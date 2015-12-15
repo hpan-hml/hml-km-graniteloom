@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -76,6 +76,38 @@ public class QuerySolution extends StandardObject {
 
   public static boolean solutionScoreGreaterThanP(QuerySolution s1, QuerySolution s2) {
     return (s1.matchScore > s2.matchScore);
+  }
+
+  public static boolean querySolutionGreaterThanP(QuerySolution x, QuerySolution y) {
+    return (QuerySolution.querySolutionLessThanP(y, x));
+  }
+
+  public static boolean querySolutionLessThanP(QuerySolution x, QuerySolution y) {
+    { Stella_Object xbinding = null;
+      Vector vector000 = x.bindings;
+      int index000 = 0;
+      int length000 = vector000.length();
+      Stella_Object ybinding = null;
+      Vector vector001 = y.bindings;
+      int index001 = 0;
+      int length001 = vector001.length();
+
+      loop000 : for (;(index000 < length000) &&
+                (index001 < length001); index000 = index000 + 1, index001 = index001 + 1) {
+        xbinding = (vector000.theArray)[index000];
+        ybinding = (vector001.theArray)[index001];
+        if (Stella_Object.eqlP(xbinding, ybinding)) {
+          continue loop000;
+        }
+        else if (Logic.logicFormLessP(xbinding, ybinding)) {
+          return (true);
+        }
+        else {
+          return (false);
+        }
+      }
+    }
+    return (false);
   }
 
   public boolean deletedPSetter(boolean value) {

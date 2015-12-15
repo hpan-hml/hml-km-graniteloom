@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -196,7 +196,7 @@ int WhynotPartialMatch::computeUnknownGoalCutoff() {
                 siblingunknowns = siblingunknowns + ((WhynotPartialMatch*)(((ControlFrame*)((((Vector*)(dynamicSlotValue(parentframe->dynamicSlots, SYM_WHYNOT_STELLA_ARGUMENTS, NULL)))->theArray)[i]))->partialMatchFrame))->numberOfFailedSubgoals();
               }
             }
-            cutoff = stella::max(parentcutoff - siblingunknowns, 0);
+            cutoff = stella::integerMax(parentcutoff - siblingunknowns, 0);
           }
         }
         else {
@@ -555,7 +555,7 @@ Keyword* WhynotPartialMatch::continuePartialAntecedentsProof(Keyword* lastmove) 
       }
       if (!((lastmove == KWD_WHYNOT_UP_TRUE) ||
           (allottedclockticks == NULL_INTEGER))) {
-        frame->allottedClockTicks = ((int)(((double)(((IntegerWrapper*)(dynamicSlotValue(frame->dynamicSlots, SYM_WHYNOT_LOGIC_REAL_ALLOTTED_CLOCK_TICKS, NULL_INTEGER_WRAPPER)))->wrapperValue - (currentclockticks - frame->startingClockTicks))) / stella::max(numberOfRemainingAntecedents(iterator), 1)));
+        frame->allottedClockTicks = ((int)(((double)(((IntegerWrapper*)(dynamicSlotValue(frame->dynamicSlots, SYM_WHYNOT_LOGIC_REAL_ALLOTTED_CLOCK_TICKS, NULL_INTEGER_WRAPPER)))->wrapperValue - (currentclockticks - frame->startingClockTicks))) / stella::integerMax(numberOfRemainingAntecedents(iterator), 1)));
         if ((frame->allottedClockTicks < oMIN_CLOCK_TICKS_PER_WHYNOT_ANTECEDENTo) &&
             (numberOfRemainingAntecedents(iterator) > 0)) {
           if (((boolean)(oTRACED_KEYWORDSo)) &&
@@ -717,8 +717,7 @@ double WhynotPartialMatch::computePartialTruth(QueryIterator* query) {
             partialmatchframe->dynamicCutoff = ((WhynotProofClass*)(proofclasses->nth(topnproofs - 1)))->representative->positiveScore + 0.01;
           }
           if ((!maximizescoreP) ||
-              (!((baseframe->truthValue == UNKNOWN_TRUTH_VALUE) ||
-              (!((boolean)(baseframe->truthValue)))))) {
+              knownTruthValueP(baseframe->truthValue)) {
             break;
           }
         }
@@ -780,16 +779,14 @@ int computeProofDeviation(Justification* proof1, Justification* proof2, int maxd
       if (proof1->inferenceRule == KWD_WHYNOT_PATTERN) {
         { PatternVariable* var1 = NULL;
           Object* value1 = NULL;
-          KvCons* iter000 = proof1->substitution->theKvList;
+          DictionaryIterator* iter000 = ((DictionaryIterator*)(proof1->substitution->allocateIterator()));
           PatternVariable* var2 = NULL;
           Object* value2 = NULL;
-          KvCons* iter001 = proof2->substitution->theKvList;
+          DictionaryIterator* iter001 = ((DictionaryIterator*)(proof2->substitution->allocateIterator()));
 
           for  (var1, value1, iter000, var2, value2, iter001; 
-                ((boolean)(iter000)) &&
-                    ((boolean)(iter001)); 
-                iter000 = iter000->rest,
-                iter001 = iter001->rest) {
+                iter000->nextP() &&
+                    iter001->nextP(); ) {
             var1 = ((PatternVariable*)(iter000->key));
             value1 = iter000->value;
             var2 = ((PatternVariable*)(iter001->key));
@@ -929,16 +926,14 @@ boolean insertWhynotProofToClassP(WhynotProofClass* clasS, Justification* proof)
           }
           { PatternVariable* newvar = NULL;
             Object* newvalue = NULL;
-            KvCons* iter001 = newdev->substitution->theKvList;
+            DictionaryIterator* iter001 = ((DictionaryIterator*)(newdev->substitution->allocateIterator()));
             PatternVariable* repvar = NULL;
             Object* repvalue = NULL;
-            KvCons* iter002 = clasS->deviatingPattern->substitution->theKvList;
+            DictionaryIterator* iter002 = ((DictionaryIterator*)(clasS->deviatingPattern->substitution->allocateIterator()));
 
             for  (newvar, newvalue, iter001, repvar, repvalue, iter002; 
-                  ((boolean)(iter001)) &&
-                      ((boolean)(iter002)); 
-                  iter001 = iter001->rest,
-                  iter002 = iter002->rest) {
+                  iter001->nextP() &&
+                      iter002->nextP(); ) {
               newvar = ((PatternVariable*)(iter001->key));
               newvalue = iter001->value;
               repvar = ((PatternVariable*)(iter002->key));
@@ -1067,7 +1062,7 @@ void postProcessWhynotProofClasses(List* classes) {
     for (clasS, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       clasS = ((WhynotProofClass*)(iter000->value));
       if (clasS->length() > 1) {
-        { KeyValueList* substitution = clasS->deviatingPattern->substitution;
+        { KeyValueMap* substitution = clasS->deviatingPattern->substitution;
           PatternVariable* variable = clasS->deviatingVariable;
 
           { AlternativeBindingsSet* self000 = newAlternativeBindingsSet();
@@ -1177,8 +1172,7 @@ QueryIterator* WhynotPartialMatch::retrievePartialSolutions(QueryIterator* query
             testValue000 = !testValue000;
             if (testValue000) {
               {
-                if (!((baseframe->truthValue == UNKNOWN_TRUTH_VALUE) ||
-                    (!((boolean)(baseframe->truthValue))))) {
+                if (knownTruthValueP(baseframe->truthValue)) {
                   strictproofs->push(currentproof);
                   continue;
                 }
@@ -1193,7 +1187,7 @@ QueryIterator* WhynotPartialMatch::retrievePartialSolutions(QueryIterator* query
           if (insertWhynotProof(partialproofclasses, currentproof)->length() == oSIMILAR_WHYNOT_PROOF_CUTOFFo) {
             cutoffSimilarWhynotProofs(query);
           }
-          topnpartialproofs = ((howmany == NULL_INTEGER) ? topn : stella::max(topn, howmany - strictproofs->length()));
+          topnpartialproofs = ((howmany == NULL_INTEGER) ? topn : stella::integerMax(topn, howmany - strictproofs->length()));
           if (haveenoughpartialproofsP ||
               (partialproofclasses->length() >= topnpartialproofs)) {
             haveenoughpartialproofsP = true;
@@ -1271,7 +1265,7 @@ QueryIterator* WhynotPartialMatch::retrievePartialSolutions(QueryIterator* query
 
 Cons* retrievalProofSolution(Justification* proof, QueryIterator* query) {
   { Cons* solution = NIL;
-    KeyValueList* substitution = proof->substitution;
+    KeyValueMap* substitution = proof->substitution;
 
     { PatternVariable* extvar = NULL;
       Vector* vector000 = query->externalVariables;
@@ -1284,11 +1278,10 @@ Cons* retrievalProofSolution(Justification* proof, QueryIterator* query) {
         extvar = ((PatternVariable*)((vector000->theArray)[index000]));
         { PatternVariable* var = NULL;
           Object* value = NULL;
-          KvCons* iter000 = substitution->theKvList;
+          DictionaryIterator* iter000 = ((DictionaryIterator*)(substitution->allocateIterator()));
 
           for  (var, value, iter000; 
-                ((boolean)(iter000)); 
-                iter000 = iter000->rest) {
+                iter000->nextP(); ) {
             var = ((PatternVariable*)(iter000->key));
             value = iter000->value;
             if (var->skolemName == extvar->skolemName) {
@@ -1445,7 +1438,7 @@ void explainWhynot(char* label, Keyword* style, int maxdepth, boolean summaryP, 
           if (label == NULL) {
             { ExplanationInfo* info = registerJustification(visibleJustification(justification), oMOST_RECENT_EXPLANATION_MAPPINGo.get());
 
-              info->label = integerToString(i);
+              info->label = integerToString(((long long int)(i)));
               info->depth = 1;
             }
           }
@@ -1706,6 +1699,7 @@ void startupWhynot() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MIN-CLOCK-TICKS-PER-WHYNOT-ANTECEDENT* INTEGER 5)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *MAX-WHYNOT-PROOF-CLASS-DEVIATIONS* INTEGER 1)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SIMILAR-WHYNOT-PROOF-CUTOFF* INTEGER 3)");

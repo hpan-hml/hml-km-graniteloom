@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,44 +50,44 @@ import edu.isi.stella.javalib.*;
 public class _StartupForeach {
   static void helpStartupForeach1() {
     {
-      Stella.SYM_STELLA_AS = ((Symbol)(Stella.internRigidSymbolWrtModule("AS", null, 0)));
-      Stella.SYM_STELLA_COMMA = ((Symbol)(Stella.internRigidSymbolWrtModule("COMMA", null, 0)));
-      Stella.SYM_STELLA_COLLECT = ((Symbol)(Stella.internRigidSymbolWrtModule("COLLECT", null, 0)));
-      Stella.SYM_STELLA_PREFIX_FOREACH = ((Symbol)(Stella.internRigidSymbolWrtModule("PREFIX-FOREACH", null, 0)));
-      Stella.SYM_STELLA_X = ((Symbol)(Stella.internRigidSymbolWrtModule("X", null, 0)));
-      Stella.SYM_STELLA_WHERE = ((Symbol)(Stella.internRigidSymbolWrtModule("WHERE", null, 0)));
-      Stella.SYM_STELLA_INTO = ((Symbol)(Stella.internRigidSymbolWrtModule("INTO", null, 0)));
-      Stella.SYM_STELLA_COLLECT_INTO = ((Symbol)(Stella.internRigidSymbolWrtModule("COLLECT-INTO", null, 0)));
-      Stella.SYM_STELLA_EXISTS = ((Symbol)(Stella.internRigidSymbolWrtModule("EXISTS", null, 0)));
-      Stella.SYM_STELLA_FORALL = ((Symbol)(Stella.internRigidSymbolWrtModule("FORALL", null, 0)));
-      Stella.SYM_STELLA_SOME = ((Symbol)(Stella.internRigidSymbolWrtModule("SOME", null, 0)));
-      Stella.SGT_STELLA_INTEGER_INTERVAL = ((Surrogate)(Stella.internRigidSymbolWrtModule("INTEGER-INTERVAL", null, 1)));
-      Stella.SGT_STELLA_ABSTRACT_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("ABSTRACT-ITERATOR", null, 1)));
-      Stella.SYM_STELLA_ALLOCATE_ITERATOR = ((Symbol)(Stella.internRigidSymbolWrtModule("ALLOCATE-ITERATOR", null, 0)));
-      Stella.SGT_STELLA_ARGUMENT_LIST = ((Surrogate)(Stella.internRigidSymbolWrtModule("ARGUMENT-LIST", null, 1)));
-      Stella.SGT_STELLA_SEQUENCE_MIXIN = ((Surrogate)(Stella.internRigidSymbolWrtModule("SEQUENCE-MIXIN", null, 1)));
-      Stella.SYM_STELLA_THE_ARRAY = ((Symbol)(Stella.internRigidSymbolWrtModule("THE-ARRAY", null, 0)));
-      Stella.SYM_STELLA_NILp = ((Symbol)(Stella.internRigidSymbolWrtModule("NIL?", null, 0)));
-      Stella.SYM_STELLA_NEXTp = ((Symbol)(Stella.internRigidSymbolWrtModule("NEXT?", null, 0)));
-      Stella.SYM_STELLA_ANY_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("ANY-VALUE", null, 0)));
-      Stella.SYM_STELLA_ANY_KEY = ((Symbol)(Stella.internRigidSymbolWrtModule("ANY-KEY", null, 0)));
-      Stella.SYM_STELLA_le = ((Symbol)(Stella.internRigidSymbolWrtModule("<=", null, 0)));
-      Stella.SYM_STELLA_OR = ((Symbol)(Stella.internRigidSymbolWrtModule("OR", null, 0)));
-      Stella.SYM_STELLA_1_ = ((Symbol)(Stella.internRigidSymbolWrtModule("1-", null, 0)));
-      Stella.SYM_STELLA__ = ((Symbol)(Stella.internRigidSymbolWrtModule("-", null, 0)));
-      Stella.SYM_STELLA_l = ((Symbol)(Stella.internRigidSymbolWrtModule("<", null, 0)));
-      Stella.SYM_STELLA_LENGTH = ((Symbol)(Stella.internRigidSymbolWrtModule("LENGTH", null, 0)));
-      Stella.SYM_STELLA_NTH = ((Symbol)(Stella.internRigidSymbolWrtModule("NTH", null, 0)));
-      Stella.SGT_STELLA_ARGUMENT_LIST_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("ARGUMENT-LIST-ITERATOR", null, 1)));
-      Stella.SYM_STELLA_SYS_CALL_METHOD = ((Symbol)(Stella.internRigidSymbolWrtModule("SYS-CALL-METHOD", null, 0)));
-      Stella.SYM_STELLA_ON = ((Symbol)(Stella.internRigidSymbolWrtModule("ON", null, 0)));
-      Stella.SYM_STELLA_EMPTYp = ((Symbol)(Stella.internRigidSymbolWrtModule("EMPTY?", null, 0)));
-      Stella.SYM_STELLA_ADD_CONS_TO_END_OF_CONS_LIST = ((Symbol)(Stella.internRigidSymbolWrtModule("ADD-CONS-TO-END-OF-CONS-LIST", null, 0)));
-      Stella.SYM_STELLA_CONSp = ((Symbol)(Stella.internRigidSymbolWrtModule("CONS?", null, 0)));
-      Stella.SYM_STELLA_SYS_FOREACH = ((Symbol)(Stella.internRigidSymbolWrtModule("SYS-FOREACH", null, 0)));
-      Stella.SYM_STELLA_BREAK = ((Symbol)(Stella.internRigidSymbolWrtModule("BREAK", null, 0)));
-      Stella.SYM_STELLA_ALWAYS = ((Symbol)(Stella.internRigidSymbolWrtModule("ALWAYS", null, 0)));
-      Stella.SYM_STELLA_STARTUP_FOREACH = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-FOREACH", null, 0)));
+      Stella.SYM_STELLA_AS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("AS", null, 0)));
+      Stella.SYM_STELLA_COMMA = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COMMA", null, 0)));
+      Stella.SYM_STELLA_COLLECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COLLECT", null, 0)));
+      Stella.SYM_STELLA_PREFIX_FOREACH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PREFIX-FOREACH", null, 0)));
+      Stella.SYM_STELLA_X = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("X", null, 0)));
+      Stella.SYM_STELLA_WHERE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WHERE", null, 0)));
+      Stella.SYM_STELLA_INTO = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTO", null, 0)));
+      Stella.SYM_STELLA_COLLECT_INTO = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COLLECT-INTO", null, 0)));
+      Stella.SYM_STELLA_EXISTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EXISTS", null, 0)));
+      Stella.SYM_STELLA_FORALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FORALL", null, 0)));
+      Stella.SYM_STELLA_SOME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SOME", null, 0)));
+      Stella.SGT_STELLA_INTEGER_INTERVAL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("INTEGER-INTERVAL", null, 1)));
+      Stella.SGT_STELLA_ABSTRACT_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ABSTRACT-ITERATOR", null, 1)));
+      Stella.SYM_STELLA_ALLOCATE_ITERATOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ALLOCATE-ITERATOR", null, 0)));
+      Stella.SGT_STELLA_ARGUMENT_LIST = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ARGUMENT-LIST", null, 1)));
+      Stella.SGT_STELLA_SEQUENCE_MIXIN = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SEQUENCE-MIXIN", null, 1)));
+      Stella.SYM_STELLA_THE_ARRAY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-ARRAY", null, 0)));
+      Stella.SYM_STELLA_NILp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NIL?", null, 0)));
+      Stella.SYM_STELLA_NEXTp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NEXT?", null, 0)));
+      Stella.SYM_STELLA_ANY_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ANY-VALUE", null, 0)));
+      Stella.SYM_STELLA_ANY_KEY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ANY-KEY", null, 0)));
+      Stella.SYM_STELLA_le = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("<=", null, 0)));
+      Stella.SYM_STELLA_OR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OR", null, 0)));
+      Stella.SYM_STELLA_1_ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("1-", null, 0)));
+      Stella.SYM_STELLA__ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("-", null, 0)));
+      Stella.SYM_STELLA_l = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("<", null, 0)));
+      Stella.SYM_STELLA_LENGTH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LENGTH", null, 0)));
+      Stella.SYM_STELLA_NTH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NTH", null, 0)));
+      Stella.SGT_STELLA_ARGUMENT_LIST_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ARGUMENT-LIST-ITERATOR", null, 1)));
+      Stella.SYM_STELLA_SYS_CALL_METHOD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SYS-CALL-METHOD", null, 0)));
+      Stella.SYM_STELLA_ON = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ON", null, 0)));
+      Stella.SYM_STELLA_EMPTYp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EMPTY?", null, 0)));
+      Stella.SYM_STELLA_ADD_CONS_TO_END_OF_CONS_LIST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ADD-CONS-TO-END-OF-CONS-LIST", null, 0)));
+      Stella.SYM_STELLA_CONSp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CONS?", null, 0)));
+      Stella.SYM_STELLA_SYS_FOREACH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SYS-FOREACH", null, 0)));
+      Stella.SYM_STELLA_BREAK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BREAK", null, 0)));
+      Stella.SYM_STELLA_ALWAYS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ALWAYS", null, 0)));
+      Stella.SYM_STELLA_STARTUP_FOREACH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-FOREACH", null, 0)));
     }
   }
 
@@ -144,6 +144,7 @@ public class _StartupForeach {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AGGRESSIVELY-OPTIMIZE-INTERVAL-FOREACH?* BOOLEAN FALSE)");
         }
 

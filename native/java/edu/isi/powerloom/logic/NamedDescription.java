@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -372,15 +372,15 @@ public class NamedDescription extends Description {
                     if ((operator == Logic.SYM_PL_KERNEL_KB_NTH_DOMAIN) &&
                         ((firstarg == name) &&
                          Stella_Object.integerP(axiom000.rest.rest.value))) {
-                      typedarguments = Stella_Object.cons(((PatternVariable)((iovariables.theArray)[(((IntegerWrapper)(axiom000.rest.rest.value)).wrapperValue)])), typedarguments);
+                      typedarguments = Cons.cons(((PatternVariable)((iovariables.theArray)[(((IntegerWrapper)(axiom000.rest.rest.value)).wrapperValue)])), typedarguments);
                     }
                     else if ((operator == Logic.SYM_PL_KERNEL_KB_DOMAIN) &&
                         (firstarg == name)) {
-                      typedarguments = Stella_Object.cons(((PatternVariable)((iovariables.theArray)[0])), typedarguments);
+                      typedarguments = Cons.cons(((PatternVariable)((iovariables.theArray)[0])), typedarguments);
                     }
                     else if ((operator == Logic.SYM_PL_KERNEL_KB_RANGE) &&
                         (firstarg == name)) {
-                      typedarguments = Stella_Object.cons(((PatternVariable)(iovariables.last())), typedarguments);
+                      typedarguments = Cons.cons(((PatternVariable)(iovariables.last())), typedarguments);
                     }
                   }
                 }
@@ -412,7 +412,7 @@ public class NamedDescription extends Description {
                    (!typedarguments.membP(var)))) {
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_NTH_DOMAIN, Stella_Object.cons(name, Stella_Object.cons(Stella_Object.cons(IntegerWrapper.wrapInteger(i), Stella_Object.cons(Stella.internSymbolInModule(type.symbolName, ((Module)(type.homeContext)), false), Stella.NIL)), Stella.NIL)))), Stella.NIL);
+                    collect000 = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_NTH_DOMAIN, Cons.cons(name, Cons.cons(Cons.cons(IntegerWrapper.wrapInteger(i), Cons.cons(Symbol.internSymbolInModule(type.symbolName, ((Module)(type.homeContext)), false), Stella.NIL)), Stella.NIL)))), Stella.NIL);
                     if (argumenttypeaxioms == Stella.NIL) {
                       argumenttypeaxioms = collect000;
                     }
@@ -423,7 +423,7 @@ public class NamedDescription extends Description {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_NTH_DOMAIN, Stella_Object.cons(name, Stella_Object.cons(Stella_Object.cons(IntegerWrapper.wrapInteger(i), Stella_Object.cons(Stella.internSymbolInModule(type.symbolName, ((Module)(type.homeContext)), false), Stella.NIL)), Stella.NIL)))), Stella.NIL);
+                    collect000.rest = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_NTH_DOMAIN, Cons.cons(name, Cons.cons(Cons.cons(IntegerWrapper.wrapInteger(i), Cons.cons(Symbol.internSymbolInModule(type.symbolName, ((Module)(type.homeContext)), false), Stella.NIL)), Stella.NIL)))), Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -496,7 +496,7 @@ public class NamedDescription extends Description {
   public static Stella_Object completeRuleDefinition(NamedDescription self, Stella_Object body, Symbol arrow) {
     { Cons parameters = NamedDescription.yieldRelationParametersTree(self, false, false);
 
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FORALL, Stella_Object.cons(parameters, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(arrow, Stella.list$(Stella_Object.cons(Stella_Object.cons(self.descriptionName(), parameters.concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Logic.wrapKifWithForall(body, parameters), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_FORALL, Cons.cons(parameters, Cons.cons(Cons.cons(Cons.cons(arrow, Cons.list$(Cons.cons(Cons.cons(self.descriptionName(), parameters.concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Logic.wrapKifWithForall(body, parameters), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -516,9 +516,9 @@ public class NamedDescription extends Description {
           parameter = pname;
           if (typedP &&
               (!(ptype == Logic.SGT_STELLA_THING))) {
-            parameter = Stella_Object.cons(parameter, Stella_Object.cons(Surrogate.surrogateToSymbol(ptype), Stella.NIL));
+            parameter = Cons.cons(parameter, Cons.cons(Symbol.internSymbolInModule(ptype.symbolName, ((Module)(ptype.homeContext)), true), Stella.NIL));
           }
-          parameterlist = Stella_Object.cons(parameter, parameterlist);
+          parameterlist = Cons.cons(parameter, parameterlist);
         }
       }
       if (dropfunctionparameterP &&
@@ -531,7 +531,7 @@ public class NamedDescription extends Description {
 
   public static void definitionHalfRuleHandler(NamedDescription self, StorageSlot slot, Stella_Object body) {
     { Keyword keyword = ((Keyword)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Logic.SYM_STELLA_SLOT_OPTION_KEYWORD, null)));
-      Symbol arrow = Stella.internSymbolInModule(keyword.symbolName, Stella.getStellaModule("PL-KERNEL-KB", true), false);
+      Symbol arrow = Symbol.internSymbolInModule(keyword.symbolName, Stella.getStellaModule("PL-KERNEL-KB", true), false);
       Stella_Object newrule = null;
 
       if (body == null) {
@@ -575,6 +575,7 @@ public class NamedDescription extends Description {
           else if (!Description.inferableWithCycleCheckP(throughchild000, alreadyvisitedlist)) {
             return (false);
           }
+          alreadyvisitedlist = Cons.cons(throughchild000, alreadyvisitedlist);
           { Proposition p = null;
             Cons iter000 = LogicObject.applicableRulesOfDescription(throughchild000, Logic.KWD_BACKWARD, false);
 
@@ -639,6 +640,38 @@ public class NamedDescription extends Description {
     }
   }
 
+  public static double dynamicallyEstimateInferenceCost(NamedDescription self) {
+    { MemoizationTable memoTable000 = null;
+      Cons memoizedEntry000 = null;
+      Stella_Object memoizedValue000 = null;
+
+      if (Stella.$MEMOIZATION_ENABLEDp$) {
+        memoTable000 = ((MemoizationTable)(Logic.SGT_LOGIC_F_DYNAMICALLY_ESTIMATE_INFERENCE_COST_MEMO_TABLE_000.surrogateValue));
+        if (memoTable000 == null) {
+          Surrogate.initializeMemoizationTable(Logic.SGT_LOGIC_F_DYNAMICALLY_ESTIMATE_INFERENCE_COST_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:IMPLIES-PROPOSITION-UPDATE))");
+          memoTable000 = ((MemoizationTable)(Logic.SGT_LOGIC_F_DYNAMICALLY_ESTIMATE_INFERENCE_COST_MEMO_TABLE_000.surrogateValue));
+        }
+        memoizedEntry000 = MruMemoizationTable.lookupMruMemoizedValue(((MruMemoizationTable)(memoTable000)), self, ((Context)(Stella.$CONTEXT$.get())), Stella.MEMOIZED_NULL_VALUE, null, -1);
+        memoizedValue000 = memoizedEntry000.value;
+      }
+      if (memoizedValue000 != null) {
+        if (memoizedValue000 == Stella.MEMOIZED_NULL_VALUE) {
+          memoizedValue000 = null;
+        }
+      }
+      else {
+        memoizedValue000 = IntegerWrapper.wrapInteger(LogicObject.applicableRulesOfDescription(self, Logic.KWD_BACKWARD, true).length());
+        if (Stella.$MEMOIZATION_ENABLEDp$) {
+          memoizedEntry000.value = ((memoizedValue000 == null) ? Stella.MEMOIZED_NULL_VALUE : memoizedValue000);
+        }
+      }
+      { IntegerWrapper nofrules = ((IntegerWrapper)(memoizedValue000));
+
+        return (Stella.float_max(Logic.INFERABLE_PENALTY_COST * nofrules.wrapperValue, 1.0));
+      }
+    }
+  }
+
   public static double estimateCardinalityOfExtension(NamedDescription description) {
     if ((description == null) ||
         (!NamedDescription.relationSupportsExtensionP(description))) {
@@ -653,7 +686,7 @@ public class NamedDescription extends Description {
       if (estimate == Stella.NULL_INTEGER) {
         estimate = 0;
       }
-      return (((double)(Stella.max(estimate, (NamedDescription.classDescriptionP(description) ? ((int)(Logic.ESTIMATED_SIZE_OF_CLASS_EXTENSION)) : ((int)(Logic.ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS * Logic.ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS * Logic.ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS)))))));
+      return (((double)(Stella.integer_max(estimate, (NamedDescription.classDescriptionP(description) ? ((int)(Logic.ESTIMATED_SIZE_OF_CLASS_EXTENSION)) : ((int)(Logic.ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS * Logic.ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS * Logic.ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS)))))));
     }
   }
 
@@ -668,7 +701,7 @@ public class NamedDescription extends Description {
 
           try {
             Native.setBooleanSpecial(Logic.$INVISIBLEASSERTIONp$, true);
-            Logic.assertTuple(Logic.SGT_PL_KERNEL_KB_OBSERVED_CARDINALITY_OF, Stella.consList(Stella_Object.cons(self, Stella_Object.cons(IntegerWrapper.wrapInteger(cardinality), Stella.NIL))));
+            Logic.assertTuple(Logic.SGT_PL_KERNEL_KB_OBSERVED_CARDINALITY_OF, Cons.consList(Cons.cons(self, Cons.cons(IntegerWrapper.wrapInteger(cardinality), Stella.NIL))));
 
           } finally {
             Logic.$INVISIBLEASSERTIONp$.set(old$InvisibleassertionP$000);
@@ -701,7 +734,7 @@ public class NamedDescription extends Description {
             type = ((Surrogate)(iter000.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons((Logic.typeHasBacklinksP(Logic.ensureDeferredDescription(type)) ? Stella.ONE_WRAPPER : Stella.ZERO_WRAPPER), Stella.NIL);
+                collect000 = Cons.cons((Logic.typeHasBacklinksP(Logic.ensureDeferredDescription(type)) ? Stella.ONE_WRAPPER : Stella.ZERO_WRAPPER), Stella.NIL);
                 if (zeroonelist.theConsList == Stella.NIL) {
                   zeroonelist.theConsList = collect000;
                 }
@@ -712,7 +745,7 @@ public class NamedDescription extends Description {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons((Logic.typeHasBacklinksP(Logic.ensureDeferredDescription(type)) ? Stella.ONE_WRAPPER : Stella.ZERO_WRAPPER), Stella.NIL);
+                collect000.rest = Cons.cons((Logic.typeHasBacklinksP(Logic.ensureDeferredDescription(type)) ? Stella.ONE_WRAPPER : Stella.ZERO_WRAPPER), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -802,18 +835,18 @@ public class NamedDescription extends Description {
         }
       }
       { Skolem roleset = NamedDescription.getRolesetOf(relation, instance);
+        boolean closedP = Logic.closedTermP(relation) ||
+            Logic.closedTermP(roleset);
 
-        { boolean testValue000 = false;
+        if (roleset != null) {
+          { boolean testValue000 = false;
 
-          testValue000 = roleset != null;
-          if (testValue000) {
             if (LogicObject.collectionImpliesCollectionP(roleset, valuetype)) {
               testValue000 = true;
             }
             else {
               {
-                testValue000 = Logic.closedTermP(relation) ||
-                    Logic.closedTermP(roleset);
+                testValue000 = closedP;
                 if (testValue000) {
                   { boolean alwaysP000 = true;
 
@@ -833,17 +866,43 @@ public class NamedDescription extends Description {
                 }
               }
             }
+            if (testValue000) {
+              return (true);
+            }
           }
-          if (testValue000) {
-            return (true);
+        }
+        else {
+          { boolean testValue001 = false;
+
+            testValue001 = closedP;
+            if (testValue001) {
+              { boolean alwaysP001 = true;
+
+                { Stella_Object filler = null;
+                  Cons iter001 = LogicObject.allSlotValues(((LogicObject)(instance)), relationref);
+
+                  loop001 : for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+                    filler = iter001.value;
+                    if (!Logic.testTypeOnInstanceP(filler, valuesurrogate)) {
+                      alwaysP001 = false;
+                      break loop001;
+                    }
+                  }
+                }
+                testValue001 = alwaysP001;
+              }
+            }
+            if (testValue001) {
+              return (true);
+            }
           }
         }
       }
       { NamedDescription superr = null;
-        Cons iter001 = NamedDescription.allSuperrelations(relation, false);
+        Cons iter002 = NamedDescription.allSuperrelations(relation, false);
 
-        for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
-          superr = ((NamedDescription)(iter001.value));
+        for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
+          superr = ((NamedDescription)(iter002.value));
           { Skolem superroleset = NamedDescription.getRolesetOf(superr, instance);
 
             if ((superroleset != null) &&
@@ -869,10 +928,10 @@ public class NamedDescription extends Description {
               (Logic.accessBinaryValue(instance, relationref) != null)) {
             return (1);
           }
-          { Cons maxcards = Stella.consList(Stella_Object.cons(IntegerWrapper.wrapInteger(NamedDescription.computeStoredBoundOnRoleset(relation, instance, Logic.KWD_UPPER)), Stella.NIL));
+          { Cons maxcards = Cons.consList(Cons.cons(IntegerWrapper.wrapInteger(NamedDescription.computeStoredBoundOnRoleset(relation, instance, Logic.KWD_UPPER)), Stella.NIL));
 
             if (singlevaluedP) {
-              maxcards = Stella_Object.cons(IntegerWrapper.wrapInteger(1), maxcards);
+              maxcards = Cons.cons(IntegerWrapper.wrapInteger(1), maxcards);
             }
             { Skolem roleset = NamedDescription.getRolesetOf(relation, instance);
 
@@ -882,17 +941,17 @@ public class NamedDescription extends Description {
               }
             }
             if (Logic.closedTermP(relation)) {
-              maxcards = Stella_Object.cons(IntegerWrapper.wrapInteger(NamedDescription.computeMinimumCardinality(relation, instance)), maxcards);
+              maxcards = Cons.cons(IntegerWrapper.wrapInteger(NamedDescription.computeMinimumCardinality(relation, instance)), maxcards);
             }
             { NamedDescription superr = null;
               Cons iter000 = NamedDescription.allSuperrelations(relation, false);
 
               for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
                 superr = ((NamedDescription)(iter000.value));
-                maxcards = Stella_Object.cons(IntegerWrapper.wrapInteger(NamedDescription.computeStoredBoundOnRoleset(superr, instance, Logic.KWD_UPPER)), maxcards);
+                maxcards = Cons.cons(IntegerWrapper.wrapInteger(NamedDescription.computeStoredBoundOnRoleset(superr, instance, Logic.KWD_UPPER)), maxcards);
               }
             }
-            { IntegerWrapper minmax = ((IntegerWrapper)(maxcards.value));
+            { int minmax = ((IntegerWrapper)(maxcards.value)).wrapperValue;
 
               { IntegerWrapper ub = null;
                 Cons iter001 = maxcards.rest;
@@ -900,11 +959,11 @@ public class NamedDescription extends Description {
                 for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                   ub = ((IntegerWrapper)(iter001.value));
                   if (ub != null) {
-                    minmax = IntegerWrapper.wrapInteger(Stella.min(ub.wrapperValue, minmax.wrapperValue));
+                    minmax = Stella.integer_min(minmax, ub.wrapperValue);
                   }
                 }
               }
-              return (minmax.wrapperValue);
+              return (minmax);
             }
           }
         }
@@ -926,18 +985,18 @@ public class NamedDescription extends Description {
               (Logic.accessBinaryValue(instance, relationref) != null)) {
             return (1);
           }
-          { Cons mincards = Stella.consList(Stella_Object.cons(IntegerWrapper.wrapInteger(0), Stella_Object.cons(IntegerWrapper.wrapInteger(NamedDescription.computeStoredBoundOnRoleset(relation, instance, Logic.KWD_LOWER)), Stella.NIL)));
+          { Cons mincards = Cons.consList(Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(IntegerWrapper.wrapInteger(NamedDescription.computeStoredBoundOnRoleset(relation, instance, Logic.KWD_LOWER)), Stella.NIL)));
 
-            mincards = Stella_Object.cons(IntegerWrapper.wrapInteger(LogicObject.allSlotValues(((LogicObject)(instance)), relationref).length()), mincards);
+            mincards = Cons.cons(IntegerWrapper.wrapInteger(LogicObject.allSlotValues(((LogicObject)(instance)), relationref).length()), mincards);
             { NamedDescription subr = null;
               Cons iter000 = NamedDescription.allSubrelations(relation, false);
 
               for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
                 subr = ((NamedDescription)(iter000.value));
-                mincards = Stella_Object.cons(IntegerWrapper.wrapInteger(NamedDescription.computeStoredBoundOnRoleset(subr, instance, Logic.KWD_LOWER)), mincards);
+                mincards = Cons.cons(IntegerWrapper.wrapInteger(NamedDescription.computeStoredBoundOnRoleset(subr, instance, Logic.KWD_LOWER)), mincards);
               }
             }
-            { IntegerWrapper maxmin = ((IntegerWrapper)(mincards.value));
+            { int maxmin = ((IntegerWrapper)(mincards.value)).wrapperValue;
 
               { IntegerWrapper lb = null;
                 Cons iter001 = mincards.rest;
@@ -945,11 +1004,11 @@ public class NamedDescription extends Description {
                 for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                   lb = ((IntegerWrapper)(iter001.value));
                   if (lb != null) {
-                    maxmin = IntegerWrapper.wrapInteger(Stella.max(lb.wrapperValue, maxmin.wrapperValue));
+                    maxmin = Stella.integer_max(maxmin, lb.wrapperValue);
                   }
                 }
               }
-              return (maxmin.wrapperValue);
+              return (maxmin);
             }
           }
         }
@@ -1020,7 +1079,7 @@ public class NamedDescription extends Description {
   }
 
   public static Skolem getRolesetOf(NamedDescription relation, Stella_Object instance) {
-    return (((Skolem)(Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_THE_ROLESET, Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(instance, Stella.NIL)))).value)));
+    return (((Skolem)(Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_THE_ROLESET, Cons.consList(Cons.cons(relation, Cons.cons(instance, Stella.NIL)))).value)));
   }
 
   public static java.lang.reflect.Method lookupEvaluator(NamedDescription description) {
@@ -1108,6 +1167,19 @@ public class NamedDescription extends Description {
     Logic.prettyPrintRelationDefinitionTree(((Cons)(Stella.readSExpressionFromString(Logic.stringifiedSource(self)))), stream);
   }
 
+  public static boolean specialistApplicableP(NamedDescription description, Proposition proposition) {
+    { int dArity = description.arity();
+      int pArity = proposition.arguments.length();
+
+      if (dArity < 0) {
+        return (true);
+      }
+      else {
+        return (dArity == pArity);
+      }
+    }
+  }
+
   public static DescriptionExtensionIterator allTrueExtensionMembers(NamedDescription self, boolean specializeP) {
     { DescriptionExtensionIterator iterator = DescriptionExtensionIterator.newDescriptionExtensionIterator();
 
@@ -1193,14 +1265,14 @@ public class NamedDescription extends Description {
                 type = ((Surrogate)(iter000.value));
                 if ((type == null) ||
                     NamedDescription.classDescriptionP(self)) {
-                  declarations = Stella_Object.cons(v.skolemName, declarations);
+                  declarations = Cons.cons(v.skolemName, declarations);
                 }
                 else {
-                  declarations = Stella_Object.cons(Stella_Object.cons(v.skolemName, Stella_Object.cons(Surrogate.surrogateToSymbol(type), Stella.NIL)), declarations);
+                  declarations = Cons.cons(Cons.cons(v.skolemName, Cons.cons(Symbol.internSymbolInModule(type.symbolName, ((Module)(type.homeContext)), true), Stella.NIL)), declarations);
                 }
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(v.skolemName, Stella.NIL);
+                    collect000 = Cons.cons(v.skolemName, Stella.NIL);
                     if (variables == Stella.NIL) {
                       variables = collect000;
                     }
@@ -1211,21 +1283,21 @@ public class NamedDescription extends Description {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(v.skolemName, Stella.NIL);
+                    collect000.rest = Cons.cons(v.skolemName, Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
               }
             }
             declarations = declarations.reverse();
-            clauses = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(Stella_Object.cons(self.descriptionName(), variables.concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
+            clauses = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(Cons.cons(self.descriptionName(), variables.concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
             if (NamedDescription.classDescriptionP(self)) {
               { NamedDescription p = null;
                 Cons iter001 = NamedDescription.allDirectSuperrelations(self, true);
 
                 for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                   p = ((NamedDescription)(iter001.value));
-                  clauses = Stella_Object.cons(Stella_Object.cons(p.descriptionName(), Stella_Object.cons(variables.value, Stella.NIL)), clauses);
+                  clauses = Cons.cons(Cons.cons(p.descriptionName(), Cons.cons(variables.value, Stella.NIL)), clauses);
                 }
               }
             }
@@ -1233,7 +1305,7 @@ public class NamedDescription extends Description {
 
               try {
                 Native.setSpecial(Logic.$RECURSIVEGETCOMPLEMENTARGUMENT$, self);
-                complement = ((Description)(Logic.conceiveTerm(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_KAPPA, Stella_Object.cons(declarations, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_AND, clauses.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)))))));
+                complement = ((Description)(Logic.conceiveTerm(Cons.list$(Cons.cons(Logic.SYM_LOGIC_KAPPA, Cons.cons(declarations, Cons.cons(Cons.cons(Cons.cons(Logic.SYM_STELLA_AND, clauses.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)))))));
 
               } finally {
                 Logic.$RECURSIVEGETCOMPLEMENTARGUMENT$.set(old$Recursivegetcomplementargument$000);
@@ -1246,7 +1318,7 @@ public class NamedDescription extends Description {
                   Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
                   {
                     Stella.STANDARD_WARNING.nativeStream.println("WARNING: Couldn't conceive goal complement for");
-                    Stella.STANDARD_WARNING.nativeStream.println(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_KAPPA, Stella_Object.cons(declarations, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_AND, clauses.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)))));
+                    Stella.STANDARD_WARNING.nativeStream.println(Cons.list$(Cons.cons(Logic.SYM_LOGIC_KAPPA, Cons.cons(declarations, Cons.cons(Cons.cons(Cons.cons(Logic.SYM_STELLA_AND, clauses.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)))));
                   }
 ;
                   Logic.helpSignalPropositionError(Stella.STANDARD_WARNING, Logic.KWD_WARNING);
@@ -1294,7 +1366,7 @@ public class NamedDescription extends Description {
 
   public static void materializePrimitiveDescriptionBody(NamedDescription description) {
     { boolean nativeP = description.nativeRelation() != null;
-      Symbol name = (nativeP ? Stella.internSymbolInModule(description.nativeRelation().name(), description.nativeRelation().homeModule(), true) : description.descriptionName());
+      Symbol name = (nativeP ? Symbol.internSymbolInModule(description.nativeRelation().name(), description.nativeRelation().homeModule(), true) : description.descriptionName());
       List variabletypes = description.ioVariableTypes;
       int arity = variabletypes.length();
       Cons tree = null;
@@ -1311,7 +1383,7 @@ public class NamedDescription extends Description {
           name000 = ((Symbol)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(name000, Stella.NIL);
+              collect000 = Cons.cons(name000, Stella.NIL);
               if (variables == Stella.NIL) {
                 variables = collect000;
               }
@@ -1322,7 +1394,7 @@ public class NamedDescription extends Description {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(name000, Stella.NIL);
+              collect000.rest = Cons.cons(name000, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -1331,9 +1403,9 @@ public class NamedDescription extends Description {
       arguments = Cons.copyConsList(variables);
       if (nativeP &&
           (arity > 1)) {
-        variables.firstSetter(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_ISA, Stella_Object.cons(variables.value, Stella_Object.cons(Stella_Object.cons(Surrogate.typeToSymbol(((Surrogate)(variabletypes.first()))), Stella.NIL), Stella.NIL)))));
+        variables.firstSetter(Cons.list$(Cons.cons(Logic.SYM_STELLA_ISA, Cons.cons(variables.value, Cons.cons(Cons.cons(Surrogate.typeToSymbol(((Surrogate)(variabletypes.first()))), Stella.NIL), Stella.NIL)))));
       }
-      tree = Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_KAPPA, Stella_Object.cons(variables, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(name, arguments.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL))));
+      tree = Cons.list$(Cons.cons(Logic.SYM_LOGIC_KAPPA, Cons.cons(variables, Cons.cons(Cons.cons(Cons.cons(name, arguments.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL))));
       { Object old$LogicDialect$000 = Logic.$LOGIC_DIALECT$.get();
         Object old$Logicvariabletable$000 = Logic.$LOGICVARIABLETABLE$.get();
         Object old$Termunderconstruction$000 = Logic.$TERMUNDERCONSTRUCTION$.get();
@@ -1398,7 +1470,7 @@ public class NamedDescription extends Description {
         return (extension);
       }
       else if (updateP) {
-        extension = Logic.createSequenceIndex(Logic.KWD_PAGING, Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(description.surrogateValueInverse, Stella.NIL))));
+        extension = Logic.createSequenceIndex(Logic.KWD_PAGING, Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(description.surrogateValueInverse, Stella.NIL))));
         description.extension = extension;
         return (extension);
       }
@@ -1416,26 +1488,29 @@ public class NamedDescription extends Description {
   public static boolean indexIthDomainP(NamedDescription description, int i) {
     { boolean testValue000 = false;
 
-      testValue000 = NamedDescription.functionDescriptionP(description);
+      testValue000 = false;
       if (testValue000) {
-        testValue000 = !NamedDescription.computedRelationP(description);
+        testValue000 = NamedDescription.functionDescriptionP(description);
         if (testValue000) {
-          testValue000 = i == 0;
+          testValue000 = !NamedDescription.computedRelationP(description);
           if (testValue000) {
-            { boolean alwaysP000 = true;
+            testValue000 = i == 0;
+            if (testValue000) {
+              { boolean alwaysP000 = true;
 
-              { Surrogate t = null;
-                Iterator iter000 = description.ioVariableTypes.butLast();
+                { Surrogate t = null;
+                  Iterator iter000 = description.ioVariableTypes.butLast();
 
-                loop000 : while (iter000.nextP()) {
-                  t = ((Surrogate)(iter000.value));
-                  if (!Logic.logicalSubtypeOfLiteralP(t)) {
-                    alwaysP000 = false;
-                    break loop000;
+                  loop000 : while (iter000.nextP()) {
+                    t = ((Surrogate)(iter000.value));
+                    if (!Logic.logicalSubtypeOfLiteralP(t)) {
+                      alwaysP000 = false;
+                      break loop000;
+                    }
                   }
                 }
+                testValue000 = alwaysP000;
               }
-              testValue000 = alwaysP000;
             }
           }
         }
@@ -1454,7 +1529,7 @@ public class NamedDescription extends Description {
   public static Proposition assertImpliesLinkBetweenRelations(NamedDescription sub, NamedDescription renamed_Super) {
     { Proposition impliesprop = Description.assertDescriptionImpliesDescription(sub, renamed_Super, true);
 
-      KeyValueList.setDynamicSlotValue(impliesprop.dynamicSlots, Logic.SYM_LOGIC_SUBRELATION_LINKp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+      KeyValueList.setDynamicSlotValue(impliesprop.dynamicSlots, Logic.SYM_LOGIC_SUBRELATION_LINKp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       Proposition.updatePropositionTruthValue(impliesprop, Logic.KWD_ASSERT_TRUE);
       Logic.linkOriginatedProposition(sub, impliesprop);
       return (impliesprop);

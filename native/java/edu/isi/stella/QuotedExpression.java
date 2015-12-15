@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -83,7 +83,7 @@ public class QuotedExpression extends StandardObject {
   public Cons cppTranslateAtomicTree() {
     { QuotedExpression tree = this;
 
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_LITERAL, Stella_Object.cons(tree, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_LITERAL, Cons.cons(tree, Cons.cons(Stella.NIL, Stella.NIL)))));
     }
   }
 

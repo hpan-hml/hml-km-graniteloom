@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -460,7 +460,7 @@ void cppOutputUnwindProtect(Cons* tree) {
   *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
   *(oCURRENT_STREAMo.get()->nativeStream) << "catch (...) {" << std::endl;
   cppBumpIndent();
-  cppOutputStatements(tree->rest);
+  cppOutputStatements(((Cons*)(copyConsTree(tree->rest))));
   cppIndent();
   *(oCURRENT_STREAMo.get()->nativeStream) << "throw;" << std::endl;
   cppUnbumpIndent();
@@ -978,34 +978,42 @@ void Object::cppOutputLiteral() {
 void CharacterWrapper::cppOutputLiteral() {
   { CharacterWrapper* character = this;
 
-    switch (character->wrapperValue) {
-      case '\'': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\''";
-      break;
-      case '\\': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\\\'";
-      break;
-      case '\n': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\n'";
-      break;
-      case '\b': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\b'";
-      break;
-      case '\t': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\t'";
-      break;
-      case '\r': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\r'";
-      break;
-      case '\f': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\f'";
-      break;
-      case ' ': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\0'";
-      break;
-      default:
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'" << character->wrapperValue << "'";
-      break;
+    { char ch = character->wrapperValue;
+
+      switch (ch) {
+        case '\'': 
+          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\''";
+        break;
+        case '\\': 
+          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\\\'";
+        break;
+        case '\n': 
+          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\n'";
+        break;
+        case '\b': 
+          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\b'";
+        break;
+        case '\t': 
+          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\t'";
+        break;
+        case '\r': 
+          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\r'";
+        break;
+        case '\f': 
+          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\f'";
+        break;
+        case '\0': 
+          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\0'";
+        break;
+        default:
+          if (ch == NULL_CHARACTER) {
+            *(oCURRENT_STREAMo.get()->nativeStream) << "'\\0'";
+          }
+          else {
+            *(oCURRENT_STREAMo.get()->nativeStream) << "'" << ch << "'";
+          }
+        break;
+      }
     }
   }
 }
@@ -1014,6 +1022,13 @@ void IntegerWrapper::cppOutputLiteral() {
   { IntegerWrapper* inT = this;
 
     *(oCURRENT_STREAMo.get()->nativeStream) << inT->wrapperValue;
+  }
+}
+
+void LongIntegerWrapper::cppOutputLiteral() {
+  { LongIntegerWrapper* inT = this;
+
+    *(oCURRENT_STREAMo.get()->nativeStream) << inT->wrapperValue << "l";
   }
 }
 
@@ -2260,6 +2275,7 @@ void helpStartupCppOutput3() {
     defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((OBJECT OBJECT)))", ((cpp_method_code)(&Object::cppOutputLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((CHARACTER CHARACTER-WRAPPER)))", ((cpp_method_code)(&CharacterWrapper::cppOutputLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((INT INTEGER-WRAPPER)))", ((cpp_method_code)(&IntegerWrapper::cppOutputLiteral)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((INT LONG-INTEGER-WRAPPER)))", ((cpp_method_code)(&LongIntegerWrapper::cppOutputLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((FLOAT FLOAT-WRAPPER)))", ((cpp_method_code)(&FloatWrapper::cppOutputLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((BOOLEAN BOOLEAN-WRAPPER)))", ((cpp_method_code)(&BooleanWrapper::cppOutputLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((CONS CONS)))", ((cpp_method_code)(&Cons::cppOutputLiteral)), ((cpp_method_code)(NULL)));
@@ -2273,7 +2289,6 @@ void helpStartupCppOutput3() {
     defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((KEYWORD KEYWORD)))", ((cpp_method_code)(&Keyword::cppOutputLiteral)), ((cpp_method_code)(NULL)));
     defineFunctionObject("CPP-OUTPUT-IDENTIFIER", "(DEFUN CPP-OUTPUT-IDENTIFIER ((IDENTIFIER STRING-WRAPPER)))", ((cpp_function_code)(&cppOutputIdentifier)), NULL);
     defineFunctionObject("CPP-OUTPUT-ATOMIC-EXPRESSION", "(DEFUN CPP-OUTPUT-ATOMIC-EXPRESSION ((ATOM OBJECT)))", ((cpp_function_code)(&cppOutputAtomicExpression)), NULL);
-    defineFunctionObject("CPP-INDENT", "(DEFUN CPP-INDENT ())", ((cpp_function_code)(&cppIndent)), NULL);
   }
 }
 
@@ -2290,6 +2305,7 @@ void startupCppOutput() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupCppOutput3();
+      defineFunctionObject("CPP-INDENT", "(DEFUN CPP-INDENT ())", ((cpp_function_code)(&cppIndent)), NULL);
       defineFunctionObject("CPP-OUTPUT-SEMICOLON?", "(DEFUN (CPP-OUTPUT-SEMICOLON? BOOLEAN) ((STATEMENT CONS)))", ((cpp_function_code)(&cppOutputSemicolonP)), NULL);
       defineFunctionObject("CPP-INDENT-STATEMENT?", "(DEFUN (CPP-INDENT-STATEMENT? BOOLEAN) ((STATEMENT CONS)))", ((cpp_function_code)(&cppIndentStatementP)), NULL);
       defineFunctionObject("ILLEGAL-CPP-STATEMENT?", "(DEFUN (ILLEGAL-CPP-STATEMENT? BOOLEAN) ((STATEMENT CONS)))", ((cpp_function_code)(&illegalCppStatementP)), NULL);
@@ -2347,6 +2363,7 @@ void startupCppOutput() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CPP-INDENT-CHARS* INTEGER 0)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *OUTPUTTINGDEFPRINT?* BOOLEAN FALSE :DOCUMENTATION \"`true' when outputting a defprint, used to \n            conditionally dereference streams in print-native-stream \n            statements.  Also used to take the address of streams\n            when passed to functions inside of a defprint\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CPP-MAX-STRING-LITERAL-LENGTH* INTEGER 1024 :DOCUMENTATION \"C++ string literals longer than this are broken\ninto multiple pieces to avoid problems with certain MS compilers.\")");

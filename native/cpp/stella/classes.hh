@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -78,7 +78,6 @@ Surrogate* shadowSurrogate(char* name);
 boolean shadowedSymbolP(GeneralizedSymbol* symbol);
 cpp_function_code getConstructor(Class* clasS, boolean warnP);
 Object* createObject(Surrogate* type, int initialValuePairs, ...);
-BooleanWrapper* coerceToBoolean(Object* object);
 Class* defineStellaClass(Surrogate* name, List* supers, List* slots, KeywordKeyValueList* options);
 Slot* defineStellaSlot(Symbol* name, Surrogate* owner, Surrogate* basetype, Cons* typespecifier, KeywordKeyValueList* options);
 void incorporateClassOptions(Class* clasS, KeywordKeyValueList* options);
@@ -178,11 +177,6 @@ void startupClasses();
 extern Surrogate* SGT_CLASSES_STELLA_CLASS;
 extern Surrogate* SGT_CLASSES_STELLA_OBJECT;
 extern Keyword* KWD_CLASSES_PUBLICp;
-extern Symbol* SYM_CLASSES_STELLA_TRUE;
-extern Keyword* KWD_CLASSES_TRUE;
-extern Symbol* SYM_CLASSES_STELLA_FALSE;
-extern Keyword* KWD_CLASSES_FALSE;
-extern Surrogate* SGT_CLASSES_STELLA_UNKNOWN;
 extern Keyword* KWD_CLASSES_PARAMETERS;
 extern Symbol* SYM_CLASSES_STELLA_SLOT_TYPE_SPECIFIER;
 extern Keyword* KWD_CLASSES_REQUIREDp;
@@ -267,6 +261,7 @@ extern Symbol* SYM_CLASSES_STELLA_SELF;
 extern Keyword* KWD_CLASSES_TYPE;
 extern Symbol* SYM_CLASSES_STELLA_TYPE;
 extern Keyword* KWD_CLASSES_AUXILIARYp;
+extern Symbol* SYM_CLASSES_STELLA_TRUE;
 extern Symbol* SYM_CLASSES_STELLA_RETURN;
 extern Symbol* SYM_CLASSES_STELLA_CLASS_EXTENSION;
 extern Symbol* SYM_CLASSES_STELLA_BADp;
@@ -274,6 +269,7 @@ extern Surrogate* SGT_CLASSES_STELLA_SET;
 extern Surrogate* SGT_CLASSES_STELLA_ACTIVE_SET;
 extern Surrogate* SGT_CLASSES_STELLA_LIST;
 extern Surrogate* SGT_CLASSES_STELLA_ACTIVE_LIST;
+extern Surrogate* SGT_CLASSES_STELLA_UNKNOWN;
 extern Surrogate* SGT_CLASSES_STELLA_COLLECTION;
 extern Surrogate* SGT_CLASSES_STELLA_SET_MIXIN;
 extern Symbol* SYM_CLASSES_STELLA_INVERSE;
@@ -289,6 +285,7 @@ extern Symbol* SYM_CLASSES_STELLA_CLASS_REQUIRED_SLOT_NAMES;
 extern Surrogate* SGT_CLASSES_STELLA_ALL_CLASS_SLOTS_ITERATOR;
 extern Symbol* SYM_CLASSES_STELLA_ITERATOR_CONS_LIST;
 extern Symbol* SYM_CLASSES_STELLA_ITERATOR_OBJECT;
+extern Symbol* SYM_CLASSES_STELLA_FALSE;
 extern Surrogate* SGT_CLASSES_STELLA_GENERALIZED_SYMBOL;
 extern Symbol* SYM_CLASSES_STELLA_ANY;
 extern Surrogate* SGT_CLASSES_STELLA_ANY;

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,80 +50,78 @@ import edu.isi.stella.javalib.*;
 public class _StartupClasses {
   static void helpStartupClasses1() {
     {
-      Stella.KWD_PUBLICp = ((Keyword)(Stella.internRigidSymbolWrtModule("PUBLIC?", null, 2)));
-      Stella.KWD_TRUE = ((Keyword)(Stella.internRigidSymbolWrtModule("TRUE", null, 2)));
-      Stella.KWD_FALSE = ((Keyword)(Stella.internRigidSymbolWrtModule("FALSE", null, 2)));
-      Stella.KWD_PARAMETERS = ((Keyword)(Stella.internRigidSymbolWrtModule("PARAMETERS", null, 2)));
-      Stella.KWD_REQUIREDp = ((Keyword)(Stella.internRigidSymbolWrtModule("REQUIRED?", null, 2)));
-      Stella.KWD_COMPONENTp = ((Keyword)(Stella.internRigidSymbolWrtModule("COMPONENT?", null, 2)));
-      Stella.KWD_READ_ONLYp = ((Keyword)(Stella.internRigidSymbolWrtModule("READ-ONLY?", null, 2)));
-      Stella.KWD_ACTIVEp = ((Keyword)(Stella.internRigidSymbolWrtModule("ACTIVE?", null, 2)));
-      Stella.KWD_CONTEXT_SENSITIVEp = ((Keyword)(Stella.internRigidSymbolWrtModule("CONTEXT-SENSITIVE?", null, 2)));
-      Stella.KWD_HARDWIREDp = ((Keyword)(Stella.internRigidSymbolWrtModule("HARDWIRED?", null, 2)));
-      Stella.KWD_ABSTRACTp = ((Keyword)(Stella.internRigidSymbolWrtModule("ABSTRACT?", null, 2)));
-      Stella.KWD_ALLOCATION = ((Keyword)(Stella.internRigidSymbolWrtModule("ALLOCATION", null, 2)));
-      Stella.KWD_CLASS = ((Keyword)(Stella.internRigidSymbolWrtModule("CLASS", null, 2)));
-      Stella.KWD_INITIALLY = ((Keyword)(Stella.internRigidSymbolWrtModule("INITIALLY", null, 2)));
-      Stella.SYM_STELLA_SLOT_INITIAL_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("SLOT-INITIAL-VALUE", null, 0)));
-      Stella.KWD_DEFAULT = ((Keyword)(Stella.internRigidSymbolWrtModule("DEFAULT", null, 2)));
-      Stella.KWD_READER = ((Keyword)(Stella.internRigidSymbolWrtModule("READER", null, 2)));
-      Stella.KWD_WRITER = ((Keyword)(Stella.internRigidSymbolWrtModule("WRITER", null, 2)));
-      Stella.KWD_INVERSE = ((Keyword)(Stella.internRigidSymbolWrtModule("INVERSE", null, 2)));
-      Stella.SYM_STELLA_SLOT_INVERSE = ((Symbol)(Stella.internRigidSymbolWrtModule("SLOT-INVERSE", null, 0)));
-      Stella.KWD_RENAMES = ((Keyword)(Stella.internRigidSymbolWrtModule("RENAMES", null, 2)));
-      Stella.KWD_DOCUMENTATION = ((Keyword)(Stella.internRigidSymbolWrtModule("DOCUMENTATION", null, 2)));
-      Stella.KWD_PROPERTIES = ((Keyword)(Stella.internRigidSymbolWrtModule("PROPERTIES", null, 2)));
-      Stella.KWD_META_ATTRIBUTES = ((Keyword)(Stella.internRigidSymbolWrtModule("META-ATTRIBUTES", null, 2)));
-      Stella.SYM_STELLA_META_ATTRIBUTES = ((Symbol)(Stella.internRigidSymbolWrtModule("META-ATTRIBUTES", null, 0)));
-      Stella.KWD_OPTION_KEYWORD = ((Keyword)(Stella.internRigidSymbolWrtModule("OPTION-KEYWORD", null, 2)));
-      Stella.SYM_STELLA_SLOT_OPTION_KEYWORD = ((Symbol)(Stella.internRigidSymbolWrtModule("SLOT-OPTION-KEYWORD", null, 0)));
-      Stella.KWD_OPTION_HANDLER = ((Keyword)(Stella.internRigidSymbolWrtModule("OPTION-HANDLER", null, 2)));
-      Stella.SYM_STELLA_SLOT_OPTION_HANDLER = ((Symbol)(Stella.internRigidSymbolWrtModule("SLOT-OPTION-HANDLER", null, 0)));
-      Stella.KWD_BIT = ((Keyword)(Stella.internRigidSymbolWrtModule("BIT", null, 2)));
-      Stella.KWD_CL_NATIVE_TYPE = ((Keyword)(Stella.internRigidSymbolWrtModule("CL-NATIVE-TYPE", null, 2)));
-      Stella.KWD_CPP_NATIVE_TYPE = ((Keyword)(Stella.internRigidSymbolWrtModule("CPP-NATIVE-TYPE", null, 2)));
-      Stella.KWD_IDL_NATIVE_TYPE = ((Keyword)(Stella.internRigidSymbolWrtModule("IDL-NATIVE-TYPE", null, 2)));
-      Stella.SYM_STELLA_CLASS_IDL_NATIVE_TYPE = ((Symbol)(Stella.internRigidSymbolWrtModule("CLASS-IDL-NATIVE-TYPE", null, 0)));
-      Stella.KWD_JAVA_NATIVE_TYPE = ((Keyword)(Stella.internRigidSymbolWrtModule("JAVA-NATIVE-TYPE", null, 2)));
-      Stella.KWD_CL_STRUCTp = ((Keyword)(Stella.internRigidSymbolWrtModule("CL-STRUCT?", null, 2)));
-      Stella.KWD_MIXINp = ((Keyword)(Stella.internRigidSymbolWrtModule("MIXIN?", null, 2)));
-      Stella.KWD_RECYCLE_METHOD = ((Keyword)(Stella.internRigidSymbolWrtModule("RECYCLE-METHOD", null, 2)));
-      Stella.KWD_EXTENSION = ((Keyword)(Stella.internRigidSymbolWrtModule("EXTENSION", null, 2)));
-      Stella.SYM_STELLA_CLASS_EXTENSION_NAME = ((Symbol)(Stella.internRigidSymbolWrtModule("CLASS-EXTENSION-NAME", null, 0)));
-      Stella.KWD_CREATOR = ((Keyword)(Stella.internRigidSymbolWrtModule("CREATOR", null, 2)));
-      Stella.KWD_INITIALIZER = ((Keyword)(Stella.internRigidSymbolWrtModule("INITIALIZER", null, 2)));
-      Stella.KWD_TERMINATOR = ((Keyword)(Stella.internRigidSymbolWrtModule("TERMINATOR", null, 2)));
-      Stella.KWD_DESTRUCTOR = ((Keyword)(Stella.internRigidSymbolWrtModule("DESTRUCTOR", null, 2)));
-      Stella.KWD_INITIAL_VALUE = ((Keyword)(Stella.internRigidSymbolWrtModule("INITIAL-VALUE", null, 2)));
-      Stella.KWD_PRINT_FORM = ((Keyword)(Stella.internRigidSymbolWrtModule("PRINT-FORM", null, 2)));
-      Stella.KWD_EQUALITY_TEST = ((Keyword)(Stella.internRigidSymbolWrtModule("EQUALITY-TEST", null, 2)));
-      Stella.KWD_KEY = ((Keyword)(Stella.internRigidSymbolWrtModule("KEY", null, 2)));
-      Stella.KWD_SYNONYMS = ((Keyword)(Stella.internRigidSymbolWrtModule("SYNONYMS", null, 2)));
-      Stella.KWD_CHILDREN = ((Keyword)(Stella.internRigidSymbolWrtModule("CHILDREN", null, 2)));
-      Stella.SGT_STELLA_STANDARD_OBJECT = ((Surrogate)(Stella.internRigidSymbolWrtModule("STANDARD-OBJECT", null, 1)));
-      Stella.SYM_STELLA_PRIMARY_TYPE = ((Symbol)(Stella.internRigidSymbolWrtModule("PRIMARY-TYPE", null, 0)));
-      Stella.SYM_STELLA_SELF = ((Symbol)(Stella.internRigidSymbolWrtModule("SELF", null, 0)));
-      Stella.KWD_TYPE = ((Keyword)(Stella.internRigidSymbolWrtModule("TYPE", null, 2)));
-      Stella.KWD_AUXILIARYp = ((Keyword)(Stella.internRigidSymbolWrtModule("AUXILIARY?", null, 2)));
-      Stella.SYM_STELLA_RETURN = ((Symbol)(Stella.internRigidSymbolWrtModule("RETURN", null, 0)));
-      Stella.SGT_STELLA_SET_MIXIN = ((Surrogate)(Stella.internRigidSymbolWrtModule("SET-MIXIN", null, 1)));
-      Stella.SYM_STELLA_INVERSE = ((Symbol)(Stella.internRigidSymbolWrtModule("INVERSE", null, 0)));
-      Stella.KWD_DYNAMIC = ((Keyword)(Stella.internRigidSymbolWrtModule("DYNAMIC", null, 2)));
-      Stella.SGT_STELLA_DYNAMIC_SLOTS_MIXIN = ((Surrogate)(Stella.internRigidSymbolWrtModule("DYNAMIC-SLOTS-MIXIN", null, 1)));
+      Stella.KWD_PUBLICp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PUBLIC?", null, 2)));
+      Stella.KWD_PARAMETERS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PARAMETERS", null, 2)));
+      Stella.KWD_REQUIREDp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("REQUIRED?", null, 2)));
+      Stella.KWD_COMPONENTp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("COMPONENT?", null, 2)));
+      Stella.KWD_READ_ONLYp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("READ-ONLY?", null, 2)));
+      Stella.KWD_ACTIVEp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ACTIVE?", null, 2)));
+      Stella.KWD_CONTEXT_SENSITIVEp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTEXT-SENSITIVE?", null, 2)));
+      Stella.KWD_HARDWIREDp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("HARDWIRED?", null, 2)));
+      Stella.KWD_ABSTRACTp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ABSTRACT?", null, 2)));
+      Stella.KWD_ALLOCATION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ALLOCATION", null, 2)));
+      Stella.KWD_CLASS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASS", null, 2)));
+      Stella.KWD_INITIALLY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INITIALLY", null, 2)));
+      Stella.SYM_STELLA_SLOT_INITIAL_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOT-INITIAL-VALUE", null, 0)));
+      Stella.KWD_DEFAULT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFAULT", null, 2)));
+      Stella.KWD_READER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("READER", null, 2)));
+      Stella.KWD_WRITER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("WRITER", null, 2)));
+      Stella.KWD_INVERSE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INVERSE", null, 2)));
+      Stella.SYM_STELLA_SLOT_INVERSE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOT-INVERSE", null, 0)));
+      Stella.KWD_RENAMES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RENAMES", null, 2)));
+      Stella.KWD_DOCUMENTATION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DOCUMENTATION", null, 2)));
+      Stella.KWD_PROPERTIES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PROPERTIES", null, 2)));
+      Stella.KWD_META_ATTRIBUTES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("META-ATTRIBUTES", null, 2)));
+      Stella.SYM_STELLA_META_ATTRIBUTES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("META-ATTRIBUTES", null, 0)));
+      Stella.KWD_OPTION_KEYWORD = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("OPTION-KEYWORD", null, 2)));
+      Stella.SYM_STELLA_SLOT_OPTION_KEYWORD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOT-OPTION-KEYWORD", null, 0)));
+      Stella.KWD_OPTION_HANDLER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("OPTION-HANDLER", null, 2)));
+      Stella.SYM_STELLA_SLOT_OPTION_HANDLER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOT-OPTION-HANDLER", null, 0)));
+      Stella.KWD_BIT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("BIT", null, 2)));
+      Stella.KWD_CL_NATIVE_TYPE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CL-NATIVE-TYPE", null, 2)));
+      Stella.KWD_CPP_NATIVE_TYPE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP-NATIVE-TYPE", null, 2)));
+      Stella.KWD_IDL_NATIVE_TYPE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL-NATIVE-TYPE", null, 2)));
+      Stella.SYM_STELLA_CLASS_IDL_NATIVE_TYPE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASS-IDL-NATIVE-TYPE", null, 0)));
+      Stella.KWD_JAVA_NATIVE_TYPE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA-NATIVE-TYPE", null, 2)));
+      Stella.KWD_CL_STRUCTp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CL-STRUCT?", null, 2)));
+      Stella.KWD_MIXINp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MIXIN?", null, 2)));
+      Stella.KWD_RECYCLE_METHOD = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RECYCLE-METHOD", null, 2)));
+      Stella.KWD_EXTENSION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("EXTENSION", null, 2)));
+      Stella.SYM_STELLA_CLASS_EXTENSION_NAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASS-EXTENSION-NAME", null, 0)));
+      Stella.KWD_CREATOR = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CREATOR", null, 2)));
+      Stella.KWD_INITIALIZER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INITIALIZER", null, 2)));
+      Stella.KWD_TERMINATOR = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TERMINATOR", null, 2)));
+      Stella.KWD_DESTRUCTOR = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DESTRUCTOR", null, 2)));
+      Stella.KWD_INITIAL_VALUE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INITIAL-VALUE", null, 2)));
+      Stella.KWD_PRINT_FORM = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PRINT-FORM", null, 2)));
+      Stella.KWD_EQUALITY_TEST = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("EQUALITY-TEST", null, 2)));
+      Stella.KWD_KEY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("KEY", null, 2)));
+      Stella.KWD_SYNONYMS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SYNONYMS", null, 2)));
+      Stella.KWD_CHILDREN = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CHILDREN", null, 2)));
+      Stella.SGT_STELLA_STANDARD_OBJECT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("STANDARD-OBJECT", null, 1)));
+      Stella.SYM_STELLA_PRIMARY_TYPE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PRIMARY-TYPE", null, 0)));
+      Stella.SYM_STELLA_SELF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SELF", null, 0)));
+      Stella.KWD_TYPE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TYPE", null, 2)));
+      Stella.KWD_AUXILIARYp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("AUXILIARY?", null, 2)));
+      Stella.SYM_STELLA_RETURN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RETURN", null, 0)));
+      Stella.SGT_STELLA_SET_MIXIN = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SET-MIXIN", null, 1)));
+      Stella.SYM_STELLA_INVERSE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INVERSE", null, 0)));
+      Stella.KWD_DYNAMIC = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DYNAMIC", null, 2)));
+      Stella.SGT_STELLA_DYNAMIC_SLOTS_MIXIN = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DYNAMIC-SLOTS-MIXIN", null, 1)));
+      Stella.SGT_STELLA_CONTEXT_SENSITIVE_OBJECT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTEXT-SENSITIVE-OBJECT", null, 1)));
+      Stella.SGT_STELLA_CONTEXT_SENSITIVE_MIXIN = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTEXT-SENSITIVE-MIXIN", null, 1)));
     }
   }
 
   static void helpStartupClasses2() {
     {
-      Stella.SGT_STELLA_CONTEXT_SENSITIVE_OBJECT = ((Surrogate)(Stella.internRigidSymbolWrtModule("CONTEXT-SENSITIVE-OBJECT", null, 1)));
-      Stella.SGT_STELLA_CONTEXT_SENSITIVE_MIXIN = ((Surrogate)(Stella.internRigidSymbolWrtModule("CONTEXT-SENSITIVE-MIXIN", null, 1)));
-      Stella.SGT_STELLA_VOID = ((Surrogate)(Stella.internRigidSymbolWrtModule("VOID", null, 1)));
-      Stella.SYM_STELLA_METHOD_MACROp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-MACRO?", null, 0)));
-      Stella.SGT_STELLA_ALL_CLASS_SLOTS_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("ALL-CLASS-SLOTS-ITERATOR", null, 1)));
-      Stella.SYM_STELLA_ANY = ((Symbol)(Stella.internRigidSymbolWrtModule("ANY", null, 0)));
-      Stella.SGT_STELLA_ANY = ((Surrogate)(Stella.internRigidSymbolWrtModule("ANY", null, 1)));
-      Stella.SGT_STELLA_SLOT = ((Surrogate)(Stella.internRigidSymbolWrtModule("SLOT", null, 1)));
-      Stella.SYM_STELLA_STARTUP_CLASSES = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-CLASSES", null, 0)));
+      Stella.SGT_STELLA_VOID = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("VOID", null, 1)));
+      Stella.SYM_STELLA_METHOD_MACROp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-MACRO?", null, 0)));
+      Stella.SGT_STELLA_ALL_CLASS_SLOTS_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ALL-CLASS-SLOTS-ITERATOR", null, 1)));
+      Stella.SYM_STELLA_ANY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ANY", null, 0)));
+      Stella.SGT_STELLA_ANY = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ANY", null, 1)));
+      Stella.SGT_STELLA_SLOT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOT", null, 1)));
+      Stella.SYM_STELLA_STARTUP_CLASSES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-CLASSES", null, 0)));
     }
   }
 
@@ -147,7 +145,6 @@ public class _StartupClasses {
       Stella.defineFunctionObject("CREATE-OBJECT", "(DEFUN (CREATE-OBJECT OBJECT) ((TYPE TYPE) |&REST| (INITIAL-VALUE-PAIRS OBJECT)) :DOCUMENTATION \"Funcallable version of the `new' operator.\nReturn an instance of the class named by `type'.  If `initial-value-pairs'\nis supplied, it has to be a key/value list similar to what's accepted by `new'\nand the named slots will be initialized with the supplied values.  Similar to\n`new', all required arguments for `type' must be included.  Since all the\nslot initialization, etc. is handled dynamically at run time, `create-object'\nis much slower than `new'; therefore, it should only be used if `type' cannot\nbe known at translation time.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Surrogate", "createObject", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineMethodObject("(DEFMETHOD FREE ((SELF OBJECT)) :DOCUMENTATION \"Default method.  Deallocate storage for `self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "free", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD FREE ((SELF ACTIVE-OBJECT)) :DOCUMENTATION \"Remove all pointers between `self' and other objects,\nand then deallocate the storage for self.\")", Native.find_java_method("edu.isi.stella.ActiveObject", "free", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-      Stella.defineFunctionObject("COERCE-TO-BOOLEAN", "(DEFUN (COERCE-TO-BOOLEAN BOOLEAN-WRAPPER) ((OBJECT OBJECT)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "coerceToBoolean", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("DEFINE-STELLA-CLASS", "(DEFUN (DEFINE-STELLA-CLASS CLASS) ((NAME TYPE) (SUPERS (LIST OF TYPE)) (SLOTS (LIST OF SLOT)) (OPTIONS KEYWORD-KEY-VALUE-LIST)) :DOCUMENTATION \"Return a Stella class with name `name'.\nCaution:  If the class already exists, the Stella class object gets\nredefined, but the native C++ class is not redefined.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Surrogate", "defineStellaClass", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("edu.isi.stella.List"), Native.find_java_class("edu.isi.stella.List"), Native.find_java_class("edu.isi.stella.KeywordKeyValueList")}), null);
       Stella.defineFunctionObject("DEFINE-STELLA-SLOT", "(DEFUN (DEFINE-STELLA-SLOT SLOT) ((NAME SYMBOL) (OWNER TYPE) (BASETYPE TYPE) (TYPESPECIFIER CONS) (OPTIONS KEYWORD-KEY-VALUE-LIST)))", Native.find_java_method("edu.isi.stella.Symbol", "defineStellaSlot", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.KeywordKeyValueList")}), null);
       Stella.defineFunctionObject("INCORPORATE-CLASS-OPTIONS", "(DEFUN INCORPORATE-CLASS-OPTIONS ((CLASS CLASS) (OPTIONS KEYWORD-KEY-VALUE-LIST)))", Native.find_java_method("edu.isi.stella.Stella_Class", "incorporateClassOptions", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Class"), Native.find_java_class("edu.isi.stella.KeywordKeyValueList")}), null);
@@ -189,12 +186,12 @@ public class _StartupClasses {
       Stella.defineMethodObject("(DEFMETHOD HELP-FINALIZE-LOCAL-SLOT ((SELF STORAGE-SLOT)))", Native.find_java_method("edu.isi.stella.StorageSlot", "helpFinalizeLocalSlot", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("FINALIZE-LOCAL-SLOT", "(DEFUN FINALIZE-LOCAL-SLOT ((SELF SLOT)))", Native.find_java_method("edu.isi.stella.Slot", "finalizeLocalSlot", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot")}), null);
       Stella.defineMethodObject("(DEFMETHOD UNFINALIZE-LOCAL-SLOT ((SELF SLOT)))", Native.find_java_method("edu.isi.stella.Slot", "unfinalizeLocalSlot", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+      Stella.defineMethodObject("(DEFMETHOD UNFINALIZE-LOCAL-SLOT ((SELF STORAGE-SLOT)))", Native.find_java_method("edu.isi.stella.StorageSlot", "unfinalizeLocalSlot", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
     }
   }
 
   static void helpStartupClasses4() {
     {
-      Stella.defineMethodObject("(DEFMETHOD UNFINALIZE-LOCAL-SLOT ((SELF STORAGE-SLOT)))", Native.find_java_method("edu.isi.stella.StorageSlot", "unfinalizeLocalSlot", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("FINALIZE-CLASS-SLOTS", "(DEFUN FINALIZE-CLASS-SLOTS ((CLASS CLASS)))", Native.find_java_method("edu.isi.stella.Stella_Class", "finalizeClassSlots", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Class")}), null);
       Stella.defineFunctionObject("UNFINALIZE-CLASS-SLOTS", "(DEFUN UNFINALIZE-CLASS-SLOTS ((CLASS CLASS)))", Native.find_java_method("edu.isi.stella.Stella_Class", "unfinalizeClassSlots", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Class")}), null);
       Stella.defineFunctionObject("HELP-UNFINALIZE-CLASS-SLOTS", "(DEFUN HELP-UNFINALIZE-CLASS-SLOTS ((CLASS CLASS)))", Native.find_java_method("edu.isi.stella.Stella_Class", "helpUnfinalizeClassSlots", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Class")}), null);
@@ -254,6 +251,7 @@ public class _StartupClasses {
       Stella.defineFunctionObject("NAME-TO-STRING", "(DEFUN (NAME-TO-STRING STRING) ((NAME OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the string represented by `name'.  Return `null'\nif `name' is undefined or does not represent a string.\")", Native.find_java_method("edu.isi.stella.Stella_Object", "nameToString", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("PRINT-UNBOUND-SURROGATES", "(DEFUN PRINT-UNBOUND-SURROGATES (|&REST| (ARGS OBJECT)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Print all unbound surrogates visible from the module named by the first\nargument (a symbol or string).  Look at all modules if no module name or\n`null' was supplied.  If the second argument is `true', only consider\nsurrogates interned in the specified module.\")", Native.find_java_method("edu.isi.stella.Stella", "printUnboundSurrogates", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.stella.Cons", "printUnboundSurrogatesEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
       Stella.defineFunctionObject("COERCE-TO-SYMBOL", "(DEFUN (COERCE-TO-SYMBOL GENERALIZED-SYMBOL) ((NAME NAME)) :PUBLIC? TRUE :DOCUMENTATION \"Return the (generalized) symbol represented by `name'.\nReturn `null' if `name' is undefined or does not represent a string.\")", Native.find_java_method("edu.isi.stella.Stella_Object", "coerceToSymbol", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("PRINT-UNDEFINED-SUPER-CLASSES", "(DEFUN PRINT-UNDEFINED-SUPER-CLASSES ((CLASS NAME)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Print all undefined or bad (indirect) super classes of `class'.\")", Native.find_java_method("edu.isi.stella.Stella_Object", "printUndefinedSuperClasses", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
     }
   }
 
@@ -288,7 +286,6 @@ public class _StartupClasses {
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupClasses.helpStartupClasses3();
           _StartupClasses.helpStartupClasses4();
-          Stella.defineFunctionObject("PRINT-UNDEFINED-SUPER-CLASSES", "(DEFUN PRINT-UNDEFINED-SUPER-CLASSES ((CLASS NAME)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Print all undefined or bad (indirect) super classes of `class'.\")", Native.find_java_method("edu.isi.stella.Stella_Object", "printUndefinedSuperClasses", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
           Stella.defineFunctionObject("COLLECT-BAD-SUPER-CLASSES", "(DEFUN (COLLECT-BAD-SUPER-CLASSES (LIST OF TYPE)) ((TYPE TYPE) (BADONES (LIST OF TYPE))) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Surrogate", "collectBadSuperClasses", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("edu.isi.stella.List")}), null);
           Stella.defineFunctionObject("ROOT-CLASS?", "(DEFUN (ROOT-CLASS? BOOLEAN) ((CLASS CLASS)))", Native.find_java_method("edu.isi.stella.Stella_Class", "rootClassP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Class")}), null);
           Stella.defineFunctionObject("CREATE-CLASS-TAXONOMY", "(DEFUN CREATE-CLASS-TAXONOMY ())", Native.find_java_method("edu.isi.stella.Stella", "createClassTaxonomy", new java.lang.Class [] {}), null);
@@ -314,6 +311,7 @@ public class _StartupClasses {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *WARNIFREDEFINE?* BOOLEAN TRUE :DOCUMENTATION \"If set, warn about each redefinition.\" :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *UNFINALIZED-CLASSES* (LIST OF CLASS) (NEW LIST) :DOCUMENTATION \"List of classes whose class or slot inheritance is\ncurrently unfinalized.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *NEWLY-UNFINALIZED-CLASSES?* BOOLEAN FALSE :DOCUMENTATION \"Set to `true' by `remember-unfinalized-class'; set\nto `false' by `cleanup-unfinalized-classes'.  Minimizes the time that\n`finalize-classes' spends searching for classes to finalize.\")");

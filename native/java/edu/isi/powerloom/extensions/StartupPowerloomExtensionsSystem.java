@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -80,7 +80,7 @@ public class StartupPowerloomExtensionsSystem {
           Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/PLX", Stella.$STARTUP_TIME_PHASE$ > 1));
           Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
           if (Stella.currentStartupTimePhaseP(2)) {
-            Extensions.SYM_PLX_STARTUP_POWERLOOM_EXTENSIONS_SYSTEM = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-POWERLOOM-EXTENSIONS-SYSTEM", null, 0)));
+            Extensions.SYM_PLX_STARTUP_POWERLOOM_EXTENSIONS_SYSTEM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-POWERLOOM-EXTENSIONS-SYSTEM", null, 0)));
           }
           if (Stella.currentStartupTimePhaseP(6)) {
             Stella.finalizeClasses();
@@ -97,6 +97,7 @@ public class StartupPowerloomExtensionsSystem {
             Stella.cleanupUnfinalizedClasses();
           }
           if (Stella.currentStartupTimePhaseP(9)) {
+            Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/PLX")))));
             { int phase = Stella.NULL_INTEGER;
               int iter007 = 0;
               int upperBound008 = 9;

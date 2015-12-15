@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -190,6 +190,66 @@ public class CalendarDate extends DateTimeObject {
       self.timeMillis = Stella.NULL_INTEGER;
       self.modifiedJulianDay = Stella.NULL_INTEGER;
       return (self);
+    }
+  }
+
+  /** Fill in <code>substitutionList</code> with template variable substitions
+   * for the names YEAR, MONTH, MON, DAY, HOUR, MINUTE, SECOND, TIMEZONE,
+   * DAY-OF-WEEK, DOW with their values for <code>date</code>.  Also, pre-formatted
+   * DATE, TIME and ISO8601 variables are set.
+   * <p>
+   * TIMEZONE is in the format &quot;{+|-}hhmm&quot;.  MONTH is the full English
+   * month name and MON is the numeric month.  DAY-OF-WEEK is an English
+   * string and DOW is the first three letters.  Minutes and seconds are
+   * zero-padded.
+   * <p>
+   * These substitutions can be used with <code>substituteTemplateVariablesInString</code>
+   * @param date
+   * @param substitutionList
+   */
+  public static void addDateSubstitution(CalendarDate date, KeyValueList substitutionList) {
+    { double tz = Stella.getLocalTimeZone();
+
+      { int year = Stella.NULL_INTEGER;
+        int month = Stella.NULL_INTEGER;
+        int day = Stella.NULL_INTEGER;
+        Keyword dow = null;
+
+        { Object [] caller_MV_returnarray = new Object[3];
+
+          year = date.getCalendarDate(tz, caller_MV_returnarray);
+          month = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+          day = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+          dow = ((Keyword)(caller_MV_returnarray[2]));
+        }
+        substitutionList.insertAt(StringWrapper.wrapString("YEAR"), StringWrapper.wrapString(Native.integerToString(((long)(year)))));
+        substitutionList.insertAt(StringWrapper.wrapString("MONTH"), ((StringWrapper)((Stella.$MONTH_NAME_VECTOR$.theArray)[month])));
+        substitutionList.insertAt(StringWrapper.wrapString("MON"), StringWrapper.wrapString(Native.integerToString(((long)(month)))));
+        substitutionList.insertAt(StringWrapper.wrapString("DAY"), StringWrapper.wrapString(Native.integerToString(((long)(day)))));
+        substitutionList.insertAt(StringWrapper.wrapString("DAY-OF-WEEK"), StringWrapper.wrapString(Native.stringCapitalize(dow.symbolName)));
+        substitutionList.insertAt(StringWrapper.wrapString("DOW"), StringWrapper.wrapString(Native.stringCapitalize(Native.string_subsequence(dow.symbolName, 0, 3))));
+        substitutionList.insertAt(StringWrapper.wrapString("DATE"), StringWrapper.wrapString(Stella.formatWithPadding(Native.integerToString(((long)(day))), 2, '0', Stella.KWD_RIGHT, false) + "-" + ((StringWrapper)((Stella.$MONTH_ABBREVIATION_VECTOR$.theArray)[month])).wrapperValue + "-" + Native.integerToString(((long)(year)))));
+      }
+      { int hour = Stella.NULL_INTEGER;
+        int min = Stella.NULL_INTEGER;
+        int sec = Stella.NULL_INTEGER;
+        int millis = Stella.NULL_INTEGER;
+
+        { Object [] caller_MV_returnarray = new Object[3];
+
+          hour = date.getTime(tz, caller_MV_returnarray);
+          min = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+          sec = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+          millis = ((int)(((IntegerWrapper)(caller_MV_returnarray[2])).wrapperValue));
+        }
+        millis = millis;
+        substitutionList.insertAt(StringWrapper.wrapString("HOUR"), StringWrapper.wrapString(Native.integerToString(((long)(hour)))));
+        substitutionList.insertAt(StringWrapper.wrapString("MINUTE"), StringWrapper.wrapString(Stella.formatWithPadding(Native.integerToString(((long)(min))), 2, '0', Stella.KWD_RIGHT, false)));
+        substitutionList.insertAt(StringWrapper.wrapString("SECOND"), StringWrapper.wrapString(Stella.formatWithPadding(Native.integerToString(((long)(sec))), 2, '0', Stella.KWD_RIGHT, false)));
+        substitutionList.insertAt(StringWrapper.wrapString("TIME"), StringWrapper.wrapString(Native.integerToString(((long)(hour))) + ":" + Stella.formatWithPadding(Native.integerToString(((long)(min))), 2, '0', Stella.KWD_RIGHT, false) + ":" + Stella.formatWithPadding(Native.integerToString(((long)(sec))), 2, '0', Stella.KWD_RIGHT, false)));
+      }
+      substitutionList.insertAt(StringWrapper.wrapString("TIMEZONE"), StringWrapper.wrapString(Stella.timeZoneFormat60(tz, false)));
+      substitutionList.insertAt(StringWrapper.wrapString("IOS8601"), StringWrapper.wrapString(date.calendarDateToIso8601String(tz, true)));
     }
   }
 
@@ -497,7 +557,7 @@ public class CalendarDate extends DateTimeObject {
             tzString = "Z";
           }
           else {
-            tzString = Stella.timeZoneFormat60(timezone);
+            tzString = Stella.timeZoneFormat60(timezone, true);
           }
         }
         return (date.calendarDateToDateString(timezone, true) + "T" + date.calendarDateToTimeString(timezone, false, false, true) + tzString);
@@ -552,9 +612,9 @@ public class CalendarDate extends DateTimeObject {
           milli = ((int)(((IntegerWrapper)(caller_MV_returnarray[2])).wrapperValue));
         }
         { String timezoneString = (includeTimezoneP ? (((timezone == 0.0) ? " UTC" : (" " + Native.floatToString(timezone)))) : "");
-          String milliString = (includeMillisP ? ("." + Stella.formatWithPadding(Native.integerToString(milli), 3, '0', Stella.KWD_RIGHT, false)) : "");
+          String milliString = (includeMillisP ? ("." + Stella.formatWithPadding(Native.integerToString(((long)(milli))), 3, '0', Stella.KWD_RIGHT, false)) : "");
 
-          return (((padHoursP ? Stella.formatWithPadding(Native.integerToString(hours), 2, '0', Stella.KWD_RIGHT, false) : Native.integerToString(hours))) + ":" + Stella.formatWithPadding(Native.integerToString(minutes), 2, '0', Stella.KWD_RIGHT, false) + ":" + Stella.formatWithPadding(Native.integerToString(seconds), 2, '0', Stella.KWD_RIGHT, false) + milliString + timezoneString);
+          return (((padHoursP ? Stella.formatWithPadding(Native.integerToString(((long)(hours))), 2, '0', Stella.KWD_RIGHT, false) : Native.integerToString(((long)(hours))))) + ":" + Stella.formatWithPadding(Native.integerToString(((long)(minutes))), 2, '0', Stella.KWD_RIGHT, false) + ":" + Stella.formatWithPadding(Native.integerToString(((long)(seconds))), 2, '0', Stella.KWD_RIGHT, false) + milliString + timezoneString);
         }
       }
     }
@@ -585,10 +645,10 @@ public class CalendarDate extends DateTimeObject {
           dow = ((Keyword)(caller_MV_returnarray[2]));
         }
         dow = dow;
-        { String yearString = ((year < 0) ? (Native.integerToString(0 - year) + "BC") : Native.integerToString(year));
-          String monthString = (numericMonthP ? Stella.formatWithPadding(Native.integerToString(month), 2, '0', Stella.KWD_RIGHT, false) : StringWrapper.unwrapString(((StringWrapper)((Stella.$MONTH_ABBREVIATION_VECTOR$.theArray)[month]))));
+        { String yearString = ((year < 0) ? (Native.integerToString(((long)(0 - year))) + "BC") : Native.integerToString(((long)(year))));
+          String monthString = (numericMonthP ? Stella.formatWithPadding(Native.integerToString(((long)(month))), 2, '0', Stella.KWD_RIGHT, false) : StringWrapper.unwrapString(((StringWrapper)((Stella.$MONTH_ABBREVIATION_VECTOR$.theArray)[month]))));
 
-          return (yearString + "-" + monthString + "-" + Stella.formatWithPadding(Native.integerToString(day), 2, '0', Stella.KWD_RIGHT, false));
+          return (yearString + "-" + monthString + "-" + Stella.formatWithPadding(Native.integerToString(((long)(day))), 2, '0', Stella.KWD_RIGHT, false));
         }
       }
     }

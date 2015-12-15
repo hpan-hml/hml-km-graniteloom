@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -91,6 +91,9 @@ public class QueryIterator extends Iterator {
     /** Set to TRUE if query times out.
      */
     public boolean timeoutP;
+    /** Set to TRUE if one or more depth cutoffs occurred.
+     */
+    public boolean depthCutoffsP;
     public KeyValueList dynamicSlots;
 
   public static QueryIterator newQueryIterator() {
@@ -100,6 +103,7 @@ public class QueryIterator extends Iterator {
       self.dynamicSlots = KeyValueList.newKeyValueList();
       self.firstIterationP = true;
       self.value = null;
+      self.depthCutoffsP = false;
       self.timeoutP = false;
       self.currentClockTicks = 0;
       self.allottedClockTicks = Stella.NULL_INTEGER;
@@ -156,7 +160,7 @@ public class QueryIterator extends Iterator {
       justifications = query.baseControlFrame.allJustifications();
       if (label != null) {
         if (mapping != null) {
-          justifications = Stella.list(Stella_Object.cons(Logic.lookupJustification(mapping, label), Stella.NIL));
+          justifications = List.list(Cons.cons(Logic.lookupJustification(mapping, label), Stella.NIL));
         }
         if (justifications.first() == null) {
           { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -314,10 +318,10 @@ public class QueryIterator extends Iterator {
       else {
         if ((solution.allJustifications != null) &&
             solution.allJustifications.nonEmptyP()) {
-          justifications = Stella.list(Stella.NIL);
+          justifications = List.list(Stella.NIL);
           { Justification just = null;
             Cons iter000 = solution.allJustifications.theConsList;
-            int i = Stella.NULL_INTEGER;
+            int ignore = Stella.NULL_INTEGER;
             int iter001 = 1;
             int upperBound000 = maxjustifications;
             boolean unboundedP000 = upperBound000 == Stella.NULL_INTEGER;
@@ -327,10 +331,10 @@ public class QueryIterator extends Iterator {
                       (unboundedP000 ||
                        (iter001 <= upperBound000)); iter000 = iter000.rest, iter001 = iter001 + 1) {
               just = ((Justification)(iter000.value));
-              i = iter001;
+              ignore = iter001;
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(just, Stella.NIL);
+                  collect000 = Cons.cons(just, Stella.NIL);
                   if (justifications.theConsList == Stella.NIL) {
                     justifications.theConsList = collect000;
                   }
@@ -341,7 +345,7 @@ public class QueryIterator extends Iterator {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(just, Stella.NIL);
+                  collect000.rest = Cons.cons(just, Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -352,7 +356,7 @@ public class QueryIterator extends Iterator {
           return (justifications);
         }
         else {
-          return (Stella.list(Stella_Object.cons(solution.justification, Stella.NIL)));
+          return (List.list(Cons.cons(solution.justification, Stella.NIL)));
         }
       }
     }
@@ -422,7 +426,7 @@ public class QueryIterator extends Iterator {
               }
               if ((renamed_Class != null) &&
                   Stella_Object.isaP(renamed_Class, Logic.SGT_STELLA_CLASS)) {
-                return (((PartialMatchFrame)(Surrogate.createObject(((Stella_Class)(renamed_Class)).classType, Stella_Object.cons(Logic.KWD_CONTROL_FRAME, Stella_Object.cons(frame, Stella_Object.cons(Logic.KWD_KIND, Stella_Object.cons(kind, Stella.NIL))))))));
+                return (((PartialMatchFrame)(Surrogate.createObject(((Stella_Class)(renamed_Class)).classType, Cons.cons(Logic.KWD_CONTROL_FRAME, Cons.cons(frame, Cons.cons(Logic.KWD_KIND, Cons.cons(kind, Stella.NIL))))))));
               }
               else {
                 { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -448,7 +452,7 @@ public class QueryIterator extends Iterator {
     }
   }
 
-  public static Cons updatePropositionsFromQuery(QueryIterator query, Description description, Module module, Keyword updatemode) {
+  public static Cons updatePropositionsFromQuery(QueryIterator query, Description description, Module module, Keyword updatemode, boolean recordjustificationsP) {
     if (query.queryIsTrueFalseP()) {
       { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
 
@@ -469,7 +473,7 @@ public class QueryIterator extends Iterator {
     { Description querydescription = query.queryDescription();
       boolean partialP = query.queryIsPartialP();
       QuerySolutionTable solutions = query.solutions;
-      KeyValueList mapping = KeyValueList.newKeyValueList();
+      KeyValueMap mapping = KeyValueMap.newKeyValueMap();
       boolean dontcheckduplicatesP = false;
       Proposition proposition = null;
       Cons propositions = Stella.NIL;
@@ -545,7 +549,7 @@ public class QueryIterator extends Iterator {
               solution = ((QuerySolution)(iter000.value));
               i = iter001;
               mapping.clear();
-              if (Stella.mod(i, 10000) == 9999) {
+              if (Stella.integer_mod(i, 10000) == 9999) {
                 if ((Stella.$TRACED_KEYWORDS$ != null) &&
                     Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_UPDATE_FROM_QUERY)) {
                   System.out.print((tenthousands = tenthousands + 1));
@@ -553,7 +557,7 @@ public class QueryIterator extends Iterator {
                 }
                 OutputStream.flushOutput(Stella.STANDARD_OUTPUT);
               }
-              else if (Stella.mod(i, 1000) == 999) {
+              else if (Stella.integer_mod(i, 1000) == 999) {
                 if ((Stella.$TRACED_KEYWORDS$ != null) &&
                     Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_UPDATE_FROM_QUERY)) {
                   System.out.print(".");
@@ -583,10 +587,11 @@ public class QueryIterator extends Iterator {
 
                 for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
                   prop = ((Proposition)(iter002.value));
-                  KeyValueList.setDynamicSlotValue(prop.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTIVEp, (false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+                  KeyValueList.setDynamicSlotValue(prop.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTIVEp, Stella.FALSE_WRAPPER, Stella.FALSE_WRAPPER);
                   prop = Proposition.recursivelyFastenDownPropositions(prop, dontcheckduplicatesP);
                   { Keyword thisupdatemode = updatemode;
                     TruthValue truthvalue = solution.truthValue;
+                    Justification justification = solution.justification;
                     boolean equivalenceP = prop.kind == Logic.KWD_EQUIVALENT;
 
                     if ((truthvalue == Logic.FALSE_TRUTH_VALUE) ||
@@ -600,13 +605,27 @@ public class QueryIterator extends Iterator {
                     if (equivalenceP) {
                       Proposition.updateEquivalenceProposition(prop, thisupdatemode);
                     }
-                    else {
-                      Proposition.updatePropositionTruthValue(prop, thisupdatemode);
-                    }
+                    Proposition.updatePropositionTruthValue(prop, thisupdatemode);
                     if (partialP) {
                       KeyValueList.setDynamicSlotValue(prop.dynamicSlots, Logic.SYM_LOGIC_WEIGHT, FloatWrapper.wrapFloat(solution.matchScore), Stella.NULL_FLOAT_WRAPPER);
                     }
-                    propositions = Stella_Object.cons(prop, propositions);
+                    Proposition.verifyArgumentTypesAndCount(prop);
+                    if (recordjustificationsP &&
+                        (justification != null)) {
+                      { Justification self007 = Justification.newJustification();
+
+                        self007.inferenceRule = Logic.KWD_ASSERT_FROM_QUERY;
+                        self007.proposition = prop;
+                        self007.antecedents = Cons.cons(justification, Stella.NIL);
+                        self007.substitution = ((KeyValueMap)(mapping.copy()));
+                        self007.truthValue = truthvalue;
+                        { Justification resultjustification = self007;
+
+                          Proposition.addForwardJustifications(prop, resultjustification);
+                        }
+                      }
+                    }
+                    propositions = Cons.cons(prop, propositions);
                   }
                 }
               }
@@ -625,6 +644,19 @@ public class QueryIterator extends Iterator {
         }
       }
       return (propositions.reverse());
+    }
+  }
+
+  public static void freeCachedQuery(QueryIterator query, Symbol queryid) {
+    { List queries = ((List)(Logic.$INLINE_QUERY_CACHE$.lookup(queryid)));
+
+      if (queries == null) {
+        queries = List.newList();
+        Logic.$INLINE_QUERY_CACHE$.insertAt(queryid, queries);
+      }
+      if (queries.length() < Logic.$MAX_CACHED_QUERIES_PER_ID$) {
+        queries.push(query);
+      }
     }
   }
 
@@ -657,9 +689,6 @@ public class QueryIterator extends Iterator {
   public Cons consify() {
     { QueryIterator self = this;
 
-      if (self == null) {
-        return (Stella.NIL);
-      }
       { Object old$Queryiterator$000 = Logic.$QUERYITERATOR$.get();
         Object old$ReversepolarityP$000 = Logic.$REVERSEPOLARITYp$.get();
 
@@ -686,9 +715,6 @@ public class QueryIterator extends Iterator {
   public Cons consifyCurrentSolutions() {
     { QueryIterator self = this;
 
-      if (self == null) {
-        return (Stella.NIL);
-      }
       { QuerySolutionTable solutions = self.solutions;
         Cons listifiedsolutions = Stella.NIL;
         int arity = self.queryDescription().arity();
@@ -702,7 +728,7 @@ public class QueryIterator extends Iterator {
             solution = ((QuerySolution)(iter000.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(((atomicsingletonsP &&
+                collect000 = Cons.cons(((atomicsingletonsP &&
                     (arity == 1)) ? (solution.bindings.theArray)[0] : solution.bindings.consify()), Stella.NIL);
                 if (listifiedsolutions == Stella.NIL) {
                   listifiedsolutions = collect000;
@@ -714,7 +740,7 @@ public class QueryIterator extends Iterator {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(((atomicsingletonsP &&
+                collect000.rest = Cons.cons(((atomicsingletonsP &&
                     (arity == 1)) ? (solution.bindings.theArray)[0] : solution.bindings.consify()), Stella.NIL);
                 collect000 = collect000.rest;
               }
@@ -731,11 +757,11 @@ public class QueryIterator extends Iterator {
 
       if ((truthvalue == Logic.TRUE_TRUTH_VALUE) ||
           (truthvalue == Logic.DEFAULT_TRUE_TRUTH_VALUE)) {
-        return ((true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER));
+        return (Stella.TRUE_WRAPPER);
       }
       else if ((truthvalue == Logic.FALSE_TRUTH_VALUE) ||
           (truthvalue == Logic.DEFAULT_FALSE_TRUTH_VALUE)) {
-        return ((false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER));
+        return (Stella.FALSE_WRAPPER);
       }
       else {
         return (null);
@@ -872,14 +898,14 @@ public class QueryIterator extends Iterator {
                 if (Surrogate.subtypeOfP(testValue004, Logic.SGT_STELLA_GENERALIZED_SYMBOL)) {
                   { GeneralizedSymbol value000 = ((GeneralizedSymbol)(value));
 
-                    theoptions.insertAt(key, Stella.string_keywordify(Logic.coerceToString(value000)));
+                    theoptions.insertAt(key, Stella.string_keywordify(Stella_Object.coerceToString(value000)));
                     query.inferenceLevel = Logic.getInferenceLevel(((Keyword)(Logic.lookupQueryOption(query, Logic.KWD_INFERENCE_LEVEL))));
                   }
                 }
                 else if (Surrogate.subtypeOfStringP(testValue004)) {
                   { StringWrapper value000 = ((StringWrapper)(value));
 
-                    theoptions.insertAt(key, Stella.string_keywordify(Logic.coerceToString(value000)));
+                    theoptions.insertAt(key, Stella.string_keywordify(Stella_Object.coerceToString(value000)));
                     query.inferenceLevel = Logic.getInferenceLevel(((Keyword)(Logic.lookupQueryOption(query, Logic.KWD_INFERENCE_LEVEL))));
                   }
                 }
@@ -910,14 +936,23 @@ public class QueryIterator extends Iterator {
               value = Stella_Object.coerceToBoolean(value);
               theoptions.insertAt(key, value);
               if (Stella_Object.eqlP(value, Stella.TRUE_WRAPPER)) {
-                KeyValueList.setDynamicSlotValue(query.dynamicSlots, Logic.SYM_LOGIC_ITERATIVE_DEEPENINGp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+                KeyValueList.setDynamicSlotValue(query.dynamicSlots, Logic.SYM_LOGIC_ITERATIVE_DEEPENINGp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
               }
             }
-            else if (testValue000 == Logic.KWD_SINGLETONSp) {
+            else if ((testValue000 == Logic.KWD_SINGLETONSp) ||
+                (testValue000 == Logic.KWD_ATOMIC_SINGLETONSp)) {
               theoptions.insertAt(key, Stella_Object.coerceToBoolean(value));
               KeyValueList.setDynamicSlotValue(query.dynamicSlots, Logic.SYM_LOGIC_ATOMIC_SINGLETONSp, (Stella_Object.eqlP(value, Stella.TRUE_WRAPPER) ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
             }
             else if (testValue000 == Logic.KWD_DONT_OPTIMIZEp) {
+              value = Stella_Object.coerceToBoolean(value);
+              theoptions.insertAt(key, value);
+            }
+            else if (testValue000 == Logic.KWD_ALL_PROOFSp) {
+              value = Stella_Object.coerceToBoolean(value);
+              theoptions.insertAt(key, value);
+            }
+            else if (testValue000 == Logic.KWD_CHECK_VARIABLESp) {
               value = Stella_Object.coerceToBoolean(value);
               theoptions.insertAt(key, value);
             }
@@ -979,6 +1014,15 @@ public class QueryIterator extends Iterator {
 
                   if (Stella.stringEqlP(value000.symbolName, "SCORE")) {
                     theoptions.insertAt(key, Logic.KWD_SCORE);
+                  }
+                  else if (Stella.stringEqlP(value000.symbolName, "VALUES")) {
+                    theoptions.insertAt(key, Logic.KWD_VALUES);
+                  }
+                  else if (Stella.stringEqlP(value000.symbolName, "VALUES-DESCENDING")) {
+                    theoptions.insertAt(key, Logic.KWD_VALUES_DESCENDING);
+                  }
+                  else if (Stella.stringEqlP(value000.symbolName, "VALUES-ASCENDING")) {
+                    theoptions.insertAt(key, Logic.KWD_VALUES_ASCENDING);
                   }
                   else {
                     { OutputStringStream stream006 = OutputStringStream.newOutputStringStream();
@@ -1203,6 +1247,7 @@ public class QueryIterator extends Iterator {
         }
         self.exhaustedP = false;
         self.timeoutP = false;
+        self.depthCutoffsP = false;
         self.solutions.clear();
         initialframe.truthValue = null;
         self.augmentedGoalCacheP = false;
@@ -1367,7 +1412,7 @@ public class QueryIterator extends Iterator {
                       for (;index000 < length000; index000 = index000 + 1, iter000 = iter000 + 1) {
                         ev = ((PatternVariable)((vector000.theArray)[index000]));
                         i = iter000;
-                        (solution.bindings.theArray)[i] = ((((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(ev.boundToOffset)]);
+                        (solution.bindings.theArray)[i] = (Logic.valueOf((((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(ev.boundToOffset)]));
                       }
                     }
                     self.foundAtLeastOneSolutionP = true;
@@ -1462,7 +1507,7 @@ public class QueryIterator extends Iterator {
   public boolean queryIsTrueFalseP() {
     { QueryIterator self = this;
 
-      if (self.externalVariables.arraySize == 0) {
+      if (self.externalVariables.emptyP()) {
         return (true);
       }
       { PatternRecord patternrecord = self.baseControlFrame.patternRecord;
@@ -1522,8 +1567,8 @@ public class QueryIterator extends Iterator {
           Native.setSpecial(Logic.$QUERYITERATOR$, queryiterator);
           Native.setSpecial(Logic.$EVALUATIONMODE$, Logic.KWD_DESCRIPTION);
           if (Logic.testQueryOptionP(queryiterator, Logic.KWD_DONT_OPTIMIZEp)) {
-            KeyValueList.setDynamicSlotValue(description.dynamicSlots, Logic.SYM_LOGIC_DONT_OPTIMIZEp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
-            KeyValueList.setDynamicSlotValue(description.proposition.dynamicSlots, Logic.SYM_LOGIC_DONT_OPTIMIZEp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+            KeyValueList.setDynamicSlotValue(description.dynamicSlots, Logic.SYM_LOGIC_DONT_OPTIMIZEp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
+            KeyValueList.setDynamicSlotValue(description.proposition.dynamicSlots, Logic.SYM_LOGIC_DONT_OPTIMIZEp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
           }
           queryiterator.queryContext = ((Context)(Stella.$CONTEXT$.get()));
           queryiterator.baseControlFrame = basecontrolframe;
@@ -1588,9 +1633,9 @@ public class QueryIterator extends Iterator {
           queryiterator.activeGoalCaches.clear();
           if (Logic.$ITERATIVE_DEEPENING_MODEp$ &&
               (!Logic.testQueryOptionP(queryiterator, Logic.KWD_ITERATIVE_DEEPENINGp))) {
-            KeyValueList.setDynamicSlotValue(queryiterator.dynamicSlots, Logic.SYM_LOGIC_ITERATIVE_DEEPENINGp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+            KeyValueList.setDynamicSlotValue(queryiterator.dynamicSlots, Logic.SYM_LOGIC_ITERATIVE_DEEPENINGp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
           }
-          queryiterator.currentDepthCutoff = (((BooleanWrapper)(KeyValueList.dynamicSlotValue(queryiterator.dynamicSlots, Logic.SYM_LOGIC_ITERATIVE_DEEPENINGp, Stella.FALSE_WRAPPER))).wrapperValue ? Stella.min(Logic.$INITIAL_BACKTRACKING_DEPTH$, queryiterator.maximumDepth) : queryiterator.maximumDepth);
+          queryiterator.currentDepthCutoff = (((BooleanWrapper)(KeyValueList.dynamicSlotValue(queryiterator.dynamicSlots, Logic.SYM_LOGIC_ITERATIVE_DEEPENINGp, Stella.FALSE_WRAPPER))).wrapperValue ? Stella.integer_min(Logic.$INITIAL_BACKTRACKING_DEPTH$, queryiterator.maximumDepth) : queryiterator.maximumDepth);
           queryiterator.triggeredDepthCutoffP = false;
           queryiterator.failedToFindDuplicateSubgoalP = false;
           queryiterator.foundAtLeastOneSolutionP = false;
@@ -1763,8 +1808,19 @@ public class QueryIterator extends Iterator {
       if (!(exhaustedP)) {
         stream.print(" so far");
       }
-      if (self.timeoutP) {
-        stream.print(" (timeout)");
+      if (self.timeoutP ||
+          self.depthCutoffsP) {
+        stream.print(" (");
+        if (self.timeoutP) {
+          stream.print("timeout");
+          if (self.depthCutoffsP) {
+            stream.print(", ");
+          }
+        }
+        if (self.depthCutoffsP) {
+          stream.print("depth cutoffs");
+        }
+        stream.print(")");
       }
       if (nofsolutions == 0) {
         stream.println(".");
@@ -1898,7 +1954,7 @@ public class QueryIterator extends Iterator {
                   lastmove = Logic.KWD_DOWN;
                 }
                 else {
-                  { Stella_Object proposition = (upframe.proposition.arguments.theArray)[(upframe.argumentCursor)];
+                  { Stella_Object proposition = Logic.argumentBoundTo((upframe.proposition.arguments.theArray)[(upframe.argumentCursor)]);
 
                     downframe = ControlFrame.createDownFrame(upframe, ((Proposition)(proposition)));
                     frame = downframe;
@@ -2114,7 +2170,7 @@ public class QueryIterator extends Iterator {
           query.allottedTime = allottedtime;
           query.timeoutP = timeoutP;
           if (checkformoveoutP) {
-            query.allottedClockTicks = Stella.max(allottedticks - (clockticks - startticks), 0);
+            query.allottedClockTicks = Stella.integer_max(allottedticks - (clockticks - startticks), 0);
             if (!(timeoutP)) {
               query.timeoutP = query.allottedClockTicks == 0;
             }
@@ -2367,6 +2423,14 @@ public class QueryIterator extends Iterator {
         value = (self.timeoutP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER);
       }
     }
+    else if (slotname == Logic.SYM_LOGIC_DEPTH_CUTOFFSp) {
+      if (setvalueP) {
+        self.depthCutoffsP = BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(value)));
+      }
+      else {
+        value = (self.depthCutoffsP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER);
+      }
+    }
     else {
       if (slotname == Logic.SYM_LOGIC_NEGATED_QUERY) {
         slotname = Logic.SYM_LOGIC_AUXILIARY_QUERY;
@@ -2392,7 +2456,7 @@ public class QueryIterator extends Iterator {
       { BooleanWrapper answer = ((BooleanWrapper)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_STELLA_BADp, null)));
 
         if (answer == null) {
-          return ((false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER));
+          return (Stella.FALSE_WRAPPER);
         }
         else {
           return (answer);

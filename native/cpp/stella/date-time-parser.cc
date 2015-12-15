@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -622,6 +622,7 @@ Cons* decomposeDateTimeString(char* string, int start, int end) {
         stringIndex = stringIndex + 1;
       }
       else if (nextChar == '+') {
+        partsList = cons(consList(2, SYM_DATE_TIME_PARSER_STELLA_DATE_DIVIDER, wrapCharacter(nextChar)), partsList);
         stringIndex = stringIndex + 1;
       }
       else if (nextChar == '(') {
@@ -1137,7 +1138,7 @@ void helpStartupDateTimeParser2() {
   {
     WHITESPACE_CHARS = listO(9, wrapCharacter(' '), wrapCharacter('\t'), wrapCharacter('\n'), wrapCharacter('\r'), wrapCharacter('\f'), wrapCharacter(','), wrapCharacter('\''), wrapCharacter('`'), NIL);
     TIME_DIVIDERS = listO(3, wrapCharacter(':'), wrapCharacter('.'), NIL);
-    DATE_DIVIDERS = listO(4, wrapCharacter('\\'), wrapCharacter('/'), wrapCharacter('-'), NIL);
+    DATE_DIVIDERS = listO(5, wrapCharacter('\\'), wrapCharacter('/'), wrapCharacter('-'), wrapCharacter('+'), NIL);
     DATE_TIME_DIVIDERS = cons(wrapCharacter('T'), NIL);
     oWEEKDAY_STRINGSo.set(newStringHashTable());
     oMONTH_STRINGSo.set(newStringToIntegerHashTable());
@@ -1146,42 +1147,42 @@ void helpStartupDateTimeParser2() {
     oSPECIAL_STRINGSo.set(newStringHashTable());
     oSPECIAL_SYMBOLSo.set(listO(5, SYM_DATE_TIME_PARSER_STELLA_YESTERDAY, SYM_DATE_TIME_PARSER_STELLA_TODAY, SYM_DATE_TIME_PARSER_STELLA_TOMORROW, SYM_DATE_TIME_PARSER_STELLA_NOW, NIL));
     { Cons* item = NULL;
-      Cons* iter048 = ((Cons*)(listO(18, listO(3, wrapString("monday"), KWD_DATE_TIME_PARSER_MONDAY, NIL), listO(3, wrapString("mon"), KWD_DATE_TIME_PARSER_MONDAY, NIL), listO(3, wrapString("tuesday"), KWD_DATE_TIME_PARSER_TUESDAY, NIL), listO(3, wrapString("tues"), KWD_DATE_TIME_PARSER_TUESDAY, NIL), listO(3, wrapString("tue"), KWD_DATE_TIME_PARSER_TUESDAY, NIL), listO(3, wrapString("wednesday"), KWD_DATE_TIME_PARSER_WEDNESDAY, NIL), listO(3, wrapString("wednes"), KWD_DATE_TIME_PARSER_WEDNESDAY, NIL), listO(3, wrapString("wed"), KWD_DATE_TIME_PARSER_WEDNESDAY, NIL), listO(3, wrapString("thursday"), KWD_DATE_TIME_PARSER_THURSDAY, NIL), listO(3, wrapString("thurs"), KWD_DATE_TIME_PARSER_THURSDAY, NIL), listO(3, wrapString("thu"), KWD_DATE_TIME_PARSER_THURSDAY, NIL), listO(3, wrapString("friday"), KWD_DATE_TIME_PARSER_FRIDAY, NIL), listO(3, wrapString("fri"), KWD_DATE_TIME_PARSER_FRIDAY, NIL), listO(3, wrapString("saturday"), KWD_DATE_TIME_PARSER_SATURDAY, NIL), listO(3, wrapString("sat"), KWD_DATE_TIME_PARSER_SATURDAY, NIL), listO(3, wrapString("sunday"), KWD_DATE_TIME_PARSER_SUNDAY, NIL), listO(3, wrapString("sun"), KWD_DATE_TIME_PARSER_SUNDAY, NIL), NIL)));
+      Cons* iter053 = ((Cons*)(listO(18, listO(3, wrapString("monday"), KWD_DATE_TIME_PARSER_MONDAY, NIL), listO(3, wrapString("mon"), KWD_DATE_TIME_PARSER_MONDAY, NIL), listO(3, wrapString("tuesday"), KWD_DATE_TIME_PARSER_TUESDAY, NIL), listO(3, wrapString("tues"), KWD_DATE_TIME_PARSER_TUESDAY, NIL), listO(3, wrapString("tue"), KWD_DATE_TIME_PARSER_TUESDAY, NIL), listO(3, wrapString("wednesday"), KWD_DATE_TIME_PARSER_WEDNESDAY, NIL), listO(3, wrapString("wednes"), KWD_DATE_TIME_PARSER_WEDNESDAY, NIL), listO(3, wrapString("wed"), KWD_DATE_TIME_PARSER_WEDNESDAY, NIL), listO(3, wrapString("thursday"), KWD_DATE_TIME_PARSER_THURSDAY, NIL), listO(3, wrapString("thurs"), KWD_DATE_TIME_PARSER_THURSDAY, NIL), listO(3, wrapString("thu"), KWD_DATE_TIME_PARSER_THURSDAY, NIL), listO(3, wrapString("friday"), KWD_DATE_TIME_PARSER_FRIDAY, NIL), listO(3, wrapString("fri"), KWD_DATE_TIME_PARSER_FRIDAY, NIL), listO(3, wrapString("saturday"), KWD_DATE_TIME_PARSER_SATURDAY, NIL), listO(3, wrapString("sat"), KWD_DATE_TIME_PARSER_SATURDAY, NIL), listO(3, wrapString("sunday"), KWD_DATE_TIME_PARSER_SUNDAY, NIL), listO(3, wrapString("sun"), KWD_DATE_TIME_PARSER_SUNDAY, NIL), NIL)));
 
-      for (item, iter048; !(iter048 == NIL); iter048 = iter048->rest) {
-        item = ((Cons*)(iter048->value));
+      for (item, iter053; !(iter053 == NIL); iter053 = iter053->rest) {
+        item = ((Cons*)(iter053->value));
         oWEEKDAY_STRINGSo.get()->insertAt(((StringWrapper*)(item->value))->wrapperValue, item->rest->value);
       }
     }
     { Cons* item = NULL;
-      Cons* iter049 = ((Cons*)(listO(25, listO(3, wrapString("january"), wrapInteger(1), NIL), listO(3, wrapString("jan"), wrapInteger(1), NIL), listO(3, wrapString("february"), wrapInteger(2), NIL), listO(3, wrapString("feb"), wrapInteger(2), NIL), listO(3, wrapString("march"), wrapInteger(3), NIL), listO(3, wrapString("mar"), wrapInteger(3), NIL), listO(3, wrapString("april"), wrapInteger(4), NIL), listO(3, wrapString("apr"), wrapInteger(4), NIL), listO(3, wrapString("may"), wrapInteger(5), NIL), listO(3, wrapString("june"), wrapInteger(6), NIL), listO(3, wrapString("jun"), wrapInteger(6), NIL), listO(3, wrapString("july"), wrapInteger(7), NIL), listO(3, wrapString("jul"), wrapInteger(7), NIL), listO(3, wrapString("august"), wrapInteger(8), NIL), listO(3, wrapString("aug"), wrapInteger(8), NIL), listO(3, wrapString("september"), wrapInteger(9), NIL), listO(3, wrapString("sept"), wrapInteger(9), NIL), listO(3, wrapString("sep"), wrapInteger(9), NIL), listO(3, wrapString("october"), wrapInteger(10), NIL), listO(3, wrapString("oct"), wrapInteger(10), NIL), listO(3, wrapString("november"), wrapInteger(11), NIL), listO(3, wrapString("nov"), wrapInteger(11), NIL), listO(3, wrapString("december"), wrapInteger(12), NIL), listO(3, wrapString("dec"), wrapInteger(12), NIL), NIL)));
+      Cons* iter054 = ((Cons*)(listO(25, listO(3, wrapString("january"), wrapInteger(1), NIL), listO(3, wrapString("jan"), wrapInteger(1), NIL), listO(3, wrapString("february"), wrapInteger(2), NIL), listO(3, wrapString("feb"), wrapInteger(2), NIL), listO(3, wrapString("march"), wrapInteger(3), NIL), listO(3, wrapString("mar"), wrapInteger(3), NIL), listO(3, wrapString("april"), wrapInteger(4), NIL), listO(3, wrapString("apr"), wrapInteger(4), NIL), listO(3, wrapString("may"), wrapInteger(5), NIL), listO(3, wrapString("june"), wrapInteger(6), NIL), listO(3, wrapString("jun"), wrapInteger(6), NIL), listO(3, wrapString("july"), wrapInteger(7), NIL), listO(3, wrapString("jul"), wrapInteger(7), NIL), listO(3, wrapString("august"), wrapInteger(8), NIL), listO(3, wrapString("aug"), wrapInteger(8), NIL), listO(3, wrapString("september"), wrapInteger(9), NIL), listO(3, wrapString("sept"), wrapInteger(9), NIL), listO(3, wrapString("sep"), wrapInteger(9), NIL), listO(3, wrapString("october"), wrapInteger(10), NIL), listO(3, wrapString("oct"), wrapInteger(10), NIL), listO(3, wrapString("november"), wrapInteger(11), NIL), listO(3, wrapString("nov"), wrapInteger(11), NIL), listO(3, wrapString("december"), wrapInteger(12), NIL), listO(3, wrapString("dec"), wrapInteger(12), NIL), NIL)));
 
-      for (item, iter049; !(iter049 == NIL); iter049 = iter049->rest) {
-        item = ((Cons*)(iter049->value));
+      for (item, iter054; !(iter054 == NIL); iter054 = iter054->rest) {
+        item = ((Cons*)(iter054->value));
         oMONTH_STRINGSo.get()->insertAt(((StringWrapper*)(item->value))->wrapperValue, ((IntegerWrapper*)(item->rest->value))->wrapperValue);
       }
     }
     { Cons* item = NULL;
-      Cons* iter050 = ((Cons*)(listO(49, listO(3, wrapString("gmt"), wrapFloat(0.0), NIL), listO(3, wrapString("utc"), wrapFloat(0.0), NIL), listO(3, wrapString("zulu"), wrapFloat(0.0), NIL), listO(3, wrapString("est"), wrapFloat(-5.0), NIL), listO(3, wrapString("edt"), wrapFloat(-4.0), NIL), listO(3, wrapString("cst"), wrapFloat(-6.0), NIL), listO(3, wrapString("cdt"), wrapFloat(-5.0), NIL), listO(3, wrapString("mst"), wrapFloat(-7.0), NIL), listO(3, wrapString("mdt"), wrapFloat(-6.0), NIL), listO(3, wrapString("pst"), wrapFloat(-8.0), NIL), listO(3, wrapString("pdt"), wrapFloat(-7.0), NIL), listO(3, wrapString("a"), wrapFloat(1.0), NIL), listO(3, wrapString("b"), wrapFloat(2.0), NIL), listO(3, wrapString("c"), wrapFloat(3.0), NIL), listO(3, wrapString("c*"), wrapFloat(3.5), NIL), listO(3, wrapString("d"), wrapFloat(4.0), NIL), listO(3, wrapString("d*"), wrapFloat(4.5), NIL), listO(3, wrapString("e"), wrapFloat(5.0), NIL), listO(3, wrapString("e*"), wrapFloat(4.5), NIL), listO(3, wrapString("f"), wrapFloat(6.0), NIL), listO(3, wrapString("f*"), wrapFloat(6.5), NIL), listO(3, wrapString("g"), wrapFloat(7.0), NIL), listO(3, wrapString("h"), wrapFloat(7.0), NIL), listO(3, wrapString("i"), wrapFloat(9.0), NIL), listO(3, wrapString("i*"), wrapFloat(9.5), NIL), listO(3, wrapString("k"), wrapFloat(10.0), NIL), listO(3, wrapString("k*"), wrapFloat(10.5), NIL), listO(3, wrapString("l"), wrapFloat(11.0), NIL), listO(3, wrapString("l*"), wrapFloat(11.5), NIL), listO(3, wrapString("m"), wrapFloat(12.0), NIL), listO(3, wrapString("m*"), wrapFloat(13.0), NIL), listO(3, wrapString("m%"), wrapFloat(14.0), NIL), listO(3, wrapString("n"), wrapFloat(-1.0), NIL), listO(3, wrapString("o"), wrapFloat(-2.0), NIL), listO(3, wrapString("p"), wrapFloat(-3.0), NIL), listO(3, wrapString("p*"), wrapFloat(-3.5), NIL), listO(3, wrapString("q"), wrapFloat(-4.0), NIL), listO(3, wrapString("r"), wrapFloat(-5.0), NIL), listO(3, wrapString("s"), wrapFloat(-6.0), NIL), listO(3, wrapString("t"), wrapFloat(-7.0), NIL), listO(3, wrapString("u"), wrapFloat(-8.0), NIL), listO(3, wrapString("u*"), wrapFloat(-8.5), NIL), listO(3, wrapString("v"), wrapFloat(-9.0), NIL), listO(3, wrapString("v*"), wrapFloat(-9.5), NIL), listO(3, wrapString("w"), wrapFloat(-10.0), NIL), listO(3, wrapString("x"), wrapFloat(-11.0), NIL), listO(3, wrapString("y"), wrapFloat(-12.0), NIL), listO(3, wrapString("z"), wrapFloat(0.0), NIL), NIL)));
+      Cons* iter055 = ((Cons*)(listO(49, listO(3, wrapString("gmt"), wrapFloat(0.0), NIL), listO(3, wrapString("utc"), wrapFloat(0.0), NIL), listO(3, wrapString("zulu"), wrapFloat(0.0), NIL), listO(3, wrapString("est"), wrapFloat(-5.0), NIL), listO(3, wrapString("edt"), wrapFloat(-4.0), NIL), listO(3, wrapString("cst"), wrapFloat(-6.0), NIL), listO(3, wrapString("cdt"), wrapFloat(-5.0), NIL), listO(3, wrapString("mst"), wrapFloat(-7.0), NIL), listO(3, wrapString("mdt"), wrapFloat(-6.0), NIL), listO(3, wrapString("pst"), wrapFloat(-8.0), NIL), listO(3, wrapString("pdt"), wrapFloat(-7.0), NIL), listO(3, wrapString("a"), wrapFloat(1.0), NIL), listO(3, wrapString("b"), wrapFloat(2.0), NIL), listO(3, wrapString("c"), wrapFloat(3.0), NIL), listO(3, wrapString("c*"), wrapFloat(3.5), NIL), listO(3, wrapString("d"), wrapFloat(4.0), NIL), listO(3, wrapString("d*"), wrapFloat(4.5), NIL), listO(3, wrapString("e"), wrapFloat(5.0), NIL), listO(3, wrapString("e*"), wrapFloat(4.5), NIL), listO(3, wrapString("f"), wrapFloat(6.0), NIL), listO(3, wrapString("f*"), wrapFloat(6.5), NIL), listO(3, wrapString("g"), wrapFloat(7.0), NIL), listO(3, wrapString("h"), wrapFloat(7.0), NIL), listO(3, wrapString("i"), wrapFloat(9.0), NIL), listO(3, wrapString("i*"), wrapFloat(9.5), NIL), listO(3, wrapString("k"), wrapFloat(10.0), NIL), listO(3, wrapString("k*"), wrapFloat(10.5), NIL), listO(3, wrapString("l"), wrapFloat(11.0), NIL), listO(3, wrapString("l*"), wrapFloat(11.5), NIL), listO(3, wrapString("m"), wrapFloat(12.0), NIL), listO(3, wrapString("m*"), wrapFloat(13.0), NIL), listO(3, wrapString("m%"), wrapFloat(14.0), NIL), listO(3, wrapString("n"), wrapFloat(-1.0), NIL), listO(3, wrapString("o"), wrapFloat(-2.0), NIL), listO(3, wrapString("p"), wrapFloat(-3.0), NIL), listO(3, wrapString("p*"), wrapFloat(-3.5), NIL), listO(3, wrapString("q"), wrapFloat(-4.0), NIL), listO(3, wrapString("r"), wrapFloat(-5.0), NIL), listO(3, wrapString("s"), wrapFloat(-6.0), NIL), listO(3, wrapString("t"), wrapFloat(-7.0), NIL), listO(3, wrapString("u"), wrapFloat(-8.0), NIL), listO(3, wrapString("u*"), wrapFloat(-8.5), NIL), listO(3, wrapString("v"), wrapFloat(-9.0), NIL), listO(3, wrapString("v*"), wrapFloat(-9.5), NIL), listO(3, wrapString("w"), wrapFloat(-10.0), NIL), listO(3, wrapString("x"), wrapFloat(-11.0), NIL), listO(3, wrapString("y"), wrapFloat(-12.0), NIL), listO(3, wrapString("z"), wrapFloat(0.0), NIL), NIL)));
 
-      for (item, iter050; !(iter050 == NIL); iter050 = iter050->rest) {
-        item = ((Cons*)(iter050->value));
+      for (item, iter055; !(iter055 == NIL); iter055 = iter055->rest) {
+        item = ((Cons*)(iter055->value));
         oZONE_STRINGSo.get()->insertAt(((StringWrapper*)(item->value))->wrapperValue, item->rest->value);
       }
     }
     { Cons* item = NULL;
-      Cons* iter051 = ((Cons*)(listO(5, listO(3, wrapString("bc"), SYM_DATE_TIME_PARSER_STELLA_BCE, NIL), listO(3, wrapString("bce"), SYM_DATE_TIME_PARSER_STELLA_BCE, NIL), listO(3, wrapString("ad"), SYM_DATE_TIME_PARSER_STELLA_CE, NIL), listO(3, wrapString("ce"), SYM_DATE_TIME_PARSER_STELLA_CE, NIL), NIL)));
+      Cons* iter056 = ((Cons*)(listO(5, listO(3, wrapString("bc"), SYM_DATE_TIME_PARSER_STELLA_BCE, NIL), listO(3, wrapString("bce"), SYM_DATE_TIME_PARSER_STELLA_BCE, NIL), listO(3, wrapString("ad"), SYM_DATE_TIME_PARSER_STELLA_CE, NIL), listO(3, wrapString("ce"), SYM_DATE_TIME_PARSER_STELLA_CE, NIL), NIL)));
 
-      for (item, iter051; !(iter051 == NIL); iter051 = iter051->rest) {
-        item = ((Cons*)(iter051->value));
+      for (item, iter056; !(iter056 == NIL); iter056 = iter056->rest) {
+        item = ((Cons*)(iter056->value));
         oERA_STRINGSo.get()->insertAt(((StringWrapper*)(item->value))->wrapperValue, item->rest->value);
       }
     }
     { Symbol* symbol = NULL;
-      Cons* iter052 = oSPECIAL_SYMBOLSo.get();
+      Cons* iter057 = oSPECIAL_SYMBOLSo.get();
 
-      for (symbol, iter052; !(iter052 == NIL); iter052 = iter052->rest) {
-        symbol = ((Symbol*)(iter052->value));
+      for (symbol, iter057; !(iter057 == NIL); iter057 = iter057->rest) {
+        symbol = ((Symbol*)(iter057->value));
         oSPECIAL_STRINGSo.get()->insertAt(stringDowncase(symbol->symbolName), symbol);
       }
     }
@@ -1252,9 +1253,10 @@ void startupDateTimeParser() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT WHITESPACE-CHARS CONS (BQUOTE (#\\  #\\Tab #\\Linefeed #\\Return #\\Page #\\, #\\' #\\`)))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT TIME-DIVIDERS CONS (BQUOTE (#\\: #\\.)))");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT DATE-DIVIDERS CONS (BQUOTE (#\\\\ #\\/ #\\-)))");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT DATE-DIVIDERS CONS (BQUOTE (#\\\\ #\\/ #\\- #\\+)))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT DATE-TIME-DIVIDERS CONS (BQUOTE (#\\T)))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *ERROR-ON-MISMATCH* BOOLEAN FALSE :PUBLIC? TRUE :DOCUMENTATION \"If TRUE, an error will be signalled if parse-date-time is unable\n   to determine the time/date format of the string.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *WEEKDAY-STRINGS* (STRING-HASH-TABLE OF STRING KEYWORD) (NEW (STRING-HASH-TABLE OF STRING KEYWORD)))");

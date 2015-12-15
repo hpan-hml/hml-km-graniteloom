@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -74,20 +74,24 @@ int helpGetInteger(Object* obj);
 double helpGetFloat(Object* obj);
 double helpGetTimezone(Object* obj);
 boolean canBindAllP(Cons* plObjects, Cons* values);
-void timepointOfEvaluator(Proposition* self);
-Keyword* timepointOfSpecialist(ControlFrame* frame, Keyword* lastmove);
+Object* timepointOfConstraint(IntegerWrapper* missingArgument, StringWrapper* x1, DateTimeLogicWrapper* x2);
+DateTimeLogicWrapper* timepointOfOComputation(IntegerWrapper* yy, IntegerWrapper* mm, IntegerWrapper* dd, IntegerWrapper* hr, IntegerWrapper* min, NumberWrapper* sec, Object* tz);
 void timepointOfOEvaluator(Proposition* self);
 Keyword* timepointOfOSpecialist(ControlFrame* frame, Keyword* lastmove);
-void durationOfEvaluator(Proposition* self);
-Keyword* durationOfSpecialist(ControlFrame* frame, Keyword* lastmove);
-void timeMinusEvaluator(Proposition* self);
-void timeAddEvaluator(Proposition* self);
+Object* durationOfConstraint(IntegerWrapper* missingArgument, StringWrapper* x1, DateTimeLogicWrapper* x2);
 Object* timeMinusConstraint(IntegerWrapper* missingArgument, DateTimeLogicWrapper* x1, DateTimeLogicWrapper* x2, DateTimeLogicWrapper* x3);
-Object* timeAddConstraint(IntegerWrapper* missingArgument, DateTimeLogicWrapper* x1, DateTimeLogicWrapper* x2, DateTimeLogicWrapper* x3);
+Object* timePlusConstraint(IntegerWrapper* missingArgument, DateTimeLogicWrapper* x1, DateTimeLogicWrapper* x2, DateTimeLogicWrapper* x3);
 double helpGetTimeZone(Object* timeZoneSpecifier);
 LogicObject* dowKeywordToInstance(Keyword* dow);
-Object* helpExtractDateTimeComponent(DateTimeLogicWrapper* timepoint, double timeZone, GeneralizedSymbol* predicate);
-Keyword* timepointAccessorSpecialist(ControlFrame* frame, Keyword* lastmove);
+IntegerWrapper* timepointYearComputation(DateTimeLogicWrapper* timepoint, Object* timezone);
+IntegerWrapper* timepointMonthComputation(DateTimeLogicWrapper* timepoint, Object* timezone);
+IntegerWrapper* timepointDayComputation(DateTimeLogicWrapper* timepoint, Object* timezone);
+LogicObject* timepointDayOfWeekComputation(DateTimeLogicWrapper* timepoint, Object* timezone);
+IntegerWrapper* timepointHourComputation(DateTimeLogicWrapper* timepoint, Object* timezone);
+IntegerWrapper* timepointMinuteComputation(DateTimeLogicWrapper* timepoint, Object* timezone);
+NumberWrapper* timepointSecondComputation(DateTimeLogicWrapper* timepoint, Object* timezone);
+StringWrapper* timepointDateComputation(DateTimeLogicWrapper* timepoint, Object* timezone);
+StringWrapper* timepointTimeComputation(DateTimeLogicWrapper* timepoint, Object* timezone);
 void helpStartupTimepointSupport1();
 void startupTimepointSupport();
 
@@ -102,9 +106,8 @@ extern Surrogate* SGT_TIMEPOINT_SUPPORT_LOGIC_PATTERN_VARIABLE;
 extern Surrogate* SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM;
 extern Surrogate* SGT_TIMEPOINT_SUPPORT_UNIT_SUPPORT_DIM_NUMBER_LOGIC_WRAPPER;
 extern Surrogate* SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE;
-extern Keyword* KWD_TIMEPOINT_SUPPORT_FINAL_SUCCESS;
-extern Keyword* KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE;
 extern Keyword* KWD_TIMEPOINT_SUPPORT_FAILURE;
+extern Keyword* KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE;
 extern Keyword* KWD_TIMEPOINT_SUPPORT_MONDAY;
 extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_MONDAY;
 extern Keyword* KWD_TIMEPOINT_SUPPORT_TUESDAY;
@@ -119,17 +122,6 @@ extern Keyword* KWD_TIMEPOINT_SUPPORT_SATURDAY;
 extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_SATURDAY;
 extern Keyword* KWD_TIMEPOINT_SUPPORT_SUNDAY;
 extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_SUNDAY;
-extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_YEAR;
-extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_MONTH;
-extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DAY;
-extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DAY_OF_WEEK;
-extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_HOUR;
-extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_MINUTE;
-extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_SECOND;
-extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DATE;
-extern Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_TIME;
-extern Surrogate* SGT_TIMEPOINT_SUPPORT_STELLA_NUMBER_WRAPPER;
-extern Surrogate* SGT_TIMEPOINT_SUPPORT_STELLA_STRING_WRAPPER;
 extern Symbol* SYM_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_STARTUP_TIMEPOINT_SUPPORT;
 extern Symbol* SYM_TIMEPOINT_SUPPORT_STELLA_METHOD_STARTUP_CLASSNAME;
 

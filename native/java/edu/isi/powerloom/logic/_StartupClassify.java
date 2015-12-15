@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,30 +52,30 @@ import edu.isi.stella.*;
 public class _StartupClassify {
   static void helpStartupClassify1() {
     {
-      Logic.KWD_IMPLIES_PROPOSITION_UPDATE = ((Keyword)(Stella.internRigidSymbolWrtModule("IMPLIES-PROPOSITION-UPDATE", null, 2)));
-      Logic.SGT_LOGIC_F_INFERABLE_WITH_CYCLE_CHECKp_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-INFERABLE-WITH-CYCLE-CHECK?-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_LOGIC_MARKER_TABLE = ((Surrogate)(Stella.internRigidSymbolWrtModule("MARKER-TABLE", null, 1)));
-      Logic.SYM_LOGIC_TEST_TABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("TEST-TABLE", null, 0)));
-      Logic.SYM_LOGIC_RECALL_TABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("RECALL-TABLE", null, 0)));
-      Logic.SYM_LOGIC_SUPPORTS_RECALLp = ((Symbol)(Stella.internRigidSymbolWrtModule("SUPPORTS-RECALL?", null, 0)));
-      Logic.KWD_CLASSIFIER_INFERENCES = ((Keyword)(Stella.internRigidSymbolWrtModule("CLASSIFIER-INFERENCES", null, 2)));
-      Logic.SGT_LOGIC_CLASSIFICATION_CACHE = ((Surrogate)(Stella.internRigidSymbolWrtModule("CLASSIFICATION-CACHE", null, 1)));
-      Logic.SYM_LOGIC_INFERABLE_DIRECT_SUBDESCRIPTIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("INFERABLE-DIRECT-SUBDESCRIPTIONS", null, 0)));
-      Logic.SYM_LOGIC_CACHE_UPCLASSIFICATION_TIMESTAMP = ((Symbol)(Stella.internRigidSymbolWrtModule("CACHE-UPCLASSIFICATION-TIMESTAMP", null, 0)));
-      Logic.SYM_LOGIC_CACHE_DOWNCLASSIFICATION_TIMESTAMP = ((Symbol)(Stella.internRigidSymbolWrtModule("CACHE-DOWNCLASSIFICATION-TIMESTAMP", null, 0)));
-      Logic.SYM_LOGIC_INTRODUCTION_TIMESTAMP = ((Symbol)(Stella.internRigidSymbolWrtModule("INTRODUCTION-TIMESTAMP", null, 0)));
-      Logic.SGT_LOGIC_CLASSIFICATION_SESSION = ((Surrogate)(Stella.internRigidSymbolWrtModule("CLASSIFICATION-SESSION", null, 1)));
-      Logic.SYM_LOGIC_CLASSIFICATION_CACHE_TABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("CLASSIFICATION-CACHE-TABLE", null, 0)));
-      Logic.SYM_LOGIC_CLASSIFICATION_TIMECLOCK = ((Symbol)(Stella.internRigidSymbolWrtModule("CLASSIFICATION-TIMECLOCK", null, 0)));
-      Logic.SYM_LOGIC_INTRODUCTION_TIMESTAMP_STACK = ((Symbol)(Stella.internRigidSymbolWrtModule("INTRODUCTION-TIMESTAMP-STACK", null, 0)));
-      Logic.SYM_LOGIC_EVERYTHING_CLASSIFIEDp = ((Symbol)(Stella.internRigidSymbolWrtModule("EVERYTHING-CLASSIFIED?", null, 0)));
-      Logic.SYM_LOGIC_LAST_CACHE_TABLE_KEY = ((Symbol)(Stella.internRigidSymbolWrtModule("LAST-CACHE-TABLE-KEY", null, 0)));
-      Logic.SYM_LOGIC_LAST_CACHE_TABLE_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("LAST-CACHE-TABLE-VALUE", null, 0)));
-      Logic.KWD_INSTANCE = ((Keyword)(Stella.internRigidSymbolWrtModule("INSTANCE", null, 2)));
-      Logic.SYM_LOGIC_CLASSIFICATION_SESSION = ((Symbol)(Stella.internRigidSymbolWrtModule("CLASSIFICATION-SESSION", null, 0)));
-      Logic.KWD_CLASSIFIER = ((Keyword)(Stella.internRigidSymbolWrtModule("CLASSIFIER", null, 2)));
-      Logic.KWD_CLASSIFIER_PROFILE = ((Keyword)(Stella.internRigidSymbolWrtModule("CLASSIFIER-PROFILE", null, 2)));
-      Logic.SYM_LOGIC_STARTUP_CLASSIFY = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-CLASSIFY", null, 0)));
+      Logic.KWD_IMPLIES_PROPOSITION_UPDATE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IMPLIES-PROPOSITION-UPDATE", null, 2)));
+      Logic.SGT_LOGIC_F_INFERABLE_WITH_CYCLE_CHECKp_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-INFERABLE-WITH-CYCLE-CHECK?-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_LOGIC_MARKER_TABLE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("MARKER-TABLE", null, 1)));
+      Logic.SYM_LOGIC_TEST_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TEST-TABLE", null, 0)));
+      Logic.SYM_LOGIC_RECALL_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RECALL-TABLE", null, 0)));
+      Logic.SYM_LOGIC_SUPPORTS_RECALLp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUPPORTS-RECALL?", null, 0)));
+      Logic.KWD_CLASSIFIER_INFERENCES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASSIFIER-INFERENCES", null, 2)));
+      Logic.SGT_LOGIC_CLASSIFICATION_CACHE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASSIFICATION-CACHE", null, 1)));
+      Logic.SYM_LOGIC_INFERABLE_DIRECT_SUBDESCRIPTIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INFERABLE-DIRECT-SUBDESCRIPTIONS", null, 0)));
+      Logic.SYM_LOGIC_CACHE_UPCLASSIFICATION_TIMESTAMP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CACHE-UPCLASSIFICATION-TIMESTAMP", null, 0)));
+      Logic.SYM_LOGIC_CACHE_DOWNCLASSIFICATION_TIMESTAMP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CACHE-DOWNCLASSIFICATION-TIMESTAMP", null, 0)));
+      Logic.SYM_LOGIC_INTRODUCTION_TIMESTAMP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTRODUCTION-TIMESTAMP", null, 0)));
+      Logic.SGT_LOGIC_CLASSIFICATION_SESSION = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASSIFICATION-SESSION", null, 1)));
+      Logic.SYM_LOGIC_CLASSIFICATION_CACHE_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASSIFICATION-CACHE-TABLE", null, 0)));
+      Logic.SYM_LOGIC_CLASSIFICATION_TIMECLOCK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASSIFICATION-TIMECLOCK", null, 0)));
+      Logic.SYM_LOGIC_INTRODUCTION_TIMESTAMP_STACK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTRODUCTION-TIMESTAMP-STACK", null, 0)));
+      Logic.SYM_LOGIC_EVERYTHING_CLASSIFIEDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EVERYTHING-CLASSIFIED?", null, 0)));
+      Logic.SYM_LOGIC_LAST_CACHE_TABLE_KEY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LAST-CACHE-TABLE-KEY", null, 0)));
+      Logic.SYM_LOGIC_LAST_CACHE_TABLE_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LAST-CACHE-TABLE-VALUE", null, 0)));
+      Logic.KWD_INSTANCE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INSTANCE", null, 2)));
+      Logic.SYM_LOGIC_CLASSIFICATION_SESSION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASSIFICATION-SESSION", null, 0)));
+      Logic.KWD_CLASSIFIER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASSIFIER", null, 2)));
+      Logic.KWD_CLASSIFIER_PROFILE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASSIFIER-PROFILE", null, 2)));
+      Logic.SYM_LOGIC_STARTUP_CLASSIFY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-CLASSIFY", null, 0)));
     }
   }
 
@@ -200,6 +200,7 @@ public class _StartupClassify {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SPECIALMARKERTABLE* MARKER-TABLE :DOCUMENTATION \"Special variable that points to the marker table \nreferenced by the function 'test-special-marker-table?'.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *FINDSUPERSANDSUBSDESCRIPTION* DESCRIPTION NULL :DOCUMENTATION \"Points to a possibly unnamed description being\ntemporarily classified.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CLASSIFICATIONSESSION* CLASSIFICATION-SESSION NULL :PUBLIC? TRUE :DOCUMENTATION \"Points to state of on-going classification session.\")");

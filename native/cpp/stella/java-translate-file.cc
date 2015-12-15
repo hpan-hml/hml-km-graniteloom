@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -557,7 +557,7 @@ void javaTranslateWalkedSystemUnits(KeyValueList* systemunits) {
 
 void javaTranslateSystem(char* systemname) {
   // Translate the system `systemName' to Java.
-  translateSystem(systemname, KWD_JAVA_TRANSLATE_FILE_JAVA, 6, KWD_JAVA_TRANSLATE_FILE_TWO_PASSp, TRUE_WRAPPER, KWD_JAVA_TRANSLATE_FILE_FORCE_TRANSLATIONp, TRUE_WRAPPER, KWD_JAVA_TRANSLATE_FILE_PRODUCTION_SETTINGSp, TRUE_WRAPPER);
+  translateSystem(systemname, consList(7, KWD_JAVA_TRANSLATE_FILE_JAVA, KWD_JAVA_TRANSLATE_FILE_TWO_PASSp, TRUE_WRAPPER, KWD_JAVA_TRANSLATE_FILE_FORCE_TRANSLATIONp, TRUE_WRAPPER, KWD_JAVA_TRANSLATE_FILE_PRODUCTION_SETTINGSp, TRUE_WRAPPER));
 }
 
 void startupJavaTranslateFile() {
@@ -620,6 +620,7 @@ void startupJavaTranslateFile() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CURRENT-JAVA-OUTPUT-CLASS* CLASS NULL :PUBLIC? FALSE :DOCUMENTATION \"Holds the current Stella class being output in Java\")");
     }
   }

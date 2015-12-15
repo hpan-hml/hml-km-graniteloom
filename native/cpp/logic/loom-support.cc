@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -117,6 +117,7 @@ LoomRole* findOrCreateLoomRole(Object* instanceref, Object* relationref, boolean
   // a Loom role named 'relationRef'.  If 'create?', create a role
   // instance if one doesn't already exist.
   { Cons* dummy1;
+    Cons* dummy2;
 
     { Object* instance = getInstance(instanceref);
       LogicObject* relation = getRelation(relationref);
@@ -126,7 +127,7 @@ LoomRole* findOrCreateLoomRole(Object* instanceref, Object* relationref, boolean
           (!((boolean)(relation)))) {
         return (NULL);
       }
-      role = ((LoomRole*)(applyCachedRetrieve(listO(4, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), listO(5, SYM_LOOM_SUPPORT_LOOM_API_LOOM_ROLE_OF, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), consList(3, instance, relation, NULL), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_FIND_OR_CREATE_LOOM_ROLE_QUERY_000, dummy1)->value));
+      role = ((LoomRole*)(applyCachedRetrieve(listO(4, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), listO(5, SYM_LOOM_SUPPORT_LOOM_API_LOOM_ROLE_OF, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), consList(3, instance, relation, NULL), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_FIND_OR_CREATE_LOOM_ROLE_QUERY_000, dummy1, dummy2)->value));
       if (((boolean)(role)) ||
           (!createP)) {
         return (role);
@@ -143,6 +144,7 @@ Cons* getLoomRoles(Object* instanceref, boolean inferrolesP) {
   // 'inferRoles', create roles on the fly corresponding to
   // frame predicate or domain propositions inherited by 'instance'.
   { Cons* dummy1;
+    Cons* dummy2;
 
     { Object* instance = getInstance(instanceref);
 
@@ -152,13 +154,14 @@ Cons* getLoomRoles(Object* instanceref, boolean inferrolesP) {
       if (inferrolesP) {
         getRelationInducedRoles(instance);
       }
-      return (applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_EXISTS, SYM_LOOM_SUPPORT_LOOM_API_pR, listO(5, SYM_LOOM_SUPPORT_LOOM_API_LOOM_ROLE_OF, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), NIL), consList(2, instance, NULL), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_GET_LOOM_ROLES_QUERY_000, dummy1));
+      return (applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_EXISTS, SYM_LOOM_SUPPORT_LOOM_API_pR, listO(5, SYM_LOOM_SUPPORT_LOOM_API_LOOM_ROLE_OF, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), NIL), consList(2, instance, NULL), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_GET_LOOM_ROLES_QUERY_000, dummy1, dummy2));
     }
   }
 }
 
 Cons* getRelationInducedRoles(Object* instanceref) {
   { Cons* dummy1;
+    Cons* dummy2;
 
     { Object* instance = getInstance(instanceref);
       Cons* relations = NIL;
@@ -167,7 +170,7 @@ Cons* getRelationInducedRoles(Object* instanceref) {
       if (!((boolean)(instance))) {
         return (NULL);
       }
-      relations = applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pI, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_OR, listO(4, SYM_LOOM_SUPPORT_STELLA_EXISTS, listO(3, SYM_LOOM_SUPPORT_LOOM_API_pFR, SYM_LOOM_SUPPORT_LOOM_API_pV, NIL), listO(5, SYM_LOOM_SUPPORT_STELLA_AND, listO(3, SYM_LOOM_SUPPORT_LOOM_API_FRAME_PREDICATE, SYM_LOOM_SUPPORT_LOOM_API_pFR, NIL), listO(6, SYM_LOOM_SUPPORT_PL_KERNEL_KB_HOLDS, SYM_LOOM_SUPPORT_LOOM_API_pFR, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pV, NIL), listO(3, SYM_LOOM_SUPPORT_STELLA_NOT, listO(4, SYM_LOOM_SUPPORT_STELLA_AND, listO(4, SYM_LOOM_SUPPORT_STELLA_e, SYM_LOOM_SUPPORT_LOOM_API_pFR, SYM_LOOM_SUPPORT_PL_KERNEL_KB_RANGE_MAX_CARDINALITY, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_e, SYM_LOOM_SUPPORT_LOOM_API_pV, wrapInteger(0), NIL), NIL), NIL), NIL), NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_EXISTS, cons(SYM_LOOM_SUPPORT_LOGIC_pC, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_AND, listO(4, SYM_LOOM_SUPPORT_LOOM_API_INSTANCE_OF, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOGIC_pC, NIL), listO(4, SYM_LOOM_SUPPORT_PL_KERNEL_KB_DOMAIN, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOGIC_pC, NIL), NIL), NIL), NIL), consList(2, NULL, instance), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_GET_RELATION_INDUCED_ROLES_QUERY_000, dummy1);
+      relations = applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pI, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_OR, listO(4, SYM_LOOM_SUPPORT_STELLA_EXISTS, listO(3, SYM_LOOM_SUPPORT_LOOM_API_pFR, SYM_LOOM_SUPPORT_LOOM_API_pV, NIL), listO(5, SYM_LOOM_SUPPORT_STELLA_AND, listO(3, SYM_LOOM_SUPPORT_LOOM_API_FRAME_PREDICATE, SYM_LOOM_SUPPORT_LOOM_API_pFR, NIL), listO(6, SYM_LOOM_SUPPORT_PL_KERNEL_KB_HOLDS, SYM_LOOM_SUPPORT_LOOM_API_pFR, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pV, NIL), listO(3, SYM_LOOM_SUPPORT_STELLA_NOT, listO(4, SYM_LOOM_SUPPORT_STELLA_AND, listO(4, SYM_LOOM_SUPPORT_STELLA_e, SYM_LOOM_SUPPORT_LOOM_API_pFR, SYM_LOOM_SUPPORT_PL_KERNEL_KB_RANGE_MAX_CARDINALITY, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_e, SYM_LOOM_SUPPORT_LOOM_API_pV, wrapInteger(0), NIL), NIL), NIL), NIL), NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_EXISTS, cons(SYM_LOOM_SUPPORT_LOGIC_pC, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_AND, listO(4, SYM_LOOM_SUPPORT_LOOM_API_INSTANCE_OF, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOGIC_pC, NIL), listO(4, SYM_LOOM_SUPPORT_PL_KERNEL_KB_DOMAIN, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOGIC_pC, NIL), NIL), NIL), NIL), consList(2, NULL, instance), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_GET_RELATION_INDUCED_ROLES_QUERY_000, dummy1, dummy2);
       { Object* r = NULL;
         Cons* iter000 = relations;
 
@@ -184,8 +187,9 @@ Cons* getRelationInducedRoles(Object* instanceref) {
 NamedDescription* relationOfLoomRole(LoomRole* role) {
   // Return the relation for the Loom role 'role'.
   { Cons* dummy1;
+    Cons* dummy2;
 
-    return (((NamedDescription*)(applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_EXISTS, SYM_LOOM_SUPPORT_LOOM_API_pI, listO(5, SYM_LOOM_SUPPORT_LOOM_API_LOOM_ROLE_OF, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), NIL), consList(2, NULL, role), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_RELATION_OF_LOOM_ROLE_QUERY_000, dummy1)->value)));
+    return (((NamedDescription*)(applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_EXISTS, SYM_LOOM_SUPPORT_LOOM_API_pI, listO(5, SYM_LOOM_SUPPORT_LOOM_API_LOOM_ROLE_OF, SYM_LOOM_SUPPORT_LOOM_API_pI, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pROLE, NIL), NIL), consList(2, NULL, role), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_RELATION_OF_LOOM_ROLE_QUERY_000, dummy1, dummy2)->value)));
   }
 }
 
@@ -206,7 +210,7 @@ Cons* getRoleNamesAndValues(Object* instanceref) {
         p = ((Proposition*)(iter000->value));
         if ((p->arguments->length() == 2) &&
             eqlP((p->arguments->theArray)[0], instance)) {
-          { Symbol* relation = surrogateToSymbol(((Surrogate*)(p->operatoR)));
+          { Symbol* relation = internSymbolInModule(((Surrogate*)(p->operatoR))->symbolName, ((Module*)(((Surrogate*)(p->operatoR))->homeContext)), true);
             Object* filler = valueOf((p->arguments->theArray)[1]);
 
             if (((boolean)(filler))) {
@@ -323,6 +327,8 @@ void clearUserContexts() {
 Cons* listContext(Module* context, Keyword* values) {
   { Cons* dummy1;
     Cons* dummy2;
+    Cons* dummy3;
+    Cons* dummy4;
 
     { 
       BIND_STELLA_SPECIAL(oCONTEXTo, Context*, context);
@@ -331,10 +337,10 @@ Cons* listContext(Module* context, Keyword* values) {
         return (allNamedTerms(context, false)->consify());
       }
       else if (values == KWD_LOOM_SUPPORT_CONCEPTS) {
-        return (applyCachedRetrieve(cons(SYM_LOOM_SUPPORT_LOGIC_pX, NIL), listO(3, SYM_LOOM_SUPPORT_PL_KERNEL_KB_CLASS, SYM_LOOM_SUPPORT_LOGIC_pX, NIL), consList(1, NULL), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_LIST_CONTEXT_QUERY_000, dummy1));
+        return (applyCachedRetrieve(cons(SYM_LOOM_SUPPORT_LOGIC_pX, NIL), listO(3, SYM_LOOM_SUPPORT_PL_KERNEL_KB_CLASS, SYM_LOOM_SUPPORT_LOGIC_pX, NIL), consList(1, NULL), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_LIST_CONTEXT_QUERY_000, dummy1, dummy2));
       }
       else if (values == KWD_LOOM_SUPPORT_RELATIONS) {
-        return (applyCachedRetrieve(cons(SYM_LOOM_SUPPORT_LOGIC_pX, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_AND, listO(3, SYM_LOOM_SUPPORT_PL_KERNEL_KB_RELATION, SYM_LOOM_SUPPORT_LOGIC_pX, NIL), listO(3, SYM_LOOM_SUPPORT_LOGIC_FAIL, listO(3, SYM_LOOM_SUPPORT_PL_KERNEL_KB_CLASS, SYM_LOOM_SUPPORT_LOGIC_pX, NIL), NIL), NIL), consList(1, NULL), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_LIST_CONTEXT_QUERY_001, dummy2));
+        return (applyCachedRetrieve(cons(SYM_LOOM_SUPPORT_LOGIC_pX, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_AND, listO(3, SYM_LOOM_SUPPORT_PL_KERNEL_KB_RELATION, SYM_LOOM_SUPPORT_LOGIC_pX, NIL), listO(3, SYM_LOOM_SUPPORT_LOGIC_FAIL, listO(3, SYM_LOOM_SUPPORT_PL_KERNEL_KB_CLASS, SYM_LOOM_SUPPORT_LOGIC_pX, NIL), NIL), NIL), consList(1, NULL), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_LIST_CONTEXT_QUERY_001, dummy3, dummy4));
       }
       else if (values == KWD_LOOM_SUPPORT_INSTANCES) {
         return (allInstances(context, false)->consify());
@@ -487,7 +493,7 @@ Symbol* getInstanceName(Object* instanceref) {
 
           if (((boolean)(instance)) &&
               ((boolean)(instance->surrogateValueInverse))) {
-            return (surrogateToSymbol(instance->surrogateValueInverse));
+            return (internSymbolInModule(instance->surrogateValueInverse->symbolName, ((Module*)(instance->surrogateValueInverse->homeContext)), true));
           }
         }
       }
@@ -497,7 +503,7 @@ Symbol* getInstanceName(Object* instanceref) {
 
           if (((boolean)(instance)) &&
               ((boolean)(instance->surrogateValueInverse))) {
-            return (surrogateToSymbol(instance->surrogateValueInverse));
+            return (internSymbolInModule(instance->surrogateValueInverse->symbolName, ((Module*)(instance->surrogateValueInverse->homeContext)), true));
           }
         }
       }
@@ -1071,7 +1077,7 @@ Description* computeConjunctionRelation(Cons* relationrefs) {
         for (r, iter002; !(iter002 == NIL); iter002 = iter002->rest) {
           r = ((Description*)(iter002->value));
           if (namedP(r)) {
-            clauses = cons(cons(surrogateToSymbol(r->surrogateValueInverse), copyConsList(variables)->concatenate(NIL, 0)), clauses);
+            clauses = cons(cons(internSymbolInModule(r->surrogateValueInverse->symbolName, ((Module*)(r->surrogateValueInverse->homeContext)), true), copyConsList(variables)->concatenate(NIL, 0)), clauses);
           }
           else {
             clauses = cons(((Cons*)(generateExpression(r, true)))->rest->rest->value, clauses);
@@ -1102,13 +1108,14 @@ Description* computeConjunctionRelation(Cons* relationrefs) {
 NamedDescription* getDomain(Object* relationref) {
   // Return the domain of the binary relation 'relationRef'.
   { Cons* dummy1;
+    Cons* dummy2;
 
     { LogicObject* relation = getRelation(relationref);
 
       if (!((boolean)(relation))) {
         return (NULL);
       }
-      return (((NamedDescription*)(applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOOM_API_pD, SYM_LOOM_SUPPORT_LOOM_API_pR, NIL), listO(4, SYM_LOOM_SUPPORT_PL_KERNEL_KB_DOMAIN, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pD, NIL), consList(2, NULL, relation), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_GET_DOMAIN_QUERY_000, dummy1)->value)));
+      return (((NamedDescription*)(applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOOM_API_pD, SYM_LOOM_SUPPORT_LOOM_API_pR, NIL), listO(4, SYM_LOOM_SUPPORT_PL_KERNEL_KB_DOMAIN, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pD, NIL), consList(2, NULL, relation), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_GET_DOMAIN_QUERY_000, dummy1, dummy2)->value)));
     }
   }
 }
@@ -1116,13 +1123,14 @@ NamedDescription* getDomain(Object* relationref) {
 NamedDescription* getRange(Object* relationref) {
   // Return the range of the binary relation 'relationRef'.
   { Cons* dummy1;
+    Cons* dummy2;
 
     { LogicObject* relation = getRelation(relationref);
 
       if (!((boolean)(relation))) {
         return (NULL);
       }
-      return (((NamedDescription*)(applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOOM_API_pD, SYM_LOOM_SUPPORT_LOOM_API_pR, NIL), listO(4, SYM_LOOM_SUPPORT_PL_KERNEL_KB_RANGE, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pD, NIL), consList(2, NULL, relation), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_GET_RANGE_QUERY_000, dummy1)->value)));
+      return (((NamedDescription*)(applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOOM_API_pD, SYM_LOOM_SUPPORT_LOOM_API_pR, NIL), listO(4, SYM_LOOM_SUPPORT_PL_KERNEL_KB_RANGE, SYM_LOOM_SUPPORT_LOOM_API_pR, SYM_LOOM_SUPPORT_LOOM_API_pD, NIL), consList(2, NULL, relation), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_GET_RANGE_QUERY_000, dummy1, dummy2)->value)));
     }
   }
 }
@@ -1190,6 +1198,7 @@ Cons* getPartitions(Object* classref) {
   // Return a list of partitions that
   // specify disjointness of children of the class classRef'.
   { Cons* dummy1;
+    Cons* dummy2;
 
     { LogicObject* clasS = getClass(classref);
       Cons* partitions = NIL;
@@ -1201,7 +1210,7 @@ Cons* getPartitions(Object* classref) {
           for (c, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
             c = ((LogicObject*)(iter000->value));
             { Object* mdc = NULL;
-              Cons* iter001 = applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOGIC_pC, SYM_LOOM_SUPPORT_LOGIC_pMDC, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_AND, listO(4, SYM_LOOM_SUPPORT_PL_KERNEL_KB_MEMBER_OF, SYM_LOOM_SUPPORT_LOGIC_pC, SYM_LOOM_SUPPORT_LOGIC_pMDC, NIL), listO(3, SYM_LOOM_SUPPORT_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION, SYM_LOOM_SUPPORT_LOGIC_pMDC, NIL), NIL), consList(2, c, NULL), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_GET_PARTITIONS_QUERY_000, dummy1);
+              Cons* iter001 = applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOGIC_pC, SYM_LOOM_SUPPORT_LOGIC_pMDC, NIL), listO(4, SYM_LOOM_SUPPORT_STELLA_AND, listO(4, SYM_LOOM_SUPPORT_PL_KERNEL_KB_MEMBER_OF, SYM_LOOM_SUPPORT_LOGIC_pC, SYM_LOOM_SUPPORT_LOGIC_pMDC, NIL), listO(3, SYM_LOOM_SUPPORT_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION, SYM_LOOM_SUPPORT_LOGIC_pMDC, NIL), NIL), consList(2, c, NULL), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_GET_PARTITIONS_QUERY_000, dummy1, dummy2);
 
               for (mdc, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
                 mdc = iter001->value;
@@ -1233,6 +1242,7 @@ boolean coveringP(Object* instanceref, Object* classref) {
   // covers 'classRef'.  If 'classRef' is NULL, return TRUE if 'instanceRef' covers
   // some concept.
   { Cons* dummy1;
+    Cons* dummy2;
 
     { Object* mdc = getInstance(instanceref);
       LogicObject* coveredclass = getClass(classref);
@@ -1241,7 +1251,7 @@ boolean coveringP(Object* instanceref, Object* classref) {
           (!testPropertyP(mdc, SGT_LOOM_SUPPORT_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION))) {
         return (false);
       }
-      { ConsIterator* c = applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOGIC_pMDC, SYM_LOOM_SUPPORT_LOOM_API_pCOVERED, NIL), listO(4, SYM_LOOM_SUPPORT_LOOM_API_COVERING, SYM_LOOM_SUPPORT_LOGIC_pMDC, SYM_LOOM_SUPPORT_LOOM_API_pCOVERED, NIL), consList(2, mdc, coveredclass), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_COVERINGp_QUERY_000, dummy1)->allocateIterator();
+      { ConsIterator* c = applyCachedRetrieve(listO(3, SYM_LOOM_SUPPORT_LOGIC_pMDC, SYM_LOOM_SUPPORT_LOOM_API_pCOVERED, NIL), listO(4, SYM_LOOM_SUPPORT_PL_KERNEL_KB_COVERING, SYM_LOOM_SUPPORT_LOGIC_pMDC, SYM_LOOM_SUPPORT_LOOM_API_pCOVERED, NIL), consList(2, mdc, coveredclass), consList(0), SYM_LOOM_SUPPORT_LOOM_API_F_COVERINGp_QUERY_000, dummy1, dummy2)->allocateIterator();
 
         for (c; c->nextP(); ) {
           return (true);
@@ -1324,7 +1334,68 @@ void helpStartupLoomSupport1() {
     SYM_LOOM_SUPPORT_LOOM_API_F_GET_PARTITIONS_QUERY_000 = ((Symbol*)(internRigidSymbolWrtModule("F-GET-PARTITIONS-QUERY-000", NULL, 0)));
     SGT_LOOM_SUPPORT_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION = ((Surrogate*)(internRigidSymbolWrtModule("MUTUALLY-DISJOINT-COLLECTION", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SYM_LOOM_SUPPORT_LOOM_API_pCOVERED = ((Symbol*)(internRigidSymbolWrtModule("?COVERED", NULL, 0)));
-    SYM_LOOM_SUPPORT_LOOM_API_COVERING = ((Symbol*)(internRigidSymbolWrtModule("COVERING", NULL, 0)));
+    SYM_LOOM_SUPPORT_PL_KERNEL_KB_COVERING = ((Symbol*)(internRigidSymbolWrtModule("COVERING", getStellaModule("/PL-KERNEL-KB", true), 0)));
+  }
+}
+
+void helpStartupLoomSupport2() {
+  {
+    defineFunctionObject("SAFE-SURROGATIFY", "(DEFUN (SAFE-SURROGATIFY SURROGATE) ((SURROGATEREF OBJECT)))", ((cpp_function_code)(&safeSurrogatify)), NULL);
+    defineFunctionObject("FIND-OR-CREATE-LOOM-ROLE", "(DEFUN (FIND-OR-CREATE-LOOM-ROLE LOOM-ROLE) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT) (CREATE? BOOLEAN)) :DOCUMENTATION \"Return a LOOM-ROLE instance if 'instanceRef' has\na Loom role named 'relationRef'.  If 'create?', create a role\ninstance if one doesn't already exist.\")", ((cpp_function_code)(&findOrCreateLoomRole)), NULL);
+    defineFunctionObject("GET-LOOM-ROLES", "(DEFUN (GET-LOOM-ROLES (CONS OF LOOM-ROLE)) ((INSTANCEREF OBJECT) (INFERROLES? BOOLEAN)) :DOCUMENTATION \"Return a list of LOOM-ROLEs on 'instanceRef'.  If\n'inferRoles', create roles on the fly corresponding to\nframe predicate or domain propositions inherited by 'instance'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getLoomRoles)), NULL);
+    defineFunctionObject("GET-RELATION-INDUCED-ROLES", "(DEFUN (GET-RELATION-INDUCED-ROLES (CONS OF LOOM-ROLE)) ((INSTANCEREF OBJECT)))", ((cpp_function_code)(&getRelationInducedRoles)), NULL);
+    defineFunctionObject("RELATION-OF-LOOM-ROLE", "(DEFUN (RELATION-OF-LOOM-ROLE NAMED-DESCRIPTION) ((ROLE LOOM-ROLE)) :DOCUMENTATION \"Return the relation for the Loom role 'role'.\")", ((cpp_function_code)(&relationOfLoomRole)), NULL);
+    defineFunctionObject("GET-ROLE-NAMES-AND-VALUES", "(DEFUN (GET-ROLE-NAMES-AND-VALUES CONS) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return a list of lists, with each sublist containing\na relation (role) name (a symbol) followed by one or more fillers of\nthat role on 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getRoleNamesAndValues)), NULL);
+    defineFunctionObject("GET-XCONTEXT", "(DEFUN (GET-XCONTEXT MODULE) ((CONTEXTREF OBJECT)) :DOCUMENTATION \"Return the module referenced by 'contextRef'.\")", ((cpp_function_code)(&getXcontext)), NULL);
+    defineFunctionObject("GET-PARENT-CONTEXTS", "(DEFUN (GET-PARENT-CONTEXTS (CONS OF MODULE)) ((MODULEREF OBJECT)) :DOCUMENTATION \"Return a list of parent modules of 'moduleRef'.\")", ((cpp_function_code)(&getParentContexts)), NULL);
+    defineFunctionObject("GET-CHILD-CONTEXTS", "(DEFUN (GET-CHILD-CONTEXTS (CONS OF MODULE)) ((MODULEREF OBJECT)) :DOCUMENTATION \"Return a list of child modules of 'moduleRef'.\")", ((cpp_function_code)(&getChildContexts)), NULL);
+    defineFunctionObject("CONTEXT-OF-INSTANCE", "(DEFUN (CONTEXT-OF-INSTANCE MODULE) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return the home context (a module) of 'instanceRef',\nor NULL if it is not context sensitive.\")", ((cpp_function_code)(&contextOfInstance)), NULL);
+    defineFunctionObject("CLEAR-USER-CONTEXTS", "(DEFUN CLEAR-USER-CONTEXTS () :DOCUMENTATION \"Destroy the contents of all non-system-defined modules.\")", ((cpp_function_code)(&clearUserContexts)), NULL);
+    defineFunctionObject("LIST-CONTEXT", "(DEFUN (LIST-CONTEXT CONS) ((CONTEXT MODULE) (VALUES KEYWORD)))", ((cpp_function_code)(&listContext)), NULL);
+    defineFunctionObject("RELATION-ARITY", "(DEFUN (RELATION-ARITY INTEGER) ((RELATIONREF OBJECT)) :DOCUMENTATION \"Return the arity of the relation 'relationRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&relationArity)), NULL);
+    defineFunctionObject("FIND-CLASS", "(DEFUN (FIND-CLASS LOGIC-OBJECT) ((INSTANCEREF OBJECT) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Return the nearest class with name 'instanceRef' in\nthe module 'module'.  If 'local?' is FALSE, also search modules inherited\nby 'module'.  'instanceRef' can be a string, symbol, or surrogate.\" :PUBLIC? TRUE)", ((cpp_function_code)(&findClass)), NULL);
+    defineFunctionObject("FIND-RELATION", "(DEFUN (FIND-RELATION LOGIC-OBJECT) ((INSTANCEREF OBJECT) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Return the nearest relation with name 'instanceRef' in\nthe module 'module'.  If 'local?' is FALSE, also search modules inherited\nby 'module'.  'instanceRef' can be a string, symbol, or surrogate.\" :PUBLIC? TRUE)", ((cpp_function_code)(&findRelation)), NULL);
+    defineFunctionObject("GET-INSTANCE-SURROGATE", "(DEFUN (GET-INSTANCE-SURROGATE SURROGATE) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return the surrogate pointing to the instance referenced by\n'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getInstanceSurrogate)), NULL);
+    defineFunctionObject("GET-INSTANCE-NAME", "(DEFUN (GET-INSTANCE-NAME SYMBOL) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return the name (a symbol) of the instance referenced by\n'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getInstanceName)), NULL);
+    defineFunctionObject("GET-EQUIVALENT-NAMES", "(DEFUN (GET-EQUIVALENT-NAMES (CONS OF SYMBOL)) ((RELATIONREF OBJECT)) :DOCUMENTATION \"Return a list containing the name of 'relationRef'\nplus the names of any equivalent relations.\")", ((cpp_function_code)(&getEquivalentNames)), NULL);
+    defineFunctionObject("INSTANCE?", "(DEFUN (INSTANCE? BOOLEAN) ((OBJECTREF OBJECT)) :DOCUMENTATION \"Return TRUE if 'objectRef' is an instance or the\nname of an instance.\" :PUBLIC? TRUE)", ((cpp_function_code)(&instanceP)), NULL);
+    defineFunctionObject("INDIVIDUAL?", "(DEFUN (INDIVIDUAL? BOOLEAN) ((OBJECT OBJECT)) :DOCUMENTATION \"Return TRUE if 'objectRef' is an instance or the\nname of an instance, and does not denote a relation, class, or set.\" :PUBLIC? TRUE)", ((cpp_function_code)(&individualP)), NULL);
+    defineFunctionObject("NAMED?", "(DEFUN (NAMED? BOOLEAN) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return TRUE if the object returned by 'instanceRef'\nis matched with a logical constant.\" :PUBLIC? TRUE)", ((cpp_function_code)(&namedP)), NULL);
+    defineFunctionObject("CREATE-INSTANCE", "(DEFUN (CREATE-INSTANCE OBJECT) ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Create an instance named 'instanceRef'\nof type 'classRef'.\")", ((cpp_function_code)(&createInstance)), NULL);
+    defineFunctionObject("FIND-OR-CREATE-INSTANCE", "(DEFUN (FIND-OR-CREATE-INSTANCE LOGIC-OBJECT) ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Find an existing instance refenced by 'instanceRef'\nof type 'classRef', or create one of type 'classRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&findOrCreateInstance)), NULL);
+    defineFunctionObject("INSTANCE-OF?", "(DEFUN (INSTANCE-OF? BOOLEAN) ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Return TRUE if the instance referenced by 'instanceRef'\nbelongs to the class referenced by 'classRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&instanceOfP)), NULL);
+    defineFunctionObject("ADD-TYPE", "(DEFUN ADD-TYPE ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Assert that the instance referenced by 'instanceRef'\nis an instance of the class referenced by 'classRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&addType)), NULL);
+    defineFunctionObject("REMOVE-TYPE", "(DEFUN REMOVE-TYPE ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Retract that the instance referenced by 'instanceRef'\nis an instance of the class referenced by 'classRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&removeType)), NULL);
+    defineFunctionObject("GET-TYPES", "(DEFUN (GET-TYPES (CONS OF DESCRIPTION)) ((INSTANCEREF OBJECT) (DIRECTORASSERTED KEYWORD)) :DOCUMENTATION \"Return a list of classes that instance belongs to.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getTypes)), NULL);
+    defineFunctionObject("UPDATE-ROLE-VALUE", "(DEFUN UPDATE-ROLE-VALUE ((INSTANCEREF OBJECT) (RELATIONREF OBJECT) (VALUEREF OBJECT) (ASSERT? BOOLEAN)) :DOCUMENTATION \"Assert the tuple '(relationRef instanceRef valueRef)',\nor retract if 'assert?' is FALSE.\")", ((cpp_function_code)(&updateRoleValue)), NULL);
+    defineFunctionObject("ADD-ROLE-VALUE", "(DEFUN ADD-ROLE-VALUE ((INSTANCEREF OBJECT) (RELATIONREF OBJECT) (VALUEREF OBJECT)) :DOCUMENTATION \"Assert the tuple '(relationRef instanceRef valueRef)'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&addRoleValue)), NULL);
+    defineFunctionObject("REMOVE-ROLE-VALUE", "(DEFUN REMOVE-ROLE-VALUE ((INSTANCEREF OBJECT) (RELATIONREF OBJECT) (VALUEREF OBJECT)) :DOCUMENTATION \"Retract the tuple '(relationRef instanceRef valueRef)'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&removeRoleValue)), NULL);
+    defineFunctionObject("GET-ROLE-VALUE", "(DEFUN (GET-ROLE-VALUE OBJECT) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Return a value for the binary relation 'relationRef'\napplied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getRoleValue)), NULL);
+    defineFunctionObject("GET-ROLE-VALUES", "(DEFUN (GET-ROLE-VALUES CONS) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Return a list of values for the binary relation 'relationRef'\napplied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getRoleValues)), NULL);
+    defineFunctionObject("GET-ROLE-DEFAULT-VALUES", "(DEFUN (GET-ROLE-DEFAULT-VALUES CONS) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Return a list of default values for the binary relation\n'relationRef' applied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getRoleDefaultValues)), NULL);
+    defineFunctionObject("GET-CLASS-INSTANCES", "(DEFUN (GET-CLASS-INSTANCES CONS) ((CLASSREF OBJECT) (DIRECT? BOOLEAN)) :DOCUMENTATION \"Return a list of instances belonging to the class 'classRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getClassInstances)), NULL);
+    defineFunctionObject("SUBRELATION?", "(DEFUN (SUBRELATION? BOOLEAN) ((SUBRELATIONREF OBJECT) (SUPERRELATIONREF OBJECT)) :DOCUMENTATION \"Return TRUE if 'subrelationRef' specializes 'superrelationRef'.\nSide-effect: Upclassify 'subrelationRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&subrelationP)), NULL);
+    defineFunctionObject("GET-SUPERRELATIONS", "(DEFUN (GET-SUPERRELATIONS (CONS OF LOGIC-OBJECT)) ((RELATIONREF OBJECT) (DIRECT? BOOLEAN)) :DOCUMENTATION \"Return a list of relations that generalize 'relationRef'.\nDoes not include relations equivalent to 'relationRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getSuperrelations)), NULL);
+    defineFunctionObject("GET-SUBRELATIONS", "(DEFUN (GET-SUBRELATIONS (CONS OF LOGIC-OBJECT)) ((RELATIONREF OBJECT) (DIRECT? BOOLEAN)) :DOCUMENTATION \"Return a list of relations that specialize 'relationRef'.\nDoes not include relations equivalent to 'relationRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getSubrelations)), NULL);
+    defineFunctionObject("MOST-SPECIFIC-RELATIONS", "(DEFUN (MOST-SPECIFIC-RELATIONS (CONS OF LOGIC-OBJECT)) ((RELATIONREFS CONS) (CLASSIFYFIRST? BOOLEAN)) :DOCUMENTATION \"Return a list of the most specific among the\nrelations in 'relationRefs'.  If 'classifyFirst?', insure that\nall relations are classified before filtering for most-specific.\" :PUBLIC? TRUE)", ((cpp_function_code)(&mostSpecificRelations)), NULL);
+    defineFunctionObject("COMPUTE-CONJUNCTION-RELATION", "(DEFUN (COMPUTE-CONJUNCTION-RELATION DESCRIPTION) ((RELATIONREFS (CONS OF NAMED-DESCRIPTION))) :DOCUMENTATION \"Return a relation representing the conjunction\nof relations in 'relationRefs'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&computeConjunctionRelation)), NULL);
+    defineFunctionObject("GET-DOMAIN", "(DEFUN (GET-DOMAIN NAMED-DESCRIPTION) ((RELATIONREF OBJECT)) :DOCUMENTATION \"Return the domain of the binary relation 'relationRef'.\")", ((cpp_function_code)(&getDomain)), NULL);
+    defineFunctionObject("GET-RANGE", "(DEFUN (GET-RANGE NAMED-DESCRIPTION) ((RELATIONREF OBJECT)) :DOCUMENTATION \"Return the range of the binary relation 'relationRef'.\")", ((cpp_function_code)(&getRange)), NULL);
+    defineFunctionObject("GET-MIN-CARDINALITY", "(DEFUN (GET-MIN-CARDINALITY INTEGER) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Infer a minimum cardinality for the set of fillers of\nthe range of relation 'relationRef' applied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getMinCardinality)), NULL);
+    defineFunctionObject("GET-MAX-CARDINALITY", "(DEFUN (GET-MAX-CARDINALITY INTEGER) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Infer a maximum cardinality for the set of fillers of\nthe range of relation 'relationRef' applied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getMaxCardinality)), NULL);
+    defineFunctionObject("GET-VALUE-RESTRICTION", "(DEFUN (GET-VALUE-RESTRICTION DESCRIPTION) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Infer a type restriction on the set of fillers of\nthe range of relation 'relationRef' applied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getValueRestriction)), NULL);
+    defineFunctionObject("ASSERT-LOOM-PROPOSITION", "(DEFUN ASSERT-LOOM-PROPOSITION ((LOOMSENTENCE CONS) (RETRACT? BOOLEAN)) :DOCUMENTATION \"Convert each Loom sentence into a KIF equivalent\nand assert it or retract it.\")", ((cpp_function_code)(&assertLoomProposition)), NULL);
+    defineFunctionObject("DELETE-INSTANCE", "(DEFUN DELETE-INSTANCE ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Destroy the instance, class or relation 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&deleteInstance)), NULL);
+    defineFunctionObject("GENERATE-SOURCE-EXPRESSION", "(DEFUN (GENERATE-SOURCE-EXPRESSION OBJECT) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return an s-expression representing the\nsource expression for 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&generateSourceExpression)), NULL);
+    defineFunctionObject("GET-PARTITIONS", "(DEFUN (GET-PARTITIONS CONS) ((CLASSREF OBJECT)) :DOCUMENTATION \"Return a list of partitions that\nspecify disjointness of children of the class classRef'.\")", ((cpp_function_code)(&getPartitions)), NULL);
+    defineFunctionObject("DISJOINT-RELATIONS?", "(DEFUN (DISJOINT-RELATIONS? BOOLEAN) ((RELATIONREF1 OBJECT) (RELATIONREF2 OBJECT)) :DOCUMENTATION \"Return TRUE if 'relationRef1' and 'relationRef2' are\ndisjoint.\" :PUBLIC? TRUE)", ((cpp_function_code)(&disjointRelationsP)), NULL);
+    defineFunctionObject("COVERING?", "(DEFUN (COVERING? BOOLEAN) ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Return TRUE if the mutually disjoint collection 'instanceRef'\ncovers 'classRef'.  If 'classRef' is NULL, return TRUE if 'instanceRef' covers\nsome concept.\")", ((cpp_function_code)(&coveringP)), NULL);
+    defineFunctionObject("COLLECTION-MEMBERS", "(DEFUN (COLLECTION-MEMBERS CONS) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return a list of concepts that belong to the collection 'instanceRef'.\")", ((cpp_function_code)(&collectionMembers)), NULL);
+    defineFunctionObject("STARTUP-LOOM-SUPPORT", "(DEFUN STARTUP-LOOM-SUPPORT () :PUBLIC? TRUE)", ((cpp_function_code)(&startupLoomSupport)), NULL);
+    { MethodSlot* function = lookupFunction(SYM_LOOM_SUPPORT_LOOM_API_STARTUP_LOOM_SUPPORT);
+
+      setDynamicSlotValue(function->dynamicSlots, SYM_LOOM_SUPPORT_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupLoomSupport"), NULL_STRING_WRAPPER);
+    }
   }
 }
 
@@ -1348,68 +1419,14 @@ void startupLoomSupport() {
       finalizeClasses();
     }
     if (currentStartupTimePhaseP(7)) {
-      defineFunctionObject("SAFE-SURROGATIFY", "(DEFUN (SAFE-SURROGATIFY SURROGATE) ((SURROGATEREF OBJECT)))", ((cpp_function_code)(&safeSurrogatify)), NULL);
-      defineFunctionObject("FIND-OR-CREATE-LOOM-ROLE", "(DEFUN (FIND-OR-CREATE-LOOM-ROLE LOOM-ROLE) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT) (CREATE? BOOLEAN)) :DOCUMENTATION \"Return a LOOM-ROLE instance if 'instanceRef' has\na Loom role named 'relationRef'.  If 'create?', create a role\ninstance if one doesn't already exist.\")", ((cpp_function_code)(&findOrCreateLoomRole)), NULL);
-      defineFunctionObject("GET-LOOM-ROLES", "(DEFUN (GET-LOOM-ROLES (CONS OF LOOM-ROLE)) ((INSTANCEREF OBJECT) (INFERROLES? BOOLEAN)) :DOCUMENTATION \"Return a list of LOOM-ROLEs on 'instanceRef'.  If\n'inferRoles', create roles on the fly corresponding to\nframe predicate or domain propositions inherited by 'instance'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getLoomRoles)), NULL);
-      defineFunctionObject("GET-RELATION-INDUCED-ROLES", "(DEFUN (GET-RELATION-INDUCED-ROLES (CONS OF LOOM-ROLE)) ((INSTANCEREF OBJECT)))", ((cpp_function_code)(&getRelationInducedRoles)), NULL);
-      defineFunctionObject("RELATION-OF-LOOM-ROLE", "(DEFUN (RELATION-OF-LOOM-ROLE NAMED-DESCRIPTION) ((ROLE LOOM-ROLE)) :DOCUMENTATION \"Return the relation for the Loom role 'role'.\")", ((cpp_function_code)(&relationOfLoomRole)), NULL);
-      defineFunctionObject("GET-ROLE-NAMES-AND-VALUES", "(DEFUN (GET-ROLE-NAMES-AND-VALUES CONS) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return a list of lists, with each sublist containing\na relation (role) name (a symbol) followed by one or more fillers of\nthat role on 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getRoleNamesAndValues)), NULL);
-      defineFunctionObject("GET-XCONTEXT", "(DEFUN (GET-XCONTEXT MODULE) ((CONTEXTREF OBJECT)) :DOCUMENTATION \"Return the module referenced by 'contextRef'.\")", ((cpp_function_code)(&getXcontext)), NULL);
-      defineFunctionObject("GET-PARENT-CONTEXTS", "(DEFUN (GET-PARENT-CONTEXTS (CONS OF MODULE)) ((MODULEREF OBJECT)) :DOCUMENTATION \"Return a list of parent modules of 'moduleRef'.\")", ((cpp_function_code)(&getParentContexts)), NULL);
-      defineFunctionObject("GET-CHILD-CONTEXTS", "(DEFUN (GET-CHILD-CONTEXTS (CONS OF MODULE)) ((MODULEREF OBJECT)) :DOCUMENTATION \"Return a list of child modules of 'moduleRef'.\")", ((cpp_function_code)(&getChildContexts)), NULL);
-      defineFunctionObject("CONTEXT-OF-INSTANCE", "(DEFUN (CONTEXT-OF-INSTANCE MODULE) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return the home context (a module) of 'instanceRef',\nor NULL if it is not context sensitive.\")", ((cpp_function_code)(&contextOfInstance)), NULL);
-      defineFunctionObject("CLEAR-USER-CONTEXTS", "(DEFUN CLEAR-USER-CONTEXTS () :DOCUMENTATION \"Destroy the contents of all non-system-defined modules.\")", ((cpp_function_code)(&clearUserContexts)), NULL);
-      defineFunctionObject("LIST-CONTEXT", "(DEFUN (LIST-CONTEXT CONS) ((CONTEXT MODULE) (VALUES KEYWORD)))", ((cpp_function_code)(&listContext)), NULL);
-      defineFunctionObject("RELATION-ARITY", "(DEFUN (RELATION-ARITY INTEGER) ((RELATIONREF OBJECT)) :DOCUMENTATION \"Return the arity of the relation 'relationRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&relationArity)), NULL);
-      defineFunctionObject("FIND-CLASS", "(DEFUN (FIND-CLASS LOGIC-OBJECT) ((INSTANCEREF OBJECT) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Return the nearest class with name 'instanceRef' in\nthe module 'module'.  If 'local?' is FALSE, also search modules inherited\nby 'module'.  'instanceRef' can be a string, symbol, or surrogate.\" :PUBLIC? TRUE)", ((cpp_function_code)(&findClass)), NULL);
-      defineFunctionObject("FIND-RELATION", "(DEFUN (FIND-RELATION LOGIC-OBJECT) ((INSTANCEREF OBJECT) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Return the nearest relation with name 'instanceRef' in\nthe module 'module'.  If 'local?' is FALSE, also search modules inherited\nby 'module'.  'instanceRef' can be a string, symbol, or surrogate.\" :PUBLIC? TRUE)", ((cpp_function_code)(&findRelation)), NULL);
-      defineFunctionObject("GET-INSTANCE-SURROGATE", "(DEFUN (GET-INSTANCE-SURROGATE SURROGATE) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return the surrogate pointing to the instance referenced by\n'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getInstanceSurrogate)), NULL);
-      defineFunctionObject("GET-INSTANCE-NAME", "(DEFUN (GET-INSTANCE-NAME SYMBOL) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return the name (a symbol) of the instance referenced by\n'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getInstanceName)), NULL);
-      defineFunctionObject("GET-EQUIVALENT-NAMES", "(DEFUN (GET-EQUIVALENT-NAMES (CONS OF SYMBOL)) ((RELATIONREF OBJECT)) :DOCUMENTATION \"Return a list containing the name of 'relationRef'\nplus the names of any equivalent relations.\")", ((cpp_function_code)(&getEquivalentNames)), NULL);
-      defineFunctionObject("INSTANCE?", "(DEFUN (INSTANCE? BOOLEAN) ((OBJECTREF OBJECT)) :DOCUMENTATION \"Return TRUE if 'objectRef' is an instance or the\nname of an instance.\" :PUBLIC? TRUE)", ((cpp_function_code)(&instanceP)), NULL);
-      defineFunctionObject("INDIVIDUAL?", "(DEFUN (INDIVIDUAL? BOOLEAN) ((OBJECT OBJECT)) :DOCUMENTATION \"Return TRUE if 'objectRef' is an instance or the\nname of an instance, and does not denote a relation, class, or set.\" :PUBLIC? TRUE)", ((cpp_function_code)(&individualP)), NULL);
-      defineFunctionObject("NAMED?", "(DEFUN (NAMED? BOOLEAN) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return TRUE if the object returned by 'instanceRef'\nis matched with a logical constant.\" :PUBLIC? TRUE)", ((cpp_function_code)(&namedP)), NULL);
-      defineFunctionObject("CREATE-INSTANCE", "(DEFUN (CREATE-INSTANCE OBJECT) ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Create an instance named 'instanceRef'\nof type 'classRef'.\")", ((cpp_function_code)(&createInstance)), NULL);
-      defineFunctionObject("FIND-OR-CREATE-INSTANCE", "(DEFUN (FIND-OR-CREATE-INSTANCE LOGIC-OBJECT) ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Find an existing instance refenced by 'instanceRef'\nof type 'classRef', or create one of type 'classRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&findOrCreateInstance)), NULL);
-      defineFunctionObject("INSTANCE-OF?", "(DEFUN (INSTANCE-OF? BOOLEAN) ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Return TRUE if the instance referenced by 'instanceRef'\nbelongs to the class referenced by 'classRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&instanceOfP)), NULL);
-      defineFunctionObject("ADD-TYPE", "(DEFUN ADD-TYPE ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Assert that the instance referenced by 'instanceRef'\nis an instance of the class referenced by 'classRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&addType)), NULL);
-      defineFunctionObject("REMOVE-TYPE", "(DEFUN REMOVE-TYPE ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Retract that the instance referenced by 'instanceRef'\nis an instance of the class referenced by 'classRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&removeType)), NULL);
-      defineFunctionObject("GET-TYPES", "(DEFUN (GET-TYPES (CONS OF DESCRIPTION)) ((INSTANCEREF OBJECT) (DIRECTORASSERTED KEYWORD)) :DOCUMENTATION \"Return a list of classes that instance belongs to.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getTypes)), NULL);
-      defineFunctionObject("UPDATE-ROLE-VALUE", "(DEFUN UPDATE-ROLE-VALUE ((INSTANCEREF OBJECT) (RELATIONREF OBJECT) (VALUEREF OBJECT) (ASSERT? BOOLEAN)) :DOCUMENTATION \"Assert the tuple '(relationRef instanceRef valueRef)',\nor retract if 'assert?' is FALSE.\")", ((cpp_function_code)(&updateRoleValue)), NULL);
-      defineFunctionObject("ADD-ROLE-VALUE", "(DEFUN ADD-ROLE-VALUE ((INSTANCEREF OBJECT) (RELATIONREF OBJECT) (VALUEREF OBJECT)) :DOCUMENTATION \"Assert the tuple '(relationRef instanceRef valueRef)'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&addRoleValue)), NULL);
-      defineFunctionObject("REMOVE-ROLE-VALUE", "(DEFUN REMOVE-ROLE-VALUE ((INSTANCEREF OBJECT) (RELATIONREF OBJECT) (VALUEREF OBJECT)) :DOCUMENTATION \"Retract the tuple '(relationRef instanceRef valueRef)'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&removeRoleValue)), NULL);
-      defineFunctionObject("GET-ROLE-VALUE", "(DEFUN (GET-ROLE-VALUE OBJECT) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Return a value for the binary relation 'relationRef'\napplied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getRoleValue)), NULL);
-      defineFunctionObject("GET-ROLE-VALUES", "(DEFUN (GET-ROLE-VALUES CONS) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Return a list of values for the binary relation 'relationRef'\napplied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getRoleValues)), NULL);
-      defineFunctionObject("GET-ROLE-DEFAULT-VALUES", "(DEFUN (GET-ROLE-DEFAULT-VALUES CONS) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Return a list of default values for the binary relation\n'relationRef' applied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getRoleDefaultValues)), NULL);
-      defineFunctionObject("GET-CLASS-INSTANCES", "(DEFUN (GET-CLASS-INSTANCES CONS) ((CLASSREF OBJECT) (DIRECT? BOOLEAN)) :DOCUMENTATION \"Return a list of instances belonging to the class 'classRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getClassInstances)), NULL);
-      defineFunctionObject("SUBRELATION?", "(DEFUN (SUBRELATION? BOOLEAN) ((SUBRELATIONREF OBJECT) (SUPERRELATIONREF OBJECT)) :DOCUMENTATION \"Return TRUE if 'subrelationRef' specializes 'superrelationRef'.\nSide-effect: Upclassify 'subrelationRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&subrelationP)), NULL);
-      defineFunctionObject("GET-SUPERRELATIONS", "(DEFUN (GET-SUPERRELATIONS (CONS OF LOGIC-OBJECT)) ((RELATIONREF OBJECT) (DIRECT? BOOLEAN)) :DOCUMENTATION \"Return a list of relations that generalize 'relationRef'.\nDoes not include relations equivalent to 'relationRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getSuperrelations)), NULL);
-      defineFunctionObject("GET-SUBRELATIONS", "(DEFUN (GET-SUBRELATIONS (CONS OF LOGIC-OBJECT)) ((RELATIONREF OBJECT) (DIRECT? BOOLEAN)) :DOCUMENTATION \"Return a list of relations that specialize 'relationRef'.\nDoes not include relations equivalent to 'relationRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getSubrelations)), NULL);
-      defineFunctionObject("MOST-SPECIFIC-RELATIONS", "(DEFUN (MOST-SPECIFIC-RELATIONS (CONS OF LOGIC-OBJECT)) ((RELATIONREFS CONS) (CLASSIFYFIRST? BOOLEAN)) :DOCUMENTATION \"Return a list of the most specific among the\nrelations in 'relationRefs'.  If 'classifyFirst?', insure that\nall relations are classified before filtering for most-specific.\" :PUBLIC? TRUE)", ((cpp_function_code)(&mostSpecificRelations)), NULL);
-      defineFunctionObject("COMPUTE-CONJUNCTION-RELATION", "(DEFUN (COMPUTE-CONJUNCTION-RELATION DESCRIPTION) ((RELATIONREFS (CONS OF NAMED-DESCRIPTION))) :DOCUMENTATION \"Return a relation representing the conjunction\nof relations in 'relationRefs'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&computeConjunctionRelation)), NULL);
-      defineFunctionObject("GET-DOMAIN", "(DEFUN (GET-DOMAIN NAMED-DESCRIPTION) ((RELATIONREF OBJECT)) :DOCUMENTATION \"Return the domain of the binary relation 'relationRef'.\")", ((cpp_function_code)(&getDomain)), NULL);
-      defineFunctionObject("GET-RANGE", "(DEFUN (GET-RANGE NAMED-DESCRIPTION) ((RELATIONREF OBJECT)) :DOCUMENTATION \"Return the range of the binary relation 'relationRef'.\")", ((cpp_function_code)(&getRange)), NULL);
-      defineFunctionObject("GET-MIN-CARDINALITY", "(DEFUN (GET-MIN-CARDINALITY INTEGER) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Infer a minimum cardinality for the set of fillers of\nthe range of relation 'relationRef' applied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getMinCardinality)), NULL);
-      defineFunctionObject("GET-MAX-CARDINALITY", "(DEFUN (GET-MAX-CARDINALITY INTEGER) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Infer a maximum cardinality for the set of fillers of\nthe range of relation 'relationRef' applied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getMaxCardinality)), NULL);
-      defineFunctionObject("GET-VALUE-RESTRICTION", "(DEFUN (GET-VALUE-RESTRICTION DESCRIPTION) ((INSTANCEREF OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Infer a type restriction on the set of fillers of\nthe range of relation 'relationRef' applied to 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getValueRestriction)), NULL);
-      defineFunctionObject("ASSERT-LOOM-PROPOSITION", "(DEFUN ASSERT-LOOM-PROPOSITION ((LOOMSENTENCE CONS) (RETRACT? BOOLEAN)) :DOCUMENTATION \"Convert each Loom sentence into a KIF equivalent\nand assert it or retract it.\")", ((cpp_function_code)(&assertLoomProposition)), NULL);
-      defineFunctionObject("DELETE-INSTANCE", "(DEFUN DELETE-INSTANCE ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Destroy the instance, class or relation 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&deleteInstance)), NULL);
-      defineFunctionObject("GENERATE-SOURCE-EXPRESSION", "(DEFUN (GENERATE-SOURCE-EXPRESSION OBJECT) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return an s-expression representing the\nsource expression for 'instanceRef'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&generateSourceExpression)), NULL);
-      defineFunctionObject("GET-PARTITIONS", "(DEFUN (GET-PARTITIONS CONS) ((CLASSREF OBJECT)) :DOCUMENTATION \"Return a list of partitions that\nspecify disjointness of children of the class classRef'.\")", ((cpp_function_code)(&getPartitions)), NULL);
-      defineFunctionObject("DISJOINT-RELATIONS?", "(DEFUN (DISJOINT-RELATIONS? BOOLEAN) ((RELATIONREF1 OBJECT) (RELATIONREF2 OBJECT)) :DOCUMENTATION \"Return TRUE if 'relationRef1' and 'relationRef2' are\ndisjoint.\" :PUBLIC? TRUE)", ((cpp_function_code)(&disjointRelationsP)), NULL);
-      defineFunctionObject("COVERING?", "(DEFUN (COVERING? BOOLEAN) ((INSTANCEREF OBJECT) (CLASSREF OBJECT)) :DOCUMENTATION \"Return TRUE if the mutually disjoint collection 'instanceRef'\ncovers 'classRef'.  If 'classRef' is NULL, return TRUE if 'instanceRef' covers\nsome concept.\")", ((cpp_function_code)(&coveringP)), NULL);
-      defineFunctionObject("COLLECTION-MEMBERS", "(DEFUN (COLLECTION-MEMBERS CONS) ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Return a list of concepts that belong to the collection 'instanceRef'.\")", ((cpp_function_code)(&collectionMembers)), NULL);
-      defineFunctionObject("STARTUP-LOOM-SUPPORT", "(DEFUN STARTUP-LOOM-SUPPORT () :PUBLIC? TRUE)", ((cpp_function_code)(&startupLoomSupport)), NULL);
-      { MethodSlot* function = lookupFunction(SYM_LOOM_SUPPORT_LOOM_API_STARTUP_LOOM_SUPPORT);
-
-        setDynamicSlotValue(function->dynamicSlots, SYM_LOOM_SUPPORT_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupLoomSupport"), NULL_STRING_WRAPPER);
-      }
+      helpStartupLoomSupport2();
     }
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOOM-API")))));
       defrelation(consList(6, ((Symbol*)(copyConsTree(SYM_LOOM_SUPPORT_LOOM_API_LOOM_ROLE_OF))), ((Cons*)(copyConsTree(getQuotedTree("(((?C CLASS) (?R RELATION) (?ROLE LOOM-ROLE)) \"/PL-KERNEL-KB/LOOM-API\")", "/PL-KERNEL-KB/LOOM-API")))), KWD_LOOM_SUPPORT_DOCUMENTATION, ((StringWrapper*)(copyConsTree(wrapString("")))), KWD_LOOM_SUPPORT_AXIOMS, ((Cons*)(copyConsTree(getQuotedTree("((SINGLE-VALUED LOOM-ROLE-OF) \"/PL-KERNEL-KB/LOOM-API\")", "/PL-KERNEL-KB/LOOM-API"))))));
     }
   }
@@ -1533,7 +1550,7 @@ Surrogate* SGT_LOOM_SUPPORT_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION = NULL;
 
 Symbol* SYM_LOOM_SUPPORT_LOOM_API_pCOVERED = NULL;
 
-Symbol* SYM_LOOM_SUPPORT_LOOM_API_COVERING = NULL;
+Symbol* SYM_LOOM_SUPPORT_PL_KERNEL_KB_COVERING = NULL;
 
 Symbol* SYM_LOOM_SUPPORT_LOOM_API_F_COVERINGp_QUERY_000 = NULL;
 

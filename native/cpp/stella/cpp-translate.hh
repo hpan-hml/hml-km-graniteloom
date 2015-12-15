@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -108,6 +108,8 @@ Cons* cppTranslateArgumentListTree(Symbol* operatoR, Surrogate* owner, Object* a
 Cons* cppTranslateTheCode(Cons* tree);
 Cons* cppTranslateSysPointerToFunction(Cons* tree);
 Cons* cppTranslateSysNew(Cons* tree);
+boolean cppNonPointerTypeP(StandardObject* typespec);
+boolean cppTypeWithoutInteriorPointersP(StandardObject* typespec);
 Cons* cppTranslateNewArray(Cons* tree);
 Cons* cppTranslateVoidSys(Cons* tree);
 Cons* cppTranslateTypedSys(Cons* tree);
@@ -164,9 +166,9 @@ boolean slotReaderFromNameP(Symbol* methodname, StandardObject* methodowner);
 boolean slotReaderP(MethodSlot* method);
 StringWrapper* cppTranslateConstructorName(MethodSlot* constructor);
 StringWrapper* cppTranslateFunctionNameFromName(Symbol* functionname);
-StringWrapper* cppTranslateFunctionName(MethodSlot* function);
+StringWrapper* cppTranslateFunctionName(MethodSlot* function, boolean qualifyP);
 StringWrapper* cppTranslateMethodNameFromName(Symbol* methodname, StandardObject* methodowner);
-StringWrapper* cppTranslateMethodName(MethodSlot* method);
+StringWrapper* cppTranslateMethodName(MethodSlot* method, boolean qualifyP);
 Cons* deleteQuotedNullStatements(Cons* trees);
 boolean cppMethodObjectIsFunctionP(MethodSlot* method);
 boolean cppMethodObjectIsOverloadedFunctionP(MethodSlot* method);
@@ -338,10 +340,8 @@ extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_CATCH;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_TYPE;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_LOCAL;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_UNWIND_PROTECT;
-extern Surrogate* SGT_CPP_TRANSLATE_STELLA_FLOAT;
-extern Surrogate* SGT_CPP_TRANSLATE_STELLA_INTEGER_WRAPPER;
-extern Surrogate* SGT_CPP_TRANSLATE_STELLA_INTEGER;
-extern Surrogate* SGT_CPP_TRANSLATE_STELLA_FLOAT_WRAPPER;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_NUMBER;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_NUMBER_WRAPPER;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_CAST;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_ASSIGN;
 extern Keyword* KWD_CPP_TRANSLATE_UNBOUND_SPECIAL_VARIABLE;
@@ -364,6 +364,7 @@ extern Surrogate* SGT_CPP_TRANSLATE_STELLA_ARGUMENT_LIST_ITERATOR;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_FOREACH;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_VA_START;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_VA_END;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_INTEGER;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_ALLOCATE_ITERATOR;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_LENGTH;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_NEXTp;
@@ -377,7 +378,17 @@ extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_FUNCTION_POINTER;
 extern Keyword* KWD_CPP_TRANSLATE_METHOD;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_METHOD_POINTER;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_TRUE;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_SHORT_INTEGER;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_LONG_INTEGER;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_UNSIGNED_LONG_INTEGER;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_FLOAT;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_SINGLE_FLOAT;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_DOUBLE_FLOAT;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_CHARACTER;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_BYTE;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_OCTET;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_ANY_VALUE;
+extern Surrogate* SGT_CPP_TRANSLATE_STELLA_NATIVE_EXCEPTION;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_ARRAY_REFERENCE;
 extern Surrogate* SGT_CPP_TRANSLATE_STELLA_VOID;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_REFERENCED_SLOT_VALUE;

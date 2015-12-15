@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -52,32 +52,32 @@ import edu.isi.stella.*;
 public class _StartupUnits {
   static void helpStartupUnits1() {
     {
-      Utilities.SGT_UTILITIES_RATIO = ((Surrogate)(Stella.internRigidSymbolWrtModule("RATIO", null, 1)));
-      Utilities.SYM_UTILITIES_NUMERATOR = ((Symbol)(Stella.internRigidSymbolWrtModule("NUMERATOR", null, 0)));
-      Utilities.SYM_UTILITIES_DENOMINATOR = ((Symbol)(Stella.internRigidSymbolWrtModule("DENOMINATOR", null, 0)));
-      Utilities.KWD_START = ((Keyword)(Stella.internRigidSymbolWrtModule("START", null, 2)));
-      Utilities.SYM_STELLA_$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*", Stella.getStellaModule("/STELLA", true), 0)));
-      Utilities.KWD_INTEGER = ((Keyword)(Stella.internRigidSymbolWrtModule("INTEGER", null, 2)));
-      Utilities.KWD_DELIMITER = ((Keyword)(Stella.internRigidSymbolWrtModule("DELIMITER", null, 2)));
-      Utilities.KWD_FRACTION = ((Keyword)(Stella.internRigidSymbolWrtModule("FRACTION", null, 2)));
-      Utilities.KWD_UNIT = ((Keyword)(Stella.internRigidSymbolWrtModule("UNIT", null, 2)));
-      Utilities.KWD_EOF = ((Keyword)(Stella.internRigidSymbolWrtModule("EOF", null, 2)));
-      Utilities.KWD_OTHERWISE = ((Keyword)(Stella.internRigidSymbolWrtModule("OTHERWISE", null, 2)));
-      Utilities.KWD_ERROR = ((Keyword)(Stella.internRigidSymbolWrtModule("ERROR", null, 2)));
-      Utilities.KWD_INCLUDE = ((Keyword)(Stella.internRigidSymbolWrtModule("INCLUDE", null, 2)));
-      Utilities.SGT_UTILITIES_MEASURE = ((Surrogate)(Stella.internRigidSymbolWrtModule("MEASURE", null, 1)));
-      Utilities.SYM_UTILITIES_BASE_UNIT = ((Symbol)(Stella.internRigidSymbolWrtModule("BASE-UNIT", null, 0)));
-      Utilities.SYM_UTILITIES_SCALE = ((Symbol)(Stella.internRigidSymbolWrtModule("SCALE", null, 0)));
-      Utilities.SYM_UTILITIES_PRIME_ID = ((Symbol)(Stella.internRigidSymbolWrtModule("PRIME-ID", null, 0)));
-      Utilities.SYM_STELLA_NAME = ((Symbol)(Stella.internRigidSymbolWrtModule("NAME", Stella.getStellaModule("/STELLA", true), 0)));
-      Utilities.KWD_PRESERVE = ((Keyword)(Stella.internRigidSymbolWrtModule("PRESERVE", null, 2)));
-      Utilities.SGT_UTILITIES_DIM_NUMBER = ((Surrogate)(Stella.internRigidSymbolWrtModule("DIM-NUMBER", null, 1)));
-      Utilities.SYM_UTILITIES_PID = ((Symbol)(Stella.internRigidSymbolWrtModule("PID", null, 0)));
-      Utilities.SYM_UTILITIES_MAGNITUDE = ((Symbol)(Stella.internRigidSymbolWrtModule("MAGNITUDE", null, 0)));
-      Utilities.SYM_UTILITIES_PREFERRED_UNITS = ((Symbol)(Stella.internRigidSymbolWrtModule("PREFERRED-UNITS", null, 0)));
-      Utilities.KWD_DIGIT = ((Keyword)(Stella.internRigidSymbolWrtModule("DIGIT", null, 2)));
-      Utilities.SGT_STELLA_TIME_DURATION = ((Surrogate)(Stella.internRigidSymbolWrtModule("TIME-DURATION", Stella.getStellaModule("/STELLA", true), 1)));
-      Utilities.SYM_UTILITIES_STARTUP_UNITS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-UNITS", null, 0)));
+      Utilities.SGT_UTILITIES_RATIO = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("RATIO", null, 1)));
+      Utilities.SYM_UTILITIES_NUMERATOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NUMERATOR", null, 0)));
+      Utilities.SYM_UTILITIES_DENOMINATOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DENOMINATOR", null, 0)));
+      Utilities.KWD_START = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("START", null, 2)));
+      Utilities.SYM_STELLA_$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.KWD_INTEGER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INTEGER", null, 2)));
+      Utilities.KWD_DELIMITER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DELIMITER", null, 2)));
+      Utilities.KWD_FRACTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FRACTION", null, 2)));
+      Utilities.KWD_UNIT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UNIT", null, 2)));
+      Utilities.KWD_EOF = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("EOF", null, 2)));
+      Utilities.KWD_OTHERWISE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("OTHERWISE", null, 2)));
+      Utilities.KWD_ERROR = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ERROR", null, 2)));
+      Utilities.KWD_INCLUDE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INCLUDE", null, 2)));
+      Utilities.SGT_UTILITIES_MEASURE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("MEASURE", null, 1)));
+      Utilities.SYM_UTILITIES_BASE_UNIT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BASE-UNIT", null, 0)));
+      Utilities.SYM_UTILITIES_SCALE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SCALE", null, 0)));
+      Utilities.SYM_UTILITIES_PRIME_ID = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PRIME-ID", null, 0)));
+      Utilities.SYM_STELLA_NAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NAME", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.KWD_PRESERVE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PRESERVE", null, 2)));
+      Utilities.SGT_UTILITIES_DIM_NUMBER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DIM-NUMBER", null, 1)));
+      Utilities.SYM_UTILITIES_PID = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PID", null, 0)));
+      Utilities.SYM_UTILITIES_MAGNITUDE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MAGNITUDE", null, 0)));
+      Utilities.SYM_UTILITIES_PREFERRED_UNITS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PREFERRED-UNITS", null, 0)));
+      Utilities.KWD_DIGIT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DIGIT", null, 2)));
+      Utilities.SGT_STELLA_TIME_DURATION = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("TIME-DURATION", Stella.getStellaModule("/STELLA", true), 1)));
+      Utilities.SYM_UTILITIES_STARTUP_UNITS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-UNITS", null, 0)));
     }
   }
 
@@ -91,7 +91,7 @@ public class _StartupUnits {
       Utilities.$ALL_MEASURES$ = Stella.NIL;
       Utilities.$BASE_MEASURES$ = Stella.NIL;
       Utilities.$RATIO_ONE$ = Ratio.newRatio(1, 1);
-      Utilities.$UNIT_TOKENIZER_TABLE_DEFINITION$ = Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.KWD_START, Stella_Object.cons(Utilities.SYM_STELLA_$, Stella_Object.cons(StringWrapper.wrapString("-+0123456789"), Stella_Object.cons(Utilities.KWD_INTEGER, Stella_Object.cons(Utilities.SYM_STELLA_$, Stella_Object.cons(StringWrapper.wrapString("."), Stella_Object.cons(Utilities.KWD_DELIMITER, Stella_Object.cons(Utilities.SYM_STELLA_$, Stella_Object.cons(StringWrapper.wrapString("/"), Stella_Object.cons(Utilities.KWD_FRACTION, Stella_Object.cons(Utilities.SYM_STELLA_$, Stella_Object.cons(StringWrapper.wrapString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%"), Stella_Object.cons(Utilities.KWD_UNIT, Stella_Object.cons(Utilities.KWD_EOF, Stella_Object.cons(Utilities.KWD_EOF, Stella_Object.cons(Utilities.KWD_OTHERWISE, Stella_Object.cons(Utilities.KWD_ERROR, Stella_Object.cons(Stella.NIL, Stella.NIL))))))))))))))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.KWD_UNIT, Stella_Object.cons(Utilities.SYM_STELLA_$, Stella_Object.cons(StringWrapper.wrapString("-+0123456789"), Stella_Object.cons(Utilities.KWD_INTEGER, Stella_Object.cons(Utilities.SYM_STELLA_$, Stella_Object.cons(StringWrapper.wrapString("."), Stella_Object.cons(Utilities.KWD_DELIMITER, Stella_Object.cons(Utilities.SYM_STELLA_$, Stella_Object.cons(StringWrapper.wrapString("/"), Stella_Object.cons(Utilities.KWD_FRACTION, Stella_Object.cons(StringWrapper.wrapString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%"), Stella_Object.cons(Utilities.KWD_UNIT, Stella_Object.cons(Utilities.KWD_EOF, Stella_Object.cons(Utilities.KWD_EOF, Stella_Object.cons(Utilities.KWD_OTHERWISE, Stella_Object.cons(Utilities.KWD_ERROR, Stella_Object.cons(Stella.NIL, Stella.NIL)))))))))))))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.KWD_INTEGER, Stella_Object.cons(StringWrapper.wrapString("-+0123456789"), Stella_Object.cons(Utilities.KWD_INTEGER, Stella_Object.cons(Utilities.SYM_STELLA_$, Stella_Object.cons(StringWrapper.wrapString("."), Stella_Object.cons(Utilities.KWD_DELIMITER, Stella_Object.cons(Utilities.SYM_STELLA_$, Stella_Object.cons(StringWrapper.wrapString("/"), Stella_Object.cons(Utilities.KWD_FRACTION, Stella_Object.cons(Utilities.SYM_STELLA_$, Stella_Object.cons(StringWrapper.wrapString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%"), Stella_Object.cons(Utilities.KWD_UNIT, Stella_Object.cons(Utilities.KWD_EOF, Stella_Object.cons(Utilities.KWD_EOF, Stella_Object.cons(Utilities.KWD_OTHERWISE, Stella_Object.cons(Utilities.KWD_ERROR, Stella_Object.cons(Stella.NIL, Stella.NIL)))))))))))))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.KWD_FRACTION, Stella_Object.cons(Utilities.KWD_INCLUDE, Stella_Object.cons(Utilities.KWD_START, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.KWD_DELIMITER, Stella_Object.cons(Utilities.KWD_INCLUDE, Stella_Object.cons(Utilities.KWD_START, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.KWD_ERROR, Stella_Object.cons(Utilities.KWD_INCLUDE, Stella_Object.cons(Utilities.KWD_START, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))));
+      Utilities.$UNIT_TOKENIZER_TABLE_DEFINITION$ = Cons.list$(Cons.cons(Cons.list$(Cons.cons(Utilities.KWD_START, Cons.cons(Utilities.SYM_STELLA_$, Cons.cons(StringWrapper.wrapString("-+0123456789"), Cons.cons(Utilities.KWD_INTEGER, Cons.cons(Utilities.SYM_STELLA_$, Cons.cons(StringWrapper.wrapString("."), Cons.cons(Utilities.KWD_DELIMITER, Cons.cons(Utilities.SYM_STELLA_$, Cons.cons(StringWrapper.wrapString("/"), Cons.cons(Utilities.KWD_FRACTION, Cons.cons(Utilities.SYM_STELLA_$, Cons.cons(StringWrapper.wrapString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%"), Cons.cons(Utilities.KWD_UNIT, Cons.cons(Utilities.KWD_EOF, Cons.cons(Utilities.KWD_EOF, Cons.cons(Utilities.KWD_OTHERWISE, Cons.cons(Utilities.KWD_ERROR, Cons.cons(Stella.NIL, Stella.NIL))))))))))))))))))), Cons.cons(Cons.list$(Cons.cons(Utilities.KWD_UNIT, Cons.cons(Utilities.SYM_STELLA_$, Cons.cons(StringWrapper.wrapString("-+0123456789"), Cons.cons(Utilities.KWD_INTEGER, Cons.cons(Utilities.SYM_STELLA_$, Cons.cons(StringWrapper.wrapString("."), Cons.cons(Utilities.KWD_DELIMITER, Cons.cons(Utilities.SYM_STELLA_$, Cons.cons(StringWrapper.wrapString("/"), Cons.cons(Utilities.KWD_FRACTION, Cons.cons(StringWrapper.wrapString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%"), Cons.cons(Utilities.KWD_UNIT, Cons.cons(Utilities.KWD_EOF, Cons.cons(Utilities.KWD_EOF, Cons.cons(Utilities.KWD_OTHERWISE, Cons.cons(Utilities.KWD_ERROR, Cons.cons(Stella.NIL, Stella.NIL)))))))))))))))))), Cons.cons(Cons.list$(Cons.cons(Utilities.KWD_INTEGER, Cons.cons(StringWrapper.wrapString("-+0123456789"), Cons.cons(Utilities.KWD_INTEGER, Cons.cons(Utilities.SYM_STELLA_$, Cons.cons(StringWrapper.wrapString("."), Cons.cons(Utilities.KWD_DELIMITER, Cons.cons(Utilities.SYM_STELLA_$, Cons.cons(StringWrapper.wrapString("/"), Cons.cons(Utilities.KWD_FRACTION, Cons.cons(Utilities.SYM_STELLA_$, Cons.cons(StringWrapper.wrapString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%"), Cons.cons(Utilities.KWD_UNIT, Cons.cons(Utilities.KWD_EOF, Cons.cons(Utilities.KWD_EOF, Cons.cons(Utilities.KWD_OTHERWISE, Cons.cons(Utilities.KWD_ERROR, Cons.cons(Stella.NIL, Stella.NIL)))))))))))))))))), Cons.cons(Cons.list$(Cons.cons(Utilities.KWD_FRACTION, Cons.cons(Utilities.KWD_INCLUDE, Cons.cons(Utilities.KWD_START, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Utilities.KWD_DELIMITER, Cons.cons(Utilities.KWD_INCLUDE, Cons.cons(Utilities.KWD_START, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Utilities.KWD_ERROR, Cons.cons(Utilities.KWD_INCLUDE, Cons.cons(Utilities.KWD_START, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))))));
     }
   }
 
@@ -216,6 +216,7 @@ public class _StartupUnits {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("UTILITIES")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *PRIME-NUMBERS* (CONS OF INTEGER-WRAPPER) (QUOTE (2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97)) :PUBLIC? FALSE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CURRENT-PRIME-INDEX* INTEGER -1 :PUBLIC? FALSE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *PRIME-TO-MEASURE-TABLE* (STELLA-HASH-TABLE OF RATIO MEASURE) (NEW STELLA-HASH-TABLE) :PUBLIC? FALSE)");

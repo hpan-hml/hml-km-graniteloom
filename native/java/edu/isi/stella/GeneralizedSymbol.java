@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,6 +50,176 @@ import edu.isi.stella.javalib.*;
 public abstract class GeneralizedSymbol extends ContextSensitiveObject {
     public String symbolName;
     public int symbolId;
+
+  public static GeneralizedSymbol internRigidSymbolCaseSensitively(String name, int kindofsym, boolean tryupcasingP) {
+    { GeneralizedSymbol symbol = null;
+
+      symbol = GeneralizedSymbol.lookupRigidSymbol(name, kindofsym);
+      if (symbol != null) {
+        return (symbol);
+      }
+      if (((Boolean)(Stella.$TRANSIENTOBJECTSp$.get())).booleanValue() &&
+          (kindofsym == Stella.SYMBOL_SYM)) {
+        symbol = Stella.lookupTransientSymbol(name);
+        if (symbol != null) {
+          return (symbol);
+        }
+      }
+      if (tryupcasingP) {
+        symbol = GeneralizedSymbol.lookupRigidSymbol(Native.stringUpcase(name), kindofsym);
+        if (symbol != null) {
+          return (symbol);
+        }
+      }
+      switch (kindofsym) {
+        case 0: 
+          if (((Boolean)(Stella.$TRANSIENTOBJECTSp$.get())).booleanValue()) {
+            return (Stella.internTransientSymbol(name));
+          }
+          else {
+            return (Symbol.internPermanentSymbol(name));
+          }
+        case 1: 
+          return (GeneralizedSymbol.internRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), Stella.SURROGATE_SYM));
+        default:
+          { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+            stream000.nativeStream.print("`" + kindofsym + "' is not a valid case option");
+            throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+          }
+      }
+    }
+  }
+
+  /** Return a newly-created or existing rigid symbol
+   * interned into the module <code>module</code> with name <code>name</code>.
+   * @param name
+   * @param module
+   * @param kindofsym
+   * @return GeneralizedSymbol
+   */
+  public static GeneralizedSymbol internRigidSymbolLocally(String name, Module module, int kindofsym) {
+    if (module == null) {
+      module = ((Module)(Stella.$MODULE$.get()));
+    }
+    { GeneralizedSymbol symbol = GeneralizedSymbol.lookupRigidSymbolLocally(name, module, kindofsym);
+
+      if (symbol != null) {
+        return (symbol);
+      }
+      { ExtensibleSymbolArray array = Stella.selectSymbolArray(kindofsym);
+
+        return (GeneralizedSymbol.helpInternGeneralizedSymbol(name, kindofsym, array, ExtensibleSymbolArray.nextFreeOffset(array), module));
+      }
+    }
+  }
+
+  /** Return a newly-created or existing rigid symbol with
+   * name <code>name</code>.
+   * @param name
+   * @param module
+   * @param kindofsym
+   * @return GeneralizedSymbol
+   */
+  public static GeneralizedSymbol internRigidSymbolWrtModule(String name, Module module, int kindofsym) {
+    if (module == null) {
+      module = ((Module)(Stella.$MODULE$.get()));
+    }
+    { int offset = Stella.lookupRigidSymbolOffsetWrtModule(name, module, kindofsym);
+
+      if (offset != Stella.NULL_INTEGER) {
+        switch (kindofsym) {
+          case 0: 
+            return (Symbol.getSymFromOffset(offset));
+          case 1: 
+            return (Surrogate.getSgtFromOffset(offset));
+          case 2: 
+            return (Keyword.getKwdFromOffset(offset));
+          default:
+            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+              stream000.nativeStream.print("`" + kindofsym + "' is not a valid case option");
+              throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+            }
+        }
+      }
+      { ExtensibleSymbolArray array = Stella.selectSymbolArray(kindofsym);
+
+        offset = ExtensibleSymbolArray.nextFreeOffset(array);
+        return (GeneralizedSymbol.helpInternGeneralizedSymbol(name, kindofsym, array, offset, module));
+      }
+    }
+  }
+
+  public static GeneralizedSymbol helpInternGeneralizedSymbol(String name, int kindofsym, ExtensibleSymbolArray array, int offset, Module module) {
+    { GeneralizedSymbol symbol = null;
+      StringToIntegerHashTable table = Module.selectSymbolOffsetTable(module, kindofsym);
+
+      switch (kindofsym) {
+        case 0: 
+          symbol = Symbol.newSymbol(name);
+          table.insertAt(name, offset);
+          symbol.homeContext = module;
+        break;
+        case 1: 
+          symbol = Surrogate.newSurrogate(name);
+          table.insertAt(name, offset);
+          symbol.homeContext = module;
+        break;
+        case 2: 
+          symbol = Keyword.newKeyword(name);
+          table.insertAt(name, offset);
+          symbol.homeContext = null;
+        break;
+        default:
+          { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+            stream000.nativeStream.print("`" + kindofsym + "' is not a valid case option");
+            throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+          }
+      }
+      ExtensibleSymbolArray.addToSymbolArrayAt(array, offset, symbol);
+      return (symbol);
+    }
+  }
+
+  /** Return the permanent symbol with name 'name' and type
+   * <code>kindofsym</code> visible from the current module (case-sensitive).
+   * @param name
+   * @param kindofsym
+   * @return GeneralizedSymbol
+   */
+  public static GeneralizedSymbol lookupRigidSymbol(String name, int kindofsym) {
+    return (Stella.lookupRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), kindofsym));
+  }
+
+  public static GeneralizedSymbol lookupRigidSymbolLocally(String name, Module module, int kindofsym) {
+    { StringToIntegerHashTable offsettable = Module.selectSymbolOffsetTable(module, kindofsym);
+      int offset = offsettable.lookup(name);
+
+      if (offset != Stella.NULL_INTEGER) {
+        switch (kindofsym) {
+          case 0: 
+            return (Symbol.getSymFromOffset(offset));
+          case 1: 
+            return (Surrogate.getSgtFromOffset(offset));
+          case 2: 
+            return (Keyword.getKwdFromOffset(offset));
+          default:
+            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+              stream000.nativeStream.print("`" + kindofsym + "' is not a valid case option");
+              throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+            }
+        }
+      }
+      return (null);
+    }
+  }
+
+  public static GeneralizedSymbol getGeneralizedSymbolFromOffset(ExtensibleSymbolArray symbolarray, int offset) {
+    return (((GeneralizedSymbol)((symbolarray.theArray)[offset])));
+  }
 
   public static StringWrapper idlTranslateSymbolConstantId(GeneralizedSymbol symbol) {
     { StringWrapper translatedsymbol = GeneralizedSymbol.idlTranslateSymbolConstantName(symbol);
@@ -402,17 +572,17 @@ public abstract class GeneralizedSymbol extends ContextSensitiveObject {
 
       if (Stella.incrementalTranslationP()) {
       }
-      tree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFGLOBAL, Stella_Object.cons(symbolconstant, Stella_Object.cons(Stella_Object.cons(symbolconstanttypetree, Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.KWD_PUBLICp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL))));
+      tree = Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFGLOBAL, Cons.cons(symbolconstant, Cons.cons(Cons.cons(symbolconstanttypetree, Cons.list$(Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.KWD_PUBLICp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL))));
       Cons.walkAuxiliaryTree(tree);
-      tree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Stella_Object.cons(Stella.KWD_SYMBOLS, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(symbolconstant, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SAFE_CAST, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_INTERN_RIGID_SYMBOL_WRT_MODULE, Stella_Object.cons(StringWrapper.wrapString(symbol.symbolName), Stella_Object.cons(Stella_Object.cons((((((Module)(symbol.homeContext)) == ((Module)(Stella.$MODULE$.get()))) ||
-          Stella_Object.keywordP(symbol)) ? ((StandardObject)(Stella.SYM_STELLA_NULL)) : ((StandardObject)(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_GET_STELLA_MODULE, Stella_Object.cons(StringWrapper.wrapString(((Module)(symbol.homeContext)).moduleFullName), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella.NIL), Stella.NIL))))))), Stella_Object.cons(IntegerWrapper.wrapInteger((Stella_Object.keywordP(symbol) ? Stella.KEYWORD_SYM : ((Stella_Object.surrogateP(symbol) ? Stella.SURROGATE_SYM : Stella.SYMBOL_SYM)))), Stella.NIL)), Stella.NIL)))), Stella_Object.cons(symbolconstanttypetree, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      tree = Cons.list$(Cons.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Cons.cons(Stella.KWD_SYMBOLS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(symbolconstant, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SAFE_CAST, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_INTERN_RIGID_SYMBOL_WRT_MODULE, Cons.cons(StringWrapper.wrapString(symbol.symbolName), Cons.cons(Cons.cons((((((Module)(symbol.homeContext)) == ((Module)(Stella.$MODULE$.get()))) ||
+          Stella_Object.keywordP(symbol)) ? ((StandardObject)(Stella.SYM_STELLA_NULL)) : ((StandardObject)(Cons.list$(Cons.cons(Stella.SYM_STELLA_GET_STELLA_MODULE, Cons.cons(StringWrapper.wrapString(((Module)(symbol.homeContext)).moduleFullName), Cons.cons(Cons.cons(Stella.SYM_STELLA_TRUE, Stella.NIL), Stella.NIL))))))), Cons.cons(IntegerWrapper.wrapInteger((Stella_Object.keywordP(symbol) ? Stella.KEYWORD_SYM : ((Stella_Object.surrogateP(symbol) ? Stella.SURROGATE_SYM : Stella.SYMBOL_SYM)))), Stella.NIL)), Stella.NIL)))), Cons.cons(symbolconstanttypetree, Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))));
       Cons.walkAuxiliaryTree(tree);
       return (symbolconstant);
     }
   }
 
   public static Symbol yieldSymbolConstantName(GeneralizedSymbol symbol) {
-    return (Stella.internSymbolInModule(GeneralizedSymbol.constructSymbolConstantName(((GeneralizedSymbol)(symbol.permanentify()))), ((Module)(Stella.$MODULE$.get())), true));
+    return (Symbol.internSymbolInModule(GeneralizedSymbol.constructSymbolConstantName(((GeneralizedSymbol)(symbol.permanentify()))), ((Module)(Stella.$MODULE$.get())), true));
   }
 
   public static String constructSymbolConstantName(GeneralizedSymbol symbol) {
@@ -477,7 +647,7 @@ public abstract class GeneralizedSymbol extends ContextSensitiveObject {
           { boolean testValue000 = false;
 
             { 
-              shadow = Stella.lookupSymbolInModule(name.symbolName, definitionmodule, true);
+              shadow = Symbol.lookupSymbolInModule(name.symbolName, definitionmodule, true);
               testValue000 = shadow != null;
             }
             if (testValue000) {
@@ -545,7 +715,7 @@ public abstract class GeneralizedSymbol extends ContextSensitiveObject {
     }
   }
 
-  public String visibleName() {
+  public String visibleName(boolean readableP) {
     { GeneralizedSymbol self = this;
 
       { boolean visibleP = false;
@@ -555,13 +725,13 @@ public abstract class GeneralizedSymbol extends ContextSensitiveObject {
           if (Surrogate.subtypeOfSymbolP(testValue000)) {
             { Symbol self000 = ((Symbol)(self));
 
-              visibleP = self000 == Stella.lookupSymbolInModule(self000.symbolName, ((Module)(Stella.$MODULE$.get())), false);
+              visibleP = self000 == Symbol.lookupSymbolInModule(self000.symbolName, ((Module)(Stella.$MODULE$.get())), false);
             }
           }
           else if (Surrogate.subtypeOfSurrogateP(testValue000)) {
             { Surrogate self000 = ((Surrogate)(self));
 
-              visibleP = self000 == Stella.lookupSurrogateInModule(self000.symbolName, ((Module)(Stella.$MODULE$.get())), false);
+              visibleP = self000 == Surrogate.lookupSurrogateInModule(self000.symbolName, ((Module)(Stella.$MODULE$.get())), false);
             }
           }
           else {
@@ -573,25 +743,25 @@ public abstract class GeneralizedSymbol extends ContextSensitiveObject {
           }
         }
         if (visibleP) {
-          return (self.localPrintName());
+          return (self.localPrintName(readableP));
         }
         else {
-          return (Stella.computeFullName(self.localPrintName(), ((Module)(self.homeContext))));
+          return (Stella.computeFullName(self.localPrintName(readableP), ((Module)(self.homeContext))));
         }
       }
     }
   }
 
-  public String relativeName() {
+  public String relativeName(boolean readableP) {
     { GeneralizedSymbol self = this;
 
       { String string = null;
 
         if (((Module)(self.homeContext)) == ((Module)(Stella.$MODULE$.get()))) {
-          string = self.localPrintName();
+          string = self.localPrintName(readableP);
         }
         else {
-          string = Stella.computeFullName(self.localPrintName(), ((Module)(self.homeContext)));
+          string = Stella.computeFullName(self.localPrintName(readableP), ((Module)(self.homeContext)));
         }
         if (self.symbolId == -1) {
           string = "<<UNINTERNED>>/" + string;
@@ -601,10 +771,15 @@ public abstract class GeneralizedSymbol extends ContextSensitiveObject {
     }
   }
 
-  public String localPrintName() {
+  public String localPrintName(boolean readableP) {
     { GeneralizedSymbol self = this;
 
-      return (self.symbolName);
+      if (readableP) {
+        return (Stella.readableSymbolName(self.symbolName, ((Module)(Stella.$MODULE$.get())).caseSensitiveP));
+      }
+      else {
+        return (self.symbolName);
+      }
     }
   }
 
@@ -636,36 +811,10 @@ public abstract class GeneralizedSymbol extends ContextSensitiveObject {
         try {
           Native.setSpecial(Stella.$MODULE$, ((Module)(basesymbol.homeContext)));
           if (((Module)(Stella.$MODULE$.get())) != null) {
-            return (((Surrogate)(Stella.internRigidSymbolLocally((((Module)(Stella.$MODULE$.get())).caseSensitiveP ? newname : Native.stringUpcase(newname)), ((Module)(Stella.$MODULE$.get())), Stella.SURROGATE_SYM))));
+            return (((Surrogate)(GeneralizedSymbol.internRigidSymbolLocally((((Module)(Stella.$MODULE$.get())).caseSensitiveP ? newname : Native.stringUpcase(newname)), ((Module)(Stella.$MODULE$.get())), Stella.SURROGATE_SYM))));
           }
           Native.setSpecial(Stella.$MODULE$, currentmodule);
-          return (Stella.internSurrogate(newname));
-
-        } finally {
-          Stella.$MODULE$.set(old$Module$000);
-        }
-      }
-    }
-  }
-
-  /** Return a newly-created or existing symbol with name
-   * <code>newname</code> which is interned in the same module as <code>basesymbol</code>.
-   * @param basesymbol
-   * @param newname
-   * @return Symbol
-   */
-  public static Symbol internDerivedSymbol(GeneralizedSymbol basesymbol, String newname) {
-    { Module currentmodule = ((Module)(Stella.$MODULE$.get()));
-
-      { Object old$Module$000 = Stella.$MODULE$.get();
-
-        try {
-          Native.setSpecial(Stella.$MODULE$, ((Module)(basesymbol.homeContext)));
-          if (((Module)(Stella.$MODULE$.get())) != null) {
-            return (((Symbol)(Stella.internRigidSymbolLocally(newname, ((Module)(Stella.$MODULE$.get())), Stella.SYMBOL_SYM))));
-          }
-          Native.setSpecial(Stella.$MODULE$, currentmodule);
-          return (((Symbol)(Stella.internRigidSymbolCaseSensitively(newname, Stella.SYMBOL_SYM, false))));
+          return (Surrogate.internSurrogate(newname));
 
         } finally {
           Stella.$MODULE$.set(old$Module$000);

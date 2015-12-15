@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -110,9 +110,9 @@ public class TokenizerToken extends StandardObject {
         tokentype = tokenlist.type;
         if (tokentype == Stella.KWD_START_TAG) {
           if (parsedtree != null) {
-            parsedtreestack = Stella_Object.cons(parsedtree, parsedtreestack);
+            parsedtreestack = Cons.cons(parsedtree, parsedtreestack);
           }
-          nsStack = Stella_Object.cons(namespaceTable, nsStack);
+          nsStack = Cons.cons(namespaceTable, nsStack);
           parsedtree = Stella.NIL;
           tagname = tokenlist.content;
           tokenlist = tokenlist.next;
@@ -122,7 +122,7 @@ public class TokenizerToken extends StandardObject {
             ((tokentype == Stella.KWD_START_DECLARATION_TAG) ||
              (tokentype == Stella.KWD_START_SPECIAL_TAG))) {
           if (parsedtree != null) {
-            parsedtreestack = Stella_Object.cons(parsedtree, parsedtreestack);
+            parsedtreestack = Cons.cons(parsedtree, parsedtreestack);
           }
           parsedtree = Stella.NIL;
           tagname = null;
@@ -257,13 +257,13 @@ public class TokenizerToken extends StandardObject {
             { String namespaceValue = XmlDoctype.normalizeAttributeValue(doctype, tokenlist.content, doctypeDefinitionP);
 
               if (colonPosition != Stella.NULL_INTEGER) {
-                namespaceTable = Stella_Object.kvCons(StringWrapper.wrapString(Native.string_subsequence(xmlnsName, colonPosition + 1, Stella.NULL_INTEGER)), StringWrapper.wrapString(namespaceValue), namespaceTable);
+                namespaceTable = KvCons.kvCons(StringWrapper.wrapString(Native.string_subsequence(xmlnsName, colonPosition + 1, Stella.NULL_INTEGER)), StringWrapper.wrapString(namespaceValue), namespaceTable);
               }
               else if (Stella.stringEqlP(namespaceValue, "")) {
-                namespaceTable = Stella_Object.kvCons(StringWrapper.wrapString(""), null, namespaceTable);
+                namespaceTable = KvCons.kvCons(StringWrapper.wrapString(""), null, namespaceTable);
               }
               else {
-                namespaceTable = Stella_Object.kvCons(StringWrapper.wrapString(""), StringWrapper.wrapString(namespaceValue), namespaceTable);
+                namespaceTable = KvCons.kvCons(StringWrapper.wrapString(""), StringWrapper.wrapString(namespaceValue), namespaceTable);
               }
               parsedtoken = new StringWrapper();
               ((StringWrapper)(parsedtoken)).wrapperValue = namespaceValue;

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -47,13 +47,129 @@ package edu.isi.stella;
 
 import edu.isi.stella.javalib.*;
 
-public abstract class VectorSequence extends Vector {
+/** Extensible sequence implemented by a vector.  Whenever we run
+ * out of room, we grow the sequence by a factor of two.  Note that this keeps the
+ * average insertion cost per element constant.  This is generally preferable over
+ * linked lists unless we need within-list insertions or removals, since it uses
+ * less space and has better cache locality.
+ * @author Stella Java Translator
+ */
+public class VectorSequence extends Vector {
     public int sequenceLength;
 
-  public int length() {
+  public static VectorSequence newVectorSequence(int arraySize) {
+    { VectorSequence self = null;
+
+      self = new VectorSequence();
+      self.arraySize = arraySize;
+      self.theArray = null;
+      self.sequenceLength = 0;
+      self.initializeVector();
+      return (self);
+    }
+  }
+
+  /** Return TRUE iff the sequences <code>x</code> and <code>y</code> are structurally
+   * equivalent.  Uses <code>equalP</code> to test equality of elements.
+   * @param y
+   * @return boolean
+   */
+  public boolean objectEqualP(Stella_Object y) {
+    { VectorSequence x = this;
+
+      if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(y), Stella.SGT_STELLA_VECTOR_SEQUENCE)) {
+        { VectorSequence y000 = ((VectorSequence)(y));
+
+          if (x.sequenceLength == y000.sequenceLength) {
+            { Stella_Object eltx = null;
+              VectorSequence vector000 = x;
+              int index000 = 0;
+              int length000 = vector000.sequenceLength;
+              Stella_Object elty = null;
+              VectorSequence vector001 = y000;
+              int index001 = 0;
+              int length001 = vector001.sequenceLength;
+
+              for (;(index000 < length000) &&
+                        (index001 < length001); index000 = index000 + 1, index001 = index001 + 1) {
+                eltx = (vector000.theArray)[index000];
+                elty = (vector001.theArray)[index001];
+                if (!Stella_Object.equalP(eltx, elty)) {
+                  return (false);
+                }
+              }
+            }
+            return (true);
+          }
+        }
+      }
+      else {
+      }
+      return (false);
+    }
+  }
+
+  /** Clear <code>self</code> by setting its active length to zero.
+   */
+  public void clear() {
     { VectorSequence self = this;
 
-      return (self.sequenceLength);
+      self.sequenceLength = 0;
+    }
+  }
+
+  /** Return a copy of the vector sequence <code>self</code>.
+   * @return Vector
+   */
+  public Vector copy() {
+    { VectorSequence self = this;
+
+      { VectorSequence copy = VectorSequence.newVectorSequence(self.arraySize);
+
+        VectorSequence.copyVectorSequence(self, copy);
+        return (copy);
+      }
+    }
+  }
+
+  public static void copyVectorSequence(VectorSequence source, VectorSequence copy) {
+    { edu.isi.stella.Stella_Object[] sourcearray = source.theArray;
+      edu.isi.stella.Stella_Object[] copyarray = copy.theArray;
+      int length = source.sequenceLength;
+
+      copy.sequenceLength = length;
+      { int i = Stella.NULL_INTEGER;
+        int iter000 = 0;
+        int upperBound000 = length - 1;
+
+        for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
+          i = iter000;
+          copyarray[i] = (sourcearray[i]);
+        }
+      }
+    }
+  }
+
+  /** Reverse the order of elements in the active portion of <code>self</code>.
+   * @return VectorSequence
+   */
+  public VectorSequence reverse() {
+    { VectorSequence self = this;
+
+      { edu.isi.stella.Stella_Object[] array = self.theArray;
+        int bottom = 0;
+        int top = self.sequenceLength - 1;
+        Stella_Object elt = null;
+
+        while (bottom < top) {
+          elt = array[bottom];
+          array[bottom] = (array[top]);
+          array[top] = elt;
+          bottom = bottom + 1;
+          top = top - 1;
+        }
+        return (self);
+      }
     }
   }
 
@@ -116,7 +232,7 @@ public abstract class VectorSequence extends Vector {
       { int oldlength = self.sequenceLength;
 
         if (oldlength == self.arraySize) {
-          Vector.resizeVector(self, self.arraySize + self.resizeIncrement());
+          Vector.resizeVector(self, self.arraySize * 2);
         }
         (self.theArray)[oldlength] = value;
         self.sequenceLength = oldlength + 1;
@@ -124,11 +240,52 @@ public abstract class VectorSequence extends Vector {
     }
   }
 
-  public static Stella_Object accessVectorSequenceSlotValue(VectorSequence self, Symbol slotname, Stella_Object value, boolean setvalueP) {
-    if (slotname == Stella.SYM_STELLA_RESIZE_INCREMENT) {
-      value = IntegerWrapper.wrapInteger(self.resizeIncrement());
+  public Stella_Object lastSetter(Stella_Object value) {
+    { VectorSequence self = this;
+
+      return ((self.theArray)[(self.sequenceLength - 1)] = value);
     }
-    else if (slotname == Stella.SYM_STELLA_SEQUENCE_LENGTH) {
+  }
+
+  /** Return the last item in the vector <code>self</code>.
+   * @return Stella_Object
+   */
+  public Stella_Object last() {
+    { VectorSequence self = this;
+
+      return ((self.theArray)[(self.sequenceLength - 1)]);
+    }
+  }
+
+  public int length() {
+    { VectorSequence self = this;
+
+      return (self.sequenceLength);
+    }
+  }
+
+  /** Return <code>true</code> if <code>self</code> has length &gt; 0.
+   * @return boolean
+   */
+  public boolean nonEmptyP() {
+    { VectorSequence self = this;
+
+      return (self.sequenceLength > 0);
+    }
+  }
+
+  /** Return <code>true</code> if <code>self</code> has length 0.
+   * @return boolean
+   */
+  public boolean emptyP() {
+    { VectorSequence self = this;
+
+      return (self.sequenceLength == 0);
+    }
+  }
+
+  public static Stella_Object accessVectorSequenceSlotValue(VectorSequence self, Symbol slotname, Stella_Object value, boolean setvalueP) {
+    if (slotname == Stella.SYM_STELLA_SEQUENCE_LENGTH) {
       if (setvalueP) {
         self.sequenceLength = ((IntegerWrapper)(value)).wrapperValue;
       }
@@ -146,10 +303,10 @@ public abstract class VectorSequence extends Vector {
     return (value);
   }
 
-  public int resizeIncrement() {
+  public Surrogate primaryType() {
     { VectorSequence self = this;
 
-      return (Stella.$HARDWIRED_RESIZE_INCREMENT_ON_VECTOR_SEQUENCE$);
+      return (Stella.SGT_STELLA_VECTOR_SEQUENCE);
     }
   }
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -63,7 +63,7 @@ extern int oDEPTHCUTOFFo;
 // Function signatures:
 boolean nilP(Object* x);
 Cons* cons(Object* value, Cons* rest);
-Cons* removeDuplicatesFromLongList(Cons* self);
+Cons* removeDuplicatesFromLongList(Cons* self, boolean equaltestP);
 Cons* mapNullToNil(Cons* self);
 Cons* lastCons(Cons* self);
 boolean terminateConsIteratorP(ConsIterator* self);
@@ -77,10 +77,12 @@ Cons* helpSortConsList(Cons* list, int length, cpp_function_code predicate);
 Cons* mergeConsLists(Cons* list1, Cons* list2, cpp_function_code predicate);
 boolean generalizedSymbolLessThanP(GeneralizedSymbol* x, GeneralizedSymbol* y);
 boolean wrappedIntegerLessThanP(IntegerWrapper* x, IntegerWrapper* y);
+boolean wrappedLongIntegerLessThanP(LongIntegerWrapper* x, LongIntegerWrapper* y);
 boolean wrappedFloatLessThanP(FloatWrapper* x, FloatWrapper* y);
 boolean wrappedStringLessThanP(StringWrapper* x, StringWrapper* y);
 boolean wrappedMutableStringLessThanP(MutableStringWrapper* x, MutableStringWrapper* y);
-cpp_function_code chooseSortPredicate(Cons* self);
+boolean numberLessThanP(NumberWrapper* x, NumberWrapper* y);
+cpp_function_code chooseSortPredicate(Object* firstelement);
 boolean sortTupleCompareP(Cons* x, Cons* y);
 boolean searchConsTreeP(Object* tree, Object* value);
 boolean searchConsTreeWithFilterP(Object* tree, Object* value, Cons* filter);

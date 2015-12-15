@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -53,6 +53,7 @@ extern IntegerWrapper* ONE_WRAPPER;
 extern BooleanWrapper* TRUE_WRAPPER;
 extern BooleanWrapper* FALSE_WRAPPER;
 extern IntegerWrapper* NULL_INTEGER_WRAPPER;
+extern LongIntegerWrapper* NULL_LONG_INTEGER_WRAPPER;
 extern FloatWrapper* NULL_FLOAT_WRAPPER;
 extern StringWrapper* NULL_STRING_WRAPPER;
 extern MutableStringWrapper* NULL_MUTABLE_STRING_WRAPPER;
@@ -70,6 +71,9 @@ Object* lookupLiteralTypeInfo(Surrogate* type, Keyword* key);
 void setLiteralTypeInfo(Surrogate* type, Keyword* key, Object* value);
 IntegerWrapper* wrapInteger(int value);
 int unwrapInteger(IntegerWrapper* wrapper);
+LongIntegerWrapper* wrapLongInteger(long long int value);
+long long int unwrapLongInteger(LongIntegerWrapper* wrapper);
+NumberWrapper* wrapIntegerValue(long long int value);
 FloatWrapper* wrapFloat(double value);
 double unwrapFloat(FloatWrapper* wrapper);
 StringWrapper* wrapString(char* value);
@@ -88,6 +92,7 @@ boolean coerceWrappedBooleanToBoolean(BooleanWrapper* wrapper);
 Object* inlineWrapBoolean(Object* expression);
 Object* inlineUnwrapBoolean(Object* expression);
 IntegerWrapper* integerWrapLiteral(int value);
+LongIntegerWrapper* longIntegerWrapLiteral(long long int value);
 FloatWrapper* floatWrapLiteral(double value);
 MutableStringWrapper* mutableStringWrapLiteral(char* value);
 StringWrapper* stringWrapLiteral(char* value);
@@ -96,6 +101,7 @@ FunctionCodeWrapper* functionCodeWrapLiteral(cpp_function_code value);
 MethodCodeWrapper* methodCodeWrapLiteral(cpp_method_code value);
 boolean eqlToBooleanP(Object* y, boolean x);
 boolean eqlToIntegerP(Object* y, int x);
+boolean eqlToLongIntegerP(Object* y, long long int x);
 boolean eqlToFloatP(Object* y, double x);
 boolean eqlToStringP(Object* y, char* x);
 boolean eqlToCharacterP(Object* y, char x);
@@ -123,6 +129,7 @@ char* mutableStringToString(char* s);
 void helpStartupLiterals1();
 void helpStartupLiterals2();
 void helpStartupLiterals3();
+void helpStartupLiterals4();
 void startupLiterals();
 
 // Auxiliary global declarations:
@@ -131,6 +138,8 @@ extern Keyword* KWD_LITERALS_NULL_WRAPPER;
 extern Symbol* SYM_LITERALS_STELLA_FALSE_WRAPPER;
 extern Surrogate* SGT_LITERALS_STELLA_INTEGER;
 extern Symbol* SYM_LITERALS_STELLA_NULL_INTEGER_WRAPPER;
+extern Surrogate* SGT_LITERALS_STELLA_LONG_INTEGER;
+extern Symbol* SYM_LITERALS_STELLA_NULL_LONG_INTEGER_WRAPPER;
 extern Surrogate* SGT_LITERALS_STELLA_FLOAT;
 extern Symbol* SYM_LITERALS_STELLA_NULL_FLOAT_WRAPPER;
 extern Surrogate* SGT_LITERALS_STELLA_STRING;
@@ -150,13 +159,16 @@ extern Symbol* SYM_LITERALS_STELLA_WRAP_BOOLEAN;
 extern Symbol* SYM_LITERALS_STELLA_COERCE_WRAPPED_BOOLEAN_TO_BOOLEAN;
 extern Keyword* KWD_LITERALS_WRAP_FUNCTION;
 extern Symbol* SYM_LITERALS_STELLA_WRAP_INTEGER;
+extern Symbol* SYM_LITERALS_STELLA_WRAP_LONG_INTEGER;
 extern Symbol* SYM_LITERALS_STELLA_WRAP_FLOAT;
 extern Symbol* SYM_LITERALS_STELLA_WRAP_STRING;
 extern Symbol* SYM_LITERALS_STELLA_WRAP_CHARACTER;
 extern Symbol* SYM_LITERALS_STELLA_WRAP_FUNCTION_CODE;
 extern Symbol* SYM_LITERALS_STELLA_WRAP_METHOD_CODE;
 extern Surrogate* SGT_LITERALS_STELLA_INTEGER_WRAPPER;
+extern Surrogate* SGT_LITERALS_STELLA_LONG_INTEGER_WRAPPER;
 extern Surrogate* SGT_LITERALS_STELLA_FLOAT_WRAPPER;
+extern Surrogate* SGT_LITERALS_STELLA_BOOLEAN_WRAPPER;
 extern Surrogate* SGT_LITERALS_STELLA_STRING_WRAPPER;
 extern Surrogate* SGT_LITERALS_STELLA_VERBATIM_STRING_WRAPPER;
 extern Surrogate* SGT_LITERALS_STELLA_CHARACTER_WRAPPER;

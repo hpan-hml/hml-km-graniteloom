@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -58,15 +58,15 @@ public class _StartupInferenceCaches {
         Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/LOGIC", Stella.$STARTUP_TIME_PHASE$ > 1));
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Logic.SYM_LOGIC_INFERENCE_CACHE_OF = ((Symbol)(Stella.internRigidSymbolWrtModule("INFERENCE-CACHE-OF", null, 0)));
-          Logic.KWD_JUST_IN_TIME = ((Keyword)(Stella.internRigidSymbolWrtModule("JUST-IN-TIME", null, 2)));
-          Logic.SYM_LOGIC_JUST_IN_TIME_INFERENCE_CACHE = ((Symbol)(Stella.internRigidSymbolWrtModule("JUST-IN-TIME-INFERENCE-CACHE", null, 0)));
-          Logic.KWD_TMS = ((Keyword)(Stella.internRigidSymbolWrtModule("TMS", null, 2)));
-          Logic.SYM_LOGIC_UP_TO_DATE_INFERENCESp = ((Symbol)(Stella.internRigidSymbolWrtModule("UP-TO-DATE-INFERENCES?", null, 0)));
-          Logic.SYM_LOGIC_TRUTH_MAINTAINEDp = ((Symbol)(Stella.internRigidSymbolWrtModule("TRUTH-MAINTAINED?", null, 0)));
-          Logic.KWD_PERFORMANCE_CLUES = ((Keyword)(Stella.internRigidSymbolWrtModule("PERFORMANCE-CLUES", null, 2)));
-          Logic.KWD_FORCE = ((Keyword)(Stella.internRigidSymbolWrtModule("FORCE", null, 2)));
-          Logic.SYM_LOGIC_STARTUP_INFERENCE_CACHES = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-INFERENCE-CACHES", null, 0)));
+          Logic.SYM_LOGIC_INFERENCE_CACHE_OF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INFERENCE-CACHE-OF", null, 0)));
+          Logic.KWD_JUST_IN_TIME = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("JUST-IN-TIME", null, 2)));
+          Logic.SYM_LOGIC_JUST_IN_TIME_INFERENCE_CACHE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JUST-IN-TIME-INFERENCE-CACHE", null, 0)));
+          Logic.KWD_TMS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TMS", null, 2)));
+          Logic.SYM_LOGIC_UP_TO_DATE_INFERENCESp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UP-TO-DATE-INFERENCES?", null, 0)));
+          Logic.SYM_LOGIC_TRUTH_MAINTAINEDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TRUTH-MAINTAINED?", null, 0)));
+          Logic.KWD_PERFORMANCE_CLUES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PERFORMANCE-CLUES", null, 2)));
+          Logic.KWD_FORCE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FORCE", null, 2)));
+          Logic.SYM_LOGIC_STARTUP_INFERENCE_CACHES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-INFERENCE-CACHES", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Logic.$INVISIBLEASSERTIONp$.setDefaultValue(new Boolean(false));
@@ -116,6 +116,7 @@ public class _StartupInferenceCaches {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *INVISIBLEASSERTION?* BOOLEAN FALSE :DOCUMENTATION \"Used to signal an assertion that doesn't\nblow away inference caches.\")");
         }
 

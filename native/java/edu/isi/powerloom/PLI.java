@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -90,6 +90,8 @@ public class PLI {
   public static Keyword KWD_CASE_SENSITIVEp = null;
 
   public static Keyword KWD_SUBSET_OF = null;
+
+  public static Surrogate SGT_PL_KERNEL_KB_NTH_DOMAIN = null;
 
   public static Symbol SYM_PLI_STARTUP_PLI = null;
 
@@ -273,7 +275,7 @@ public class PLI {
                 i = iter000;
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons((sequence000.theArray)[i], Stella.NIL);
+                    collect000 = Cons.cons((sequence000.theArray)[i], Stella.NIL);
                     if (result == Stella.NIL) {
                       result = collect000;
                     }
@@ -284,7 +286,7 @@ public class PLI {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons((sequence000.theArray)[i], Stella.NIL);
+                    collect000.rest = Cons.cons((sequence000.theArray)[i], Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -324,7 +326,7 @@ public class PLI {
               term = ((ref == Logic.SYM_STELLA_NULL) ? null : Logic.evaluateTerm(ref));
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(term, Stella.NIL);
+                  collect000 = Cons.cons(term, Stella.NIL);
                   if (result == Stella.NIL) {
                     result = collect000;
                   }
@@ -335,7 +337,7 @@ public class PLI {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(term, Stella.NIL);
+                  collect000.rest = Cons.cons(term, Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -362,7 +364,7 @@ public class PLI {
    * @return Keyword
    */
   public static Keyword getKeyword(String name) {
-    return (Stella.lookupKeyword(name));
+    return (Keyword.lookupKeyword(name));
   }
 
   /** Returns the Stella SYMBOL <code>name</code> visible in <code>module</code> if it
@@ -388,7 +390,7 @@ public class PLI {
           Native.setSpecial(Stella.$CONTEXT$, cxt000);
           environment = environment;
           synchronized (Logic.$POWERLOOM_LOCK$) {
-            return (Stella.lookupSymbol(name));
+            return (Symbol.lookupSymbol(name));
           }
 
         } finally {
@@ -408,7 +410,7 @@ public class PLI {
     if (!(Stella.allUpperCaseStringP(name))) {
       name = Native.stringUpcase(name);
     }
-    { Symbol operator = Stella.lookupSymbolInModule(name, Logic.$LOGIC_MODULE$, false);
+    { Symbol operator = Symbol.lookupSymbolInModule(name, Logic.$LOGIC_MODULE$, false);
 
       if ((operator != null) &&
           PLI.legalOperatorP(operator)) {
@@ -993,7 +995,7 @@ public class PLI {
               Proposition.functionWithDefinedValueP(((Proposition)(p))))))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(p, Stella.NIL);
+                collect000 = Cons.cons(p, Stella.NIL);
                 if (value000 == Stella.NIL) {
                   value000 = collect000;
                 }
@@ -1004,7 +1006,7 @@ public class PLI {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(p, Stella.NIL);
+                collect000.rest = Cons.cons(p, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -1028,7 +1030,7 @@ public class PLI {
                     if ((!((Proposition)(p)).deletedP()) &&
                         ((((Boolean)(Logic.$REVERSEPOLARITYp$.get())).booleanValue() ? Proposition.falseP(((Proposition)(p))) : (Proposition.trueP(((Proposition)(p))) ||
                         Proposition.functionWithDefinedValueP(((Proposition)(p))))))) {
-                      result = Stella_Object.cons(p, result);
+                      result = Cons.cons(p, result);
                     }
                   }
                 }
@@ -1061,7 +1063,9 @@ public class PLI {
           Native.setSpecial(Stella.$CONTEXT$, cxt000);
           environment = environment;
           synchronized (Logic.$POWERLOOM_LOCK$) {
-            { boolean specializeP = !(environment == PLI.ASSERTION_ENV);
+            { boolean assertionsonlyP = (environment != null) &&
+                  Stella.stringEqlP(environment.level, "ASSERTION");
+              boolean specializeP = !assertionsonlyP;
 
               { Stella_Object value000 = null;
 
@@ -1081,6 +1085,9 @@ public class PLI {
                   Iterator iterator = ((argumentwithbacklinks != null) ? ((Iterator)(Logic.allTrueDependentPropositions(argumentwithbacklinks, relation.surrogateValueInverse, specializeP))) : PLI.helpGetTrueExtensionMembers(((NamedDescription)(relation)), specializeP).allocateIterator());
                   Cons results = Stella.NIL;
 
+                  if (!(assertionsonlyP)) {
+                    Native.setSpecial(Stella.$CONTEXT$, Logic.getPropertyTestContext());
+                  }
                   { Proposition p = null;
                     Iterator iter001 = iterator;
 
@@ -1114,7 +1121,7 @@ public class PLI {
                           testValue000 = arguments.length() == p.arguments.length();
                         }
                         if (testValue000) {
-                          results = Stella_Object.cons(p, results);
+                          results = Cons.cons(p, results);
                           limit = limit - 1;
                           if (limit == 0) {
                             break loop001;
@@ -1286,7 +1293,7 @@ public class PLI {
                 }
               }
               else {
-                return (((Proposition)(PLI.helpGetPropositions(relation, Stella.consList(Stella_Object.cons(arg1, Stella_Object.cons(arg2, Stella.NIL))), 1, module, environment).value)));
+                return (((Proposition)(PLI.helpGetPropositions(relation, Cons.consList(Cons.cons(arg1, Cons.cons(arg2, Stella.NIL))), 1, module, environment).value)));
               }
               return (null);
             }
@@ -1312,7 +1319,7 @@ public class PLI {
    * @return PlIterator
    */
   public static PlIterator getBinaryPropositions(LogicObject relation, Stella_Object arg1, Stella_Object arg2, Module module, Environment environment) {
-    return (PLI.consToPlIterator(PLI.helpGetPropositions(relation, Stella.consList(Stella_Object.cons(arg1, Stella_Object.cons(arg2, Stella.NIL))), 0, module, environment)));
+    return (PLI.consToPlIterator(PLI.helpGetPropositions(relation, Cons.consList(Cons.cons(arg1, Cons.cons(arg2, Stella.NIL))), 0, module, environment)));
   }
 
   /** Return all values <code>v</code> such that (<code>relation</code> <code>arg</code> <code>v</code>)
@@ -1339,7 +1346,7 @@ public class PLI {
           Native.setSpecial(Stella.$CONTEXT$, cxt000);
           environment = environment;
           synchronized (Logic.$POWERLOOM_LOCK$) {
-            return (PLI.consToPlIterator(Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(PLI.SYM_PLI_pR, Stella_Object.cons(PLI.SYM_PLI_pI, Stella_Object.cons(PLI.SYM_PLI_pV, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.list$(Stella_Object.cons(PLI.SYM_PLI_pR, Stella_Object.cons(PLI.SYM_PLI_pI, Stella_Object.cons(PLI.SYM_PLI_pV, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(arg, Stella_Object.cons(null, Stella.NIL)))), Stella.consList(Stella.NIL), PLI.SYM_PLI_F_GET_INFERRED_BINARY_PROPOSITION_VALUES_QUERY_000, new Object[1])));
+            return (PLI.consToPlIterator(Logic.applyCachedRetrieve(Cons.list$(Cons.cons(PLI.SYM_PLI_pR, Cons.cons(PLI.SYM_PLI_pI, Cons.cons(PLI.SYM_PLI_pV, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.list$(Cons.cons(PLI.SYM_PLI_pR, Cons.cons(PLI.SYM_PLI_pI, Cons.cons(PLI.SYM_PLI_pV, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(relation, Cons.cons(arg, Cons.cons(null, Stella.NIL)))), Cons.consList(Stella.NIL), PLI.SYM_PLI_F_GET_INFERRED_BINARY_PROPOSITION_VALUES_QUERY_000, new Object[2])));
           }
 
         } finally {
@@ -1476,7 +1483,7 @@ public class PLI {
    * @return boolean
    */
   public static boolean isTrueUnaryProposition(LogicObject relation, Stella_Object arg, Module module, Environment environment) {
-    return (PLI.helpGetPropositions(relation, Stella.consList(Stella_Object.cons(arg, Stella.NIL)), 1, module, environment) != null);
+    return (PLI.helpGetPropositions(relation, Cons.consList(Cons.cons(arg, Stella.NIL)), 1, module, environment) != null);
   }
 
   /** Return TRUE if the proposition (<code>relation</code> <code>arg</code> <code>value</code>) has
@@ -1794,7 +1801,7 @@ public class PLI {
               return (PLI.listToPlIterator(Logic.assertedCollectionMembers(concept, false).removeDeletedMembers()));
             }
             else {
-              return (PLI.retrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALL, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella_Object.cons(Logic.objectName(concept), Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), module, environment));
+              return (PLI.retrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALL, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Cons.cons(Logic.objectName(concept), Cons.cons(Logic.SYM_LOGIC_pX, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), module, environment));
             }
           }
 
@@ -1860,7 +1867,7 @@ public class PLI {
               return (PLI.listToPlIterator(Logic.assertedCollectionMembers(concept, true).removeDeletedMembers()));
             }
             else {
-              return (PLI.retrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALL, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella_Object.cons(Logic.objectName(concept), Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FAIL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EXISTS, Stella_Object.cons(Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(PLI.SYM_PLI_PROPER_SUBRELATION, Stella_Object.cons(Logic.objectName(concept), Stella_Object.cons(Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), module, environment));
+              return (PLI.retrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALL, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.cons(Logic.objectName(concept), Cons.cons(Logic.SYM_LOGIC_pX, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_FAIL, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(Cons.cons(Logic.SYM_LOGIC_pY, Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(PLI.SYM_PLI_PROPER_SUBRELATION, Cons.cons(Logic.objectName(concept), Cons.cons(Cons.cons(Logic.SYM_LOGIC_pY, Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), module, environment));
             }
           }
 
@@ -1932,7 +1939,7 @@ public class PLI {
                 while (iter000.nextP()) {
                   i = iter000.value;
                   if (PLI.isTrueBinaryProposition(relation, i, value, module, environment)) {
-                    answers = Stella_Object.cons(i, answers);
+                    answers = Cons.cons(i, answers);
                   }
                 }
               }
@@ -1998,49 +2005,7 @@ public class PLI {
     }
   }
 
-  /** Return all named concepts that <code>renamed_Object</code> belongs to.
-   * @param renamed_Object
-   * @param module
-   * @param environment
-   * @return PlIterator
-   */
-  public static PlIterator getTypes(LogicObject renamed_Object, Module module, Environment environment) {
-    { PlIterator directtypes = PLI.getDirectTypes(renamed_Object, module, environment);
-      Cons types = Stella.NIL;
-
-      { LogicObject d = null;
-        PlIterator iter000 = directtypes;
-
-        while (iter000.nextP()) {
-          d = ((LogicObject)(iter000.value));
-          if (!types.memberP(d)) {
-            types = Stella_Object.cons(d, types);
-          }
-          { LogicObject c = null;
-            Iterator iter001 = LogicObject.allSupercollections(d);
-
-            while (iter001.nextP()) {
-              c = ((LogicObject)(iter001.value));
-              if (Stella_Object.isaP(c, Logic.SGT_LOGIC_NAMED_DESCRIPTION)) {
-                if (!types.memberP(c)) {
-                  types = Stella_Object.cons(c, types);
-                }
-              }
-            }
-          }
-        }
-      }
-      return (PLI.consToPlIterator(types));
-    }
-  }
-
-  /** Return most specific concepts that <code>renamed_Object</code> belongs to.
-   * @param renamed_Object
-   * @param module
-   * @param environment
-   * @return PlIterator
-   */
-  public static PlIterator getDirectTypes(LogicObject renamed_Object, Module module, Environment environment) {
+  static Cons helpGetTypes(LogicObject renamed_Object, Module module, Environment environment) {
     { Module mdl000 = module;
       Context cxt000 = mdl000;
 
@@ -2058,17 +2023,20 @@ public class PLI {
           synchronized (Logic.$POWERLOOM_LOCK$) {
             { Cons derivabletypes = Stella.NIL;
 
-              { Proposition prop = null;
-                Iterator iter000 = Logic.allTrueDependentPropositions(renamed_Object, null, false);
-
-                while (iter000.nextP()) {
-                  prop = ((Proposition)(iter000.value));
-                  if (prop.kind == Logic.KWD_ISA) {
-                    derivabletypes = Stella_Object.cons(PLI.getNthValue(prop, 0, module, environment), derivabletypes);
-                  }
-                }
+              if ((environment == null) ||
+                  ((environment != null) &&
+                   Stella.stringEqlP(environment.level, "INFERENCE"))) {
+                derivabletypes = Logic.allTypes(renamed_Object);
               }
-              return (PLI.consToPlIterator(Logic.mostSpecificNamedDescriptions(derivabletypes)));
+              else if ((environment != null) &&
+                  Stella.stringEqlP(environment.level, "ASSERTION")) {
+                derivabletypes = Logic.allAssertedTypes(renamed_Object);
+              }
+              else if ((environment != null) &&
+                  Stella.stringEqlP(environment.level, "TAXONOMIC")) {
+                derivabletypes = Logic.allTaxonomicTypes(renamed_Object);
+              }
+              return (derivabletypes);
             }
           }
 
@@ -2078,6 +2046,26 @@ public class PLI {
         }
       }
     }
+  }
+
+  /** Return all named concepts that <code>renamed_Object</code> belongs to.
+   * @param renamed_Object
+   * @param module
+   * @param environment
+   * @return PlIterator
+   */
+  public static PlIterator getTypes(LogicObject renamed_Object, Module module, Environment environment) {
+    return (PLI.consToPlIterator(PLI.helpGetTypes(renamed_Object, module, environment)));
+  }
+
+  /** Return most specific concepts that <code>renamed_Object</code> belongs to.
+   * @param renamed_Object
+   * @param module
+   * @param environment
+   * @return PlIterator
+   */
+  public static PlIterator getDirectTypes(LogicObject renamed_Object, Module module, Environment environment) {
+    return (PLI.consToPlIterator(Logic.mostSpecificNamedDescriptions(PLI.helpGetTypes(renamed_Object, module, environment))));
   }
 
   /** Return propositions that satisfy <code>relation</code>.
@@ -2103,7 +2091,8 @@ public class PLI {
           Native.setSpecial(Stella.$CONTEXT$, cxt000);
           environment = environment;
           synchronized (Logic.$POWERLOOM_LOCK$) {
-            return (PLI.consToPlIterator(PLI.helpGetTrueExtensionMembers(((NamedDescription)(relation)), !(environment == PLI.ASSERTION_ENV))));
+            return (PLI.consToPlIterator(PLI.helpGetTrueExtensionMembers(((NamedDescription)(relation)), !((environment != null) &&
+                Stella.stringEqlP(environment.level, "ASSERTION")))));
           }
 
         } finally {
@@ -2173,7 +2162,7 @@ public class PLI {
     { String fullName = ((parent != null) ? (parent.moduleFullName + "/" + name) : name);
       Symbol caseSensitiveSymbol = (caseSensitiveP ? Logic.SYM_STELLA_TRUE : Logic.SYM_STELLA_FALSE);
 
-      return (Module.defineModule(fullName, Stella.list$(Stella_Object.cons(PLI.KWD_CASE_SENSITIVEp, Stella_Object.cons(caseSensitiveSymbol, Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+      return (Module.defineModule(fullName, Cons.list$(Cons.cons(PLI.KWD_CASE_SENSITIVEp, Cons.cons(caseSensitiveSymbol, Cons.cons(Stella.NIL, Stella.NIL))))));
     }
   }
 
@@ -2222,7 +2211,7 @@ public class PLI {
    * @return Module
    */
   public static Module clearModule(Module module) {
-    Stella.callClearModule(Stella_Object.cons(module, Stella.NIL));
+    Stella.callClearModule(Cons.cons(module, Stella.NIL));
     return (module);
   }
 
@@ -2236,7 +2225,7 @@ public class PLI {
   public static Module sClearModule(String name, Environment environment) {
     { Context module = PLI.safelyGetModule(name, environment);
 
-      Stella.callClearModule(Stella_Object.cons(module, Stella.NIL));
+      Stella.callClearModule(Cons.cons(module, Stella.NIL));
       return (((Module)(module)));
     }
   }
@@ -2257,7 +2246,7 @@ public class PLI {
           if (Stella_Object.isaP(child, Logic.SGT_STELLA_MODULE)) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(child, Stella.NIL);
+                collect000 = Cons.cons(child, Stella.NIL);
                 if (directsubmodules == Stella.NIL) {
                   directsubmodules = collect000;
                 }
@@ -2268,7 +2257,7 @@ public class PLI {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(child, Stella.NIL);
+                collect000.rest = Cons.cons(child, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -2355,7 +2344,7 @@ public class PLI {
    * @return Keyword
    */
   public static Keyword createKeyword(String name) {
-    return (((Keyword)(Stella.internRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), Stella.KEYWORD_SYM))));
+    return (((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), Stella.KEYWORD_SYM))));
   }
 
   /** Returns the Stella symbol <code>name</code> visible in <code>module</code>,
@@ -2383,7 +2372,7 @@ public class PLI {
           Native.setSpecial(Stella.$CONTEXT$, cxt000);
           environment = environment;
           synchronized (Logic.$POWERLOOM_LOCK$) {
-            return (Stella.internSymbolInModule(name, ((Module)(Stella.$MODULE$.get())), false));
+            return (Symbol.internSymbolInModule(name, ((Module)(Stella.$MODULE$.get())), false));
           }
 
         } finally {
@@ -2441,15 +2430,15 @@ public class PLI {
                 nameSymbol = ((Symbol)(Stella.internStellaName(name)));
               }
               else if (concept != null) {
-                nameSymbol = Stella.internSymbol(PLI.getShortName(concept));
-                nameSymbol = Stella.internSymbolInModule(PLI.generateUniqueName(nameSymbol.symbolName, ((Module)(nameSymbol.homeContext)), null), ((Module)(nameSymbol.homeContext)), true);
+                nameSymbol = Symbol.internSymbol(PLI.getShortName(concept));
+                nameSymbol = Symbol.internSymbolInModule(PLI.generateUniqueName(nameSymbol.symbolName, ((Module)(nameSymbol.homeContext)), null), ((Module)(nameSymbol.homeContext)), true);
               }
               else {
-                nameSymbol = Stella.internSymbolInModule(PLI.generateUniqueName("I", null, null), ((Module)(Stella.$MODULE$.get())), true);
+                nameSymbol = Symbol.internSymbolInModule(PLI.generateUniqueName("I", null, null), ((Module)(Stella.$MODULE$.get())), true);
               }
-              objectSurrogate = Stella.lookupSurrogateInModule(nameSymbol.symbolName, ((Module)(nameSymbol.homeContext)), false);
+              objectSurrogate = Surrogate.lookupSurrogateInModule(nameSymbol.symbolName, ((Module)(nameSymbol.homeContext)), false);
               if (objectSurrogate == null) {
-                objectSurrogate = Stella.internSurrogateInModule(nameSymbol.symbolName, ((Module)(nameSymbol.homeContext)), false);
+                objectSurrogate = Surrogate.internSurrogateInModule(nameSymbol.symbolName, ((Module)(nameSymbol.homeContext)), false);
               }
               renamed_Object = ((LogicObject)(Logic.helpCreateLogicInstance(objectSurrogate, null)));
               if (concept != null) {
@@ -2528,7 +2517,7 @@ public class PLI {
           Native.setSpecial(Stella.$CONTEXT$, cxt000);
           environment = environment;
           synchronized (Logic.$POWERLOOM_LOCK$) {
-            return (Logic.callDefconcept(Stella_Object.cons(Stella.internStellaName(name), (((parent != null) ? Stella.list$(Stella_Object.cons(PLI.KWD_SUBSET_OF, Stella_Object.cons(Logic.objectName(parent), Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL))));
+            return (Logic.callDefconcept(Cons.cons(Stella.internStellaName(name), (((parent != null) ? Cons.list$(Cons.cons(PLI.KWD_SUBSET_OF, Cons.cons(Logic.objectName(parent), Cons.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL))));
           }
 
         } finally {
@@ -2620,7 +2609,7 @@ public class PLI {
                   i = iter000;
                   if (collect000 == null) {
                     {
-                      collect000 = Stella_Object.cons(Logic.yieldSystemDefinedParameterName(i, ((Module)(Stella.$MODULE$.get()))), Stella.NIL);
+                      collect000 = Cons.cons(Logic.yieldSystemDefinedParameterName(i, ((Module)(Stella.$MODULE$.get()))), Stella.NIL);
                       if (args == Stella.NIL) {
                         args = collect000;
                       }
@@ -2631,13 +2620,13 @@ public class PLI {
                   }
                   else {
                     {
-                      collect000.rest = Stella_Object.cons(Logic.yieldSystemDefinedParameterName(i, ((Module)(Stella.$MODULE$.get()))), Stella.NIL);
+                      collect000.rest = Cons.cons(Logic.yieldSystemDefinedParameterName(i, ((Module)(Stella.$MODULE$.get()))), Stella.NIL);
                       collect000 = collect000.rest;
                     }
                   }
                 }
               }
-              return (Logic.callDefrelation(Stella_Object.cons(Stella.internStellaName(name), Stella_Object.cons(args, Stella.NIL))));
+              return (Logic.callDefrelation(Cons.cons(Stella.internStellaName(name), Cons.cons(args, Stella.NIL))));
             }
 
           } finally {
@@ -2725,7 +2714,7 @@ public class PLI {
                   i = iter000;
                   if (collect000 == null) {
                     {
-                      collect000 = Stella_Object.cons(Logic.yieldSystemDefinedParameterName(i, ((Module)(Stella.$MODULE$.get()))), Stella.NIL);
+                      collect000 = Cons.cons(Logic.yieldSystemDefinedParameterName(i, ((Module)(Stella.$MODULE$.get()))), Stella.NIL);
                       if (args == Stella.NIL) {
                         args = collect000;
                       }
@@ -2736,13 +2725,13 @@ public class PLI {
                   }
                   else {
                     {
-                      collect000.rest = Stella_Object.cons(Logic.yieldSystemDefinedParameterName(i, ((Module)(Stella.$MODULE$.get()))), Stella.NIL);
+                      collect000.rest = Cons.cons(Logic.yieldSystemDefinedParameterName(i, ((Module)(Stella.$MODULE$.get()))), Stella.NIL);
                       collect000 = collect000.rest;
                     }
                   }
                 }
               }
-              return (Logic.callDeffunction(Stella_Object.cons(Stella.internStellaName(name), Stella_Object.cons(args, Stella.NIL))));
+              return (Logic.callDeffunction(Cons.cons(Stella.internStellaName(name), Cons.cons(args, Stella.NIL))));
             }
 
           } finally {
@@ -2861,6 +2850,98 @@ public class PLI {
     }
   }
 
+  /** Register <code>name</code> as a function name in <code>module</code> which will invoke the
+   * native code procedure described by <code>functionReferenceD</code>  The <code>name</code>
+   * is a fully-qualified name which will be interpreted by the normal
+   * rules for reading names in PowerLoom.  The function must conform
+   * to the signature for computation functions used by the computation
+   * specialist.  Arity specifies the number of arguments the computation
+   * accepts.
+   * <p>
+   * The exact form of <code>functionReference</code> depends on the underlying
+   * programming language.  The following type mappings are used:
+   *           C++:  cpp_function_code (a pointer to the function code)
+   *   Common Lisp:  FUNCTION   (result of #' or (FUNCTION ...))
+   *          Java:  java.lang.reflect.Method
+   * @param name
+   * @param functionReference
+   * @param arity
+   * @param module
+   * @param environment
+   */
+  public static void registerComputationFunction(String name, java.lang.reflect.Method functionReference, int arity, Module module, Environment environment) {
+    { Module mdl000 = module;
+      Context cxt000 = mdl000;
+
+      if (mdl000 == null) {
+        mdl000 = ((Module)(Stella.$MODULE$.get()));
+        cxt000 = ((Context)(Stella.$CONTEXT$.get()));
+      }
+      { Object old$Module$000 = Stella.$MODULE$.get();
+        Object old$Context$000 = Stella.$CONTEXT$.get();
+
+        try {
+          Native.setSpecial(Stella.$MODULE$, mdl000);
+          Native.setSpecial(Stella.$CONTEXT$, cxt000);
+          environment = environment;
+          synchronized (Logic.$POWERLOOM_LOCK$) {
+            Logic.registerComputationFunction(name, functionReference, arity);
+          }
+
+        } finally {
+          Stella.$CONTEXT$.set(old$Context$000);
+          Stella.$MODULE$.set(old$Module$000);
+        }
+      }
+    }
+  }
+
+  /** Register <code>name</code> as a function name in the module named <code>moduleName</code>.
+   * This function will the native code named <code>nativeName</code>.  The <code>name</code>
+   * is a fully-qualified name which will be interpreted by the normal
+   * rules for reading names in PowerLoom.  The <code>nativeName</code> will be
+   * processed in a manner that depends on the underlying programming
+   * language.  The following type mappings are used:
+   *           C++:  Not available.  Error signaled.
+   *   Common Lisp:  The native-name is read by READ-FROM-STRING and then
+   *                 the SYMBOL-FUNCTION is taken.
+   *          Java:  A fully package-qualified name is required.  It is
+   *                 looked up using the Reflection tools.
+   * The function found must conform to the signature for computation functions.
+   * Arity specifies the number of arguments the computation accepts.
+   * @param name
+   * @param nativeName
+   * @param arity
+   * @param moduleName
+   * @param environment
+   */
+  public static void sRegisterComputationFunction(String name, String nativeName, int arity, String moduleName, Environment environment) {
+    { Module mdl000 = ((Module)(PLI.safelyGetModule(moduleName, environment)));
+      Context cxt000 = mdl000;
+
+      if (mdl000 == null) {
+        mdl000 = ((Module)(Stella.$MODULE$.get()));
+        cxt000 = ((Context)(Stella.$CONTEXT$.get()));
+      }
+      { Object old$Module$000 = Stella.$MODULE$.get();
+        Object old$Context$000 = Stella.$CONTEXT$.get();
+
+        try {
+          Native.setSpecial(Stella.$MODULE$, mdl000);
+          Native.setSpecial(Stella.$CONTEXT$, cxt000);
+          environment = environment;
+          synchronized (Logic.$POWERLOOM_LOCK$) {
+            Logic.registerComputationFunctionName(name, nativeName, arity);
+          }
+
+        } finally {
+          Stella.$CONTEXT$.set(old$Context$000);
+          Stella.$MODULE$.set(old$Module$000);
+        }
+      }
+    }
+  }
+
   /** Create a logical term that denotes a list containing <code>members</code> in
    * <code>module</code> using <code>environment</code>.  Useful for passing lists as arguments
    * to parameterized queries.
@@ -2947,9 +3028,9 @@ public class PLI {
   /** Delete the object <code>renamed_Object</code>, retracting all facts attached to it.
    * @param renamed_Object
    */
-  public static void destroyObject(LogicObject renamed_Object) {
+  public static void destroyObject(Stella_Object renamed_Object) {
     synchronized (Logic.$POWERLOOM_LOCK$) {
-      Logic.destroyInstance(renamed_Object);
+      Logic.destroyObject(renamed_Object);
     }
   }
 
@@ -2968,7 +3049,7 @@ public class PLI {
       Stella_Object renamed_Object = PLI.safelyGetObject(objectName, ((Module)(module)), environment);
 
       if (renamed_Object != null) {
-        PLI.destroyObject(((LogicObject)(renamed_Object)));
+        PLI.destroyObject(renamed_Object);
       }
     }
   }
@@ -3436,7 +3517,7 @@ public class PLI {
                   if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
                     { Proposition propositions000 = ((Proposition)(propositions));
 
-                      return (PLI.consToPlIterator(Stella_Object.cons(propositions000, Stella.NIL)));
+                      return (PLI.consToPlIterator(Cons.cons(propositions000, Stella.NIL)));
                     }
                   }
                   else if (testValue000 == Logic.SGT_STELLA_CONS) {
@@ -3755,7 +3836,9 @@ public class PLI {
   }
 
   /** Return the type (a concept) for the the nth argument of the
-   * relation <code>relation</code>.  Counting starts at zero.
+   * relation <code>relation</code>.  Counting starts at zero.  NOTE: if there are multiple
+   * <code>nthDomain</code> propositions for <code>relation</code>, this arbitrarily returns one of them;
+   * it does not look for the most specific one (which might have to be created).
    * @param relation
    * @param n
    * @return LogicObject
@@ -3764,50 +3847,23 @@ public class PLI {
     if (Logic.classP(relation)) {
       return (((n == 0) ? relation : null));
     }
-    else {
-      if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(relation), Logic.SGT_LOGIC_NAMED_DESCRIPTION)) {
-        { NamedDescription relation000 = ((NamedDescription)(relation));
+    if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(relation), Logic.SGT_LOGIC_NAMED_DESCRIPTION)) {
+      { NamedDescription relation000 = ((NamedDescription)(relation));
 
-          if ((n >= 0) &&
-              (n < relation000.ioVariableTypes.length())) {
-            { Stella_Object type = ((Surrogate)(relation000.ioVariableTypes.nth(n))).surrogateValue;
+        if ((n >= 0) &&
+            (n < relation000.ioVariableTypes.length())) {
+          { Proposition domainprop = ((Proposition)(PLI.helpGetPropositions(((LogicObject)(PLI.SGT_PL_KERNEL_KB_NTH_DOMAIN.surrogateValue)), Cons.cons(relation000, Cons.cons(IntegerWrapper.wrapInteger(n), Cons.cons(null, Stella.NIL))), 1, null, null).value));
 
-              if (type == null) {
-                return (null);
-              }
-              { Surrogate testValue000 = Stella_Object.safePrimaryType(type);
-
-                if (Surrogate.subtypeOfClassP(testValue000)) {
-                  { Stella_Class type000 = ((Stella_Class)(type));
-
-                    return (((NamedDescription)(KeyValueList.dynamicSlotValue(type000.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTION, null))));
-                  }
-                }
-                else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_LOGIC_OBJECT)) {
-                  { LogicObject type000 = ((LogicObject)(type));
-
-                    return (type000);
-                  }
-                }
-                else {
-                  { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-                    stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
-                    throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-                  }
-                }
-              }
+            if (domainprop != null) {
+              return (((LogicObject)((domainprop.arguments.theArray)[(domainprop.arguments.length() - 1)])));
             }
-          }
-          else {
-            return (null);
           }
         }
       }
-      else {
-        return (null);
-      }
     }
+    else {
+    }
+    return (null);
   }
 
   /** Return the type (a concept) for the nth argument of the relation
@@ -3836,10 +3892,9 @@ public class PLI {
   }
 
   /** Read logic commands from the file named <code>filename</code> and evaluate them.
-   * The file should begin with an <code>inModule</code> declaration that specifies
-   * the module within which all remaining commands are to be evaluated
-   * The remaining commands are evaluated one-by-one, applying the function
-   * <code>evaluate</code> to each of them.
+   * The file should contain an <code>inModule</code> declaration that specifies the module
+   * within which all remaining commands are to be evaluated.  The remaining commands
+   * are evaluated one-by-one, applying the function <code>evaluate</code> to each of them.
    * @param filename
    * @param environment
    */
@@ -3870,9 +3925,47 @@ public class PLI {
     }
   }
 
+  /** Read logic commands from the file named <code>filename</code> and evaluate them.
+   * If the file does not have an <code>inModule</code> declaration that specifies the module
+   * within which all remaining commands are to be evaluated, it will be loaded
+   * in the <code>module</code> specified.  If no <code>module</code> is specified and the file does
+   * not contain an <code>inModule</code> declaration, an error will be signaled.
+   * The remaining commands are evaluated one-by-one, applying the function
+   * <code>evaluate</code> to each of them.
+   * @param filename
+   * @param module
+   * @param environment
+   */
+  public static void loadInModule(String filename, Module module, Environment environment) {
+    { Module mdl000 = module;
+      Context cxt000 = mdl000;
+
+      if (mdl000 == null) {
+        mdl000 = ((Module)(Stella.$MODULE$.get()));
+        cxt000 = ((Context)(Stella.$CONTEXT$.get()));
+      }
+      { Object old$Module$000 = Stella.$MODULE$.get();
+        Object old$Context$000 = Stella.$CONTEXT$.get();
+
+        try {
+          Native.setSpecial(Stella.$MODULE$, mdl000);
+          Native.setSpecial(Stella.$CONTEXT$, cxt000);
+          environment = environment;
+          synchronized (Logic.$POWERLOOM_LOCK$) {
+            Logic.load(filename, Cons.cons(Logic.KWD_MODULE, Cons.cons(module, Stella.NIL)));
+          }
+
+        } finally {
+          Stella.$CONTEXT$.set(old$Context$000);
+          Stella.$MODULE$.set(old$Module$000);
+        }
+      }
+    }
+  }
+
   /** Read logic commands from the STELLA stream <code>stream</code> and evaluate them.
-   * The stream should begin with an <code>inModule</code> declaration that specifies
-   * the module within which all remaining commands are to be evaluated
+   * The stream should contain an <code>inModule</code> declaration that specifies
+   * the module within which all remaining commands are to be evaluated.
    * The remaining commands are evaluated one-by-one, applying the function
    * <code>evaluate</code> to each of them.
    * @param stream
@@ -3895,6 +3988,44 @@ public class PLI {
           environment = environment;
           synchronized (Logic.$POWERLOOM_LOCK$) {
             Logic.loadStream(stream);
+          }
+
+        } finally {
+          Stella.$CONTEXT$.set(old$Context$000);
+          Stella.$MODULE$.set(old$Module$000);
+        }
+      }
+    }
+  }
+
+  /** Read logic commands from the STELLA stream <code>stream</code> and evaluate them.
+   * If the stream does not supply an <code>inModule</code> declaration that specifies the
+   * module within which all remaining commands are to be evaluated, it will be
+   * loaded in the <code>module</code> specified.  If no <code>module</code> is specified and the file 
+   * does not supply an <code>inModule</code> declaration, an error will be signaled.
+   * The remaining commands are evaluated one-by-one, applying the function
+   * <code>evaluate</code> to each of them.
+   * @param stream
+   * @param module
+   * @param environment
+   */
+  public static void loadStreamInModule(InputStream stream, Module module, Environment environment) {
+    { Module mdl000 = module;
+      Context cxt000 = mdl000;
+
+      if (mdl000 == null) {
+        mdl000 = ((Module)(Stella.$MODULE$.get()));
+        cxt000 = ((Context)(Stella.$CONTEXT$.get()));
+      }
+      { Object old$Module$000 = Stella.$MODULE$.get();
+        Object old$Context$000 = Stella.$CONTEXT$.get();
+
+        try {
+          Native.setSpecial(Stella.$MODULE$, mdl000);
+          Native.setSpecial(Stella.$CONTEXT$, cxt000);
+          environment = environment;
+          synchronized (Logic.$POWERLOOM_LOCK$) {
+            Logic.loadStreamInModule(stream, module);
           }
 
         } finally {
@@ -3946,6 +4077,50 @@ public class PLI {
     }
   }
 
+  /** Read logic commands from the native input stream <code>stream</code> and evaluate them.
+   * Assumes <code>stream</code> is a line-buffered stream which is a safe compromise but does
+   * not generate the best efficiency for block-buffered streams such as files.
+   * If the stream does not supply an <code>inModule</code> declaration that specifies the
+   * module within which all remaining commands are to be evaluated, it will be
+   * loaded in the <code>module</code> specified.  If no <code>module</code> is specified and the file 
+   * does not supply an <code>inModule</code> declaration, an error will be signaled.
+   * The remaining commands are evaluated one-by-one, applying the function
+   * <code>evaluate</code> to each of them.
+   * @param stream
+   * @param module
+   * @param environment
+   */
+  public static void loadNativeStreamInModule(java.io.PushbackInputStream stream, Module module, Environment environment) {
+    { Module mdl000 = module;
+      Context cxt000 = mdl000;
+
+      if (mdl000 == null) {
+        mdl000 = ((Module)(Stella.$MODULE$.get()));
+        cxt000 = ((Context)(Stella.$CONTEXT$.get()));
+      }
+      { Object old$Module$000 = Stella.$MODULE$.get();
+        Object old$Context$000 = Stella.$CONTEXT$.get();
+
+        try {
+          Native.setSpecial(Stella.$MODULE$, mdl000);
+          Native.setSpecial(Stella.$CONTEXT$, cxt000);
+          environment = environment;
+          synchronized (Logic.$POWERLOOM_LOCK$) {
+            { InputStream self000 = InputStream.newInputStream();
+
+              self000.nativeStream = stream;
+              Logic.loadStreamInModule(self000, module);
+            }
+          }
+
+        } finally {
+          Stella.$CONTEXT$.set(old$Context$000);
+          Stella.$MODULE$.set(old$Module$000);
+        }
+      }
+    }
+  }
+
   /** Save the contents of the module <code>mod</code> into a file named <code>filename</code>.
    * If a file named <code>filename</code> already exists, then the action taken depends on the
    * value of <code>ifexists</code>.  Possible values are &quot;ASK&quot;, &quot;REPLACE&quot;, &quot;WARN&quot; and &quot;ERROR&quot;:
@@ -3961,7 +4136,7 @@ public class PLI {
    * @param environment
    */
   public static void saveModule(Module module, String filename, String ifexists, Environment environment) {
-    { boolean existsP = Native.probeFileP(filename);
+    { boolean existsP = Stella.probeFileP(filename);
 
       if ((!existsP) ||
           Stella.stringEqualP(ifexists, "REPLACE")) {
@@ -4064,7 +4239,8 @@ public class PLI {
    * the number includes both the predidate and arguments. For the PL-iterator
    * case,the number of columns is for the current value of the iterator.
    * <p>
-   * For non sequence objects, the column count is zero.
+   * For a null item, the column count is zero.
+   * For non sequence objects, the column count is one.
    * @param obj
    * @return int
    */
@@ -4521,6 +4697,14 @@ public class PLI {
         (tv == null));
   }
 
+  /** Tests whether <code>tv</code> is a known truth value (i.e., true or false).
+   * @param tv
+   * @return boolean
+   */
+  public static boolean isKnown(TruthValue tv) {
+    return (TruthValue.knownTruthValueP(tv));
+  }
+
   /** Tests whether <code>tv</code> is an inconsistent truth value.
    * @param tv
    * @return boolean
@@ -4561,7 +4745,7 @@ public class PLI {
    * 	 
    *     (happy Fred)
    * 	
-   * is a legal <code>query</code> argument.  Note that for a setence whose relation is a list
+   * is a legal <code>query</code> argument.  Note that for a sentence whose relation is a list
    * itself, e.g., <code>__FruitFn_BananaTree__MyBanana_</code> this shortcut is not available,
    * that is, in that case an extra level of list nesting is always necessary.
    * The returned truth value represents the logical truth of the queried sentence
@@ -4590,7 +4774,7 @@ public class PLI {
           synchronized (Logic.$POWERLOOM_LOCK$) {
             query = ((Cons)(Logic.deobjectifyTree(query)));
             if (Stella_Object.symbolP(query.value)) {
-              query = Stella_Object.cons(query, Stella.NIL);
+              query = Cons.cons(query, Stella.NIL);
             }
             return (Logic.callAsk(query));
           }
@@ -4652,7 +4836,7 @@ public class PLI {
                   sexp = iter000.value;
                   if (collect000 == null) {
                     {
-                      collect000 = Stella_Object.cons(sexp, Stella.NIL);
+                      collect000 = Cons.cons(sexp, Stella.NIL);
                       if (queryform == Stella.NIL) {
                         queryform = collect000;
                       }
@@ -4663,7 +4847,7 @@ public class PLI {
                   }
                   else {
                     {
-                      collect000.rest = Stella_Object.cons(sexp, Stella.NIL);
+                      collect000.rest = Cons.cons(sexp, Stella.NIL);
                       collect000 = collect000.rest;
                     }
                   }
@@ -4809,7 +4993,7 @@ public class PLI {
                   sexp = iter000.value;
                   if (collect000 == null) {
                     {
-                      collect000 = Stella_Object.cons(sexp, Stella.NIL);
+                      collect000 = Cons.cons(sexp, Stella.NIL);
                       if (queryform == Stella.NIL) {
                         queryform = collect000;
                       }
@@ -4820,7 +5004,7 @@ public class PLI {
                   }
                   else {
                     {
-                      collect000.rest = Stella_Object.cons(sexp, Stella.NIL);
+                      collect000.rest = Cons.cons(sexp, Stella.NIL);
                       collect000 = collect000.rest;
                     }
                   }

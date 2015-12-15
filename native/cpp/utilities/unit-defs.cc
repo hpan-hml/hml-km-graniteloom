@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -184,17 +184,6 @@ void initializeUnitDefinitions() {
     m->addUnit("c", 2.99792458e+8, "m/s");
     m = defineDerivedMeasure("Acceleration", "m/s2", "m/s2");
     m->addUnit("G", 9.80665, "m/s2");
-    m = defineBaseMeasure("Angle", "deg");
-    m->addUnit("rad", 57.29577951308232, "deg");
-    m->addUnit("radian", 1.0, "rad");
-    m->addUnit("minute", 0.016666666666666666, "deg");
-    m->addUnit("sec", 0.016666666666666666, "minute");
-    m->addUnit("arcmin", 1.0, "minute");
-    m->addUnit("arcsec", 1.0, "sec");
-    m->addUnit("degree", 1.0, "deg");
-    m->addUnit("mil", 0.05625, "deg");
-    m = defineBaseMeasure("Solid-Angle", "sr");
-    m->addUnit("steradian", 1.0, "sr");
     m = defineBaseMeasure("Amount-Of-Substance", "mole");
     m->addUnit("mol", 1.0, "mole");
     m->addUnit("mmol", 0.001, "mole");
@@ -256,17 +245,6 @@ void initializeUnitDefinitions() {
     m->addUnit("kWh", 1.0, "kW.h");
     m->addUnit("kiloton", 4.184e+12, "J");
     m->addUnit("Megaton", 1000.0, "kiloton");
-    m = defineDerivedMeasure("Revolution", "deg/s", "deg/s");
-    m->addUnit("rps", 360.0, "deg/s");
-    m->addUnit("rpm", 0.016666666666666666, "rps");
-    m = defineDerivedMeasure("Frequency", "Hz", "s-1");
-    m->addUnit("kHz", 1000.0, "Hz");
-    m->addUnit("MHz", 1000000.0, "Hz");
-    m->addUnit("GHz", 1.0e+9, "Hz");
-    m->addUnit("Bq", 1.0, "Hz");
-    m->addUnit("Ci", 3.7e+10, "Bq");
-    m->addUnit("mCi", 0.001, "Ci");
-    m->addUnit("pCi", 1.0e-9, "Ci");
     m = defineBaseMeasure("Electric-Current", "A");
     m->addUnit("mA", 0.001, "A");
     m = defineDerivedMeasure("Electric-Charge", "C", "s.A");
@@ -294,6 +272,12 @@ void initializeUnitDefinitions() {
     m->addUnit("lm", 1.0, "Cd");
     m = defineDerivedMeasure("Illuminance", "lux", "Cd/m2");
     m->addUnit("lx", 1.0, "lux");
+    m = defineBaseMeasure("Temperature", "K");
+    m->addUnit("oK", 1.0, "K");
+    m->addUnit("Kelvin", 1.0, "K");
+    m->addUnit("oC", 1.0, "K");
+    m->addUnit("oF", 0.5555555555555556, "K");
+    m->addUnit("Rankine", 1.0, "oF");
     m = defineBaseMeasure("Data", "bit");
     m->addUnit("byte", 8.0, "bit");
     m->addUnit("B", 1.0, "byte");
@@ -316,6 +300,27 @@ void initializeUnitDefinitions() {
     m = defineDimensionlessMeasure();
     m->addUnit("%", 0.01, "");
     m->addUnit("%%", 0.001, "");
+    m->addUnit("rad", 1.0, "");
+    m->addUnit("radian", 1.0, "rad");
+    m->addUnit("deg", 0.017453292519943295, "rad");
+    m->addUnit("minute", 0.016666666666666666, "deg");
+    m->addUnit("sec", 0.016666666666666666, "minute");
+    m->addUnit("arcmin", 1.0, "minute");
+    m->addUnit("arcsec", 1.0, "sec");
+    m->addUnit("degree", 1.0, "deg");
+    m->addUnit("mil", 0.05625, "deg");
+    m->addUnit("sr", 1.0, "");
+    m->addUnit("steradian", 1.0, "sr");
+    m = defineDerivedMeasure("Frequency", "Hz", "s-1");
+    m->addUnit("kHz", 1000.0, "Hz");
+    m->addUnit("MHz", 1000000.0, "Hz");
+    m->addUnit("GHz", 1.0e+9, "Hz");
+    m->addUnit("Bq", 1.0, "Hz");
+    m->addUnit("Ci", 3.7e+10, "Bq");
+    m->addUnit("mCi", 0.001, "Ci");
+    m->addUnit("pCi", 1.0e-9, "Ci");
+    m->addUnit("rps", 360.0, "deg/s");
+    m->addUnit("rpm", 0.016666666666666666, "rps");
   }
 }
 
@@ -341,6 +346,9 @@ void startupUnitDefs() {
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
+    }
+    if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("UTILITIES")))));
     }
   }
 }

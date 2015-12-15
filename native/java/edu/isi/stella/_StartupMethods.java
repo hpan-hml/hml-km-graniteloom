@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,59 +50,60 @@ import edu.isi.stella.javalib.*;
 public class _StartupMethods {
   static void helpStartupMethods1() {
     {
-      Stella.SYM_STELLA_LIKE = ((Symbol)(Stella.internRigidSymbolWrtModule("LIKE", null, 0)));
-      Stella.SYM_STELLA_UNKNOWN = ((Symbol)(Stella.internRigidSymbolWrtModule("UNKNOWN", null, 0)));
-      Stella.SYM_STELLA_OF = ((Symbol)(Stella.internRigidSymbolWrtModule("OF", null, 0)));
-      Stella.SGT_STELLA_ARRAY = ((Surrogate)(Stella.internRigidSymbolWrtModule("ARRAY", null, 1)));
-      Stella.SYM_STELLA_OUT = ((Symbol)(Stella.internRigidSymbolWrtModule("OUT", null, 0)));
-      Stella.SYM_STELLA_INOUT = ((Symbol)(Stella.internRigidSymbolWrtModule("INOUT", null, 0)));
-      Stella.SYM_STELLA_ARGUMENT_LIST = ((Symbol)(Stella.internRigidSymbolWrtModule("ARGUMENT-LIST", null, 0)));
-      Stella.SYM_STELLA_aREST = ((Symbol)(Stella.internRigidSymbolWrtModule("&REST", null, 0)));
-      Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-VARIABLE-ARGUMENTS?", null, 0)));
-      Stella.SYM_STELLA_aBODY = ((Symbol)(Stella.internRigidSymbolWrtModule("&BODY", null, 0)));
-      Stella.SYM_STELLA_METHOD_BODY_ARGUMENTp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-BODY-ARGUMENT?", null, 0)));
-      Stella.KWD_RETURN_TYPES = ((Keyword)(Stella.internRigidSymbolWrtModule("RETURN-TYPES", null, 2)));
-      Stella.KWD_NATIVEp = ((Keyword)(Stella.internRigidSymbolWrtModule("NATIVE?", null, 2)));
-      Stella.SYM_STELLA_METHOD_NATIVEp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-NATIVE?", null, 0)));
-      Stella.KWD_CONSTRUCTORp = ((Keyword)(Stella.internRigidSymbolWrtModule("CONSTRUCTOR?", null, 2)));
-      Stella.SYM_STELLA_METHOD_CONSTRUCTORp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-CONSTRUCTOR?", null, 0)));
-      Stella.KWD_GLOBALLY_INLINEp = ((Keyword)(Stella.internRigidSymbolWrtModule("GLOBALLY-INLINE?", null, 2)));
-      Stella.SYM_STELLA_METHOD_GLOBALLY_INLINEp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-GLOBALLY-INLINE?", null, 0)));
-      Stella.KWD_INLINE = ((Keyword)(Stella.internRigidSymbolWrtModule("INLINE", null, 2)));
-      Stella.KWD_RETURNS = ((Keyword)(Stella.internRigidSymbolWrtModule("RETURNS", null, 2)));
-      Stella.KWD_STORAGE_SLOT = ((Keyword)(Stella.internRigidSymbolWrtModule("STORAGE-SLOT", null, 2)));
-      Stella.KWD_INHERITS_THROUGH = ((Keyword)(Stella.internRigidSymbolWrtModule("INHERITS-THROUGH", null, 2)));
-      Stella.SYM_STELLA_METHOD_INHERITS_THROUGH = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-INHERITS-THROUGH", null, 0)));
-      Stella.KWD_COMMANDp = ((Keyword)(Stella.internRigidSymbolWrtModule("COMMAND?", null, 2)));
-      Stella.SYM_STELLA_METHOD_COMMANDp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-COMMAND?", null, 0)));
-      Stella.KWD_LISP_MACROp = ((Keyword)(Stella.internRigidSymbolWrtModule("LISP-MACRO?", null, 2)));
-      Stella.SYM_STELLA_METHOD_LISP_MACROp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-LISP-MACRO?", null, 0)));
-      Stella.KWD_EVALUATE_ARGUMENTSp = ((Keyword)(Stella.internRigidSymbolWrtModule("EVALUATE-ARGUMENTS?", null, 2)));
-      Stella.SYM_STELLA_DEFINE_FUNCTION_OBJECT = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFINE-FUNCTION-OBJECT", null, 0)));
-      Stella.SYM_STELLA_THE_CODE = ((Symbol)(Stella.internRigidSymbolWrtModule("THE-CODE", null, 0)));
-      Stella.SYM_STELLA_DEFINE_METHOD_OBJECT = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFINE-METHOD-OBJECT", null, 0)));
-      Stella.KWD_METHOD = ((Keyword)(Stella.internRigidSymbolWrtModule("METHOD", null, 2)));
-      Stella.SYM_STELLA_SUPER_CLASSES = ((Symbol)(Stella.internRigidSymbolWrtModule("SUPER-CLASSES", null, 0)));
-      Stella.SYM_STELLA_EQUIVALENT_SLOT = ((Symbol)(Stella.internRigidSymbolWrtModule("EQUIVALENT-SLOT", null, 0)));
-      Stella.SYM_STELLA_SLOT_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("SLOT-VALUE", null, 0)));
-      Stella.SYM_STELLA_LOOP = ((Symbol)(Stella.internRigidSymbolWrtModule("LOOP", null, 0)));
-      Stella.SYM_STELLA_IF = ((Symbol)(Stella.internRigidSymbolWrtModule("IF", null, 0)));
-      Stella.SYM_STELLA_FIRST = ((Symbol)(Stella.internRigidSymbolWrtModule("FIRST", null, 0)));
-      Stella.SYM_STELLA_VARIABLE_ARITY_TABLEp = ((Symbol)(Stella.internRigidSymbolWrtModule("VARIABLE-ARITY-TABLE?", null, 0)));
-      Stella.SYM_STELLA_EVALUATOR_WRAPPER_CODE = ((Symbol)(Stella.internRigidSymbolWrtModule("EVALUATOR-WRAPPER-CODE", null, 0)));
-      Stella.SYM_STELLA_VARIABLE_TYPE_SPECIFIER = ((Symbol)(Stella.internRigidSymbolWrtModule("VARIABLE-TYPE-SPECIFIER", null, 0)));
-      Stella.SYM_STELLA_DEFSPECIAL = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFSPECIAL", null, 0)));
-      Stella.SYM_STELLA_DEFCONSTANT = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFCONSTANT", null, 0)));
-      Stella.KWD_UNBOUND_SPECIAL_VARIABLE = ((Keyword)(Stella.internRigidSymbolWrtModule("UNBOUND-SPECIAL-VARIABLE", null, 2)));
-      Stella.SYM_STELLA_STARTUP_METHODS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-METHODS", null, 0)));
+      Stella.SYM_STELLA_LIKE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LIKE", null, 0)));
+      Stella.SYM_STELLA_UNKNOWN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNKNOWN", null, 0)));
+      Stella.SYM_STELLA_OF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OF", null, 0)));
+      Stella.SGT_STELLA_ARRAY = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ARRAY", null, 1)));
+      Stella.SYM_STELLA_OUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OUT", null, 0)));
+      Stella.SYM_STELLA_INOUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INOUT", null, 0)));
+      Stella.SYM_STELLA_ARGUMENT_LIST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ARGUMENT-LIST", null, 0)));
+      Stella.SYM_STELLA_aREST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("&REST", null, 0)));
+      Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-VARIABLE-ARGUMENTS?", null, 0)));
+      Stella.SYM_STELLA_aBODY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("&BODY", null, 0)));
+      Stella.SYM_STELLA_METHOD_BODY_ARGUMENTp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-BODY-ARGUMENT?", null, 0)));
+      Stella.KWD_RETURN_TYPES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RETURN-TYPES", null, 2)));
+      Stella.KWD_NATIVEp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NATIVE?", null, 2)));
+      Stella.SYM_STELLA_METHOD_NATIVEp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-NATIVE?", null, 0)));
+      Stella.KWD_CONSTRUCTORp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONSTRUCTOR?", null, 2)));
+      Stella.SYM_STELLA_METHOD_CONSTRUCTORp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-CONSTRUCTOR?", null, 0)));
+      Stella.KWD_GLOBALLY_INLINEp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("GLOBALLY-INLINE?", null, 2)));
+      Stella.SYM_STELLA_METHOD_GLOBALLY_INLINEp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-GLOBALLY-INLINE?", null, 0)));
+      Stella.KWD_INLINE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INLINE", null, 2)));
+      Stella.KWD_RETURNS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RETURNS", null, 2)));
+      Stella.KWD_STORAGE_SLOT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("STORAGE-SLOT", null, 2)));
+      Stella.KWD_INHERITS_THROUGH = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INHERITS-THROUGH", null, 2)));
+      Stella.SYM_STELLA_METHOD_INHERITS_THROUGH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-INHERITS-THROUGH", null, 0)));
+      Stella.KWD_COMMANDp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("COMMAND?", null, 2)));
+      Stella.SYM_STELLA_METHOD_COMMANDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-COMMAND?", null, 0)));
+      Stella.KWD_LISP_MACROp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LISP-MACRO?", null, 2)));
+      Stella.SYM_STELLA_METHOD_LISP_MACROp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-LISP-MACRO?", null, 0)));
+      Stella.KWD_EVALUATE_ARGUMENTSp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("EVALUATE-ARGUMENTS?", null, 2)));
+      Stella.SYM_STELLA_DEFINE_FUNCTION_OBJECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFINE-FUNCTION-OBJECT", null, 0)));
+      Stella.SYM_STELLA_THE_CODE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-CODE", null, 0)));
+      Stella.SYM_STELLA_DEFINE_METHOD_OBJECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFINE-METHOD-OBJECT", null, 0)));
+      Stella.KWD_METHOD = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD", null, 2)));
+      Stella.SYM_STELLA_SUPER_CLASSES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUPER-CLASSES", null, 0)));
+      Stella.SYM_STELLA_EQUIVALENT_SLOT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EQUIVALENT-SLOT", null, 0)));
+      Stella.SYM_STELLA_SLOT_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOT-VALUE", null, 0)));
+      Stella.SYM_STELLA_LOOP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOP", null, 0)));
+      Stella.SYM_STELLA_IF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IF", null, 0)));
+      Stella.SYM_STELLA_FIRST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FIRST", null, 0)));
+      Stella.SYM_STELLA_VARIABLE_ARITY_TABLEp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("VARIABLE-ARITY-TABLE?", null, 0)));
+      Stella.SYM_STELLA_EVALUATOR_WRAPPER_CODE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EVALUATOR-WRAPPER-CODE", null, 0)));
+      Stella.SYM_STELLA_VARIABLE_TYPE_SPECIFIER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("VARIABLE-TYPE-SPECIFIER", null, 0)));
+      Stella.SYM_STELLA_DEFSPECIAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFSPECIAL", null, 0)));
+      Stella.SYM_STELLA_DEFCONSTANT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFCONSTANT", null, 0)));
+      Stella.KWD_UNBOUND_SPECIAL_VARIABLE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UNBOUND-SPECIAL-VARIABLE", null, 2)));
+      Stella.SYM_STELLA_STARTUP_METHODS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-METHODS", null, 0)));
     }
   }
 
   static void helpStartupMethods2() {
     {
-      Stella.defineFunctionObject("APPLY", "(DEFUN (APPLY OBJECT) ((CODE FUNCTION-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nOBJECT.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "apply", new java.lang.Class [] {Native.find_java_class("java.lang.reflect.Method"), Native.find_java_class("edu.isi.stella.Cons")}), null);
+      Stella.defineFunctionObject("APPLY", "(DEFUN (APPLY OBJECT) ((CODE FUNCTION-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type OBJECT.\nCurrently limited to at most 10 `arguments'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "apply", new java.lang.Class [] {Native.find_java_class("java.lang.reflect.Method"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("APPLY-METHOD", "(DEFUN (APPLY-METHOD OBJECT) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nOBJECT.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "applyMethod", new java.lang.Class [] {Native.find_java_class("java.lang.reflect.Method"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("APPLY-INTEGER-METHOD", "(DEFUN (APPLY-INTEGER-METHOD INTEGER) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nINTEGER.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "applyIntegerMethod", new java.lang.Class [] {Native.find_java_class("java.lang.reflect.Method"), Native.find_java_class("edu.isi.stella.Cons")}), null);
+      Stella.defineFunctionObject("APPLY-LONG-INTEGER-METHOD", "(DEFUN (APPLY-LONG-INTEGER-METHOD LONG-INTEGER) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nLONG-INTEGER.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "applyLongIntegerMethod", new java.lang.Class [] {Native.find_java_class("java.lang.reflect.Method"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("APPLY-STRING-METHOD", "(DEFUN (APPLY-STRING-METHOD STRING) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nSTRING.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "applyStringMethod", new java.lang.Class [] {Native.find_java_class("java.lang.reflect.Method"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("APPLY-BOOLEAN-METHOD", "(DEFUN (APPLY-BOOLEAN-METHOD BOOLEAN) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nBOOLEAN.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "applyBooleanMethod", new java.lang.Class [] {Native.find_java_class("java.lang.reflect.Method"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("APPLY-FLOAT-METHOD", "(DEFUN (APPLY-FLOAT-METHOD FLOAT) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nFLOAT.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "applyFloatMethod", new java.lang.Class [] {Native.find_java_class("java.lang.reflect.Method"), Native.find_java_class("edu.isi.stella.Cons")}), null);
@@ -159,7 +160,6 @@ public class _StartupMethods {
       Stella.defineFunctionObject("COMPUTE-ANCHORED-TYPE-SPEC", "(DEFUN (COMPUTE-ANCHORED-TYPE-SPEC TYPE-SPEC) ((OWNERTYPE TYPE-SPEC) (RELTYPE ANCHORED-TYPE-SPECIFIER)))", Native.find_java_method("edu.isi.stella.StandardObject", "computeAnchoredTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject"), Native.find_java_class("edu.isi.stella.AnchoredTypeSpecifier")}), null);
       Stella.defineFunctionObject("COMPUTE-RELATIVE-TYPE-SPEC", "(DEFUN (COMPUTE-RELATIVE-TYPE-SPEC TYPE-SPEC) ((RELATIVETYPE TYPE-SPEC) (OWNERTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.StandardObject", "computeRelativeTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject"), Native.find_java_class("edu.isi.stella.StandardObject")}), null);
       Stella.defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF SLOT) (FIRSTARGTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.Slot", "computeReturnTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject")}), ((java.lang.reflect.Method)(null)));
-      Stella.defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF METHOD-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.MethodSlot", "computeReturnTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject")}), ((java.lang.reflect.Method)(null)));
     }
   }
 
@@ -182,6 +182,7 @@ public class _StartupMethods {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupMethods.helpStartupMethods2();
+          Stella.defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF METHOD-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.MethodSlot", "computeReturnTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject")}), ((java.lang.reflect.Method)(null)));
           Stella.defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF STORAGE-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.StorageSlot", "computeReturnTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject")}), ((java.lang.reflect.Method)(null)));
           Stella.defineFunctionObject("YIELD-TYPE-SPEC-TREE", "(DEFUN (YIELD-TYPE-SPEC-TREE OBJECT) ((SELF TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.StandardObject", "yieldTypeSpecTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject")}), null);
           Stella.defineFunctionObject("ATTACH-FUNCTION", "(DEFUN (ATTACH-FUNCTION METHOD-SLOT) ((NEWFUNCTION METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "attachFunction", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
@@ -218,6 +219,7 @@ public class _StartupMethods {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAXIMUM-STRING-CONSTANT-SIZE* INTEGER 4000 :DOCUMENTATION \"Maximum size for a string constant in the target language.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *FUNCTION-LOOKUP-TABLE* (HASH-TABLE OF SYMBOL STANDARD-OBJECT) (NEW (HASH-TABLE OF SYMBOL FUNCTION)) :DOCUMENTATION \"Lookup table for functions.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *GLOBAL-VARIABLE-LOOKUP-TABLE* (HASH-TABLE OF SYMBOL GLOBAL-VARIABLE) (NEW (HASH-TABLE OF SYMBOL GLOBAL-VARIABLE)) :DOCUMENTATION \"Lookup table for global variables.\" :PUBLIC? TRUE)");

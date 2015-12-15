@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -90,15 +90,15 @@ Cons* parseLogicVariableDeclarations(Object* tree);
 Cons* helpBuildQuantifiedProposition(Cons* tree, boolean converttypestoconstraintsP, Proposition*& _Return1, Proposition*& _Return2);
 Cons* buildQuantifiedProposition(Cons* tree, boolean converttypestoconstraintsP, Proposition*& _Return1, Proposition*& _Return2);
 Vector* copyConsListToVariablesVector(Cons* conslist);
-boolean equivalentHoldsPropositionP(Proposition* self, Proposition* other, KeyValueList* mapping);
-boolean equivalentCommutativePropositionsP(Proposition* self, Proposition* other, KeyValueList* mapping);
-boolean equivalentPropositionsP(Proposition* self, Proposition* other, KeyValueList* mapping);
-boolean equivalentFunctionPropositionsP(Proposition* self, Proposition* other, KeyValueList* mapping);
-boolean equivalentDescriptionsP(Description* self, Description* other, KeyValueList* mapping);
+boolean equivalentHoldsPropositionP(Proposition* self, Proposition* other, KeyValueMap* mapping);
+boolean equivalentCommutativePropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping);
+boolean equivalentPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping);
+boolean equivalentFunctionPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping);
+boolean equivalentDescriptionsP(Description* self, Description* other, KeyValueMap* mapping);
 boolean equivalentEnumerationsP(Collection* self, Collection* other);
-boolean equivalentFormulaeP(Object* self, Object* other, KeyValueList* mapping);
+boolean equivalentFormulaeP(Object* self, Object* other, KeyValueMap* mapping);
 boolean sameAndUniqueArgumentsP(Vector* variables, Vector* arguments);
-boolean unifyPropositionsP(Proposition* self, Proposition* other, KeyValueList* mapping);
+boolean unifyPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping);
 boolean namedDescriptionP(Description* self);
 Description* findDuplicateComplexDescription(Description* self);
 Description* findDuplicateDescription(Description* self);
@@ -110,11 +110,11 @@ Proposition* flattenNestedFunctionArguments(Proposition* proposition);
 void collapseValueOfChainsForIoVariables(Vector* iovariables);
 Vector* removeNullsInVariablesVector(Vector* iovariables);
 void tightenArgumentBindings(Proposition* proposition, Vector* iovariables);
-void equateTopLevelEquivalences(Proposition* proposition);
+void equateTopLevelEquivalences(Proposition* proposition, Vector* iovariables, Keyword* kind);
 void collectAllVariables(Proposition* self, List* collection, List* beenthere);
 void computeInternalVariables(Description* self);
 void collectExternalVariables(Proposition* proposition);
-Description* finishBuildingDescription(Description* description, boolean checkforduplicateP);
+Description* finishBuildingDescription(Description* description, boolean checkforduplicateP, Keyword* kind);
 Description* evaluateDescriptionTerm(Cons* term, boolean checkforduplicateP);
 Cons* removeVariableTypePropositions(Proposition* proposition);
 Description* getComplementOfGoalDescription(NamedDescription* self);
@@ -274,7 +274,6 @@ extern Surrogate* SGT_DESCRIPTIONS_STELLA_CONS;
 extern Keyword* KWD_DESCRIPTIONS_ISA;
 extern Symbol* SYM_DESCRIPTIONS_LOGIC_VARIABLE_TYPEp;
 extern Symbol* SYM_DESCRIPTIONS_STELLA_EXISTS;
-extern Symbol* SYM_DESCRIPTIONS_LOGIC_ENTITY_MAPPING;
 extern Keyword* KWD_DESCRIPTIONS_AND;
 extern Keyword* KWD_DESCRIPTIONS_OR;
 extern Keyword* KWD_DESCRIPTIONS_EQUIVALENT;
@@ -296,8 +295,10 @@ extern Symbol* SYM_DESCRIPTIONS_STELLA_NOT;
 extern Surrogate* SGT_DESCRIPTIONS_STELLA_PROPOSITIONdIF;
 extern Symbol* SYM_DESCRIPTIONS_STELLA_AND;
 extern Surrogate* SGT_DESCRIPTIONS_STELLA_CS_VALUE;
+extern Keyword* KWD_DESCRIPTIONS_HEAD;
 extern Symbol* SYM_DESCRIPTIONS_LOGIC_THE_ONLY;
 extern Symbol* SYM_DESCRIPTIONS_LOGIC_IOTAp;
+extern Keyword* KWD_DESCRIPTIONS_TOP_LEVEL;
 extern Symbol* SYM_DESCRIPTIONS_LOGIC_COMPLEMENT_DESCRIPTION;
 extern Symbol* SYM_DESCRIPTIONS_LOGIC_VARIABLE_TYPE_TABLE;
 extern Surrogate* SGT_DESCRIPTIONS_LOGIC_LOGIC_OBJECT;

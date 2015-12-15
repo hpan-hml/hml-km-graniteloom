@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -147,6 +147,7 @@ extern Surrogate* SGT_BACKLINKS_STELLA_INTEGER;
 extern Surrogate* SGT_BACKLINKS_STELLA_FLOAT;
 extern Surrogate* SGT_BACKLINKS_STELLA_STRING;
 extern Surrogate* SGT_BACKLINKS_STELLA_LITERAL_WRAPPER;
+extern Surrogate* SGT_BACKLINKS_LOGIC_BACKLINKS_MIXIN;
 extern Surrogate* SGT_BACKLINKS_LOGIC_PAGING_INDEX;
 extern Surrogate* SGT_BACKLINKS_PL_KERNEL_KB_SUBSET_OF;
 extern Symbol* SYM_BACKLINKS_LOGIC_MASTER_PROPOSITION;
@@ -155,6 +156,7 @@ extern Symbol* SYM_BACKLINKS_LOGIC_SUBSUMPTION_LINKp;
 extern Keyword* KWD_BACKLINKS_RULES;
 extern Keyword* KWD_BACKLINKS_CONTEXT_PROPOSITIONS;
 extern Keyword* KWD_BACKLINKS_CONTEXT_INSTANCES;
+extern Keyword* KWD_BACKLINKS_EQUIVALENT;
 extern Surrogate* SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_000;
 extern Surrogate* SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_001;
 extern Surrogate* SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_002;
@@ -162,7 +164,6 @@ extern Keyword* KWD_BACKLINKS_EVALUATEp;
 extern Symbol* SYM_BACKLINKS_STELLA_TRUE;
 extern Keyword* KWD_BACKLINKS_FUNCTION;
 extern Keyword* KWD_BACKLINKS_PREDICATE;
-extern Keyword* KWD_BACKLINKS_EQUIVALENT;
 extern Keyword* KWD_BACKLINKS_EXTENSIONAL_ASSERTION;
 extern Keyword* KWD_BACKLINKS_DESCRIPTION;
 extern Keyword* KWD_BACKLINKS_PAGING;

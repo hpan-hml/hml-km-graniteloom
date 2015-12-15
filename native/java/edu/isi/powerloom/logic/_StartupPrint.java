@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -58,9 +58,9 @@ public class _StartupPrint {
         Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/LOGIC", Stella.$STARTUP_TIME_PHASE$ > 1));
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Logic.KWD_DEBUG_LOW = ((Keyword)(Stella.internRigidSymbolWrtModule("DEBUG-LOW", null, 2)));
-          Logic.KWD_DEBUG_HIGH = ((Keyword)(Stella.internRigidSymbolWrtModule("DEBUG-HIGH", null, 2)));
-          Logic.SYM_LOGIC_STARTUP_PRINT = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-PRINT", null, 0)));
+          Logic.KWD_DEBUG_LOW = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEBUG-LOW", null, 2)));
+          Logic.KWD_DEBUG_HIGH = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEBUG-HIGH", null, 2)));
+          Logic.SYM_LOGIC_STARTUP_PRINT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-PRINT", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Logic.$PRINTMODE$.setDefaultValue(Logic.KWD_FLAT);
@@ -95,6 +95,7 @@ public class _StartupPrint {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTMODE* KEYWORD :FLAT :DOCUMENTATION \"Controls the kind of detail that gets printed about\nindividual objects.  Values are :ORIGINAL, :REALISTIC, :FLAT, :DEBUG-LOW, and\n :DEBUG-HIGH.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTFUNCTIONSASRELATIONS?* BOOLEAN FALSE :DOCUMENTATION \"Controls whether functions are printed as relations (F i v) or\nas functions (= (F i) v).\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT VARIABLE-BINDING-SEPARATOR STRING \"/\")");

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,7 +56,7 @@ public class _StartupMoreDemons {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.SYM_STELLA_STARTUP_MORE_DEMONS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-MORE-DEMONS", null, 0)));
+          Stella.SYM_STELLA_STARTUP_MORE_DEMONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-MORE-DEMONS", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -77,9 +77,10 @@ public class _StartupMoreDemons {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
-          Stella.defineDemon("inverse-slot-demon", Stella_Object.cons(Stella.KWD_CODE, Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.StandardObject", "inverseSlotDemon", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject"), Native.find_java_class("edu.isi.stella.StorageSlot"), Native.find_java_class("edu.isi.stella.StandardObject"), Native.find_java_class("edu.isi.stella.StandardObject")})), Stella.NIL)));
-          Stella.defineDemon("class-extension-constructor-demon", Stella_Object.cons(Stella.KWD_DOCUMENTATION, Stella_Object.cons(StringWrapper.wrapString("Demon that inserts the instance 'self' into the extension of\nthe class 'class'."), Stella_Object.cons(Stella.KWD_CREATE, Stella_Object.cons(Stella.KWD_ALL, Stella_Object.cons(Stella.KWD_CODE, Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.ActiveObject", "classExtensionConstructorDemon", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.ActiveObject"), Native.find_java_class("edu.isi.stella.Stella_Class")})), Stella.NIL)))))));
-          Stella.defineDemon("class-extension-destructor-demon", Stella_Object.cons(Stella.KWD_DOCUMENTATION, Stella_Object.cons(StringWrapper.wrapString("Demon that removes the instance 'self' from the extension of\nthe class 'class'.  Removal removes the instance forever.  Deletion without\nremoval can be achieved in constant time by setting 'deleted?' on 'self'."), Stella_Object.cons(Stella.KWD_DESTROY, Stella_Object.cons(Stella.KWD_ALL, Stella_Object.cons(Stella.KWD_CODE, Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.ActiveObject", "classExtensionDestructorDemon", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.ActiveObject"), Native.find_java_class("edu.isi.stella.Stella_Class")})), Stella.NIL)))))));
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
+          Stella.defineDemon("inverse-slot-demon", Cons.cons(Stella.KWD_CODE, Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.StandardObject", "inverseSlotDemon", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject"), Native.find_java_class("edu.isi.stella.StorageSlot"), Native.find_java_class("edu.isi.stella.StandardObject"), Native.find_java_class("edu.isi.stella.StandardObject")})), Stella.NIL)));
+          Stella.defineDemon("class-extension-constructor-demon", Cons.cons(Stella.KWD_DOCUMENTATION, Cons.cons(StringWrapper.wrapString("Demon that inserts the instance 'self' into the extension of\nthe class 'class'."), Cons.cons(Stella.KWD_CREATE, Cons.cons(Stella.KWD_ALL, Cons.cons(Stella.KWD_CODE, Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.ActiveObject", "classExtensionConstructorDemon", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.ActiveObject"), Native.find_java_class("edu.isi.stella.Stella_Class")})), Stella.NIL)))))));
+          Stella.defineDemon("class-extension-destructor-demon", Cons.cons(Stella.KWD_DOCUMENTATION, Cons.cons(StringWrapper.wrapString("Demon that removes the instance 'self' from the extension of\nthe class 'class'.  Removal removes the instance forever.  Deletion without\nremoval can be achieved in constant time by setting 'deleted?' on 'self'."), Cons.cons(Stella.KWD_DESTROY, Cons.cons(Stella.KWD_ALL, Cons.cons(Stella.KWD_CODE, Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.ActiveObject", "classExtensionDestructorDemon", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.ActiveObject"), Native.find_java_class("edu.isi.stella.Stella_Class")})), Stella.NIL)))))));
           { Demon createdemon = Stella.lookupDemon("class-extension-constructor-demon");
             Demon destroydemon = Stella.lookupDemon("class-extension-destructor-demon");
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -70,6 +70,7 @@ extern HookList* oDESTROY_CONTEXT_HOOKSo;
 extern HookList* oREDEFINE_RELATION_HOOKSo;
 extern HookList* oFINALIZE_RELATION_HOOKSo;
 extern HookList* oBLOCK_NATIVE_CLASS_CREATION_HOOKSo;
+extern HookList* oSTELLA_EXIT_HOOKSo;
 
 // Function signatures:
 boolean validateDemonReferencesP(Demon* demon);
@@ -101,6 +102,7 @@ void addHook(HookList* hooklist, Symbol* hookfunction);
 void dropHook(HookList* hooklist, Symbol* hookfunction);
 void runHooks(HookList* hooklist, Object* argument);
 void helpStartupDemons1();
+void helpStartupDemons2();
 void startupDemons();
 
 // Auxiliary global declarations:

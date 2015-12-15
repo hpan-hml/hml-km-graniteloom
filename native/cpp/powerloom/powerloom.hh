@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -45,7 +45,6 @@
 
 
 
-
 namespace stella_powerloom_code {
   using namespace stella_utilities;
   using namespace stella_plx;
@@ -53,10 +52,32 @@ namespace stella_powerloom_code {
   using namespace logic;
   using namespace stella;
 
+// Global declarations:
+extern Cons* oPOWERLOOM_EXTENSION_SYSTEMSo;
+
 // Function signatures:
+void loadAllExtensionSystems();
+void loadAllExtensionsOptionHandler(CmdLineOption* option, Object* value);
+void startPowerloomGuiOptionHandler(CmdLineOption* option, Object* value);
 void startupPowerloom();
 
 // Auxiliary global declarations:
+extern Keyword* KWD_POWERLOOM_KEY;
+extern Keyword* KWD_POWERLOOM_DOCUMENTATION;
+extern Keyword* KWD_POWERLOOM_N_ARGUMENTS;
+extern Keyword* KWD_POWERLOOM_HANDLER;
+extern Symbol* SYM_POWERLOOM_POWERLOOM_CODE_LOAD_ALL_EXTENSIONS_OPTION_HANDLER;
+extern Keyword* KWD_POWERLOOM_ERROR_ACTION;
+extern Keyword* KWD_POWERLOOM_ERROR;
+extern Symbol* SYM_POWERLOOM_POWERLOOM_CODE_START_POWERLOOM_GUI_OPTION_HANDLER;
+extern Keyword* KWD_POWERLOOM_WARN;
+extern Keyword* KWD_POWERLOOM_KEY2;
+extern Keyword* KWD_POWERLOOM_PROPERTY;
+extern Keyword* KWD_POWERLOOM_VALUE_TYPE;
+extern Surrogate* SGT_POWERLOOM_STELLA_BOOLEAN;
+extern Keyword* KWD_POWERLOOM_DEFAULT_VALUE;
+extern Keyword* KWD_POWERLOOM_KEY3;
+extern Symbol* SYM_POWERLOOM_STELLA_EVAL_OPTION_HANDLER;
 extern Symbol* SYM_POWERLOOM_POWERLOOM_CODE_STARTUP_POWERLOOM;
 extern Symbol* SYM_POWERLOOM_STELLA_METHOD_STARTUP_CLASSNAME;
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,26 +50,26 @@ import edu.isi.stella.javalib.*;
 public class _StartupDemons {
   static void helpStartupDemons1() {
     {
-      Stella.KWD_MODIFY = ((Keyword)(Stella.internRigidSymbolWrtModule("MODIFY", null, 2)));
-      Stella.KWD_ALL = ((Keyword)(Stella.internRigidSymbolWrtModule("ALL", null, 2)));
-      Stella.KWD_SLOT = ((Keyword)(Stella.internRigidSymbolWrtModule("SLOT", null, 2)));
-      Stella.KWD_CODE = ((Keyword)(Stella.internRigidSymbolWrtModule("CODE", null, 2)));
-      Stella.KWD_GUARDp = ((Keyword)(Stella.internRigidSymbolWrtModule("GUARD?", null, 2)));
-      Stella.KWD_INHERITEDp = ((Keyword)(Stella.internRigidSymbolWrtModule("INHERITED?", null, 2)));
-      Stella.KWD_ACTIVATEp = ((Keyword)(Stella.internRigidSymbolWrtModule("ACTIVATE?", null, 2)));
-      Stella.SYM_STELLA_DEFINE_DEMON = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFINE-DEMON", null, 0)));
-      Stella.SYM_STELLA_OWNER_INSTANCE = ((Symbol)(Stella.internRigidSymbolWrtModule("OWNER-INSTANCE", null, 0)));
-      Stella.SYM_STELLA_ACTIVE_SLOT = ((Symbol)(Stella.internRigidSymbolWrtModule("ACTIVE-SLOT", null, 0)));
-      Stella.SYM_STELLA_GET_SLOT = ((Symbol)(Stella.internRigidSymbolWrtModule("GET-SLOT", null, 0)));
-      Stella.SYM_STELLA_CANT_OVERWRITE_ACTIVE_COLLECTION_SLOT = ((Symbol)(Stella.internRigidSymbolWrtModule("CANT-OVERWRITE-ACTIVE-COLLECTION-SLOT", null, 0)));
-      Stella.SYM_STELLA_CHECK_FOR_SLOT_DEMONSp = ((Symbol)(Stella.internRigidSymbolWrtModule("CHECK-FOR-SLOT-DEMONS?", null, 0)));
-      Stella.SYM_STELLA_WRAPPEDOLDVALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("WRAPPEDOLDVALUE", null, 0)));
-      Stella.SYM_STELLA_WRAPPEDNEWVALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("WRAPPEDNEWVALUE", null, 0)));
-      Stella.SYM_STELLA_RUN_SLOT_GUARD_DEMONSp = ((Symbol)(Stella.internRigidSymbolWrtModule("RUN-SLOT-GUARD-DEMONS?", null, 0)));
-      Stella.SYM_STELLA_RUN_SLOT_DEMONS = ((Symbol)(Stella.internRigidSymbolWrtModule("RUN-SLOT-DEMONS", null, 0)));
-      Stella.SGT_STELLA_HOOK_LIST = ((Surrogate)(Stella.internRigidSymbolWrtModule("HOOK-LIST", null, 1)));
-      Stella.SYM_STELLA_SIGNATURE = ((Symbol)(Stella.internRigidSymbolWrtModule("SIGNATURE", null, 0)));
-      Stella.SYM_STELLA_STARTUP_DEMONS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-DEMONS", null, 0)));
+      Stella.KWD_MODIFY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MODIFY", null, 2)));
+      Stella.KWD_ALL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ALL", null, 2)));
+      Stella.KWD_SLOT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOT", null, 2)));
+      Stella.KWD_CODE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CODE", null, 2)));
+      Stella.KWD_GUARDp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("GUARD?", null, 2)));
+      Stella.KWD_INHERITEDp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INHERITED?", null, 2)));
+      Stella.KWD_ACTIVATEp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ACTIVATE?", null, 2)));
+      Stella.SYM_STELLA_DEFINE_DEMON = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFINE-DEMON", null, 0)));
+      Stella.SYM_STELLA_OWNER_INSTANCE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OWNER-INSTANCE", null, 0)));
+      Stella.SYM_STELLA_ACTIVE_SLOT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ACTIVE-SLOT", null, 0)));
+      Stella.SYM_STELLA_GET_SLOT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GET-SLOT", null, 0)));
+      Stella.SYM_STELLA_CANT_OVERWRITE_ACTIVE_COLLECTION_SLOT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CANT-OVERWRITE-ACTIVE-COLLECTION-SLOT", null, 0)));
+      Stella.SYM_STELLA_CHECK_FOR_SLOT_DEMONSp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CHECK-FOR-SLOT-DEMONS?", null, 0)));
+      Stella.SYM_STELLA_WRAPPEDOLDVALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAPPEDOLDVALUE", null, 0)));
+      Stella.SYM_STELLA_WRAPPEDNEWVALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAPPEDNEWVALUE", null, 0)));
+      Stella.SYM_STELLA_RUN_SLOT_GUARD_DEMONSp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RUN-SLOT-GUARD-DEMONS?", null, 0)));
+      Stella.SYM_STELLA_RUN_SLOT_DEMONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RUN-SLOT-DEMONS", null, 0)));
+      Stella.SGT_STELLA_HOOK_LIST = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("HOOK-LIST", null, 1)));
+      Stella.SYM_STELLA_SIGNATURE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SIGNATURE", null, 0)));
+      Stella.SYM_STELLA_STARTUP_DEMONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-DEMONS", null, 0)));
     }
   }
 
@@ -91,6 +91,7 @@ public class _StartupDemons {
           Stella.$REDEFINE_RELATION_HOOKS$ = HookList.newHookList();
           Stella.$FINALIZE_RELATION_HOOKS$ = HookList.newHookList();
           Stella.$BLOCK_NATIVE_CLASS_CREATION_HOOKS$ = HookList.newHookList();
+          Stella.$STELLA_EXIT_HOOKS$ = HookList.newHookList();
         }
         if (Stella.currentStartupTimePhaseP(5)) {
           { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("HOOK-LIST", "(DEFCLASS HOOK-LIST (KEY-VALUE-LIST) :DOCUMENTATION \"Each HOOK-LIST object contains a list of zero or\nmore function codes that get funcall'd some procedure.\" :PARAMETERS ((ANY-KEY :TYPE SYMBOL) (ANY-VALUE :TYPE FUNCTION-CODE-WRAPPER)) :SLOTS ((SIGNATURE :TYPE STRING) (DOCUMENTATION :TYPE STRING)))");
@@ -144,6 +145,7 @@ public class _StartupDemons {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEMONS-TABLE* STRING-HASH-TABLE (NEW STRING-HASH-TABLE) :DOCUMENTATION \"Table containing all active and inactive demons, indexed\non their names.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CONSTRUCTOR-DEMONS* (LIST OF DEMON) NULL :DOCUMENTATION \"These demons trigger every time an active instance is created.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DESTRUCTOR-DEMONS* (LIST OF DEMON) NULL :DOCUMENTATION \"These demons trigger every time an active instance is destroyed.\")");
@@ -155,6 +157,7 @@ public class _StartupDemons {
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *REDEFINE-RELATION-HOOKS* HOOK-LIST (NEW HOOK-LIST) :DOCUMENTATION \"HOOK-LIST is called by `undefine-old-class'.  Each\nhook function is passed a LIST of two RELATION objects; the first is the\nold relation object and the second is the new (redefined) relation object.\nThe hook functions are expected to copy/transfer information from the\nold relation to the new relation so that it won't be lost.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *FINALIZE-RELATION-HOOKS* HOOK-LIST (NEW HOOK-LIST) :DOCUMENTATION \"HOOK-LIST is called by `finalize-one-class'\nand `finalize-local-slot', applied to a RELATION argument.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *BLOCK-NATIVE-CLASS-CREATION-HOOKS* HOOK-LIST (NEW HOOK-LIST) :DOCUMENTATION \"HOOK-LIST called by `create-native-class', applied to\na STELLA class.  Return value of TRUE blocks creation.\")");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-EXIT-HOOKS* HOOK-LIST (NEW HOOK-LIST) :DOCUMENTATION \"HOOK-LIST of cleanup functions to be called upon exit from\nthe STELLA application or any point where such cleanup is required.  The\nfunctions on this list should be highly tolerant of their invocation environment\nand not assume any special state; that is, they should be no-ops if no special\ncleanup is required.\")");
         }
 
       } finally {

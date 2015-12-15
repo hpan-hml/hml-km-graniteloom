@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,21 +52,21 @@ import edu.isi.stella.*;
 public class _StartupSequenceIndices {
   static void helpStartupSequenceIndices1() {
     {
-      Logic.SYM_LOGIC_SELECTION_PATTERN = ((Symbol)(Stella.internRigidSymbolWrtModule("SELECTION-PATTERN", null, 0)));
-      Logic.SYM_LOGIC_THE_SEQUENCE = ((Symbol)(Stella.internRigidSymbolWrtModule("THE-SEQUENCE", null, 0)));
-      Logic.SYM_LOGIC_THE_SEQUENCE_LENGTH = ((Symbol)(Stella.internRigidSymbolWrtModule("THE-SEQUENCE-LENGTH", null, 0)));
-      Logic.SGT_LOGIC_NON_PAGING_INDEX = ((Surrogate)(Stella.internRigidSymbolWrtModule("NON-PAGING-INDEX", null, 1)));
-      Logic.SGT_LOGIC_PAGING_INDEX = ((Surrogate)(Stella.internRigidSymbolWrtModule("PAGING-INDEX", null, 1)));
-      Logic.SYM_LOGIC_STORE = ((Symbol)(Stella.internRigidSymbolWrtModule("STORE", null, 0)));
-      Logic.SGT_LOGIC_SEQUENCE_INDEX_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("SEQUENCE-INDEX-ITERATOR", null, 1)));
-      Logic.SYM_STELLA_LIST_ITERATOR_CURSOR = ((Symbol)(Stella.internRigidSymbolWrtModule("LIST-ITERATOR-CURSOR", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SGT_LOGIC_PAGING_INDEX_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("PAGING-INDEX-ITERATOR", null, 1)));
-      Logic.SYM_LOGIC_OBJECT_STORE = ((Symbol)(Stella.internRigidSymbolWrtModule("OBJECT-STORE", null, 0)));
-      Logic.SGT_STELLA_MODULE = ((Surrogate)(Stella.internRigidSymbolWrtModule("MODULE", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.SGT_LOGIC_OBJECT_STORE = ((Surrogate)(Stella.internRigidSymbolWrtModule("OBJECT-STORE", null, 1)));
-      Logic.KWD_PAGING = ((Keyword)(Stella.internRigidSymbolWrtModule("PAGING", null, 2)));
-      Logic.KWD_NON_PAGING = ((Keyword)(Stella.internRigidSymbolWrtModule("NON-PAGING", null, 2)));
-      Logic.SYM_LOGIC_STARTUP_SEQUENCE_INDICES = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-SEQUENCE-INDICES", null, 0)));
+      Logic.SYM_LOGIC_SELECTION_PATTERN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SELECTION-PATTERN", null, 0)));
+      Logic.SYM_LOGIC_THE_SEQUENCE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-SEQUENCE", null, 0)));
+      Logic.SYM_LOGIC_THE_SEQUENCE_LENGTH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-SEQUENCE-LENGTH", null, 0)));
+      Logic.SGT_LOGIC_NON_PAGING_INDEX = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NON-PAGING-INDEX", null, 1)));
+      Logic.SGT_LOGIC_PAGING_INDEX = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PAGING-INDEX", null, 1)));
+      Logic.SYM_LOGIC_STORE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STORE", null, 0)));
+      Logic.SGT_LOGIC_SEQUENCE_INDEX_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SEQUENCE-INDEX-ITERATOR", null, 1)));
+      Logic.SYM_STELLA_LIST_ITERATOR_CURSOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LIST-ITERATOR-CURSOR", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SGT_LOGIC_PAGING_INDEX_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PAGING-INDEX-ITERATOR", null, 1)));
+      Logic.SYM_LOGIC_OBJECT_STORE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OBJECT-STORE", null, 0)));
+      Logic.SGT_STELLA_MODULE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("MODULE", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.SGT_LOGIC_OBJECT_STORE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("OBJECT-STORE", null, 1)));
+      Logic.KWD_PAGING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PAGING", null, 2)));
+      Logic.KWD_NON_PAGING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NON-PAGING", null, 2)));
+      Logic.SYM_LOGIC_STARTUP_SEQUENCE_INDICES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-SEQUENCE-INDICES", null, 0)));
     }
   }
 
@@ -164,6 +164,7 @@ public class _StartupSequenceIndices {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NIL-NON-PAGING-INDEX NON-PAGING-INDEX (NEW NON-PAGING-INDEX) :DOCUMENTATION \"Returns a non-writable empty sequence.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NIL-PAGING-INDEX PAGING-INDEX (NEW PAGING-INDEX :SELECTION-PATTERN (QUOTE (:NIL-SEQUENCE))) :DOCUMENTATION \"Returns a non-writable empty sequence.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *LOADINGREGENERABLEOBJECTS?* BOOLEAN FALSE :DOCUMENTATION \"If TRUE, objects being created are regenerable,\nand should not be indexed using the backlinks procedures.\")");

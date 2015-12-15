@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,17 +50,17 @@ import edu.isi.stella.javalib.*;
 public class _StartupDescribe {
   static void helpStartupDescribe1() {
     {
-      Stella.SGT_STELLA_CONTEXT = ((Surrogate)(Stella.internRigidSymbolWrtModule("CONTEXT", null, 1)));
-      Stella.KWD_VERBOSE = ((Keyword)(Stella.internRigidSymbolWrtModule("VERBOSE", null, 2)));
-      Stella.SGT_STELLA_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("ITERATOR", null, 1)));
-      Stella.SGT_STELLA_RELATION = ((Surrogate)(Stella.internRigidSymbolWrtModule("RELATION", null, 1)));
-      Stella.KWD_SOURCE = ((Keyword)(Stella.internRigidSymbolWrtModule("SOURCE", null, 2)));
-      Stella.KWD_TERSE = ((Keyword)(Stella.internRigidSymbolWrtModule("TERSE", null, 2)));
-      Stella.KWD_OWNER = ((Keyword)(Stella.internRigidSymbolWrtModule("OWNER", null, 2)));
-      Stella.KWD_SHADOWS = ((Keyword)(Stella.internRigidSymbolWrtModule("SHADOWS", null, 2)));
-      Stella.SYM_STELLA_gg_INFERRED_SLOTS = ((Symbol)(Stella.internRigidSymbolWrtModule(">>_INFERRED_SLOTS", null, 0)));
-      Stella.KWD_USED_BY = ((Keyword)(Stella.internRigidSymbolWrtModule("USED-BY", null, 2)));
-      Stella.SYM_STELLA_STARTUP_DESCRIBE = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-DESCRIBE", null, 0)));
+      Stella.SGT_STELLA_CONTEXT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTEXT", null, 1)));
+      Stella.KWD_VERBOSE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("VERBOSE", null, 2)));
+      Stella.SGT_STELLA_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ITERATOR", null, 1)));
+      Stella.SGT_STELLA_RELATION = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("RELATION", null, 1)));
+      Stella.KWD_SOURCE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SOURCE", null, 2)));
+      Stella.KWD_TERSE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TERSE", null, 2)));
+      Stella.KWD_OWNER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("OWNER", null, 2)));
+      Stella.KWD_SHADOWS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SHADOWS", null, 2)));
+      Stella.SYM_STELLA_gg_INFERRED_SLOTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule(">>_INFERRED_SLOTS", null, 0)));
+      Stella.KWD_USED_BY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("USED-BY", null, 2)));
+      Stella.SYM_STELLA_STARTUP_DESCRIBE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-DESCRIBE", null, 0)));
     }
   }
 
@@ -133,7 +133,7 @@ public class _StartupDescribe {
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Stella.$STRING_TO_OBJECT_FUNCTIONS$ = KeyValueList.newKeyValueList();
-          Stella.$INTEGER_TO_OBJECT_FUNCTIONS$ = Stella.list(Stella.NIL);
+          Stella.$INTEGER_TO_OBJECT_FUNCTIONS$ = List.list(Stella.NIL);
           Stella.$DEFAULT_DESCRIBE_MODE$ = Stella.KWD_VERBOSE;
           Stella.$SLOTOPTIONSLOTS$.setDefaultValue(null);
           Stella.$CLASSOPTIONSLOTS$.setDefaultValue(null);
@@ -150,6 +150,7 @@ public class _StartupDescribe {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STRING-TO-OBJECT-FUNCTIONS* (KEY-VALUE-LIST OF TYPE CODE-WRAPPER) (NEW KEY-VALUE-LIST) :DOCUMENTATION \"Table of functions (keyed by type of object returned) that can\nbe called to search for an object identified by a string.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *INTEGER-TO-OBJECT-FUNCTIONS* (LIST OF CODE-WRAPPER) (LIST) :DOCUMENTATION \"List of functions that can be called to search for\nan object identified by an integer.\")");
           Stella.$STRING_TO_OBJECT_FUNCTIONS$.clear();

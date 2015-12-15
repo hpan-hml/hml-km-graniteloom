@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -58,6 +58,11 @@ public class KeyValueList extends Dictionary {
    * @return KeyValueList
    */
   public static KeyValueList loadConfigurationFile(String file) {
+    { String temp000 = Stella.findFileInLoadPath(file, null);
+
+      file = ((temp000 != null) ? temp000 : file);
+    }
+    Stella.ensureFileExists(file, "load-configuration-file");
     { KeyValueList configuration = KeyValueList.newKeyValueList();
 
       { InputFileStream in = null;
@@ -177,6 +182,36 @@ public class KeyValueList extends Dictionary {
     }
   }
 
+  /** Print all properties defined in <code>configuration</code> to <code>stream</code>.
+   * @param configuration
+   * @param stream
+   */
+  public static void printConfigurationProperties(KeyValueList configuration, OutputStream stream) {
+    { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+
+      try {
+        Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+        { Cons entry = null;
+          Cons iter000 = ((Cons)(configuration.consify().sortTuples(0, null)));
+
+          for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+            entry = ((Cons)(iter000.value));
+            stream.nativeStream.print(StringWrapper.unwrapString(((StringWrapper)(entry.value))) + " = ");
+            if (Stella_Object.stringP(entry.rest.value)) {
+              stream.nativeStream.println(StringWrapper.unwrapString(((StringWrapper)(entry.rest.value))));
+            }
+            else {
+              stream.nativeStream.println(entry.rest.value);
+            }
+          }
+        }
+
+      } finally {
+        Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+      }
+    }
+  }
+
   /** Save <code>table</code> as a configuration file.  Uses a Java-style property file syntax.
    * @param table
    * @param file
@@ -238,7 +273,7 @@ public class KeyValueList extends Dictionary {
   }
 
   public static List concatenateSystemUnits(KeyValueList systemunits) {
-    { Cons head = Stella_Object.cons(null, Stella.NIL);
+    { Cons head = Cons.cons(null, Stella.NIL);
       Cons cursor = head;
 
       { StringWrapper file = null;
@@ -284,7 +319,7 @@ public class KeyValueList extends Dictionary {
         cursor = cursor.rest;
       }
       if (!deletevalueP) {
-        dynamicslots.theKvList = Stella_Object.kvCons(slotname, value, dynamicslots.theKvList);
+        dynamicslots.theKvList = KvCons.kvCons(slotname, value, dynamicslots.theKvList);
       }
       return (value);
     }
@@ -391,7 +426,7 @@ public class KeyValueList extends Dictionary {
                            (!((Stella_Class)(unit.theObject)).mixinP))) {
                         if (collect000 == null) {
                           {
-                            collect000 = Stella_Object.cons(unit, Stella.NIL);
+                            collect000 = Cons.cons(unit, Stella.NIL);
                             if (classunits.theConsList == Stella.NIL) {
                               classunits.theConsList = collect000;
                             }
@@ -402,7 +437,7 @@ public class KeyValueList extends Dictionary {
                         }
                         else {
                           {
-                            collect000.rest = Stella_Object.cons(unit, Stella.NIL);
+                            collect000.rest = Cons.cons(unit, Stella.NIL);
                             collect000 = collect000.rest;
                           }
                         }
@@ -434,7 +469,7 @@ public class KeyValueList extends Dictionary {
         }
         cursor = cursor.rest;
       }
-      self.theKvList = Stella_Object.kvCons(variable, value, self.theKvList);
+      self.theKvList = KvCons.kvCons(variable, value, self.theKvList);
     }
   }
 
@@ -454,9 +489,18 @@ public class KeyValueList extends Dictionary {
     return (null);
   }
 
+  /** Fill in <code>substitutionList</code> with date information for the current
+   * date and time.  See <code>addDateSubstitution</code> for details.
+   * @param substitutionList
+   */
+  public static void addCurrentDateSubstitution(KeyValueList substitutionList) {
+    CalendarDate.addDateSubstitution(CalendarDate.makeCurrentDateTime(), substitutionList);
+  }
+
   /** Fill in <code>substitutionList</code> with template variable substitions
    * for the names YEAR and DATE which correspond to the current year and date.
    * These substitutions can then be used with <code>substituteTemplateVariablesInString</code>
+   * DEPRECATED.  Use <code>addDateSubsitution</code> or <code>addCurrentDateSubstitution</code> instead.
    * @param substitutionList
    */
   public static void fillInDateSubstitution(KeyValueList substitutionList) {
@@ -473,8 +517,8 @@ public class KeyValueList extends Dictionary {
         dow = ((Keyword)(caller_MV_returnarray[2]));
       }
       dow = dow;
-      substitutionList.insertAt(StringWrapper.wrapString("YEAR"), StringWrapper.wrapString(Native.integerToString(year)));
-      substitutionList.insertAt(StringWrapper.wrapString("DATE"), StringWrapper.wrapString(Stella.formatWithPadding(Native.integerToString(day), 2, '0', Stella.KWD_RIGHT, false) + "-" + ((StringWrapper)((Stella.$MONTH_ABBREVIATION_VECTOR$.theArray)[month])).wrapperValue + "-" + Native.integerToString(year)));
+      substitutionList.insertAt(StringWrapper.wrapString("YEAR"), StringWrapper.wrapString(Native.integerToString(((long)(year)))));
+      substitutionList.insertAt(StringWrapper.wrapString("DATE"), StringWrapper.wrapString(Stella.formatWithPadding(Native.integerToString(((long)(day))), 2, '0', Stella.KWD_RIGHT, false) + "-" + ((StringWrapper)((Stella.$MONTH_ABBREVIATION_VECTOR$.theArray)[month])).wrapperValue + "-" + Native.integerToString(((long)(year)))));
     }
   }
 
@@ -518,7 +562,7 @@ public class KeyValueList extends Dictionary {
             v = iter000.value;
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Stella_Object.cons(k, Stella_Object.cons(v, Stella.NIL)), Stella.NIL);
+                collect000 = Cons.cons(Cons.cons(k, Cons.cons(v, Stella.NIL)), Stella.NIL);
                 if (result.theConsList == Stella.NIL) {
                   result.theConsList = collect000;
                 }
@@ -529,7 +573,7 @@ public class KeyValueList extends Dictionary {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Stella_Object.cons(k, Stella_Object.cons(v, Stella.NIL)), Stella.NIL);
+                collect000.rest = Cons.cons(Cons.cons(k, Cons.cons(v, Stella.NIL)), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -555,7 +599,7 @@ public class KeyValueList extends Dictionary {
         for (;iter000 != null; iter000 = iter000.rest) {
           key = iter000.key;
           value = iter000.value;
-          plist = Stella_Object.cons(value, Stella_Object.cons(key, plist));
+          plist = Cons.cons(value, Cons.cons(key, plist));
         }
       }
       { PropertyList self000 = PropertyList.newPropertyList();
@@ -748,7 +792,7 @@ public class KeyValueList extends Dictionary {
   public void kvPush(Stella_Object key, Stella_Object value) {
     { KeyValueList self = this;
 
-      self.theKvList = Stella_Object.kvCons(key, value, self.theKvList);
+      self.theKvList = KvCons.kvCons(key, value, self.theKvList);
     }
   }
 
@@ -827,7 +871,7 @@ public class KeyValueList extends Dictionary {
           }
         }
         if (!(foundP000)) {
-          self.theKvList = Stella_Object.kvCons(key, value, self.theKvList);
+          self.theKvList = KvCons.kvCons(key, value, self.theKvList);
         }
       }
     }
@@ -886,7 +930,7 @@ public class KeyValueList extends Dictionary {
           }
           cursor = cursor.rest;
         }
-        self.theKvList = Stella_Object.kvCons(key, value, self.theKvList);
+        self.theKvList = KvCons.kvCons(key, value, self.theKvList);
       }
     }
   }
@@ -962,7 +1006,7 @@ public class KeyValueList extends Dictionary {
             v = iter000.value;
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Stella_Object.cons(k, Stella_Object.cons(v, Stella.NIL)), Stella.NIL);
+                collect000 = Cons.cons(Cons.cons(k, Cons.cons(v, Stella.NIL)), Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect000;
                 }
@@ -973,7 +1017,7 @@ public class KeyValueList extends Dictionary {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Stella_Object.cons(k, Stella_Object.cons(v, Stella.NIL)), Stella.NIL);
+                collect000.rest = Cons.cons(Cons.cons(k, Cons.cons(v, Stella.NIL)), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }

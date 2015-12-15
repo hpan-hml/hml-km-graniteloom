@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -60,7 +60,3 @@
 (CL:DEFSTRUCT (DIM-NUMBER (:CONC-NAME %DIM-NUMBER.) (:INCLUDE QUANTITY) (:CONSTRUCTOR %MAKE-DIM-NUMBER ()) (:COPIER ()) (:PREDICATE ())) (PID NULL)
   (MAGNITUDE NULL-FLOAT :TYPE CL:DOUBLE-FLOAT)
   (PREFERRED-UNITS STELLA::NULL-STRING :TYPE CL:SIMPLE-STRING))
-
-(CL:DEFINE-CONDITION HTTP-EXCEPTION (READ-EXCEPTION)
-  ((ERROR-CODE :TYPE CL:FIXNUM :INITFORM NULL-INTEGER :ALLOCATION
-    :INSTANCE :ACCESSOR %ERROR-CODE)))

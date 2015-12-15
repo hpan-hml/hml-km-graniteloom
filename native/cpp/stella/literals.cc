@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -57,6 +57,8 @@ BooleanWrapper* FALSE_WRAPPER = NULL;
 
 IntegerWrapper* NULL_INTEGER_WRAPPER = NULL;
 
+LongIntegerWrapper* NULL_LONG_INTEGER_WRAPPER = NULL;
+
 FloatWrapper* NULL_FLOAT_WRAPPER = NULL;
 
 StringWrapper* NULL_STRING_WRAPPER = NULL;
@@ -72,12 +74,13 @@ MethodCodeWrapper* NULL_METHOD_CODE_WRAPPER = NULL;
 boolean Wrapper::terminateWrapperP() {
   { Wrapper* self = this;
 
-    if ((self == NULL_FLOAT_WRAPPER) ||
-        ((self == NULL_STRING_WRAPPER) ||
-         ((self == NULL_MUTABLE_STRING_WRAPPER) ||
-          ((self == NULL_CHARACTER_WRAPPER) ||
-           ((self == NULL_FUNCTION_CODE_WRAPPER) ||
-            (self == NULL_METHOD_CODE_WRAPPER)))))) {
+    if ((self == NULL_LONG_INTEGER_WRAPPER) ||
+        ((self == NULL_FLOAT_WRAPPER) ||
+         ((self == NULL_STRING_WRAPPER) ||
+          ((self == NULL_MUTABLE_STRING_WRAPPER) ||
+           ((self == NULL_CHARACTER_WRAPPER) ||
+            ((self == NULL_FUNCTION_CODE_WRAPPER) ||
+             (self == NULL_METHOD_CODE_WRAPPER))))))) {
       return (false);
     }
     else {
@@ -157,6 +160,47 @@ int unwrapInteger(IntegerWrapper* wrapper) {
   }
   else {
     return (wrapper->wrapperValue);
+  }
+}
+
+LongIntegerWrapper* wrapLongInteger(long long int value) {
+  // Return a literal object whose value is the LONG-INTEGER 'value'.
+  if (value == NULL_LONG_INTEGER) {
+    return (NULL_LONG_INTEGER_WRAPPER);
+  }
+  else {
+    return (newLongIntegerWrapper(value));
+  }
+}
+
+long long int unwrapLongInteger(LongIntegerWrapper* wrapper) {
+  // Unwrap `wrapper' and return the result.
+  // Return NULL if `wrapper' is NULL.
+  if (!((boolean)(wrapper))) {
+    return (NULL_LONG_INTEGER);
+  }
+  else {
+    return (wrapper->wrapperValue);
+  }
+}
+
+NumberWrapper* wrapIntegerValue(long long int value) {
+  // Return a literal object whose value is 'value'.  Choose a regular integer
+  // wrapper unless `value' is too large and needs to be stored in a long wrapper.
+  if ((value >= NULL_INTEGER) &&
+      (value <= MOST_POSITIVE_INTEGER)) {
+    { IntegerWrapper* intwrapper = new (PointerFreeGC)IntegerWrapper;
+
+      intwrapper->wrapperValue = ((int)(value));
+      return (intwrapper);
+    }
+  }
+  else {
+    { LongIntegerWrapper* longwrapper = new (PointerFreeGC)LongIntegerWrapper;
+
+      longwrapper->wrapperValue = value;
+      return (longwrapper);
+    }
   }
 }
 
@@ -305,31 +349,41 @@ boolean coerceWrappedBooleanToBoolean(BooleanWrapper* wrapper) {
 }
 
 Object* inlineWrapBoolean(Object* expression) {
-  if (expression == SYM_LITERALS_STELLA_TRUE) {
-    return (SYM_LITERALS_STELLA_TRUE_WRAPPER);
-  }
-  else if (expression == SYM_LITERALS_STELLA_FALSE) {
-    return (SYM_LITERALS_STELLA_FALSE_WRAPPER);
-  }
-  else {
-    return (listO(3, SYM_LITERALS_STELLA_WRAP_BOOLEAN, expression, NIL));
+  { Object* walkedexp = walkedExpressionExpression(expression);
+
+    if (walkedexp == SYM_LITERALS_STELLA_TRUE) {
+      return (SYM_LITERALS_STELLA_TRUE_WRAPPER);
+    }
+    else if (walkedexp == SYM_LITERALS_STELLA_FALSE) {
+      return (SYM_LITERALS_STELLA_FALSE_WRAPPER);
+    }
+    else {
+      return (listO(3, SYM_LITERALS_STELLA_WRAP_BOOLEAN, expression, NIL));
+    }
   }
 }
 
 Object* inlineUnwrapBoolean(Object* expression) {
-  if (expression == SYM_LITERALS_STELLA_TRUE_WRAPPER) {
-    return (SYM_LITERALS_STELLA_TRUE);
-  }
-  else if (expression == SYM_LITERALS_STELLA_FALSE_WRAPPER) {
-    return (SYM_LITERALS_STELLA_FALSE);
-  }
-  else {
-    return (listO(3, SYM_LITERALS_STELLA_COERCE_WRAPPED_BOOLEAN_TO_BOOLEAN, expression, NIL));
+  { Object* walkedexp = walkedExpressionExpression(expression);
+
+    if (walkedexp == SYM_LITERALS_STELLA_TRUE_WRAPPER) {
+      return (SYM_LITERALS_STELLA_TRUE);
+    }
+    else if (walkedexp == SYM_LITERALS_STELLA_FALSE_WRAPPER) {
+      return (SYM_LITERALS_STELLA_FALSE);
+    }
+    else {
+      return (listO(3, SYM_LITERALS_STELLA_COERCE_WRAPPED_BOOLEAN_TO_BOOLEAN, expression, NIL));
+    }
   }
 }
 
 IntegerWrapper* integerWrapLiteral(int value) {
   return (wrapInteger(value));
+}
+
+LongIntegerWrapper* longIntegerWrapLiteral(long long int value) {
+  return (wrapLongInteger(value));
 }
 
 FloatWrapper* floatWrapLiteral(double value) {
@@ -374,6 +428,13 @@ Object* IntegerWrapper::copyWrappedLiteral() {
   { IntegerWrapper* self = this;
 
     return (wrapInteger(self->wrapperValue));
+  }
+}
+
+Object* LongIntegerWrapper::copyWrappedLiteral() {
+  { LongIntegerWrapper* self = this;
+
+    return (wrapLongInteger(self->wrapperValue));
   }
 }
 
@@ -441,8 +502,19 @@ boolean IntegerWrapper::objectEqlP(Object* y) {
   { IntegerWrapper* x = this;
 
     return (((boolean)(y)) &&
-        ((y->primaryType() == SGT_LITERALS_STELLA_INTEGER_WRAPPER) &&
+        (((y->primaryType() == SGT_LITERALS_STELLA_INTEGER_WRAPPER) ||
+        isaP(y, SGT_LITERALS_STELLA_INTEGER_WRAPPER)) &&
          (x->wrapperValue == ((IntegerWrapper*)(y))->wrapperValue)));
+  }
+}
+
+boolean LongIntegerWrapper::objectEqlP(Object* y) {
+  { LongIntegerWrapper* x = this;
+
+    return (((boolean)(y)) &&
+        (((y->primaryType() == SGT_LITERALS_STELLA_LONG_INTEGER_WRAPPER) ||
+        isaP(y, SGT_LITERALS_STELLA_LONG_INTEGER_WRAPPER)) &&
+         (x->wrapperValue == ((LongIntegerWrapper*)(y))->wrapperValue)));
   }
 }
 
@@ -450,7 +522,8 @@ boolean FloatWrapper::objectEqlP(Object* y) {
   { FloatWrapper* x = this;
 
     return (((boolean)(y)) &&
-        ((y->primaryType() == SGT_LITERALS_STELLA_FLOAT_WRAPPER) &&
+        (((y->primaryType() == SGT_LITERALS_STELLA_FLOAT_WRAPPER) ||
+        isaP(y, SGT_LITERALS_STELLA_FLOAT_WRAPPER)) &&
          (x->wrapperValue == ((FloatWrapper*)(y))->wrapperValue)));
   }
 }
@@ -458,7 +531,11 @@ boolean FloatWrapper::objectEqlP(Object* y) {
 boolean BooleanWrapper::objectEqlP(Object* y) {
   { BooleanWrapper* x = this;
 
-    return (x == y);
+    return ((x == y) ||
+        (((boolean)(y)) &&
+         (((y->primaryType() == SGT_LITERALS_STELLA_BOOLEAN_WRAPPER) ||
+        isaP(y, SGT_LITERALS_STELLA_BOOLEAN_WRAPPER)) &&
+          (x->wrapperValue == ((BooleanWrapper*)(y))->wrapperValue))));
   }
 }
 
@@ -470,10 +547,11 @@ boolean StringWrapper::objectEqlP(Object* y) {
 
         if ((ytype == SGT_LITERALS_STELLA_STRING_WRAPPER) ||
             ((ytype == SGT_LITERALS_STELLA_VERBATIM_STRING_WRAPPER) ||
-             ((!oCLASS_HIERARCHY_BOOTEDpo) &&
-              ((!((boolean)(ytype))) ||
-               ((!((boolean)(SGT_LITERALS_STELLA_STRING_WRAPPER))) ||
-                (!((boolean)(SGT_LITERALS_STELLA_VERBATIM_STRING_WRAPPER)))))))) {
+             (((!oCLASS_HIERARCHY_BOOTEDpo) &&
+            ((!((boolean)(ytype))) ||
+             ((!((boolean)(SGT_LITERALS_STELLA_STRING_WRAPPER))) ||
+              (!((boolean)(SGT_LITERALS_STELLA_VERBATIM_STRING_WRAPPER)))))) ||
+              isaP(y, SGT_LITERALS_STELLA_STRING_WRAPPER)))) {
           return (stringEqlP(x->wrapperValue, ((StringWrapper*)(y))->wrapperValue));
         }
       }
@@ -493,7 +571,8 @@ boolean CharacterWrapper::objectEqlP(Object* y) {
   { CharacterWrapper* x = this;
 
     return (((boolean)(y)) &&
-        ((y->primaryType() == SGT_LITERALS_STELLA_CHARACTER_WRAPPER) &&
+        (((y->primaryType() == SGT_LITERALS_STELLA_CHARACTER_WRAPPER) ||
+        isaP(y, SGT_LITERALS_STELLA_CHARACTER_WRAPPER)) &&
          (x->wrapperValue == ((CharacterWrapper*)(y))->wrapperValue)));
   }
 }
@@ -506,6 +585,11 @@ boolean eqlToBooleanP(Object* y, boolean x) {
 boolean eqlToIntegerP(Object* y, int x) {
   return (integerP(y) &&
       (((IntegerWrapper*)(y))->wrapperValue == x));
+}
+
+boolean eqlToLongIntegerP(Object* y, long long int x) {
+  return (longIntegerP(y) &&
+      (((LongIntegerWrapper*)(y))->wrapperValue == x));
 }
 
 boolean eqlToFloatP(Object* y, double x) {
@@ -548,30 +632,37 @@ Object* helpBquotify(Object* tree) {
         return (consList(2, SYM_LITERALS_STELLA_WRAP_LITERAL, tree));
       }
     }
-    else if (subtypeOfStringP(testValue000)) {
+    else if (subtypeOfLongIntegerP(testValue000)) {
       { Object* tree002 = tree;
-        StringWrapper* tree = ((StringWrapper*)(tree002));
+        LongIntegerWrapper* tree = ((LongIntegerWrapper*)(tree002));
+
+        return (consList(2, SYM_LITERALS_STELLA_WRAP_LITERAL, tree));
+      }
+    }
+    else if (subtypeOfStringP(testValue000)) {
+      { Object* tree003 = tree;
+        StringWrapper* tree = ((StringWrapper*)(tree003));
 
         return (consList(2, SYM_LITERALS_STELLA_WRAP_LITERAL, tree));
       }
     }
     else if (subtypeOfFloatP(testValue000)) {
-      { Object* tree003 = tree;
-        FloatWrapper* tree = ((FloatWrapper*)(tree003));
+      { Object* tree004 = tree;
+        FloatWrapper* tree = ((FloatWrapper*)(tree004));
 
         return (consList(2, SYM_LITERALS_STELLA_WRAP_LITERAL, tree));
       }
     }
     else if (subtypeOfCharacterP(testValue000)) {
-      { Object* tree004 = tree;
-        CharacterWrapper* tree = ((CharacterWrapper*)(tree004));
+      { Object* tree005 = tree;
+        CharacterWrapper* tree = ((CharacterWrapper*)(tree005));
 
         return (consList(2, SYM_LITERALS_STELLA_WRAP_LITERAL, tree));
       }
     }
     else if (subtypeOfKeywordP(testValue000)) {
-      { Object* tree005 = tree;
-        Keyword* tree = ((Keyword*)(tree005));
+      { Object* tree006 = tree;
+        Keyword* tree = ((Keyword*)(tree006));
 
         if (useHardcodedSymbolsP()) {
           return (consList(2, SYM_LITERALS_STELLA_GET_KWD, wrapInteger(tree->symbolId)));
@@ -582,8 +673,8 @@ Object* helpBquotify(Object* tree) {
       }
     }
     else if (subtypeOfSurrogateP(testValue000)) {
-      { Object* tree006 = tree;
-        Surrogate* tree = ((Surrogate*)(tree006));
+      { Object* tree007 = tree;
+        Surrogate* tree = ((Surrogate*)(tree007));
 
         if (useHardcodedSymbolsP()) {
           return (consList(2, SYM_LITERALS_STELLA_GET_SGT, wrapInteger(tree->symbolId)));
@@ -594,8 +685,8 @@ Object* helpBquotify(Object* tree) {
       }
     }
     else if (subtypeOfSymbolP(testValue000)) {
-      { Object* tree007 = tree;
-        Symbol* tree = ((Symbol*)(tree007));
+      { Object* tree008 = tree;
+        Symbol* tree = ((Symbol*)(tree008));
 
         if (symbolCommonLispP(tree)) {
           return (consList(2, SYM_LITERALS_STELLA_INTERN_COMMON_LISP_SYMBOL, wrapString(tree->symbolName)));
@@ -1111,6 +1202,13 @@ double IntegerWrapper::numberWrapperToFloat() {
   }
 }
 
+double LongIntegerWrapper::numberWrapperToFloat() {
+  { LongIntegerWrapper* self = this;
+
+    return (((double)(self->wrapperValue)));
+  }
+}
+
 double FloatWrapper::numberWrapperToFloat() {
   { FloatWrapper* self = this;
 
@@ -1125,6 +1223,8 @@ void helpStartupLiterals1() {
     SYM_LITERALS_STELLA_FALSE_WRAPPER = ((Symbol*)(internRigidSymbolWrtModule("FALSE-WRAPPER", NULL, 0)));
     SGT_LITERALS_STELLA_INTEGER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER", NULL, 1)));
     SYM_LITERALS_STELLA_NULL_INTEGER_WRAPPER = ((Symbol*)(internRigidSymbolWrtModule("NULL-INTEGER-WRAPPER", NULL, 0)));
+    SGT_LITERALS_STELLA_LONG_INTEGER = ((Surrogate*)(internRigidSymbolWrtModule("LONG-INTEGER", NULL, 1)));
+    SYM_LITERALS_STELLA_NULL_LONG_INTEGER_WRAPPER = ((Symbol*)(internRigidSymbolWrtModule("NULL-LONG-INTEGER-WRAPPER", NULL, 0)));
     SGT_LITERALS_STELLA_FLOAT = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT", NULL, 1)));
     SYM_LITERALS_STELLA_NULL_FLOAT_WRAPPER = ((Symbol*)(internRigidSymbolWrtModule("NULL-FLOAT-WRAPPER", NULL, 0)));
     SGT_LITERALS_STELLA_STRING = ((Surrogate*)(internRigidSymbolWrtModule("STRING", NULL, 1)));
@@ -1144,13 +1244,16 @@ void helpStartupLiterals1() {
     SYM_LITERALS_STELLA_COERCE_WRAPPED_BOOLEAN_TO_BOOLEAN = ((Symbol*)(internRigidSymbolWrtModule("COERCE-WRAPPED-BOOLEAN-TO-BOOLEAN", NULL, 0)));
     KWD_LITERALS_WRAP_FUNCTION = ((Keyword*)(internRigidSymbolWrtModule("WRAP-FUNCTION", NULL, 2)));
     SYM_LITERALS_STELLA_WRAP_INTEGER = ((Symbol*)(internRigidSymbolWrtModule("WRAP-INTEGER", NULL, 0)));
+    SYM_LITERALS_STELLA_WRAP_LONG_INTEGER = ((Symbol*)(internRigidSymbolWrtModule("WRAP-LONG-INTEGER", NULL, 0)));
     SYM_LITERALS_STELLA_WRAP_FLOAT = ((Symbol*)(internRigidSymbolWrtModule("WRAP-FLOAT", NULL, 0)));
     SYM_LITERALS_STELLA_WRAP_STRING = ((Symbol*)(internRigidSymbolWrtModule("WRAP-STRING", NULL, 0)));
     SYM_LITERALS_STELLA_WRAP_CHARACTER = ((Symbol*)(internRigidSymbolWrtModule("WRAP-CHARACTER", NULL, 0)));
     SYM_LITERALS_STELLA_WRAP_FUNCTION_CODE = ((Symbol*)(internRigidSymbolWrtModule("WRAP-FUNCTION-CODE", NULL, 0)));
     SYM_LITERALS_STELLA_WRAP_METHOD_CODE = ((Symbol*)(internRigidSymbolWrtModule("WRAP-METHOD-CODE", NULL, 0)));
     SGT_LITERALS_STELLA_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-WRAPPER", NULL, 1)));
+    SGT_LITERALS_STELLA_LONG_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("LONG-INTEGER-WRAPPER", NULL, 1)));
     SGT_LITERALS_STELLA_FLOAT_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT-WRAPPER", NULL, 1)));
+    SGT_LITERALS_STELLA_BOOLEAN_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN-WRAPPER", NULL, 1)));
     SGT_LITERALS_STELLA_STRING_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("STRING-WRAPPER", NULL, 1)));
     SGT_LITERALS_STELLA_VERBATIM_STRING_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("VERBATIM-STRING-WRAPPER", NULL, 1)));
     SGT_LITERALS_STELLA_CHARACTER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("CHARACTER-WRAPPER", NULL, 1)));
@@ -1175,11 +1278,6 @@ void helpStartupLiterals1() {
     KWD_LITERALS_SYMBOL_CONSTITUENT = ((Keyword*)(internRigidSymbolWrtModule("SYMBOL-CONSTITUENT", NULL, 2)));
     KWD_LITERALS_SYMBOL_QUALIFIER = ((Keyword*)(internRigidSymbolWrtModule("SYMBOL-QUALIFIER", NULL, 2)));
     KWD_LITERALS_ESCAPE = ((Keyword*)(internRigidSymbolWrtModule("ESCAPE", NULL, 2)));
-    KWD_LITERALS_DELIMITER = ((Keyword*)(internRigidSymbolWrtModule("DELIMITER", NULL, 2)));
-    KWD_LITERALS_WHITE_SPACE = ((Keyword*)(internRigidSymbolWrtModule("WHITE-SPACE", NULL, 2)));
-    SYM_LITERALS_STELLA_NULL_STRING = ((Symbol*)(internRigidSymbolWrtModule("NULL-STRING", NULL, 0)));
-    SYM_LITERALS_STELLA_STARTUP_LITERALS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-LITERALS", NULL, 0)));
-    SYM_LITERALS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
   }
 }
 
@@ -1189,6 +1287,7 @@ void helpStartupLiterals2() {
     oLITERAL_TYPESo = newList();
     setLiteralTypeInfo(SGT_LITERALS_STELLA_BOOLEAN, KWD_LITERALS_NULL_WRAPPER, SYM_LITERALS_STELLA_FALSE_WRAPPER);
     setLiteralTypeInfo(SGT_LITERALS_STELLA_INTEGER, KWD_LITERALS_NULL_WRAPPER, SYM_LITERALS_STELLA_NULL_INTEGER_WRAPPER);
+    setLiteralTypeInfo(SGT_LITERALS_STELLA_LONG_INTEGER, KWD_LITERALS_NULL_WRAPPER, SYM_LITERALS_STELLA_NULL_LONG_INTEGER_WRAPPER);
     setLiteralTypeInfo(SGT_LITERALS_STELLA_FLOAT, KWD_LITERALS_NULL_WRAPPER, SYM_LITERALS_STELLA_NULL_FLOAT_WRAPPER);
     setLiteralTypeInfo(SGT_LITERALS_STELLA_STRING, KWD_LITERALS_NULL_WRAPPER, SYM_LITERALS_STELLA_NULL_STRING_WRAPPER);
     setLiteralTypeInfo(SGT_LITERALS_STELLA_MUTABLE_STRING, KWD_LITERALS_NULL_WRAPPER, SYM_LITERALS_STELLA_NULL_MUTABLE_STRING_WRAPPER);
@@ -1197,6 +1296,7 @@ void helpStartupLiterals2() {
     setLiteralTypeInfo(SGT_LITERALS_STELLA_METHOD_CODE, KWD_LITERALS_NULL_WRAPPER, SYM_LITERALS_STELLA_NULL_METHOD_CODE_WRAPPER);
     setLiteralTypeInfo(SGT_LITERALS_STELLA_BOOLEAN, KWD_LITERALS_WRAP_FUNCTION, SYM_LITERALS_STELLA_WRAP_BOOLEAN);
     setLiteralTypeInfo(SGT_LITERALS_STELLA_INTEGER, KWD_LITERALS_WRAP_FUNCTION, SYM_LITERALS_STELLA_WRAP_INTEGER);
+    setLiteralTypeInfo(SGT_LITERALS_STELLA_LONG_INTEGER, KWD_LITERALS_WRAP_FUNCTION, SYM_LITERALS_STELLA_WRAP_LONG_INTEGER);
     setLiteralTypeInfo(SGT_LITERALS_STELLA_FLOAT, KWD_LITERALS_WRAP_FUNCTION, SYM_LITERALS_STELLA_WRAP_FLOAT);
     setLiteralTypeInfo(SGT_LITERALS_STELLA_STRING, KWD_LITERALS_WRAP_FUNCTION, SYM_LITERALS_STELLA_WRAP_STRING);
     setLiteralTypeInfo(SGT_LITERALS_STELLA_CHARACTER, KWD_LITERALS_WRAP_FUNCTION, SYM_LITERALS_STELLA_WRAP_CHARACTER);
@@ -1216,6 +1316,9 @@ void helpStartupLiterals3() {
     defineFunctionObject("SET-LITERAL-TYPE-INFO", "(DEFUN SET-LITERAL-TYPE-INFO ((TYPE TYPE) (KEY KEYWORD) (VALUE OBJECT)))", ((cpp_function_code)(&setLiteralTypeInfo)), NULL);
     defineFunctionObject("WRAP-INTEGER", "(DEFUN (WRAP-INTEGER INTEGER-WRAPPER) ((VALUE INTEGER)) :DOCUMENTATION \"Return a literal object whose value is the INTEGER 'value'.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&wrapInteger)), NULL);
     defineFunctionObject("UNWRAP-INTEGER", "(DEFUN (UNWRAP-INTEGER INTEGER) ((WRAPPER INTEGER-WRAPPER)) :DOCUMENTATION \"Unwrap `wrapper' and return the result.\nReturn NULL if `wrapper' is NULL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unwrapInteger)), NULL);
+    defineFunctionObject("WRAP-LONG-INTEGER", "(DEFUN (WRAP-LONG-INTEGER LONG-INTEGER-WRAPPER) ((VALUE LONG-INTEGER)) :DOCUMENTATION \"Return a literal object whose value is the LONG-INTEGER 'value'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&wrapLongInteger)), NULL);
+    defineFunctionObject("UNWRAP-LONG-INTEGER", "(DEFUN (UNWRAP-LONG-INTEGER LONG-INTEGER) ((WRAPPER LONG-INTEGER-WRAPPER)) :DOCUMENTATION \"Unwrap `wrapper' and return the result.\nReturn NULL if `wrapper' is NULL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unwrapLongInteger)), NULL);
+    defineFunctionObject("WRAP-INTEGER-VALUE", "(DEFUN (WRAP-INTEGER-VALUE NUMBER-WRAPPER) ((VALUE LONG-INTEGER)) :DOCUMENTATION \"Return a literal object whose value is 'value'.  Choose a regular integer\nwrapper unless `value' is too large and needs to be stored in a long wrapper.\" :PUBLIC? TRUE)", ((cpp_function_code)(&wrapIntegerValue)), NULL);
     defineFunctionObject("WRAP-FLOAT", "(DEFUN (WRAP-FLOAT FLOAT-WRAPPER) ((VALUE FLOAT)) :DOCUMENTATION \"Return a literal object whose value is the FLOAT 'value'.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&wrapFloat)), NULL);
     defineFunctionObject("UNWRAP-FLOAT", "(DEFUN (UNWRAP-FLOAT FLOAT) ((WRAPPER FLOAT-WRAPPER)) :DOCUMENTATION \"Unwrap `wrapper' and return the result.\nReturn NULL if `wrapper' is NULL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unwrapFloat)), NULL);
     defineFunctionObject("WRAP-STRING", "(DEFUN (WRAP-STRING STRING-WRAPPER) ((VALUE STRING)) :DOCUMENTATION \"Return a literal object whose value is the STRING 'value'.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&wrapString)), NULL);
@@ -1234,6 +1337,7 @@ void helpStartupLiterals3() {
     defineFunctionObject("INLINE-WRAP-BOOLEAN", "(DEFUN INLINE-WRAP-BOOLEAN ((EXPRESSION OBJECT)) :TYPE OBJECT :MACRO? TRUE)", ((cpp_function_code)(&inlineWrapBoolean)), NULL);
     defineFunctionObject("INLINE-UNWRAP-BOOLEAN", "(DEFUN INLINE-UNWRAP-BOOLEAN ((EXPRESSION OBJECT)) :TYPE OBJECT :MACRO? TRUE)", ((cpp_function_code)(&inlineUnwrapBoolean)), NULL);
     defineMethodObject("(DEFMETHOD (WRAP-LITERAL INTEGER-WRAPPER) ((VALUE INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (WRAP-INTEGER VALUE)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (WRAP-LITERAL LONG-INTEGER-WRAPPER) ((VALUE LONG-INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (WRAP-LONG-INTEGER VALUE)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (WRAP-LITERAL FLOAT-WRAPPER) ((VALUE FLOAT)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (WRAP-FLOAT VALUE)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (WRAP-LITERAL MUTABLE-STRING-WRAPPER) ((VALUE MUTABLE-STRING)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (WRAP-MUTABLE-STRING VALUE)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (WRAP-LITERAL STRING-WRAPPER) ((VALUE STRING)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (WRAP-STRING VALUE)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
@@ -1243,6 +1347,7 @@ void helpStartupLiterals3() {
     defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF STANDARD-OBJECT)))", ((cpp_method_code)(&StandardObject::copyWrappedLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF LITERAL-WRAPPER)))", ((cpp_method_code)(&LiteralWrapper::copyWrappedLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF INTEGER-WRAPPER)))", ((cpp_method_code)(&IntegerWrapper::copyWrappedLiteral)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF LONG-INTEGER-WRAPPER)))", ((cpp_method_code)(&LongIntegerWrapper::copyWrappedLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF FLOAT-WRAPPER)))", ((cpp_method_code)(&FloatWrapper::copyWrappedLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF STRING-WRAPPER)))", ((cpp_method_code)(&StringWrapper::copyWrappedLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF MUTABLE-STRING-WRAPPER)))", ((cpp_method_code)(&MutableStringWrapper::copyWrappedLiteral)), ((cpp_method_code)(NULL)));
@@ -1252,6 +1357,7 @@ void helpStartupLiterals3() {
     defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X OBJECT) (Y OBJECT)))", ((cpp_method_code)(&Object::objectEqlP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X STANDARD-OBJECT) (Y OBJECT)))", ((cpp_method_code)(&StandardObject::objectEqlP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X INTEGER-WRAPPER) (Y OBJECT)))", ((cpp_method_code)(&IntegerWrapper::objectEqlP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X LONG-INTEGER-WRAPPER) (Y OBJECT)))", ((cpp_method_code)(&LongIntegerWrapper::objectEqlP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X FLOAT-WRAPPER) (Y OBJECT)))", ((cpp_method_code)(&FloatWrapper::objectEqlP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X BOOLEAN-WRAPPER) (Y OBJECT)))", ((cpp_method_code)(&BooleanWrapper::objectEqlP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X STRING-WRAPPER) (Y OBJECT)))", ((cpp_method_code)(&StringWrapper::objectEqlP)), ((cpp_method_code)(NULL)));
@@ -1259,10 +1365,16 @@ void helpStartupLiterals3() {
     defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X CHARACTER-WRAPPER) (Y OBJECT)))", ((cpp_method_code)(&CharacterWrapper::objectEqlP)), ((cpp_method_code)(NULL)));
     defineFunctionObject("EQL-TO-BOOLEAN?", "(DEFUN (EQL-TO-BOOLEAN? BOOLEAN) ((Y OBJECT) (X BOOLEAN)))", ((cpp_function_code)(&eqlToBooleanP)), NULL);
     defineFunctionObject("EQL-TO-INTEGER?", "(DEFUN (EQL-TO-INTEGER? BOOLEAN) ((Y OBJECT) (X INTEGER)))", ((cpp_function_code)(&eqlToIntegerP)), NULL);
+    defineFunctionObject("EQL-TO-LONG-INTEGER?", "(DEFUN (EQL-TO-LONG-INTEGER? BOOLEAN) ((Y OBJECT) (X LONG-INTEGER)))", ((cpp_function_code)(&eqlToLongIntegerP)), NULL);
     defineFunctionObject("EQL-TO-FLOAT?", "(DEFUN (EQL-TO-FLOAT? BOOLEAN) ((Y OBJECT) (X FLOAT)))", ((cpp_function_code)(&eqlToFloatP)), NULL);
     defineFunctionObject("EQL-TO-STRING?", "(DEFUN (EQL-TO-STRING? BOOLEAN) ((Y OBJECT) (X STRING)))", ((cpp_function_code)(&eqlToStringP)), NULL);
     defineFunctionObject("EQL-TO-CHARACTER?", "(DEFUN (EQL-TO-CHARACTER? BOOLEAN) ((Y OBJECT) (X CHARACTER)))", ((cpp_function_code)(&eqlToCharacterP)), NULL);
     defineFunctionObject("HELP-BQUOTIFY", "(DEFUN (HELP-BQUOTIFY OBJECT) ((TREE OBJECT)))", ((cpp_function_code)(&helpBquotify)), NULL);
+  }
+}
+
+void helpStartupLiterals4() {
+  {
     defineFunctionObject("BQUOTIFY", "(DEFUN (BQUOTIFY OBJECT) ((TREE OBJECT)))", ((cpp_function_code)(&bquotify)), NULL);
     defineFunctionObject("EXPAND-BQUOTE-TREE", "(DEFUN (EXPAND-BQUOTE-TREE OBJECT) ((TREE OBJECT)))", ((cpp_function_code)(&expandBquoteTree)), NULL);
     defineFunctionObject("SIMPLIFY-BQUOTE-TREE", "(DEFUN (SIMPLIFY-BQUOTE-TREE OBJECT) ((TREE OBJECT)))", ((cpp_function_code)(&simplifyBquoteTree)), NULL);
@@ -1270,6 +1382,34 @@ void helpStartupLiterals3() {
     defineMethodObject("(DEFMETHOD (PERMANENTIFY SYMBOL) ((SELF SYMBOL)) :PUBLIC? TRUE)", ((cpp_method_code)(&Symbol::permanentify)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (PERMANENTIFY SYMBOL) ((SELF TRANSIENT-SYMBOL)) :PUBLIC? TRUE)", ((cpp_method_code)(&TransientSymbol::permanentify)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (PERMANENTIFY LITERAL-WRAPPER) ((SELF LITERAL-WRAPPER)) :PUBLIC? TRUE)", ((cpp_method_code)(&LiteralWrapper::permanentify)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("PERMANENT-COPY", "(DEFUN (PERMANENT-COPY OBJECT) ((TREE OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&permanentCopy)), NULL);
+    defineMethodObject("(DEFMETHOD (SOFT-PERMANENTIFY SYMBOL) ((SYMBOL SYMBOL)))", ((cpp_method_code)(&Symbol::softPermanentify)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (SOFT-PERMANENTIFY SYMBOL) ((SYMBOL TRANSIENT-SYMBOL)))", ((cpp_method_code)(&TransientSymbol::softPermanentify)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("PRINT-CHARACTER", "(DEFUN PRINT-CHARACTER ((CHAR CHARACTER) (STREAM NATIVE-OUTPUT-STREAM)) :PUBLIC? TRUE)", ((cpp_function_code)(&printCharacter)), NULL);
+    defineFunctionObject("CREATE-CHARACTER-TYPE-TABLE", "(DEFUN (CREATE-CHARACTER-TYPE-TABLE (ARRAY (256) OF KEYWORD)) ())", ((cpp_function_code)(&createCharacterTypeTable)), NULL);
+    defineFunctionObject("DIGIT-CHARACTER?", "(DEFUN (DIGIT-CHARACTER? BOOLEAN) ((CH CHARACTER)) :DOCUMENTATION \"Return TRUE if `ch' represents a digit.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (EQL? (AREF *CHARACTER-TYPE-TABLE* (CHARACTER-CODE CH)) :DIGIT)))", ((cpp_function_code)(&digitCharacterP)), NULL);
+    defineFunctionObject("LETTER-CHARACTER?", "(DEFUN (LETTER-CHARACTER? BOOLEAN) ((CH CHARACTER)) :DOCUMENTATION \"Return TRUE if `ch' represents a letter.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (EQL? (AREF *CHARACTER-TYPE-TABLE* (CHARACTER-CODE CH)) :LETTER)))", ((cpp_function_code)(&letterCharacterP)), NULL);
+    defineFunctionObject("UPPER-CASE-CHARACTER?", "(DEFUN (UPPER-CASE-CHARACTER? BOOLEAN) ((CH CHARACTER)) :PUBLIC? TRUE :DOCUMENTATION \"Return TRUE if `ch' represents an upper-case character.\")", ((cpp_function_code)(&upperCaseCharacterP)), NULL);
+    defineFunctionObject("LOWER-CASE-CHARACTER?", "(DEFUN (LOWER-CASE-CHARACTER? BOOLEAN) ((CH CHARACTER)) :PUBLIC? TRUE :DOCUMENTATION \"Return TRUE if `ch' represents a lower-case character.\")", ((cpp_function_code)(&lowerCaseCharacterP)), NULL);
+    defineFunctionObject("WHITE-SPACE-CHARACTER?", "(DEFUN (WHITE-SPACE-CHARACTER? BOOLEAN) ((CH CHARACTER)) :DOCUMENTATION \"Return TRUE if `ch' is a white space character.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (EQL? (AREF *CHARACTER-TYPE-TABLE* (CHARACTER-CODE CH)) :WHITE-SPACE)))", ((cpp_function_code)(&whiteSpaceCharacterP)), NULL);
+    defineFunctionObject("ALL-UPPER-CASE-STRING?", "(DEFUN (ALL-UPPER-CASE-STRING? BOOLEAN) ((S STRING)) :DOCUMENTATION \"Return TRUE if all letters in `s' are upper case.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allUpperCaseStringP)), NULL);
+    defineFunctionObject("ALL-LOWER-CASE-STRING?", "(DEFUN (ALL-LOWER-CASE-STRING? BOOLEAN) ((S STRING)) :DOCUMENTATION \"Return TRUE if all letters in `s' are lower case.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allLowerCaseStringP)), NULL);
+    defineFunctionObject("INITIALIZE-CHARACTER-UPCASE-TABLE", "(DEFUN (INITIALIZE-CHARACTER-UPCASE-TABLE STRING) ())", ((cpp_function_code)(&initializeCharacterUpcaseTable)), NULL);
+    defineFunctionObject("INITIALIZE-CHARACTER-DOWNCASE-TABLE", "(DEFUN (INITIALIZE-CHARACTER-DOWNCASE-TABLE STRING) ())", ((cpp_function_code)(&initializeCharacterDowncaseTable)), NULL);
+    defineFunctionObject("UPCASE-CHARACTER", "(DEFUN (UPCASE-CHARACTER CHARACTER) ((CHAR CHARACTER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"If `char' is lowercase, return its uppercase version,\notherwise, return 'char' unmodified.\" (RETURN (NTH *CHARACTER-UPCASE-TABLE* (CHARACTER-CODE CHAR))))", ((cpp_function_code)(&upcaseCharacter)), NULL);
+    defineFunctionObject("DOWNCASE-CHARACTER", "(DEFUN (DOWNCASE-CHARACTER CHARACTER) ((CHAR CHARACTER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"If `char' is uppercase, return its lowercase version,\notherwise, return 'char' unmodified.\" (RETURN (NTH *CHARACTER-DOWNCASE-TABLE* (CHARACTER-CODE CHAR))))", ((cpp_function_code)(&downcaseCharacter)), NULL);
+    defineFunctionObject("PRINT-STRING-READABLY", "(DEFUN PRINT-STRING-READABLY ((STRING STRING) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printStringReadably)), NULL);
+    defineFunctionObject("STRING-TO-MUTABLE-STRING", "(DEFUN (STRING-TO-MUTABLE-STRING MUTABLE-STRING) ((S STRING)) :DOCUMENTATION \"Copy `s' into a mutable string with the same content.\nIn Lisp and C++ this simply copies `s'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:COPY-SEQ S) :CPP \"strcpy(new (GC) char[strlen(s)+1], s)\" :JAVA \"new StringBuffer(s)\")))", ((cpp_function_code)(&stringToMutableString)), NULL);
+    defineFunctionObject("MUTABLE-STRING-TO-STRING", "(DEFUN (MUTABLE-STRING-TO-STRING STRING) ((S MUTABLE-STRING)) :DOCUMENTATION \"Convert `s' into a regular string with the same content.\nIn Lisp and C++ this is a no-op.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP S :CPP \"s\" :JAVA \"s.toString()\")))", ((cpp_function_code)(&mutableStringToString)), NULL);
+    defineMethodObject("(DEFMETHOD (NUMBER-WRAPPER-TO-FLOAT FLOAT) ((SELF OBJECT)) :PUBLIC? TRUE)", ((cpp_method_code)(&Object::numberWrapperToFloat)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (NUMBER-WRAPPER-TO-FLOAT FLOAT) ((SELF INTEGER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_method_code)(&IntegerWrapper::numberWrapperToFloat)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (NUMBER-WRAPPER-TO-FLOAT FLOAT) ((SELF LONG-INTEGER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_method_code)(&LongIntegerWrapper::numberWrapperToFloat)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (NUMBER-WRAPPER-TO-FLOAT FLOAT) ((SELF FLOAT-WRAPPER)) :PUBLIC? TRUE)", ((cpp_method_code)(&FloatWrapper::numberWrapperToFloat)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("STARTUP-LITERALS", "(DEFUN STARTUP-LITERALS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupLiterals)), NULL);
+    { MethodSlot* function = lookupFunction(SYM_LITERALS_STELLA_STARTUP_LITERALS);
+
+      setDynamicSlotValue(function->dynamicSlots, SYM_LITERALS_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupLiterals"), NULL_STRING_WRAPPER);
+    }
   }
 }
 
@@ -1280,6 +1420,7 @@ void startupLiterals() {
     FALSE_WRAPPER = newBooleanWrapper(false);
     TRUE_WRAPPER = newBooleanWrapper(true);
     NULL_INTEGER_WRAPPER = newIntegerWrapper(NULL_INTEGER);
+    NULL_LONG_INTEGER_WRAPPER = newLongIntegerWrapper(NULL_LONG_INTEGER);
     NULL_FLOAT_WRAPPER = newFloatWrapper(NULL_FLOAT);
     NULL_STRING_WRAPPER = newStringWrapper(NULL);
     NULL_MUTABLE_STRING_WRAPPER = newMutableStringWrapper(NULL);
@@ -1292,6 +1433,11 @@ void startupLiterals() {
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
     if (currentStartupTimePhaseP(2)) {
       helpStartupLiterals1();
+      KWD_LITERALS_DELIMITER = ((Keyword*)(internRigidSymbolWrtModule("DELIMITER", NULL, 2)));
+      KWD_LITERALS_WHITE_SPACE = ((Keyword*)(internRigidSymbolWrtModule("WHITE-SPACE", NULL, 2)));
+      SYM_LITERALS_STELLA_NULL_STRING = ((Symbol*)(internRigidSymbolWrtModule("NULL-STRING", NULL, 0)));
+      SYM_LITERALS_STELLA_STARTUP_LITERALS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-LITERALS", NULL, 0)));
+      SYM_LITERALS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
     }
     if (currentStartupTimePhaseP(4)) {
       helpStartupLiterals2();
@@ -1301,44 +1447,20 @@ void startupLiterals() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupLiterals3();
-      defineFunctionObject("PERMANENT-COPY", "(DEFUN (PERMANENT-COPY OBJECT) ((TREE OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&permanentCopy)), NULL);
-      defineMethodObject("(DEFMETHOD (SOFT-PERMANENTIFY SYMBOL) ((SYMBOL SYMBOL)))", ((cpp_method_code)(&Symbol::softPermanentify)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (SOFT-PERMANENTIFY SYMBOL) ((SYMBOL TRANSIENT-SYMBOL)))", ((cpp_method_code)(&TransientSymbol::softPermanentify)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("PRINT-CHARACTER", "(DEFUN PRINT-CHARACTER ((CHAR CHARACTER) (STREAM NATIVE-OUTPUT-STREAM)) :PUBLIC? TRUE)", ((cpp_function_code)(&printCharacter)), NULL);
-      defineFunctionObject("CREATE-CHARACTER-TYPE-TABLE", "(DEFUN (CREATE-CHARACTER-TYPE-TABLE (ARRAY (256) OF KEYWORD)) ())", ((cpp_function_code)(&createCharacterTypeTable)), NULL);
-      defineFunctionObject("DIGIT-CHARACTER?", "(DEFUN (DIGIT-CHARACTER? BOOLEAN) ((CH CHARACTER)) :DOCUMENTATION \"Return TRUE if `ch' represents a digit.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (EQL? (AREF *CHARACTER-TYPE-TABLE* (CHARACTER-CODE CH)) :DIGIT)))", ((cpp_function_code)(&digitCharacterP)), NULL);
-      defineFunctionObject("LETTER-CHARACTER?", "(DEFUN (LETTER-CHARACTER? BOOLEAN) ((CH CHARACTER)) :DOCUMENTATION \"Return TRUE if `ch' represents a letter.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (EQL? (AREF *CHARACTER-TYPE-TABLE* (CHARACTER-CODE CH)) :LETTER)))", ((cpp_function_code)(&letterCharacterP)), NULL);
-      defineFunctionObject("UPPER-CASE-CHARACTER?", "(DEFUN (UPPER-CASE-CHARACTER? BOOLEAN) ((CH CHARACTER)) :PUBLIC? TRUE :DOCUMENTATION \"Return TRUE if `ch' represents an upper-case character.\")", ((cpp_function_code)(&upperCaseCharacterP)), NULL);
-      defineFunctionObject("LOWER-CASE-CHARACTER?", "(DEFUN (LOWER-CASE-CHARACTER? BOOLEAN) ((CH CHARACTER)) :PUBLIC? TRUE :DOCUMENTATION \"Return TRUE if `ch' represents a lower-case character.\")", ((cpp_function_code)(&lowerCaseCharacterP)), NULL);
-      defineFunctionObject("WHITE-SPACE-CHARACTER?", "(DEFUN (WHITE-SPACE-CHARACTER? BOOLEAN) ((CH CHARACTER)) :DOCUMENTATION \"Return TRUE if `ch' is a white space character.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (EQL? (AREF *CHARACTER-TYPE-TABLE* (CHARACTER-CODE CH)) :WHITE-SPACE)))", ((cpp_function_code)(&whiteSpaceCharacterP)), NULL);
-      defineFunctionObject("ALL-UPPER-CASE-STRING?", "(DEFUN (ALL-UPPER-CASE-STRING? BOOLEAN) ((S STRING)) :DOCUMENTATION \"Return TRUE if all letters in `s' are upper case.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allUpperCaseStringP)), NULL);
-      defineFunctionObject("ALL-LOWER-CASE-STRING?", "(DEFUN (ALL-LOWER-CASE-STRING? BOOLEAN) ((S STRING)) :DOCUMENTATION \"Return TRUE if all letters in `s' are lower case.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allLowerCaseStringP)), NULL);
-      defineFunctionObject("INITIALIZE-CHARACTER-UPCASE-TABLE", "(DEFUN (INITIALIZE-CHARACTER-UPCASE-TABLE STRING) ())", ((cpp_function_code)(&initializeCharacterUpcaseTable)), NULL);
-      defineFunctionObject("INITIALIZE-CHARACTER-DOWNCASE-TABLE", "(DEFUN (INITIALIZE-CHARACTER-DOWNCASE-TABLE STRING) ())", ((cpp_function_code)(&initializeCharacterDowncaseTable)), NULL);
-      defineFunctionObject("UPCASE-CHARACTER", "(DEFUN (UPCASE-CHARACTER CHARACTER) ((CHAR CHARACTER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"If `char' is lowercase, return its uppercase version,\notherwise, return 'char' unmodified.\" (RETURN (NTH *CHARACTER-UPCASE-TABLE* (CHARACTER-CODE CHAR))))", ((cpp_function_code)(&upcaseCharacter)), NULL);
-      defineFunctionObject("DOWNCASE-CHARACTER", "(DEFUN (DOWNCASE-CHARACTER CHARACTER) ((CHAR CHARACTER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"If `char' is uppercase, return its lowercase version,\notherwise, return 'char' unmodified.\" (RETURN (NTH *CHARACTER-DOWNCASE-TABLE* (CHARACTER-CODE CHAR))))", ((cpp_function_code)(&downcaseCharacter)), NULL);
-      defineFunctionObject("PRINT-STRING-READABLY", "(DEFUN PRINT-STRING-READABLY ((STRING STRING) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printStringReadably)), NULL);
-      defineFunctionObject("STRING-TO-MUTABLE-STRING", "(DEFUN (STRING-TO-MUTABLE-STRING MUTABLE-STRING) ((S STRING)) :DOCUMENTATION \"Copy `s' into a mutable string with the same content.\nIn Lisp and C++ this simply copies `s'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:COPY-SEQ S) :CPP \"strcpy(new (GC) char[strlen(s)+1], s)\" :JAVA \"new StringBuffer(s)\")))", ((cpp_function_code)(&stringToMutableString)), NULL);
-      defineFunctionObject("MUTABLE-STRING-TO-STRING", "(DEFUN (MUTABLE-STRING-TO-STRING STRING) ((S MUTABLE-STRING)) :DOCUMENTATION \"Convert `s' into a regular string with the same content.\nIn Lisp and C++ this is a no-op.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP S :CPP \"s\" :JAVA \"s.toString()\")))", ((cpp_function_code)(&mutableStringToString)), NULL);
-      defineMethodObject("(DEFMETHOD (NUMBER-WRAPPER-TO-FLOAT FLOAT) ((SELF OBJECT)) :PUBLIC? TRUE)", ((cpp_method_code)(&Object::numberWrapperToFloat)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (NUMBER-WRAPPER-TO-FLOAT FLOAT) ((SELF INTEGER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_method_code)(&IntegerWrapper::numberWrapperToFloat)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (NUMBER-WRAPPER-TO-FLOAT FLOAT) ((SELF FLOAT-WRAPPER)) :PUBLIC? TRUE)", ((cpp_method_code)(&FloatWrapper::numberWrapperToFloat)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("STARTUP-LITERALS", "(DEFUN STARTUP-LITERALS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupLiterals)), NULL);
-      { MethodSlot* function = lookupFunction(SYM_LITERALS_STELLA_STARTUP_LITERALS);
-
-        setDynamicSlotValue(function->dynamicSlots, SYM_LITERALS_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupLiterals"), NULL_STRING_WRAPPER);
-      }
+      helpStartupLiterals4();
     }
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL ZERO-WRAPPER INTEGER-WRAPPER NULL :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL ONE-WRAPPER INTEGER-WRAPPER NULL :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL TRUE-WRAPPER BOOLEAN-WRAPPER NULL :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL FALSE-WRAPPER BOOLEAN-WRAPPER NULL :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NULL-INTEGER-WRAPPER INTEGER-WRAPPER NULL :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NULL-LONG-INTEGER-WRAPPER LONG-INTEGER-WRAPPER NULL :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NULL-FLOAT-WRAPPER FLOAT-WRAPPER NULL :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NULL-STRING-WRAPPER STRING-WRAPPER NULL :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NULL-MUTABLE-STRING-WRAPPER MUTABLE-STRING-WRAPPER NULL :PUBLIC? TRUE)");
@@ -1363,6 +1485,10 @@ Symbol* SYM_LITERALS_STELLA_FALSE_WRAPPER = NULL;
 Surrogate* SGT_LITERALS_STELLA_INTEGER = NULL;
 
 Symbol* SYM_LITERALS_STELLA_NULL_INTEGER_WRAPPER = NULL;
+
+Surrogate* SGT_LITERALS_STELLA_LONG_INTEGER = NULL;
+
+Symbol* SYM_LITERALS_STELLA_NULL_LONG_INTEGER_WRAPPER = NULL;
 
 Surrogate* SGT_LITERALS_STELLA_FLOAT = NULL;
 
@@ -1402,6 +1528,8 @@ Keyword* KWD_LITERALS_WRAP_FUNCTION = NULL;
 
 Symbol* SYM_LITERALS_STELLA_WRAP_INTEGER = NULL;
 
+Symbol* SYM_LITERALS_STELLA_WRAP_LONG_INTEGER = NULL;
+
 Symbol* SYM_LITERALS_STELLA_WRAP_FLOAT = NULL;
 
 Symbol* SYM_LITERALS_STELLA_WRAP_STRING = NULL;
@@ -1414,7 +1542,11 @@ Symbol* SYM_LITERALS_STELLA_WRAP_METHOD_CODE = NULL;
 
 Surrogate* SGT_LITERALS_STELLA_INTEGER_WRAPPER = NULL;
 
+Surrogate* SGT_LITERALS_STELLA_LONG_INTEGER_WRAPPER = NULL;
+
 Surrogate* SGT_LITERALS_STELLA_FLOAT_WRAPPER = NULL;
+
+Surrogate* SGT_LITERALS_STELLA_BOOLEAN_WRAPPER = NULL;
 
 Surrogate* SGT_LITERALS_STELLA_STRING_WRAPPER = NULL;
 

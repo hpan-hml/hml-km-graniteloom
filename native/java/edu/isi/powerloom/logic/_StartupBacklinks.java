@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,19 +52,20 @@ import edu.isi.stella.*;
 public class _StartupBacklinks {
   static void helpStartupBacklinks1() {
     {
-      Logic.KWD_DEPENDENTS = ((Keyword)(Stella.internRigidSymbolWrtModule("DEPENDENTS", null, 2)));
-      Logic.SYM_LOGIC_DEPENDENT_PROPOSITIONS_INDEX = ((Symbol)(Stella.internRigidSymbolWrtModule("DEPENDENT-PROPOSITIONS-INDEX", null, 0)));
-      Logic.KWD_RELATION = ((Keyword)(Stella.internRigidSymbolWrtModule("RELATION", null, 2)));
-      Logic.KWD_DEBUGGING = ((Keyword)(Stella.internRigidSymbolWrtModule("DEBUGGING", null, 2)));
-      Logic.SYM_LOGIC_HYPOTHESIZED_INSTANCEp = ((Symbol)(Stella.internRigidSymbolWrtModule("HYPOTHESIZED-INSTANCE?", null, 0)));
-      Logic.SGT_STELLA_STRING = ((Surrogate)(Stella.internRigidSymbolWrtModule("STRING", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.SYM_LOGIC_SUBSUMPTION_LINKp = ((Symbol)(Stella.internRigidSymbolWrtModule("SUBSUMPTION-LINK?", null, 0)));
-      Logic.KWD_RULES = ((Keyword)(Stella.internRigidSymbolWrtModule("RULES", null, 2)));
-      Logic.SGT_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-SELECT-RELATION-PROPOSITIONS-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_001 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-SELECT-RELATION-PROPOSITIONS-MEMO-TABLE-001", null, 1)));
-      Logic.SGT_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_002 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-SELECT-RELATION-PROPOSITIONS-MEMO-TABLE-002", null, 1)));
-      Logic.KWD_EVALUATEp = ((Keyword)(Stella.internRigidSymbolWrtModule("EVALUATE?", null, 2)));
-      Logic.SYM_LOGIC_STARTUP_BACKLINKS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-BACKLINKS", null, 0)));
+      Logic.KWD_DEPENDENTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEPENDENTS", null, 2)));
+      Logic.SYM_LOGIC_DEPENDENT_PROPOSITIONS_INDEX = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEPENDENT-PROPOSITIONS-INDEX", null, 0)));
+      Logic.KWD_RELATION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RELATION", null, 2)));
+      Logic.KWD_DEBUGGING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEBUGGING", null, 2)));
+      Logic.SYM_LOGIC_HYPOTHESIZED_INSTANCEp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("HYPOTHESIZED-INSTANCE?", null, 0)));
+      Logic.SGT_STELLA_STRING = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("STRING", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.SGT_LOGIC_BACKLINKS_MIXIN = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("BACKLINKS-MIXIN", null, 1)));
+      Logic.SYM_LOGIC_SUBSUMPTION_LINKp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUBSUMPTION-LINK?", null, 0)));
+      Logic.KWD_RULES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RULES", null, 2)));
+      Logic.SGT_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-SELECT-RELATION-PROPOSITIONS-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_001 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-SELECT-RELATION-PROPOSITIONS-MEMO-TABLE-001", null, 1)));
+      Logic.SGT_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_002 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-SELECT-RELATION-PROPOSITIONS-MEMO-TABLE-002", null, 1)));
+      Logic.KWD_EVALUATEp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("EVALUATE?", null, 2)));
+      Logic.SYM_LOGIC_STARTUP_BACKLINKS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-BACKLINKS", null, 0)));
     }
   }
 
@@ -169,8 +170,9 @@ public class _StartupBacklinks {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SPECIALIZED-BACKLINKS-CROSSOVER-POINT* INTEGER 10 :DOCUMENTATION \"When 'dependent-propositions-list' gets this long in a\nbacklinks index, then we create a hash table index and other\nspecialized indices.\")");
-          Stella.$WRAPPED_TYPE_TABLE$ = Stella.$WRAPPED_TYPE_TABLE$.concatenate(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SGT_LOGIC_INTEGER_LOGIC_WRAPPER, Stella_Object.cons(Logic.SGT_STELLA_INTEGER, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SGT_LOGIC_FLOAT_LOGIC_WRAPPER, Stella_Object.cons(Logic.SGT_STELLA_FLOAT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SGT_LOGIC_STRING_LOGIC_WRAPPER, Stella_Object.cons(Logic.SGT_STELLA_STRING, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL);
+          Stella.$WRAPPED_TYPE_TABLE$ = Stella.$WRAPPED_TYPE_TABLE$.concatenate(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SGT_LOGIC_INTEGER_LOGIC_WRAPPER, Cons.cons(Logic.SGT_STELLA_INTEGER, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SGT_LOGIC_FLOAT_LOGIC_WRAPPER, Cons.cons(Logic.SGT_STELLA_FLOAT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SGT_LOGIC_STRING_LOGIC_WRAPPER, Cons.cons(Logic.SGT_STELLA_STRING, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL);
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *INTEGER-LOGIC-WRAPPER-TABLE* INTEGER-HASH-TABLE (NEW INTEGER-HASH-TABLE))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *FLOAT-LOGIC-WRAPPER-TABLE* FLOAT-HASH-TABLE (NEW FLOAT-HASH-TABLE))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STRING-LOGIC-WRAPPER-TABLE* STRING-HASH-TABLE (NEW STRING-HASH-TABLE))");

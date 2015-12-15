@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -1419,6 +1419,7 @@ void startupKifIn() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AUTOMATIC-INSTANCE-CHARACTER* CHARACTER #\\$ :DOCUMENTATION \"Character that identifies variables representing\ninstances named by the system.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *ANNOTATION-TRANSLATION-TABLE* (CONS OF CONS) (BQUOTE ((<<= <= (:DIRECTION :BACKWARD)) (=>> => (:DIRECTION :FORWARD)) (<~ <= (:CONFIDENCE-LEVEL :DEFAULT)) (~> => (:CONFIDENCE-LEVEL :DEFAULT)) (<<~ <= (:CONFIDENCE-LEVEL :DEFAULT :DIRECTION :BACKWARD)) (~>> => (:CONFIDENCE-LEVEL :DEFAULT :DIRECTION :FORWARD)))))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *KIF-SENTENCE-OPERATORS* (CONS OF SYMBOL) (QUOTE (AND OR NOT FAIL EXISTS FORALL => <= <=> =)))");

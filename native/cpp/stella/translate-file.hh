@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -73,7 +73,7 @@ char* rootSourceDirectory();
 char* rootNativeDirectory();
 char* rootBinaryDirectory();
 char* systemDefinitionsDirectory();
-boolean handleInModuleTree(Cons* tree, boolean seeninmoduleP, boolean& _Return1);
+boolean handleInModuleTree(Cons* tree, boolean seeninmoduleP, boolean erroroninmoduleP, boolean& _Return1);
 void translateAndOutputUnitsToFile(char* file, char* targetlanguage);
 void operateOnFile(char* file, Keyword* operation);
 void cleanUpTranslationUnitsSpecial();
@@ -126,9 +126,12 @@ boolean stellaNeedToCompileP(Object* file);
 boolean systemNeedsTranslationP(char* systemname, Keyword* language);
 Module* computeFileUnitsModule(List* fileunits);
 List* concatenateSystemUnits(KeyValueList* systemunits);
-boolean translateSystem(char* systemname, Keyword* outputlanguage, int options, ...);
+boolean translateSystem(char* systemname, Cons* languageAoptions);
+BooleanWrapper* translateSystemEvaluatorWrapper(Cons* arguments);
 boolean helpTranslateSystem(Cons* files, boolean twopassP, boolean forcetranslationP);
-void transferNativeSystemFiles(Keyword* outputlanguage);
+void transferNativeSystemFiles(Keyword* outputLanguage);
+void transferDataFiles(Keyword* outputLanguage);
+void transferFiles(Cons* files, Keyword* outputLanguage);
 void helpStartupTranslateFile1();
 void helpStartupTranslateFile2();
 void startupTranslateFile();
@@ -156,14 +159,17 @@ extern Keyword* KWD_TRANSLATE_FILE_CPP_CODE;
 extern Keyword* KWD_TRANSLATE_FILE_CPP_HEADER;
 extern Keyword* KWD_TRANSLATE_FILE_C_CODE;
 extern Keyword* KWD_TRANSLATE_FILE_C_HEADER;
+extern Keyword* KWD_TRANSLATE_FILE_OTHER;
 extern Keyword* KWD_TRANSLATE_FILE_NONE;
 extern Keyword* KWD_TRANSLATE_FILE_LISP_BINARY;
 extern Keyword* KWD_TRANSLATE_FILE_USE_COMMON_LISP_STRUCTS;
 extern Keyword* KWD_TRANSLATE_FILE_USE_COMMON_LISP_VECTOR_STRUCTS;
 extern Keyword* KWD_TRANSLATE_FILE_LISP;
 extern Keyword* KWD_TRANSLATE_FILE_DIRECTORY;
-extern Keyword* KWD_TRANSLATE_FILE_OTHER;
 extern Symbol* SYM_TRANSLATE_FILE_STELLA_SYSTEM_UNITS_ALIST;
+extern Keyword* KWD_TRANSLATE_FILE_LANGUAGE;
+extern Keyword* KWD_TRANSLATE_FILE_ACTION;
+extern Keyword* KWD_TRANSLATE_FILE_TRANSLATE_SYSTEM;
 extern Keyword* KWD_TRANSLATE_FILE_TWO_PASSp;
 extern Keyword* KWD_TRANSLATE_FILE_FORCE_TRANSLATIONp;
 extern Keyword* KWD_TRANSLATE_FILE_PRODUCTION_SETTINGSp;

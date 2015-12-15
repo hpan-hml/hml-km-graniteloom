@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,21 +50,24 @@ namespace stella {
 // A float approximation of the mathematical constant pi.
 double PI = 3.141592653589793;
 
-int NULL_INTEGER = 1 << (sizeof (int) / sizeof (char) * 8 - 1);
+int NULL_INTEGER = std::numeric_limits<int>::min();
 
-short int NULL_SHORT_INTEGER = 1 << (sizeof (short int) / sizeof (char) * 8 - 1);
+short int NULL_SHORT_INTEGER = std::numeric_limits<short int>::min();
 
-long int NULL_LONG_INTEGER = 1 << (sizeof (long int) / sizeof (char) * 8 - 1);
+long long int NULL_LONG_INTEGER = std::numeric_limits<long long int>::min();
 
-unsigned short int NULL_UNSIGNED_SHORT_INTEGER = (unsigned short int) -1;
+unsigned short int NULL_UNSIGNED_SHORT_INTEGER = std::numeric_limits<unsigned short int>::min();
 
-unsigned long int NULL_UNSIGNED_LONG_INTEGER = (unsigned long int) -1;
+unsigned long int NULL_UNSIGNED_LONG_INTEGER = std::numeric_limits<unsigned long long int>::min();
 
-double NULL_FLOAT = -HUGE_VAL /* IEEE infinity, defined in <math.h> */;
+double NULL_FLOAT = std::numeric_limits<double>::infinity() != 0 ?
+                    -std::numeric_limits<double>::infinity() :
+                    // work around a problem in g++ 3.2.2 where infinity()==0:
+                    NULL_INTEGER / (double)ceiling(-0.42);
 
-float NULL_SINGLE_FLOAT = -HUGE_VAL /* IEEE infinity, defined in <math.h> */;
+float NULL_SINGLE_FLOAT = -std::numeric_limits<float>::infinity();
 
-double NULL_DOUBLE_FLOAT = -HUGE_VAL /* IEEE infinity, defined in <math.h> */;
+double NULL_DOUBLE_FLOAT = -std::numeric_limits<double>::infinity();
 
 char NULL_CHARACTER = '\0';
 
@@ -87,6 +90,26 @@ char* lispNullArraySymbolString(int rank) {
     default:
       return ("STELLA::NULL");
   }
+}
+
+int MOST_POSITIVE_INTEGER = std::numeric_limits<int>::max();
+
+int MOST_NEGATIVE_INTEGER = NULL_INTEGER;
+
+long long int MOST_POSITIVE_LONG_INTEGER = std::numeric_limits<long long int>::max();
+
+long long int MOST_NEGATIVE_LONG_INTEGER = NULL_LONG_INTEGER;
+
+double MOST_POSITIVE_FLOAT = std::numeric_limits<double>::max();
+
+double MOST_NEGATIVE_FLOAT = 0 - MOST_POSITIVE_FLOAT;
+
+double LEAST_POSITIVE_FLOAT = std::numeric_limits<double>::min();
+
+double LEAST_NEGATIVE_FLOAT = NULL_FLOAT;
+
+void printNumericConstants() {
+  std::cout << "MOST-POSITIVE-INTEGER:             " << MOST_POSITIVE_INTEGER << std::endl << "MOST-NEGATIVE-INTEGER:            " << MOST_NEGATIVE_INTEGER << std::endl << "NULL-INTEGER:                     " << NULL_INTEGER << std::endl << "MOST-POSITIVE-LONG-INTEGER:        " << MOST_POSITIVE_LONG_INTEGER << std::endl << "MOST-NEGATIVE-LONG-INTEGER:       " << MOST_NEGATIVE_LONG_INTEGER << std::endl << "NULL-LONG-INTEGER:                " << NULL_LONG_INTEGER << std::endl << "MOST-POSITIVE-FLOAT:               " << MOST_POSITIVE_FLOAT << std::endl << "MOST-NEGATIVE-FLOAT:              " << MOST_NEGATIVE_FLOAT << std::endl << "LEAST-POSITIVE-FLOAT:              " << LEAST_POSITIVE_FLOAT << std::endl << "LEAST-NEGATIVE-FLOAT:             " << LEAST_NEGATIVE_FLOAT << std::endl << "NULL-FLOAT:                       " << NULL_FLOAT << std::endl << "*INTEGER-MSB-MASK*:                " << oINTEGER_MSB_MASKo << std::endl << "*INTEGER-UNSIGNED-BITS-MASK*:      " << oINTEGER_UNSIGNED_BITS_MASKo << std::endl << "*LONG-INTEGER-MSB-MASK*:           " << oLONG_INTEGER_MSB_MASKo << std::endl << "*LONG-INTEGER-UNSIGNED-BITS-MASK*: " << oLONG_INTEGER_UNSIGNED_BITS_MASKo << std::endl << "LONG-INTEGER-BIT-WIDTH:            " << LONG_INTEGER_BIT_WIDTH << std::endl << "il(MOST-POSITIVE-INTEGER):         " << integerLength(((long long int)(MOST_POSITIVE_INTEGER))) << std::endl << "il(MOST-POSITIVE-LONG-INTEGER):    " << integerLength(MOST_POSITIVE_LONG_INTEGER) << std::endl << "il(MOST-NEGATIVE-INTEGER):         " << integerLength(((long long int)(MOST_NEGATIVE_INTEGER))) << std::endl << "il(MOST-NEGATIVE-LONG-INTEGER):    " << integerLength(MOST_NEGATIVE_LONG_INTEGER) << std::endl;
 }
 
 boolean eqlP(Object* x, Object* y) {
@@ -128,32 +151,65 @@ boolean Wrapper::objectEqualP(Object* y) {
   }
 }
 
-boolean zeroP(int x) {
+boolean integerZeroP(int x) {
   // Return true if `x' is 0.
   return ((!x));
 }
 
-boolean plusP(int x) {
+boolean longIntegerZeroP(long long int x) {
+  // Return true if `x' is 0.
+  return ((!x));
+}
+
+boolean integerPlusP(int x) {
   // Return true if `x' is greater than 0.
   return ((x > 0));
 }
 
-boolean evenP(int x) {
+boolean longIntegerPlusP(long long int x) {
+  // Return true if `x' is greater than 0.
+  return ((x > 0));
+}
+
+boolean integerEvenP(int x) {
   // Return true if `x' is an even number.
   return (!(x % 2));
 }
 
-boolean oddP(int x) {
+boolean longIntegerEvenP(long long int x) {
+  // Return true if `x' is an even number.
+  return (!(x % 2));
+}
+
+boolean integerOddP(int x) {
   // Return true if `x' is an odd number.
   return ((x % 2));
 }
 
-int div(int x, int y) {
+boolean longIntegerOddP(long long int x) {
+  // Return true if `x' is an odd number.
+  return ((x % 2));
+}
+
+int integerDiv(int x, int y) {
   // Return the integer quotient from dividing `x' by `y'.
   return ((x / y));
 }
 
-int rem(int x, int y) {
+long long int longIntegerDiv(long long int x, long long int y) {
+  // Return the integer quotient from dividing `x' by `y'.
+  return ((x / y));
+}
+
+int integerRem(int x, int y) {
+  // Return the remainder from dividing `x' by `y'.  The
+  // sign of the result is always the same as the sign of `x'.  This has slightly
+  // different behavior than the `mod' function, and has less overhead in C++ and
+  // Java, which don't have direct support for a true modulus function.
+  return ((x % y));
+}
+
+long long int longIntegerRem(long long int x, long long int y) {
   // Return the remainder from dividing `x' by `y'.  The
   // sign of the result is always the same as the sign of `x'.  This has slightly
   // different behavior than the `mod' function, and has less overhead in C++ and
@@ -169,7 +225,7 @@ double frem(double x, double y) {
   return (fmod(x, y));
 }
 
-int mod(int x, int modulus) {
+int integerMod(int x, int modulus) {
   // True modulus.  Return the result of `x' mod `modulo'.
   // Note: In C++ and Java, `mod' has more overhead than the similar
   // function `rem'.  The  answers returned by `mod' and `rem' are only
@@ -190,7 +246,28 @@ int mod(int x, int modulus) {
   }
 }
 
-double stella::fmod(double x, double modulus) {
+long long int longIntegerMod(long long int x, long long int modulus) {
+  // True modulus.  Return the result of `x' mod `modulo'.
+  // Note: In C++ and Java, `mod' has more overhead than the similar
+  // function `rem'.  The  answers returned by `mod' and `rem' are only
+  // different when the signs of `x' and `modulo' are different.
+  { long long int remainder = (x % modulus);
+
+    if (remainder > 0) {
+      if (modulus < 0) {
+        remainder = modulus + remainder;
+      }
+    }
+    else if (remainder < 0) {
+      if (modulus > 0) {
+        remainder = modulus + remainder;
+      }
+    }
+    return (remainder);
+  }
+}
+
+double fmod(double x, double modulus) {
   // True modulus for floats.  Return the result of `x' mod `modulo'.
   // Note: In C++ and Java, `mod' has more overhead than the similar
   // function `rem'.  The  answers returned by `mod' and `rem' are only
@@ -211,7 +288,7 @@ double stella::fmod(double x, double modulus) {
   }
 }
 
-int gcd(int x, int y) {
+long long int gcd(long long int x, long long int y) {
   // Return the greatest common divisor of `x' and `y'.
   if (x < 0) {
     x = 0 - x;
@@ -219,7 +296,7 @@ int gcd(int x, int y) {
   if (y < 0) {
     y = 0 - y;
   }
-  { int temp = 0;
+  { long long int temp = 0l;
 
     while (!(y == 0)) {
       temp = (x % y);
@@ -228,6 +305,12 @@ int gcd(int x, int y) {
     }
     return (x);
   }
+}
+
+boolean regularIntegerValuedP(long long int x) {
+  // Return `true' if `x' can be represented by a regular integer.
+  return ((x >= NULL_INTEGER) &&
+      (x <= MOST_POSITIVE_INTEGER));
 }
 
 boolean integerValuedP(double x) {
@@ -342,7 +425,7 @@ double base60ToFloat(Cons* l) {
   }
 }
 
-int stella::random(int n) {
+int random(int n) {
   // Generate a random integer in the interval [0..n-1].
   { int rnum = ::random() % n;
 
@@ -355,42 +438,42 @@ void seedRandomNumberGenerator() {
   ::srandom(time(NULL));;
 }
 
-double stella::sqrt(double n) {
+double sqrt(double n) {
   // Return the square root of `n'.
   return (::sqrt(n));
 }
 
-double stella::cos(double n) {
+double cos(double n) {
   // Return the cosine of `n' radians.
   return (::cos(n));
 }
 
-double stella::sin(double n) {
+double sin(double n) {
   // Return the sine of `n' radians.
   return (::sin(n));
 }
 
-double stella::tan(double n) {
+double tan(double n) {
   // Return the tangent of `n' radians.
   return (::tan(n));
 }
 
-double stella::acos(double n) {
+double acos(double n) {
   // Return the arccosine of `n' in radians.
   return (::acos(n));
 }
 
-double stella::asin(double n) {
+double asin(double n) {
   // Return the arcsine of `n' in radians.
   return (::asin(n));
 }
 
-double stella::atan(double n) {
+double atan(double n) {
   // Return the arc tangent of `n' in radians.
   return (::atan(n));
 }
 
-double stella::atan2(double x, double y) {
+double atan2(double x, double y) {
   // Return the arc tangent of `x' / `y' in radians.
   return (::atan2(x,y));
 }
@@ -399,7 +482,7 @@ double stella::atan2(double x, double y) {
 // Used for log 10 conversions.
 double RECIPROCAL_NL10 = NULL_FLOAT;
 
-double stella::log(double n) {
+double log(double n) {
   // Return the natural logarithm (base e) of `n'.
   return (::log(n));
 }
@@ -409,7 +492,7 @@ double log10(double n) {
   return (::log(n) * RECIPROCAL_NL10);
 }
 
-double stella::exp(double n) {
+double exp(double n) {
   // Return the e to the power `n'.
   return (::exp(n));
 }
@@ -419,29 +502,382 @@ double expt(double x, double y) {
   return (::pow(x,y));
 }
 
-int stella::min(int x, int y) {
+int integerMin(int x, int y) {
   // Return the minimum of `x' and `y'.  If either is NULL, return the other.
-  if (x == NULL_INTEGER) {
-    return (y);
-  }
-  if (y == NULL_INTEGER) {
-    return (x);
-  }
-  return (((x < y) ? x : y));
+  return (((x > y) ? (((y == NULL_INTEGER) ? x : y)) : (((x == NULL_INTEGER) ? y : x))));
 }
 
-int stella::max(int x, int y) {
+long long int longIntegerMin(long long int x, long long int y) {
+  // Return the minimum of `x' and `y'.  If either is NULL, return the other.
+  return (((x > y) ? (((y == NULL_LONG_INTEGER) ? x : y)) : (((x == NULL_LONG_INTEGER) ? y : x))));
+}
+
+double floatMin(double x, double y) {
+  // Return the minimum of `x' and `y'.  If either is NULL, return the other.
+  return (((x > y) ? (((y == NULL_FLOAT) ? x : y)) : (((x == NULL_FLOAT) ? y : x))));
+}
+
+NumberWrapper* NumberWrapper::min(NumberWrapper* y) {
+  // Return the minimum of `x' and `y'.  If `y' is NULL, return `x'.
+  { NumberWrapper* x = this;
+
+    { Surrogate* testValue000 = safePrimaryType(x);
+
+      if (subtypeOfIntegerP(testValue000)) {
+        { NumberWrapper* x000 = x;
+          IntegerWrapper* x = ((IntegerWrapper*)(x000));
+
+          { Surrogate* testValue001 = safePrimaryType(y);
+
+            if (subtypeOfIntegerP(testValue001)) {
+              { NumberWrapper* y000 = y;
+                IntegerWrapper* y = ((IntegerWrapper*)(y000));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue <= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfLongIntegerP(testValue001)) {
+              { NumberWrapper* y001 = y;
+                LongIntegerWrapper* y = ((LongIntegerWrapper*)(y001));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue <= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfFloatP(testValue001)) {
+              { NumberWrapper* y002 = y;
+                FloatWrapper* y = ((FloatWrapper*)(y002));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue <= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else {
+              return (x);
+            }
+          }
+        }
+      }
+      else if (subtypeOfLongIntegerP(testValue000)) {
+        { NumberWrapper* x001 = x;
+          LongIntegerWrapper* x = ((LongIntegerWrapper*)(x001));
+
+          { Surrogate* testValue002 = safePrimaryType(y);
+
+            if (subtypeOfIntegerP(testValue002)) {
+              { NumberWrapper* y003 = y;
+                IntegerWrapper* y = ((IntegerWrapper*)(y003));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue <= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfLongIntegerP(testValue002)) {
+              { NumberWrapper* y004 = y;
+                LongIntegerWrapper* y = ((LongIntegerWrapper*)(y004));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue <= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfFloatP(testValue002)) {
+              { NumberWrapper* y005 = y;
+                FloatWrapper* y = ((FloatWrapper*)(y005));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue <= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else {
+              return (x);
+            }
+          }
+        }
+      }
+      else if (subtypeOfFloatP(testValue000)) {
+        { NumberWrapper* x002 = x;
+          FloatWrapper* x = ((FloatWrapper*)(x002));
+
+          { Surrogate* testValue003 = safePrimaryType(y);
+
+            if (subtypeOfIntegerP(testValue003)) {
+              { NumberWrapper* y006 = y;
+                IntegerWrapper* y = ((IntegerWrapper*)(y006));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue <= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfLongIntegerP(testValue003)) {
+              { NumberWrapper* y007 = y;
+                LongIntegerWrapper* y = ((LongIntegerWrapper*)(y007));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue <= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfFloatP(testValue003)) {
+              { NumberWrapper* y008 = y;
+                FloatWrapper* y = ((FloatWrapper*)(y008));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue <= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else {
+              return (x);
+            }
+          }
+        }
+      }
+      else {
+        { OutputStringStream* stream000 = newOutputStringStream();
+
+          *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+          throw *newStellaException(stream000->theStringReader());
+        }
+      }
+    }
+  }
+}
+
+int integerMax(int x, int y) {
   // Return the maximum of `x' and `y'.  If either is NULL, return the other.
-  if (x == NULL_INTEGER) {
-    return (y);
-  }
-  if (y == NULL_INTEGER) {
-    return (x);
-  }
   return (((x > y) ? x : y));
 }
 
+long long int longIntegerMax(long long int x, long long int y) {
+  // Return the maximum of `x' and `y'.  If either is NULL, return the other.
+  return (((x > y) ? x : y));
+}
+
+double floatMax(double x, double y) {
+  // Return the maximum of `x' and `y'.  If either is NULL, return the other.
+  return (((x > y) ? x : y));
+}
+
+NumberWrapper* NumberWrapper::max(NumberWrapper* y) {
+  // Return the maximum of `x' and `y'.  If `y' is NULL, return `x'.
+  { NumberWrapper* x = this;
+
+    { Surrogate* testValue000 = safePrimaryType(x);
+
+      if (subtypeOfIntegerP(testValue000)) {
+        { NumberWrapper* x000 = x;
+          IntegerWrapper* x = ((IntegerWrapper*)(x000));
+
+          { Surrogate* testValue001 = safePrimaryType(y);
+
+            if (subtypeOfIntegerP(testValue001)) {
+              { NumberWrapper* y000 = y;
+                IntegerWrapper* y = ((IntegerWrapper*)(y000));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue >= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfLongIntegerP(testValue001)) {
+              { NumberWrapper* y001 = y;
+                LongIntegerWrapper* y = ((LongIntegerWrapper*)(y001));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue >= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfFloatP(testValue001)) {
+              { NumberWrapper* y002 = y;
+                FloatWrapper* y = ((FloatWrapper*)(y002));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue >= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else {
+              return (x);
+            }
+          }
+        }
+      }
+      else if (subtypeOfLongIntegerP(testValue000)) {
+        { NumberWrapper* x001 = x;
+          LongIntegerWrapper* x = ((LongIntegerWrapper*)(x001));
+
+          { Surrogate* testValue002 = safePrimaryType(y);
+
+            if (subtypeOfIntegerP(testValue002)) {
+              { NumberWrapper* y003 = y;
+                IntegerWrapper* y = ((IntegerWrapper*)(y003));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue >= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfLongIntegerP(testValue002)) {
+              { NumberWrapper* y004 = y;
+                LongIntegerWrapper* y = ((LongIntegerWrapper*)(y004));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue >= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfFloatP(testValue002)) {
+              { NumberWrapper* y005 = y;
+                FloatWrapper* y = ((FloatWrapper*)(y005));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue >= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else {
+              return (x);
+            }
+          }
+        }
+      }
+      else if (subtypeOfFloatP(testValue000)) {
+        { NumberWrapper* x002 = x;
+          FloatWrapper* x = ((FloatWrapper*)(x002));
+
+          { Surrogate* testValue003 = safePrimaryType(y);
+
+            if (subtypeOfIntegerP(testValue003)) {
+              { NumberWrapper* y006 = y;
+                IntegerWrapper* y = ((IntegerWrapper*)(y006));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue >= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfLongIntegerP(testValue003)) {
+              { NumberWrapper* y007 = y;
+                LongIntegerWrapper* y = ((LongIntegerWrapper*)(y007));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue >= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else if (subtypeOfFloatP(testValue003)) {
+              { NumberWrapper* y008 = y;
+                FloatWrapper* y = ((FloatWrapper*)(y008));
+
+                if ((!((boolean)(y))) ||
+                    (x->wrapperValue >= y->wrapperValue)) {
+                  return (x);
+                }
+                else {
+                  return (y);
+                }
+              }
+            }
+            else {
+              return (x);
+            }
+          }
+        }
+      }
+      else {
+        { OutputStringStream* stream000 = newOutputStringStream();
+
+          *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+          throw *newStellaException(stream000->theStringReader());
+        }
+      }
+    }
+  }
+}
+
 int integerAbs(int x) {
+  // Return the absolute value of `x'.
+  return (((x < 0) ? (0 - x) : x));
+}
+
+long long int longIntegerAbs(long long int x) {
   // Return the absolute value of `x'.
   return (((x < 0) ? (0 - x) : x));
 }
@@ -547,6 +983,47 @@ boolean StringWrapper::nonEmptyP() {
   }
 }
 
+boolean blankStringP(char* string) {
+  // Return true if `string' is either NULL, empty, or only
+  // contains white space characters.
+  { boolean testValue000 = false;
+
+    if (string == NULL) {
+      testValue000 = true;
+    }
+    else {
+      if (stringEqlP(string, "")) {
+        testValue000 = true;
+      }
+      else {
+        { boolean alwaysP000 = true;
+
+          { char chaR = NULL_CHARACTER;
+            char* vector000 = string;
+            int index000 = 0;
+            int length000 = strlen(vector000);
+
+            for  (chaR, vector000, index000, length000; 
+                  index000 < length000; 
+                  index000 = index000 + 1) {
+              chaR = vector000[index000];
+              if (!(oCHARACTER_TYPE_TABLEo[(int)(unsigned char) chaR] == KWD_PRIMAL_WHITE_SPACE)) {
+                alwaysP000 = false;
+                break;
+              }
+            }
+          }
+          testValue000 = alwaysP000;
+        }
+      }
+    }
+    { boolean value000 = testValue000;
+
+      return (value000);
+    }
+  }
+}
+
 boolean stringL(char* x, char* y) {
   // Return true if `x' is lexicographically < `y', considering case.
   return (stringCompare(x, y, true) < 0);
@@ -596,7 +1073,7 @@ char* makeRawMutableString(int size) {
   // Return a new uninitialized mutable string of `size'.
   { char* s = NULL;
 
-    s = new (GC) char[size+1]; s[size]='\0';
+    s = new (PointerFreeGC) char[size+1]; s[size]='\0';
     return (s);
   }
 }
@@ -897,6 +1374,33 @@ int insertString(char* source, int start, int end, char* target, int targetIndex
   return (targetIndex);
 }
 
+char* stringTrim(char* string) {
+  // Remove any leading and trailing white space from `string'
+  // and return a copy of the trimmed substring (which might be empty if we had
+  // all white space).  If no white space was removed, `string' is returned
+  // unmodified and uncopied.
+  { int start = 0;
+    int last = strlen(string) - 1;
+    int end = last;
+
+    while ((start <= end) &&
+        (oCHARACTER_TYPE_TABLEo[(int)(unsigned char) (string[start])] == KWD_PRIMAL_WHITE_SPACE)) {
+      start = start + 1;
+    }
+    while ((end > start) &&
+        (oCHARACTER_TYPE_TABLEo[(int)(unsigned char) (string[end])] == KWD_PRIMAL_WHITE_SPACE)) {
+      end = end - 1;
+    }
+    if ((start > 0) ||
+        (end < last)) {
+      return (stringSubsequence(string, start, end + 1));
+    }
+    else {
+      return (string);
+    }
+  }
+}
+
 char* characterToString(char c) {
   // Convert `c' into a one-element string and return the result.
   return (makeString(1, c));
@@ -966,7 +1470,7 @@ char* formatWithPadding(char* input, int length, char padchar, Keyword* align, b
 char* zeroPadInteger(int value, int size) {
   // Returns a string representing `value' of at least length
   // 'size', padded if necessary with 0 characters.
-  return (((value < 0) ? stringConcatenate("-", formatWithPadding(integerToString(0 - value), size - 1, '0', KWD_PRIMAL_RIGHT, false), 0) : formatWithPadding(integerToString(value), size, '0', KWD_PRIMAL_RIGHT, false)));
+  return (((value < 0) ? stringConcatenate("-", formatWithPadding(integerToString(((long long int)(0 - value))), size - 1, '0', KWD_PRIMAL_RIGHT, false), 0) : formatWithPadding(integerToString(((long long int)(value))), size, '0', KWD_PRIMAL_RIGHT, false)));
 }
 
 char* zeroPadString(char* input, int size) {
@@ -1073,6 +1577,16 @@ int mutableStringLength(char* self) {
   return (strlen(self));
 }
 
+int stringSearchIgnoreCase(char* string, char* substring, int start) {
+  // Return start position of the left-most occurrence of
+  // `substring' in `string', beginning from `start'.  Return NULL if it is not
+  // a substring.  The comparison ignores differences in letter case.
+  if (start == NULL_INTEGER) {
+    start = 0;
+  }
+  return (stringSearch(stringDowncase(string), stringDowncase(substring), start));
+}
+
 boolean startsWithP(char* string, char* prefix, int start) {
   // Return TRUE if `string' starts with `prefix' starting from
   // `start' (which defaults to 0 if it is supplied as NULL).
@@ -1100,6 +1614,48 @@ boolean startsWithP(char* string, char* prefix, int start) {
             i = iter000;
             j = iter001;
             if (!(prefix[i] == string[j])) {
+              alwaysP000 = false;
+              break;
+            }
+          }
+        }
+        { boolean value000 = alwaysP000;
+
+          return (value000);
+        }
+      }
+    }
+  }
+}
+
+boolean endsWithP(char* string, char* suffix, int end) {
+  // Return TRUE if the substring of `string' ending at `end'
+  // ends with `suffix'.  If `end' is NULL it defaults to the length of `string'.
+  if (end == NULL_INTEGER) {
+    end = strlen(string);
+  }
+  { int suffixlength = strlen(suffix);
+    int start = end - suffixlength;
+
+    if (start < 0) {
+      return (false);
+    }
+    else {
+      { boolean alwaysP000 = true;
+
+        { int i = NULL_INTEGER;
+          int iter000 = 0;
+          int upperBound000 = suffixlength - 1;
+          int j = NULL_INTEGER;
+          int iter001 = start;
+
+          for  (i, iter000, upperBound000, j, iter001; 
+                iter000 <= upperBound000; 
+                iter000 = iter000 + 1,
+                iter001 = iter001 + 1) {
+            i = iter000;
+            j = iter001;
+            if (!(suffix[i] == string[j])) {
               alwaysP000 = false;
               break;
             }
@@ -1258,6 +1814,28 @@ boolean eqlExceptInWhitespaceP(char* s1, char* s2) {
     }
     return ((i1 == len1) &&
         (i2 == len2));
+  }
+}
+
+Cons* splitString(char* input, char separator) {
+  // Split `input' into separate strings based on the `separator' character.
+  { int length = strlen(input);
+    int start = 0;
+    int end = 0;
+    Cons* strings = NIL;
+
+    for (;;) {
+      end = stringPosition(input, separator, start);
+      strings = cons(wrapString(stringSubsequence(input, start, end)), strings);
+      if ((end != NULL_INTEGER) &&
+          (end < (length - 1))) {
+        start = end + 1;
+      }
+      else {
+        break;
+      }
+    }
+    return (strings->reverse());
   }
 }
 
@@ -1560,7 +2138,13 @@ int* oHASH_BYTE_RANDOM_TABLEo = NULL;
 int oINTEGER_MSB_MASKo = 1 << (sizeof (int) / sizeof (char) * 8 - 1);
 
 // Mask that covers all the unsigned bits of an integer.
-int oINTEGER_UNSIGNED_BITS_MASKo = (~ oINTEGER_MSB_MASKo);
+int oINTEGER_UNSIGNED_BITS_MASKo = MOST_POSITIVE_INTEGER;
+
+// The sign bit of a long integer.
+long long int oLONG_INTEGER_MSB_MASKo = NULL_LONG_INTEGER;
+
+// Mask that covers all the unsigned bits of a long integer.
+long long int oLONG_INTEGER_UNSIGNED_BITS_MASKo = MOST_POSITIVE_LONG_INTEGER;
 
 int hashmod(int code, int size) {
   // Map the hash code `code' onto a bucket index for a hash table
@@ -1644,6 +2228,13 @@ int IntegerWrapper::hashCode() {
   }
 }
 
+int LongIntegerWrapper::hashCode() {
+  { LongIntegerWrapper* self = this;
+
+    return (((int)(self->wrapperValue)));
+  }
+}
+
 int FloatWrapper::hashCode() {
   { FloatWrapper* self = this;
 
@@ -1671,6 +2262,10 @@ int stringHashCode(char* self) {
 
 int integerHashCode(int self) {
   return (self);
+}
+
+int longIntegerHashCode(long long int self) {
+  return (((int)(self)));
 }
 
 int floatHashCode(double self) {
@@ -1838,6 +2433,80 @@ void unmake(Object* self) {
   self = self;
 }
 
+boolean probeFileP(char* filename) {
+  // Return true if file `fileName' exists.  Note that this does
+  // not necessarily mean that the file can also be read.
+  return (nativeProbeFileP(translateLogicalPathname(filename)));
+}
+
+CalendarDate* fileWriteDate(char* filename) {
+  // Return the time at which file `fileName' was last modified or
+  // NULL if that cannot be determined.
+  { char* truefile = translateLogicalPathname(filename);
+
+    if (!(nativeProbeFileP(truefile))) {
+      ensureFileExists(filename, "file-write-date");
+    }
+    return (nativeFileWriteDate(truefile));
+  }
+}
+
+long long int fileLength(char* filename) {
+  // Return the length of file `fileName' in bytes or NULL if that
+  // cannot be determined.
+  { char* truefile = translateLogicalPathname(filename);
+
+    if (!(nativeProbeFileP(truefile))) {
+      ensureFileExists(filename, "file-length");
+    }
+    return (nativeFileLength(truefile));
+  }
+}
+
+void deleteFile(char* filename) {
+  // Delete the file `fileName'.
+  { char* truefile = translateLogicalPathname(filename);
+
+    if (!(nativeProbeFileP(truefile))) {
+      ensureFileExists(filename, "delete-file");
+    }
+    nativeDeleteFile(truefile);
+  }
+}
+
+void renameFile(char* fromfile, char* tofile) {
+  // Rename the file `fromFile' to `toFile'.
+  { char* truefrom = translateLogicalPathname(fromfile);
+    char* trueto = translateLogicalPathname(tofile);
+
+    if (!(nativeProbeFileP(truefrom))) {
+      ensureFileExists(fromfile, "rename-file");
+    }
+    if (nativeProbeFileP(trueto)) {
+      ensureFileDoesNotExist(tofile, "rename-file");
+    }
+    nativeRenameFile(truefrom, trueto);
+  }
+}
+
+void copyStreamToStream(InputStream* in, OutputStream* out) {
+  // Copy `in' verbatimely to `out'.  Does the right thing for binary data.
+  { char* buffer = new (PointerFreeGC) char[oTOKENIZER_INITIAL_BUFFER_SIZEo];
+    int bytesread = 0;
+
+    for (;;) {
+      bytesread = nativeByteArrayReadSequence(buffer, in->nativeStream, 0, oTOKENIZER_INITIAL_BUFFER_SIZEo);
+      if (bytesread > 0) {
+        nativeByteArrayWriteSequence(buffer, out->nativeStream, 0, bytesread);
+      }
+      else {
+        flushOutput(out);
+        break;
+      }
+    }
+  }
+}
+
 void copyFile(char* fromfile, char* tofile) {
   // Copy file `fromFile' to file `toFile', clobbering
   // any data already in `toFile'.
@@ -1850,19 +2519,7 @@ void copyFile(char* fromfile, char* tofile) {
 
         try {
           to = openOutputFile(tofile, 0);
-          { char* buffer = new (GC) char[oTOKENIZER_INITIAL_BUFFER_SIZEo];
-            int bytesRead = 0;
-
-            for (;;) {
-              bytesRead = nativeByteArrayReadSequence(buffer, from->nativeStream, 0, oTOKENIZER_INITIAL_BUFFER_SIZEo);
-              if (bytesRead > 0) {
-                nativeByteArrayWriteSequence(buffer, to->nativeStream, 0, bytesRead);
-              }
-              else {
-                break;
-              }
-            }
-          }
+          copyStreamToStream(from, to);
         }
 catch (...) {
           if (((boolean)(to))) {
@@ -1887,27 +2544,232 @@ catch (...) {
   }
 }
 
-int lognot(int arg) {
+char* makeTemporaryFileName(char* prefix, char* suffix) {
+  // Return a file name of the form `<prefix>NNNNNN<suffix>'
+  // which is guaranteed to not refer to any existing file.  A null `prefix'
+  // defaults to `tmpfile', a null `suffix' defaults to the empty string.
+  // The number portion NNNNNN will correpond to a random number between 0
+  // and 999999.  If no qualifying filename can be found after 100 attempts,
+  // NULL will be returned.  Note that it is possible due to multi-threading
+  // or processing that the generated filename becomes used by another thread
+  // or OS process.  If necessary, this case can be handled by the caller.
+  if (prefix == NULL) {
+    prefix = "tmpfile";
+  }
+  if (suffix == NULL) {
+    suffix = "";
+  }
+  { int i = NULL_INTEGER;
+    int iter000 = 0;
+    int upperBound000 = 100;
+
+    for  (i, iter000, upperBound000; 
+          iter000 <= upperBound000; 
+          iter000 = iter000 + 1) {
+      i = iter000;
+      i = i;
+      { char* uniquifier = formatWithPadding(integerToString(((long long int)(stella::random(1000000)))), 6, '0', KWD_PRIMAL_RIGHT, false);
+        char* tempfilename = stringConcatenate(prefix, uniquifier, 1, suffix);
+
+        if (!probeFileP(tempfilename)) {
+          return (tempfilename);
+        }
+      }
+    }
+  }
+  return (NULL);
+}
+
+Cons* clListDirectoryFiles(char* directory) {
+  { Cons* files = NULL;
+    int dirnamelength = strlen(directory);
+    char* dirsep = directorySeparatorString();
+    boolean checkduplicatesP = false;
+    char* normfile = NULL;
+    Cons* normalizedfiles = NIL;
+
+    if (!((boolean)(files))) {
+      checkduplicatesP = true;
+    }
+    files = NIL;
+    if (checkduplicatesP) {
+      normalizedfiles = normalizedfiles->removeDuplicatesEqual();
+    }
+    { StringWrapper* file = NULL;
+      Cons* iter000 = files;
+      Cons* collect000 = NULL;
+
+      for  (file, iter000, collect000; 
+            !(iter000 == NIL); 
+            iter000 = iter000->rest) {
+        file = ((StringWrapper*)(iter000->value));
+        normfile = file->wrapperValue;
+        if (startsWithP(normfile, directory, 0)) {
+          normfile = stringSubsequence(normfile, dirnamelength, NULL_INTEGER);
+        }
+        if (endsWithP(normfile, dirsep, NULL_INTEGER)) {
+          normfile = stringSubsequence(normfile, 0, strlen(normfile) - strlen(dirsep));
+        }
+        if (stringEqlP(normfile, ".") ||
+            stringEqlP(normfile, "..")) {
+          continue;
+        }
+        if (!((boolean)(collect000))) {
+          {
+            collect000 = cons(wrapString(normfile), NIL);
+            if (normalizedfiles == NIL) {
+              normalizedfiles = collect000;
+            }
+            else {
+              addConsToEndOfConsList(normalizedfiles, collect000);
+            }
+          }
+        }
+        else {
+          {
+            collect000->rest = cons(wrapString(normfile), NIL);
+            collect000 = collect000->rest;
+          }
+        }
+      }
+    }
+    return (normalizedfiles);
+  }
+}
+
+# include <dirent.h>
+Cons* cppListDirectoryFiles(char* directory) {
+  { Cons* files = NIL;
+
+    DIR *dirptr;
+       struct dirent *entry;
+       dirptr = opendir(directory);
+       if (dirptr != NULL) {
+          while (entry = readdir(dirptr)) {
+            char* filename = entry->d_name;
+            // skip . and ..:
+            if (!strcmp(filename, ".") || !strcmp(filename, ".."))
+               continue;
+            // do this to copy out the string:
+            filename = stringConcatenate(filename, "");
+            files = cons(wrapString(filename), files);
+          }
+          closedir(dirptr);
+         }
+         else
+            files = NULL;
+    if (!((boolean)(files))) {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "list-directory-files: error reading " << "`" << directory << "'";
+        throw *newStellaException(stream000->theStringReader());
+      }
+    }
+    return (files);
+  }
+}
+
+Cons* javaListDirectoryFiles(char* directory) {
+  { Cons* files = NIL;
+
+    return (files);
+  }
+}
+
+Cons* listDirectoryFiles(char* directory) {
+  // Return all the files and sub-directories in `directory' sorted by name.
+  // Each returned file is a bare file name without a `directory' component.  If a file is
+  // a directory, it will look just like a plain file.  This means consumers might have to
+  // explicitly test whether a file is a directory depending on what they do. Excludes . and ..
+  // directories.  Handles logical pathnames but resulting files will always use physical pathname
+  // syntax.  This is mostly consistent across native languages, but some differences still exist -
+  // e.g., Lisp will convert . or .. into absolute pathnames.
+  directory = translateLogicalPathname(fileNameAsDirectory(directory));
+  ensureFileExists(directory, "list-directory-files");
+  { Cons* files = cppListDirectoryFiles(directory);
+
+    return (files->sort(NULL));
+  }
+}
+
+Cons* listDirectoryFilesEvaluatorWrapper(Cons* arguments) {
+  return (listDirectoryFiles(((StringWrapper*)(arguments->value))->wrapperValue));
+}
+
+int integerLognot(int arg) {
   return ((~ arg));
 }
 
-int logand(int arg1, int arg2) {
+long long int longIntegerLognot(long long int arg) {
+  return ((~ arg));
+}
+
+int integerLogand(int arg1, int arg2) {
   return ((arg1 & arg2));
 }
 
-int logor(int arg1, int arg2) {
+long long int longIntegerLogand(long long int arg1, long long int arg2) {
+  return ((arg1 & arg2));
+}
+
+int integerLogor(int arg1, int arg2) {
   return ((arg1 | arg2));
 }
 
-int logxor(int arg1, int arg2) {
+long long int longIntegerLogor(long long int arg1, long long int arg2) {
+  return ((arg1 | arg2));
+}
+
+int integerLogxor(int arg1, int arg2) {
   return ((arg1 ^ arg2));
 }
 
-int shiftLeft(int arg, int count) {
+long long int longIntegerLogxor(long long int arg1, long long int arg2) {
+  return ((arg1 ^ arg2));
+}
+
+// The number of bits in a long integer.
+int LONG_INTEGER_BIT_WIDTH = NULL_INTEGER;
+
+int integerLength(long long int x) {
+  // Return the 1-based position of the left-most bit in `x'.
+  // If `x' is negative, we only count the value bits, not the sign.
+  if (x < 0) {
+    x = -1 - x;
+  }
+  if (x == 0) {
+    return (0);
+  }
+  { int bot = 0;
+    int top = LONG_INTEGER_BIT_WIDTH - 1;
+    int split = 0;
+    long long int rem = 0l;
+
+    for (;;) {
+      split = ((bot + top) >> 1);
+      rem = (x >> split);
+      if (rem == 1) {
+        return (split + 1);
+      }
+      if (rem == 0) {
+        top = split - 1;
+      }
+      else {
+        bot = split + 1;
+      }
+    }
+  }
+}
+
+int integerShiftLeft(int arg, int count) {
   return ((arg << count));
 }
 
-int shiftRight(int arg, int count) {
+long long int longIntegerShiftLeft(long long int arg, int count) {
+  return ((arg << count));
+}
+
+int integerShiftRight(int arg, int count) {
   // Shift `arg' to the right by `count' positions and
   // 0-extend from the left if `arg' is positive or 1-extend if it is
   // negative.  This is an arithmetic shift that preserve the sign of `arg'
@@ -1915,12 +2777,28 @@ int shiftRight(int arg, int count) {
   return ((arg >> count));
 }
 
-int unsignedShiftRightBy1(int arg) {
+long long int longIntegerShiftRight(long long int arg, int count) {
+  // Shift `arg' to the right by `count' positions and
+  // 0-extend from the left if `arg' is positive or 1-extend if it is
+  // negative.  This is an arithmetic shift that preserve the sign of `arg'
+  // and is equivalent to dividing `arg' by 2** `count'.
+  return ((arg >> count));
+}
+
+int integerUnsignedShiftRightBy1(int arg) {
   // Shift `arg' to the right by 1 position and 0-extend
   // from the left.  This does not preserve the sign of `arg' and shifts
   // the sign-bit just like a regular bit.  In Common-Lisp we can't do that
   // directly and need to do some extra masking.
   return (((unsigned int)arg >> 1));
+}
+
+long long int longIntegerUnsignedShiftRightBy1(long long int arg) {
+  // Shift `arg' to the right by 1 position and 0-extend
+  // from the left.  This does not preserve the sign of `arg' and shifts
+  // the sign-bit just like a regular bit.  In Common-Lisp we can't do that
+  // directly and need to do some extra masking.
+  return (((unsigned long long int)arg >> 1));
 }
 
 char* generateUuid(Keyword* uuidType) {
@@ -1955,7 +2833,7 @@ char* generateRandomUuid() {
   // To make the string representation, take the hexadecimal presentation of bytes 1-4
   //    (without 0x in front of it) let them follow by a -, then take bytes 5 and 6, - 
   // bytes 7 and 8, - bytes 9 and 10, - then followed by bytes 11-16.
-  return (stringConcatenate(zeroPadString(integerToHexString(stella::random(65536)), 4), zeroPadString(integerToHexString(stella::random(65536)), 4), 9, "-", zeroPadString(integerToHexString(stella::random(65536)), 4), "-", integerToHexString(16384 + stella::random(4096)), "-", integerToHexString(32768 + stella::random(16384)), "-", zeroPadString(integerToHexString(stella::random(16777216)), 6), zeroPadString(integerToHexString(stella::random(16777216)), 6)));
+  return (stringConcatenate(zeroPadString(integerToHexString(((long long int)(stella::random(65536)))), 4), zeroPadString(integerToHexString(((long long int)(stella::random(65536)))), 4), 9, "-", zeroPadString(integerToHexString(((long long int)(stella::random(65536)))), 4), "-", integerToHexString(((long long int)(16384 + stella::random(4096)))), "-", integerToHexString(((long long int)(32768 + stella::random(16384)))), "-", zeroPadString(integerToHexString(((long long int)(stella::random(16777216)))), 6), zeroPadString(integerToHexString(((long long int)(stella::random(16777216)))), 6)));
 }
 
 Object* stellify(Object* self) {
@@ -1995,7 +2873,7 @@ char* runningSystemInformation() {
   }
 }
 
-void stella::sleep(double seconds) {
+void sleep(double seconds) {
   // The program will sleep for the indicated number of seconds.
   // Fractional values are allowed, but the results are implementation dependent:
   // Common Lisp uses the fractions natively, Java with a resolution of 0.001,
@@ -2044,6 +2922,7 @@ void helpStartupPrimal1() {
     SYM_PRIMAL_STELLA_LOG = ((Symbol*)(internRigidSymbolWrtModule("LOG", NULL, 0)));
     SYM_PRIMAL_STELLA_MIN = ((Symbol*)(internRigidSymbolWrtModule("MIN", NULL, 0)));
     SYM_PRIMAL_STELLA_MAX = ((Symbol*)(internRigidSymbolWrtModule("MAX", NULL, 0)));
+    KWD_PRIMAL_WHITE_SPACE = ((Keyword*)(internRigidSymbolWrtModule("WHITE-SPACE", NULL, 2)));
     KWD_PRIMAL_UPCASE = ((Keyword*)(internRigidSymbolWrtModule("UPCASE", NULL, 2)));
     KWD_PRIMAL_DOWNCASE = ((Keyword*)(internRigidSymbolWrtModule("DOWNCASE", NULL, 2)));
     KWD_PRIMAL_CAPITALIZE = ((Keyword*)(internRigidSymbolWrtModule("CAPITALIZE", NULL, 2)));
@@ -2051,7 +2930,6 @@ void helpStartupPrimal1() {
     KWD_PRIMAL_LEFT = ((Keyword*)(internRigidSymbolWrtModule("LEFT", NULL, 2)));
     KWD_PRIMAL_RIGHT = ((Keyword*)(internRigidSymbolWrtModule("RIGHT", NULL, 2)));
     KWD_PRIMAL_CENTER = ((Keyword*)(internRigidSymbolWrtModule("CENTER", NULL, 2)));
-    KWD_PRIMAL_WHITE_SPACE = ((Keyword*)(internRigidSymbolWrtModule("WHITE-SPACE", NULL, 2)));
     SYM_PRIMAL_STELLA_HASH_CODE = ((Symbol*)(internRigidSymbolWrtModule("HASH-CODE", NULL, 0)));
     KWD_PRIMAL_JAVA = ((Keyword*)(internRigidSymbolWrtModule("JAVA", NULL, 2)));
     KWD_PRIMAL_TYPE_4 = ((Keyword*)(internRigidSymbolWrtModule("TYPE-4", NULL, 2)));
@@ -2065,6 +2943,7 @@ void helpStartupPrimal1() {
 void helpStartupPrimal2() {
   {
     defineFunctionObject("LISP-NULL-ARRAY-SYMBOL-STRING", "(DEFUN (LISP-NULL-ARRAY-SYMBOL-STRING STRING) ((RANK INTEGER)))", ((cpp_function_code)(&lispNullArraySymbolString)), NULL);
+    defineFunctionObject("PRINT-NUMERIC-CONSTANTS", "(DEFUN PRINT-NUMERIC-CONSTANTS () :COMMAND? TRUE)", ((cpp_function_code)(&printNumericConstants)), NULL);
     defineMethodObject("(DEFMETHOD (NULL? BOOLEAN) ((X UNKNOWN)) :DOCUMENTATION \"Return true if `x' is undefined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (NULL? BOOLEAN) ((X OBJECT)) :DOCUMENTATION \"Return true if `x' is undefined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (NULL? BOOLEAN) ((X SECOND-CLASS-OBJECT)) :DOCUMENTATION \"Return true if `x' is undefined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
@@ -2075,6 +2954,7 @@ void helpStartupPrimal2() {
     defineMethodObject("(DEFMETHOD (NULL? BOOLEAN) ((X CHARACTER)) :DOCUMENTATION \"Return true if `x' is undefined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (NULL? BOOLEAN) ((X CODE)) :DOCUMENTATION \"Return true if `x' is undefined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (NULL? BOOLEAN) ((X INTEGER)) :DOCUMENTATION \"Return true if `x' is undefined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (NULL? BOOLEAN) ((X LONG-INTEGER)) :DOCUMENTATION \"Return true if `x' is undefined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (NULL? BOOLEAN) ((X FLOAT)) :DOCUMENTATION \"Return true if `x' is undefined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (DEFINED? BOOLEAN) ((X UNKNOWN)) :DOCUMENTATION \"Return true if `x' is defined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (DEFINED? BOOLEAN) ((X OBJECT)) :DOCUMENTATION \"Return true if `x' is defined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
@@ -2086,6 +2966,7 @@ void helpStartupPrimal2() {
     defineMethodObject("(DEFMETHOD (DEFINED? BOOLEAN) ((X CHARACTER)) :DOCUMENTATION \"Return true if `x' is defined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (DEFINED? BOOLEAN) ((X CODE)) :DOCUMENTATION \"Return true if `x' is defined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (DEFINED? BOOLEAN) ((X INTEGER)) :DOCUMENTATION \"Return true if `x' is defined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (DEFINED? BOOLEAN) ((X LONG-INTEGER)) :DOCUMENTATION \"Return true if `x' is defined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (DEFINED? BOOLEAN) ((X FLOAT)) :DOCUMENTATION \"Return true if `x' is defined (handled specially by all translators).\" :PUBLIC? TRUE :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineFunctionObject("EQ?", "(DEFUN (EQ? BOOLEAN) ((X UNKNOWN) (Y UNKNOWN)) :DOCUMENTATION \"Return true if `x' and `y' are literally the same object (or\nsimple number).  Analogue to the Common Lisp EQL and C++ and Java's ==.\" :PUBLIC? TRUE :NATIVE? TRUE)", NULL, NULL);
     defineFunctionObject("=", "(DEFUN (= BOOLEAN) ((X NUMBER) (Y NUMBER)) :DOCUMENTATION \"Return true if `x' and `y' are numbers of exactly the same magnitude.\" :PUBLIC? TRUE :NATIVE? TRUE)", NULL, NULL);
@@ -2101,20 +2982,33 @@ void helpStartupPrimal2() {
     defineFunctionObject("-", "(DEFUN (- NUMBER) ((X NUMBER) |&REST| (ARGUMENTS NUMBER)) :DOCUMENTATION \"If only `x' was supplied return the result of 0 - `x'.\nOtherwise, return the result of (...((`x' - arg1) - arg2) - ... - argN).\" :PUBLIC? TRUE :NATIVE? TRUE)", NULL, NULL);
     defineFunctionObject("*", "(DEFUN (* NUMBER) (|&REST| (ARGUMENTS NUMBER)) :DOCUMENTATION \"Return the product of all `arguments'.\" :PUBLIC? TRUE :NATIVE? TRUE)", NULL, NULL);
     defineFunctionObject("/", "(DEFUN (/ NUMBER) ((X NUMBER) |&REST| (ARGUMENTS NUMBER)) :DOCUMENTATION \"If only `x' was supplied return the result of 1 / `x'.\nOtherwise, return the result of (...((`x' / arg1) / arg2 ) / ... / argN).\" :PUBLIC? TRUE :NATIVE? TRUE)", NULL, NULL);
-    defineFunctionObject("ZERO?", "(DEFUN (ZERO? BOOLEAN) ((X INTEGER)) :DOCUMENTATION \"Return true if `x' is 0.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:= X 0) :CPP \"(!x)\" :JAVA \"(x == 0)\")))", ((cpp_function_code)(&zeroP)), NULL);
-    defineFunctionObject("PLUS?", "(DEFUN (PLUS? BOOLEAN) ((X INTEGER)) :DOCUMENTATION \"Return true if `x' is greater than 0.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:> X 0) :CPP \"(x > 0)\" :JAVA \"(x > 0)\")))", ((cpp_function_code)(&plusP)), NULL);
-    defineFunctionObject("EVEN?", "(DEFUN (EVEN? BOOLEAN) ((X INTEGER)) :DOCUMENTATION \"Return true if `x' is an even number.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:NOT (CL:LOGBITP 0 X)) :CPP \"!(x % 2)\" :JAVA \"((x % 2) == 0)\")))", ((cpp_function_code)(&evenP)), NULL);
-    defineFunctionObject("ODD?", "(DEFUN (ODD? BOOLEAN) ((X INTEGER)) :DOCUMENTATION \"Return true if `x' is an odd number.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGBITP 0 X) :CPP \"(x % 2)\" :JAVA \"((x % 2) == 1)\")))", ((cpp_function_code)(&oddP)), NULL);
-    defineFunctionObject("DIV", "(DEFUN (DIV INTEGER) ((X INTEGER) (Y INTEGER)) :DOCUMENTATION \"Return the integer quotient from dividing `x' by `y'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:VALUES (CL:TRUNCATE X Y)) :CPP \"(x / y)\" :JAVA \"(x / y)\")))", ((cpp_function_code)(&div)), NULL);
-    defineFunctionObject("REM", "(DEFUN (REM INTEGER) ((X INTEGER) (Y INTEGER)) :DOCUMENTATION \"Return the remainder from dividing `x' by `y'.  The\nsign of the result is always the same as the sign of `x'.  This has slightly\ndifferent behavior than the `mod' function, and has less overhead in C++ and\nJava, which don't have direct support for a true modulus function.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:REM X Y) :CPP \"(x % y)\" :JAVA \"(x % y)\")))", ((cpp_function_code)(&rem)), NULL);
+    defineMethodObject("(DEFMETHOD (ZERO? BOOLEAN) ((X INTEGER)) :DOCUMENTATION \"Return true if `x' is 0.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:= X 0) :CPP \"(!x)\" :JAVA \"(x == 0)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (ZERO? BOOLEAN) ((X LONG-INTEGER)) :DOCUMENTATION \"Return true if `x' is 0.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:= X 0) :CPP \"(!x)\" :JAVA \"(x == 0)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (PLUS? BOOLEAN) ((X INTEGER)) :DOCUMENTATION \"Return true if `x' is greater than 0.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:> X 0) :CPP \"(x > 0)\" :JAVA \"(x > 0)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (PLUS? BOOLEAN) ((X LONG-INTEGER)) :DOCUMENTATION \"Return true if `x' is greater than 0.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:> X 0) :CPP \"(x > 0)\" :JAVA \"(x > 0)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (EVEN? BOOLEAN) ((X INTEGER)) :DOCUMENTATION \"Return true if `x' is an even number.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:NOT (CL:LOGBITP 0 X)) :CPP \"!(x % 2)\" :JAVA \"((x % 2) == 0)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (EVEN? BOOLEAN) ((X LONG-INTEGER)) :DOCUMENTATION \"Return true if `x' is an even number.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:NOT (CL:LOGBITP 0 X)) :CPP \"!(x % 2)\" :JAVA \"((x % 2) == 0)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (ODD? BOOLEAN) ((X INTEGER)) :DOCUMENTATION \"Return true if `x' is an odd number.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGBITP 0 X) :CPP \"(x % 2)\" :JAVA \"((x % 2) == 1)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (ODD? BOOLEAN) ((X LONG-INTEGER)) :DOCUMENTATION \"Return true if `x' is an odd number.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGBITP 0 X) :CPP \"(x % 2)\" :JAVA \"((x % 2) == 1)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (DIV INTEGER) ((X INTEGER) (Y INTEGER)) :DOCUMENTATION \"Return the integer quotient from dividing `x' by `y'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:VALUES (CL:TRUNCATE X Y)) :CPP \"(x / y)\" :JAVA \"(x / y)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (DIV LONG-INTEGER) ((X LONG-INTEGER) (Y LONG-INTEGER)) :DOCUMENTATION \"Return the integer quotient from dividing `x' by `y'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:VALUES (CL:TRUNCATE X Y)) :CPP \"(x / y)\" :JAVA \"(x / y)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (REM INTEGER) ((X INTEGER) (Y INTEGER)) :DOCUMENTATION \"Return the remainder from dividing `x' by `y'.  The\nsign of the result is always the same as the sign of `x'.  This has slightly\ndifferent behavior than the `mod' function, and has less overhead in C++ and\nJava, which don't have direct support for a true modulus function.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:REM X Y) :CPP \"(x % y)\" :JAVA \"(x % y)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (REM LONG-INTEGER) ((X LONG-INTEGER) (Y LONG-INTEGER)) :DOCUMENTATION \"Return the remainder from dividing `x' by `y'.  The\nsign of the result is always the same as the sign of `x'.  This has slightly\ndifferent behavior than the `mod' function, and has less overhead in C++ and\nJava, which don't have direct support for a true modulus function.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:REM X Y) :CPP \"(x % y)\" :JAVA \"(x % y)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineFunctionObject("FREM", "(DEFUN (FREM FLOAT) ((X FLOAT) (Y FLOAT)) :DOCUMENTATION \"Return the floating point remainder from dividing `x' by `y'.  The\nsign of the result is always the same as the sign of `x'.  This has slightly\ndifferent behavior than the `mod' function, and has less overhead in C++ and\nJava, which don't have direct support for a true modulus function.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:REM X Y) :CPP \"fmod(x, y)\" :JAVA \"(x % y)\")))", ((cpp_function_code)(&frem)), NULL);
-    defineFunctionObject("MOD", "(DEFUN (MOD INTEGER) ((X INTEGER) (MODULUS INTEGER)) :DOCUMENTATION \"True modulus.  Return the result of `x' mod `modulo'.\nNote: In C++ and Java, `mod' has more overhead than the similar\nfunction `rem'.  The  answers returned by `mod' and `rem' are only\ndifferent when the signs of `x' and `modulo' are different.\" :PUBLIC? TRUE)", ((cpp_function_code)(&mod)), NULL);
+    defineMethodObject("(DEFMETHOD (MOD INTEGER) ((X INTEGER) (MODULUS INTEGER)) :DOCUMENTATION \"True modulus.  Return the result of `x' mod `modulo'.\nNote: In C++ and Java, `mod' has more overhead than the similar\nfunction `rem'.  The  answers returned by `mod' and `rem' are only\ndifferent when the signs of `x' and `modulo' are different.\" :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (MOD LONG-INTEGER) ((X LONG-INTEGER) (MODULUS LONG-INTEGER)) :DOCUMENTATION \"True modulus.  Return the result of `x' mod `modulo'.\nNote: In C++ and Java, `mod' has more overhead than the similar\nfunction `rem'.  The  answers returned by `mod' and `rem' are only\ndifferent when the signs of `x' and `modulo' are different.\" :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineFunctionObject("FMOD", "(DEFUN (FMOD FLOAT) ((X FLOAT) (MODULUS FLOAT)) :DOCUMENTATION \"True modulus for floats.  Return the result of `x' mod `modulo'.\nNote: In C++ and Java, `mod' has more overhead than the similar\nfunction `rem'.  The  answers returned by `mod' and `rem' are only\ndifferent when the signs of `x' and `modulo' are different.\" :PUBLIC? TRUE)", ((cpp_function_code)(&stella::fmod)), NULL);
-    defineFunctionObject("GCD", "(DEFUN (GCD INTEGER) ((X INTEGER) (Y INTEGER)) :DOCUMENTATION \"Return the greatest common divisor of `x' and `y'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&gcd)), NULL);
+    defineFunctionObject("GCD", "(DEFUN (GCD LONG-INTEGER) ((X LONG-INTEGER) (Y LONG-INTEGER)) :DOCUMENTATION \"Return the greatest common divisor of `x' and `y'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&gcd)), NULL);
     defineFunctionObject("CEILING", "(DEFUN (CEILING INTEGER) ((N NUMBER)) :DOCUMENTATION \"Return the smallest integer >= `n'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("FLOOR", "(DEFUN (FLOOR INTEGER) ((N NUMBER)) :DOCUMENTATION \"Return the biggest integer <= `n'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("ROUND", "(DEFUN (ROUND INTEGER) ((N NUMBER)) :DOCUMENTATION \"Round `n' to the closest integer and return the result.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+  }
+}
+
+void helpStartupPrimal3() {
+  {
     defineFunctionObject("TRUNCATE", "(DEFUN (TRUNCATE INTEGER) ((N NUMBER)) :DOCUMENTATION \"Truncate `n' toward zero and return the result.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("REGULAR-INTEGER-VALUED?", "(DEFUN (REGULAR-INTEGER-VALUED? BOOLEAN) ((X LONG-INTEGER)) :DOCUMENTATION \"Return `true' if `x' can be represented by a regular integer.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (AND (>= X NULL-INTEGER) (<= X MOST-POSITIVE-INTEGER))))", ((cpp_function_code)(&regularIntegerValuedP)), NULL);
     defineFunctionObject("INTEGER-VALUED?", "(DEFUN (INTEGER-VALUED? BOOLEAN) ((X FLOAT)) :DOCUMENTATION \"Returns `true' if `x' is the floating point representation of an integer.\" :PUBLIC? TRUE)", ((cpp_function_code)(&integerValuedP)), NULL);
     defineFunctionObject("FLOAT-TO-BASE60", "(DEFUN (FLOAT-TO-BASE60 (CONS OF NUMBER-WRAPPER)) ((X FLOAT) (ALL-INTEGERS? BOOLEAN)) :DOCUMENTATION \"Returns a cons of `x' in a base-60 form.  That means\nthe first value will be the integer part of `x', the next value\nthe iteger value of the fraction part of `x' times 60 and the\nthird value the fraction part of `x' time 3600.  If `all-integers?'\nis `true', then the last value will be rounded to an integer.\nThis can be used to convert from decimal degree values to Degree-Minute-Second\nor from decimal hours to Hour-Minute-Second format.\" :PUBLIC? TRUE)", ((cpp_function_code)(&floatToBase60)), NULL);
     defineFunctionObject("BASE60-TO-FLOAT", "(DEFUN (BASE60-TO-FLOAT FLOAT) ((L (CONS OF NUMBER-WRAPPER))) :DOCUMENTATION \"Converts (x y z) into a float.  The return value\nis x + y/60 + z/3600.\nThis can be used to convert from Degree-Minute-Second to decimal degrees\nor from Hour-Minute-Second format to decimal hours.\")", ((cpp_function_code)(&base60ToFloat)), NULL);
@@ -2124,11 +3018,6 @@ void helpStartupPrimal2() {
     defineFunctionObject("COS", "(DEFUN (COS FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the cosine of `n' radians.\" (RETURN (VERBATIM :COMMON-LISP (CL:COS N) :CPP \"::cos(n)\" :JAVA \"Math.cos(n)\")))", ((cpp_function_code)(&stella::cos)), NULL);
     defineFunctionObject("SIN", "(DEFUN (SIN FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the sine of `n' radians.\" (RETURN (VERBATIM :COMMON-LISP (CL:SIN N) :CPP \"::sin(n)\" :JAVA \"Math.sin(n)\")))", ((cpp_function_code)(&stella::sin)), NULL);
     defineFunctionObject("TAN", "(DEFUN (TAN FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the tangent of `n' radians.\" (RETURN (VERBATIM :COMMON-LISP (CL:TAN N) :CPP \"::tan(n)\" :JAVA \"Math.tan(n)\")))", ((cpp_function_code)(&stella::tan)), NULL);
-  }
-}
-
-void helpStartupPrimal3() {
-  {
     defineFunctionObject("ACOS", "(DEFUN (ACOS FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the arccosine of `n' in radians.\" (RETURN (VERBATIM :COMMON-LISP (CL:ACOS N) :CPP \"::acos(n)\" :JAVA \"Math.acos(n)\")))", ((cpp_function_code)(&stella::acos)), NULL);
     defineFunctionObject("ASIN", "(DEFUN (ASIN FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the arcsine of `n' in radians.\" (RETURN (VERBATIM :COMMON-LISP (CL:ASIN N) :CPP \"::asin(n)\" :JAVA \"Math.asin(n)\")))", ((cpp_function_code)(&stella::asin)), NULL);
     defineFunctionObject("ATAN", "(DEFUN (ATAN FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the arc tangent of `n' in radians.\" (RETURN (VERBATIM :COMMON-LISP (CL:ATAN N) :CPP \"::atan(n)\" :JAVA \"Math.atan(n)\")))", ((cpp_function_code)(&stella::atan)), NULL);
@@ -2137,9 +3026,16 @@ void helpStartupPrimal3() {
     defineFunctionObject("LOG10", "(DEFUN (LOG10 FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the logarithm (base 10) of `n'.\" (RETURN (VERBATIM :COMMON-LISP (CL:LOG N 10.0D0) :OTHERWISE (* (LOG N) RECIPROCAL-NL10))))", ((cpp_function_code)(&log10)), NULL);
     defineFunctionObject("EXP", "(DEFUN (EXP FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the e to the power `n'.\" (RETURN (VERBATIM :COMMON-LISP (CL:EXP N) :CPP \"::exp(n)\" :JAVA \"Math.exp(n)\")))", ((cpp_function_code)(&stella::exp)), NULL);
     defineFunctionObject("EXPT", "(DEFUN (EXPT FLOAT) ((X FLOAT) (Y FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return `x' ^ `y'.\" (RETURN (VERBATIM :COMMON-LISP (CL:EXPT X Y) :CPP \"::pow(x,y)\" :JAVA \"Math.pow(x,y)\")))", ((cpp_function_code)(&expt)), NULL);
-    defineFunctionObject("MIN", "(DEFUN (MIN INTEGER) ((X INTEGER) (Y INTEGER)) :DOCUMENTATION \"Return the minimum of `x' and `y'.  If either is NULL, return the other.\" :PUBLIC? TRUE)", ((cpp_function_code)(&stella::min)), NULL);
-    defineFunctionObject("MAX", "(DEFUN (MAX INTEGER) ((X INTEGER) (Y INTEGER)) :DOCUMENTATION \"Return the maximum of `x' and `y'.  If either is NULL, return the other.\" :PUBLIC? TRUE)", ((cpp_function_code)(&stella::max)), NULL);
+    defineMethodObject("(DEFMETHOD (MIN INTEGER) ((X INTEGER) (Y INTEGER)) :DOCUMENTATION \"Return the minimum of `x' and `y'.  If either is NULL, return the other.\" :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (MIN LONG-INTEGER) ((X LONG-INTEGER) (Y LONG-INTEGER)) :DOCUMENTATION \"Return the minimum of `x' and `y'.  If either is NULL, return the other.\" :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (MIN FLOAT) ((X FLOAT) (Y FLOAT)) :DOCUMENTATION \"Return the minimum of `x' and `y'.  If either is NULL, return the other.\" :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (MIN NUMBER-WRAPPER) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :DOCUMENTATION \"Return the minimum of `x' and `y'.  If `y' is NULL, return `x'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&NumberWrapper::min)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (MAX INTEGER) ((X INTEGER) (Y INTEGER)) :DOCUMENTATION \"Return the maximum of `x' and `y'.  If either is NULL, return the other.\" :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (MAX LONG-INTEGER) ((X LONG-INTEGER) (Y LONG-INTEGER)) :DOCUMENTATION \"Return the maximum of `x' and `y'.  If either is NULL, return the other.\" :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (MAX FLOAT) ((X FLOAT) (Y FLOAT)) :DOCUMENTATION \"Return the maximum of `x' and `y'.  If either is NULL, return the other.\" :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (MAX NUMBER-WRAPPER) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :DOCUMENTATION \"Return the maximum of `x' and `y'.  If `y' is NULL, return `x'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&NumberWrapper::max)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (ABS INTEGER) ((X INTEGER)) :DOCUMENTATION \"Return the absolute value of `x'.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (CHOOSE (< X 0) (- 0 X) X)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (ABS LONG-INTEGER) ((X LONG-INTEGER)) :DOCUMENTATION \"Return the absolute value of `x'.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (CHOOSE (< X 0) (- 0 X) X)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (ABS FLOAT) ((X FLOAT)) :DOCUMENTATION \"Return the absolute value of `x'.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (CHOOSE (< X 0.0) (- 0.0 X) X)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineFunctionObject("CHARACTER-CODE", "(DEFUN (CHARACTER-CODE INTEGER) ((CH CHARACTER)) :DOCUMENTATION \"Return the 8-bit ASCII code of `ch' as an integer.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:CHAR-CODE CH) :CPP \"(int)(unsigned char) ch\" :JAVA \"(int) ch\")))", ((cpp_function_code)(&characterCode)), NULL);
     defineFunctionObject("CODE-CHARACTER", "(DEFUN (CODE-CHARACTER CHARACTER) ((CODE INTEGER)) :DOCUMENTATION \"Return the character encoded by `code' (0 <= `code' <= 255).\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:CODE-CHAR CODE) :CPP \"(char) code\" :JAVA \"(char) code\")))", ((cpp_function_code)(&codeCharacter)), NULL);
@@ -2153,6 +3049,7 @@ void helpStartupPrimal3() {
     defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((X STRING)) :DOCUMENTATION \"Return true if `x' is not the empty string \\\"\\\"\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NOT (EMPTY? X))))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((X STRING-WRAPPER)) :DOCUMENTATION \"Return true if `x' is the wrapped empty string \\\"\\\"\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (STRING-EQL? (WRAPPER-VALUE X) \"\")))", ((cpp_method_code)(&StringWrapper::emptyP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((X STRING-WRAPPER)) :DOCUMENTATION \"Return true if `x' is not the wrapped empty string \\\"\\\"\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NOT (EMPTY? X))))", ((cpp_method_code)(&StringWrapper::nonEmptyP)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("BLANK-STRING?", "(DEFUN (BLANK-STRING? BOOLEAN) ((STRING STRING)) :DOCUMENTATION \"Return true if `string' is either NULL, empty, or only\ncontains white space characters.\" :PUBLIC? TRUE)", ((cpp_function_code)(&blankStringP)), NULL);
     defineFunctionObject("STRING<", "(DEFUN (STRING< BOOLEAN) ((X STRING) (Y STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return true if `x' is lexicographically < `y', considering case.\")", ((cpp_function_code)(&stringL)), NULL);
     defineFunctionObject("STRING<=", "(DEFUN (STRING<= BOOLEAN) ((X STRING) (Y STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return true if `x' is lexicographically <= `y', considering case.\")", ((cpp_function_code)(&stringLE)), NULL);
     defineFunctionObject("STRING>=", "(DEFUN (STRING>= BOOLEAN) ((X STRING) (Y STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return true if `x' is lexicographically >= `y', considering case.\")", ((cpp_function_code)(&stringGE)), NULL);
@@ -2163,13 +3060,18 @@ void helpStartupPrimal3() {
     defineFunctionObject("STRING-GREATER?", "(DEFUN (STRING-GREATER? BOOLEAN) ((X STRING) (Y STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return true if `x' is lexicographically > `y', ignoring case.\")", ((cpp_function_code)(&stringGreaterP)), NULL);
     defineFunctionObject("MAKE-STRING", "(DEFUN (MAKE-STRING STRING) ((SIZE INTEGER) (INITCHAR CHARACTER)) :DOCUMENTATION \"Return a new string filled with `size' `initchar's.\" :PUBLIC? TRUE :NATIVE? TRUE)", NULL, NULL);
     defineFunctionObject("MAKE-MUTABLE-STRING", "(DEFUN (MAKE-MUTABLE-STRING MUTABLE-STRING) ((SIZE INTEGER) (INITCHAR CHARACTER)) :DOCUMENTATION \"Return a new mutable string filled with `size' `initchar's.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:MAKE-STRING SIZE :INITIAL-ELEMENT INITCHAR) :CPP \"makeString(size, initchar)\" :JAVA \"#$(STELLAROOT).javalib.Native.makeMutableString(size, initchar)\")))", ((cpp_function_code)(&makeMutableString)), NULL);
-    defineFunctionObject("MAKE-RAW-MUTABLE-STRING", "(DEFUN (MAKE-RAW-MUTABLE-STRING MUTABLE-STRING) ((SIZE INTEGER)) :DOCUMENTATION \"Return a new uninitialized mutable string of `size'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (LET ((S MUTABLE-STRING NULL)) (VERBATIM :COMMON-LISP (SETQ S (CL:MAKE-STRING SIZE)) :CPP \"s = new (GC) char[size+1]; s[size]='\\\\0'\" :JAVA \"s = new StringBuffer(size); s.setLength(size)\") (RETURN S)))", ((cpp_function_code)(&makeRawMutableString)), NULL);
+    defineFunctionObject("MAKE-RAW-MUTABLE-STRING", "(DEFUN (MAKE-RAW-MUTABLE-STRING MUTABLE-STRING) ((SIZE INTEGER)) :DOCUMENTATION \"Return a new uninitialized mutable string of `size'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (LET ((S MUTABLE-STRING NULL)) (VERBATIM :COMMON-LISP (SETQ S (CL:MAKE-STRING SIZE)) :CPP \"s = new (PointerFreeGC) char[size+1]; s[size]='\\\\0'\" :JAVA \"s = new StringBuffer(size); s.setLength(size)\") (RETURN S)))", ((cpp_function_code)(&makeRawMutableString)), NULL);
     defineFunctionObject("STRING-CONCATENATE", "(DEFUN (STRING-CONCATENATE STRING) ((STRING1 STRING) (STRING2 STRING)) :DOCUMENTATION \"Return a new string representing the concatenation of\n`string1' and `string2'.\" :NATIVE? TRUE)", NULL, NULL);
     defineMethodObject("(DEFMETHOD (CONCATENATE STRING) ((STRING1 STRING) (STRING2 STRING) |&REST| (OTHERSTRINGS STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return a new string representing the concatenation\nof `string1', `string2', and `otherStrings'.  The two mandatory parameters\nallow us to optimize the common binary case by not relying on the somewhat\nless efficient variable arguments mechanism.\")", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineFunctionObject("STRING-UPCASE", "(DEFUN (STRING-UPCASE STRING) ((STRING STRING)) :DOCUMENTATION \"Return an upper-case copy of `string'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("STRING-DOWNCASE", "(DEFUN (STRING-DOWNCASE STRING) ((STRING STRING)) :DOCUMENTATION \"Return a lower-case copy of `string'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("STRING-CAPITALIZE", "(DEFUN (STRING-CAPITALIZE STRING) ((STRING STRING)) :DOCUMENTATION \"Return a capitalized version of `string'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineMethodObject("(DEFMETHOD (COPY STRING) ((STRING STRING)) :DOCUMENTATION \"Return a copy of `string'.\" :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+  }
+}
+
+void helpStartupPrimal4() {
+  {
     defineMethodObject("(DEFMETHOD (SUBSTITUTE STRING) ((SELF STRING) (NEW-CHAR CHARACTER) (OLD-CHAR CHARACTER)) :DOCUMENTATION \"Substitute all occurences of `old-char' with `new-char'\nin the string `self'.\" :NATIVE? TRUE :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (SUBSTITUTE MUTABLE-STRING) ((SELF MUTABLE-STRING) (NEW-CHAR CHARACTER) (OLD-CHAR CHARACTER)) :DOCUMENTATION \"Substitute all occurences of `old-char' with `new-char'\nin the string `self'.\" :NATIVE? TRUE :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineFunctionObject("HELP-SUBSTITUTE-CHARACTERS", "(DEFUN (HELP-SUBSTITUTE-CHARACTERS MUTABLE-STRING) ((SELF MUTABLE-STRING) (NEW-CHARS STRING) (OLD-CHARS STRING)) :PUBLIC? FALSE :GLOBALLY-INLINE? TRUE (LET ((POS INTEGER NULL)) (FOREACH I IN (INTERVAL 0 (1- (LENGTH SELF))) DO (SETQ POS (POSITION OLD-CHARS (NTH SELF I) 0)) (WHEN (DEFINED? POS) (SETF (NTH SELF I) (NTH NEW-CHARS POS)))) (RETURN SELF)))", ((cpp_function_code)(&helpSubstituteCharacters)), NULL);
@@ -2178,22 +3080,18 @@ void helpStartupPrimal3() {
     defineFunctionObject("REPLACE-SUBSTRINGS", "(DEFUN (REPLACE-SUBSTRINGS STRING) ((STRING STRING) (NEW STRING) (OLD STRING)) :DOCUMENTATION \"Replace all occurrences of `old' in `string' with `new'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&replaceSubstrings)), NULL);
     defineFunctionObject("INSTANTIATE-STRING-TEMPLATE", "(DEFUN (INSTANTIATE-STRING-TEMPLATE STRING) ((TEMPLATE STRING) |&REST| (|VARS&VALUES| STRING)) :DOCUMENTATION \"For each occurrence of a <var> string from `vars&values' in `template' replace it\nwith its corresponding <value> string.  Replacement is done in sequence which\nmeans (part of) a value might be replaced further with a later <var> and <value>.\" :PUBLIC? TRUE)", ((cpp_function_code)(&instantiateStringTemplate)), NULL);
     defineFunctionObject("INSERT-STRING", "(DEFUN (INSERT-STRING INTEGER) ((SOURCE STRING) (START INTEGER) (END INTEGER) (TARGET MUTABLE-STRING) (TARGET-INDEX INTEGER) (CASE-CONVERSION KEYWORD)) :DOCUMENTATION \"Inserts characters from `source' begining at `start' and\nending at `end' into `target' starting at `target-index'.  If `end' is `null',\nthen the entire length of the string is used. The copy of characters is affected\nby the `case-conversion' keyword which should be one of\n   :UPCASE :DOWNCASE :CAPITALIZE :PRESERVE.\n\nThe final value of target-index is returned.\")", ((cpp_function_code)(&insertString)), NULL);
-    defineFunctionObject("INTEGER-TO-STRING", "(DEFUN (INTEGER-TO-STRING STRING) ((I INTEGER)) :DOCUMENTATION \"Convert `i' to its string representation and return the result.\n This is more efficient than using a string stream.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
-    defineFunctionObject("INTEGER-TO-HEX-STRING", "(DEFUN (INTEGER-TO-HEX-STRING STRING) ((I INTEGER)) :DOCUMENTATION \"Convert `i' to a string representation in hexadecimal notation and return the result.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
-    defineFunctionObject("INTEGER-TO-STRING-IN-BASE", "(DEFUN (INTEGER-TO-STRING-IN-BASE STRING) ((I INTEGER) (BASE INTEGER)) :DOCUMENTATION \"Convert `i' to a string representation in `base' and return the\nresult.  `base' must be positive and not more than 36.\n\nNote that in the C++ version, only 8, 10 and 16 will work as `base' arguments,\nsince that is all the underlying implementation supports.  Other argument\nvalues will be treated as `10'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("STRING-TRIM", "(DEFUN (STRING-TRIM STRING) ((STRING STRING)) :DOCUMENTATION \"Remove any leading and trailing white space from `string'\nand return a copy of the trimmed substring (which might be empty if we had\nall white space).  If no white space was removed, `string' is returned\nunmodified and uncopied.\" :PUBLIC? TRUE)", ((cpp_function_code)(&stringTrim)), NULL);
+    defineFunctionObject("INTEGER-TO-STRING", "(DEFUN (INTEGER-TO-STRING STRING) ((I LONG-INTEGER)) :DOCUMENTATION \"Convert `i' to its string representation and return the result.\n This is more efficient than using a string stream.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("INTEGER-TO-HEX-STRING", "(DEFUN (INTEGER-TO-HEX-STRING STRING) ((I LONG-INTEGER)) :DOCUMENTATION \"Convert `i' to a string representation in hexadecimal notation and return the result.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("INTEGER-TO-STRING-IN-BASE", "(DEFUN (INTEGER-TO-STRING-IN-BASE STRING) ((I LONG-INTEGER) (BASE INTEGER)) :DOCUMENTATION \"Convert `i' to a string representation in `base' and return the\nresult.  `base' must be positive and not more than 36.\n\nNote that in the C++ version, only 8, 10 and 16 will work as `base' arguments,\nsince that is all the underlying implementation supports.  Other argument\nvalues will be treated as `10'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("FLOAT-TO-STRING", "(DEFUN (FLOAT-TO-STRING STRING) ((F FLOAT)) :DOCUMENTATION \"Convert `f' to its string representation and return the result.  This is more\nefficient than using a string stream.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("CHARACTER-TO-STRING", "(DEFUN (CHARACTER-TO-STRING STRING) ((C CHARACTER)) :DOCUMENTATION \"Convert `c' into a one-element string and return the result.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (MAKE-STRING 1 C)))", ((cpp_function_code)(&characterToString)), NULL);
-    defineFunctionObject("STRING-TO-INTEGER", "(DEFUN (STRING-TO-INTEGER INTEGER) ((STRING STRING)) :DOCUMENTATION \"Convert a `string' representation of an integer into an integer.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("STRING-TO-INTEGER", "(DEFUN (STRING-TO-INTEGER LONG-INTEGER) ((STRING STRING)) :DOCUMENTATION \"Convert a `string' representation of an integer into an integer.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("STRING-TO-FLOAT", "(DEFUN (STRING-TO-FLOAT FLOAT) ((STRING STRING)) :DOCUMENTATION \"Convert a `string' representation of a float into a float.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("FORMAT-FLOAT", "(DEFUN (FORMAT-FLOAT STRING) ((F FLOAT) (NDECIMALS INTEGER)) :DOCUMENTATION \"Print `f' in fixed-point format with `nDecimals' behind the decimal point\nand return the result as a string.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("FORMAT-WITH-PADDING", "(DEFUN (FORMAT-WITH-PADDING STRING) ((INPUT STRING) (LENGTH INTEGER) (PADCHAR CHARACTER) (ALIGN KEYWORD) (TRUNCATE? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Formats `input' to be (at least) `length' long, using `padchar' to\nfill if necessary.  `align' must be one of :LEFT, :RIGHT, :CENTER and will control\nhow `input' will be justified in the resulting string.  If `truncate?' is true, then\nthen an overlength string will be truncated, using the opposite of `align' to pick\nthe truncation direction.\")", ((cpp_function_code)(&formatWithPadding)), NULL);
     defineFunctionObject("ZERO-PAD-INTEGER", "(DEFUN (ZERO-PAD-INTEGER STRING) ((VALUE INTEGER) (SIZE INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Returns a string representing `value' of at least length\n'size', padded if necessary with 0 characters.\")", ((cpp_function_code)(&zeroPadInteger)), NULL);
     defineFunctionObject("ZERO-PAD-STRING", "(DEFUN (ZERO-PAD-STRING STRING) ((INPUT STRING) (SIZE INTEGER)) :PUBLIC? FALSE)", ((cpp_function_code)(&zeroPadString)), NULL);
-  }
-}
-
-void helpStartupPrimal4() {
-  {
     defineMethodObject("(DEFMETHOD (MEMBER? BOOLEAN) ((SELF STRING) (CHAR CHARACTER)) :NATIVE? TRUE :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (FIRST CHARACTER) ((SELF STRING)) :DOCUMENTATION \"Return the first character of `self'.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (NTH SELF 0)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (FIRST CHARACTER) ((SELF MUTABLE-STRING)) :DOCUMENTATION \"Return the first character of `self' (settable via `setf').\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (NTH SELF 0)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
@@ -2218,8 +3116,10 @@ void helpStartupPrimal4() {
     defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF MUTABLE-STRING)) :DOCUMENTATION \"Return the length of the string `self'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LENGTH SELF) :CPP \"strlen(self)\" :JAVA \"self.length()\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (POSITION INTEGER) ((STRING STRING) (CHARACTER CHARACTER) (START INTEGER)) :DOCUMENTATION \"Return the position of `character' within `string' (counting\nfrom zero); or return NULL if `character' does not occur within `string'.\nIf `start' was supplied as non-NULL, only consider the substring starting\nat `start', however, the returned position will always be relative to the\nentire string.\" :NATIVE? TRUE :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (LAST-POSITION INTEGER) ((STRING STRING) (CHARACTER CHARACTER) (END INTEGER)) :DOCUMENTATION \"Return the last position of `character' within `string'\n(counting from zero); or return NULL if `character' does not occur \nwithin `string'.  If `end' was supplied as non-NULL, only consider\nthe substring ending at `end', however, the returned position will\nalways be relative to the entire string.\" :NATIVE? TRUE :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("STRING-SEARCH", "(DEFUN (STRING-SEARCH INTEGER) ((STRING STRING) (SUBSTRING STRING) (START INTEGER)) :DOCUMENTATION \"Return start position of the left-most occurrence of\n`substring' in `string', beginning from `start'.  Return NULL if it is not\na substring.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("STRING-SEARCH", "(DEFUN (STRING-SEARCH INTEGER) ((STRING STRING) (SUBSTRING STRING) (START INTEGER)) :DOCUMENTATION \"Return start position of the left-most occurrence of\n`substring' in `string', beginning from `start'.  Return NULL if it is not\na substring.  The comparison is exact.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("STRING-SEARCH-IGNORE-CASE", "(DEFUN (STRING-SEARCH-IGNORE-CASE INTEGER) ((STRING STRING) (SUBSTRING STRING) (START INTEGER)) :DOCUMENTATION \"Return start position of the left-most occurrence of\n`substring' in `string', beginning from `start'.  Return NULL if it is not\na substring.  The comparison ignores differences in letter case.\" :PUBLIC? TRUE)", ((cpp_function_code)(&stringSearchIgnoreCase)), NULL);
     defineFunctionObject("STARTS-WITH?", "(DEFUN (STARTS-WITH? BOOLEAN) ((STRING STRING) (PREFIX STRING) (START INTEGER)) :DOCUMENTATION \"Return TRUE if `string' starts with `prefix' starting from\n`start' (which defaults to 0 if it is supplied as NULL).\" :PUBLIC? TRUE)", ((cpp_function_code)(&startsWithP)), NULL);
+    defineFunctionObject("ENDS-WITH?", "(DEFUN (ENDS-WITH? BOOLEAN) ((STRING STRING) (SUFFIX STRING) (END INTEGER)) :DOCUMENTATION \"Return TRUE if the substring of `string' ending at `end'\nends with `suffix'.  If `end' is NULL it defaults to the length of `string'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&endsWithP)), NULL);
     defineFunctionObject("HELP-FIND-MATCHING-PREFIX-LENGTH", "(DEFUN (HELP-FIND-MATCHING-PREFIX-LENGTH INTEGER) ((STRING1 STRING) (START1 INTEGER) (END1 INTEGER) (STRING2 STRING) (START2 INTEGER) (END2 INTEGER)) :PUBLIC? FALSE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Helping function for `find-matching-prefix' that requires `end1' and `end2'\nto be properly set up.\" (LET ((I1 START1) (I2 START2)) (WHILE (AND (< I1 END1) (< I2 END2) (EQL? (NTH STRING1 I1) (NTH STRING2 I2))) (++ I1) (++ I2)) (RETURN (- I1 START1))))", ((cpp_function_code)(&helpFindMatchingPrefixLength)), NULL);
     defineFunctionObject("FIND-MATCHING-PREFIX-LENGTH", "(DEFUN (FIND-MATCHING-PREFIX-LENGTH INTEGER) ((STRING1 STRING) (START1 INTEGER) (END1 INTEGER) (STRING2 STRING) (START2 INTEGER) (END2 INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Finds the length of the matching prefix strings of `string1' and\n`string2', starting at position `start1' and `start2' respectively.\nThe search will end when `end1' or `end2' is reached.  If either `end1'\nor `end2' is null, then they will be set to the length of their respective\nstrings.\")", ((cpp_function_code)(&findMatchingPrefixLength)), NULL);
     defineFunctionObject("FIND-MISMATCH", "(DEFUN (FIND-MISMATCH INTEGER INTEGER) ((STRING1 STRING) (START1 INTEGER) (END1 INTEGER) (STRING2 STRING) (START2 INTEGER) (END2 INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Finds the first position in each of `string1' and `string2' where\nthey mismatch, starting at position `start1' and `start2' respectively.\nThe search will end when `end1' or `end2' is reached.  If either `end1'\nor `end2' is null, then they will be set to the length of their respective\nstrings.  If there is no mismatch, then `null' values are returned.\")", ((cpp_function_code)(&findMismatch)), NULL);
@@ -2230,7 +3130,13 @@ void helpStartupPrimal4() {
     defineFunctionObject("EQL-EXCEPT-IN-WHITESPACE?", "(DEFUN (EQL-EXCEPT-IN-WHITESPACE? BOOLEAN) ((S1 STRING) (S2 STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if the strings `s1' and `s2' are the same\nexcept for the amounts of whitespace separating words.  Leading or\ntrailing whitespace is also not considered.\")", ((cpp_function_code)(&eqlExceptInWhitespaceP)), NULL);
     defineMethodObject("(DEFMETHOD (SUBSEQUENCE STRING) ((STRING STRING) (START INTEGER) (END INTEGER)) :DOCUMENTATION \"Return a substring of `string' beginning at position `start'\nand ending up to but not including position `end', counting from zero.  An\n`end' value of NULL stands for the rest of the string.\" :NATIVE? TRUE :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (SUBSEQUENCE STRING) ((STRING MUTABLE-STRING) (START INTEGER) (END INTEGER)) :DOCUMENTATION \"Return a substring of `string' beginning at position `start'\nand ending up to but not including position `end', counting from zero.  An\n`end' value of NULL stands for the rest of the string.\" :NATIVE? TRUE :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("SPLIT-STRING", "(DEFUN (SPLIT-STRING (CONS OF STRING-WRAPPER)) ((INPUT STRING) (SEPARATOR CHARACTER)) :DOCUMENTATION \"Split `input' into separate strings based on the `separator' character.\" :PUBLIC? TRUE)", ((cpp_function_code)(&splitString)), NULL);
     defineFunctionObject("STRINGIFY", "(DEFUN (STRINGIFY STRING) ((EXPRESSION OBJECT)) :DOCUMENTATION \"Print `expression' onto a string and return the result.\nPrinting is done with `*printReadably?*' set to true and with `*printPretty?*'\nset to false.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+  }
+}
+
+void helpStartupPrimal5() {
+  {
     defineFunctionObject("UNSTRINGIFY", "(DEFUN (UNSTRINGIFY OBJECT) ((STRING STRING)) :DOCUMENTATION \"Read a STELLA expression from `string' and return the result.\nThis is identical to `read-s-expression-from-string'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (READ-S-EXPRESSION-FROM-STRING STRING)))", ((cpp_function_code)(&unstringify)), NULL);
     defineMethodObject("(DEFMETHOD FREE-HASH-TABLE-VALUES ((SELF ABSTRACT-HASH-TABLE)) :DOCUMENTATION \"Call free on each value in the hash table `self'.\")", ((cpp_method_code)(&AbstractHashTable::freeHashTableValues)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD INITIALIZE-HASH-TABLE ((SELF ABSTRACT-HASH-TABLE)) :DOCUMENTATION \"Insert a newly-created native hash table into `self'.\")", ((cpp_method_code)(&AbstractHashTable::initializeHashTable)), ((cpp_method_code)(NULL)));
@@ -2254,11 +3160,6 @@ void helpStartupPrimal4() {
     defineMethodObject("(DEFMETHOD INSERT-AT ((SELF STRING-TO-INTEGER-HASH-TABLE) (KEY STRING) (VALUE INTEGER)) :PUBLIC? TRUE)", ((cpp_method_code)(&StringToIntegerHashTable::insertAt)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD REMOVE-AT ((SELF STRING-TO-INTEGER-HASH-TABLE) (KEY STRING)) :PUBLIC? TRUE)", ((cpp_method_code)(&StringToIntegerHashTable::removeAt)), ((cpp_method_code)(NULL)));
     defineFunctionObject("HASHMOD", "(DEFUN (HASHMOD INTEGER) ((CODE INTEGER) (SIZE INTEGER)) :DOCUMENTATION \"Map the hash code `code' onto a bucket index for a hash table\nof `size' (i.e., onto the interval [0..size-1].  This is just like `rem' for\npositive hash codes but also works for negative hash codes by mapping those\nonto a positive number first.  Note, that the sign conversion mapping is not\nequivalent to calling the `abs' function (it simply masks the sign bit for\nspeed) and therefore really only makes sense for hash codes.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:REM (CL:THE CL:FIXNUM (CL:LOGAND CODE *INTEGER-UNSIGNED-BITS-MASK*)) SIZE) :CPP \"(((unsigned int) code) % size)\" :JAVA \"((code & 0x7FFFFFFF) % size)\")))", ((cpp_function_code)(&hashmod)), NULL);
-  }
-}
-
-void helpStartupPrimal5() {
-  {
     defineFunctionObject("ROTATE-HASH-CODE", "(DEFUN (ROTATE-HASH-CODE INTEGER) ((ARG INTEGER)) :DOCUMENTATION \"Rotate `arg' to the right by 1 position.  This means shift `arg' to the right\nby one and feed in `arg's bit zero from the left.  In Lisp the result will stay\nin positive FIXNUM range.  In C++ and Java this might return a negative\nvalue which might be equal to NULL-INTEGER.  Important: to make this inlinable,\nit must be called with an atom (i.e., constant or variable) as its argument.\nThis function is primarily useful for hashing sequences of items where the hash\ncode should take the sequential order of elements into account (e.g., lists).\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (CHOOSE (= (LOGAND ARG 1) 0) (UNSIGNED-SHIFT-RIGHT-BY-1 ARG) (LOGOR (SHIFT-RIGHT ARG 1) *INTEGER-MSB-MASK*))))", ((cpp_function_code)(&rotateHashCode)), NULL);
     defineFunctionObject("OBJECT-HASH-CODE", "(DEFUN (OBJECT-HASH-CODE INTEGER) ((SELF OBJECT)) :DOCUMENTATION \"Return a hash code for `self' (can be negative).  Two objects that are `eq?'\nare guaranteed to generate the same hash code.  Two objects that are not `eq?'\ndo not necessarily generate different hash codes.  Similar to `hash-code' but\nalways hashes on the address of `self' even if it is a wrapper.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP \"(STELLA::%%OBJECT-HASH-CODE SELF)\" :CPP \"(size_t)self\" :JAVA \"self.hashCode()\")))", ((cpp_function_code)(&objectHashCode)), NULL);
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF OBJECT)) :DOCUMENTATION \"Return a hash code for `self' (can be negative).  Two objects that are `eql?'\nare guaranteed to generate the same hash code.  Two objects that are not `eql?'\ndo not necessarily generate different hash codes.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Object::hashCode)), ((cpp_method_code)(NULL)));
@@ -2267,11 +3168,13 @@ void helpStartupPrimal5() {
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF WRAPPER)) :PUBLIC? TRUE)", ((cpp_method_code)(&Wrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF STRING-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))", ((cpp_method_code)(&StringWrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF INTEGER-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))", ((cpp_method_code)(&IntegerWrapper::hashCode)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF LONG-INTEGER-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (CAST (WRAPPER-VALUE SELF) INTEGER))))", ((cpp_method_code)(&LongIntegerWrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF FLOAT-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))", ((cpp_method_code)(&FloatWrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF CHARACTER-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))", ((cpp_method_code)(&CharacterWrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF BOOLEAN-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (CHOOSE (WRAPPER-VALUE SELF) 7333705 1891526)))", ((cpp_method_code)(&BooleanWrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF STRING)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:SXHASH SELF) :JAVA \"self.hashCode()\" :CPP \"native_hash_string(self)\" :OTHERWISE (HASH-STRING SELF 0))))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN SELF))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF LONG-INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (CAST SELF INTEGER)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:SXHASH SELF) :CPP \"(size_t)self\" :JAVA \"(int)(Double.doubleToLongBits(self)^(Double.doubleToLongBits(self)>>>32))\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF CHARACTER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (LOGXOR (AREF *HASH-BYTE-RANDOM-TABLE* (CHARACTER-CODE SELF)) 15119378)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF OBJECT)) :DOCUMENTATION \"Return a hash code for `self' (can be negative).  Two objects that are `equal?'\nare guaranteed to generate the same hash code (provided, that writers of\n`object-equal?' methods also implemented the appropriate `equal-hash-code'\nmethod).  Two objects that are not `equal?'do not necessarily generate different\nhash codes.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Object::equalHashCode)), ((cpp_method_code)(NULL)));
@@ -2283,25 +3186,49 @@ void helpStartupPrimal5() {
     defineMethodObject("(DEFMETHOD (NTH (LIKE (ANY-VALUE SELF))) ((SELF NATIVE-VECTOR) (POSITION INTEGER)) :DOCUMENTATION \"Return the element in `self' at `position'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:AREF SELF POSITION) :CPP \"self[position]\" :JAVA \"self[position]\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (NTH-SETTER (LIKE (ANY-VALUE SELF))) ((SELF NATIVE-VECTOR) (VALUE (LIKE (ANY-VALUE SELF))) (POSITION INTEGER)) :DOCUMENTATION \"Set the element in `self' at `position' to `value'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:SETF (CL:AREF SELF POSITION) VALUE) :CPP \"self[position] = value\" :JAVA \"self[position] = value\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineFunctionObject("UNMAKE", "(DEFUN UNMAKE ((SELF OBJECT)))", ((cpp_function_code)(&unmake)), NULL);
-    defineFunctionObject("PROBE-FILE?", "(DEFUN (PROBE-FILE? BOOLEAN) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return true if file `fileName' exists.  Note that this does\nnot necessarily mean that the file can also be read.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
-    defineFunctionObject("FILE-WRITE-DATE", "(DEFUN (FILE-WRITE-DATE CALENDAR-DATE) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return the time at which file `fileName' was last modified or\nNULL if that cannot be determined.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
-    defineFunctionObject("FILE-LENGTH", "(DEFUN (FILE-LENGTH INTEGER) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return the length of file `fileName' in bytes or NULL if that\ncannot be determined.  Note that this will currently overrun for files that\nare longer than what can be represented by a STELLA integer.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
-    defineFunctionObject("DELETE-FILE", "(DEFUN DELETE-FILE ((FILENAME FILE-NAME)) :DOCUMENTATION \"Delete the file `fileName'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("NATIVE-PROBE-FILE?", "(DEFUN (NATIVE-PROBE-FILE? BOOLEAN) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return true if file `fileName' exists.  Note that this does\nnot necessarily mean that the file can also be read.  This does not handle any\nnecessary pathname translations or error conditions.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("PROBE-FILE?", "(DEFUN (PROBE-FILE? BOOLEAN) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return true if file `fileName' exists.  Note that this does\nnot necessarily mean that the file can also be read.\")", ((cpp_function_code)(&probeFileP)), NULL);
+    defineFunctionObject("NATIVE-FILE-WRITE-DATE", "(DEFUN (NATIVE-FILE-WRITE-DATE CALENDAR-DATE) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return the time at which file `fileName' was last modified or\nNULL if that cannot be determined.  This does not handle any necessary pathname\ntranslations or error conditions.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("FILE-WRITE-DATE", "(DEFUN (FILE-WRITE-DATE CALENDAR-DATE) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return the time at which file `fileName' was last modified or\nNULL if that cannot be determined.\" :PUBLIC? TRUE)", ((cpp_function_code)(&fileWriteDate)), NULL);
+    defineFunctionObject("NATIVE-FILE-LENGTH", "(DEFUN (NATIVE-FILE-LENGTH LONG-INTEGER) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return the length of file `fileName' in bytes or NULL if that\ncannot be determined.  This does not handle any necessary pathname translations\nor error conditions.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("FILE-LENGTH", "(DEFUN (FILE-LENGTH LONG-INTEGER) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return the length of file `fileName' in bytes or NULL if that\ncannot be determined.\" :PUBLIC? TRUE)", ((cpp_function_code)(&fileLength)), NULL);
+    defineFunctionObject("NATIVE-DELETE-FILE", "(DEFUN NATIVE-DELETE-FILE ((FILENAME FILE-NAME)) :DOCUMENTATION \"Delete the file `fileName'.  This does not handle any necessary\npathname translations or error conditions.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("DELETE-FILE", "(DEFUN DELETE-FILE ((FILENAME FILE-NAME)) :DOCUMENTATION \"Delete the file `fileName'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&deleteFile)), NULL);
+    defineFunctionObject("NATIVE-RENAME-FILE", "(DEFUN NATIVE-RENAME-FILE ((FROMFILE FILE-NAME) (TOFILE FILE-NAME)) :DOCUMENTATION \"Rename the file `fromFile' to `toFile'.  This does not handle\nany necessary pathname translations or error conditions.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("RENAME-FILE", "(DEFUN RENAME-FILE ((FROMFILE FILE-NAME) (TOFILE FILE-NAME)) :DOCUMENTATION \"Rename the file `fromFile' to `toFile'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&renameFile)), NULL);
+    defineFunctionObject("COPY-STREAM-TO-STREAM", "(DEFUN COPY-STREAM-TO-STREAM ((IN INPUT-STREAM) (OUT OUTPUT-STREAM)) :DOCUMENTATION \"Copy `in' verbatimely to `out'.  Does the right thing for binary data.\" :PUBLIC? TRUE)", ((cpp_function_code)(&copyStreamToStream)), NULL);
+  }
+}
+
+void helpStartupPrimal6() {
+  {
     defineFunctionObject("COPY-FILE", "(DEFUN COPY-FILE ((FROMFILE FILE-NAME) (TOFILE FILE-NAME)) :DOCUMENTATION \"Copy file `fromFile' to file `toFile', clobbering\nany data already in `toFile'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&copyFile)), NULL);
-    defineFunctionObject("LOGNOT", "(DEFUN (LOGNOT INTEGER) ((ARG INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGNOT ARG) :CPP \"(~ arg)\" :JAVA \"(~ arg)\")))", ((cpp_function_code)(&lognot)), NULL);
-    defineFunctionObject("LOGAND", "(DEFUN (LOGAND INTEGER) ((ARG1 INTEGER) (ARG2 INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGAND ARG1 ARG2) :CPP \"(arg1 & arg2)\" :JAVA \"(arg1 & arg2)\")))", ((cpp_function_code)(&logand)), NULL);
-    defineFunctionObject("LOGOR", "(DEFUN (LOGOR INTEGER) ((ARG1 INTEGER) (ARG2 INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGIOR ARG1 ARG2) :CPP \"(arg1 | arg2)\" :JAVA \"(arg1 | arg2)\")))", ((cpp_function_code)(&logor)), NULL);
-    defineFunctionObject("LOGXOR", "(DEFUN (LOGXOR INTEGER) ((ARG1 INTEGER) (ARG2 INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGXOR ARG1 ARG2) :CPP \"(arg1 ^ arg2)\" :JAVA \"(arg1 ^ arg2)\")))", ((cpp_function_code)(&logxor)), NULL);
-    defineFunctionObject("INTEGER-LENGTH", "(DEFUN (INTEGER-LENGTH INTEGER) ((ARG INTEGER)) :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
-    defineFunctionObject("SHIFT-LEFT", "(DEFUN (SHIFT-LEFT INTEGER) ((ARG INTEGER) (COUNT INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:ASH ARG COUNT) :CPP \"(arg << count)\" :JAVA \"(arg << count)\")))", ((cpp_function_code)(&shiftLeft)), NULL);
-    defineFunctionObject("SHIFT-RIGHT", "(DEFUN (SHIFT-RIGHT INTEGER) ((ARG INTEGER) (COUNT INTEGER)) :DOCUMENTATION \"Shift `arg' to the right by `count' positions and\n0-extend from the left if `arg' is positive or 1-extend if it is\nnegative.  This is an arithmetic shift that preserve the sign of `arg'\nand is equivalent to dividing `arg' by 2** `count'.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:ASH ARG (CL:THE CL:FIXNUM (CL:- COUNT))) :CPP \"(arg >> count)\" :JAVA \"(arg >> count)\")))", ((cpp_function_code)(&shiftRight)), NULL);
-    defineFunctionObject("UNSIGNED-SHIFT-RIGHT-BY-1", "(DEFUN (UNSIGNED-SHIFT-RIGHT-BY-1 INTEGER) ((ARG INTEGER)) :DOCUMENTATION \"Shift `arg' to the right by 1 position and 0-extend\nfrom the left.  This does not preserve the sign of `arg' and shifts\nthe sign-bit just like a regular bit.  In Common-Lisp we can't do that\ndirectly and need to do some extra masking.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGAND (CL:THE CL:FIXNUM (CL:ASH ARG -1)) *INTEGER-UNSIGNED-BITS-MASK*) :CPP \"((unsigned int)arg >> 1)\" :JAVA \"(arg >>> 1)\")))", ((cpp_function_code)(&unsignedShiftRightBy1)), NULL);
+    defineFunctionObject("MAKE-TEMPORARY-FILE-NAME", "(DEFUN (MAKE-TEMPORARY-FILE-NAME STRING) ((PREFIX STRING) (SUFFIX STRING)) :DOCUMENTATION \"Return a file name of the form `<prefix>NNNNNN<suffix>'\nwhich is guaranteed to not refer to any existing file.  A null `prefix'\ndefaults to `tmpfile', a null `suffix' defaults to the empty string.\nThe number portion NNNNNN will correpond to a random number between 0\nand 999999.  If no qualifying filename can be found after 100 attempts,\nNULL will be returned.  Note that it is possible due to multi-threading\nor processing that the generated filename becomes used by another thread\nor OS process.  If necessary, this case can be handled by the caller.\" :PUBLIC? TRUE)", ((cpp_function_code)(&makeTemporaryFileName)), NULL);
+    defineFunctionObject("CL-LIST-DIRECTORY-FILES", "(DEFUN (CL-LIST-DIRECTORY-FILES (CONS OF STRING-WRAPPER)) ((DIRECTORY STRING)))", ((cpp_function_code)(&clListDirectoryFiles)), NULL);
+    defineFunctionObject("CPP-LIST-DIRECTORY-FILES", "(DEFUN (CPP-LIST-DIRECTORY-FILES (CONS OF STRING-WRAPPER)) ((DIRECTORY STRING)))", ((cpp_function_code)(&cppListDirectoryFiles)), NULL);
+    defineFunctionObject("JAVA-LIST-DIRECTORY-FILES", "(DEFUN (JAVA-LIST-DIRECTORY-FILES (CONS OF STRING-WRAPPER)) ((DIRECTORY STRING)))", ((cpp_function_code)(&javaListDirectoryFiles)), NULL);
+    defineFunctionObject("LIST-DIRECTORY-FILES", "(DEFUN (LIST-DIRECTORY-FILES (CONS OF STRING-WRAPPER)) ((DIRECTORY STRING)) :DOCUMENTATION \"Return all the files and sub-directories in `directory' sorted by name.\nEach returned file is a bare file name without a `directory' component.  If a file is\na directory, it will look just like a plain file.  This means consumers might have to\nexplicitly test whether a file is a directory depending on what they do. Excludes . and ..\ndirectories.  Handles logical pathnames but resulting files will always use physical pathname\nsyntax.  This is mostly consistent across native languages, but some differences still exist -\ne.g., Lisp will convert . or .. into absolute pathnames.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&listDirectoryFiles)), ((cpp_function_code)(&listDirectoryFilesEvaluatorWrapper)));
+    defineMethodObject("(DEFMETHOD (LOGNOT INTEGER) ((ARG INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGNOT ARG) :CPP \"(~ arg)\" :JAVA \"(~ arg)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LOGNOT LONG-INTEGER) ((ARG LONG-INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGNOT ARG) :CPP \"(~ arg)\" :JAVA \"(~ arg)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LOGAND INTEGER) ((ARG1 INTEGER) (ARG2 INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGAND ARG1 ARG2) :CPP \"(arg1 & arg2)\" :JAVA \"(arg1 & arg2)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LOGAND LONG-INTEGER) ((ARG1 LONG-INTEGER) (ARG2 LONG-INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGAND ARG1 ARG2) :CPP \"(arg1 & arg2)\" :JAVA \"(arg1 & arg2)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LOGOR INTEGER) ((ARG1 INTEGER) (ARG2 INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGIOR ARG1 ARG2) :CPP \"(arg1 | arg2)\" :JAVA \"(arg1 | arg2)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LOGOR LONG-INTEGER) ((ARG1 LONG-INTEGER) (ARG2 LONG-INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGIOR ARG1 ARG2) :CPP \"(arg1 | arg2)\" :JAVA \"(arg1 | arg2)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LOGXOR INTEGER) ((ARG1 INTEGER) (ARG2 INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGXOR ARG1 ARG2) :CPP \"(arg1 ^ arg2)\" :JAVA \"(arg1 ^ arg2)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LOGXOR LONG-INTEGER) ((ARG1 LONG-INTEGER) (ARG2 LONG-INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGXOR ARG1 ARG2) :CPP \"(arg1 ^ arg2)\" :JAVA \"(arg1 ^ arg2)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("INTEGER-LENGTH", "(DEFUN (INTEGER-LENGTH INTEGER) ((X LONG-INTEGER)) :DOCUMENTATION \"Return the 1-based position of the left-most bit in `x'.\nIf `x' is negative, we only count the value bits, not the sign.\" :PUBLIC? TRUE)", ((cpp_function_code)(&integerLength)), NULL);
+    defineMethodObject("(DEFMETHOD (SHIFT-LEFT INTEGER) ((ARG INTEGER) (COUNT INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:ASH ARG COUNT) :CPP \"(arg << count)\" :JAVA \"(arg << count)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (SHIFT-LEFT LONG-INTEGER) ((ARG LONG-INTEGER) (COUNT INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:ASH ARG COUNT) :CPP \"(arg << count)\" :JAVA \"(arg << count)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (SHIFT-RIGHT INTEGER) ((ARG INTEGER) (COUNT INTEGER)) :DOCUMENTATION \"Shift `arg' to the right by `count' positions and\n0-extend from the left if `arg' is positive or 1-extend if it is\nnegative.  This is an arithmetic shift that preserve the sign of `arg'\nand is equivalent to dividing `arg' by 2** `count'.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:ASH ARG (CL:THE CL:FIXNUM (CL:- COUNT))) :CPP \"(arg >> count)\" :JAVA \"(arg >> count)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (SHIFT-RIGHT LONG-INTEGER) ((ARG LONG-INTEGER) (COUNT INTEGER)) :DOCUMENTATION \"Shift `arg' to the right by `count' positions and\n0-extend from the left if `arg' is positive or 1-extend if it is\nnegative.  This is an arithmetic shift that preserve the sign of `arg'\nand is equivalent to dividing `arg' by 2** `count'.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:ASH ARG (CL:THE CL:FIXNUM (CL:- COUNT))) :CPP \"(arg >> count)\" :JAVA \"(arg >> count)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (UNSIGNED-SHIFT-RIGHT-BY-1 INTEGER) ((ARG INTEGER)) :DOCUMENTATION \"Shift `arg' to the right by 1 position and 0-extend\nfrom the left.  This does not preserve the sign of `arg' and shifts\nthe sign-bit just like a regular bit.  In Common-Lisp we can't do that\ndirectly and need to do some extra masking.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGAND (CL:THE CL:FIXNUM (CL:ASH ARG -1)) *INTEGER-UNSIGNED-BITS-MASK*) :CPP \"((unsigned int)arg >> 1)\" :JAVA \"(arg >>> 1)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (UNSIGNED-SHIFT-RIGHT-BY-1 LONG-INTEGER) ((ARG LONG-INTEGER)) :DOCUMENTATION \"Shift `arg' to the right by 1 position and 0-extend\nfrom the left.  This does not preserve the sign of `arg' and shifts\nthe sign-bit just like a regular bit.  In Common-Lisp we can't do that\ndirectly and need to do some extra masking.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGAND (CL:ASH ARG -1) *LONG-INTEGER-UNSIGNED-BITS-MASK*) :CPP \"((unsigned long long int)arg >> 1)\" :JAVA \"(arg >>> 1)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineFunctionObject("GENERATE-UUID", "(DEFUN (GENERATE-UUID STRING) ((UUID-TYPE KEYWORD)) :PUBLIC? TRUE :DOCUMENTATION \"Generates a UUID of the specified type.  Legal types are\na subset of the IETF RFC 4122 (see http://www.ietf.org/rfc/rfc4122.txt )\nUUID types.  Currently supported are:\n    :TYPE-4  :RANDOM       A type-4 (random) UUID.  These are synonyms.\")", ((cpp_function_code)(&generateUuid)), NULL);
     defineFunctionObject("GENERATE-RANDOM-UUID", "(DEFUN (GENERATE-RANDOM-UUID STRING) () :PUBLIC? TRUE :DOCUMENTATION \"Generates a random UUID (Type 4), according to the guidelines\nof IETF RFC 4122 (see http://www.ietf.org/rfc/rfc4122.txt )\n\nTake 16 random bytes (octets), put them all behind each other, for the description\nthe numbering starts with byte 1 (most significant, first) to byte 16 \n   (least significant, last). Then put in the version and variant.\nTo put in the version, take the 7th byte and perform an and operation using 0x0f,\n   followed by an or operation with 0x40. \nTo put in the variant, take the 9th byte and perform an and operation using 0x3f,\n   followed by an or operation with 0x80.\nTo make the string representation, take the hexadecimal presentation of bytes 1-4\n   (without 0x in front of it) let them follow by a -, then take bytes 5 and 6, - \nbytes 7 and 8, - bytes 9 and 10, - then followed by bytes 11-16.\")", ((cpp_function_code)(&generateRandomUuid)), NULL);
     defineFunctionObject("STELLIFY", "(DEFUN (STELLIFY OBJECT) ((SELF OBJECT)) :DOCUMENTATION \"Convert a Lisp object into a STELLA object.\" :PUBLIC? TRUE)", ((cpp_function_code)(&stellify)), NULL);
     defineFunctionObject("STELLA-OBJECT?", "(DEFUN (STELLA-OBJECT? BOOLEAN) ((SELF OBJECT)) :DOCUMENTATION \"Return true if `self' is a member of the STELLA class `OBJECT'.\")", ((cpp_function_code)(&stellaObjectP)), NULL);
-    defineFunctionObject("RUNNING-AS-LISP?", "(DEFUN (RUNNING-AS-LISP? BOOLEAN) () :DOCUMENTATION \"Return true if the executable code is a Common Lisp application.\")", ((cpp_function_code)(&runningAsLispP)), NULL);
-    defineFunctionObject("RUNNING-IN-LANGUAGE", "(DEFUN (RUNNING-IN-LANGUAGE KEYWORD) () :DOCUMENTATION \"Returns the keyword for the language the current implementation is running in.\")", ((cpp_function_code)(&runningInLanguage)), NULL);
+    defineFunctionObject("RUNNING-AS-LISP?", "(DEFUN (RUNNING-AS-LISP? BOOLEAN) () :DOCUMENTATION \"Return true if the executable code is a Common Lisp application.\" :PUBLIC? TRUE)", ((cpp_function_code)(&runningAsLispP)), NULL);
+    defineFunctionObject("RUNNING-IN-LANGUAGE", "(DEFUN (RUNNING-IN-LANGUAGE KEYWORD) () :DOCUMENTATION \"Returns the keyword for the language the current implementation is running in.\" :PUBLIC? TRUE)", ((cpp_function_code)(&runningInLanguage)), NULL);
     defineFunctionObject("RUNNING-SYSTEM-INFORMATION", "(DEFUN (RUNNING-SYSTEM-INFORMATION STRING) () :DOCUMENTATION \"Returns an information string about the current running system environment.\")", ((cpp_function_code)(&runningSystemInformation)), NULL);
     defineFunctionObject("GET-TICKTOCK", "(DEFUN (GET-TICKTOCK TICKTOCK) () :DOCUMENTATION \"Return the current CPU time.  If the current OS/Language\ncombination does not support measuring of CPU time, return real time instead.\nUse `ticktock-difference' to measure the time difference between values\nreturned by this function.  This is an attempt to provide some platform\nindependent support to measure (at least approximately) consumed CPU time.\" :PUBLIC? TRUE :NATIVE? TRUE)", NULL, NULL);
     defineFunctionObject("TICKTOCK-DIFFERENCE", "(DEFUN (TICKTOCK-DIFFERENCE FLOAT) ((T1 TICKTOCK) (T2 TICKTOCK)) :DOCUMENTATION \"The difference in two TICKTOCK time values in seconds where\n`t1' is the earlier time.  The resolution is implementation dependent but will\nnormally be some fractional value of a second.\" :PUBLIC? TRUE :NATIVE? TRUE)", NULL, NULL);
@@ -2320,7 +3247,7 @@ void helpStartupPrimal5() {
 
 void startupPrimal() {
   if (currentStartupTimePhaseP(0)) {
-    oHASH_BYTE_RANDOM_TABLEo = new (GC)(int[256]);
+    oHASH_BYTE_RANDOM_TABLEo = new (PointerFreeGC)(int[256]);
     { int i = NULL_INTEGER;
       int iter008 = 0;
       int upperBound009 = 255;
@@ -2354,7 +3281,7 @@ void startupPrimal() {
       }
     }
     oHASH_TABLE_SIZE_PRIME_STRINGSo = stella::vector(27, wrapString("29"), wrapString("53"), wrapString("97"), wrapString("193"), wrapString("389"), wrapString("769"), wrapString("1543"), wrapString("3079"), wrapString("6151"), wrapString("12289"), wrapString("24593"), wrapString("49157"), wrapString("98317"), wrapString("196613"), wrapString("393241"), wrapString("786433"), wrapString("1572869"), wrapString("3145739"), wrapString("6291469"), wrapString("12582917"), wrapString("25165843"), wrapString("50331653"), wrapString("100663319"), wrapString("201326611"), wrapString("402653189"), wrapString("805306457"), wrapString("1610612741"));
-    oHASH_TABLE_SIZE_PRIMESo = newVector(oHASH_TABLE_SIZE_PRIME_STRINGSo->length());
+    oHASH_TABLE_SIZE_PRIMESo = stella::newVector(oHASH_TABLE_SIZE_PRIME_STRINGSo->length());
     { StringWrapper* s = NULL;
       Vector* vector015 = oHASH_TABLE_SIZE_PRIME_STRINGSo;
       int index016 = 0;
@@ -2368,7 +3295,7 @@ void startupPrimal() {
             iter018 = iter018 + 1) {
         s = ((StringWrapper*)((vector015->theArray)[index016]));
         i = iter018;
-        (oHASH_TABLE_SIZE_PRIMESo->theArray)[i] = (wrapInteger(stringToInteger(s->wrapperValue)));
+        (oHASH_TABLE_SIZE_PRIMESo->theArray)[i] = (wrapInteger(((int)(stringToInteger(s->wrapperValue)))));
       }
     }
   }
@@ -2379,7 +3306,11 @@ void startupPrimal() {
       helpStartupPrimal1();
     }
     if (currentStartupTimePhaseP(4)) {
+      MOST_NEGATIVE_INTEGER = NULL_INTEGER + 1;
+      MOST_NEGATIVE_LONG_INTEGER = NULL_LONG_INTEGER + 1;
+      LEAST_NEGATIVE_FLOAT = 0 - LEAST_POSITIVE_FLOAT;
       RECIPROCAL_NL10 = 1.0 / ::log(10.0);
+      LONG_INTEGER_BIT_WIDTH = stella::round(::log((MOST_POSITIVE_LONG_INTEGER * 2.0)) / ::log((2.0)));
     }
     if (currentStartupTimePhaseP(6)) {
       finalizeClasses();
@@ -2389,25 +3320,35 @@ void startupPrimal() {
       helpStartupPrimal3();
       helpStartupPrimal4();
       helpStartupPrimal5();
+      helpStartupPrimal6();
     }
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT PI FLOAT (VERBATIM :COMMON-LISP \"(cl:float CL:PI 0.0d0)\" :CPP \"3.141592653589793\" :JAVA \"java.lang.Math.PI\") :PUBLIC? TRUE :DOCUMENTATION \"A float approximation of the mathematical constant pi.\")");
       defineStellaGlobalVariableFromStringifiedSource("(defconstant NULL UNKNOWN NULL\n       :public? TRUE\n       :documentation\n       \"Generic undefined value for any STELLA data type.  The STELLA\ntranslator substitutes specific NULL-values appropriate for a particular data\ntype.  For example, NULL-INTEGER represents the undefined INTEGER value.\")");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-INTEGER INTEGER (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-FIXNUM :CPP \"1 << (sizeof (int) / sizeof (char) * 8 - 1)\" :JAVA \"Integer.MIN_VALUE\") :PUBLIC? TRUE)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-SHORT-INTEGER SHORT-INTEGER (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-FIXNUM :CPP \"1 << (sizeof (short int) / sizeof (char) * 8 - 1)\" :JAVA \"Short.MIN_VALUE\") :PUBLIC? TRUE)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-LONG-INTEGER LONG-INTEGER (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-FIXNUM :CPP \"1 << (sizeof (long int) / sizeof (char) * 8 - 1)\" :JAVA \"Long.MIN_VALUE\") :PUBLIC? TRUE)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-UNSIGNED-SHORT-INTEGER UNSIGNED-SHORT-INTEGER (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-FIXNUM :CPP \"(unsigned short int) -1\" :JAVA \"Short.MIN_VALUE\") :PUBLIC? TRUE)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-UNSIGNED-LONG-INTEGER UNSIGNED-LONG-INTEGER (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-FIXNUM :CPP \"(unsigned long int) -1\" :JAVA \"Long.MIN_VALUE\") :PUBLIC? TRUE)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-FLOAT FLOAT (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-DOUBLE-FLOAT :CPP \"-HUGE_VAL /* IEEE infinity, defined in <math.h> */\" :JAVA \"Double.NEGATIVE_INFINITY; /* IEEE Infinity */\") :PUBLIC? TRUE)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-SINGLE-FLOAT SINGLE-FLOAT (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-SINGLE-FLOAT :CPP \"-HUGE_VAL /* IEEE infinity, defined in <math.h> */\" :JAVA \"Float.NEGATIVE_INFINITY; /* IEEE Infinity */\") :PUBLIC? TRUE)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-DOUBLE-FLOAT DOUBLE-FLOAT (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-DOUBLE-FLOAT :CPP \"-HUGE_VAL /* IEEE infinity, defined in <math.h> */\" :JAVA \"Double.NEGATIVE_INFINITY; /* IEEE Infinity */\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-INTEGER INTEGER (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-FIXNUM :CPP \"std::numeric_limits<int>::min()\" :JAVA \"Integer.MIN_VALUE\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-SHORT-INTEGER SHORT-INTEGER (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-FIXNUM :CPP \"std::numeric_limits<short int>::min()\" :JAVA \"Short.MIN_VALUE\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-LONG-INTEGER LONG-INTEGER (VERBATIM :COMMON-LISP \"(CL:- (CL:expt 2 63))\" :CPP \"std::numeric_limits<long long int>::min()\" :JAVA \"Long.MIN_VALUE\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-UNSIGNED-SHORT-INTEGER UNSIGNED-SHORT-INTEGER (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-FIXNUM :CPP \"std::numeric_limits<unsigned short int>::min()\" :JAVA \"Short.MIN_VALUE\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-UNSIGNED-LONG-INTEGER UNSIGNED-LONG-INTEGER (VERBATIM :COMMON-LISP \"(CL:1- (CL:expt 2 64))\" :CPP \"std::numeric_limits<unsigned long long int>::min()\" :JAVA \"Long.MIN_VALUE\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-FLOAT FLOAT (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-DOUBLE-FLOAT :CPP \"std::numeric_limits<double>::infinity() != 0 ?\n                    -std::numeric_limits<double>::infinity() :\n                    // work around a problem in g++ 3.2.2 where infinity()==0:\n                    NULL_INTEGER / (double)ceiling(-0.42)\" :JAVA \"Double.NEGATIVE_INFINITY; /* IEEE Infinity */\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-SINGLE-FLOAT SINGLE-FLOAT (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-SINGLE-FLOAT :CPP \"-std::numeric_limits<float>::infinity()\" :JAVA \"Float.NEGATIVE_INFINITY; /* IEEE Infinity */\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-DOUBLE-FLOAT DOUBLE-FLOAT (VERBATIM :COMMON-LISP CL:MOST-NEGATIVE-DOUBLE-FLOAT :CPP \"-std::numeric_limits<double>::infinity()\" :JAVA \"Double.NEGATIVE_INFINITY; /* IEEE Infinity */\") :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-CHARACTER CHARACTER (VERBATIM :COMMON-LISP (CL:CODE-CHAR 0) :CPP \"'\\\\0'\" :JAVA \"Character.MIN_VALUE\") :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-BYTE BYTE (VERBATIM :COMMON-LISP \"255\" :CPP \"255\" :JAVA \"-128\") :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NULL-OCTET OCTET (VERBATIM :COMMON-LISP \"255\" :CPP \"255\" :JAVA \"-128\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MOST-POSITIVE-INTEGER INTEGER (VERBATIM :COMMON-LISP CL:MOST-POSITIVE-FIXNUM :CPP \"std::numeric_limits<int>::max()\" :JAVA \"Integer.MAX_VALUE\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MOST-NEGATIVE-INTEGER INTEGER (1+ NULL-INTEGER) :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MOST-POSITIVE-LONG-INTEGER LONG-INTEGER (VERBATIM :COMMON-LISP \"(CL:1- (CL:expt 2 63))\" :CPP \"std::numeric_limits<long long int>::max()\" :JAVA \"Long.MAX_VALUE\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MOST-NEGATIVE-LONG-INTEGER LONG-INTEGER (1+ NULL-LONG-INTEGER) :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MOST-POSITIVE-FLOAT FLOAT (VERBATIM :COMMON-LISP CL:MOST-POSITIVE-DOUBLE-FLOAT :CPP \"std::numeric_limits<double>::max()\" :JAVA \"Double.MAX_VALUE\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MOST-NEGATIVE-FLOAT FLOAT (VERBATIM :COMMON-LISP \"(cl:multiple-value-bind (signif expon)\n                (cl:integer-decode-float cl:most-positive-double-float)\n              (cl:- (cl:scale-float (CL:- signif 1.0) expon)))\" :OTHERWISE (- MOST-POSITIVE-FLOAT)) :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT LEAST-POSITIVE-FLOAT FLOAT (VERBATIM :COMMON-LISP CL:LEAST-POSITIVE-DOUBLE-FLOAT :CPP \"std::numeric_limits<double>::min()\" :JAVA \"Double.MIN_VALUE\") :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT LEAST-NEGATIVE-FLOAT FLOAT (- LEAST-POSITIVE-FLOAT) :PUBLIC? TRUE)");
       seedRandomNumberGenerator();
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT RECIPROCAL-NL10 FLOAT (/ 1.0 (LOG 10.0)) :DOCUMENTATION \"1 / (log 10) Reciprocal of the Log base e of 10.\nUsed for log 10 conversions.\")");
       registerNativeName(SYM_PRIMAL_STELLA_FLOOR, KWD_PRIMAL_CPP, KWD_PRIMAL_FUNCTION);
@@ -2429,10 +3370,13 @@ void startupPrimal() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *TRANSIENTOBJECTS?* BOOLEAN FALSE :PUBLIC? TRUE)");
       registerNativeName(SYM_PRIMAL_STELLA_HASH_CODE, KWD_PRIMAL_JAVA, KWD_PRIMAL_FUNCTION);
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *HASH-BYTE-RANDOM-TABLE* (ARRAY (256) OF INTEGER) NULL :DOCUMENTATION \"A table of 256 N-bit random numbers that can be used to\nhash sequences of bytes.  Each bit-column in the table has an approximately\neven number of 0's and 1's.\")");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *INTEGER-MSB-MASK* INTEGER (VERBATIM :COMMON-LISP \"#.(CL:ash 1 (CL:1- (CL:integer-length CL:most-positive-fixnum)))\" :CPP \"1 << (sizeof (int) / sizeof (char) * 8 - 1)\" :JAVA \"0x80000000\") :DOCUMENTATION \"The most significant bit of a regular integer (FIXNUM\nin Common-Lisp).  In C++ and Java this corresponds to the sign bit, in\nLisp this corresponds to the left-most bit of `CL:most-positive-fixnum'.\")");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *INTEGER-UNSIGNED-BITS-MASK* INTEGER (VERBATIM :COMMON-LISP (CL:LOGIOR (CL:1- *INTEGER-MSB-MASK*) *INTEGER-MSB-MASK*) :OTHERWISE (LOGNOT *INTEGER-MSB-MASK*)) :DOCUMENTATION \"Mask that covers all the unsigned bits of an integer.\")");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *INTEGER-MSB-MASK* INTEGER (VERBATIM :COMMON-LISP \"#.(cl:abs (cl:ash cl:most-negative-fixnum -1))\" :CPP \"1 << (sizeof (int) / sizeof (char) * 8 - 1)\" :JAVA \"0x80000000\") :DOCUMENTATION \"The most significant bit of a regular integer (FIXNUM\nin Common-Lisp).  In C++ and Java this corresponds to the sign bit, in\nLisp this corresponds to the left-most bit of `CL:most-positive-fixnum'.\" :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *INTEGER-UNSIGNED-BITS-MASK* INTEGER (VERBATIM :OTHERWISE MOST-POSITIVE-INTEGER) :DOCUMENTATION \"Mask that covers all the unsigned bits of an integer.\" :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *LONG-INTEGER-MSB-MASK* LONG-INTEGER (VERBATIM :OTHERWISE NULL-LONG-INTEGER) :DOCUMENTATION \"The sign bit of a long integer.\" :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *LONG-INTEGER-UNSIGNED-BITS-MASK* LONG-INTEGER (VERBATIM :OTHERWISE MOST-POSITIVE-LONG-INTEGER) :DOCUMENTATION \"Mask that covers all the unsigned bits of a long integer.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *HASH-TABLE-SIZE-PRIME-STRINGS* (VECTOR OF STRING-WRAPPER) NULL :DOCUMENTATION \"List of prime numbers approximately growing by a factor of 2\nthat are suitable to be used as hash table sizes.  This is in string\nformat to enable processing by Lisps with different fixnum sizes.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *HASH-TABLE-SIZE-PRIMES* (VECTOR OF INTEGER-WRAPPER) NULL :DOCUMENTATION \"List of prime numbers approximately growing by a factor of 2\nthat are suitable to be used as hash table sizes.\" :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT LONG-INTEGER-BIT-WIDTH INTEGER (ROUND (/ (LOG (* MOST-POSITIVE-LONG-INTEGER 2.0)) (LOG 2))) :DOCUMENTATION \"The number of bits in a long integer.\")");
       registerNativeName(SYM_PRIMAL_STELLA_SLEEP, KWD_PRIMAL_CPP, KWD_PRIMAL_FUNCTION);
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *BOOTSTRAP-LOCK* PROCESS-LOCK-OBJECT (VERBATIM :COMMON-LISP \"(%make-process-lock)\" :JAVA \"new java.lang.Object()\" :CPP \"NULL\") :PUBLIC? TRUE :DOCUMENTATION \"Process lock object for bootstrap use.\")");
     }
@@ -2475,6 +3419,8 @@ Symbol* SYM_PRIMAL_STELLA_MIN = NULL;
 
 Symbol* SYM_PRIMAL_STELLA_MAX = NULL;
 
+Keyword* KWD_PRIMAL_WHITE_SPACE = NULL;
+
 Keyword* KWD_PRIMAL_UPCASE = NULL;
 
 Keyword* KWD_PRIMAL_DOWNCASE = NULL;
@@ -2488,8 +3434,6 @@ Keyword* KWD_PRIMAL_LEFT = NULL;
 Keyword* KWD_PRIMAL_RIGHT = NULL;
 
 Keyword* KWD_PRIMAL_CENTER = NULL;
-
-Keyword* KWD_PRIMAL_WHITE_SPACE = NULL;
 
 Symbol* SYM_PRIMAL_STELLA_HASH_CODE = NULL;
 

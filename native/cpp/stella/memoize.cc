@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -639,8 +639,8 @@ Object* accessMruMemoizationTableSlotValue(MruMemoizationTable* self, Symbol* sl
 
 void initializeMruBucketTables(MruMemoizationTable* memotable) {
   memotable->nofBuckets = pickHashTableSizePrime(memotable->maxEntries);
-  memotable->mruBucketsVector = newVector(memotable->nofBuckets);
-  memotable->lruBucketsVector = newVector(memotable->nofBuckets);
+  memotable->mruBucketsVector = stella::newVector(memotable->nofBuckets);
+  memotable->lruBucketsVector = stella::newVector(memotable->nofBuckets);
   memotable->mruBuckets = memotable->mruBucketsVector->theArray;
   memotable->lruBuckets = memotable->lruBucketsVector->theArray;
   memotable->freeEntries = memotable->maxEntries;
@@ -1315,10 +1315,10 @@ void startupMemoize() {
     }
     if (currentStartupTimePhaseP(4)) {
       oALL_MEMOIZATION_TABLESo = newList();
-      { Symbol* self068 = newSymbol("MEMOIZED-NULL-VALUE");
+      { Symbol* self073 = newSymbol("MEMOIZED-NULL-VALUE");
 
-        self068->homeContext = NULL;
-        MEMOIZED_NULL_VALUE = self068;
+        self073->homeContext = NULL;
+        MEMOIZED_NULL_VALUE = self073;
       }
     }
     if (currentStartupTimePhaseP(5)) {
@@ -1378,6 +1378,7 @@ void startupMemoize() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *ALL-MEMOIZATION-TABLES* (LIST OF MEMOIZATION-TABLE) (NEW LIST) :DOCUMENTATION \"Holds all currently active memoization tables for timestamp\nmaintenance and clearance purposes.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MEMOIZATION-ENABLED?* BOOLEAN FALSE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MEMOIZED-NULL-VALUE SYMBOL (NEW SYMBOL :SYMBOL-NAME \"MEMOIZED-NULL-VALUE\" :HOME-CONTEXT NULL) :DOCUMENTATION \"Used by memoization to indicate that a NULL value\nwas cached.  Needed to distinguish between an undefined value and a\ncached NULL.\")");

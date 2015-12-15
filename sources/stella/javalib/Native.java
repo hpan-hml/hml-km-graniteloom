@@ -20,7 +20,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -39,7 +39,7 @@
 |                                                                            |
 +---------------------------- END LICENSE BLOCK ----------------------------*/
 
-// Version: Native.java,v 1.54 2006/05/11 07:06:47 hans Exp
+// Version: Native.java,v 1.59 2010/04/26 21:45:15 hans Exp
 
 // Native Java stuff for STELLA
 
@@ -101,39 +101,6 @@ public class Native {
     return Math.exp(n);
   }
 
-  public static int integerLength (int x) {
-    // Implements a search for the leftmost bit of "X"
-    //   using a binary search method.
-
-    int ilength = 0;
-    if (x < 0) {
-      x = -x;
-      ilength++;
-    }
-    if ((x ^ 0xFFFF0000L)  != 0) {
-      x >>= 16;
-      ilength += 16;
-    }
-    if ((x ^ 0xFF00)  != 0) {
-      x >>= 8;
-      ilength += 8;
-    }
-    if ((x ^ 0xF0)  != 0) {
-      x >>= 4;
-      ilength += 4;
-    }
-    if ((x ^ 0xC)  != 0) {
-      x >>= 2;
-      ilength += 2;
-    }
-    switch (x) {
-    case 0: return ilength;
-    case 1: return ilength + 1;
-    case 2:                       // Fall through to case 3
-    case 3: return ilength + 2;
-    }
-    throw (StellaException) StellaException.newStellaException("Error in integerLength(" + x + "):  Shouldn't get here!").fillInStackTrace();
-  }
 
     //
   ///// Character library functions
@@ -366,16 +333,16 @@ public class Native {
 
 // **************************************************
 
-  public static String integerToString(int i) {
-    return Integer.toString(i);
+  public static String integerToString(long i) {
+    return Long.toString(i);
   }
 
-  public static String integerToHexString(int i) {
-    return Integer.toHexString(i);
+  public static String integerToHexString(long i) {
+    return Long.toHexString(i);
   }
 
-  public static String integerToStringInBase(int i, int base) {
-    return Integer.toString(i, base);
+  public static String integerToStringInBase(long i, int base) {
+    return Long.toString(i, base);
   }
 
   public static String floatToString(double f) {
@@ -391,8 +358,8 @@ public class Native {
 
 
   //  throws NumberFormatException    ??
-  public static int stringToInteger(String string) {
-    return Integer.parseInt(string);
+  public static long stringToInteger(String string) {
+    return Long.parseLong(string);
   }
 
   public static double stringToFloat(String string) {
@@ -404,22 +371,12 @@ public class Native {
   ///// Stream operations
    //
 
-  public static BufferedInputStream openInputFileStream(String filename) {
-    try {
-      return (new BufferedInputStream(new FileInputStream(filename)));
-    }
-    catch (java.io.FileNotFoundException e) {
-      throw (NoSuchFileException) NoSuchFileException.newNoSuchFileException("openInputFileStream: " + e.getMessage()).fillInStackTrace();
-    }
+  public static NativeFileInputStream openInputFileStream(String filename) {
+      return NativeFileInputStream.open(filename);
   }
 
-  public static BufferedOutputStream openOutputFileStream(String filename, boolean append) {
-   try {
-     return (new BufferedOutputStream (new FileOutputStream(filename, append)));
-   }
-   catch (java.io.IOException e) {
-     throw (InputOutputException) InputOutputException.newInputOutputException("openOutputFileStream: " + e.getMessage()).fillInStackTrace();
-   }
+  public static NativeFileOutputStream openOutputFileStream(String filename, boolean append) {
+      return NativeFileOutputStream.open(filename, append);
   }
 
   public static String readLine(PushbackInputStream stream) {
@@ -473,59 +430,60 @@ public class Native {
   ///// File operations
    //
 
-  public static boolean probeFileP(String filename) {
-    filename = Stella.translateLogicalPathname(filename);
+  public static boolean nativeProbeFileP(String filename) {
     return (new File(filename)).exists();
   }
 
-  public static CalendarDate fileWriteDate(String filename) {
-    filename = Stella.translateLogicalPathname(filename);
+  public static CalendarDate nativeFileWriteDate(String filename) {
     return CalendarDate.nativeDateTimeToCalendarDate ((new File(filename)).lastModified());
   }
 
-  public static int fileLength(String filename) {
-    // NOTE: Using 'int' to store sizes might not be sufficient!!
-    //  Java interface contract specifies long!!
-    filename = Stella.translateLogicalPathname(filename);
-    return (int) (new File(filename)).length();
+  public static long nativeFileLength(String filename) {
+    return (new File(filename)).length();
   }
 
-  public static void deleteFile(String filename) {
-    filename = Stella.translateLogicalPathname(filename);
+  public static void nativeDeleteFile(String filename) {
     (new File(filename)).delete();
   }
 
-
-  /*
-  public static void copyFile(String fromFilename, String toFilename) {
-    java.io.FileInputStream fromFile = null;
-    java.io.FileOutputStream toFile = null;
-    byte buffer [] = new byte[1024];
-    int bytesRead = 0;
-
-    try {
-      fromFile = new FileInputStream(Stella.translateLogicalPathname(fromFilename));
-      toFile  = new FileOutputStream(Stella.translateLogicalPathname(toFilename));
-      while (bytesRead >= 0) {
-        bytesRead = fromFile.read(buffer, 0, 1024);
-        if (bytesRead > 0) toFile.write(buffer, 0, bytesRead);
-      }
-    } catch (java.lang.FileNotFoundException fnf) {
-      throw (NoSuchFileException) NoSuchFileException.newNoSuchFileException(fnf.getMessage()).fillInStackTrace();
-    } catch (java.lang.IOException ioe) {
-      throw (InputOutputException) InputOutputException.newInputOutputException("copyFile: " + e.getMessage()).fillInStackTrace();
-    } finally {
-      if (fromFile != null) fromFile.close();
-      if (toFile != null) toFile.close();
-    }
+  public static void nativeRenameFile(String fromfile, String tofile) {
+    (new File(fromfile)).renameTo(new File(tofile));
   }
-  */
+
+
     //
   ///// Exception-handling support
    //
 
+  public static void rethrowAsStellaException(Exception e, 
+                                              Class stellaExceptionType, 
+                                              String messagePrefix,
+                                              boolean stackTrace) {
+      // Convenience method to map a Java exception `e' that needs to be
+      // caught or declared onto a STELLA runtime exception of type
+      // `stellaExceptionType'.  If non-null, prepend `messagePrefix'
+      // to the exception message; also, fill in stack trace if
+      // `stackTrace' is true.
+      RuntimeException stellaException = null;
+      String message = messagePrefix;
+      if (message == null) message = "";
+      message += e.getMessage();
+      if (stackTrace) message += "\n";
+      
+      try {
+          java.lang.reflect.Constructor constructor = 
+              stellaExceptionType.getConstructor(new Class[]{String.class});
+          stellaException = (RuntimeException)constructor.newInstance(new Object[]{message});
+      }
+      catch (Exception ex) {
+          // instantiation problem, use a generic StellaException:
+          stellaException = new StellaException(message);
+      }
+      if (stackTrace)
+          stellaException.fillInStackTrace();
+      throw stellaException;
+  }
 
-  // Implement Java exception handlers:
 
     //
   ///// Funcall support

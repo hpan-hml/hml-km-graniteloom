@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -82,7 +82,7 @@ public class AbstractPropositionsIterator extends Iterator {
         keywithequivalents = Logic.findSelectionKeyWithEquivalents(pattern);
         if (keywithequivalents != null) {
           equivalentskolems = keywithequivalents.variableValueInverse();
-          equivalentsstack = Stella_Object.cons(equivalentskolems, Stella.NIL);
+          equivalentsstack = Cons.cons(equivalentskolems, Stella.NIL);
         }
       }
       if (equivalentsstack == null) {
@@ -99,7 +99,7 @@ public class AbstractPropositionsIterator extends Iterator {
         equivalentsstack = equivalentsstack.rest;
       }
       if (!(newskolem.variableValueInverse() == Stella.NIL)) {
-        equivalentsstack = Stella_Object.cons(newskolem.variableValueInverse(), equivalentsstack);
+        equivalentsstack = Cons.cons(newskolem.variableValueInverse(), equivalentsstack);
       }
       self.equivalentsStack = equivalentsstack;
       if (keywithequivalents == null) {

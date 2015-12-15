@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -67,7 +67,7 @@ public class StartupUtilitiesSystem {
           Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/UTILITIES", Stella.$STARTUP_TIME_PHASE$ > 1));
           Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
           if (Stella.currentStartupTimePhaseP(2)) {
-            Utilities.SYM_UTILITIES_STARTUP_UTILITIES_SYSTEM = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-UTILITIES-SYSTEM", null, 0)));
+            Utilities.SYM_UTILITIES_STARTUP_UTILITIES_SYSTEM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-UTILITIES-SYSTEM", null, 0)));
           }
           if (Stella.currentStartupTimePhaseP(6)) {
             Stella.finalizeClasses();
@@ -84,6 +84,7 @@ public class StartupUtilitiesSystem {
             Stella.cleanupUnfinalizedClasses();
           }
           if (Stella.currentStartupTimePhaseP(9)) {
+            Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/UTILITIES")))));
             { int phase = Stella.NULL_INTEGER;
               int iter006 = 0;
               int upperBound007 = 9;
@@ -94,7 +95,6 @@ public class StartupUtilitiesSystem {
                 _StartupManuals.startupManuals();
                 _StartupUnits.startupUnits();
                 _StartupUnitDefs.startupUnitDefs();
-                _StartupHttp.startupHttp();
               }
             }
             Stella.$STARTUP_TIME_PHASE$ = 999;

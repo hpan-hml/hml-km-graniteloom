@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -119,7 +119,7 @@ Cons* cppYieldStaticMemberAllocationTree(StorageSlot* slot, Class* clasS) {
 
 Cons* cppYieldMemberFuncSignatureTree(MethodSlot* method) {
   oMETHODBEINGWALKEDo.set(method);
-  return (cons((method->methodFunctionP ? NULL : cppTranslateClassName(internSymbolInModule(method->slotOwner->symbolName, ((Module*)(method->slotOwner->homeContext)), false))), listO(3, cons(wrapString("virtual"), cons(cppTranslateAndPointerizeTypeSpec(computeMostGeneralReturnType(method, method->computeReturnTypeSpec(method->slotOwner))), NIL)), cppTranslateFunctionName(method), cons(cppTranslateFunctionParameters(method), NIL))));
+  return (cons((method->methodFunctionP ? NULL : cppTranslateClassName(internSymbolInModule(method->slotOwner->symbolName, ((Module*)(method->slotOwner->homeContext)), false))), listO(3, cons(wrapString("virtual"), cons(cppTranslateAndPointerizeTypeSpec(computeMostGeneralReturnType(method, method->computeReturnTypeSpec(method->slotOwner))), NIL)), cppTranslateFunctionName(method, false), cons(cppTranslateFunctionParameters(method), NIL))));
 }
 
 Cons* cppYieldConstructorSignatureTree(MethodSlot* method) {
@@ -546,6 +546,9 @@ void startupCppClassOut() {
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
+    }
+    if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
     }
   }
 }

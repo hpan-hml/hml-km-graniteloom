@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -202,19 +202,13 @@ public class Stella {
 
   public static Symbol SYM_STELLA_POTENTIAL_FREE_SYMBOL_OFFSET = null;
 
-  public static int $HARDWIRED_RESIZE_INCREMENT_ON_VECTOR_SEQUENCE$ = Stella.NULL_INTEGER;
-
-  public static Symbol SYM_STELLA_RESIZE_INCREMENT = null;
+  public static Surrogate SGT_STELLA_VECTOR_SEQUENCE = null;
 
   public static Symbol SYM_STELLA_SEQUENCE_LENGTH = null;
 
-  public static Symbol SYM_STELLA_VSEQ = null;
+  public static Surrogate SGT_STELLA_CUSTOM_VECTOR_SEQUENCE = null;
 
-  public static Surrogate SGT_STELLA_SHORT_VECTOR_SEQUENCE = null;
-
-  public static int $HARDWIRED_RESIZE_INCREMENT_ON_SHORT_VECTOR_SEQUENCE$ = Stella.NULL_INTEGER;
-
-  public static Symbol SYM_STELLA_SVSEQ = null;
+  public static Symbol SYM_STELLA_RESIZE_FACTOR = null;
 
   public static Surrogate SGT_STELLA_BOOLEAN_VECTOR = null;
 
@@ -652,6 +646,10 @@ public class Stella {
 
   public static Symbol SYM_STELLA_NULL_INTEGER = null;
 
+  public static Surrogate SGT_STELLA_LONG_INTEGER_WRAPPER = null;
+
+  public static Symbol SYM_STELLA_NULL_LONG_INTEGER = null;
+
   public static Surrogate SGT_STELLA_FLOAT_WRAPPER = null;
 
   public static Symbol SYM_STELLA_NULL_FLOAT = null;
@@ -695,6 +693,8 @@ public class Stella {
   public static Symbol SYM_STELLA_CPP_ONLY_FILES = null;
 
   public static Symbol SYM_STELLA_JAVA_ONLY_FILES = null;
+
+  public static Symbol SYM_STELLA_DATA_FILES = null;
 
   public static Symbol SYM_STELLA_PREPROCESSED_FILES = null;
 
@@ -873,6 +873,8 @@ public class Stella {
 
   public static Symbol SYM_STELLA_STANDARD_ERROR = null;
 
+  public static Symbol SYM_STELLA_SIGNAL_TRANSLATION_NOTE = null;
+
   public static Symbol SYM_STELLA_SIGNAL_TRANSLATION_WARNING = null;
 
   public static Symbol SYM_STELLA_WHEN = null;
@@ -947,6 +949,10 @@ public class Stella {
 
   public static Symbol SYM_STELLA_POSITION = null;
 
+  public static Keyword KWD_LETTER = null;
+
+  public static Keyword KWD_DIGIT = null;
+
   public static KeyValueList $HTML_ESCAPE_TABLE$ = null;
 
   public static Symbol SYM_STELLA_THE_STREAM = null;
@@ -963,15 +969,23 @@ public class Stella {
 
   public static double $LOGGING_LOCAL_TIME_ZONE$ = Stella.NULL_FLOAT;
 
+  public static Keyword KWD_LEVEL = null;
+
   public static Keyword KWD_LOG_LEVELS = null;
 
-  public static Keyword KWD_LEVEL = null;
+  /** The number of spaces to print before the content of a log message.
+   */
+  public static int $LOG_INDENT_LEVEL$ = 0;
 
   public static Keyword KWD_STREAM = null;
 
   public static Keyword KWD_PREFIX = null;
 
   public static Keyword KWD_MAX_WIDTH = null;
+
+  public static Surrogate SGT_STELLA_GENERALIZED_SYMBOL = null;
+
+  public static Surrogate SGT_STELLA_FILE_OUTPUT_STREAM = null;
 
   public static Symbol SYM_STELLA_STARTUP_STREAMS = null;
 
@@ -1018,6 +1032,22 @@ public class Stella {
 
   public final static byte NULL_OCTET = -128;
 
+  public final static int MOST_POSITIVE_INTEGER = Integer.MAX_VALUE;
+
+  public static int MOST_NEGATIVE_INTEGER = Stella.NULL_INTEGER;
+
+  public final static long MOST_POSITIVE_LONG_INTEGER = Long.MAX_VALUE;
+
+  public static long MOST_NEGATIVE_LONG_INTEGER = Stella.NULL_LONG_INTEGER;
+
+  public final static double MOST_POSITIVE_FLOAT = Double.MAX_VALUE;
+
+  public final static double MOST_NEGATIVE_FLOAT = 0 - Stella.MOST_POSITIVE_FLOAT;
+
+  public final static double LEAST_POSITIVE_FLOAT = Double.MIN_VALUE;
+
+  public static double LEAST_NEGATIVE_FLOAT = Stella.NULL_FLOAT;
+
   /** 1 / (log 10) Reciprocal of the Log base e of 10.
    * Used for log 10 conversions.
    */
@@ -1061,6 +1091,8 @@ public class Stella {
 
   public final static StellaSpecialVariable $TRANSIENTOBJECTSp$ = new StellaSpecialVariable();
 
+  public static Keyword KWD_WHITE_SPACE = null;
+
   public static Keyword KWD_UPCASE = null;
 
   public static Keyword KWD_DOWNCASE = null;
@@ -1074,8 +1106,6 @@ public class Stella {
   public static Keyword KWD_RIGHT = null;
 
   public static Keyword KWD_CENTER = null;
-
-  public static Keyword KWD_WHITE_SPACE = null;
 
   public static Symbol SYM_STELLA_HASH_CODE = null;
 
@@ -1093,7 +1123,15 @@ public class Stella {
 
   /** Mask that covers all the unsigned bits of an integer.
    */
-  public final static int $INTEGER_UNSIGNED_BITS_MASK$ = (~ Stella.$INTEGER_MSB_MASK$);
+  public final static int $INTEGER_UNSIGNED_BITS_MASK$ = Stella.MOST_POSITIVE_INTEGER;
+
+  /** The sign bit of a long integer.
+   */
+  public final static long $LONG_INTEGER_MSB_MASK$ = Stella.NULL_LONG_INTEGER;
+
+  /** Mask that covers all the unsigned bits of a long integer.
+   */
+  public final static long $LONG_INTEGER_UNSIGNED_BITS_MASK$ = Stella.MOST_POSITIVE_LONG_INTEGER;
 
   /** List of prime numbers approximately growing by a factor of 2
    * that are suitable to be used as hash table sizes.  This is in string
@@ -1105,6 +1143,10 @@ public class Stella {
    * that are suitable to be used as hash table sizes.
    */
   public static Vector $HASH_TABLE_SIZE_PRIMES$ = null;
+
+  /** The number of bits in a long integer.
+   */
+  public static int LONG_INTEGER_BIT_WIDTH = Stella.NULL_INTEGER;
 
   public static Keyword KWD_TYPE_4 = null;
 
@@ -1133,8 +1175,6 @@ public class Stella {
    * an unoptimized Common Lisp, 20 is a good crossover point.
    */
   public static int $REMOVE_DUPLICATES_CROSSOVER_POINT$ = 20;
-
-  public static Surrogate SGT_STELLA_GENERALIZED_SYMBOL = null;
 
   public final static StellaSpecialVariable $SORT_TUPLE_COMPARE_PREDICATE$ = new StellaSpecialVariable();
 
@@ -1184,6 +1224,12 @@ public class Stella {
 
   public static Symbol SYM_STELLA_VECTOR = null;
 
+  public static Surrogate SGT_STELLA_HEAP = null;
+
+  public static Symbol SYM_STELLA_PREDICATE = null;
+
+  public static Symbol SYM_STELLA_FILL_POINTER = null;
+
   public static boolean $USE_STELLA_HASH_TABLESp$ = false;
 
   public static Symbol SYM_STELLA_SIZE = null;
@@ -1212,6 +1258,18 @@ public class Stella {
   public static Symbol SYM_STELLA_CROSSOVER_POINT = null;
 
   public static Surrogate SGT_STELLA_HASH_SET = null;
+
+  public static Surrogate SGT_STELLA_1D_ARRAY = null;
+
+  public static Symbol SYM_STELLA_OBJECT_ARRAY = null;
+
+  public static Surrogate SGT_STELLA_1D_FLOAT_ARRAY = null;
+
+  public static Symbol SYM_STELLA_FLOAT_ARRAY = null;
+
+  public static Surrogate SGT_STELLA_2D_ARRAY = null;
+
+  public static Surrogate SGT_STELLA_2D_FLOAT_ARRAY = null;
 
   public static Symbol SYM_STELLA_STARTUP_COLLECTIONS = null;
 
@@ -1307,10 +1365,6 @@ public class Stella {
 
   public static Keyword KWD_KEYWORD = null;
 
-  public static Keyword KWD_LETTER = null;
-
-  public static Keyword KWD_DIGIT = null;
-
   public static Keyword KWD_SYMBOL_CONSTITUENT = null;
 
   public static String $SYMBOL_ESCAPE_CODE_TABLE$ = null;
@@ -1334,6 +1388,8 @@ public class Stella {
   public static BooleanWrapper FALSE_WRAPPER = null;
 
   public static IntegerWrapper NULL_INTEGER_WRAPPER = null;
+
+  public static LongIntegerWrapper NULL_LONG_INTEGER_WRAPPER = null;
 
   public static FloatWrapper NULL_FLOAT_WRAPPER = null;
 
@@ -1366,6 +1422,10 @@ public class Stella {
   public static Surrogate SGT_STELLA_INTEGER = null;
 
   public static Symbol SYM_STELLA_NULL_INTEGER_WRAPPER = null;
+
+  public static Surrogate SGT_STELLA_LONG_INTEGER = null;
+
+  public static Symbol SYM_STELLA_NULL_LONG_INTEGER_WRAPPER = null;
 
   public static Surrogate SGT_STELLA_FLOAT = null;
 
@@ -1400,6 +1460,8 @@ public class Stella {
   public static Keyword KWD_WRAP_FUNCTION = null;
 
   public static Symbol SYM_STELLA_WRAP_INTEGER = null;
+
+  public static Symbol SYM_STELLA_WRAP_LONG_INTEGER = null;
 
   public static Symbol SYM_STELLA_WRAP_FLOAT = null;
 
@@ -1459,10 +1521,6 @@ public class Stella {
   public final static StellaSpecialVariable $WARNIFREDEFINEp$ = new StellaSpecialVariable();
 
   public static Keyword KWD_PUBLICp = null;
-
-  public static Keyword KWD_TRUE = null;
-
-  public static Keyword KWD_FALSE = null;
 
   public static Keyword KWD_PARAMETERS = null;
 
@@ -1724,8 +1782,6 @@ public class Stella {
 
   public static Surrogate SGT_STELLA_SECOND_CLASS_OBJECT = null;
 
-  public static Keyword KWD_OTHERWISE = null;
-
   public static Symbol SYM_STELLA_DEFINE_CLASS_FROM_STRINGIFIED_SOURCE = null;
 
   public static Keyword KWD_IDL = null;
@@ -1908,6 +1964,10 @@ public class Stella {
   static int MILLIS_PER_DAY = Stella.NULL_INTEGER;
 
   static int MILLIS_PER_HOUR = Stella.NULL_INTEGER;
+
+  /** A vector of month names for printing dates
+   */
+  public static Vector $MONTH_NAME_VECTOR$ = null;
 
   /** A vector of month abbreviations for printing dates
    */
@@ -2270,7 +2330,8 @@ public class Stella {
   public final static StellaSpecialVariable $USEHARDCODEDSYMBOLSp$ = new StellaSpecialVariable();
 
   /** Specifies the current translator output language; either
-   * :common-lisp, :idl, :java, :cpp, or :cpp-standalone.
+   * :common-lisp, :idl, :java, :cpp, or :cpp-standalone.  The initial value
+   * points to the native implementation language of this STELLA instance.
    */
   public final static StellaSpecialVariable $TRANSLATOROUTPUTLANGUAGE$ = new StellaSpecialVariable();
 
@@ -2332,6 +2393,8 @@ public class Stella {
   public final static StellaSpecialVariable $TRANSLATIONERRORS$ = new StellaSpecialVariable();
 
   public final static StellaSpecialVariable $TRANSLATIONWARNINGS$ = new StellaSpecialVariable();
+
+  public final static StellaSpecialVariable $TRANSLATIONNOTES$ = new StellaSpecialVariable();
 
   public static Surrogate SGT_STELLA_TYPE_SPEC = null;
 
@@ -2422,8 +2485,6 @@ public class Stella {
   public static Surrogate SGT_STELLA_DOUBLE_FLOAT = null;
 
   public static Surrogate SGT_STELLA_SHORT_INTEGER = null;
-
-  public static Surrogate SGT_STELLA_LONG_INTEGER = null;
 
   public static Surrogate SGT_STELLA_UNSIGNED_SHORT_INTEGER = null;
 
@@ -2586,6 +2647,10 @@ public class Stella {
 
   public static Symbol SYM_STELLA_SUBTYPE_OF_INTEGERp = null;
 
+  public static Symbol SYM_STELLA_LONG_INTEGERp = null;
+
+  public static Symbol SYM_STELLA_SUBTYPE_OF_LONG_INTEGERp = null;
+
   public static Symbol SYM_STELLA_FLOATp = null;
 
   public static Symbol SYM_STELLA_SUBTYPE_OF_FLOATp = null;
@@ -2663,6 +2728,8 @@ public class Stella {
   public static Symbol SYM_STELLA_EQL_TO_BOOLEANp = null;
 
   public static Symbol SYM_STELLA_EQL_TO_INTEGERp = null;
+
+  public static Symbol SYM_STELLA_EQL_TO_LONG_INTEGERp = null;
 
   public static Symbol SYM_STELLA_EQL_TO_FLOATp = null;
 
@@ -2766,6 +2833,8 @@ public class Stella {
 
   public static Symbol SYM_STELLA_SYS_HANDLE_EXCEPTION = null;
 
+  public static Keyword KWD_OTHERWISE = null;
+
   public static Symbol SYM_STELLA_INITIAL_ELEMENT = null;
 
   public static Surrogate SGT_STELLA_CODE = null;
@@ -2791,6 +2860,8 @@ public class Stella {
   public final static StellaSpecialVariable $EVALUATIONTREE$ = new StellaSpecialVariable();
 
   public final static StellaSpecialVariable $EVALUATIONPARENTTREE$ = new StellaSpecialVariable();
+
+  public static Symbol SYM_STELLA_APPEND = null;
 
   public static Symbol SYM_STELLA_STARTUP_WALK = null;
 
@@ -2848,9 +2919,11 @@ public class Stella {
 
   public static Symbol SYM_STELLA_CLSYS_DUMMY = null;
 
-  public static Symbol SYM_STELLA_$CLSYS_SELF$ = null;
-
   public static Symbol SYM_STELLA_rrDEFCONSMETHOD = null;
+
+  public static Symbol SYM_STELLA_rrDEFINTEGERMETHOD = null;
+
+  public static Symbol SYM_STELLA_$CLSYS_SELF$ = null;
 
   public static Keyword KWD_VOID = null;
 
@@ -3250,6 +3323,22 @@ public class Stella {
 
   public static Keyword KWD_FULLY_ESCAPED = null;
 
+  public static Symbol SYM_STELLA_GET_TOKEN_INTEGER = null;
+
+  public static Symbol SYM_STELLA_GET_TOKEN_INTEGER_INTERNAL = null;
+
+  public static int $GET_TOKEN_INTEGER_CHECKPOINT$ = Stella.NULL_INTEGER;
+
+  public static Symbol SYM_STELLA_GET_TOKEN_LONG_INTEGER = null;
+
+  public static Symbol SYM_STELLA_GET_TOKEN_LONG_INTEGER_INTERNAL = null;
+
+  public static long $GET_TOKEN_LONG_INTEGER_CHECKPOINT$ = Stella.NULL_LONG_INTEGER;
+
+  public static Symbol SYM_STELLA_GET_TOKEN_FLOAT = null;
+
+  public static Symbol SYM_STELLA_GET_TOKEN_FLOAT_INTERNAL = null;
+
   public static Surrogate SGT_STELLA_STELLA_TOKEN = null;
 
   public static Symbol SYM_STELLA_LOGICAL_TOKEN_TYPE = null;
@@ -3259,6 +3348,14 @@ public class Stella {
   public static Keyword KWD_FULL = null;
 
   public static Keyword KWD_PARTIAL = null;
+
+  public static Keyword KWD_TEXT = null;
+
+  public static Keyword KWD_PUNCTUATION = null;
+
+  public static Keyword KWD_QUOTE = null;
+
+  public static Surrogate SGT_STELLA_F_TOKENIZE_STRING_MEMO_TABLE_000 = null;
 
   public static int $STELLA_TOKENIZER_WHITE_SPACE_STATE$ = Stella.NULL_INTEGER;
 
@@ -3668,6 +3765,14 @@ public class Stella {
    */
   public static HookList $BLOCK_NATIVE_CLASS_CREATION_HOOKS$ = null;
 
+  /** HOOK-LIST of cleanup functions to be called upon exit from
+   * the STELLA application or any point where such cleanup is required.  The
+   * functions on this list should be highly tolerant of their invocation environment
+   * and not assume any special state; that is, they should be no-ops if no special
+   * cleanup is required.
+   */
+  public static HookList $STELLA_EXIT_HOOKS$ = null;
+
   public static Symbol SYM_STELLA_STARTUP_DEMONS = null;
 
   public static Symbol SYM_STELLA_STARTUP_MORE_DEMONS = null;
@@ -3792,9 +3897,28 @@ public class Stella {
 
   public static Symbol SYM_STELLA_SYSTEM_UNITS_ALIST = null;
 
+  public static Keyword KWD_LANGUAGE = null;
+
+  public static Keyword KWD_ACTION = null;
+
+  public static Keyword KWD_TRANSLATE_SYSTEM = null;
+
   public static Keyword KWD_DEVELOPMENT_SETTINGSp = null;
 
   public static Symbol SYM_STELLA_STARTUP_TRANSLATE_FILE = null;
+
+  public static Cons $FILE_LOAD_PATH$ = null;
+
+  /** File extensions to append by default when a
+   * file is looked up by <code>findFileInLoadPath</code>.
+   */
+  public static Cons $STELLA_FILE_EXTENSIONS$ = null;
+
+  public static Keyword KWD_TRUE = null;
+
+  public static Keyword KWD_FALSE = null;
+
+  public static Surrogate SGT_STELLA_IDENTITY = null;
 
   public static Symbol SYM_STELLA_IN_MODULE = null;
 
@@ -3808,11 +3932,17 @@ public class Stella {
 
   public static Keyword KWD_REQUIRED_SYSTEMS = null;
 
+  public static Keyword KWD_LOAD_SYSTEM = null;
+
+  public static Keyword KWD_MAKE_SYSTEM = null;
+
   public static Keyword KWD_LISP_ONLY_FILES = null;
 
   public static Keyword KWD_CPP_ONLY_FILES = null;
 
   public static Keyword KWD_JAVA_ONLY_FILES = null;
+
+  public static Keyword KWD_DATA_FILES = null;
 
   public static Keyword KWD_PREPROCESSED_FILES = null;
 
@@ -3833,6 +3963,12 @@ public class Stella {
   public static Keyword KWD_DEVELOPMENT_SETTINGS = null;
 
   public static Keyword KWD_FINALIZATION_FUNCTION = null;
+
+  /** Holds the action and options of the current system action
+   * such as :make-system, :load-system or :translate-system.  This is used to
+   * perform the appropriate actions on required systems in <code>defineSystem</code>.
+   */
+  public final static StellaSpecialVariable $CURRENT_SYSTEM_ACTION$ = new StellaSpecialVariable();
 
   public static Keyword KWD_FORCE_RECOMPILATIONp = null;
 
@@ -3857,6 +3993,72 @@ public class Stella {
   public static Symbol SYM_STELLA_CONFIGURATION_TABLE = null;
 
   public static KeyValueList $SYSTEM_CONFIGURATION_TABLE$ = null;
+
+  public static Surrogate SGT_STELLA_CMD_LINE_OPTION = null;
+
+  public static Symbol SYM_STELLA_KEYS = null;
+
+  public static Symbol SYM_STELLA_VALUE_TYPE = null;
+
+  public static Symbol SYM_STELLA_MULTI_VALUEDp = null;
+
+  public static Symbol SYM_STELLA_N_ARGUMENTS = null;
+
+  public static Symbol SYM_STELLA_DEFAULT_VALUE = null;
+
+  public static Symbol SYM_STELLA_CONFIGURATION_PROPERTY = null;
+
+  public static Symbol SYM_STELLA_HANDLER = null;
+
+  public static Symbol SYM_STELLA_ERROR_ACTION = null;
+
+  public static KeyValueMap $REGISTERED_COMMAND_LINE_OPTIONS$ = null;
+
+  public static Keyword KWD_KEY2 = null;
+
+  public static Keyword KWD_KEY3 = null;
+
+  public static Keyword KWD_KEYS = null;
+
+  public static Keyword KWD_VALUE_TYPE = null;
+
+  public static Keyword KWD_MULTI_VALUEDp = null;
+
+  public static Keyword KWD_N_ARGUMENTS = null;
+
+  public static Keyword KWD_DEFAULT_VALUE = null;
+
+  public static Keyword KWD_PROPERTY = null;
+
+  public static Keyword KWD_HANDLER = null;
+
+  public static Keyword KWD_ERROR_ACTION = null;
+
+  public static Cons $UNPROCESSED_COMMAND_LINE_ARGUMENTS$ = null;
+
+  public static Keyword KWD_IGNORE = null;
+
+  public static Symbol SYM_STELLA_EVAL_OPTION_HANDLER = null;
+
+  public static Symbol SYM_STELLA_EVAL_IN_MODULE_OPTION_HANDLER = null;
+
+  public static Symbol SYM_STELLA_LOAD_PATH_OPTION_HANDLER = null;
+
+  public static Symbol SYM_STELLA_CONFIG_FILE_OPTION_HANDLER = null;
+
+  public static Symbol SYM_STELLA_LOAD_FILE_OPTION_HANDLER = null;
+
+  public static Symbol SYM_STELLA_DEFINE_PROPERTY_OPTION_HANDLER = null;
+
+  /** Documentation to be printed at the beginning of command line help.
+   */
+  public static String $COMMAND_LINE_HELP_HEADER$ = "";
+
+  /** Documentation to be printed at the end of command line help.
+   */
+  public static String $COMMAND_LINE_HELP_TRAILER$ = "";
+
+  public static Symbol SYM_STELLA_HELP_OPTION_HANDLER = null;
 
   public static Symbol SYM_STELLA_STARTUP_SYSTEMS = null;
 
@@ -4130,6 +4332,10 @@ public class Stella {
 
   public static Symbol SYM_STELLA_CPP_METHOD_POINTER = null;
 
+  public static Surrogate SGT_STELLA_BYTE = null;
+
+  public static Surrogate SGT_STELLA_OCTET = null;
+
   public static Symbol SYM_STELLA_CPP_ARRAY_REFERENCE = null;
 
   public static Symbol SYM_STELLA_CPP_REFERENCED_SLOT_VALUE = null;
@@ -4302,10 +4508,6 @@ public class Stella {
 
   public static String $JAVA_CHARACTER_SUBSTITUTION_TABLE$ = null;
 
-  public static Surrogate SGT_STELLA_BYTE = null;
-
-  public static Surrogate SGT_STELLA_OCTET = null;
-
   public static Surrogate SGT_STELLA_THIRY_TWO_BIT_VECTOR = null;
 
   public static Surrogate SGT_STELLA_DOUBLE = null;
@@ -4438,8 +4640,6 @@ public class Stella {
 
   public static Symbol SYM_STELLA_JAVA_SYMBOL = null;
 
-  public static Symbol SYM_STELLA_NULL_SINGLE_FLOAT = null;
-
   public static Symbol SYM_STELLA_JAVA_UNARY_OP = null;
 
   public static Symbol SYM_STELLA_JAVA_BINARY_OP = null;
@@ -4530,11 +4730,11 @@ public class Stella {
 
   public static int $STELLA_MAJOR_VERSION_NUMBER$ = 3;
 
-  public static int $STELLA_MINOR_VERSION_NUMBER$ = 4;
+  public static int $STELLA_MINOR_VERSION_NUMBER$ = 5;
 
   public static String $STELLA_RELEASE_STATE$ = "";
 
-  public static int $STELLA_PATCH_LEVEL$ = 0;
+  public static int $STELLA_PATCH_LEVEL$ = 20;
 
   public static String $STELLA_VERSION_STRING$ = null;
 
@@ -4565,7 +4765,7 @@ public class Stella {
    * @param context
    */
   public static void ensureFileExists(String filename, String context) {
-    if (!(Native.probeFileP(filename))) {
+    if (!(Stella.probeFileP(filename))) {
       { NoSuchFileException self000 = NoSuchFileException.newNoSuchFileException(context + ": file " + filename + " does not exist");
 
         self000.filename = filename;
@@ -4584,7 +4784,7 @@ public class Stella {
    * @param context
    */
   public static void ensureFileDoesNotExist(String filename, String context) {
-    if (Native.probeFileP(filename)) {
+    if (Stella.probeFileP(filename)) {
       { FileAlreadyExistsException self000 = FileAlreadyExistsException.newFileAlreadyExistsException(context + ": file " + filename + " already exists");
 
         self000.filename = filename;
@@ -4617,7 +4817,7 @@ public class Stella {
    */
   public static OutputFileStream openOutputFile(String filename, Cons options) {
     { OutputFileStream stream = OutputFileStream.newOutputFileStream(null);
-      PropertyList theoptions = Stella_Object.vetOptions(options, Stella.list$(Stella_Object.cons(Stella.KWD_IF_EXISTS, Stella_Object.cons(Stella.KWD_IF_EXISTS_ACTION, Stella_Object.cons(Stella.KWD_IF_NOT_EXISTS, Stella_Object.cons(Stella.KWD_IF_NOT_EXISTS_ACTION, Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+      PropertyList theoptions = Stella_Object.vetOptions(options, Cons.list$(Cons.cons(Stella.KWD_IF_EXISTS, Cons.cons(Stella.KWD_IF_EXISTS_ACTION, Cons.cons(Stella.KWD_IF_NOT_EXISTS, Cons.cons(Stella.KWD_IF_NOT_EXISTS_ACTION, Cons.cons(Stella.NIL, Stella.NIL)))))));
 
       { Stella_Object temp000 = theoptions.lookup(Stella.KWD_IF_EXISTS);
 
@@ -4673,7 +4873,7 @@ public class Stella {
    */
   public static InputFileStream openInputFile(String filename, Cons options) {
     { InputFileStream stream = InputFileStream.newInputFileStream(null);
-      PropertyList theoptions = Stella_Object.vetOptions(options, Stella.list$(Stella_Object.cons(Stella.KWD_IF_NOT_EXISTS, Stella_Object.cons(Stella.KWD_IF_NOT_EXISTS_ACTION, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      PropertyList theoptions = Stella_Object.vetOptions(options, Cons.list$(Cons.cons(Stella.KWD_IF_NOT_EXISTS, Cons.cons(Stella.KWD_IF_NOT_EXISTS_ACTION, Cons.cons(Stella.NIL, Stella.NIL)))));
 
       { Stella_Object temp000 = theoptions.lookup(Stella.KWD_IF_NOT_EXISTS);
 
@@ -4743,6 +4943,7 @@ public class Stella {
 
         self000.nativeStream = in;
         self000.state = Stella.KWD_OPEN;
+        self000.bufferingScheme = Stella.KWD_BLOCK;
         { InputStream value000 = self000;
 
           { OutputStream self001 = OutputStream.newOutputStream();
@@ -4761,6 +4962,24 @@ public class Stella {
         }
       }
     }
+  }
+
+  public static long nativeFileInputStreamPosition(java.io.PushbackInputStream nstream) {
+    return (((NativeFileInputStream)nstream).position());
+  }
+
+  public static long nativeFileInputStreamPositionSetter(java.io.PushbackInputStream nstream, long newpos) {
+    ((NativeFileInputStream)nstream).position(newpos);
+    return (newpos);
+  }
+
+  public static long nativeFileOutputStreamPosition(java.io.PrintStream nstream) {
+    return (((NativeFileOutputStream)nstream).position());
+  }
+
+  public static long nativeFileOutputStreamPositionSetter(java.io.PrintStream nstream, long newpos) {
+    ((NativeFileOutputStream)nstream).position(newpos);
+    return (newpos);
   }
 
   public static boolean htmlCharacterNeedsQuotingP(char ch) {
@@ -4815,49 +5034,30 @@ public class Stella {
 
       for (;index000 < length000; index000 = index000 + 1) {
         ch = vector000.charAt(index000);
-        switch (ch) {
-          case ' ': 
-            stream.print("%20");
-          break;
-          case '?': 
-            stream.print("%3F");
-          break;
-          case '#': 
-            stream.print("%23");
-          break;
-          case '=': 
-            stream.print("%3D");
-          break;
-          case '&': 
-            stream.print("%26");
-          break;
-          case '%': 
-            stream.print("%25");
-          break;
-          case '+': 
-            stream.print("%2B");
-          break;
-          case '<': 
-            stream.print("%3C");
-          break;
-          case '>': 
-            stream.print("%3E");
-          break;
-          case '/': 
-            stream.print("%2F");
-          break;
-          case ':': 
-            stream.print("%3A");
-          break;
-          case '"': 
-            stream.print("%22");
-          break;
-          case '\'': 
-            stream.print("%27");
-          break;
-          default:
-            stream.print(ch);
-          break;
+        if ((Stella.$CHARACTER_TYPE_TABLE$[(int) ch] == Stella.KWD_LETTER) ||
+            (Stella.$CHARACTER_TYPE_TABLE$[(int) ch] == Stella.KWD_DIGIT)) {
+          stream.print(ch);
+        }
+        else {
+          switch (ch) {
+            case '-': 
+            case '_': 
+            case '.': 
+            case '~': 
+              stream.print(ch);
+            break;
+            default:
+              { int code = (int) ch;
+
+                if (code < 16) {
+                  stream.print("%0" + Native.integerToHexString(((long)(code))));
+                }
+                else {
+                  stream.print("%" + Native.integerToHexString(((long)(code))));
+                }
+              }
+            break;
+          }
         }
       }
     }
@@ -5045,7 +5245,7 @@ public class Stella {
    *   :LOG-LEVELS - a cons list of legal levels in ascending log level order;
    *                 for example, (:NONE :LOW :MEDIUM :HIGH) or (0 1 2 3).
    *   :LEVEL      - the current log level for <code>module</code>
-   *   :STREAM     - the stream to log to (defaults to STANDARD-OUTPUT)
+   *   :STREAM     - the stream or file to log to (defaults to STANDARD-OUTPUT)
    *   :PREFIX     - the prefix to use to identify the module (defaults to <code>module</code>)
    *   :MAX-WIDTH  - logging output lines will be kept to approximately this width
    *                 (defaults to 10000, minimum width of about 30 is used to
@@ -5086,6 +5286,59 @@ public class Stella {
     }
   }
 
+  /** Set the log-level for <code>module</code> to <code>level</code>.  This is a
+   * convenience function for this common operation.
+   * @param module
+   * @param level
+   */
+  public static void setLogLevel(String module, Stella_Object level) {
+    Stella.setLoggingParameters(module, Cons.cons(Stella.KWD_LEVEL, Cons.cons(level, Stella.NIL)));
+  }
+
+  /** Increase the indentation level for subsequent log messages.
+   */
+  public static void bumpLogIndent() {
+    Stella.$LOG_INDENT_LEVEL$ = Stella.$LOG_INDENT_LEVEL$ + 2;
+  }
+
+  /** Decrease the indentation level for subsequent log messages.
+   */
+  public static void unbumpLogIndent() {
+    Stella.$LOG_INDENT_LEVEL$ = Stella.$LOG_INDENT_LEVEL$ - 2;
+  }
+
+  /** Return a valid log stream for <code>module</code>.
+   * @param module
+   * @return OutputStream
+   */
+  public static OutputStream getLogStream(String module) {
+    { Stella_Object streamspec = Stella.lookupLoggingParameter(module, Stella.KWD_STREAM, Stella.STANDARD_OUTPUT);
+
+      { Surrogate testValue000 = Stella_Object.safePrimaryType(streamspec);
+
+        if (Surrogate.subtypeOfStringP(testValue000)) {
+          { StringWrapper streamspec000 = ((StringWrapper)(streamspec));
+
+            return (Stella.openOutputFile(streamspec000.wrapperValue, Cons.cons(Stella.KWD_IF_EXISTS, Cons.cons(Stella.KWD_APPEND, Cons.cons(Stella.KWD_IF_NOT_EXISTS, Cons.cons(Stella.KWD_CREATE, Stella.NIL))))));
+          }
+        }
+        else if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_OUTPUT_STREAM)) {
+          { OutputStream streamspec000 = ((OutputStream)(streamspec));
+
+            return (streamspec000);
+          }
+        }
+        else {
+          { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+            stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
+            throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+          }
+        }
+      }
+    }
+  }
+
   /** Log all elements of <code>message</code> to <code>module</code>s log stream if
    * <code>loglevel</code> is the same or lower than the <code>module</code>s log level.  Interprets <code>EOL</code>
    * or :EOL to print a line terminator.
@@ -5095,63 +5348,82 @@ public class Stella {
    */
   public static void logMessage(String module, Stella_Object loglevel, Cons message) {
     if (Stella_Object.logLevelLE(loglevel, module)) {
-      { OutputStream log = ((OutputStream)(Stella.lookupLoggingParameter(module, Stella.KWD_STREAM, Stella.STANDARD_OUTPUT)));
+      { OutputStream log = Stella.getLogStream(module);
         String moduleprefix = ((StringWrapper)(Stella.lookupLoggingParameter(module, Stella.KWD_PREFIX, StringWrapper.wrapString(module)))).wrapperValue;
         int maxroom = ((IntegerWrapper)(Stella.lookupLoggingParameter(module, Stella.KWD_MAX_WIDTH, IntegerWrapper.wrapInteger(10000)))).wrapperValue;
         int room = maxroom;
         String eltstring = null;
 
-        log.nativeStream.print("[" + CalendarDate.makeCurrentDateTime().calendarDateToString(Stella.$LOGGING_LOCAL_TIME_ZONE$, false, false) + ((Stella.stringEqlP(moduleprefix, "") ? "" : " ")) + moduleprefix + "] ");
-        room = room - (27 + moduleprefix.length());
-        { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+        try {
+          log.nativeStream.print("[" + CalendarDate.makeCurrentDateTime().calendarDateToString(Stella.$LOGGING_LOCAL_TIME_ZONE$, false, false) + ((Stella.stringEqlP(moduleprefix, "") ? "" : " ")) + moduleprefix + "] ");
+          { int i = Stella.NULL_INTEGER;
+            int iter000 = 1;
+            int upperBound000 = Stella.$LOG_INDENT_LEVEL$;
+            boolean unboundedP000 = upperBound000 == Stella.NULL_INTEGER;
 
-          try {
-            Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-            { Stella_Object elt = null;
-              Cons iter000 = message;
+            for (;unboundedP000 ||
+                      (iter000 <= upperBound000); iter000 = iter000 + 1) {
+              i = iter000;
+              i = i;
+              log.nativeStream.print(" ");
+            }
+          }
+          room = room - (27 + moduleprefix.length() + Stella.$LOG_INDENT_LEVEL$);
+          { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
 
-              loop000 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-                elt = iter000.value;
-                { Surrogate testValue000 = Stella_Object.safePrimaryType(elt);
+            try {
+              Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+              { Stella_Object elt = null;
+                Cons iter001 = message;
 
-                  if (Surrogate.subtypeOfStringP(testValue000)) {
-                    { StringWrapper elt000 = ((StringWrapper)(elt));
+                loop001 : for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+                  elt = iter001.value;
+                  { Surrogate testValue000 = Stella_Object.safePrimaryType(elt);
 
-                      eltstring = elt000.wrapperValue;
+                    if (Surrogate.subtypeOfStringP(testValue000)) {
+                      { StringWrapper elt000 = ((StringWrapper)(elt));
+
+                        eltstring = elt000.wrapperValue;
+                      }
+                    }
+                    else if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_GENERALIZED_SYMBOL)) {
+                      { GeneralizedSymbol elt000 = ((GeneralizedSymbol)(elt));
+
+                        if (Stella.stringEqlP(elt000.symbolName, "EOL")) {
+                          log.nativeStream.println();
+                          room = maxroom;
+                          continue loop001;
+                        }
+                        else {
+                          eltstring = Native.stringify(elt000);
+                        }
+                      }
+                    }
+                    else {
+                      eltstring = Native.stringify(elt);
                     }
                   }
-                  else if (Surrogate.subtypeOfSymbolP(testValue000)) {
-                    { Symbol elt000 = ((Symbol)(elt));
-
-                      if (Stella.stringEqlP(elt000.symbolName, "EOL")) {
-                        log.nativeStream.println();
-                        room = maxroom;
-                        continue loop000;
-                      }
-                      else {
-                        eltstring = Native.stringify(elt000);
-                      }
-                    }
+                  if (room < eltstring.length()) {
+                    log.nativeStream.print(Native.string_subsequence(eltstring, 0, room) + "...");
                   }
                   else {
-                    eltstring = Native.stringify(elt);
+                    log.nativeStream.print(eltstring);
                   }
                 }
-                if (room < eltstring.length()) {
-                  log.nativeStream.print(Native.string_subsequence(eltstring, 0, room) + "...");
-                }
-                else {
-                  log.nativeStream.print(eltstring);
-                }
               }
-            }
 
-          } finally {
-            Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+            } finally {
+              Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+            }
           }
+          log.nativeStream.println();
+          OutputStream.flushOutput(log);
+
+        } finally {
         }
-        log.nativeStream.println();
-        OutputStream.flushOutput(log);
+        if (Stella_Object.isaP(log, Stella.SGT_STELLA_FILE_OUTPUT_STREAM)) {
+          Stream.closeStream(log);
+        }
       }
     }
   }
@@ -5184,11 +5456,45 @@ public class Stella {
     }
   }
 
+  public static void printNumericConstants() {
+    {
+      System.out.println("MOST-POSITIVE-INTEGER:             " + Stella.MOST_POSITIVE_INTEGER);
+      System.out.println("MOST-NEGATIVE-INTEGER:            " + Stella.MOST_NEGATIVE_INTEGER);
+      System.out.println("NULL-INTEGER:                     " + Stella.NULL_INTEGER);
+      System.out.println("MOST-POSITIVE-LONG-INTEGER:        " + Stella.MOST_POSITIVE_LONG_INTEGER);
+      System.out.println("MOST-NEGATIVE-LONG-INTEGER:       " + Stella.MOST_NEGATIVE_LONG_INTEGER);
+      System.out.println("NULL-LONG-INTEGER:                " + Stella.NULL_LONG_INTEGER);
+      System.out.println("MOST-POSITIVE-FLOAT:               " + Stella.MOST_POSITIVE_FLOAT);
+      System.out.println("MOST-NEGATIVE-FLOAT:              " + Stella.MOST_NEGATIVE_FLOAT);
+      System.out.println("LEAST-POSITIVE-FLOAT:              " + Stella.LEAST_POSITIVE_FLOAT);
+      System.out.println("LEAST-NEGATIVE-FLOAT:             " + Stella.LEAST_NEGATIVE_FLOAT);
+      System.out.println("NULL-FLOAT:                       " + Stella.NULL_FLOAT);
+      System.out.println("*INTEGER-MSB-MASK*:                " + Stella.$INTEGER_MSB_MASK$);
+      System.out.println("*INTEGER-UNSIGNED-BITS-MASK*:      " + Stella.$INTEGER_UNSIGNED_BITS_MASK$);
+      System.out.println("*LONG-INTEGER-MSB-MASK*:           " + Stella.$LONG_INTEGER_MSB_MASK$);
+      System.out.println("*LONG-INTEGER-UNSIGNED-BITS-MASK*: " + Stella.$LONG_INTEGER_UNSIGNED_BITS_MASK$);
+      System.out.println("LONG-INTEGER-BIT-WIDTH:            " + Stella.LONG_INTEGER_BIT_WIDTH);
+      System.out.println("il(MOST-POSITIVE-INTEGER):         " + Stella.integerLength(((long)(Stella.MOST_POSITIVE_INTEGER))));
+      System.out.println("il(MOST-POSITIVE-LONG-INTEGER):    " + Stella.integerLength(Stella.MOST_POSITIVE_LONG_INTEGER));
+      System.out.println("il(MOST-NEGATIVE-INTEGER):         " + Stella.integerLength(((long)(Stella.MOST_NEGATIVE_INTEGER))));
+      System.out.println("il(MOST-NEGATIVE-LONG-INTEGER):    " + Stella.integerLength(Stella.MOST_NEGATIVE_LONG_INTEGER));
+    }
+;
+  }
+
   /** Return true if <code>x</code> is 0.
    * @param x
    * @return boolean
    */
-  public static boolean zeroP(int x) {
+  public static boolean integer_zeroP(int x) {
+    return ((x == 0));
+  }
+
+  /** Return true if <code>x</code> is 0.
+   * @param x
+   * @return boolean
+   */
+  public static boolean longInteger_zeroP(long x) {
     return ((x == 0));
   }
 
@@ -5196,7 +5502,15 @@ public class Stella {
    * @param x
    * @return boolean
    */
-  public static boolean plusP(int x) {
+  public static boolean integer_plusP(int x) {
+    return ((x > 0));
+  }
+
+  /** Return true if <code>x</code> is greater than 0.
+   * @param x
+   * @return boolean
+   */
+  public static boolean longInteger_plusP(long x) {
     return ((x > 0));
   }
 
@@ -5204,7 +5518,15 @@ public class Stella {
    * @param x
    * @return boolean
    */
-  public static boolean evenP(int x) {
+  public static boolean integer_evenP(int x) {
+    return (((x % 2) == 0));
+  }
+
+  /** Return true if <code>x</code> is an even number.
+   * @param x
+   * @return boolean
+   */
+  public static boolean longInteger_evenP(long x) {
     return (((x % 2) == 0));
   }
 
@@ -5212,7 +5534,15 @@ public class Stella {
    * @param x
    * @return boolean
    */
-  public static boolean oddP(int x) {
+  public static boolean integer_oddP(int x) {
+    return (((x % 2) == 1));
+  }
+
+  /** Return true if <code>x</code> is an odd number.
+   * @param x
+   * @return boolean
+   */
+  public static boolean longInteger_oddP(long x) {
     return (((x % 2) == 1));
   }
 
@@ -5221,7 +5551,16 @@ public class Stella {
    * @param y
    * @return int
    */
-  public static int div(int x, int y) {
+  public static int integer_div(int x, int y) {
+    return ((x / y));
+  }
+
+  /** Return the integer quotient from dividing <code>x</code> by <code>y</code>.
+   * @param x
+   * @param y
+   * @return long
+   */
+  public static long longInteger_div(long x, long y) {
     return ((x / y));
   }
 
@@ -5233,7 +5572,19 @@ public class Stella {
    * @param y
    * @return int
    */
-  public static int rem(int x, int y) {
+  public static int integer_rem(int x, int y) {
+    return ((x % y));
+  }
+
+  /** Return the remainder from dividing <code>x</code> by <code>y</code>.  The
+   * sign of the result is always the same as the sign of <code>x</code>.  This has slightly
+   * different behavior than the <code>mod</code> function, and has less overhead in C++ and
+   * Java, which don't have direct support for a true modulus function.
+   * @param x
+   * @param y
+   * @return long
+   */
+  public static long longInteger_rem(long x, long y) {
     return ((x % y));
   }
 
@@ -5257,8 +5608,33 @@ public class Stella {
    * @param modulus
    * @return int
    */
-  public static int mod(int x, int modulus) {
+  public static int integer_mod(int x, int modulus) {
     { int remainder = (x % modulus);
+
+      if (remainder > 0) {
+        if (modulus < 0) {
+          remainder = modulus + remainder;
+        }
+      }
+      else if (remainder < 0) {
+        if (modulus > 0) {
+          remainder = modulus + remainder;
+        }
+      }
+      return (remainder);
+    }
+  }
+
+  /** True modulus.  Return the result of <code>x</code> mod <code>modulo</code>.
+   * Note: In C++ and Java, <code>mod</code> has more overhead than the similar
+   * function <code>rem</code>.  The  answers returned by <code>mod</code> and <code>rem</code> are only
+   * different when the signs of <code>x</code> and <code>modulo</code> are different.
+   * @param x
+   * @param modulus
+   * @return long
+   */
+  public static long longInteger_mod(long x, long modulus) {
+    { long remainder = (x % modulus);
 
       if (remainder > 0) {
         if (modulus < 0) {
@@ -5302,16 +5678,16 @@ public class Stella {
   /** Return the greatest common divisor of <code>x</code> and <code>y</code>.
    * @param x
    * @param y
-   * @return int
+   * @return long
    */
-  public static int gcd(int x, int y) {
+  public static long gcd(long x, long y) {
     if (x < 0) {
       x = 0 - x;
     }
     if (y < 0) {
       y = 0 - y;
     }
-    { int temp = 0;
+    { long temp = 0l;
 
       while (!(y == 0)) {
         temp = (x % y);
@@ -5320,6 +5696,15 @@ public class Stella {
       }
       return (x);
     }
+  }
+
+  /** Return <code>true</code> if <code>x</code> can be represented by a regular integer.
+   * @param x
+   * @return boolean
+   */
+  public static boolean regularIntegerValuedP(long x) {
+    return ((x >= Stella.NULL_INTEGER) &&
+        (x <= Stella.MOST_POSITIVE_INTEGER));
   }
 
   /** Returns <code>true</code> if <code>x</code> is the floating point representation of an integer.
@@ -5347,10 +5732,10 @@ public class Stella {
       double fsecond = ((x * 3600.0) - (degree * 3600.0)) - (minute * 60.0);
 
       if (allIntegersP) {
-        return (Stella.consList(Stella_Object.cons(IntegerWrapper.wrapInteger(degree), Stella_Object.cons(IntegerWrapper.wrapInteger(minute), Stella_Object.cons(IntegerWrapper.wrapInteger(Native.round(fsecond)), Stella.NIL)))));
+        return (Cons.consList(Cons.cons(IntegerWrapper.wrapInteger(degree), Cons.cons(IntegerWrapper.wrapInteger(minute), Cons.cons(IntegerWrapper.wrapInteger(Native.round(fsecond)), Stella.NIL)))));
       }
       else {
-        return (Stella.consList(Stella_Object.cons(IntegerWrapper.wrapInteger(degree), Stella_Object.cons(IntegerWrapper.wrapInteger(minute), Stella_Object.cons(FloatWrapper.wrapFloat(fsecond), Stella.NIL)))));
+        return (Cons.consList(Cons.cons(IntegerWrapper.wrapInteger(degree), Cons.cons(IntegerWrapper.wrapInteger(minute), Cons.cons(FloatWrapper.wrapFloat(fsecond), Stella.NIL)))));
       }
     }
   }
@@ -5473,14 +5858,26 @@ public class Stella {
    * @param y
    * @return int
    */
-  public static int min(int x, int y) {
-    if (x == Stella.NULL_INTEGER) {
-      return (y);
-    }
-    if (y == Stella.NULL_INTEGER) {
-      return (x);
-    }
-    return (((x < y) ? x : y));
+  public static int integer_min(int x, int y) {
+    return (((x > y) ? (((y == Stella.NULL_INTEGER) ? x : y)) : (((x == Stella.NULL_INTEGER) ? y : x))));
+  }
+
+  /** Return the minimum of <code>x</code> and <code>y</code>.  If either is NULL, return the other.
+   * @param x
+   * @param y
+   * @return long
+   */
+  public static long longInteger_min(long x, long y) {
+    return (((x > y) ? (((y == Stella.NULL_LONG_INTEGER) ? x : y)) : (((x == Stella.NULL_LONG_INTEGER) ? y : x))));
+  }
+
+  /** Return the minimum of <code>x</code> and <code>y</code>.  If either is NULL, return the other.
+   * @param x
+   * @param y
+   * @return double
+   */
+  public static double float_min(double x, double y) {
+    return (((x > y) ? (((y == Stella.NULL_FLOAT) ? x : y)) : (((x == Stella.NULL_FLOAT) ? y : x))));
   }
 
   /** Return the maximum of <code>x</code> and <code>y</code>.  If either is NULL, return the other.
@@ -5488,13 +5885,25 @@ public class Stella {
    * @param y
    * @return int
    */
-  public static int max(int x, int y) {
-    if (x == Stella.NULL_INTEGER) {
-      return (y);
-    }
-    if (y == Stella.NULL_INTEGER) {
-      return (x);
-    }
+  public static int integer_max(int x, int y) {
+    return (((x > y) ? x : y));
+  }
+
+  /** Return the maximum of <code>x</code> and <code>y</code>.  If either is NULL, return the other.
+   * @param x
+   * @param y
+   * @return long
+   */
+  public static long longInteger_max(long x, long y) {
+    return (((x > y) ? x : y));
+  }
+
+  /** Return the maximum of <code>x</code> and <code>y</code>.  If either is NULL, return the other.
+   * @param x
+   * @param y
+   * @return double
+   */
+  public static double float_max(double x, double y) {
     return (((x > y) ? x : y));
   }
 
@@ -5503,6 +5912,14 @@ public class Stella {
    * @return int
    */
   public static int integer_abs(int x) {
+    return (((x < 0) ? (0 - x) : x));
+  }
+
+  /** Return the absolute value of <code>x</code>.
+   * @param x
+   * @return long
+   */
+  public static long longInteger_abs(long x) {
     return (((x < 0) ? (0 - x) : x));
   }
 
@@ -5624,6 +6041,48 @@ public class Stella {
    */
   public static boolean string_nonEmptyP(String x) {
     return (!Stella.stringEqlP(x, ""));
+  }
+
+  /** Return true if <code>string</code> is either NULL, empty, or only
+   * contains white space characters.
+   * @param string
+   * @return boolean
+   */
+  public static boolean blankStringP(String string) {
+    { boolean testValue000 = false;
+
+      if (string == null) {
+        testValue000 = true;
+      }
+      else {
+        if (Stella.stringEqlP(string, "")) {
+          testValue000 = true;
+        }
+        else {
+          { boolean alwaysP000 = true;
+
+            { char renamed_Char = Stella.NULL_CHARACTER;
+              String vector000 = string;
+              int index000 = 0;
+              int length000 = vector000.length();
+
+              loop000 : for (;index000 < length000; index000 = index000 + 1) {
+                renamed_Char = vector000.charAt(index000);
+                if (!(Stella.$CHARACTER_TYPE_TABLE$[(int) renamed_Char] == Stella.KWD_WHITE_SPACE)) {
+                  alwaysP000 = false;
+                  break loop000;
+                }
+              }
+            }
+            testValue000 = alwaysP000;
+          }
+        }
+      }
+      { boolean value000 = testValue000;
+
+        return (value000);
+      }
+    }
   }
 
   /** Return true if <code>x</code> is lexicographically &lt; <code>y</code>, considering case.
@@ -6013,6 +6472,36 @@ public class Stella {
     return (targetIndex);
   }
 
+  /** Remove any leading and trailing white space from <code>string</code>
+   * and return a copy of the trimmed substring (which might be empty if we had
+   * all white space).  If no white space was removed, <code>string</code> is returned
+   * unmodified and uncopied.
+   * @param string
+   * @return String
+   */
+  public static String stringTrim(String string) {
+    { int start = 0;
+      int last = string.length() - 1;
+      int end = last;
+
+      while ((start <= end) &&
+          (Stella.$CHARACTER_TYPE_TABLE$[(int) (string.charAt(start))] == Stella.KWD_WHITE_SPACE)) {
+        start = start + 1;
+      }
+      while ((end > start) &&
+          (Stella.$CHARACTER_TYPE_TABLE$[(int) (string.charAt(end))] == Stella.KWD_WHITE_SPACE)) {
+        end = end - 1;
+      }
+      if ((start > 0) ||
+          (end < last)) {
+        return (Native.string_subsequence(string, start, end + 1));
+      }
+      else {
+        return (string);
+      }
+    }
+  }
+
   /** Convert <code>c</code> into a one-element string and return the result.
    * @param c
    * @return String
@@ -6096,7 +6585,7 @@ public class Stella {
    * @return String
    */
   public static String zeroPadInteger(int value, int size) {
-    return (((value < 0) ? ("-" + Stella.formatWithPadding(Native.integerToString(0 - value), size - 1, '0', Stella.KWD_RIGHT, false)) : Stella.formatWithPadding(Native.integerToString(value), size, '0', Stella.KWD_RIGHT, false)));
+    return (((value < 0) ? ("-" + Stella.formatWithPadding(Native.integerToString(((long)(0 - value))), size - 1, '0', Stella.KWD_RIGHT, false)) : Stella.formatWithPadding(Native.integerToString(((long)(value))), size, '0', Stella.KWD_RIGHT, false)));
   }
 
   static String zeroPadString(String input, int size) {
@@ -6272,6 +6761,21 @@ public class Stella {
     return (self.length());
   }
 
+  /** Return start position of the left-most occurrence of
+   * <code>substring</code> in <code>string</code>, beginning from <code>start</code>.  Return NULL if it is not
+   * a substring.  The comparison ignores differences in letter case.
+   * @param string
+   * @param substring
+   * @param start
+   * @return int
+   */
+  public static int stringSearchIgnoreCase(String string, String substring, int start) {
+    if (start == Stella.NULL_INTEGER) {
+      start = 0;
+    }
+    return (Native.stringSearch(Native.stringDowncase(string), Native.stringDowncase(substring), start));
+  }
+
   /** Return TRUE if <code>string</code> starts with <code>prefix</code> starting from
    * <code>start</code> (which defaults to 0 if it is supplied as NULL).
    * @param string
@@ -6301,6 +6805,50 @@ public class Stella {
               i = iter000;
               j = iter001;
               if (!(prefix.charAt(i) == string.charAt(j))) {
+                alwaysP000 = false;
+                break loop000;
+              }
+            }
+          }
+          { boolean value000 = alwaysP000;
+
+            return (value000);
+          }
+        }
+      }
+    }
+  }
+
+  /** Return TRUE if the substring of <code>string</code> ending at <code>end</code>
+   * ends with <code>suffix</code>.  If <code>end</code> is NULL it defaults to the length of <code>string</code>.
+   * @param string
+   * @param suffix
+   * @param end
+   * @return boolean
+   */
+  public static boolean endsWithP(String string, String suffix, int end) {
+    if (end == Stella.NULL_INTEGER) {
+      end = string.length();
+    }
+    { int suffixlength = suffix.length();
+      int start = end - suffixlength;
+
+      if (start < 0) {
+        return (false);
+      }
+      else {
+        { boolean alwaysP000 = true;
+
+          { int i = Stella.NULL_INTEGER;
+            int iter000 = 0;
+            int upperBound000 = suffixlength - 1;
+            int j = Stella.NULL_INTEGER;
+            int iter001 = start;
+
+            loop000 : for (;iter000 <= upperBound000; iter000 = iter000 + 1, iter001 = iter001 + 1) {
+              i = iter000;
+              j = iter001;
+              if (!(suffix.charAt(i) == string.charAt(j))) {
                 alwaysP000 = false;
                 break loop000;
               }
@@ -6517,6 +7065,32 @@ public class Stella {
     }
   }
 
+  /** Split <code>input</code> into separate strings based on the <code>separator</code> character.
+   * @param input
+   * @param separator
+   * @return Cons
+   */
+  public static Cons splitString(String input, char separator) {
+    { int length = input.length();
+      int start = 0;
+      int end = 0;
+      Cons strings = Stella.NIL;
+
+      loop000 : for (;;) {
+        end = Native.string_position(input, separator, start);
+        strings = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(input, start, end)), strings);
+        if ((end != Stella.NULL_INTEGER) &&
+            (end < (length - 1))) {
+          start = end + 1;
+        }
+        else {
+          break loop000;
+        }
+      }
+      return (strings.reverse());
+    }
+  }
+
   /** Read a STELLA expression from <code>string</code> and return the result.
    * This is identical to <code>readSExpressionFromString</code>.
    * @param string
@@ -6560,6 +7134,10 @@ public class Stella {
 
   public static int integer_hashCode_(int self) {
     return (self);
+  }
+
+  public static int longInteger_hashCode_(long self) {
+    return (((int)(self)));
   }
 
   public static int float_hashCode_(double self) {
@@ -6643,6 +7221,76 @@ public class Stella {
     return (self[position] = value);
   }
 
+  /** Return true if file <code>filename</code> exists.  Note that this does
+   * not necessarily mean that the file can also be read.
+   * @param filename
+   * @return boolean
+   */
+  public static boolean probeFileP(String filename) {
+    return (Native.nativeProbeFileP(Stella.translateLogicalPathname(filename)));
+  }
+
+  /** Return the time at which file <code>filename</code> was last modified or
+   * NULL if that cannot be determined.
+   * @param filename
+   * @return CalendarDate
+   */
+  public static CalendarDate fileWriteDate(String filename) {
+    { String truefile = Stella.translateLogicalPathname(filename);
+
+      if (!(Native.nativeProbeFileP(truefile))) {
+        Stella.ensureFileExists(filename, "file-write-date");
+      }
+      return (Native.nativeFileWriteDate(truefile));
+    }
+  }
+
+  /** Return the length of file <code>filename</code> in bytes or NULL if that
+   * cannot be determined.
+   * @param filename
+   * @return long
+   */
+  public static long fileLength(String filename) {
+    { String truefile = Stella.translateLogicalPathname(filename);
+
+      if (!(Native.nativeProbeFileP(truefile))) {
+        Stella.ensureFileExists(filename, "file-length");
+      }
+      return (Native.nativeFileLength(truefile));
+    }
+  }
+
+  /** Delete the file <code>filename</code>.
+   * @param filename
+   */
+  public static void deleteFile(String filename) {
+    { String truefile = Stella.translateLogicalPathname(filename);
+
+      if (!(Native.nativeProbeFileP(truefile))) {
+        Stella.ensureFileExists(filename, "delete-file");
+      }
+      Native.nativeDeleteFile(truefile);
+    }
+  }
+
+  /** Rename the file <code>fromfile</code> to <code>tofile</code>.
+   * @param fromfile
+   * @param tofile
+   */
+  public static void renameFile(String fromfile, String tofile) {
+    { String truefrom = Stella.translateLogicalPathname(fromfile);
+      String trueto = Stella.translateLogicalPathname(tofile);
+
+      if (!(Native.nativeProbeFileP(truefrom))) {
+        Stella.ensureFileExists(fromfile, "rename-file");
+      }
+      if (Native.nativeProbeFileP(trueto)) {
+        Stella.ensureFileDoesNotExist(tofile, "rename-file");
+      }
+      Native.nativeRenameFile(truefrom, trueto);
+    }
+  }
+
   /** Copy file <code>fromfile</code> to file <code>tofile</code>, clobbering
    * any data already in <code>tofile</code>.
    * @param fromfile
@@ -6658,19 +7306,7 @@ public class Stella {
 
           try {
             to = Stella.openOutputFile(tofile, Stella.NIL);
-            { byte[] buffer = new byte[Stella.$TOKENIZER_INITIAL_BUFFER_SIZE$];
-              int bytesRead = 0;
-
-              loop000 : for (;;) {
-                bytesRead = Stella.nativeByteArrayReadSequence(buffer, from.nativeStream, 0, Stella.$TOKENIZER_INITIAL_BUFFER_SIZE$);
-                if (bytesRead > 0) {
-                  Stella.nativeByteArrayWriteSequence(buffer, to.nativeStream, 0, bytesRead);
-                }
-                else {
-                  break loop000;
-                }
-              }
-            }
+            InputStream.copyStreamToStream(from, to);
 
           } finally {
             if (to != null) {
@@ -6687,23 +7323,217 @@ public class Stella {
     }
   }
 
-  public static int lognot(int arg) {
+  /** Return a file name of the form <code>LprefixGNNNNNNLsuffixG</code>
+   * which is guaranteed to not refer to any existing file.  A null <code>prefix</code>
+   * defaults to <code>tmpfile</code>, a null <code>suffix</code> defaults to the empty string.
+   * The number portion NNNNNN will correpond to a random number between 0
+   * and 999999.  If no qualifying filename can be found after 100 attempts,
+   * NULL will be returned.  Note that it is possible due to multi-threading
+   * or processing that the generated filename becomes used by another thread
+   * or OS process.  If necessary, this case can be handled by the caller.
+   * @param prefix
+   * @param suffix
+   * @return String
+   */
+  public static String makeTemporaryFileName(String prefix, String suffix) {
+    if (prefix == null) {
+      prefix = "tmpfile";
+    }
+    if (suffix == null) {
+      suffix = "";
+    }
+    { int i = Stella.NULL_INTEGER;
+      int iter000 = 0;
+      int upperBound000 = 100;
+
+      for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
+        i = iter000;
+        i = i;
+        { String uniquifier = Stella.formatWithPadding(Native.integerToString(((long)(Stella.random(1000000)))), 6, '0', Stella.KWD_RIGHT, false);
+          String tempfilename = prefix + uniquifier + suffix;
+
+          if (!Stella.probeFileP(tempfilename)) {
+            return (tempfilename);
+          }
+        }
+      }
+    }
+    return (null);
+  }
+
+  public static Cons clListDirectoryFiles(String directory) {
+    { Cons files = null;
+      int dirnamelength = directory.length();
+      String dirsep = Stella.directorySeparatorString();
+      boolean checkduplicatesP = false;
+      String normfile = null;
+      Cons normalizedfiles = Stella.NIL;
+
+      if (files == null) {
+        checkduplicatesP = true;
+      }
+      files = Stella.NIL;
+      if (checkduplicatesP) {
+        normalizedfiles = normalizedfiles.removeDuplicatesEqual();
+      }
+      { StringWrapper file = null;
+        Cons iter000 = files;
+        Cons collect000 = null;
+
+        loop000 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          file = ((StringWrapper)(iter000.value));
+          normfile = file.wrapperValue;
+          if (Stella.startsWithP(normfile, directory, 0)) {
+            normfile = Native.string_subsequence(normfile, dirnamelength, Stella.NULL_INTEGER);
+          }
+          if (Stella.endsWithP(normfile, dirsep, Stella.NULL_INTEGER)) {
+            normfile = Native.string_subsequence(normfile, 0, normfile.length() - dirsep.length());
+          }
+          if (Stella.stringEqlP(normfile, ".") ||
+              Stella.stringEqlP(normfile, "..")) {
+            continue loop000;
+          }
+          if (collect000 == null) {
+            {
+              collect000 = Cons.cons(StringWrapper.wrapString(normfile), Stella.NIL);
+              if (normalizedfiles == Stella.NIL) {
+                normalizedfiles = collect000;
+              }
+              else {
+                Cons.addConsToEndOfConsList(normalizedfiles, collect000);
+              }
+            }
+          }
+          else {
+            {
+              collect000.rest = Cons.cons(StringWrapper.wrapString(normfile), Stella.NIL);
+              collect000 = collect000.rest;
+            }
+          }
+        }
+      }
+      return (normalizedfiles);
+    }
+  }
+
+  public static Cons cppListDirectoryFiles(String directory) {
+    { Cons files = Stella.NIL;
+
+      if (files == null) {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("list-directory-files: error reading `" + directory + "'");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+      return (files);
+    }
+  }
+
+  public static Cons javaListDirectoryFiles(String directory) {
+    { Cons files = Stella.NIL;
+
+        java.io.File[] dirfiles = new java.io.File(directory).listFiles();
+         String filename = null;
+         String dirsep = Stella.directorySeparatorString();
+         for (int i = dirfiles.length-1; i >= 0; i--) {
+             filename = dirfiles[i].getName();
+             files = Cons.cons(StringWrapper.wrapString(filename), files);
+         }
+;
+      return (files);
+    }
+  }
+
+  /** Return all the files and sub-directories in <code>directory</code> sorted by name.
+   * Each returned file is a bare file name without a <code>directory</code> component.  If a file is
+   * a directory, it will look just like a plain file.  This means consumers might have to
+   * explicitly test whether a file is a directory depending on what they do. Excludes . and ..
+   * directories.  Handles logical pathnames but resulting files will always use physical pathname
+   * syntax.  This is mostly consistent across native languages, but some differences still exist -
+   * e.g., Lisp will convert . or .. into absolute pathnames.
+   * @param directory
+   * @return Cons
+   */
+  public static Cons listDirectoryFiles(String directory) {
+    directory = Stella.translateLogicalPathname(Stella.fileNameAsDirectory(directory));
+    Stella.ensureFileExists(directory, "list-directory-files");
+    { Cons files = Stella.javaListDirectoryFiles(directory);
+
+      return (files.sort(null));
+    }
+  }
+
+  public static int integer_lognot(int arg) {
     return ((~ arg));
   }
 
-  public static int logand(int arg1, int arg2) {
+  public static long longInteger_lognot(long arg) {
+    return ((~ arg));
+  }
+
+  public static int integer_logand(int arg1, int arg2) {
     return ((arg1 & arg2));
   }
 
-  public static int logor(int arg1, int arg2) {
+  public static long longInteger_logand(long arg1, long arg2) {
+    return ((arg1 & arg2));
+  }
+
+  public static int integer_logor(int arg1, int arg2) {
     return ((arg1 | arg2));
   }
 
-  public static int logxor(int arg1, int arg2) {
+  public static long longInteger_logor(long arg1, long arg2) {
+    return ((arg1 | arg2));
+  }
+
+  public static int integer_logxor(int arg1, int arg2) {
     return ((arg1 ^ arg2));
   }
 
-  public static int shiftLeft(int arg, int count) {
+  public static long longInteger_logxor(long arg1, long arg2) {
+    return ((arg1 ^ arg2));
+  }
+
+  /** Return the 1-based position of the left-most bit in <code>x</code>.
+   * If <code>x</code> is negative, we only count the value bits, not the sign.
+   * @param x
+   * @return int
+   */
+  public static int integerLength(long x) {
+    if (x < 0) {
+      x = -1 - x;
+    }
+    if (x == 0) {
+      return (0);
+    }
+    { int bot = 0;
+      int top = Stella.LONG_INTEGER_BIT_WIDTH - 1;
+      int split = 0;
+      long rem = 0l;
+
+      for (;;) {
+        split = ((bot + top) >> 1);
+        rem = (x >> split);
+        if (rem == 1) {
+          return (split + 1);
+        }
+        if (rem == 0) {
+          top = split - 1;
+        }
+        else {
+          bot = split + 1;
+        }
+      }
+    }
+  }
+
+  public static int integer_shiftLeft(int arg, int count) {
+    return ((arg << count));
+  }
+
+  public static long longInteger_shiftLeft(long arg, int count) {
     return ((arg << count));
   }
 
@@ -6715,7 +7545,19 @@ public class Stella {
    * @param count
    * @return int
    */
-  public static int shiftRight(int arg, int count) {
+  public static int integer_shiftRight(int arg, int count) {
+    return ((arg >> count));
+  }
+
+  /** Shift <code>arg</code> to the right by <code>count</code> positions and
+   * 0-extend from the left if <code>arg</code> is positive or 1-extend if it is
+   * negative.  This is an arithmetic shift that preserve the sign of <code>arg</code>
+   * and is equivalent to dividing <code>arg</code> by 2** <code>count</code>.
+   * @param arg
+   * @param count
+   * @return long
+   */
+  public static long longInteger_shiftRight(long arg, int count) {
     return ((arg >> count));
   }
 
@@ -6726,7 +7568,18 @@ public class Stella {
    * @param arg
    * @return int
    */
-  public static int unsignedShiftRightBy1(int arg) {
+  public static int integer_unsignedShiftRightBy1(int arg) {
+    return ((arg >>> 1));
+  }
+
+  /** Shift <code>arg</code> to the right by 1 position and 0-extend
+   * from the left.  This does not preserve the sign of <code>arg</code> and shifts
+   * the sign-bit just like a regular bit.  In Common-Lisp we can't do that
+   * directly and need to do some extra masking.
+   * @param arg
+   * @return long
+   */
+  public static long longInteger_unsignedShiftRightBy1(long arg) {
     return ((arg >>> 1));
   }
 
@@ -6746,7 +7599,7 @@ public class Stella {
    * @return String
    */
   public static String generateRandomUuid() {
-    return (Stella.zeroPadString(Native.integerToHexString(Stella.random(65536)), 4) + Stella.zeroPadString(Native.integerToHexString(Stella.random(65536)), 4) + "-" + Stella.zeroPadString(Native.integerToHexString(Stella.random(65536)), 4) + "-" + Native.integerToHexString(16384 + Stella.random(4096)) + "-" + Native.integerToHexString(32768 + Stella.random(16384)) + "-" + Stella.zeroPadString(Native.integerToHexString(Stella.random(16777216)), 6) + Stella.zeroPadString(Native.integerToHexString(Stella.random(16777216)), 6));
+    return (Stella.zeroPadString(Native.integerToHexString(((long)(Stella.random(65536)))), 4) + Stella.zeroPadString(Native.integerToHexString(((long)(Stella.random(65536)))), 4) + "-" + Stella.zeroPadString(Native.integerToHexString(((long)(Stella.random(65536)))), 4) + "-" + Native.integerToHexString(((long)(16384 + Stella.random(4096)))) + "-" + Native.integerToHexString(((long)(32768 + Stella.random(16384)))) + "-" + Stella.zeroPadString(Native.integerToHexString(((long)(Stella.random(16777216)))), 6) + Stella.zeroPadString(Native.integerToHexString(((long)(Stella.random(16777216)))), 6));
   }
 
   /** Return true if the executable code is a Common Lisp application.
@@ -6828,111 +7681,6 @@ public class Stella {
     return (new java.lang.Object());
   }
 
-  /** Return a cons list containing <code>values</code>, in order.
-   * @param values
-   * @return Cons
-   */
-  public static Cons consList(Cons values) {
-    { Cons list = Stella.NIL;
-
-      { Stella_Object v = null;
-        Cons iter000 = values;
-        Cons collect000 = null;
-
-        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-          v = iter000.value;
-          if (collect000 == null) {
-            {
-              collect000 = Stella_Object.cons(v, Stella.NIL);
-              if (list == Stella.NIL) {
-                list = collect000;
-              }
-              else {
-                Cons.addConsToEndOfConsList(list, collect000);
-              }
-            }
-          }
-          else {
-            {
-              collect000.rest = Stella_Object.cons(v, Stella.NIL);
-              collect000 = collect000.rest;
-            }
-          }
-        }
-      }
-      return (list);
-    }
-  }
-
-  /** Return a list of conses that make up the list <code>values</code>,
-   * terminated by the last value rather than by <code>nil</code>.  Assumes that
-   * at least one value is passed in.
-   * @param values
-   * @return Cons
-   */
-  public static Cons list$(Cons values) {
-    { Cons headcons = Stella.NIL;
-      Stella_Object answer = null;
-      Cons lastcons = null;
-
-      { Stella_Object v = null;
-        Cons iter000 = values;
-
-        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-          v = iter000.value;
-          headcons = Stella_Object.cons(v, headcons);
-        }
-      }
-      answer = headcons.rest.reverse();
-      if (answer == Stella.NIL) {
-        answer = headcons.value;
-        return (((Cons)(answer)));
-      }
-      lastcons = ((Cons)(answer));
-      while (!(lastcons.rest == Stella.NIL)) {
-        lastcons = lastcons.rest;
-      }
-      lastcons.rest = ((Cons)(headcons.value));
-      return (((Cons)(answer)));
-    }
-  }
-
-  /** Return a list containing <code>values</code>, in order.
-   * @param values
-   * @return List
-   */
-  public static List list(Cons values) {
-    { List list = List.newList();
-
-      { Stella_Object v = null;
-        Cons iter000 = values;
-        Cons collect000 = null;
-
-        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-          v = iter000.value;
-          if (collect000 == null) {
-            {
-              collect000 = Stella_Object.cons(v, Stella.NIL);
-              if (list.theConsList == Stella.NIL) {
-                list.theConsList = collect000;
-              }
-              else {
-                Cons.addConsToEndOfConsList(list.theConsList, collect000);
-              }
-            }
-          }
-          else {
-            {
-              collect000.rest = Stella_Object.cons(v, Stella.NIL);
-              collect000 = collect000.rest;
-            }
-          }
-        }
-      }
-      return (list);
-    }
-  }
-
   /** Return a set containing <code>values</code>, in order.
    * @param values
    * @return Set
@@ -6949,7 +7697,7 @@ public class Stella {
           if (!set.memberP(v)) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(v, Stella.NIL);
+                collect000 = Cons.cons(v, Stella.NIL);
                 if (set.theConsList == Stella.NIL) {
                   set.theConsList = collect000;
                 }
@@ -6960,7 +7708,7 @@ public class Stella {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(v, Stella.NIL);
+                collect000.rest = Cons.cons(v, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -6990,6 +7738,204 @@ public class Stella {
         }
       }
       return (vector);
+    }
+  }
+
+  public static void heapSortNativeVector(edu.isi.stella.Stella_Object[] vector, int size, java.lang.reflect.Method predicate) {
+    Stella.heapSortHeapify(vector, size, predicate);
+    { int end = size - 1;
+      Stella_Object aux = null;
+
+      while (end > 0) {
+        aux = vector[0];
+        vector[0] = (vector[end]);
+        vector[end] = aux;
+        end = end - 1;
+        Stella.heapSortSiftDown(vector, 0, end, predicate);
+      }
+    }
+  }
+
+  public static void heapSortHeapify(edu.isi.stella.Stella_Object[] vector, int size, java.lang.reflect.Method predicate) {
+    { int start = (size >> 1) - 1;
+
+      while (start >= 0) {
+        Stella.heapSortSiftDown(vector, start, size - 1, predicate);
+        start = start - 1;
+      }
+    }
+  }
+
+  public static void heapSortSiftDown(edu.isi.stella.Stella_Object[] vector, int start, int end, java.lang.reflect.Method predicate) {
+    { int root = start;
+      int child = 0;
+      Stella_Object aux = null;
+
+      loop000 : for (;;) {
+        child = (root << 1) + 1;
+        if (child > end) {
+          break loop000;
+        }
+        if ((child < end) &&
+            ((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {vector[child], vector[(child + 1)]}))).booleanValue()) {
+          child = child + 1;
+        }
+        if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {vector[root], vector[child]}))).booleanValue()) {
+          aux = vector[root];
+          vector[root] = (vector[child]);
+          vector[child] = aux;
+          root = child;
+        }
+        else {
+          return;
+        }
+      }
+    }
+  }
+
+  public static Stella_Object quickSortPickSplitElement(edu.isi.stella.Stella_Object[] vector, int start, int end, java.lang.reflect.Method predicate) {
+    { Stella_Object splitelement = vector[start];
+      int middle = ((start + end) >> 1);
+
+      end = end - 1;
+      if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {splitelement, vector[middle]}))).booleanValue()) {
+        if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {vector[middle], vector[end]}))).booleanValue()) {
+          splitelement = vector[middle];
+          vector[middle] = (vector[start]);
+        }
+        else if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {splitelement, vector[end]}))).booleanValue()) {
+          splitelement = vector[end];
+          vector[end] = (vector[start]);
+        }
+        else {
+        }
+      }
+      else {
+        if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {splitelement, vector[end]}))).booleanValue()) {
+        }
+        else if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {vector[middle], vector[end]}))).booleanValue()) {
+          splitelement = vector[end];
+          vector[end] = (vector[start]);
+        }
+        else {
+          splitelement = vector[middle];
+          vector[middle] = (vector[start]);
+        }
+      }
+      return (splitelement);
+    }
+  }
+
+  public static void quickSortNativeVector(edu.isi.stella.Stella_Object[] vector, int start, int end, java.lang.reflect.Method predicate) {
+    for (;;) {
+      { int length = end - start;
+        Stella_Object splitelement = null;
+        Stella_Object element = null;
+        int lowcursor = start;
+        int highcursor = end;
+
+        if (length <= 1) {
+          return;
+        }
+        else if (length >= 10) {
+          splitelement = Stella.quickSortPickSplitElement(vector, start, end, predicate);
+        }
+        else {
+          splitelement = vector[start];
+        }
+        while (lowcursor < highcursor) {
+          loop002 : while (lowcursor < highcursor) {
+            highcursor = highcursor - 1;
+            element = vector[highcursor];
+            if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {element, splitelement}))).booleanValue()) {
+              vector[lowcursor] = element;
+              break loop002;
+            }
+          }
+          loop003 : while (lowcursor < highcursor) {
+            lowcursor = lowcursor + 1;
+            element = vector[lowcursor];
+            if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {splitelement, element}))).booleanValue()) {
+              vector[highcursor] = element;
+              break loop003;
+            }
+          }
+        }
+        vector[highcursor] = splitelement;
+        if (((start + end) >> 1) < highcursor) {
+          Stella.quickSortNativeVector(vector, highcursor + 1, end, predicate);
+          end = highcursor;
+        }
+        else {
+          Stella.quickSortNativeVector(vector, start, highcursor, predicate);
+          start = highcursor + 1;
+        }
+      }
+    }
+  }
+
+  public static void heapSiftUp(edu.isi.stella.Stella_Object[] heap, int start, int end, Stella_Object value, java.lang.reflect.Method predicate) {
+    { int parent = Stella.NULL_INTEGER;
+      int child = end;
+
+      heap[end] = value;
+      loop000 : while (child > start) {
+        if ((child & 1) == 0) {
+          parent = ((child - 2) >> 1);
+        }
+        else {
+          parent = ((child - 1) >> 1);
+        }
+        if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {value, heap[parent]}))).booleanValue()) {
+          heap[child] = (heap[parent]);
+          heap[parent] = value;
+          child = parent;
+        }
+        else {
+          break loop000;
+        }
+      }
+    }
+  }
+
+  public static void heapSiftDown(edu.isi.stella.Stella_Object[] heap, int start, int end, Stella_Object value, java.lang.reflect.Method predicate) {
+    { int parent = start;
+      int child = Stella.NULL_INTEGER;
+      Stella_Object leftchild = null;
+      Stella_Object rightchild = null;
+
+      heap[start] = value;
+      end = end - 1;
+      loop000 : for (;;) {
+        child = (parent << 1) + 1;
+        if (child > end) {
+          break loop000;
+        }
+        else if (child == end) {
+          if (!(((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {heap[child], value}))).booleanValue())) {
+            break loop000;
+          }
+        }
+        else {
+          leftchild = heap[child];
+          rightchild = heap[(child + 1)];
+          if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {leftchild, value}))).booleanValue()) {
+            if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {rightchild, value}))).booleanValue() &&
+                ((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {rightchild, leftchild}))).booleanValue()) {
+              child = child + 1;
+            }
+          }
+          else if (((Boolean)(edu.isi.stella.javalib.Native.funcall(predicate, null, new java.lang.Object [] {rightchild, value}))).booleanValue()) {
+            child = child + 1;
+          }
+          else {
+            break loop000;
+          }
+        }
+        heap[parent] = (heap[child]);
+        heap[child] = value;
+        parent = child;
+      }
     }
   }
 
@@ -7046,7 +7992,7 @@ public class Stella {
       iterator.iteratorSecondInteger = arraysize;
       if (module != null) {
         if (localP) {
-          moduleslist = Stella_Object.cons(module, moduleslist);
+          moduleslist = Cons.cons(module, moduleslist);
         }
         else {
           { Module mod = null;
@@ -7057,7 +8003,7 @@ public class Stella {
               mod = ((Module)(iter000.value));
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(mod, Stella.NIL);
+                  collect000 = Cons.cons(mod, Stella.NIL);
                   if (moduleslist == Stella.NIL) {
                     moduleslist = collect000;
                   }
@@ -7068,7 +8014,7 @@ public class Stella {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(mod, Stella.NIL);
+                  collect000.rest = Cons.cons(mod, Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -7080,30 +8026,6 @@ public class Stella {
       iterator.iteratorNextCode = nextcode;
       return (iterator);
     }
-  }
-
-  public static Symbol getSym(int offset) {
-    return (((Symbol)((Stella.$FIXED_SYMBOL_ARRAY$.theArray)[offset])));
-  }
-
-  public static Surrogate getSgt(int offset) {
-    return (((Surrogate)((Stella.$FIXED_SURROGATE_ARRAY$.theArray)[offset])));
-  }
-
-  public static Keyword getKwd(int offset) {
-    return (((Keyword)((Stella.$FIXED_KEYWORD_ARRAY$.theArray)[offset])));
-  }
-
-  public static Symbol getSymFromOffset(int offset) {
-    return (((Symbol)(ExtensibleSymbolArray.getGeneralizedSymbolFromOffset(Stella.$SYMBOL_ARRAY$, offset))));
-  }
-
-  public static Surrogate getSgtFromOffset(int offset) {
-    return (((Surrogate)(ExtensibleSymbolArray.getGeneralizedSymbolFromOffset(Stella.$SURROGATE_ARRAY$, offset))));
-  }
-
-  public static Keyword getKwdFromOffset(int offset) {
-    return (((Keyword)(ExtensibleSymbolArray.getGeneralizedSymbolFromOffset(Stella.$KEYWORD_ARRAY$, offset))));
   }
 
   public static ExtensibleSymbolArray selectSymbolArray(int kindofsym) {
@@ -7123,30 +8045,6 @@ public class Stella {
     }
   }
 
-  public static GeneralizedSymbol lookupRigidSymbolLocally(String name, Module module, int kindofsym) {
-    { StringToIntegerHashTable offsettable = Module.selectSymbolOffsetTable(module, kindofsym);
-      int offset = offsettable.lookup(name);
-
-      if (offset != Stella.NULL_INTEGER) {
-        switch (kindofsym) {
-          case 0: 
-            return (Stella.getSymFromOffset(offset));
-          case 1: 
-            return (Stella.getSgtFromOffset(offset));
-          case 2: 
-            return (Stella.getKwdFromOffset(offset));
-          default:
-            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-              stream000.nativeStream.print("`" + kindofsym + "' is not a valid case option");
-              throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-            }
-        }
-      }
-      return (null);
-    }
-  }
-
   public static Cons yieldVisibleRigidSymbolsWrtModule(String name, Module module, int kindofsym) {
     { Cons listofsymbols = Stella.NIL;
       GeneralizedSymbol symbol = null;
@@ -7157,9 +8055,9 @@ public class Stella {
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           visiblemodule = ((Module)(iter000.value));
           { 
-            symbol = Stella.lookupRigidSymbolLocally(name, visiblemodule, kindofsym);
+            symbol = GeneralizedSymbol.lookupRigidSymbolLocally(name, visiblemodule, kindofsym);
             if (symbol != null) {
-              listofsymbols = Stella_Object.cons(symbol, listofsymbols);
+              listofsymbols = Cons.cons(symbol, listofsymbols);
             }
           }
         }
@@ -7200,11 +8098,11 @@ public class Stella {
       if (offset != Stella.NULL_INTEGER) {
         switch (kindofsym) {
           case 0: 
-            return (Stella.getSymFromOffset(offset));
+            return (Symbol.getSymFromOffset(offset));
           case 1: 
-            return (Stella.getSgtFromOffset(offset));
+            return (Surrogate.getSgtFromOffset(offset));
           case 2: 
-            return (Stella.getKwdFromOffset(offset));
+            return (Keyword.getKwdFromOffset(offset));
           default:
             { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
 
@@ -7216,44 +8114,6 @@ public class Stella {
       else {
         return (null);
       }
-    }
-  }
-
-  /** Return the permanent symbol with name 'name' and type
-   * <code>kindofsym</code> visible from the current module (case-sensitive).
-   * @param name
-   * @param kindofsym
-   * @return GeneralizedSymbol
-   */
-  public static GeneralizedSymbol lookupRigidSymbol(String name, int kindofsym) {
-    return (Stella.lookupRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), kindofsym));
-  }
-
-  /** Return the first symbol with <code>name</code> visible from the current module.
-   * @param name
-   * @return Symbol
-   */
-  public static Symbol lookupSymbol(String name) {
-    return (((Symbol)(Stella.lookupRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), Stella.SYMBOL_SYM))));
-  }
-
-  /** Return the first symbol with <code>name</code> visible from <code>module</code>.
-   * If <code>localP</code> only consider symbols directly interned in <code>module</code>.
-   * If <code>module</code> is <code>null</code>, use <code>$MODULE$</code> instead.
-   * @param name
-   * @param module
-   * @param localP
-   * @return Symbol
-   */
-  public static Symbol lookupSymbolInModule(String name, Module module, boolean localP) {
-    if (module == null) {
-      module = ((Module)(Stella.$MODULE$.get()));
-    }
-    if (localP) {
-      return (((Symbol)(Stella.lookupRigidSymbolLocally(name, module, Stella.SYMBOL_SYM))));
-    }
-    else {
-      return (((Symbol)(Stella.lookupRigidSymbolWrtModule(name, module, Stella.SYMBOL_SYM))));
     }
   }
 
@@ -7280,34 +8140,6 @@ public class Stella {
     }
   }
 
-  /** Return the first surrogate with <code>name</code> visible from the current module.
-   * @param name
-   * @return Surrogate
-   */
-  public static Surrogate lookupSurrogate(String name) {
-    return (((Surrogate)(Stella.lookupRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), Stella.SURROGATE_SYM))));
-  }
-
-  /** Return the first surrogate with <code>name</code> visible from <code>module</code>.
-   * If <code>localP</code> only consider surrogates directly interned in <code>module</code>.
-   * If <code>module</code> is <code>null</code>, use <code>$MODULE$</code> instead.
-   * @param name
-   * @param module
-   * @param localP
-   * @return Surrogate
-   */
-  public static Surrogate lookupSurrogateInModule(String name, Module module, boolean localP) {
-    if (module == null) {
-      module = ((Module)(Stella.$MODULE$.get()));
-    }
-    if (localP) {
-      return (((Surrogate)(Stella.lookupRigidSymbolLocally(name, module, Stella.SURROGATE_SYM))));
-    }
-    else {
-      return (((Surrogate)(Stella.lookupRigidSymbolWrtModule(name, module, Stella.SURROGATE_SYM))));
-    }
-  }
-
   /** Return the list of surrogates with <code>name</code> visible from <code>module</code>.
    * More specific surrogates (relative to the module precedence order defined by
    * <code>visibleModules</code>) come earlier in the list.  If <code>module</code> is <code>null</code>, start
@@ -7331,233 +8163,13 @@ public class Stella {
     }
   }
 
-  /** Return the keyword with <code>name</code> if it exists.
-   * @param name
-   * @return Keyword
-   */
-  public static Keyword lookupKeyword(String name) {
-    return (((Keyword)(Stella.lookupRigidSymbol(name, Stella.KEYWORD_SYM))));
-  }
-
-  public static GeneralizedSymbol helpInternGeneralizedSymbol(String name, int kindofsym, ExtensibleSymbolArray array, int offset, Module module) {
-    { GeneralizedSymbol symbol = null;
-      StringToIntegerHashTable table = Module.selectSymbolOffsetTable(module, kindofsym);
-
-      switch (kindofsym) {
-        case 0: 
-          symbol = Symbol.newSymbol(name);
-          table.insertAt(name, offset);
-          symbol.homeContext = module;
-        break;
-        case 1: 
-          symbol = Surrogate.newSurrogate(name);
-          table.insertAt(name, offset);
-          symbol.homeContext = module;
-        break;
-        case 2: 
-          symbol = Keyword.newKeyword(name);
-          table.insertAt(name, offset);
-          symbol.homeContext = null;
-        break;
-        default:
-          { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-            stream000.nativeStream.print("`" + kindofsym + "' is not a valid case option");
-            throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-          }
-      }
-      ExtensibleSymbolArray.addToSymbolArrayAt(array, offset, symbol);
-      return (symbol);
-    }
-  }
-
-  /** Return a newly-created or existing rigid symbol with
-   * name <code>name</code>.
-   * @param name
-   * @param module
-   * @param kindofsym
-   * @return GeneralizedSymbol
-   */
-  public static GeneralizedSymbol internRigidSymbolWrtModule(String name, Module module, int kindofsym) {
-    if (module == null) {
-      module = ((Module)(Stella.$MODULE$.get()));
-    }
-    { int offset = Stella.lookupRigidSymbolOffsetWrtModule(name, module, kindofsym);
-
-      if (offset != Stella.NULL_INTEGER) {
-        switch (kindofsym) {
-          case 0: 
-            return (Stella.getSymFromOffset(offset));
-          case 1: 
-            return (Stella.getSgtFromOffset(offset));
-          case 2: 
-            return (Stella.getKwdFromOffset(offset));
-          default:
-            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-              stream000.nativeStream.print("`" + kindofsym + "' is not a valid case option");
-              throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-            }
-        }
-      }
-      { ExtensibleSymbolArray array = Stella.selectSymbolArray(kindofsym);
-
-        offset = ExtensibleSymbolArray.nextFreeOffset(array);
-        return (Stella.helpInternGeneralizedSymbol(name, kindofsym, array, offset, module));
-      }
-    }
-  }
-
-  /** Return a newly-created or existing rigid symbol
-   * interned into the module <code>module</code> with name <code>name</code>.
-   * @param name
-   * @param module
-   * @param kindofsym
-   * @return GeneralizedSymbol
-   */
-  public static GeneralizedSymbol internRigidSymbolLocally(String name, Module module, int kindofsym) {
-    if (module == null) {
-      module = ((Module)(Stella.$MODULE$.get()));
-    }
-    { GeneralizedSymbol symbol = Stella.lookupRigidSymbolLocally(name, module, kindofsym);
-
-      if (symbol != null) {
-        return (symbol);
-      }
-      { ExtensibleSymbolArray array = Stella.selectSymbolArray(kindofsym);
-
-        return (Stella.helpInternGeneralizedSymbol(name, kindofsym, array, ExtensibleSymbolArray.nextFreeOffset(array), module));
-      }
-    }
-  }
-
-  public static GeneralizedSymbol internRigidSymbolCaseSensitively(String name, int kindofsym, boolean tryupcasingP) {
-    { GeneralizedSymbol symbol = null;
-
-      symbol = Stella.lookupRigidSymbol(name, kindofsym);
-      if (symbol != null) {
-        return (symbol);
-      }
-      if (((Boolean)(Stella.$TRANSIENTOBJECTSp$.get())).booleanValue() &&
-          (kindofsym == Stella.SYMBOL_SYM)) {
-        symbol = Stella.lookupTransientSymbol(name);
-        if (symbol != null) {
-          return (symbol);
-        }
-      }
-      if (tryupcasingP) {
-        symbol = Stella.lookupRigidSymbol(Native.stringUpcase(name), kindofsym);
-        if (symbol != null) {
-          return (symbol);
-        }
-      }
-      switch (kindofsym) {
-        case 0: 
-          if (((Boolean)(Stella.$TRANSIENTOBJECTSp$.get())).booleanValue()) {
-            return (Stella.internTransientSymbol(name));
-          }
-          else {
-            return (Stella.internPermanentSymbol(name));
-          }
-        case 1: 
-          return (Stella.internRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), Stella.SURROGATE_SYM));
-        default:
-          { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-            stream000.nativeStream.print("`" + kindofsym + "' is not a valid case option");
-            throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-          }
-      }
-    }
-  }
-
-  /** Return a newly-created or existing permanent symbol with
-   * name <code>name</code>.
-   * @param name
-   * @return Symbol
-   */
-  public static Symbol internPermanentSymbol(String name) {
-    return (((Symbol)(Stella.internRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), Stella.SYMBOL_SYM))));
-  }
-
-  /** Return a newly-created or existing symbol with name <code>name</code>.
-   * @param name
-   * @return Symbol
-   */
-  public static Symbol internSymbol(String name) {
-    if (((Module)(Stella.$MODULE$.get())).caseSensitiveP) {
-      return (((Symbol)(Stella.internRigidSymbolCaseSensitively(name, Stella.SYMBOL_SYM, false))));
-    }
-    else {
-      if (((Boolean)(Stella.$TRANSIENTOBJECTSp$.get())).booleanValue()) {
-        return (Stella.internTransientSymbol(Native.stringUpcase(name)));
-      }
-      else {
-        return (Stella.internPermanentSymbol(Native.stringUpcase(name)));
-      }
-    }
-  }
-
-  /** Look for a symbol named <code>name</code> in <code>module</code> (if <code>localP</code> do
-   * not consider inherited modules).  If none exists, intern it locally in
-   * <code>module</code>.  Return the existing or newly-created symbol.
-   * @param name
-   * @param module
-   * @param localP
-   * @return Symbol
-   */
-  public static Symbol internSymbolInModule(String name, Module module, boolean localP) {
-    if (module == null) {
-      module = ((Module)(Stella.$MODULE$.get()));
-    }
-    if (localP) {
-      return (((Symbol)(Stella.internRigidSymbolLocally(name, module, Stella.SYMBOL_SYM))));
-    }
-    else {
-      return (((Symbol)(Stella.internRigidSymbolWrtModule(name, module, Stella.SYMBOL_SYM))));
-    }
-  }
-
-  /** Return a newly-created or existing surrogate with name <code>name</code>.
-   * @param name
-   * @return Surrogate
-   */
-  public static Surrogate internSurrogate(String name) {
-    if (((Module)(Stella.$MODULE$.get())).caseSensitiveP) {
-      return (((Surrogate)(Stella.internRigidSymbolCaseSensitively(name, Stella.SURROGATE_SYM, false))));
-    }
-    else {
-      return (((Surrogate)(Stella.internRigidSymbolWrtModule(Native.stringUpcase(name), ((Module)(Stella.$MODULE$.get())), Stella.SURROGATE_SYM))));
-    }
-  }
-
-  /** Look for a symbol named <code>name</code> in <code>module</code> (if <code>localP</code> do
-   * not consider inherited modules).  If none exists, intern it locally in
-   * <code>module</code>.  Return the existing or newly-created symbol.
-   * @param name
-   * @param module
-   * @param localP
-   * @return Surrogate
-   */
-  public static Surrogate internSurrogateInModule(String name, Module module, boolean localP) {
-    if (module == null) {
-      module = ((Module)(Stella.$MODULE$.get()));
-    }
-    if (localP) {
-      return (((Surrogate)(Stella.internRigidSymbolLocally(name, module, Stella.SURROGATE_SYM))));
-    }
-    else {
-      return (((Surrogate)(Stella.internRigidSymbolWrtModule(name, module, Stella.SURROGATE_SYM))));
-    }
-  }
-
   /** Return a newly-created or existing keyword with name
    * <code>name</code>.  Storage note: a COPY of <code>name</code> is stored in the keyword
    * @param name
    * @return Keyword
    */
   public static Keyword internKeyword(String name) {
-    return (((Keyword)(Stella.internRigidSymbolWrtModule(Native.stringUpcase(name), ((Module)(Stella.$MODULE$.get())), Stella.KEYWORD_SYM))));
+    return (((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule(Native.stringUpcase(name), ((Module)(Stella.$MODULE$.get())), Stella.KEYWORD_SYM))));
   }
 
   /** Interns a symbol, or keyword with
@@ -7576,13 +8188,13 @@ public class Stella {
 
       switch (kindofsym) {
         case 0: 
-          symbol = Stella.lookupSymbol(name);
+          symbol = Symbol.lookupSymbol(name);
         break;
         case 1: 
-          symbol = Stella.lookupSurrogate(name);
+          symbol = Surrogate.lookupSurrogate(name);
         break;
         case 2: 
-          symbol = Stella.lookupKeyword(name);
+          symbol = Keyword.lookupKeyword(name);
         break;
         default:
           { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -7599,14 +8211,14 @@ public class Stella {
       }
       symbolarray = Stella.selectSymbolArray(kindofsym);
       if (ExtensibleSymbolArray.legalSymbolArrayOffsetP(symbolarray, offset) &&
-          (ExtensibleSymbolArray.getGeneralizedSymbolFromOffset(symbolarray, offset) != null)) {
-        symbol = ExtensibleSymbolArray.getGeneralizedSymbolFromOffset(symbolarray, offset);
+          (GeneralizedSymbol.getGeneralizedSymbolFromOffset(symbolarray, offset) != null)) {
+        symbol = GeneralizedSymbol.getGeneralizedSymbolFromOffset(symbolarray, offset);
         Stella.STANDARD_WARNING.nativeStream.println("Warning: intern-bootstrap-symbol-at: `" + symbol + "' is already interned at offset `" + offset + "'");
         return (symbol);
       }
       { ExtensibleSymbolArray array = Stella.selectSymbolArray(kindofsym);
 
-        return (Stella.helpInternGeneralizedSymbol(name, kindofsym, array, offset, ((Module)(Stella.$MODULE$.get()))));
+        return (GeneralizedSymbol.helpInternGeneralizedSymbol(name, kindofsym, array, offset, ((Module)(Stella.$MODULE$.get()))));
       }
     }
   }
@@ -7662,7 +8274,7 @@ public class Stella {
   }
 
   public static Symbol internTransientSymbol(String name) {
-    { Symbol symbol = Stella.lookupSymbolInModule(name, ((Module)(Stella.$MODULE$.get())), false);
+    { Symbol symbol = Symbol.lookupSymbolInModule(name, ((Module)(Stella.$MODULE$.get())), false);
 
       if (symbol != null) {
         return (symbol);
@@ -7693,7 +8305,7 @@ public class Stella {
       if (symbol != null) {
         return (symbol);
       }
-      symbol = ((Symbol)(Stella.internRigidSymbolWrtModule(name, Stella.$COMMON_LISP_MODULE$, Stella.SYMBOL_SYM)));
+      symbol = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule(name, Stella.$COMMON_LISP_MODULE$, Stella.SYMBOL_SYM)));
       return (symbol);
     }
   }
@@ -7707,7 +8319,7 @@ public class Stella {
   }
 
   public static String yieldGensymName(String prefix, int counter) {
-    { String suffix = Native.integerToString(counter);
+    { String suffix = Native.integerToString(((long)(counter)));
       int maskend = 4 - suffix.length();
 
       if (maskend < 1) {
@@ -7720,7 +8332,7 @@ public class Stella {
   public static String yieldUniqueGensymName(String prefix, Module module) {
     { String gensymName = Stella.yieldGensymName(prefix, Stella.$GENSYM_COUNTER$ = Stella.$GENSYM_COUNTER$ + 1);
 
-      while (Stella.lookupSymbolInModule(gensymName, module, false) != null) {
+      while (Symbol.lookupSymbolInModule(gensymName, module, false) != null) {
         gensymName = Stella.yieldGensymName(prefix, Stella.$GENSYM_COUNTER$ = Stella.$GENSYM_COUNTER$ + 1);
       }
       return (gensymName);
@@ -7744,13 +8356,13 @@ public class Stella {
    * @return Surrogate
    */
   public static Surrogate stringToSurrogate(String self) {
-    { Surrogate surrogate = Stella.internSurrogateInModule(self, ((Module)(Stella.$MODULE$.get())), false);
+    { Surrogate surrogate = Surrogate.internSurrogateInModule(self, ((Module)(Stella.$MODULE$.get())), false);
 
       if ((surrogate.homeContext == ((Module)(Stella.$MODULE$.get()))) ||
           (surrogate.surrogateValue != null)) {
         return (surrogate);
       }
-      return (Stella.internSurrogateInModule(self, ((Module)(Stella.$MODULE$.get())), true));
+      return (Surrogate.internSurrogateInModule(self, ((Module)(Stella.$MODULE$.get())), true));
     }
   }
 
@@ -7759,7 +8371,7 @@ public class Stella {
    * @return Surrogate
    */
   public static Surrogate string_surrogatify(String self) {
-    return (Stella.internSurrogate(self));
+    return (Surrogate.internSurrogate(self));
   }
 
   public static Keyword string_keywordify(String self) {
@@ -7814,14 +8426,14 @@ public class Stella {
             return (Stella.internTransientSymbol(barename));
           }
           else {
-            return (Stella.internSymbolInModule(barename, module, false));
+            return (Symbol.internSymbolInModule(barename, module, false));
           }
         }
         else if (kind == Stella.KWD_SURROGATE) {
-          return (Stella.internSurrogateInModule(barename, module, false));
+          return (Surrogate.internSurrogateInModule(barename, module, false));
         }
         else if (kind == Stella.KWD_KEYWORD) {
-          return (Stella.internRigidSymbolWrtModule(barename, null, Stella.KEYWORD_SYM));
+          return (GeneralizedSymbol.internRigidSymbolWrtModule(barename, null, Stella.KEYWORD_SYM));
         }
         else {
           { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -8098,8 +8710,74 @@ public class Stella {
     }
   }
 
+  public static String readableSymbolName(String name, boolean casesensitiveP) {
+    { Keyword testValue000 = Stella.computeSymbolEscapeCode(name, casesensitiveP);
+
+      if (testValue000 == Stella.KWD_UNESCAPED) {
+        return (name);
+      }
+      else if (testValue000 == Stella.KWD_ESCAPED) {
+        return ("|" + name + "|");
+      }
+      else if (testValue000 == Stella.KWD_COMPLEX_ESCAPED) {
+        { OutputStringStream s = OutputStringStream.newOutputStringStream();
+
+          Stella.printSymbolNameReadably(name, s.nativeStream, casesensitiveP);
+          return (s.theStringReader());
+        }
+      }
+      else {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+    }
+  }
+
+  /** Return a literal object whose value is the LONG-INTEGER 'value'.
+   * @param value
+   * @return LongIntegerWrapper
+   */
+  public static LongIntegerWrapper wrapLongInteger(long value) {
+    if (value == Stella.NULL_LONG_INTEGER) {
+      return (Stella.NULL_LONG_INTEGER_WRAPPER);
+    }
+    else {
+      return (LongIntegerWrapper.newLongIntegerWrapper(value));
+    }
+  }
+
+  /** Return a literal object whose value is 'value'.  Choose a regular integer
+   * wrapper unless <code>value</code> is too large and needs to be stored in a long wrapper.
+   * @param value
+   * @return NumberWrapper
+   */
+  public static NumberWrapper wrapIntegerValue(long value) {
+    if ((value >= Stella.NULL_INTEGER) &&
+        (value <= Stella.MOST_POSITIVE_INTEGER)) {
+      { IntegerWrapper intwrapper = new IntegerWrapper();
+
+        intwrapper.wrapperValue = ((int)(value));
+        return (intwrapper);
+      }
+    }
+    else {
+      { LongIntegerWrapper longwrapper = new LongIntegerWrapper();
+
+        longwrapper.wrapperValue = value;
+        return (longwrapper);
+      }
+    }
+  }
+
   public static IntegerWrapper integer_wrapLiteral(int value) {
     return (IntegerWrapper.wrapInteger(value));
+  }
+
+  public static LongIntegerWrapper longInteger_wrapLiteral(long value) {
+    return (Stella.wrapLongInteger(value));
   }
 
   public static FloatWrapper float_wrapLiteral(double value) {
@@ -8459,7 +9137,7 @@ public class Stella {
           { boolean testValue000 = false;
 
             { 
-              surrogate = ((Surrogate)(Stella.lookupRigidSymbolLocally(name, module, Stella.SURROGATE_SYM)));
+              surrogate = ((Surrogate)(GeneralizedSymbol.lookupRigidSymbolLocally(name, module, Stella.SURROGATE_SYM)));
               testValue000 = surrogate != null;
             }
             if (testValue000) {
@@ -8488,7 +9166,7 @@ public class Stella {
    * @return Stella_Class
    */
   public static Stella_Class string_getStellaClass(String className, boolean errorP) {
-    { Surrogate type = Stella.lookupSurrogate(className);
+    { Surrogate type = Surrogate.lookupSurrogate(className);
 
       if (type != null) {
         return (type.getStellaClass(errorP));
@@ -8508,12 +9186,12 @@ public class Stella {
   }
 
   public static Symbol shadowSymbol(String name) {
-    return (((Symbol)(Stella.internRigidSymbolLocally(name, ((Module)(Stella.$MODULE$.get())), Stella.SYMBOL_SYM))));
+    return (((Symbol)(GeneralizedSymbol.internRigidSymbolLocally(name, ((Module)(Stella.$MODULE$.get())), Stella.SYMBOL_SYM))));
   }
 
   public static Surrogate shadowSurrogate(String name) {
     Stella.shadowSymbol(name);
-    return (((Surrogate)(Stella.internRigidSymbolLocally(name, ((Module)(Stella.$MODULE$.get())), Stella.SURROGATE_SYM))));
+    return (((Surrogate)(GeneralizedSymbol.internRigidSymbolLocally(name, ((Module)(Stella.$MODULE$.get())), Stella.SURROGATE_SYM))));
   }
 
   /** Finalize all currently unfinalized classes.
@@ -8572,7 +9250,7 @@ public class Stella {
               }
             }
             if (foundP000) {
-              unresolvableclasses = Stella_Object.cons(renamed_Class, unresolvableclasses);
+              unresolvableclasses = Cons.cons(renamed_Class, unresolvableclasses);
             }
           }
         }
@@ -8618,7 +9296,7 @@ public class Stella {
               (!renamed_Class.classSlotsFinalizedP)) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(renamed_Class, Stella.NIL);
+                collect000 = Cons.cons(renamed_Class, Stella.NIL);
                 if (unfinalizedclasses == Stella.NIL) {
                   unfinalizedclasses = collect000;
                 }
@@ -8629,7 +9307,7 @@ public class Stella {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(renamed_Class, Stella.NIL);
+                collect000.rest = Cons.cons(renamed_Class, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -8761,31 +9439,95 @@ public class Stella {
   }
 
   public static Surrogate internSlotref(String classname, String slotname) {
-    return (Stella.internSurrogate(classname + "." + slotname));
+    return (Surrogate.internSurrogate(classname + "." + slotname));
   }
 
-  /** Apply <code>code</code> to <code>arguments</code>, returning a value of type
-   * OBJECT.
+  /** Apply <code>code</code> to <code>arguments</code>, returning a value of type OBJECT.
+   * Currently limited to at most 10 <code>arguments</code>.
    * @param code
    * @param arguments
    * @return Stella_Object
    */
   public static Stella_Object apply(java.lang.reflect.Method code, Cons arguments) {
-    switch (arguments.length()) {
-      case 0: 
-        return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {}))));
-      case 1: 
-        return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arguments.value}))));
-      case 2: 
-        return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arguments.value, arguments.rest.value}))));
-      case 3: 
-        return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arguments.value, arguments.rest.value, arguments.nth(2)}))));
-      case 4: 
-        return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arguments.value, arguments.rest.value, arguments.nth(2), arguments.nth(3)}))));
-      case 5: 
-        return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arguments.value, arguments.rest.value, arguments.nth(2), arguments.nth(3), arguments.nth(4)}))));
-      default:
-        throw ((StellaException)(StellaException.newStellaException("Too many function arguments in `apply'.  Max is 5.").fillInStackTrace()));
+    if (arguments == Stella.NIL) {
+      return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {}))));
+    }
+    else {
+      { Stella_Object arg1 = arguments.value;
+
+        arguments = arguments.rest;
+        if (arguments == Stella.NIL) {
+          return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arg1}))));
+        }
+        { Stella_Object arg2 = arguments.value;
+
+          arguments = arguments.rest;
+          if (arguments == Stella.NIL) {
+            return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arg1, arg2}))));
+          }
+          { Stella_Object arg3 = arguments.value;
+
+            arguments = arguments.rest;
+            if (arguments == Stella.NIL) {
+              return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arg1, arg2, arg3}))));
+            }
+            { Stella_Object arg4 = arguments.value;
+
+              arguments = arguments.rest;
+              if (arguments == Stella.NIL) {
+                return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arg1, arg2, arg3, arg4}))));
+              }
+              { Stella_Object arg5 = arguments.value;
+
+                arguments = arguments.rest;
+                if (arguments == Stella.NIL) {
+                  return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arg1, arg2, arg3, arg4, arg5}))));
+                }
+                { Stella_Object arg6 = arguments.value;
+
+                  arguments = arguments.rest;
+                  if (arguments == Stella.NIL) {
+                    return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arg1, arg2, arg3, arg4, arg5, arg6}))));
+                  }
+                  { Stella_Object arg7 = arguments.value;
+
+                    arguments = arguments.rest;
+                    if (arguments == Stella.NIL) {
+                      return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arg1, arg2, arg3, arg4, arg5, arg6, arg7}))));
+                    }
+                    { Stella_Object arg8 = arguments.value;
+
+                      arguments = arguments.rest;
+                      if (arguments == Stella.NIL) {
+                        return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8}))));
+                      }
+                      { Stella_Object arg9 = arguments.value;
+
+                        arguments = arguments.rest;
+                        if (arguments == Stella.NIL) {
+                          return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9}))));
+                        }
+                        { Stella_Object arg10 = arguments.value;
+
+                          arguments = arguments.rest;
+                          if (arguments == Stella.NIL) {
+                            return (((Stella_Object)(edu.isi.stella.javalib.Native.funcall(code, null, new java.lang.Object [] {arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10}))));
+                          }
+                          { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+                            stream000.nativeStream.print("Too many function arguments in `apply'.Maximum is 10.");
+                            throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 
@@ -8834,6 +9576,31 @@ public class Stella {
         return (((Integer)(edu.isi.stella.javalib.Native.funcall(code, arguments.value, new java.lang.Object []{arguments.rest.value, arguments.nth(2), arguments.nth(3)}))).intValue());
       case 5: 
         return (((Integer)(edu.isi.stella.javalib.Native.funcall(code, arguments.value, new java.lang.Object []{arguments.rest.value, arguments.nth(2), arguments.nth(3), arguments.nth(4)}))).intValue());
+      default:
+        throw ((StellaException)(StellaException.newStellaException("Too many function arguments in `apply'.  Max is 5.").fillInStackTrace()));
+    }
+  }
+
+  /** Apply <code>code</code> to <code>arguments</code>, returning a value of type
+   * LONG-INTEGER.
+   * @param code
+   * @param arguments
+   * @return long
+   */
+  public static long applyLongIntegerMethod(java.lang.reflect.Method code, Cons arguments) {
+    switch (arguments.length()) {
+      case 0: 
+        throw ((StellaException)(StellaException.newStellaException("Can't call method code on 0 arguments.").fillInStackTrace()));
+      case 1: 
+        return (((Long)(edu.isi.stella.javalib.Native.funcall(code, arguments.value, new java.lang.Object []{}))).longValue());
+      case 2: 
+        return (((Long)(edu.isi.stella.javalib.Native.funcall(code, arguments.value, new java.lang.Object []{arguments.rest.value}))).longValue());
+      case 3: 
+        return (((Long)(edu.isi.stella.javalib.Native.funcall(code, arguments.value, new java.lang.Object []{arguments.rest.value, arguments.nth(2)}))).longValue());
+      case 4: 
+        return (((Long)(edu.isi.stella.javalib.Native.funcall(code, arguments.value, new java.lang.Object []{arguments.rest.value, arguments.nth(2), arguments.nth(3)}))).longValue());
+      case 5: 
+        return (((Long)(edu.isi.stella.javalib.Native.funcall(code, arguments.value, new java.lang.Object []{arguments.rest.value, arguments.nth(2), arguments.nth(3), arguments.nth(4)}))).longValue());
       default:
         throw ((StellaException)(StellaException.newStellaException("Too many function arguments in `apply'.  Max is 5.").fillInStackTrace()));
     }
@@ -8924,11 +9691,11 @@ public class Stella {
         return (StringWrapper.wrapString(string));
       }
       while ((start + Stella.$MAXIMUM_STRING_CONSTANT_SIZE$) < length) {
-        chunks = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(string, start, start + Stella.$MAXIMUM_STRING_CONSTANT_SIZE$)), chunks);
+        chunks = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(string, start, start + Stella.$MAXIMUM_STRING_CONSTANT_SIZE$)), chunks);
         start = start + Stella.$MAXIMUM_STRING_CONSTANT_SIZE$;
       }
       if (start < length) {
-        chunks = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(string, start, length)), chunks);
+        chunks = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(string, start, length)), chunks);
       }
       stringtree = chunks.value;
       { Stella_Object chunk = null;
@@ -8936,7 +9703,7 @@ public class Stella {
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           chunk = iter000.value;
-          stringtree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CONCATENATE, Stella_Object.cons(chunk, Stella_Object.cons(Stella_Object.cons(stringtree, Stella.NIL), Stella.NIL))));
+          stringtree = Cons.list$(Cons.cons(Stella.SYM_STELLA_CONCATENATE, Cons.cons(chunk, Cons.cons(Cons.cons(stringtree, Stella.NIL), Stella.NIL))));
         }
       }
       return (stringtree);
@@ -8960,7 +9727,7 @@ public class Stella {
           { boolean testValue000 = false;
 
             { 
-              symbol = Stella.lookupSymbolInModule(name, module, true);
+              symbol = Symbol.lookupSymbolInModule(name, module, true);
               testValue000 = symbol != null;
             }
             if (testValue000) {
@@ -8980,7 +9747,7 @@ public class Stella {
   }
 
   public static void defineFunctionObject(String name, String definition, java.lang.reflect.Method code, java.lang.reflect.Method wrappercode) {
-    { Stella_Object namesymbol = ((name.charAt(0) == ' ') ? Stella.readSExpressionFromString(name) : Stella.internSymbolInModule(name, null, false));
+    { Stella_Object namesymbol = ((name.charAt(0) == ' ') ? Stella.readSExpressionFromString(name) : Symbol.internSymbolInModule(name, null, false));
       StandardObject oldfunction = ((StandardObject)(Stella.$FUNCTION_LOOKUP_TABLE$.lookup(((Symbol)(namesymbol)))));
       Vector record = Vector.newVector(((wrappercode != null) ? 5 : 4));
 
@@ -9006,7 +9773,7 @@ public class Stella {
    * @return GlobalVariable
    */
   public static GlobalVariable string_lookupGlobalVariable(String self) {
-    { Symbol symbol = Stella.lookupSymbol(self);
+    { Symbol symbol = Symbol.lookupSymbol(self);
 
       if (symbol != null) {
         return (symbol.lookupGlobalVariable());
@@ -9165,7 +9932,7 @@ public class Stella {
 
   public static Cons yieldRegisterRecycledItemTrees() {
     if (Stella.$TRANSLATE_WITH_RECYCLE_LIST_DEBUGGINGp$) {
-      return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_RECYCLE_LIST_DEBUGGING_ENABLEDp, Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_REGISTER_RECYCLED_ITEM, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+      return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.cons(Stella.SYM_STELLA_RECYCLE_LIST_DEBUGGING_ENABLEDp, Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_REGISTER_RECYCLED_ITEM, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
     }
     else {
       return (Stella.NIL);
@@ -9174,7 +9941,7 @@ public class Stella {
 
   public static Cons yieldUnregisterRecycledItemTrees() {
     if (Stella.$TRANSLATE_WITH_RECYCLE_LIST_DEBUGGINGp$) {
-      return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_RECYCLE_LIST_DEBUGGING_ENABLEDp, Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UNREGISTER_RECYCLED_ITEM, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+      return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.cons(Stella.SYM_STELLA_RECYCLE_LIST_DEBUGGING_ENABLEDp, Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNREGISTER_RECYCLED_ITEM, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
     }
     else {
       return (Stella.NIL);
@@ -9520,11 +10287,12 @@ public class Stella {
     }
   }
 
-  /** Format <code>zone</code> as an hh:mm string
+  /** Format <code>zone</code> as an hh:mm or hhmm string depending on <code>includeColonP</code>
    * @param timezone
+   * @param includeColonP
    * @return String
    */
-  static String timeZoneFormat60(double timezone) {
+  static String timeZoneFormat60(double timezone, boolean includeColonP) {
     { String sign = "+";
       int hours = 0;
 
@@ -9533,7 +10301,7 @@ public class Stella {
         timezone = 0 - timezone;
       }
       hours = Native.round(timezone);
-      return (sign + Stella.formatWithPadding(Native.integerToString(hours), 2, '0', Stella.KWD_RIGHT, false) + ":" + Stella.formatWithPadding(Native.integerToString(Native.round((timezone - hours) * 60.0)), 2, '0', Stella.KWD_RIGHT, false));
+      return (sign + Stella.formatWithPadding(Native.integerToString(((long)(hours))), 2, '0', Stella.KWD_RIGHT, false) + ((includeColonP ? ":" : "")) + Stella.formatWithPadding(Native.integerToString(((long)(Native.round((timezone - hours) * 60.0)))), 2, '0', Stella.KWD_RIGHT, false));
     }
   }
 
@@ -9566,25 +10334,25 @@ public class Stella {
       if ((!parsingTimeP) &&
           ((substring.length() == 1) &&
            BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(testValue = Stella_Object.dateTimeDivider(CharacterWrapper.wrapCharacter(substring.charAt(0)))))))) {
-        return (Stella.consList(Stella_Object.cons(Stella.SYM_STELLA_DATE_TIME_DIVIDER, Stella_Object.cons(testValue, Stella.NIL))));
+        return (Cons.consList(Cons.cons(Stella.SYM_STELLA_DATE_TIME_DIVIDER, Cons.cons(testValue, Stella.NIL))));
       }
       if (((IntegerWrapper)(testValue = Stella_Object.month(StringWrapper.wrapString(teststring)))) != null) {
-        return (Stella.consList(Stella_Object.cons(Stella.SYM_STELLA_MONTH, Stella_Object.cons(testValue, Stella.NIL))));
+        return (Cons.consList(Cons.cons(Stella.SYM_STELLA_MONTH, Cons.cons(testValue, Stella.NIL))));
       }
       if (((Keyword)(testValue = Stella_Object.weekday(StringWrapper.wrapString(teststring)))) != null) {
-        return (Stella.consList(Stella_Object.cons(Stella.SYM_STELLA_WEEKDAY, Stella_Object.cons(testValue, Stella.NIL))));
+        return (Cons.consList(Cons.cons(Stella.SYM_STELLA_WEEKDAY, Cons.cons(testValue, Stella.NIL))));
       }
       if (((Symbol)(testValue = Stella_Object.amPm(StringWrapper.wrapString(teststring)))) != null) {
-        return (Stella.consList(Stella_Object.cons(Stella.SYM_STELLA_AM_PM, Stella_Object.cons(testValue, Stella.NIL))));
+        return (Cons.consList(Cons.cons(Stella.SYM_STELLA_AM_PM, Cons.cons(testValue, Stella.NIL))));
       }
       if (((Symbol)(testValue = Stella_Object.noonMidn(StringWrapper.wrapString(teststring)))) != null) {
-        return (Stella.consList(Stella_Object.cons(Stella.SYM_STELLA_NOON_MIDN, Stella_Object.cons(testValue, Stella.NIL))));
+        return (Cons.consList(Cons.cons(Stella.SYM_STELLA_NOON_MIDN, Cons.cons(testValue, Stella.NIL))));
       }
       if (((FloatWrapper)(testValue = Stella_Object.zone(StringWrapper.wrapString(teststring)))) != null) {
-        return (Stella.consList(Stella_Object.cons(Stella.SYM_STELLA_ZONE, Stella_Object.cons(testValue, Stella.NIL))));
+        return (Cons.consList(Cons.cons(Stella.SYM_STELLA_ZONE, Cons.cons(testValue, Stella.NIL))));
       }
       if (((Symbol)(testValue = Stella_Object.specialp(StringWrapper.wrapString(teststring)))) != null) {
-        return (Stella.consList(Stella_Object.cons(Stella.SYM_STELLA_SPECIAL, Stella_Object.cons(testValue, Stella.NIL))));
+        return (Cons.consList(Cons.cons(Stella.SYM_STELLA_SPECIAL, Cons.cons(testValue, Stella.NIL))));
       }
       if (((Boolean)(Stella.$ERROR_ON_MISMATCH$.get())).booleanValue()) {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -9632,7 +10400,7 @@ public class Stella {
                     return (Stella.NIL);
                   }
                   else {
-                    partsList = Stella_Object.cons(matchSymbol, partsList);
+                    partsList = Cons.cons(matchSymbol, partsList);
                   }
                 }
                 stringIndex = scanIndex;
@@ -9662,10 +10430,10 @@ public class Stella {
                     fractionalValue = 0 - fractionalValue;
                   }
                   if (inFractionP) {
-                    partsList = Stella_Object.cons(FloatWrapper.wrapFloat(numericValue + (fractionalValue / fractionalDivisor)), partsList);
+                    partsList = Cons.cons(FloatWrapper.wrapFloat(numericValue + (fractionalValue / fractionalDivisor)), partsList);
                   }
                   else {
-                    partsList = Stella_Object.cons(IntegerWrapper.wrapInteger(numericValue), partsList);
+                    partsList = Cons.cons(IntegerWrapper.wrapInteger(numericValue), partsList);
                   }
                   stringIndex = scanIndex;
                   break loop002;
@@ -9694,17 +10462,17 @@ public class Stella {
           stringIndex = stringIndex + 1;
         }
         else if (Stella.TIME_DIVIDERS.memberP(CharacterWrapper.wrapCharacter(nextChar))) {
-          partsList = Stella_Object.cons(Stella.consList(Stella_Object.cons(Stella.SYM_STELLA_TIME_DIVIDER, Stella_Object.cons(CharacterWrapper.wrapCharacter(nextChar), Stella.NIL))), partsList);
+          partsList = Cons.cons(Cons.consList(Cons.cons(Stella.SYM_STELLA_TIME_DIVIDER, Cons.cons(CharacterWrapper.wrapCharacter(nextChar), Stella.NIL))), partsList);
           parsingTimeP = true;
           stringIndex = stringIndex + 1;
         }
         else if (Stella.DATE_DIVIDERS.memberP(CharacterWrapper.wrapCharacter(nextChar))) {
-          partsList = Stella_Object.cons(Stella.consList(Stella_Object.cons(Stella.SYM_STELLA_DATE_DIVIDER, Stella_Object.cons(CharacterWrapper.wrapCharacter(nextChar), Stella.NIL))), partsList);
+          partsList = Cons.cons(Cons.consList(Cons.cons(Stella.SYM_STELLA_DATE_DIVIDER, Cons.cons(CharacterWrapper.wrapCharacter(nextChar), Stella.NIL))), partsList);
           parsingTimeP = false;
           stringIndex = stringIndex + 1;
         }
         else if (Stella.DATE_TIME_DIVIDERS.memberP(CharacterWrapper.wrapCharacter(nextChar))) {
-          partsList = Stella_Object.cons(Stella.consList(Stella_Object.cons(Stella.SYM_STELLA_DATE_TIME_DIVIDER, Stella_Object.cons(CharacterWrapper.wrapCharacter(nextChar), Stella.NIL))), partsList);
+          partsList = Cons.cons(Cons.consList(Cons.cons(Stella.SYM_STELLA_DATE_TIME_DIVIDER, Cons.cons(CharacterWrapper.wrapCharacter(nextChar), Stella.NIL))), partsList);
           parsingTimeP = true;
           stringIndex = stringIndex + 1;
         }
@@ -9713,6 +10481,7 @@ public class Stella {
           stringIndex = stringIndex + 1;
         }
         else if (nextChar == '+') {
+          partsList = Cons.cons(Cons.consList(Cons.cons(Stella.SYM_STELLA_DATE_DIVIDER, Cons.cons(CharacterWrapper.wrapCharacter(nextChar), Stella.NIL))), partsList);
           stringIndex = stringIndex + 1;
         }
         else if (nextChar == '(') {
@@ -9832,7 +10601,7 @@ public class Stella {
   }
 
   public static Stella_Class getIdenticalClass(String classname, String stringifiedsource) {
-    { Surrogate surrogate = Stella.lookupSurrogate(classname);
+    { Surrogate surrogate = Surrogate.lookupSurrogate(classname);
       Stella_Object oldvalue = ((surrogate != null) ? surrogate.surrogateValue : ((Stella_Object)(null)));
 
       if (oldvalue != null) {
@@ -10032,7 +10801,7 @@ public class Stella {
       for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
         f = ((Keyword)(iter000.value));
         if (!Stella.$DEFAULT_STELLA_FEATURES$.memberP(f)) {
-          Stella.unsetStellaFeature(Stella_Object.cons(f, Stella.NIL));
+          Stella.unsetStellaFeature(Cons.cons(f, Stella.NIL));
         }
       }
     }
@@ -10042,7 +10811,7 @@ public class Stella {
       for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
         f = ((Keyword)(iter001.value));
         if (!((List)(Stella.$CURRENT_STELLA_FEATURES$.get())).memberP(f)) {
-          Stella.setStellaFeature(Stella_Object.cons(f, Stella.NIL));
+          Stella.setStellaFeature(Cons.cons(f, Stella.NIL));
         }
       }
     }
@@ -10056,7 +10825,7 @@ public class Stella {
    */
   public static List addTrace(Cons keywords) {
     if (Stella.$TRACED_KEYWORDS$ == null) {
-      Stella.$TRACED_KEYWORDS$ = Stella.list(Stella.NIL);
+      Stella.$TRACED_KEYWORDS$ = List.list(Stella.NIL);
     }
     { GeneralizedSymbol k = null;
       Cons iter000 = keywords;
@@ -10358,7 +11127,7 @@ public class Stella {
             unit = ((TranslationUnit)(iter000.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(unit.translation, Stella.NIL);
+                collect000 = Cons.cons(unit.translation, Stella.NIL);
                 if (otree == Stella.NIL) {
                   otree = collect000;
                 }
@@ -10369,7 +11138,7 @@ public class Stella {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(unit.translation, Stella.NIL);
+                collect000.rest = Cons.cons(unit.translation, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -10387,7 +11156,7 @@ public class Stella {
             if (!TranslationUnit.unitIncludedInOtherUnitsP(unit)) {
               if (collect001 == null) {
                 {
-                  collect001 = Stella_Object.cons(unit.translation, Stella.NIL);
+                  collect001 = Cons.cons(unit.translation, Stella.NIL);
                   if (otree == Stella.NIL) {
                     otree = collect001;
                   }
@@ -10398,7 +11167,7 @@ public class Stella {
               }
               else {
                 {
-                  collect001.rest = Stella_Object.cons(unit.translation, Stella.NIL);
+                  collect001.rest = Cons.cons(unit.translation, Stella.NIL);
                   collect001 = collect001.rest;
                 }
               }
@@ -10414,7 +11183,7 @@ public class Stella {
         }
       }
       if (((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_COMMON_LISP) {
-        otree = Stella_Object.cons(Stella.internCommonLispSymbol("PROGN"), otree.concatenate(Stella.NIL, Stella.NIL));
+        otree = Cons.cons(Stella.internCommonLispSymbol("PROGN"), otree.concatenate(Stella.NIL, Stella.NIL));
       }
       else if ((((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_CPP) ||
           ((((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_CPP_STANDALONE) ||
@@ -10435,6 +11204,7 @@ public class Stella {
   public static void resetTranslationErrors() {
     Native.setIntSpecial(Stella.$TRANSLATIONERRORS$, 0);
     Native.setIntSpecial(Stella.$TRANSLATIONWARNINGS$, 0);
+    Native.setIntSpecial(Stella.$TRANSLATIONNOTES$, 0);
   }
 
   public static void signalTranslationError() {
@@ -10443,6 +11213,10 @@ public class Stella {
 
   public static void signalTranslationWarning() {
     Native.setIntSpecial(Stella.$TRANSLATIONWARNINGS$, ((Integer)(Stella.$TRANSLATIONWARNINGS$.get())).intValue() + 1);
+  }
+
+  public static void signalTranslationNote() {
+    Native.setIntSpecial(Stella.$TRANSLATIONNOTES$, ((Integer)(Stella.$TRANSLATIONNOTES$.get())).intValue() + 1);
   }
 
   public static boolean ignoreTranslationErrorsP() {
@@ -10470,8 +11244,19 @@ public class Stella {
         System.out.print("s");
       }
     }
+    if (((Integer)(Stella.$TRANSLATIONNOTES$.get())).intValue() > 0) {
+      if ((((Integer)(Stella.$TRANSLATIONERRORS$.get())).intValue() > 0) ||
+          (((Integer)(Stella.$TRANSLATIONWARNINGS$.get())).intValue() > 0)) {
+        System.out.print(", ");
+      }
+      System.out.print(((Integer)(Stella.$TRANSLATIONNOTES$.get())).intValue() + " note");
+      if (((Integer)(Stella.$TRANSLATIONNOTES$.get())).intValue() > 1) {
+        System.out.print("s");
+      }
+    }
     if ((((Integer)(Stella.$TRANSLATIONERRORS$.get())).intValue() > 0) ||
-        (((Integer)(Stella.$TRANSLATIONWARNINGS$.get())).intValue() > 0)) {
+        ((((Integer)(Stella.$TRANSLATIONWARNINGS$.get())).intValue() > 0) ||
+         (((Integer)(Stella.$TRANSLATIONNOTES$.get())).intValue() > 0))) {
       System.out.println(".");
     }
   }
@@ -10818,7 +11603,7 @@ public class Stella {
 
       try {
         Native.setSpecial(Stella.$LOCALVARIABLETYPETABLE$, KeyValueList.newKeyValueList());
-        return (((Cons)(Stella_Object.walkWithoutTypeTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ERROR, Stella_Object.cons(StringWrapper.wrapString("Attempt to execute illegal statement flagged by the translator"), Stella_Object.cons(Stella.SYM_STELLA_EOL, Stella_Object.cons(StringWrapper.wrapString("    but not yet fixed."), Stella_Object.cons(Stella.NIL, Stella.NIL))))))))));
+        return (((Cons)(Stella_Object.walkWithoutTypeTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_ERROR, Cons.cons(StringWrapper.wrapString("Attempt to execute illegal statement flagged by the translator"), Cons.cons(Stella.SYM_STELLA_EOL, Cons.cons(StringWrapper.wrapString("    but not yet fixed."), Cons.cons(Stella.NIL, Stella.NIL))))))))));
 
       } finally {
         Stella.$LOCALVARIABLETYPETABLE$.set(old$Localvariabletypetable$000);
@@ -10886,7 +11671,7 @@ public class Stella {
   }
 
   public static Cons yieldHardcodedInternRegisteredSymbolsTree() {
-    { Cons interntrees = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Stella_Object.cons(Stella.KWD_SYMBOLS, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+    { Cons interntrees = Cons.list$(Cons.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Cons.cons(Stella.KWD_SYMBOLS, Cons.cons(Stella.NIL, Stella.NIL))));
 
       { GeneralizedSymbol symbol = null;
         Cons iter000 = Stella.$SYMBOL_SET$.theConsList;
@@ -10896,7 +11681,7 @@ public class Stella {
           symbol = ((GeneralizedSymbol)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Stella_Object.cons((Stella_Object.symbolP(symbol) ? Stella.SYM_STELLA_INTERN_SYMBOL_AT : ((Stella_Object.surrogateP(symbol) ? Stella.SYM_STELLA_INTERN_SURROGATE_AT : Stella.SYM_STELLA_INTERN_KEYWORD_AT))), Stella_Object.cons(StringWrapper.wrapString(symbol.symbolName), Stella_Object.cons(IntegerWrapper.wrapInteger(symbol.symbolId), Stella.NIL))), Stella.NIL);
+              collect000 = Cons.cons(Cons.cons((Stella_Object.symbolP(symbol) ? Stella.SYM_STELLA_INTERN_SYMBOL_AT : ((Stella_Object.surrogateP(symbol) ? Stella.SYM_STELLA_INTERN_SURROGATE_AT : Stella.SYM_STELLA_INTERN_KEYWORD_AT))), Cons.cons(StringWrapper.wrapString(symbol.symbolName), Cons.cons(IntegerWrapper.wrapInteger(symbol.symbolId), Stella.NIL))), Stella.NIL);
               if (interntrees == Stella.NIL) {
                 interntrees = collect000;
               }
@@ -10907,7 +11692,7 @@ public class Stella {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Stella_Object.cons((Stella_Object.symbolP(symbol) ? Stella.SYM_STELLA_INTERN_SYMBOL_AT : ((Stella_Object.surrogateP(symbol) ? Stella.SYM_STELLA_INTERN_SURROGATE_AT : Stella.SYM_STELLA_INTERN_KEYWORD_AT))), Stella_Object.cons(StringWrapper.wrapString(symbol.symbolName), Stella_Object.cons(IntegerWrapper.wrapInteger(symbol.symbolId), Stella.NIL))), Stella.NIL);
+              collect000.rest = Cons.cons(Cons.cons((Stella_Object.symbolP(symbol) ? Stella.SYM_STELLA_INTERN_SYMBOL_AT : ((Stella_Object.surrogateP(symbol) ? Stella.SYM_STELLA_INTERN_SURROGATE_AT : Stella.SYM_STELLA_INTERN_KEYWORD_AT))), Cons.cons(StringWrapper.wrapString(symbol.symbolName), Cons.cons(IntegerWrapper.wrapInteger(symbol.symbolId), Stella.NIL))), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -10973,7 +11758,7 @@ public class Stella {
                 }
                 otree = otree.remove(value000);
               }
-              otree = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(variable, Stella_Object.cons(Stella_Object.cons(oldvaluevariable, Stella.NIL), Stella.NIL)))), otree);
+              otree = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(variable, Cons.cons(Cons.cons(oldvaluevariable, Stella.NIL), Stella.NIL)))), otree);
             }
           }
         }
@@ -11014,8 +11799,8 @@ public class Stella {
   }
 
   public static void createFinalizationUnits() {
-    Cons.walkAuxiliaryTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Stella_Object.cons(Stella.KWD_FINALIZE_CLASSES, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_FINALIZE_CLASSES, Stella.NIL), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
-    Cons.walkAuxiliaryTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Stella_Object.cons(Stella.KWD_FINALIZE_METHODS, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_FINALIZE_SLOTS, Stella.NIL), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_CLEANUP_UNFINALIZED_CLASSES, Stella.NIL), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+    Cons.walkAuxiliaryTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Cons.cons(Stella.KWD_FINALIZE_CLASSES, Cons.cons(Cons.cons(Stella.SYM_STELLA_FINALIZE_CLASSES, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL))))));
+    Cons.walkAuxiliaryTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Cons.cons(Stella.KWD_FINALIZE_METHODS, Cons.cons(Cons.cons(Stella.SYM_STELLA_FINALIZE_SLOTS, Stella.NIL), Cons.cons(Cons.cons(Stella.SYM_STELLA_CLEANUP_UNFINALIZED_CLASSES, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL)))))));
   }
 
   public static Symbol yieldStartupFunctionName(String file) {
@@ -11024,7 +11809,7 @@ public class Stella {
       return (SystemDefinition.systemStartupFunctionSymbol(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get()))));
     }
     else {
-      return (Stella.internSymbolInModule("STARTUP-" + Native.stringUpcase(Stella.fileBaseName(file)), ((Module)(Stella.$MODULE$.get())), true));
+      return (Symbol.internSymbolInModule("STARTUP-" + Native.stringUpcase(Stella.fileBaseName(file)), ((Module)(Stella.$MODULE$.get())), true));
     }
   }
 
@@ -11037,24 +11822,24 @@ public class Stella {
         Stella.removeAllStartupTimePrognUnits();
       }
       else if (startupfnname != null) {
-        tree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(startupfnname, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.NIL, Stella_Object.cons(Stella.KWD_PUBLICp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL))));
+        tree = Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(startupfnname, Cons.cons(Cons.list$(Cons.cons(Stella.NIL, Cons.cons(Stella.KWD_PUBLICp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL))));
         method = Cons.defineMethodFromParseTree(tree);
-        KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_FORWARD_DECLARATIONp, (false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_FORWARD_DECLARATIONp, Stella.FALSE_WRAPPER, Stella.FALSE_WRAPPER);
         KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_STARTUP_CLASSNAME, StringWrapper.wrapString(Symbol.yieldStartupFunctionClassname(startupfnname)), Stella.NULL_STRING_WRAPPER);
-        tree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Stella_Object.cons(Stella.KWD_METHODS, Stella_Object.cons(MethodSlot.yieldDefineStellaMethodObject(method, method, null), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_FUNCTION, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LOOKUP_FUNCTION, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_QUOTE, Stella_Object.cons(startupfnname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_METHOD_STARTUP_CLASSNAME, Stella_Object.cons(Stella.SYM_STELLA_FUNCTION, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(StringWrapper.wrapString(((StringWrapper)(KeyValueList.dynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_STARTUP_CLASSNAME, Stella.NULL_STRING_WRAPPER))).wrapperValue), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))));
+        tree = Cons.list$(Cons.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Cons.cons(Stella.KWD_METHODS, Cons.cons(MethodSlot.yieldDefineStellaMethodObject(method, method, null), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_FUNCTION, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOOKUP_FUNCTION, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_QUOTE, Cons.cons(startupfnname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_METHOD_STARTUP_CLASSNAME, Cons.cons(Stella.SYM_STELLA_FUNCTION, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(StringWrapper.wrapString(((StringWrapper)(KeyValueList.dynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_STARTUP_CLASSNAME, Stella.NULL_STRING_WRAPPER))).wrapperValue), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))));
         Cons.walkAuxiliaryTree(tree);
         if (Stella.systemStartupFileP(((String)(Stella.$CURRENTFILE$.get())))) {
-          tree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(startupfnname, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.NIL, Stella_Object.cons(Stella.KWD_PUBLICp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.KWD_AUXILIARYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WITH_PROCESS_LOCK, Stella_Object.cons(Stella.SYM_STELLA_$BOOTSTRAP_LOCK$, Stella_Object.cons(Symbol.combineStartupFunctionUnits(startupfnname).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))), Stella.NIL))));
+          tree = Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(startupfnname, Cons.cons(Cons.list$(Cons.cons(Stella.NIL, Cons.cons(Stella.KWD_PUBLICp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.KWD_AUXILIARYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WITH_PROCESS_LOCK, Cons.cons(Stella.SYM_STELLA_$BOOTSTRAP_LOCK$, Cons.cons(Symbol.combineStartupFunctionUnits(startupfnname).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))))), Stella.NIL))));
         }
         else {
-          tree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(startupfnname, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.NIL, Stella_Object.cons(Stella.KWD_PUBLICp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.KWD_AUXILIARYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Symbol.combineStartupFunctionUnits(startupfnname).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))))), Stella.NIL))));
+          tree = Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(startupfnname, Cons.cons(Cons.list$(Cons.cons(Stella.NIL, Cons.cons(Stella.KWD_PUBLICp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.KWD_AUXILIARYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Symbol.combineStartupFunctionUnits(startupfnname).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))))), Stella.NIL))));
         }
         KeyValueList.setDynamicSlotValue(((MethodSlot)(Cons.helpWalkAuxiliaryTree(tree, true).theObject)).dynamicSlots, Stella.SYM_STELLA_METHOD_STARTUP_CLASSNAME, StringWrapper.wrapString(Symbol.yieldStartupFunctionClassname(startupfnname)), Stella.NULL_STRING_WRAPPER);
       }
       else {
-        tree = Stella_Object.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Symbol.combineStartupFunctionUnits(startupfnname).concatenate(Stella.NIL, Stella.NIL));
+        tree = Cons.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Symbol.combineStartupFunctionUnits(startupfnname).concatenate(Stella.NIL, Stella.NIL));
         Cons.walkAuxiliaryTree(tree);
-        tree = Stella_Object.cons(Stella.SYM_STELLA_PROGN, ((Cons)(((TranslationUnit)(((List)(Stella.$TRANSLATIONUNITS$.get())).first())).theObject)));
+        tree = Cons.cons(Stella.SYM_STELLA_PROGN, ((Cons)(((TranslationUnit)(((List)(Stella.$TRANSLATIONUNITS$.get())).first())).theObject)));
         ((TranslationUnit)(((List)(Stella.$TRANSLATIONUNITS$.get())).first())).theObject = tree;
       }
     }
@@ -11086,6 +11871,25 @@ public class Stella {
       }
       ((List)(Stella.$TRANSLATIONUNITS$.get())).remove(placeholderunit);
       TranslationUnit.clearTranslationUnit(placeholderunit);
+    }
+  }
+
+  public static Surrogate getCurrentSelfType() {
+    { MethodSlot method = ((MethodSlot)(Stella.$METHODBEINGWALKED$.get()));
+      Surrogate owner = Stella.SGT_STELLA_UNKNOWN;
+
+      if (method != null) {
+        owner = method.owner();
+        if (owner == null) {
+          if (((BooleanWrapper)(KeyValueList.dynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_CONSTRUCTORp, Stella.FALSE_WRAPPER))).wrapperValue) {
+            owner = method.slotBaseType;
+          }
+          else {
+            owner = Stella.SGT_STELLA_UNKNOWN;
+          }
+        }
+      }
+      return (owner);
     }
   }
 
@@ -11216,7 +12020,7 @@ public class Stella {
           stream.println();
         }
 ;
-        Stella_Object.printStellaDefinition(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("DECLAIM"), Stella_Object.cons(Stella_Object.cons(Stella.internCommonLispSymbol("SPECIAL"), Cons.clTranslateListOfTrees(forwardreferencedvariables.theConsList).concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), stream);
+        Stella_Object.printStellaDefinition(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("DECLAIM"), Cons.cons(Cons.cons(Stella.internCommonLispSymbol("SPECIAL"), Cons.clTranslateListOfTrees(forwardreferencedvariables.theConsList).concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))), stream);
       }
       definedvariables.free();
       forwardreferencedvariables.free();
@@ -11243,15 +12047,15 @@ public class Stella {
    * @param systemName
    */
   public static void clTranslateSystem(String systemName) {
-    Stella.translateSystem(systemName, Stella.KWD_COMMON_LISP, Stella_Object.cons(Stella.KWD_TWO_PASSp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella_Object.cons(Stella.KWD_FORCE_TRANSLATIONp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella_Object.cons(Stella.KWD_PRODUCTION_SETTINGSp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella.NIL)))))));
+    Stella.translateSystem(systemName, Cons.cons(Stella.KWD_COMMON_LISP, Cons.cons(Stella.KWD_TWO_PASSp, Cons.cons(Stella.TRUE_WRAPPER, Cons.cons(Stella.KWD_FORCE_TRANSLATIONp, Cons.cons(Stella.TRUE_WRAPPER, Cons.cons(Stella.KWD_PRODUCTION_SETTINGSp, Cons.cons(Stella.TRUE_WRAPPER, Stella.NIL))))))));
   }
 
   public static void clTranslateStella(boolean productionsettingsP) {
-    Stella.translateSystem("stella", Stella.KWD_COMMON_LISP, Stella_Object.cons(Stella.KWD_FORCE_TRANSLATIONp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella_Object.cons(Stella.KWD_PRODUCTION_SETTINGSp, Stella_Object.cons((productionsettingsP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.NIL)))));
+    Stella.translateSystem("stella", Cons.cons(Stella.KWD_COMMON_LISP, Cons.cons(Stella.KWD_FORCE_TRANSLATIONp, Cons.cons(Stella.TRUE_WRAPPER, Cons.cons(Stella.KWD_PRODUCTION_SETTINGSp, Cons.cons((productionsettingsP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.NIL))))));
   }
 
   public static void clRetranslateStella(boolean productionsettingsP) {
-    Stella.translateSystem("stella", Stella.KWD_COMMON_LISP, Stella_Object.cons(Stella.KWD_TWO_PASSp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella_Object.cons(Stella.KWD_FORCE_TRANSLATIONp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella_Object.cons(Stella.KWD_PRODUCTION_SETTINGSp, Stella_Object.cons((productionsettingsP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.NIL)))))));
+    Stella.translateSystem("stella", Cons.cons(Stella.KWD_COMMON_LISP, Cons.cons(Stella.KWD_TWO_PASSp, Cons.cons(Stella.TRUE_WRAPPER, Cons.cons(Stella.KWD_FORCE_TRANSLATIONp, Cons.cons(Stella.TRUE_WRAPPER, Cons.cons(Stella.KWD_PRODUCTION_SETTINGSp, Cons.cons((productionsettingsP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.NIL))))))));
   }
 
   public static Context computeContextOrModuleFromPathname(String pathname, boolean moduleP, boolean symbolnameP, Object [] MV_returnarray) {
@@ -11664,7 +12468,7 @@ public class Stella {
   public static Iterator allContexts() {
     { AllPurposeIterator iterator = Context.allSubcontexts(Stella.$ROOT_MODULE$, Stella.KWD_PREORDER);
 
-      iterator.iteratorConsList = Stella_Object.cons(Stella.$ROOT_MODULE$, Stella.NIL);
+      iterator.iteratorConsList = Cons.cons(Stella.$ROOT_MODULE$, Stella.NIL);
       return (iterator);
     }
   }
@@ -11703,7 +12507,7 @@ public class Stella {
                 (!((BooleanWrapper)(KeyValueList.dynamicSlotValue(m.dynamicSlots, Stella.SYM_STELLA_NAMESPACEp, Stella.FALSE_WRAPPER))).wrapperValue)) {
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(m, Stella.NIL);
+                  collect000 = Cons.cons(m, Stella.NIL);
                   if (value000 == Stella.NIL) {
                     value000 = collect000;
                   }
@@ -11714,7 +12518,7 @@ public class Stella {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(m, Stella.NIL);
+                  collect000.rest = Cons.cons(m, Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -11738,7 +12542,7 @@ public class Stella {
             m = ((Module)(iter001.value));
             if (collect001 == null) {
               {
-                collect001 = Stella_Object.cons(m, Stella.NIL);
+                collect001 = Cons.cons(m, Stella.NIL);
                 if (value002 == Stella.NIL) {
                   value002 = collect001;
                 }
@@ -11749,7 +12553,7 @@ public class Stella {
             }
             else {
               {
-                collect001.rest = Stella_Object.cons(m, Stella.NIL);
+                collect001.rest = Cons.cons(m, Stella.NIL);
                 collect001 = collect001.rest;
               }
             }
@@ -11793,7 +12597,7 @@ public class Stella {
       Stella.callClearModule(Stella.NIL);
     }
     else {
-      Stella.callClearModule(Stella_Object.cons(name.value, Stella.NIL));
+      Stella.callClearModule(Cons.cons(name.value, Stella.NIL));
     }
   }
 
@@ -11850,7 +12654,7 @@ public class Stella {
             if (context != null) {
               { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
 
-                stream000.nativeStream.print("More than one context has the name or nickname `" + self + "'");
+                stream000.nativeStream.print("More than one context has the name or nickname `" + self + "': `" + context + "' and `" + cxt + "'");
                 throw ((NoSuchContextException)(NoSuchContextException.newNoSuchContextException(stream000.theStringReader()).fillInStackTrace()));
               }
             }
@@ -11887,17 +12691,26 @@ public class Stella {
       Stella_Object namespec = name.value;
 
       if (namespec != null) {
-        if (Surrogate.subtypeOfIntegerP(Stella_Object.safePrimaryType(namespec))) {
-          { IntegerWrapper namespec000 = ((IntegerWrapper)(namespec));
+        { Surrogate testValue000 = Stella_Object.safePrimaryType(namespec);
 
-            context = Stella.integer_getStellaContextSlowly(namespec000.wrapperValue);
+          if (Surrogate.subtypeOfIntegerP(testValue000)) {
+            { IntegerWrapper namespec000 = ((IntegerWrapper)(namespec));
+
+              context = Stella.integer_getStellaContextSlowly(((int)(namespec000.wrapperValue)));
+            }
           }
-        }
-        else {
-          { String contextname = Stella_Object.coerceToModuleName(namespec, true);
+          else if (Surrogate.subtypeOfLongIntegerP(testValue000)) {
+            { LongIntegerWrapper namespec000 = ((LongIntegerWrapper)(namespec));
 
-            if (contextname != null) {
-              context = Stella.getStellaContext(contextname, true);
+              context = Stella.integer_getStellaContextSlowly(((int)(namespec000.wrapperValue)));
+            }
+          }
+          else {
+            { String contextname = Stella_Object.coerceToModuleName(namespec, true);
+
+              if (contextname != null) {
+                context = Stella.getStellaContext(contextname, true);
+              }
             }
           }
         }
@@ -11911,7 +12724,8 @@ public class Stella {
    * the pre-existing value of the current context.  <code>cc</code> is a no-op if the
    * context reference cannot be successfully evaluated.
    * In CommonLisp, if the new context is case sensitive, then change
-   * the readtable case to :INVERT, otherwise to :UPCASE.
+   * the readtable case to the value of CL-USER::*STELLA-CASE-SENSITIVE-READ-MODE*
+   * [default = :INVERT], otherwise to :UPCASE.
    * @param name
    * @return Context
    */
@@ -11921,17 +12735,27 @@ public class Stella {
       boolean casesensitiveP = context.baseModule.caseSensitiveP;
 
       if (namespec != null) {
-        if (Surrogate.subtypeOfIntegerP(Stella_Object.safePrimaryType(namespec))) {
-          { IntegerWrapper namespec000 = ((IntegerWrapper)(namespec));
+        { Surrogate testValue000 = Stella_Object.safePrimaryType(namespec);
 
-            context = Stella.integer_getStellaContextSlowly(namespec000.wrapperValue);
+          if (Surrogate.subtypeOfIntegerP(testValue000)) {
+            { IntegerWrapper namespec000 = ((IntegerWrapper)(namespec));
+
+              context = Stella.integer_getStellaContextSlowly(((int)(namespec000.wrapperValue)));
+            }
           }
-        }
-        else {
-          { String contextname = Stella_Object.coerceToModuleName(namespec, true);
+          else if (Surrogate.subtypeOfLongIntegerP(testValue000)) {
+            { LongIntegerWrapper namespec000 = ((LongIntegerWrapper)(namespec));
 
-            if (contextname != null) {
-              context = Stella.getStellaContext(contextname, true);
+              context = Stella.integer_getStellaContextSlowly(((int)(namespec000.wrapperValue)));
+            }
+          }
+          else {
+            { String contextname = Stella_Object.coerceToModuleName(namespec, true);
+
+              if (contextname != null) {
+                context = Stella.getStellaContext(contextname, true);
+                casesensitiveP = context.baseModule.caseSensitiveP;
+              }
             }
           }
         }
@@ -11953,7 +12777,7 @@ public class Stella {
       end = Native.string_position(table, separator, start);
       line = Native.string_subsequence(table, start, end);
       start = end + 1;
-      count = Native.stringToInteger(line);
+      count = ((int)(Native.stringToInteger(line)));
       end = Native.string_position(table, separator, start);
       line = Native.string_subsequence(table, start, end);
       start = end + 1;
@@ -11971,7 +12795,7 @@ public class Stella {
       end = Native.string_position(table, separator, start);
       line = Native.string_subsequence(table, start, end);
       start = end + 1;
-      count = Native.stringToInteger(line);
+      count = ((int)(Native.stringToInteger(line)));
       result.uniqueStateNames = Vector.newVector(count);
       { int i = Stella.NULL_INTEGER;
         int iter001 = 0;
@@ -11988,7 +12812,7 @@ public class Stella {
       end = Native.string_position(table, separator, start);
       line = Native.string_subsequence(table, start, end);
       start = end + 1;
-      count = Native.stringToInteger(line);
+      count = ((int)(Native.stringToInteger(line)));
       result.stateNames = Vector.newVector(count);
       { int i = Stella.NULL_INTEGER;
         int iter002 = 0;
@@ -12005,7 +12829,7 @@ public class Stella {
       end = Native.string_position(table, separator, start);
       line = Native.string_subsequence(table, start, end);
       start = end + 1;
-      count = Native.stringToInteger(line);
+      count = ((int)(Native.stringToInteger(line)));
       end = Native.string_position(table, separator, start);
       line = Native.string_subsequence(table, start, end);
       start = end + 1;
@@ -12083,7 +12907,7 @@ public class Stella {
           cursor = 0;
         }
       }
-      { int readSize = Stella.min(end - start, internalEnd - cursor);
+      { int readSize = Stella.integer_min(end - start, internalEnd - cursor);
         int originalStart = start;
         byte[] internalBuffer = state.buffer;
 
@@ -12195,7 +13019,7 @@ public class Stella {
           Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
         }
       }
-      return (Stella_Object.cons(Stella.SYM_STELLA_END_OF_TOKENSp, Stella.NIL));
+      return (Cons.cons(Stella.SYM_STELLA_END_OF_TOKENSp, Stella.NIL));
     }
     return (Stella.SYM_STELLA_TOK_ENDOFTOKENSp_);
   }
@@ -12275,13 +13099,13 @@ public class Stella {
           Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
         }
       }
-      return (Stella_Object.cons(Stella.SYM_STELLA_GET_TOKEN_TYPE, Stella.NIL));
+      return (Cons.cons(Stella.SYM_STELLA_GET_TOKEN_TYPE, Stella.NIL));
     }
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NTH, Stella_Object.cons(Stella.SYM_STELLA_TOK_STATENAMES_, Stella_Object.cons(Stella.SYM_STELLA_TOK_STATE_, Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_NTH, Cons.cons(Stella.SYM_STELLA_TOK_STATENAMES_, Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(Stella.NIL, Stella.NIL))))));
   }
 
   public static Stella_Object saveTokenizerStreamState() {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CURSOR, Stella_Object.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_TOK_CURSOR_, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_TABLE, Stella_Object.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_TOK_TABLE_, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_STATE, Stella_Object.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_TOK_STATE_, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CURSOR, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_TABLE, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_TOK_TABLE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_STATE, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))))));
   }
 
   public static String unescapeTokenString(String token, char escapechar, boolean upcaseP) {
@@ -12387,6 +13211,227 @@ public class Stella {
     }
   }
 
+  /** User-level macro to access the most recently parsed token as an integer.
+   * This assumes correct signed integer syntax and only checks for overflows.
+   * @return Stella_Object
+   */
+  public static Stella_Object getTokenInteger() {
+    if (!Stella.insideWithTokenizerP()) {
+      { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+
+        try {
+          Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+          Stella.signalTranslationError();
+          if (!(Stella.suppressWarningsP())) {
+            Stella.printErrorContext(">> ERROR: ", Stella.STANDARD_ERROR);
+            {
+              Stella.STANDARD_ERROR.nativeStream.println();
+              Stella.STANDARD_ERROR.nativeStream.println(" Encountered `get-token-integer' outside of `with-tokenizer' macro..");
+            }
+;
+          }
+
+        } finally {
+          Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+        }
+      }
+      return (Cons.cons(Stella.SYM_STELLA_GET_TOKEN_INTEGER, Stella.NIL));
+    }
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_GET_TOKEN_INTEGER_INTERNAL, Cons.cons(Stella.SYM_STELLA_TOK_BUFFER_, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.SYM_STELLA_TOK_SIZE_, Cons.cons(Stella.NIL, Stella.NIL))))))));
+  }
+
+  public static int getTokenIntegerInternal(byte[] buffer, int start, int end, int size) {
+    { long result = Stella.getTokenLongIntegerInternal(buffer, start, end, size);
+
+      if ((result > Stella.MOST_POSITIVE_INTEGER) ||
+          (result < Stella.MOST_NEGATIVE_INTEGER)) {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("get-token-integer: integer overflow: `" + result + "'");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+      return (((int)(result)));
+    }
+  }
+
+  /** User-level macro to access the most recently parsed token as a long integer.
+   * This assumes correct signed long-integer syntax and only checks for overflows.
+   * @return Stella_Object
+   */
+  public static Stella_Object getTokenLongInteger() {
+    if (!Stella.insideWithTokenizerP()) {
+      { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+
+        try {
+          Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+          Stella.signalTranslationError();
+          if (!(Stella.suppressWarningsP())) {
+            Stella.printErrorContext(">> ERROR: ", Stella.STANDARD_ERROR);
+            {
+              Stella.STANDARD_ERROR.nativeStream.println();
+              Stella.STANDARD_ERROR.nativeStream.println(" Encountered `get-token-long-integer' outside of `with-tokenizer' macro..");
+            }
+;
+          }
+
+        } finally {
+          Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+        }
+      }
+      return (Cons.cons(Stella.SYM_STELLA_GET_TOKEN_LONG_INTEGER, Stella.NIL));
+    }
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_GET_TOKEN_LONG_INTEGER_INTERNAL, Cons.cons(Stella.SYM_STELLA_TOK_BUFFER_, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.SYM_STELLA_TOK_SIZE_, Cons.cons(Stella.NIL, Stella.NIL))))))));
+  }
+
+  public static long getTokenLongIntegerInternal(byte[] buffer, int start, int end, int size) {
+    { int length = end - start;
+      int auxend = end;
+      long result = 0l;
+      boolean negativeP = false;
+      int digit = 0;
+
+      if (length < 0) {
+        length = length + size;
+        auxend = size;
+      }
+      switch (((char) (0x00ff & buffer[start]))) {
+        case '+': 
+          start = start + 1;
+        break;
+        case '-': 
+          start = start + 1;
+          negativeP = true;
+        break;
+        default:
+        break;
+      }
+      loop000 : for (;;) {
+        while (start < auxend) {
+          digit = (int) (((char) (0x00ff & buffer[start]))) - (int) '0';
+          if ((result >= Stella.$GET_TOKEN_LONG_INTEGER_CHECKPOINT$) &&
+              (((Stella.MOST_POSITIVE_LONG_INTEGER - digit) / (10l)) < result)) {
+            throw ((StellaException)(StellaException.newStellaException("get-token-long-integer: long-integer overflow").fillInStackTrace()));
+          }
+          result = (result * 10) + digit;
+          start = start + 1;
+        }
+        if (auxend == end) {
+          break loop000;
+        }
+        start = 0;
+        auxend = end;
+      }
+      if (negativeP) {
+        return (0 - result);
+      }
+      else {
+        return (result);
+      }
+    }
+  }
+
+  /** User-level macro to access the most recently parsed token as a float.
+   * This assumes correct signed float syntax and only checks for overflows.
+   * The main benefit for this is that it doesn't generate strings and wrappers.
+   * Float parsing and conversion is generally hairy and we are probably not
+   * covering all special cases here; but we are fast :-)
+   * @return Stella_Object
+   */
+  public static Stella_Object getTokenFloat() {
+    if (!Stella.insideWithTokenizerP()) {
+      { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+
+        try {
+          Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+          Stella.signalTranslationError();
+          if (!(Stella.suppressWarningsP())) {
+            Stella.printErrorContext(">> ERROR: ", Stella.STANDARD_ERROR);
+            {
+              Stella.STANDARD_ERROR.nativeStream.println();
+              Stella.STANDARD_ERROR.nativeStream.println(" Encountered `get-token-float' outside of `with-tokenizer' macro..");
+            }
+;
+          }
+
+        } finally {
+          Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+        }
+      }
+      return (Cons.cons(Stella.SYM_STELLA_GET_TOKEN_FLOAT, Stella.NIL));
+    }
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_GET_TOKEN_FLOAT_INTERNAL, Cons.cons(Stella.SYM_STELLA_TOK_BUFFER_, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.SYM_STELLA_TOK_SIZE_, Cons.cons(Stella.NIL, Stella.NIL))))))));
+  }
+
+  public static double getTokenFloatInternal(byte[] buffer, int start, int end, int size) {
+    { int length = end - start;
+      int auxend = end;
+      long mantissa = 0l;
+      int exponent = 0;
+      double mantissasign = 1.0;
+      double exponentsign = 1.0;
+      boolean exponentP = false;
+      boolean decimalsP = false;
+      int decimals = 0;
+      char ch = Stella.NULL_CHARACTER;
+      int digit = 0;
+      double result = 0.0;
+
+      if (length < 0) {
+        length = length + size;
+        auxend = size;
+      }
+      loop000 : for (;;) {
+        while (start < auxend) {
+          ch = ((char) (0x00ff & buffer[start]));
+          switch (ch) {
+            case '-': 
+              if (exponentP) {
+                exponentsign = -1.0;
+              }
+              else {
+                mantissasign = -1.0;
+              }
+            break;
+            case '+': 
+            break;
+            case '.': 
+              decimalsP = true;
+            break;
+            case 'e': 
+            case 'E': 
+              exponentP = true;
+            break;
+            default:
+              digit = (int) ch - (int) '0';
+              if (exponentP) {
+                exponent = (exponent * 10) + digit;
+              }
+              else {
+                if (decimalsP) {
+                  decimals = decimals + 1;
+                }
+                mantissa = (mantissa * 10) + digit;
+              }
+            break;
+          }
+          start = start + 1;
+        }
+        if (auxend == end) {
+          break loop000;
+        }
+        start = 0;
+        auxend = end;
+      }
+      result = ((double)(mantissa));
+      exponent = ((int)((exponent * exponentsign) - decimals));
+      if (!(exponent == 0)) {
+        result = result * Math.pow((10.0),(((double)(exponent))));
+      }
+      return (result * mantissasign);
+    }
+  }
+
   /** Parse the printed representation <code>name</code> of a STELLA symbol, surrogate or
    * keyword and return its symbol name, module name and type (which is either
    * :SYMBOL, :SURROGATE or :KEYWORD).  <code>name</code> can be qualified and must use the
@@ -12409,7 +13454,6 @@ public class Stella {
       int separatorpos = 0;
       boolean upcaseP = enablecaseconversionP &&
           (!((Module)(Stella.$MODULE$.get())).caseSensitiveP);
-      GeneralizedSymbol result = null;
 
       { TokenizerTable tok_table_ = Stella.$STELLA_TOKENIZER_TABLE$;
         String tok_transitions_ = tok_table_.transitions;
@@ -12576,18 +13620,41 @@ public class Stella {
               }
             }
           }
-          else if (tok_stellalogicalstatename_ == Stella.KWD_ERROR) {
-            { OutputStringStream stream003 = OutputStringStream.newOutputStringStream();
+          else if (tok_stellalogicalstatename_ == Stella.KWD_QUALIFIED_NAME) {
+            { String token = Stella.getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, true);
+              int length = token.length();
 
-              stream003.nativeStream.print("Illegal read syntax: `" + Stella.getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false) + "'");
-              throw ((ReadException)(ReadException.newReadException(stream003.theStringReader()).fillInStackTrace()));
+              if ((length >= 1) &&
+                  ((token.charAt((length - 1)) == '/') &&
+                   ((length == 1) ||
+                    (token.charAt((length - 2)) == '/')))) {
+                symbolname = "/";
+                tok_stellalogicalstatename_ = Stella.KWD_SYMBOL;
+                if (length > 1) {
+                  modulename = Native.string_subsequence(token, 0, length - 2);
+                }
+              }
+              else {
+                { OutputStringStream stream003 = OutputStringStream.newOutputStringStream();
+
+                  stream003.nativeStream.print("Illegal symbol syntax: `" + Stella.getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false) + "' in state `" + ((GeneralizedSymbol)(tok_statenames_[tok_state_])) + "'");
+                  throw ((ReadException)(ReadException.newReadException(stream003.theStringReader()).fillInStackTrace()));
+                }
+              }
+            }
+          }
+          else if (tok_stellalogicalstatename_ == Stella.KWD_ERROR) {
+            { OutputStringStream stream004 = OutputStringStream.newOutputStringStream();
+
+              stream004.nativeStream.print("Illegal read syntax: `" + Stella.getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false) + "'");
+              throw ((ReadException)(ReadException.newReadException(stream004.theStringReader()).fillInStackTrace()));
             }
           }
           else {
-            { OutputStringStream stream004 = OutputStringStream.newOutputStringStream();
+            { OutputStringStream stream005 = OutputStringStream.newOutputStringStream();
 
-              stream004.nativeStream.print("Illegal symbol syntax: `" + Stella.getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false) + "' in state `" + ((GeneralizedSymbol)(tok_statenames_[tok_state_])) + "'");
-              throw ((ReadException)(ReadException.newReadException(stream004.theStringReader()).fillInStackTrace()));
+              stream005.nativeStream.print("Illegal symbol syntax: `" + Stella.getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false) + "' in state `" + ((GeneralizedSymbol)(tok_statenames_[tok_state_])) + "'");
+              throw ((ReadException)(ReadException.newReadException(stream005.theStringReader()).fillInStackTrace()));
             }
           }
           symboltype = tok_stellalogicalstatename_;
@@ -12640,10 +13707,10 @@ public class Stella {
             }
           }
           else {
-            { OutputStringStream stream005 = OutputStringStream.newOutputStringStream();
+            { OutputStringStream stream006 = OutputStringStream.newOutputStringStream();
 
-              stream005.nativeStream.print("Garbage found after `" + result.symbolName + "'");
-              throw ((ReadException)(ReadException.newReadException(stream005.theStringReader()).fillInStackTrace()));
+              stream006.nativeStream.print("Garbage found after `" + name + "'");
+              throw ((ReadException)(ReadException.newReadException(stream006.theStringReader()).fillInStackTrace()));
             }
           }
         }
@@ -12780,6 +13847,253 @@ public class Stella {
         }
       }
       return (renamed_Char);
+    }
+  }
+
+  public static Vector createTokenizeStringTable(String punctuationchars, String quotechars, String escapechars) {
+    { Vector chartypetable = Vector.newVector(256);
+
+      { int i = Stella.NULL_INTEGER;
+        int iter000 = 0;
+        int upperBound000 = chartypetable.length() - 1;
+
+        for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
+          i = iter000;
+          if (Stella.$CHARACTER_TYPE_TABLE$[(int) ((char) i)] == Stella.KWD_WHITE_SPACE) {
+            (chartypetable.theArray)[i] = Stella.KWD_WHITE_SPACE;
+          }
+          else {
+            (chartypetable.theArray)[i] = Stella.KWD_TEXT;
+          }
+        }
+      }
+      { char ch = Stella.NULL_CHARACTER;
+        String vector000 = punctuationchars;
+        int index000 = 0;
+        int length000 = vector000.length();
+
+        for (;index000 < length000; index000 = index000 + 1) {
+          ch = vector000.charAt(index000);
+          (chartypetable.theArray)[((int) ch)] = Stella.KWD_PUNCTUATION;
+        }
+      }
+      { char ch = Stella.NULL_CHARACTER;
+        String vector001 = quotechars;
+        int index001 = 0;
+        int length001 = vector001.length();
+
+        for (;index001 < length001; index001 = index001 + 1) {
+          ch = vector001.charAt(index001);
+          (chartypetable.theArray)[((int) ch)] = Stella.KWD_QUOTE;
+        }
+      }
+      { char ch = Stella.NULL_CHARACTER;
+        String vector002 = escapechars;
+        int index002 = 0;
+        int length002 = vector002.length();
+
+        for (;index002 < length002; index002 = index002 + 1) {
+          ch = vector002.charAt(index002);
+          (chartypetable.theArray)[((int) ch)] = Stella.KWD_ESCAPE;
+        }
+      }
+      return (chartypetable);
+    }
+  }
+
+  /** Simple tokenizer that is somewhere between Java's StringTokenizer
+   * and StreamTokenizer in functionality.  It doens't specially support number
+   * tokens nor comment strings/sequences even though this could be added at
+   * the expense of some extra complexity.
+   * Returns a list of (&lt;token-string&gt; &lt;token-type&gt;) pairs, where the token
+   * type is one of :TEXT, :PUNCTUATION or :QUOTE, i.e., all white space
+   * is ignored and escape characters are handled and removed.  For example:
+   * 	 
+   *   (tokenize-string &quot;for(i='fo^'o'; i&gt;0; i++)&quot; &quot;()=&lt;&gt;+-;&quot; &quot;'&quot; &quot;^&quot;)
+   *   =&gt;
+   *   ((&quot;for&quot; :TEXT) (&quot;(&quot; :PUNCTUATION) (&quot;i&quot; :TEXT)
+   *    (&quot;=&quot; :PUNCTUATION) (&quot;'&quot; :QUOTE) (&quot;fo'o&quot; :TEXT)
+   *    (&quot;'&quot; :QUOTE) (&quot;;&quot; :PUNCTUATION) (&quot;i&quot; :TEXT)
+   *    (&quot;&gt;&quot; :PUNCTUATION) (&quot;0&quot; :TEXT) (&quot;;&quot; :PUNCTUATION)
+   *    (&quot;i&quot; :TEXT) (&quot;++)&quot; :PUNCTUATION))
+   * 	
+   * NOTE: this aggregates multiple punctuation characters that immediately
+   * follow each other into a single token which is (generally) useful to pickup
+   * multi-character operators such as ++, &gt;=, etc.  It's still easy to pick them
+   * apart in a post-processing step if necessary (e.g., for the <code>II_</code> case above),
+   * so we leave this for now as a feature.
+   * @param string
+   * @param punctuationchars
+   * @param quotechars
+   * @param escapechars
+   * @return Cons
+   */
+  public static Cons tokenizeString(String string, String punctuationchars, String quotechars, String escapechars) {
+    { MemoizationTable memoTable000 = null;
+      Cons memoizedEntry000 = null;
+      Stella_Object memoizedValue000 = null;
+
+      if (Stella.$MEMOIZATION_ENABLEDp$) {
+        memoTable000 = ((MemoizationTable)(Stella.SGT_STELLA_F_TOKENIZE_STRING_MEMO_TABLE_000.surrogateValue));
+        if (memoTable000 == null) {
+          Surrogate.initializeMemoizationTable(Stella.SGT_STELLA_F_TOKENIZE_STRING_MEMO_TABLE_000, "(:MAX-VALUES 10)");
+          memoTable000 = ((MemoizationTable)(Stella.SGT_STELLA_F_TOKENIZE_STRING_MEMO_TABLE_000.surrogateValue));
+        }
+        memoizedEntry000 = MruMemoizationTable.lookupMruMemoizedValue(((MruMemoizationTable)(memoTable000)), StringWrapper.wrapString(punctuationchars), StringWrapper.wrapString(quotechars), StringWrapper.wrapString(escapechars), Stella.MEMOIZED_NULL_VALUE, 0);
+        memoizedValue000 = memoizedEntry000.value;
+      }
+      if (memoizedValue000 != null) {
+        if (memoizedValue000 == Stella.MEMOIZED_NULL_VALUE) {
+          memoizedValue000 = null;
+        }
+      }
+      else {
+        memoizedValue000 = Stella.createTokenizeStringTable(punctuationchars, quotechars, escapechars);
+        if (Stella.$MEMOIZATION_ENABLEDp$) {
+          memoizedEntry000.value = ((memoizedValue000 == null) ? Stella.MEMOIZED_NULL_VALUE : memoizedValue000);
+        }
+      }
+      { Vector chartypetable = ((Vector)(memoizedValue000));
+        int i = 0;
+        char ch = Stella.NULL_CHARACTER;
+        int start = 0;
+        int end = string.length();
+        Keyword state = Stella.KWD_TEXT;
+        Keyword newstate = Stella.KWD_TEXT;
+        boolean quotedtokenP = false;
+        char quotechar = Stella.NULL_CHARACTER;
+        boolean endoftokenP = false;
+        Cons escapepositions = Stella.NIL;
+        String token = null;
+        Cons result = Stella.NIL;
+
+        loop000 : for (;;) {
+          endoftokenP = false;
+          if (i < end) {
+            ch = string.charAt(i);
+            newstate = ((Keyword)((chartypetable.theArray)[((int) ch)]));
+            if (newstate == Stella.KWD_TEXT) {
+              if ((state == Stella.KWD_PUNCTUATION) ||
+                  ((state == Stella.KWD_WHITE_SPACE) ||
+                   (state == Stella.KWD_QUOTE))) {
+                endoftokenP = true;
+              }
+              else {
+              }
+            }
+            else if (newstate == Stella.KWD_ESCAPE) {
+              if ((state == Stella.KWD_PUNCTUATION) ||
+                  ((state == Stella.KWD_WHITE_SPACE) ||
+                   (state == Stella.KWD_QUOTE))) {
+                endoftokenP = true;
+              }
+              else {
+              }
+              escapepositions = Cons.cons(IntegerWrapper.wrapInteger(i), escapepositions);
+              i = i + 2;
+              continue loop000;
+            }
+            else if (newstate == Stella.KWD_QUOTE) {
+              if (quotedtokenP &&
+                  (ch == quotechar)) {
+                endoftokenP = true;
+                quotedtokenP = false;
+              }
+              else if (quotedtokenP) {
+                newstate = Stella.KWD_TEXT;
+              }
+              else {
+                endoftokenP = true;
+                quotedtokenP = true;
+                quotechar = ch;
+              }
+            }
+            else if (newstate == Stella.KWD_PUNCTUATION) {
+              if (state == Stella.KWD_TEXT) {
+                if (quotedtokenP) {
+                  newstate = Stella.KWD_TEXT;
+                }
+                else {
+                  endoftokenP = true;
+                }
+              }
+              else if ((state == Stella.KWD_WHITE_SPACE) ||
+                  (state == Stella.KWD_QUOTE)) {
+                endoftokenP = true;
+              }
+              else {
+              }
+            }
+            else if (newstate == Stella.KWD_WHITE_SPACE) {
+              if (state == Stella.KWD_TEXT) {
+                if (quotedtokenP) {
+                  newstate = Stella.KWD_TEXT;
+                }
+                else {
+                  endoftokenP = true;
+                }
+              }
+              else if ((state == Stella.KWD_PUNCTUATION) ||
+                  (state == Stella.KWD_QUOTE)) {
+                endoftokenP = true;
+              }
+              else {
+              }
+            }
+            else {
+              { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+                stream000.nativeStream.print("`" + newstate + "' is not a valid case option");
+                throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+              }
+            }
+          }
+          if ((endoftokenP &&
+              (i > 0)) ||
+              (i >= end)) {
+            if (!(state == Stella.KWD_WHITE_SPACE)) {
+              if (!(escapepositions == Stella.NIL)) {
+                { Cons parts = Stella.NIL;
+                  int s = start;
+
+                  { IntegerWrapper e = null;
+                    Cons iter000 = escapepositions.reverse();
+
+                    for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+                      e = ((IntegerWrapper)(iter000.value));
+                      parts = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(string, s, e.wrapperValue)), parts);
+                      s = e.wrapperValue + 1;
+                    }
+                  }
+                  parts = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(string, Stella.integer_min(s, end), Stella.integer_min(i, end))), parts);
+                  parts = parts.reverse();
+                  token = Native.stringConcatenate(((StringWrapper)(parts.value)).wrapperValue, ((StringWrapper)(parts.rest.value)).wrapperValue);
+                  { StringWrapper part = null;
+                    Cons iter001 = parts.rest.rest;
+
+                    for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+                      part = ((StringWrapper)(iter001.value));
+                      token = Native.stringConcatenate(token, part.wrapperValue);
+                    }
+                  }
+                }
+                escapepositions = Stella.NIL;
+              }
+              else {
+                token = Native.string_subsequence(string, start, i);
+              }
+              result = Cons.cons(Cons.cons(StringWrapper.wrapString(token), Cons.cons(state, Stella.NIL)), result);
+            }
+            if (i >= end) {
+              break loop000;
+            }
+            start = i;
+          }
+          state = newstate;
+          i = i + 1;
+        }
+        return (result.reverse());
+      }
     }
   }
 
@@ -12980,7 +14294,7 @@ public class Stella {
   }
 
   public static KvCons makeNamespaceTable() {
-    return (Stella_Object.kvCons(StringWrapper.wrapString("xml"), StringWrapper.wrapString(Stella.$XML_URN$), null));
+    return (KvCons.kvCons(StringWrapper.wrapString("xml"), StringWrapper.wrapString(Stella.$XML_URN$), null));
   }
 
   public static Cons makeXmlCdataForm(String theData) {
@@ -12990,7 +14304,7 @@ public class Stella {
       self000.surfaceForm = "CDATA";
       { XmlSpecial tag = self000;
 
-        return (Stella_Object.cons(tag, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString(theData), Stella.NIL), Stella.NIL)));
+        return (Cons.cons(tag, Cons.cons(Cons.cons(StringWrapper.wrapString(theData), Stella.NIL), Stella.NIL)));
       }
     }
   }
@@ -13224,6 +14538,7 @@ public class Stella {
       Stella.addXmlReference("amp", "&#38;", table);
       Stella.addXmlReference("apos", "&#39;", table);
       Stella.addXmlReference("quot", "&#34;", table);
+      Stella.addXmlReference("nbsp", "&#160;", table);
       return (table);
     }
   }
@@ -13288,6 +14603,57 @@ public class Stella {
     return (Stella.NULL_INTEGER);
   }
 
+  /** Read all of the top-level XML expressions from <code>filename</code> and
+   * return them in a list.
+   * @param filename
+   * @return Cons
+   */
+  public static Cons readXmlExpressions(String filename) {
+    { InputFileStream in = null;
+
+      try {
+        in = Stella.openInputFile(filename, Stella.NIL);
+        { Cons value000 = Stella.NIL;
+
+          { Stella_Object item = null;
+            XmlExpressionIterator iter000 = InputStream.xmlExpressions(in, null);
+            Cons collect000 = null;
+
+            while (iter000.nextP()) {
+              item = iter000.value;
+              if (collect000 == null) {
+                {
+                  collect000 = Cons.cons(item, Stella.NIL);
+                  if (value000 == Stella.NIL) {
+                    value000 = collect000;
+                  }
+                  else {
+                    Cons.addConsToEndOfConsList(value000, collect000);
+                  }
+                }
+              }
+              else {
+                {
+                  collect000.rest = Cons.cons(item, Stella.NIL);
+                  collect000 = collect000.rest;
+                }
+              }
+            }
+          }
+          { Cons value001 = value000;
+
+            return (value001);
+          }
+        }
+
+      } finally {
+        if (in != null) {
+          in.free();
+        }
+      }
+    }
+  }
+
   /** Enable memoization and use of memoized expression results.
    */
   public static void enableMemoization() {
@@ -13341,7 +14707,7 @@ public class Stella {
           item = iter000.value;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(item, Stella.NIL);
+              collect000 = Cons.cons(item, Stella.NIL);
               if (conslist == Stella.NIL) {
                 conslist = collect000;
               }
@@ -13352,7 +14718,7 @@ public class Stella {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(item, Stella.NIL);
+              collect000.rest = Cons.cons(item, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -13674,7 +15040,7 @@ public class Stella {
             }
             if (foundP000) {
               {
-                result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
+                result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
                 lag = lead + 1;
                 innumberP = false;
                 incaprunP = false;
@@ -13691,7 +15057,7 @@ public class Stella {
                     if ((!innumberP) &&
                         (!(breakOnNumber == Stella.KWD_NO))) {
                       if (!(lead == lag)) {
-                        result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
+                        result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
                         lag = lead;
                       }
                     }
@@ -13709,16 +15075,16 @@ public class Stella {
                         if (lead == lag) {
                         }
                         else if (!(breakOnNumber == Stella.KWD_CLEVER)) {
-                          result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
+                          result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
                           lag = lead;
                         }
                         else if ((lead < (len - 1)) &&
                             Stella.ordinalNumberStringP(Native.string_subsequence(namestring, lag, lead + 2))) {
-                          result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead + 2)), result);
+                          result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead + 2)), result);
                           lag = lead + 2;
                         }
                         else {
-                          result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
+                          result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
                           lag = lead;
                         }
                       }
@@ -13730,7 +15096,7 @@ public class Stella {
                       }
                       else if (incaprunP) {
                         if (!(lead == (lag + 1))) {
-                          result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead - 1)), result);
+                          result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead - 1)), result);
                           lag = lead - 1;
                         }
                       }
@@ -13745,16 +15111,16 @@ public class Stella {
                         if (lead == lag) {
                         }
                         else if (!(breakOnNumber == Stella.KWD_CLEVER)) {
-                          result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
+                          result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
                           lag = lead;
                         }
                         else if ((lead < (len - 1)) &&
                             Stella.ordinalNumberStringP(Native.string_subsequence(namestring, lag, lead + 2))) {
-                          result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead + 2)), result);
+                          result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead + 2)), result);
                           lag = lead + 2;
                         }
                         else {
-                          result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
+                          result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
                           lag = lead;
                         }
                       }
@@ -13764,7 +15130,7 @@ public class Stella {
                       }
                       else if (!(breakOnCap == Stella.KWD_CLEVER)) {
                         if (!(lead == lag)) {
-                          result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
+                          result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
                           lag = lead;
                         }
                       }
@@ -13772,7 +15138,7 @@ public class Stella {
                       }
                       else {
                         if (!(lead == lag)) {
-                          result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
+                          result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, lead)), result);
                           lag = lead;
                         }
                         incaprunP = true;
@@ -13788,7 +15154,7 @@ public class Stella {
         }
       }
       if (!(lead < lag)) {
-        result = Stella_Object.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, Stella.NULL_INTEGER)), result);
+        result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(namestring, lag, Stella.NULL_INTEGER)), result);
       }
       return (result.reverse());
     }
@@ -13929,6 +15295,7 @@ public class Stella {
       { Object old$Translationphase$000 = Stella.$TRANSLATIONPHASE$.get();
         Object old$Translationerrors$000 = Stella.$TRANSLATIONERRORS$.get();
         Object old$Translationwarnings$000 = Stella.$TRANSLATIONWARNINGS$.get();
+        Object old$Translationnotes$000 = Stella.$TRANSLATIONNOTES$.get();
         Object old$Currentfile$000 = Stella.$CURRENTFILE$.get();
         Object old$Module$000 = Stella.$MODULE$.get();
         Object old$Context$000 = Stella.$CONTEXT$.get();
@@ -13937,6 +15304,7 @@ public class Stella {
           Native.setSpecial(Stella.$TRANSLATIONPHASE$, null);
           Native.setIntSpecial(Stella.$TRANSLATIONERRORS$, 0);
           Native.setIntSpecial(Stella.$TRANSLATIONWARNINGS$, 0);
+          Native.setIntSpecial(Stella.$TRANSLATIONNOTES$, 0);
           Native.setSpecial(Stella.$CURRENTFILE$, Stella.fileBaseName(file));
           Native.setSpecial(Stella.$MODULE$, currentmodule);
           Native.setSpecial(Stella.$CONTEXT$, currentcontext);
@@ -13977,7 +15345,7 @@ public class Stella {
 
                           { Object [] caller_MV_returnarray = new Object[1];
 
-                            skipP = Cons.handleInModuleTree(tree000, seeninmoduleP, caller_MV_returnarray);
+                            skipP = Cons.handleInModuleTree(tree000, seeninmoduleP, true, caller_MV_returnarray);
                             seeninmoduleP = ((boolean)(((BooleanWrapper)(caller_MV_returnarray[0])).wrapperValue));
                           }
                           if (!(skipP)) {
@@ -14049,6 +15417,7 @@ public class Stella {
           Stella.$CONTEXT$.set(old$Context$000);
           Stella.$MODULE$.set(old$Module$000);
           Stella.$CURRENTFILE$.set(old$Currentfile$000);
+          Stella.$TRANSLATIONNOTES$.set(old$Translationnotes$000);
           Stella.$TRANSLATIONWARNINGS$.set(old$Translationwarnings$000);
           Stella.$TRANSLATIONERRORS$.set(old$Translationerrors$000);
           Stella.$TRANSLATIONPHASE$.set(old$Translationphase$000);
@@ -14181,13 +15550,13 @@ public class Stella {
   }
 
   public static Keyword operatingSystem() {
-    if (Native.probeFileP("C:\\AUTOEXEC.BAT") ||
-        (Native.probeFileP("C:\\IO.SYS") ||
-         Native.probeFileP("C:\\BOOT.INI"))) {
+    if (Stella.probeFileP("C:\\AUTOEXEC.BAT") ||
+        (Stella.probeFileP("C:\\IO.SYS") ||
+         Stella.probeFileP("C:\\BOOT.INI"))) {
       return (Stella.KWD_WINDOWS);
     }
-    else if (Native.probeFileP("/usr") ||
-        Native.probeFileP("/etc")) {
+    else if (Stella.probeFileP("/usr") ||
+        Stella.probeFileP("/etc")) {
       return (Stella.KWD_UNIX);
     }
     else {
@@ -14350,6 +15719,9 @@ public class Stella {
         start = end + 1;
       }
       if (end == Stella.NULL_INTEGER) {
+        return (null);
+      }
+      else if (Native.string_position(file, Stella.directorySeparatorForFile(file), end) != Stella.NULL_INTEGER) {
         return (null);
       }
       else {
@@ -14617,7 +15989,8 @@ public class Stella {
           filepath = Stella.fileNameWithoutExtension(filepath);
         }
         if ((type == Stella.KWD_JAVA) ||
-            ((type == Stella.KWD_OTHER) &&
+            (((type == Stella.KWD_OTHER) ||
+            (type == Stella.KWD_NONE)) &&
              (((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_JAVA))) {
           subdirectory = Module.javaPackagePrefix(((Module)(Stella.$MODULE$.get())), Stella.directorySeparatorString());
         }
@@ -14718,13 +16091,13 @@ public class Stella {
   }
 
   public static BooleanWrapper fileYoungerThanP(String file1, String file2) {
-    if ((!Native.probeFileP(file1)) ||
-        (!Native.probeFileP(file2))) {
+    if ((!Stella.probeFileP(file1)) ||
+        (!Stella.probeFileP(file2))) {
       return (null);
     }
     else {
-      { CalendarDate file1Date = Native.fileWriteDate(file1);
-        CalendarDate file2Date = Native.fileWriteDate(file2);
+      { CalendarDate file1Date = Stella.fileWriteDate(file1);
+        CalendarDate file2Date = Stella.fileWriteDate(file2);
 
         if ((file1Date == null) ||
             (file2Date == null)) {
@@ -14749,7 +16122,7 @@ public class Stella {
             { boolean foundP000 = false;
 
               { StringWrapper file = null;
-                Cons iter000 = Cons.filesPlusSystemStartup(SystemDefinition.systemDefinitionSourceFiles(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get()))));
+                Cons iter000 = SystemDefinition.systemDefinitionSourceFiles(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())));
 
                 loop000 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
                   file = ((StringWrapper)(iter000.value));
@@ -14759,10 +16132,16 @@ public class Stella {
                   }
                 }
               }
-              { boolean value000 = foundP000;
-
-                return (value000);
+              if (foundP000) {
+                return (true);
               }
+            }
+            { String startupFile = SystemDefinition.systemStartupFileName(null);
+
+              if (!(Stella.probeFileP(Stella.makeFileName(startupFile, Stella.KWD_STELLA, true)))) {
+                return (true);
+              }
+              return (Stella_Object.stellaNeedToTranslateP(StringWrapper.wrapString(startupFile), language));
             }
           }
         }
@@ -14783,7 +16162,11 @@ public class Stella {
   }
 
   /** Translate all of the STELLA source files in system <code>systemname</code> into
-   * <code>outputlanguage</code>.  The following keyword/value <code>options</code> are recognized:
+   * <code>language</code> (the optional first argument).  The following keyword/value
+   * <code>options</code> are recognized:
+   * <p>
+   * <code>Clanguage</code>: can be used as an alternative to the optional language argument.
+   * If not specified, the language of the running implementation is assumed.
    * <p>
    * <code>CtwoPassP</code> (default false): if true, all files will be scanned twice, once
    * to load the signatures of objects defined in them, and once to actually
@@ -14800,117 +16183,252 @@ public class Stella {
    * <p>
    * <code>CproductionSettingsP</code> (default true): inverse to <code>CdevelopmentSettingsP</code>.
    * @param systemname
-   * @param outputlanguage
-   * @param options
+   * @param languageAoptions
    * @return boolean
    */
-  public static boolean translateSystem(String systemname, Keyword outputlanguage, Cons options) {
-    { PropertyList self000 = PropertyList.newPropertyList();
+  public static boolean translateSystem(String systemname, Cons languageAoptions) {
+    { Cons options = languageAoptions;
+      Keyword language = (Stella.getQuotedTree("((:COMMON-LISP :CPP :JAVA) \"/STELLA\")", "/STELLA").memberP(options.value) ? ((Keyword)(options.value)) : Stella.runningInLanguage());
+      PropertyList plist = Stella_Object.vetOptions(((options.value == language) ? options.rest : options), Stella.getQuotedTree("((:TWO-PASS? :FORCE-TRANSLATION? :PRODUCTION-SETTINGS? :DEVELOPMENT-SETTINGS? :LANGUAGE :ACTION) \"/STELLA\")", "/STELLA"));
+      boolean twopassP = false;
+      boolean forcetranslationP = false;
+      boolean productionmodeP = true;
 
-      self000.thePlist = options;
-      { PropertyList plist = self000;
-        boolean twopassP = false;
-        boolean forcetranslationP = false;
-        boolean productionmodeP = true;
+      language = ((Keyword)(plist.lookupWithDefault(Stella.KWD_LANGUAGE, language)));
+      plist.insertAt(Stella.KWD_LANGUAGE, language);
+      plist.insertAt(Stella.KWD_ACTION, plist.lookupWithDefault(Stella.KWD_ACTION, Stella.KWD_TRANSLATE_SYSTEM));
+      { Stella_Object key = null;
+        Stella_Object value = null;
+        Cons iter000 = plist.thePlist;
 
-        outputlanguage = ((Keyword)(Stella_Object.stellify(outputlanguage)));
-        Stella_Object.vetOptions(plist, Stella.getQuotedTree("((:TWO-PASS? :FORCE-TRANSLATION? :PRODUCTION-SETTINGS? :DEVELOPMENT-SETTINGS?) \"/STELLA\")", "/STELLA"));
-        { Stella_Object key = null;
-          Stella_Object value = null;
-          Cons iter000 = plist.thePlist;
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest.rest) {
+          key = iter000.value;
+          value = iter000.rest.value;
+          { GeneralizedSymbol testValue000 = ((GeneralizedSymbol)(key));
 
-          for (;!(iter000 == Stella.NIL); iter000 = iter000.rest.rest) {
-            key = iter000.value;
-            value = iter000.rest.value;
-            { GeneralizedSymbol testValue000 = ((GeneralizedSymbol)(key));
-
-              if (testValue000 == Stella.KWD_TWO_PASSp) {
-                twopassP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
-              }
-              else if (testValue000 == Stella.KWD_FORCE_TRANSLATIONp) {
-                forcetranslationP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
-              }
-              else if (testValue000 == Stella.KWD_PRODUCTION_SETTINGSp) {
-                productionmodeP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
-              }
-              else if (testValue000 == Stella.KWD_DEVELOPMENT_SETTINGSp) {
-                productionmodeP = !Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
-              }
-              else {
-                { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-                  stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
-                  throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-                }
-              }
+            if (testValue000 == Stella.KWD_TWO_PASSp) {
+              twopassP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
             }
-          }
-        }
-        if (Symbol.lookupFunction(SystemDefinition.systemStartupFunctionSymbol(Stella.getSystemDefinition(systemname))) == null) {
-          twopassP = true;
-        }
-        { Object old$Translatoroutputlanguage$000 = Stella.$TRANSLATOROUTPUTLANGUAGE$.get();
-          Object old$Translationphase$000 = Stella.$TRANSLATIONPHASE$.get();
-          Object old$Safety$000 = Stella.$SAFETY$.get();
-          Object old$RecyclingEnabledP$000 = Stella.$RECYCLING_ENABLEDp$.get();
-          Object old$CurrentStellaFeatures$000 = Stella.$CURRENT_STELLA_FEATURES$.get();
-
-          try {
-            Native.setSpecial(Stella.$TRANSLATOROUTPUTLANGUAGE$, ((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())));
-            Native.setSpecial(Stella.$TRANSLATIONPHASE$, null);
-            Native.setIntSpecial(Stella.$SAFETY$, ((Integer)(Stella.$SAFETY$.get())).intValue());
-            Native.setBooleanSpecial(Stella.$RECYCLING_ENABLEDp$, !(outputlanguage == Stella.KWD_JAVA));
-            Native.setSpecial(Stella.$CURRENT_STELLA_FEATURES$, ((List)(Stella.$CURRENT_STELLA_FEATURES$.get())).copy());
-            Stella.$GENSYM_COUNTER$ = -1;
-            Stella.setStellaFeature(Stella_Object.cons(Stella.KWD_TRANSLATE_WITH_COPYRIGHT_HEADER, Stella_Object.cons(Stella.KWD_WARN_ABOUT_MISSING_METHODS, Stella_Object.cons(Stella.KWD_WARN_ABOUT_UNDEFINED_METHODS, Stella.NIL))));
-            Stella.unsetStellaFeature(Stella_Object.cons(Stella.KWD_USE_HARDCODED_SYMBOLS, Stella.NIL));
-            Keyword.setTranslatorOutputLanguage(outputlanguage);
-            { Object old$Currentsystemdefinition$000 = Stella.$CURRENTSYSTEMDEFINITION$.get();
-              Object old$Currentsystemdefinitionsubdirectory$000 = Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.get();
-
-              try {
-                Native.setSpecial(Stella.$CURRENTSYSTEMDEFINITION$, Stella.getSystemDefinition(systemname));
-                Native.setSpecial(Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$, ((((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())) != null) ? ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).directory : null));
-                if (((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())) != null) {
-                  {
-                    SystemDefinition.computeOptimizationLevels(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())), productionmodeP);
-                    { Cons files = Cons.filesPlusSystemStartup(SystemDefinition.systemDefinitionSourceFiles(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get()))));
-                      boolean translatedsomethingP = false;
-
-                      if (forcetranslationP ||
-                          Stella.systemNeedsTranslationP(systemname, outputlanguage)) {
-                        SystemDefinition.createSystemStartupFile(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())));
-                        translatedsomethingP = Cons.helpTranslateSystem(files, twopassP, forcetranslationP);
-                      }
-                      Keyword.transferNativeSystemFiles(outputlanguage);
-                      return (translatedsomethingP);
-                    }
-                  }
-                }
-                else {
-                  {
-                    Stella.STANDARD_WARNING.nativeStream.println("Warning: Can't find a system named `" + systemname + "'");
-                    Stella.STANDARD_WARNING.nativeStream.println();
-                  }
-;
-                }
-
-              } finally {
-                Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.set(old$Currentsystemdefinitionsubdirectory$000);
-                Stella.$CURRENTSYSTEMDEFINITION$.set(old$Currentsystemdefinition$000);
-              }
+            else if (testValue000 == Stella.KWD_FORCE_TRANSLATIONp) {
+              forcetranslationP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
             }
-            return (false);
-
-          } finally {
-            Stella.$CURRENT_STELLA_FEATURES$.set(old$CurrentStellaFeatures$000);
-            Stella.$RECYCLING_ENABLEDp$.set(old$RecyclingEnabledP$000);
-            Stella.$SAFETY$.set(old$Safety$000);
-            Stella.$TRANSLATIONPHASE$.set(old$Translationphase$000);
-            Stella.$TRANSLATOROUTPUTLANGUAGE$.set(old$Translatoroutputlanguage$000);
+            else if (testValue000 == Stella.KWD_PRODUCTION_SETTINGSp) {
+              productionmodeP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
+            }
+            else if (testValue000 == Stella.KWD_DEVELOPMENT_SETTINGSp) {
+              productionmodeP = !Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
+            }
+            else {
+            }
           }
         }
       }
+      { Object old$Translatoroutputlanguage$000 = Stella.$TRANSLATOROUTPUTLANGUAGE$.get();
+        Object old$Translationphase$000 = Stella.$TRANSLATIONPHASE$.get();
+        Object old$Safety$000 = Stella.$SAFETY$.get();
+        Object old$RecyclingEnabledP$000 = Stella.$RECYCLING_ENABLEDp$.get();
+        Object old$CurrentStellaFeatures$000 = Stella.$CURRENT_STELLA_FEATURES$.get();
+        Object old$CurrentSystemAction$000 = Stella.$CURRENT_SYSTEM_ACTION$.get();
+
+        try {
+          Native.setSpecial(Stella.$TRANSLATOROUTPUTLANGUAGE$, ((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())));
+          Native.setSpecial(Stella.$TRANSLATIONPHASE$, null);
+          Native.setIntSpecial(Stella.$SAFETY$, ((Integer)(Stella.$SAFETY$.get())).intValue());
+          Native.setBooleanSpecial(Stella.$RECYCLING_ENABLEDp$, !(language == Stella.KWD_JAVA));
+          Native.setSpecial(Stella.$CURRENT_STELLA_FEATURES$, ((List)(Stella.$CURRENT_STELLA_FEATURES$.get())).copy());
+          Native.setSpecial(Stella.$CURRENT_SYSTEM_ACTION$, plist.copy());
+          if (!Stella.systemLoadedOrStartedUpP(systemname)) {
+            twopassP = true;
+          }
+          Stella.$GENSYM_COUNTER$ = -1;
+          Stella.setStellaFeature(Cons.cons(Stella.KWD_TRANSLATE_WITH_COPYRIGHT_HEADER, Cons.cons(Stella.KWD_WARN_ABOUT_MISSING_METHODS, Cons.cons(Stella.KWD_WARN_ABOUT_UNDEFINED_METHODS, Stella.NIL))));
+          Stella.unsetStellaFeature(Cons.cons(Stella.KWD_USE_HARDCODED_SYMBOLS, Stella.NIL));
+          Keyword.setTranslatorOutputLanguage(language);
+          { Object old$Currentsystemdefinition$000 = Stella.$CURRENTSYSTEMDEFINITION$.get();
+            Object old$Currentsystemdefinitionsubdirectory$000 = Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.get();
+
+            try {
+              Native.setSpecial(Stella.$CURRENTSYSTEMDEFINITION$, Stella.getSystemDefinition(systemname));
+              Native.setSpecial(Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$, ((((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())) != null) ? ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).directory : null));
+              if (((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())) != null) {
+                {
+                  SystemDefinition.computeOptimizationLevels(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())), productionmodeP);
+                  { Cons files = Cons.filesPlusSystemStartup(SystemDefinition.systemDefinitionSourceFiles(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get()))));
+                    boolean translatedsomethingP = false;
+
+                    if (forcetranslationP ||
+                        Stella.systemNeedsTranslationP(systemname, language)) {
+                      SystemDefinition.createSystemStartupFile(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())));
+                      translatedsomethingP = Cons.helpTranslateSystem(files, twopassP, forcetranslationP);
+                    }
+                    Keyword.transferNativeSystemFiles(language);
+                    Keyword.transferDataFiles(language);
+                    return (translatedsomethingP);
+                  }
+                }
+              }
+              else {
+                {
+                  Stella.STANDARD_WARNING.nativeStream.println("Warning: Can't find a system named `" + systemname + "'");
+                  Stella.STANDARD_WARNING.nativeStream.println();
+                }
+;
+              }
+
+            } finally {
+              Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.set(old$Currentsystemdefinitionsubdirectory$000);
+              Stella.$CURRENTSYSTEMDEFINITION$.set(old$Currentsystemdefinition$000);
+            }
+          }
+          return (false);
+
+        } finally {
+          Stella.$CURRENT_SYSTEM_ACTION$.set(old$CurrentSystemAction$000);
+          Stella.$CURRENT_STELLA_FEATURES$.set(old$CurrentStellaFeatures$000);
+          Stella.$RECYCLING_ENABLEDp$.set(old$RecyclingEnabledP$000);
+          Stella.$SAFETY$.set(old$Safety$000);
+          Stella.$TRANSLATIONPHASE$.set(old$Translationphase$000);
+          Stella.$TRANSLATOROUTPUTLANGUAGE$.set(old$Translatoroutputlanguage$000);
+        }
+      }
+    }
+  }
+
+  public static Cons parseDirectoryPath(String path) {
+    { char separator = '|';
+      int length = path.length();
+      int start = 0;
+      int end = 0;
+      Cons parsedpath = Stella.NIL;
+
+      loop000 : for (;;) {
+        end = Native.string_position(path, separator, start);
+        parsedpath = Cons.cons(StringWrapper.wrapString(Stella.fileNameAsDirectory(Native.string_subsequence(path, start, end))), parsedpath);
+        if ((end != Stella.NULL_INTEGER) &&
+            (end < (length - 1))) {
+          start = end + 1;
+        }
+        else {
+          break loop000;
+        }
+      }
+      return (parsedpath.reverse());
+    }
+  }
+
+  /** Set the STELLA load path to the |-separated
+   * directories listed in <code>path</code>.  Return the resulting load path.
+   * @param path
+   * @return Cons
+   */
+  public static Cons setLoadPath(String path) {
+    Stella.$FILE_LOAD_PATH$ = Stella.parseDirectoryPath(path);
+    return (Stella.$FILE_LOAD_PATH$);
+  }
+
+  /** Return the current STELLA load path.
+   * @return Cons
+   */
+  public static Cons getLoadPath() {
+    return (Stella.$FILE_LOAD_PATH$);
+  }
+
+  /** Add the directories listed in the |-separated
+   * <code>path</code> to the front of the STELLA load path.  Return the
+   * resulting load path.
+   * @param path
+   * @return Cons
+   */
+  public static Cons pushLoadPath(String path) {
+    Stella.$FILE_LOAD_PATH$ = Stella.parseDirectoryPath(path).concatenate(Stella.$FILE_LOAD_PATH$, Stella.NIL);
+    return (Stella.$FILE_LOAD_PATH$);
+  }
+
+  /** Remove the first element from the STELLA load path
+   * and return the removed element.
+   * @return String
+   */
+  public static String popLoadPath() {
+    { StringWrapper head000 = ((StringWrapper)(Stella.$FILE_LOAD_PATH$.value));
+
+      Stella.$FILE_LOAD_PATH$ = Stella.$FILE_LOAD_PATH$.rest;
+      { StringWrapper value000 = head000;
+
+        return (value000.wrapperValue);
+      }
+    }
+  }
+
+  /** Append the directories listed in the |-separated
+   * <code>path</code> to the end of the STELLA load path.  Return the resulting
+   * load path.
+   * @param path
+   * @return Cons
+   */
+  public static Cons addLoadPath(String path) {
+    Stella.$FILE_LOAD_PATH$ = Stella.$FILE_LOAD_PATH$.concatenate(Stella.parseDirectoryPath(path), Stella.NIL);
+    return (Stella.$FILE_LOAD_PATH$);
+  }
+
+  /** Remove the directories listed in the |-separated
+   * <code>path</code> from the PowerLoom load path.
+   * @param path
+   * @return Cons
+   */
+  public static Cons dropLoadPath(String path) {
+    { StringWrapper dir = null;
+      Cons iter000 = Stella.parseDirectoryPath(path);
+
+      for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+        dir = ((StringWrapper)(iter000.value));
+        Stella.$FILE_LOAD_PATH$ = Stella.$FILE_LOAD_PATH$.remove(dir);
+      }
+    }
+    return (Stella.$FILE_LOAD_PATH$);
+  }
+
+  /** Try to find <code>file</code> in the current load path and, if found,
+   * return its full name.  If <code>file</code> can't be found literally, try to find it
+   * with any of the listed <code>extensions</code> added.  If <code>extensions</code> is NULL it defaults
+   * to <code>$STELLA_FILE_EXTENSIONS$</code>, therefore, to not default to any extensions
+   * the value has to be supplied as NIL.
+   * @param file
+   * @param extensions
+   * @return String
+   */
+  public static String findFileInLoadPath(String file, Cons extensions) {
+    { String expandedfile = file;
+
+      if (extensions == null) {
+        extensions = Stella.$STELLA_FILE_EXTENSIONS$;
+      }
+      { Stella_Object dir = null;
+        Cons iter000 = Cons.cons(StringWrapper.wrapString(""), Stella.$FILE_LOAD_PATH$);
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          dir = iter000.value;
+          try {
+            expandedfile = StringWrapper.unwrapString(((StringWrapper)(dir))) + file;
+            if (Stella.probeFileP(expandedfile)) {
+              return (expandedfile);
+            }
+            { StringWrapper ext = null;
+              Cons iter001 = extensions;
+
+              for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+                ext = ((StringWrapper)(iter001.value));
+                expandedfile = StringWrapper.unwrapString(((StringWrapper)(dir))) + file + ext.wrapperValue;
+                if (Stella.probeFileP(expandedfile)) {
+                  return (expandedfile);
+                }
+              }
+            }
+          } catch (java.lang.Exception e) {
+            e = e;
+          }
+        }
+      }
+      return (null);
     }
   }
 
@@ -14922,13 +16440,11 @@ public class Stella {
    * @param file
    */
   public static void loadFile(String file) {
-    if (!Native.probeFileP(file)) {
-      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+    { String temp000 = Stella.findFileInLoadPath(file, null);
 
-        stream000.nativeStream.print("File `" + file + "' does not exist.");
-        throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-      }
+      file = ((temp000 != null) ? temp000 : file);
     }
+    Stella.ensureFileExists(file, "load-file");
     { boolean toplevelinvocationP = ((String)(Stella.$CURRENTFILE$.get())) == null;
       boolean skipcommandP = false;
       boolean seeninmoduleP = false;
@@ -14957,7 +16473,7 @@ public class Stella {
 
                         { Object [] caller_MV_returnarray = new Object[1];
 
-                          skipcommandP = Cons.handleInModuleTree(tree000, seeninmoduleP, caller_MV_returnarray);
+                          skipcommandP = Cons.handleInModuleTree(tree000, seeninmoduleP, true, caller_MV_returnarray);
                           seeninmoduleP = ((boolean)(((BooleanWrapper)(caller_MV_returnarray[0])).wrapperValue));
                         }
                         if (skipcommandP) {
@@ -14978,7 +16494,7 @@ public class Stella {
                               }
                               else {
                                 if (Symbol.lookupCommand(operator000) != null) {
-                                  commands = Stella_Object.cons(tree000, commands);
+                                  commands = Cons.cons(tree000, commands);
                                 }
                                 else {
                                   Stella_Object.evaluateCommand(tree000, false);
@@ -15007,12 +16523,15 @@ public class Stella {
                     Stella.$TRANSLATIONPHASE$.set(old$Translationphase$000);
                   }
                 }
-                { Stella_Object tree = null;
-                  Cons iter001 = commands.reverse();
+                { boolean finalizeP = ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())) != null;
 
-                  for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
-                    tree = iter001.value;
-                    Stella_Object.evaluateCommand(tree, true);
+                  { Stella_Object tree = null;
+                    Cons iter001 = commands.reverse();
+
+                    for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+                      tree = iter001.value;
+                      Stella_Object.evaluateCommand(tree, finalizeP);
+                    }
                   }
                 }
 
@@ -15061,7 +16580,7 @@ public class Stella {
         if (system == null) {
           { String systemfilename = Stella.makeSystemDefinitionFileName(name);
 
-            if (!Native.probeFileP(systemfilename)) {
+            if (!Stella.probeFileP(systemfilename)) {
               {
                 Stella.STANDARD_ERROR.nativeStream.println("ERROR>> File " + systemfilename + " does not exist.");
                 Stella.STANDARD_ERROR.nativeStream.println("   Can't define system " + name);
@@ -15101,7 +16620,7 @@ public class Stella {
 
   public static void helpGetSystemFiles(String filename, List collection, boolean probefileP) {
     if ((!probefileP) ||
-        Native.probeFileP(filename)) {
+        Stella.probeFileP(filename)) {
       collection.push(StringWrapper.wrapString(filename));
     }
   }
@@ -15117,7 +16636,7 @@ public class Stella {
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           f = ((StringWrapper)(iter000.value));
-          Native.deleteFile(f.wrapperValue);
+          Stella.deleteFile(f.wrapperValue);
         }
       }
       { StringWrapper f = null;
@@ -15125,7 +16644,7 @@ public class Stella {
 
         for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
           f = ((StringWrapper)(iter001.value));
-          Native.deleteFile(f.wrapperValue);
+          Stella.deleteFile(f.wrapperValue);
         }
       }
       { StringWrapper f = null;
@@ -15133,7 +16652,7 @@ public class Stella {
 
         for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
           f = ((StringWrapper)(iter002.value));
-          Native.deleteFile(f.wrapperValue);
+          Stella.deleteFile(f.wrapperValue);
         }
       }
       { StringWrapper f = null;
@@ -15141,15 +16660,19 @@ public class Stella {
 
         for (;!(iter003 == Stella.NIL); iter003 = iter003.rest) {
           f = ((StringWrapper)(iter003.value));
-          Native.deleteFile(f.wrapperValue);
+          Stella.deleteFile(f.wrapperValue);
         }
       }
     }
   }
 
   /** Translate all out-of-date files of system <code>systemname</code>
-   * into <code>language</code> and then compile and load them (the latter is only possible
-   * for Lisp right now).  The following keyword/value <code>options</code> are recognized:
+   * into <code>language</code> (the first optional argument of <code>languageAoptions</code>) and
+   * then compile and load them (the latter is only possible for Lisp right now).
+   * The following keyword/value <code>options</code> are recognized:
+   * <p>
+   * <code>Clanguage</code>: can be used as an alternative to the optional language argument.
+   * If not specified, the language of the running implementation is assumed.
    * <p>
    * <code>CtwoPassP</code>: if true, all files will be scanned twice, once to
    * load the signatures of objects defined in them, and once to actually
@@ -15173,105 +16696,99 @@ public class Stella {
    * in Lisp right now).
    * <p>
    * <code>CloadSystemP</code> (default true): if true, compiled files will be loaded into
-   * the current STELLA image (only supported in Lisp right now).
+   * the current STELLA image (only supported in Lisp and Java right now).
    * <p>
    * <code>CstartupP</code> (default true): if true, the system startup function will
    * be called once all files have been loaded.
    * @param systemname
-   * @param language
-   * @param options
+   * @param languageAoptions
    * @return boolean
    */
-  public static boolean makeSystem(String systemname, Keyword language, Cons options) {
-    language = ((Keyword)(Stella_Object.stellify(language)));
-    { Object old$Translatoroutputlanguage$000 = Stella.$TRANSLATOROUTPUTLANGUAGE$.get();
+  public static boolean makeSystem(String systemname, Cons languageAoptions) {
+    { Cons options = languageAoptions;
+      Keyword language = (Stella.getQuotedTree("((:COMMON-LISP :CPP :JAVA) \"/STELLA\")", "/STELLA").memberP(options.value) ? ((Keyword)(options.value)) : Stella.runningInLanguage());
+      PropertyList plist = Stella_Object.vetOptions(((options.value == language) ? options.rest : options), Stella.getQuotedTree("((:TWO-PASS? :DEVELOPMENT-SETTINGS? :PRODUCTION-SETTINGS? :FORCE-TRANSLATION? :FORCE-RECOMPILATION? :LOAD-SYSTEM? :LANGUAGE :ACTION) \"/STELLA\")", "/STELLA"));
+      boolean developmentsettingsP = false;
+      boolean forcetranslationP = false;
+      boolean forcerecompilationP = false;
+      boolean twopassP = !Stella.systemLoadedOrStartedUpP(systemname);
+      boolean loadsystemP = false;
+      boolean startupsystemP = false;
+      SystemDefinition system = null;
+      boolean updatedsystemP = false;
 
-      try {
-        Native.setSpecial(Stella.$TRANSLATOROUTPUTLANGUAGE$, language);
-        Keyword.setTranslatorOutputLanguage(language);
-        { PropertyList self000 = PropertyList.newPropertyList();
+      language = ((Keyword)(plist.lookupWithDefault(Stella.KWD_LANGUAGE, language)));
+      plist.insertAt(Stella.KWD_LANGUAGE, language);
+      loadsystemP = language == Stella.KWD_COMMON_LISP;
+      startupsystemP = language == Stella.KWD_COMMON_LISP;
+      plist.insertAt(Stella.KWD_ACTION, plist.lookupWithDefault(Stella.KWD_ACTION, Stella.KWD_MAKE_SYSTEM));
+      { Stella_Object key = null;
+        Stella_Object value = null;
+        Cons iter000 = plist.thePlist;
 
-          self000.thePlist = options;
-          { PropertyList plist = self000;
-            boolean developmentsettingsP = false;
-            boolean forcetranslationP = false;
-            boolean forcerecompilationP = false;
-            boolean twopassP = (Stella.getSystemDefinition(systemname) != null) &&
-                (!Stella.getSystemDefinition(systemname).loadedP);
-            boolean loadsystemP = language == Stella.KWD_COMMON_LISP;
-            boolean startupsystemP = language == Stella.KWD_COMMON_LISP;
-            boolean updatedsystemP = false;
-            SystemDefinition system = Stella.getSystemDefinition(systemname);
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest.rest) {
+          key = iter000.value;
+          value = iter000.rest.value;
+          { boolean truevalueP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
 
-            if (system == null) {
-              {
-                System.out.println("Can't find a declaration for system named " + systemname);
-                System.out.println("  Possibly a global path name needs to be set.");
+            { GeneralizedSymbol testValue000 = ((GeneralizedSymbol)(key));
+
+              if (testValue000 == Stella.KWD_DEVELOPMENT_SETTINGSp) {
+                developmentsettingsP = truevalueP;
               }
-;
-              return (false);
-            }
-            Stella_Object.vetOptions(plist, Stella.getQuotedTree("((:TWO-PASS? :DEVELOPMENT-SETTINGS? :PRODUCTION-SETTINGS? :FORCE-TRANSLATION? :FORCE-RECOMPILATION? :LOAD-SYSTEM? :STARTUP?) \"/STELLA\")", "/STELLA"));
-            { Stella_Object key = null;
-              Stella_Object value = null;
-              Cons iter000 = plist.thePlist;
-
-              for (;!(iter000 == Stella.NIL); iter000 = iter000.rest.rest) {
-                key = iter000.value;
-                value = iter000.rest.value;
-                { boolean truevalueP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
-
-                  { GeneralizedSymbol testValue000 = ((GeneralizedSymbol)(key));
-
-                    if (testValue000 == Stella.KWD_DEVELOPMENT_SETTINGSp) {
-                      developmentsettingsP = truevalueP;
-                    }
-                    else if (testValue000 == Stella.KWD_PRODUCTION_SETTINGSp) {
-                      developmentsettingsP = !truevalueP;
-                    }
-                    else if (testValue000 == Stella.KWD_FORCE_TRANSLATIONp) {
-                      forcetranslationP = truevalueP;
-                    }
-                    else if (testValue000 == Stella.KWD_FORCE_RECOMPILATIONp) {
-                      forcerecompilationP = truevalueP;
-                    }
-                    else if (testValue000 == Stella.KWD_TWO_PASSp) {
-                      twopassP = truevalueP;
-                    }
-                    else if (testValue000 == Stella.KWD_LOAD_SYSTEMp) {
-                      loadsystemP = truevalueP;
-                    }
-                    else if (testValue000 == Stella.KWD_STARTUPp) {
-                      startupsystemP = truevalueP;
-                    }
-                    else {
-                      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-                        stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
-                        throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-                      }
-                    }
-                  }
-                }
+              else if (testValue000 == Stella.KWD_PRODUCTION_SETTINGSp) {
+                developmentsettingsP = !truevalueP;
+              }
+              else if (testValue000 == Stella.KWD_FORCE_TRANSLATIONp) {
+                forcetranslationP = truevalueP;
+              }
+              else if (testValue000 == Stella.KWD_FORCE_RECOMPILATIONp) {
+                forcerecompilationP = truevalueP;
+              }
+              else if (testValue000 == Stella.KWD_TWO_PASSp) {
+                twopassP = truevalueP;
+              }
+              else if (testValue000 == Stella.KWD_LOAD_SYSTEMp) {
+                loadsystemP = truevalueP;
+              }
+              else if (testValue000 == Stella.KWD_STARTUPp) {
+                startupsystemP = truevalueP;
+              }
+              else {
               }
             }
-            if (forcerecompilationP ||
-                ((!system.loadedP) &&
-                 (forcetranslationP ||
-                  Stella.systemNeedsTranslationP(systemname, language)))) {
-              Stella.loadPreprocessedFiles(systemname);
-            }
-            updatedsystemP = Stella.translateSystem(systemname, language, Stella_Object.cons(Stella.KWD_TWO_PASSp, Stella_Object.cons((twopassP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella_Object.cons(Stella.KWD_FORCE_TRANSLATIONp, Stella_Object.cons((forcetranslationP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella_Object.cons(Stella.KWD_DEVELOPMENT_SETTINGSp, Stella_Object.cons((developmentsettingsP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.NIL)))))));
-            if (loadsystemP &&
-                Stella.loadSystem(systemname, language, Stella_Object.cons(Stella.KWD_FORCE_RECOMPILATIONp, Stella_Object.cons((forcerecompilationP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella_Object.cons(Stella.KWD_STARTUPp, Stella_Object.cons((startupsystemP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.NIL)))))) {
-              updatedsystemP = true;
-            }
-            return (updatedsystemP);
           }
         }
+      }
+      { Object old$CurrentSystemAction$000 = Stella.$CURRENT_SYSTEM_ACTION$.get();
 
-      } finally {
-        Stella.$TRANSLATOROUTPUTLANGUAGE$.set(old$Translatoroutputlanguage$000);
+        try {
+          Native.setSpecial(Stella.$CURRENT_SYSTEM_ACTION$, plist.copy());
+          system = Stella.getSystemDefinition(systemname);
+          if (system == null) {
+            {
+              System.out.println("Can't find a declaration for system named " + systemname);
+              System.out.println("  Possibly a global path name needs to be set.");
+            }
+;
+            return (false);
+          }
+          if (forcerecompilationP ||
+              ((!Stella.systemLoadedOrStartedUpP(systemname)) &&
+               (forcetranslationP ||
+                Stella.systemNeedsTranslationP(systemname, language)))) {
+            Stella.loadPreprocessedFiles(systemname);
+          }
+          updatedsystemP = Stella.translateSystem(systemname, Cons.cons(language, Cons.cons(Stella.KWD_TWO_PASSp, Cons.cons((twopassP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Cons.cons(Stella.KWD_FORCE_TRANSLATIONp, Cons.cons((forcetranslationP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Cons.cons(Stella.KWD_DEVELOPMENT_SETTINGSp, Cons.cons((developmentsettingsP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.NIL))))))));
+          if (loadsystemP &&
+              Stella.loadSystem(systemname, Cons.cons(language, Cons.cons(Stella.KWD_FORCE_RECOMPILATIONp, Cons.cons((forcerecompilationP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Cons.cons(Stella.KWD_STARTUPp, Cons.cons((startupsystemP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.NIL))))))) {
+            updatedsystemP = true;
+          }
+          return (updatedsystemP);
+
+        } finally {
+          Stella.$CURRENT_SYSTEM_ACTION$.set(old$CurrentSystemAction$000);
+        }
       }
     }
   }
@@ -15296,6 +16813,43 @@ public class Stella {
               sys = ((SystemDefinition)(iter000.value));
               if (Stella.stringEqualP(sys.name, name) &&
                   sys.loadedP) {
+                foundP000 = true;
+                break loop000;
+              }
+            }
+          }
+          testValue000 = foundP000;
+        }
+      }
+      { boolean value000 = testValue000;
+
+        return (value000);
+      }
+    }
+  }
+
+  /** Return <code>true</code> if system <code>name</code> has either been loaded
+   * or initialized with its startup function.
+   * @param name
+   * @return boolean
+   */
+  public static boolean systemLoadedOrStartedUpP(String name) {
+    { boolean testValue000 = false;
+
+      if (Stella.stringEqualP(name, "STELLA")) {
+        testValue000 = true;
+      }
+      else {
+        { boolean foundP000 = false;
+
+          { SystemDefinition sys = null;
+            Cons iter000 = Stella.$SYSTEMDEFINITIONS$.theConsList;
+
+            loop000 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+              sys = ((SystemDefinition)(iter000.value));
+              if (Stella.stringEqualP(sys.name, name) &&
+                  (sys.loadedP ||
+                   Stella.systemStartedUpP(sys.name, sys.cardinalModule))) {
                 foundP000 = true;
                 break loop000;
               }
@@ -15372,7 +16926,7 @@ public class Stella {
                       f = ((StringWrapper)(iter000.value));
                       if (collect000 == null) {
                         {
-                          collect000 = Stella_Object.cons(StringWrapper.wrapString(Stella.makeFileName(f.wrapperValue, Stella.KWD_STELLA, true)), Stella.NIL);
+                          collect000 = Cons.cons(StringWrapper.wrapString(Stella.makeFileName(f.wrapperValue, Stella.KWD_STELLA, true)), Stella.NIL);
                           if (preprocessedfiles == Stella.NIL) {
                             preprocessedfiles = collect000;
                           }
@@ -15383,7 +16937,7 @@ public class Stella {
                       }
                       else {
                         {
-                          collect000.rest = Stella_Object.cons(StringWrapper.wrapString(Stella.makeFileName(f.wrapperValue, Stella.KWD_STELLA, true)), Stella.NIL);
+                          collect000.rest = Cons.cons(StringWrapper.wrapString(Stella.makeFileName(f.wrapperValue, Stella.KWD_STELLA, true)), Stella.NIL);
                           collect000 = collect000.rest;
                         }
                       }
@@ -15393,7 +16947,7 @@ public class Stella {
 
                     try {
                       Native.setSpecial(Stella.$CURRENT_STELLA_FEATURES$, ((List)(Stella.$CURRENT_STELLA_FEATURES$.get())).copy());
-                      Stella.unsetStellaFeature(Stella_Object.cons(Stella.KWD_WARN_ABOUT_UNDEFINED_METHODS, Stella.NIL));
+                      Stella.unsetStellaFeature(Cons.cons(Stella.KWD_WARN_ABOUT_UNDEFINED_METHODS, Stella.NIL));
                       { Stella_Object f = null;
                         Cons iter001 = preprocessedfiles;
 
@@ -15414,7 +16968,7 @@ public class Stella {
 
                       for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
                         f = ((StringWrapper)(iter002.value));
-                        Native.deleteFile(Stella.makeFileName(f.wrapperValue, Stella.KWD_LISP, true));
+                        Stella.deleteFile(Stella.makeFileName(f.wrapperValue, Stella.KWD_LISP, true));
                       }
                     }
                   }
@@ -15449,9 +17003,12 @@ public class Stella {
   }
 
   /** Natively <code>language</code>-compile out-of-date translated files of system
-   * <code>systemname</code> and then load them into the running system (this is only
-   * supported/possible for Lisp at the moment).  Return true if at least one
-   * file was compiled. The following keyword/value <code>options</code> are recognized:
+   * <code>systemname</code> (only supported for Lisp at the moment) and then load them
+   * into the running system.  Return true if at least one file was compiled.
+   * The following keyword/value <code>options</code> are recognized:
+   * <p>
+   * <code>Clanguage</code>: can be used as an alternative to the optional language argument.
+   * If not specified, the language of the running implementation is assumed.
    * <p>
    * <code>CforceRecompilationP</code> (default false): if true, files will be compiled
    * whether or not their compilations are up-to-date.
@@ -15459,85 +17016,86 @@ public class Stella {
    * <code>CstartupP</code> (default true): if true, the system startup function will
    * be called once all files have been loaded.
    * @param systemname
-   * @param language
-   * @param options
+   * @param languageAoptions
    * @return boolean
    */
-  public static boolean loadSystem(String systemname, Keyword language, Cons options) {
-    if (!Stella.runningAsLispP()) {
-      return (false);
-    }
-    language = ((Keyword)(Stella_Object.stellify(language)));
-    { PropertyList self000 = PropertyList.newPropertyList();
+  public static boolean loadSystem(String systemname, Cons languageAoptions) {
+    { Cons options = languageAoptions;
+      Keyword language = (Stella.getQuotedTree("((:COMMON-LISP :CPP :JAVA) \"/STELLA\")", "/STELLA").memberP(options.value) ? ((Keyword)(options.value)) : Stella.runningInLanguage());
+      PropertyList plist = Stella_Object.vetOptions(((options.value == language) ? options.rest : options), Stella.getQuotedTree("((:FORCE-RECOMPILATION? :STARTUP? :LANGUAGE :ACTION) \"/STELLA\")", "/STELLA"));
+      boolean forcerecompilationP = false;
+      boolean startupsystemP = true;
+      boolean translatedfileP = false;
 
-      self000.thePlist = options;
-      { PropertyList plist = self000;
-        boolean forcerecompilationP = false;
-        boolean startupsystemP = true;
-        boolean translatedfileP = false;
+      language = ((Keyword)(plist.lookupWithDefault(Stella.KWD_LANGUAGE, language)));
+      plist.insertAt(Stella.KWD_LANGUAGE, language);
+      plist.insertAt(Stella.KWD_ACTION, plist.lookupWithDefault(Stella.KWD_ACTION, Stella.KWD_LOAD_SYSTEM));
+      { Stella_Object key = null;
+        Stella_Object value = null;
+        Cons iter000 = plist.thePlist;
 
-        Stella_Object.vetOptions(plist, Stella.getQuotedTree("((:FORCE-RECOMPILATION? :STARTUP?) \"/STELLA\")", "/STELLA"));
-        { Stella_Object key = null;
-          Stella_Object value = null;
-          Cons iter000 = plist.thePlist;
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest.rest) {
+          key = iter000.value;
+          value = iter000.rest.value;
+          { GeneralizedSymbol testValue000 = ((GeneralizedSymbol)(key));
 
-          for (;!(iter000 == Stella.NIL); iter000 = iter000.rest.rest) {
-            key = iter000.value;
-            value = iter000.rest.value;
-            { GeneralizedSymbol testValue000 = ((GeneralizedSymbol)(key));
-
-              if (testValue000 == Stella.KWD_FORCE_RECOMPILATIONp) {
-                forcerecompilationP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
-              }
-              else if (testValue000 == Stella.KWD_STARTUPp) {
-                startupsystemP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
-              }
-              else {
-                { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-                  stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
-                  throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-                }
-              }
+            if (testValue000 == Stella.KWD_FORCE_RECOMPILATIONp) {
+              forcerecompilationP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
             }
-          }
-        }
-        { Object old$Currentsystemdefinition$000 = Stella.$CURRENTSYSTEMDEFINITION$.get();
-          Object old$Currentsystemdefinitionsubdirectory$000 = Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.get();
-
-          try {
-            Native.setSpecial(Stella.$CURRENTSYSTEMDEFINITION$, Stella.getSystemDefinition(systemname));
-            Native.setSpecial(Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$, ((((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())) != null) ? ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).directory : null));
-            if (((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())) != null) {
-              {
-                if (((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).loadedP) {
-                  {
-                    System.out.println("Loading system `" + systemname + "' over top of itself.");
-                    System.out.println();
-                  }
-;
-                }
-                translatedfileP = Cons.compileAndLoadFiles(Cons.filesPlusSystemStartup(SystemDefinition.systemDefinitionNativeFiles(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())))), language, forcerecompilationP);
-                ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).loadedP = true;
-                if (startupsystemP) {
-                  SystemDefinition.runSystemStartupFunction(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())));
-                }
-              }
+            else if (testValue000 == Stella.KWD_STARTUPp) {
+              startupsystemP = Stella_Object.eqlP(value, Stella.TRUE_WRAPPER);
             }
             else {
-              {
-                Stella.STANDARD_WARNING.nativeStream.println("Warning: Can't find a system named `" + systemname + "'");
-                Stella.STANDARD_WARNING.nativeStream.println();
-              }
-;
             }
-
-          } finally {
-            Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.set(old$Currentsystemdefinitionsubdirectory$000);
-            Stella.$CURRENTSYSTEMDEFINITION$.set(old$Currentsystemdefinition$000);
           }
         }
-        return (translatedfileP);
+      }
+      { Object old$CurrentSystemAction$000 = Stella.$CURRENT_SYSTEM_ACTION$.get();
+
+        try {
+          Native.setSpecial(Stella.$CURRENT_SYSTEM_ACTION$, plist.copy());
+          { Object old$Currentsystemdefinition$000 = Stella.$CURRENTSYSTEMDEFINITION$.get();
+            Object old$Currentsystemdefinitionsubdirectory$000 = Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.get();
+
+            try {
+              Native.setSpecial(Stella.$CURRENTSYSTEMDEFINITION$, Stella.getSystemDefinition(systemname));
+              Native.setSpecial(Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$, ((((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())) != null) ? ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).directory : null));
+              if (((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())) != null) {
+                {
+                  if (((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).loadedP) {
+                    {
+                      System.out.println("Loading system `" + systemname + "' over top of itself.");
+                      System.out.println();
+                    }
+;
+                  }
+                  if (Stella.runningAsLispP()) {
+                    translatedfileP = Cons.compileAndLoadFiles(Cons.filesPlusSystemStartup(SystemDefinition.systemDefinitionNativeFiles(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())))), language, forcerecompilationP);
+                  }
+                  ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).loadedP = true;
+                  if (startupsystemP) {
+                    SystemDefinition.runSystemStartupFunction(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())));
+                  }
+                }
+              }
+              else {
+                {
+                  Stella.STANDARD_WARNING.nativeStream.println("Warning: Can't find a system named `" + systemname + "'");
+                  Stella.STANDARD_WARNING.nativeStream.println();
+                }
+;
+              }
+
+            } finally {
+              Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.set(old$Currentsystemdefinitionsubdirectory$000);
+              Stella.$CURRENTSYSTEMDEFINITION$.set(old$Currentsystemdefinition$000);
+            }
+          }
+          return (translatedfileP);
+
+        } finally {
+          Stella.$CURRENT_SYSTEM_ACTION$.set(old$CurrentSystemAction$000);
+        }
       }
     }
   }
@@ -15547,7 +17105,7 @@ public class Stella {
   }
 
   public static Symbol startupNameFromFile(String file) {
-    if (!Native.probeFileP(Stella.makeFileName(file, Stella.KWD_STELLA, true))) {
+    if (!Stella.probeFileP(Stella.makeFileName(file, Stella.KWD_STELLA, true))) {
       { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
 
         stream000.nativeStream.print("STELLA source file `" + Stella.makeFileName(file, Stella.KWD_STELLA, true) + "' does not exist");
@@ -15582,7 +17140,7 @@ public class Stella {
 
                           { Object [] caller_MV_returnarray = new Object[1];
 
-                            unusedP = Cons.handleInModuleTree(tree000, seeninmoduleP, caller_MV_returnarray);
+                            unusedP = Cons.handleInModuleTree(tree000, seeninmoduleP, true, caller_MV_returnarray);
                             seeninmoduleP = ((boolean)(((BooleanWrapper)(caller_MV_returnarray[0])).wrapperValue));
                           }
                           unusedP = unusedP;
@@ -15632,13 +17190,16 @@ public class Stella {
   }
 
   public static boolean systemStartedUpP(String systemname, String systemmodulename) {
+    if (Stella.$FUNCTION_LOOKUP_TABLE$ == null) {
+      return (false);
+    }
     if (Stella.stringEqualP(systemname, "STELLA")) {
       return (Stella.$FUNCTION_LOOKUP_TABLE$ != null);
     }
     if (Stella.getStellaModule(systemmodulename, false) == null) {
       return (false);
     }
-    { Symbol startupfunctionsymbol = Stella.lookupSymbolInModule(Stella.string_systemStartupFunctionName(systemname), Stella.getStellaModule(systemmodulename, false), true);
+    { Symbol startupfunctionsymbol = Symbol.lookupSymbolInModule(Stella.string_systemStartupFunctionName(systemname), Stella.getStellaModule(systemmodulename, false), true);
       MethodSlot startupfunction = ((startupfunctionsymbol != null) ? Symbol.lookupFunction(startupfunctionsymbol) : ((MethodSlot)(null)));
 
       return ((startupfunction != null) &&
@@ -15684,8 +17245,111 @@ public class Stella {
     return (Stella.helpAllRequiredSystems(systemName, List.newList()).theConsList);
   }
 
+  /** Autoload function <code>qualifiedname</code> from system <code>systemname</code>.
+   * If it is already present in the system, simply return its code.  If <code>cache</code>
+   * is defined, return its value if defined, otherwise, set its value to the
+   * function found.  If the function failed to be defined by loading <code>systemname</code>
+   * and <code>errorP</code> is true, raise an error.  Otherwise, simply return NULL.
+   * @param qualifiedname
+   * @param systemname
+   * @param cache
+   * @param errorP
+   * @return java.lang.reflect.Method
+   */
+  public static java.lang.reflect.Method autoload(String qualifiedname, String systemname, Surrogate cache, boolean errorP) {
+    { java.lang.reflect.Method function = null;
+
+      if (cache != null) {
+        { FunctionCodeWrapper functionwrapper = ((FunctionCodeWrapper)(cache.surrogateValue));
+
+          if (functionwrapper != null) {
+            return (functionwrapper.wrapperValue);
+          }
+        }
+      }
+      try {
+        { String functionname = null;
+          String functionmodulename = null;
+          Keyword type = null;
+
+          { Object [] caller_MV_returnarray = new Object[2];
+
+            functionname = Stella.parseStellaName(qualifiedname, false, caller_MV_returnarray);
+            functionmodulename = ((String)(((StringWrapper)(caller_MV_returnarray[0])).wrapperValue));
+            type = ((Keyword)(caller_MV_returnarray[1]));
+          }
+          type = type;
+          { Module functionmodule = null;
+            Symbol functionnamesymbol = null;
+            MethodSlot functionobject = null;
+
+            if (functionmodulename != null) {
+              functionmodule = Stella.getStellaModule(functionmodulename, errorP &&
+                  (systemname == null));
+            }
+            if (functionmodule != null) {
+              functionnamesymbol = Symbol.lookupSymbolInModule(functionname, functionmodule, false);
+            }
+            if (functionnamesymbol != null) {
+              functionobject = Symbol.lookupFunction(functionnamesymbol);
+            }
+            if (functionobject != null) {
+              function = functionobject.functionCode;
+            }
+            else if ((systemname != null) &&
+                (!Stella.systemLoadedP(systemname))) {
+              { Object old$Module$000 = Stella.$MODULE$.get();
+                Object old$Context$000 = Stella.$CONTEXT$.get();
+
+                try {
+                  Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
+                  Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
+                  Stella.loadSystem(systemname, Stella.NIL);
+
+                } finally {
+                  Stella.$CONTEXT$.set(old$Context$000);
+                  Stella.$MODULE$.set(old$Module$000);
+                }
+              }
+              return (Stella.autoload(qualifiedname, null, cache, errorP));
+            }
+          }
+        }
+      } catch (StellaException e) {
+        if (errorP) {
+          if (systemname != null) {
+            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+              stream000.nativeStream.print("autoload: failed to define `" + qualifiedname + "': `" + Stella.exceptionMessage(e) + "'");
+              throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+            }
+          }
+          else {
+            throw ((StellaException)(e.fillInStackTrace()));
+          }
+        }
+      }
+      if (function == null) {
+        if (errorP) {
+          { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
+
+            stream001.nativeStream.print("autoload: failed to define `" + qualifiedname + "'");
+            throw ((StellaException)(StellaException.newStellaException(stream001.theStringReader()).fillInStackTrace()));
+          }
+        }
+        else {
+          return (null);
+        }
+      }
+      if (cache != null) {
+        cache.surrogateValue = FunctionCodeWrapper.wrapFunctionCode(function);
+      }
+      return (function);
+    }
+  }
+
   public static void makeStella(boolean forcerecompilationP) {
-    Stella.makeSystem("STELLA", Stella.KWD_COMMON_LISP, Stella_Object.cons(Stella.KWD_FORCE_TRANSLATIONp, Stella_Object.cons((forcerecompilationP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella_Object.cons(Stella.KWD_DEVELOPMENT_SETTINGSp, Stella_Object.cons(Stella.FALSE_WRAPPER, Stella.NIL)))));
+    Stella.makeSystem("STELLA", Cons.cons(Stella.KWD_COMMON_LISP, Cons.cons(Stella.KWD_FORCE_TRANSLATIONp, Cons.cons((forcerecompilationP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Cons.cons(Stella.KWD_DEVELOPMENT_SETTINGSp, Cons.cons(Stella.FALSE_WRAPPER, Stella.NIL))))));
   }
 
   public static StringWrapper parseConfigurationFileLine(String line, Object [] MV_returnarray) {
@@ -15764,7 +17428,8 @@ public class Stella {
           { Surrogate testValue000 = Stella_Object.safePrimaryType(value = Stella.readSExpressionFromString(valuestring));
 
             if (Surrogate.subtypeOfIntegerP(testValue000) ||
-                Surrogate.subtypeOfFloatP(testValue000)) {
+                (Surrogate.subtypeOfLongIntegerP(testValue000) ||
+                 Surrogate.subtypeOfFloatP(testValue000))) {
             }
             else {
               value = StringWrapper.wrapString(valuestring);
@@ -15863,7 +17528,7 @@ public class Stella {
     }
     { Stella_Object temp000 = configuration.lookup(StringWrapper.wrapString(property));
 
-      configuration.insertAt(StringWrapper.wrapString(property), (((temp000 != null) ? temp000 : Stella.NIL)).consify().concatenate(Stella_Object.cons(value, Stella.NIL), Stella.NIL));
+      configuration.insertAt(StringWrapper.wrapString(property), (((temp000 != null) ? temp000 : Stella.NIL)).consify().concatenate(Cons.cons(value, Stella.NIL), Stella.NIL));
     }
     return (value);
   }
@@ -15912,10 +17577,306 @@ public class Stella {
    */
   public static void configureStella(String file) {
     if ((file != null) &&
-        Native.probeFileP(file)) {
+        (Stella.findFileInLoadPath(file, null) != null)) {
       KeyValueList.loadConfigurationFile(file);
     }
     Stella.defineLogicalHostProperty("PL", Stella.KWD_ROOT_DIRECTORY, Stella.lookupConfigurationProperty("PowerLoomRootDirectory", null, null));
+  }
+
+  /** Print all current configuration property information to
+   * standard output.
+   */
+  public static void printProperties() {
+    {
+      System.out.println("------------------------------------------------------------");
+      System.out.println("# Loaded System Configuration");
+    }
+;
+    KeyValueList.printConfigurationProperties(Stella.$SYSTEM_CONFIGURATION_TABLE$, Stella.STANDARD_OUTPUT);
+    System.out.println("------------------------------------------------------------");
+  }
+
+  /** Register a command line option.  :key identifies the name of the option which
+   * will usually start with a dash such as <code>E</code> or <code>Eval</code>.  :key2 and :key3 can be used to supply
+   * additional options (e.g., long option formats).  To supply even more keys, a list can be supplied
+   * with the :keys option.  If a :property is supplied, this option simply sets or adds to the values
+   * of the specified system configuration property.  If a :handler name is specified, its function
+   * will be used to interpret the values of the option.  :documentation can be used to supply a
+   * documentation string which will be printed by the <code>helpOptionHandler</code> (usually bound to <code>P</code>).
+   * :value-type describes what type an option value should be coerced to before assigning it to the
+   * specified configuration :property.  :n-arguments describes how many arguments this option
+   * takes.  This will be 0 for simple switches and can be 1 or greater than one for option handlers
+   * that need one or more arguments.  :default-value defines the value to use for zero-argument
+   * :property options.  If :multi-valued? is true, values of multiple occurrences of the option will be
+   * added to the specified configuration :property.  :error-action can be one of :ignore, :warn or
+   * :error to specify what to do in case an error is encountered during option processing.
+   * @param options
+   */
+  public static void registerCmdLineOption(Cons options) {
+    { PropertyList theoptions = Stella_Object.parseOptions(options, Cons.list$(Cons.cons(Stella.KWD_DOCUMENTATION, Cons.cons(Stella.SGT_STELLA_STRING, Cons.cons(Stella.KWD_KEY, Cons.cons(Stella.SGT_STELLA_STRING, Cons.cons(Stella.KWD_KEY2, Cons.cons(Stella.SGT_STELLA_STRING, Cons.cons(Stella.KWD_KEY3, Cons.cons(Stella.SGT_STELLA_STRING, Cons.cons(Stella.KWD_KEYS, Cons.cons(Stella.SGT_STELLA_CONS, Cons.cons(Stella.KWD_VALUE_TYPE, Cons.cons(Stella.SGT_STELLA_TYPE, Cons.cons(Stella.KWD_MULTI_VALUEDp, Cons.cons(Stella.SGT_STELLA_BOOLEAN, Cons.cons(Stella.KWD_N_ARGUMENTS, Cons.cons(Stella.SGT_STELLA_INTEGER, Cons.cons(Stella.KWD_DEFAULT_VALUE, Cons.cons(Stella.SGT_STELLA_OBJECT, Cons.cons(Stella.KWD_PROPERTY, Cons.cons(Stella.SGT_STELLA_STRING, Cons.cons(Stella.KWD_HANDLER, Cons.cons(Stella.SGT_STELLA_SYMBOL, Cons.cons(Stella.KWD_ERROR_ACTION, Cons.cons(Stella.SGT_STELLA_KEYWORD, Cons.cons(Stella.NIL, Stella.NIL)))))))))))))))))))))))))), true, false);
+      CmdLineOption cmdlineoption = CmdLineOption.newCmdLineOption();
+      Stella_Object value = null;
+
+      cmdlineoption.documentation = ((StringWrapper)(theoptions.lookupWithDefault(Stella.KWD_DOCUMENTATION, StringWrapper.wrapString("Not documented.")))).wrapperValue;
+      value = theoptions.lookup(Stella.KWD_KEY);
+      if (value != null) {
+        cmdlineoption.keys = Cons.cons(value, cmdlineoption.keys);
+      }
+      value = theoptions.lookup(Stella.KWD_KEY2);
+      if (value != null) {
+        cmdlineoption.keys = Cons.cons(value, cmdlineoption.keys);
+      }
+      value = theoptions.lookup(Stella.KWD_KEY3);
+      if (value != null) {
+        cmdlineoption.keys = Cons.cons(value, cmdlineoption.keys);
+      }
+      { Stella_Object val = null;
+        Cons iter000 = ((Cons)(theoptions.lookupWithDefault(Stella.KWD_KEYS, Stella.NIL)));
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          val = iter000.value;
+          value = Stella_Object.coerceValueToType(val, Stella.SGT_STELLA_STRING, true);
+          cmdlineoption.keys = Cons.cons(value, cmdlineoption.keys);
+        }
+      }
+      cmdlineoption.keys = cmdlineoption.keys.reverse();
+      cmdlineoption.valueType = ((Surrogate)(theoptions.lookupWithDefault(Stella.KWD_VALUE_TYPE, Stella.SGT_STELLA_STRING)));
+      cmdlineoption.multiValuedP = BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(theoptions.lookupWithDefault(Stella.KWD_MULTI_VALUEDp, Stella.FALSE_WRAPPER))));
+      cmdlineoption.nArguments = ((IntegerWrapper)(theoptions.lookupWithDefault(Stella.KWD_N_ARGUMENTS, IntegerWrapper.wrapInteger(0)))).wrapperValue;
+      cmdlineoption.defaultValue = theoptions.lookup(Stella.KWD_DEFAULT_VALUE);
+      cmdlineoption.configurationProperty = ((StringWrapper)(theoptions.lookupWithDefault(Stella.KWD_PROPERTY, Stella.NULL_STRING_WRAPPER))).wrapperValue;
+      value = theoptions.lookup(Stella.KWD_HANDLER);
+      if (value != null) {
+        value = Symbol.lookupFunction(((Symbol)(value)));
+        if (value == null) {
+          { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+            stream000.nativeStream.print("register-cmd-line-option: cannot find handler function: `" + theoptions.lookup(Stella.KWD_HANDLER) + "'");
+            throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+          }
+        }
+        cmdlineoption.handler = ((MethodSlot)(value)).functionCode;
+      }
+      cmdlineoption.errorAction = ((Keyword)(theoptions.lookupWithDefault(Stella.KWD_ERROR_ACTION, Stella.KWD_ERROR)));
+      { StringWrapper key = null;
+        Cons iter001 = cmdlineoption.keys;
+
+        for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+          key = ((StringWrapper)(iter001.value));
+          Stella.$REGISTERED_COMMAND_LINE_OPTIONS$.insertAt(key, cmdlineoption);
+        }
+      }
+    }
+  }
+
+  /** Unregister the command line option identified by <code>key</code> under all its keys.
+   * @param key
+   */
+  public static void unregisterCmdLineOption(String key) {
+    { CmdLineOption cmdlineoption = ((CmdLineOption)(Stella.$REGISTERED_COMMAND_LINE_OPTIONS$.lookup(StringWrapper.wrapString(key))));
+
+      if (cmdlineoption != null) {
+        { StringWrapper registeredkey = null;
+          Cons iter000 = cmdlineoption.keys;
+
+          for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+            registeredkey = ((StringWrapper)(iter000.value));
+            Stella.$REGISTERED_COMMAND_LINE_OPTIONS$.removeAt(registeredkey);
+          }
+        }
+        Stella.$REGISTERED_COMMAND_LINE_OPTIONS$.removeAt(StringWrapper.wrapString(key));
+      }
+    }
+  }
+
+  /** Unregister all currently registered command line options.
+   */
+  public static void unregisterAllCmdLineOptions() {
+    Stella.$REGISTERED_COMMAND_LINE_OPTIONS$.clear();
+  }
+
+  /** Interpret any command line <code>arguments</code> for which handlers have been registered.
+   * Leave any remaining unprocessed arguments in <code>$UNPROCESSED_COMMAND_LINE_ARGUMENTS$</code>.
+   * If any unprocessed arguments use option syntax (that is they start with a <code>_</code>), proceed
+   * according to <code>unhandledoptionaction</code> which can be one of :ignore, :warn or :error.
+   * This ensures that at any point in the option processing, <code>$UNPROCESSED_COMMAND_LINE_ARGUMENTS$</code>
+   * accurately reflects the arguments which have been either skipped or not handled yet.
+   * @param count
+   * @param arguments
+   * @param unhandledoptionaction
+   */
+  public static void processCommandLineArguments(int count, String[] arguments, Keyword unhandledoptionaction) {
+    if (Stella.$UNPROCESSED_COMMAND_LINE_ARGUMENTS$ == null) {
+      Stella.$UNPROCESSED_COMMAND_LINE_ARGUMENTS$ = Stella.consifyCommandLineArguments(count, arguments);
+    }
+    { Cons cmdlineargs = Cons.copyConsList(Stella.$UNPROCESSED_COMMAND_LINE_ARGUMENTS$);
+      String argument = null;
+      int nargs = cmdlineargs.length();
+      CmdLineOption option = null;
+      Stella_Object value = null;
+      Cons unprocessedargs = Cons.cons(null, Stella.$UNPROCESSED_COMMAND_LINE_ARGUMENTS$);
+      Cons unprocessedtrailer = unprocessedargs;
+
+      loop000 : while (!(cmdlineargs == Stella.NIL)) {
+        { StringWrapper head000 = ((StringWrapper)(cmdlineargs.value));
+
+          cmdlineargs = cmdlineargs.rest;
+          argument = head000.wrapperValue;
+        }
+        nargs = nargs - 1;
+        option = ((CmdLineOption)(Stella.$REGISTERED_COMMAND_LINE_OPTIONS$.lookup(StringWrapper.wrapString(argument))));
+        value = null;
+        if (option != null) {
+          if (nargs < option.nArguments) {
+            { Keyword testValue000 = option.errorAction;
+
+              if (testValue000 == Stella.KWD_ERROR) {
+                { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+                  stream000.nativeStream.print("process-command-line-arguments: missing value for option: `" + argument + "'");
+                  throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+                }
+              }
+              else if (testValue000 == Stella.KWD_WARN) {
+                Stella.STANDARD_WARNING.nativeStream.println("Warning: process-command-line-arguments: missing value for option: `" + argument + "'");
+              }
+              else if (testValue000 == Stella.KWD_IGNORE) {
+              }
+              else {
+                { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
+
+                  stream001.nativeStream.print("`" + testValue000 + "' is not a valid case option");
+                  throw ((StellaException)(StellaException.newStellaException(stream001.theStringReader()).fillInStackTrace()));
+                }
+              }
+            }
+            continue loop000;
+          }
+          switch (option.nArguments) {
+            case 0: 
+            break;
+            case 1: 
+              { StringWrapper head001 = ((StringWrapper)(cmdlineargs.value));
+
+                cmdlineargs = cmdlineargs.rest;
+                value = head001;
+              }
+              nargs = nargs - 1;
+            break;
+            default:
+              { Cons value001 = Stella.NIL;
+
+                { StringWrapper arg = null;
+                  Cons iter000 = cmdlineargs;
+                  int i = Stella.NULL_INTEGER;
+                  int iter001 = 1;
+                  int upperBound000 = option.nArguments;
+                  boolean unboundedP000 = upperBound000 == Stella.NULL_INTEGER;
+                  Cons collect000 = null;
+
+                  for (;(!(iter000 == Stella.NIL)) &&
+                            (unboundedP000 ||
+                             (iter001 <= upperBound000)); iter000 = iter000.rest, iter001 = iter001 + 1) {
+                    arg = ((StringWrapper)(iter000.value));
+                    i = iter001;
+                    if (collect000 == null) {
+                      {
+                        collect000 = Cons.cons(arg, Stella.NIL);
+                        if (value001 == Stella.NIL) {
+                          value001 = collect000;
+                        }
+                        else {
+                          Cons.addConsToEndOfConsList(value001, collect000);
+                        }
+                      }
+                    }
+                    else {
+                      {
+                        collect000.rest = Cons.cons(arg, Stella.NIL);
+                        collect000 = collect000.rest;
+                      }
+                    }
+                  }
+                }
+                value = value001;
+              }
+              cmdlineargs = cmdlineargs.nthRest(option.nArguments);
+              nargs = nargs - option.nArguments;
+            break;
+          }
+          unprocessedtrailer.rest = unprocessedtrailer.nthRest(option.nArguments + 2);
+          Stella.$UNPROCESSED_COMMAND_LINE_ARGUMENTS$ = ((Cons)(unprocessedargs.rest));
+          try {
+            edu.isi.stella.javalib.Native.funcall(option.handler, null, new java.lang.Object [] {option, value});
+          } catch (java.lang.Exception e) {
+            { Keyword testValue001 = option.errorAction;
+
+              if (testValue001 == Stella.KWD_ERROR) {
+                { OutputStringStream stream002 = OutputStringStream.newOutputStringStream();
+
+                  stream002.nativeStream.print("Error during processing of `" + argument + "' option: `" + Stella.exceptionMessage(e) + "'");
+                  throw ((StellaException)(StellaException.newStellaException(stream002.theStringReader()).fillInStackTrace()));
+                }
+              }
+              else if (testValue001 == Stella.KWD_WARN) {
+                Stella.STANDARD_WARNING.nativeStream.println("Warning: Error during processing of `" + argument + "' option: `" + Stella.exceptionMessage(e) + "'");
+              }
+              else if (testValue001 == Stella.KWD_IGNORE) {
+              }
+              else {
+                { OutputStringStream stream003 = OutputStringStream.newOutputStringStream();
+
+                  stream003.nativeStream.print("`" + testValue001 + "' is not a valid case option");
+                  throw ((StellaException)(StellaException.newStellaException(stream003.theStringReader()).fillInStackTrace()));
+                }
+              }
+            }
+          }
+        }
+        else {
+          unprocessedtrailer = unprocessedtrailer.rest;
+        }
+      }
+      Stella.$UNPROCESSED_COMMAND_LINE_ARGUMENTS$ = ((Cons)(unprocessedargs.rest));
+      { StringWrapper arg = null;
+        Cons iter002 = Stella.$UNPROCESSED_COMMAND_LINE_ARGUMENTS$;
+
+        loop002 : for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
+          arg = ((StringWrapper)(iter002.value));
+          if (Stella.startsWithP(StringWrapper.unwrapString(arg), "-", 0)) {
+            if (unhandledoptionaction == Stella.KWD_WARN) {
+              Stella.STANDARD_WARNING.nativeStream.println("Warning: Unhandled command line option: `" + StringWrapper.unwrapString(arg) + "'");
+            }
+            else if (unhandledoptionaction == Stella.KWD_ERROR) {
+              { OutputStringStream stream004 = OutputStringStream.newOutputStringStream();
+
+                stream004.nativeStream.print("Unhandled command line option: `" + StringWrapper.unwrapString(arg) + "'");
+                throw ((StellaException)(StellaException.newStellaException(stream004.theStringReader()).fillInStackTrace()));
+              }
+            }
+            else if (unhandledoptionaction == Stella.KWD_IGNORE) {
+              break loop002;
+            }
+            else {
+              { OutputStringStream stream005 = OutputStringStream.newOutputStringStream();
+
+                stream005.nativeStream.print("`" + unhandledoptionaction + "' is not a valid case option");
+                throw ((StellaException)(StellaException.newStellaException(stream005.theStringReader()).fillInStackTrace()));
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /** Return all command line arguments which have not yet been processed
+   * by (or been ignored by) <code>processCommandLineArguments</code>.  If arguments have not yet
+   * been processed, this will return NULL.
+   * @return Cons
+   */
+  public static Cons unprocessedCommandLineArguments() {
+    return (Stella.$UNPROCESSED_COMMAND_LINE_ARGUMENTS$);
   }
 
   public static Stella_Object string_getObject(String self, Stella_Object type) {
@@ -16034,7 +17995,7 @@ public class Stella {
           Symbol slotname = null;
 
           if (renamed_Class != null) {
-            slotname = Stella.lookupSymbol(slotstring);
+            slotname = Symbol.lookupSymbol(slotstring);
             if (slotname != null) {
               return (Stella_Class.lookupSlot(renamed_Class, slotname));
             }
@@ -16043,7 +18004,7 @@ public class Stella {
       }
     }
     else {
-      { Symbol symbol = Stella.lookupSymbol(string);
+      { Symbol symbol = Symbol.lookupSymbol(string);
 
         if (symbol != null) {
           return (Symbol.lookupFunction(symbol));
@@ -16087,7 +18048,7 @@ public class Stella {
           if (((Keyword)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_OPTION_KEYWORD, null))) != null) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(slot, Stella.NIL);
+                collect000 = Cons.cons(slot, Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect000;
                 }
@@ -16098,7 +18059,7 @@ public class Stella {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(slot, Stella.NIL);
+                collect000.rest = Cons.cons(slot, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -16114,7 +18075,7 @@ public class Stella {
           if (((Keyword)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_OPTION_KEYWORD, null))) != null) {
             if (collect001 == null) {
               {
-                collect001 = Stella_Object.cons(slot, Stella.NIL);
+                collect001 = Cons.cons(slot, Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect001;
                 }
@@ -16125,7 +18086,7 @@ public class Stella {
             }
             else {
               {
-                collect001.rest = Stella_Object.cons(slot, Stella.NIL);
+                collect001.rest = Cons.cons(slot, Stella.NIL);
                 collect001 = collect001.rest;
               }
             }
@@ -16141,7 +18102,7 @@ public class Stella {
           if (((Keyword)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_OPTION_KEYWORD, null))) != null) {
             if (collect002 == null) {
               {
-                collect002 = Stella_Object.cons(slot, Stella.NIL);
+                collect002 = Cons.cons(slot, Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect002;
                 }
@@ -16152,7 +18113,7 @@ public class Stella {
             }
             else {
               {
-                collect002.rest = Stella_Object.cons(slot, Stella.NIL);
+                collect002.rest = Cons.cons(slot, Stella.NIL);
                 collect002 = collect002.rest;
               }
             }
@@ -16168,7 +18129,7 @@ public class Stella {
           if (((Keyword)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_OPTION_KEYWORD, null))) != null) {
             if (collect003 == null) {
               {
-                collect003 = Stella_Object.cons(slot, Stella.NIL);
+                collect003 = Cons.cons(slot, Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect003;
                 }
@@ -16179,7 +18140,7 @@ public class Stella {
             }
             else {
               {
-                collect003.rest = Stella_Object.cons(slot, Stella.NIL);
+                collect003.rest = Cons.cons(slot, Stella.NIL);
                 collect003 = collect003.rest;
               }
             }
@@ -16202,7 +18163,7 @@ public class Stella {
           if (((Keyword)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_OPTION_KEYWORD, null))) != null) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(slot, Stella.NIL);
+                collect000 = Cons.cons(slot, Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect000;
                 }
@@ -16213,7 +18174,7 @@ public class Stella {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(slot, Stella.NIL);
+                collect000.rest = Cons.cons(slot, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -16583,7 +18544,7 @@ public class Stella {
    * @param systemname
    */
   public static void cppTranslateSystem(String systemname) {
-    Stella.translateSystem(systemname, Stella.KWD_CPP, Stella_Object.cons(Stella.KWD_TWO_PASSp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella_Object.cons(Stella.KWD_FORCE_TRANSLATIONp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella_Object.cons(Stella.KWD_PRODUCTION_SETTINGSp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella.NIL)))))));
+    Stella.translateSystem(systemname, Cons.cons(Stella.KWD_CPP, Cons.cons(Stella.KWD_TWO_PASSp, Cons.cons(Stella.TRUE_WRAPPER, Cons.cons(Stella.KWD_FORCE_TRANSLATIONp, Cons.cons(Stella.TRUE_WRAPPER, Cons.cons(Stella.KWD_PRODUCTION_SETTINGSp, Cons.cons(Stella.TRUE_WRAPPER, Stella.NIL))))))));
   }
 
   public static void cppOutputSystemSpecificFiles() {
@@ -16666,7 +18627,7 @@ public class Stella {
               }
               ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println("// System components:");
               if (Stella.stringEqlP(systemname, "stella")) {
-                Stella.cppOutputIncludeDirective(Stella.cppRelativizeHeaderFile(Stella_Object.makeFileNameFromRelativePath(Stella.list$(Stella_Object.cons(StringWrapper.wrapString("cpp-lib"), Stella_Object.cons(StringWrapper.wrapString("cpp-primal"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.KWD_CPP_HEADER), systemname), false);
+                Stella.cppOutputIncludeDirective(Stella.cppRelativizeHeaderFile(Stella_Object.makeFileNameFromRelativePath(Cons.list$(Cons.cons(StringWrapper.wrapString("cpp-lib"), Cons.cons(StringWrapper.wrapString("cpp-primal"), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.KWD_CPP_HEADER), systemname), false);
               }
               { StringWrapper file = null;
                 Cons iter002 = Cons.filesPlusSystemStartup(SystemDefinition.systemDefinitionSourceFiles(system));
@@ -16751,7 +18712,7 @@ public class Stella {
       String templatefile = Stella.fileNameWithoutExtension(makefile) + ".in";
       SystemDefinition system = ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get()));
 
-      if (!(Native.probeFileP(templatefile))) {
+      if (!(Stella.probeFileP(templatefile))) {
         { Object old$Currentsystemdefinition$000 = Stella.$CURRENTSYSTEMDEFINITION$.get();
           Object old$Currentsystemdefinitionsubdirectory$000 = Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.get();
 
@@ -16919,7 +18880,7 @@ public class Stella {
     { StringHashTable table = StringHashTable.newStringHashTable();
 
       { Stella_Object word = null;
-        Cons iter000 = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ASM, Stella_Object.cons(Stella.SYM_STELLA_ASSERT, Stella_Object.cons(Stella.SYM_STELLA_AUTO, Stella_Object.cons(Stella.SYM_STELLA_BREAK, Stella_Object.cons(Stella.SYM_STELLA_CASE, Stella_Object.cons(Stella.SYM_STELLA_CATCH, Stella_Object.cons(Stella.SYM_STELLA_CHAR, Stella_Object.cons(Stella.SYM_STELLA_CLASS, Stella_Object.cons(Stella.SYM_STELLA_CONST, Stella_Object.cons(Stella.SYM_STELLA_CONTINUE, Stella_Object.cons(Stella.SYM_STELLA_DEFAULT, Stella_Object.cons(Stella.SYM_STELLA_DELETE, Stella_Object.cons(Stella.SYM_STELLA_DO, Stella_Object.cons(Stella.SYM_STELLA_DOUBLE, Stella_Object.cons(Stella.SYM_STELLA_ELSE, Stella_Object.cons(Stella.SYM_STELLA_ENUM, Stella_Object.cons(Stella.SYM_STELLA_EXTERN, Stella_Object.cons(Stella.SYM_STELLA_FLOAT, Stella_Object.cons(Stella.SYM_STELLA_FOR, Stella_Object.cons(Stella.SYM_STELLA_FRIEND, Stella_Object.cons(Stella.SYM_STELLA_GOTO, Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.SYM_STELLA_INLINE, Stella_Object.cons(Stella.SYM_STELLA_INT, Stella_Object.cons(Stella.SYM_STELLA_LONG, Stella_Object.cons(Stella.SYM_STELLA_NAMESPACE, Stella_Object.cons(Stella.SYM_STELLA_NEW, Stella_Object.cons(Stella.SYM_STELLA_OPERATOR, Stella_Object.cons(Stella.SYM_STELLA_PRIVATE, Stella_Object.cons(Stella.SYM_STELLA_PROTECTED, Stella_Object.cons(Stella.SYM_STELLA_PUBLIC, Stella_Object.cons(Stella.SYM_STELLA_REGISTER, Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_SHORT, Stella_Object.cons(Stella.SYM_STELLA_SIGNED, Stella_Object.cons(Stella.SYM_STELLA_SIZEOF, Stella_Object.cons(Stella.SYM_STELLA_STATIC, Stella_Object.cons(Stella.SYM_STELLA_STRUCT, Stella_Object.cons(Stella.SYM_STELLA_SWITCH, Stella_Object.cons(Stella.SYM_STELLA_TEMPLATE, Stella_Object.cons(Stella.SYM_STELLA_THROW, Stella_Object.cons(Stella.SYM_STELLA_TRY, Stella_Object.cons(Stella.SYM_STELLA_TYPEDEF, Stella_Object.cons(Stella.SYM_STELLA_TYPEID, Stella_Object.cons(Stella.SYM_STELLA_UNION, Stella_Object.cons(Stella.SYM_STELLA_UNSIGNED, Stella_Object.cons(Stella.SYM_STELLA_VIRTUAL, Stella_Object.cons(Stella.SYM_STELLA_VOID, Stella_Object.cons(Stella.SYM_STELLA_VOLATILE, Stella_Object.cons(Stella.SYM_STELLA_WHILE, Stella_Object.cons(Stella.SYM_STELLA_TYPENAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))))))))))))))))))))))))))))))))))))))))))))))))))));
+        Cons iter000 = Cons.list$(Cons.cons(Stella.SYM_STELLA_ASM, Cons.cons(Stella.SYM_STELLA_ASSERT, Cons.cons(Stella.SYM_STELLA_AUTO, Cons.cons(Stella.SYM_STELLA_BREAK, Cons.cons(Stella.SYM_STELLA_CASE, Cons.cons(Stella.SYM_STELLA_CATCH, Cons.cons(Stella.SYM_STELLA_CHAR, Cons.cons(Stella.SYM_STELLA_CLASS, Cons.cons(Stella.SYM_STELLA_CONST, Cons.cons(Stella.SYM_STELLA_CONTINUE, Cons.cons(Stella.SYM_STELLA_DEFAULT, Cons.cons(Stella.SYM_STELLA_DELETE, Cons.cons(Stella.SYM_STELLA_DO, Cons.cons(Stella.SYM_STELLA_DOUBLE, Cons.cons(Stella.SYM_STELLA_ELSE, Cons.cons(Stella.SYM_STELLA_ENUM, Cons.cons(Stella.SYM_STELLA_EXTERN, Cons.cons(Stella.SYM_STELLA_FLOAT, Cons.cons(Stella.SYM_STELLA_FOR, Cons.cons(Stella.SYM_STELLA_FRIEND, Cons.cons(Stella.SYM_STELLA_GOTO, Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Stella.SYM_STELLA_INLINE, Cons.cons(Stella.SYM_STELLA_INT, Cons.cons(Stella.SYM_STELLA_LONG, Cons.cons(Stella.SYM_STELLA_NAMESPACE, Cons.cons(Stella.SYM_STELLA_NEW, Cons.cons(Stella.SYM_STELLA_OPERATOR, Cons.cons(Stella.SYM_STELLA_PRIVATE, Cons.cons(Stella.SYM_STELLA_PROTECTED, Cons.cons(Stella.SYM_STELLA_PUBLIC, Cons.cons(Stella.SYM_STELLA_REGISTER, Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_SHORT, Cons.cons(Stella.SYM_STELLA_SIGNED, Cons.cons(Stella.SYM_STELLA_SIZEOF, Cons.cons(Stella.SYM_STELLA_STATIC, Cons.cons(Stella.SYM_STELLA_STRUCT, Cons.cons(Stella.SYM_STELLA_SWITCH, Cons.cons(Stella.SYM_STELLA_TEMPLATE, Cons.cons(Stella.SYM_STELLA_THROW, Cons.cons(Stella.SYM_STELLA_TRY, Cons.cons(Stella.SYM_STELLA_TYPEDEF, Cons.cons(Stella.SYM_STELLA_TYPEID, Cons.cons(Stella.SYM_STELLA_UNION, Cons.cons(Stella.SYM_STELLA_UNSIGNED, Cons.cons(Stella.SYM_STELLA_VIRTUAL, Cons.cons(Stella.SYM_STELLA_VOID, Cons.cons(Stella.SYM_STELLA_VOLATILE, Cons.cons(Stella.SYM_STELLA_WHILE, Cons.cons(Stella.SYM_STELLA_TYPENAME, Cons.cons(Stella.NIL, Stella.NIL)))))))))))))))))))))))))))))))))))))))))))))))))))));
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           word = iter000.value;
@@ -16933,14 +18894,14 @@ public class Stella {
   }
 
   public static Cons cppYieldSymbolIdForm(int symbolid) {
-    { Symbol symbol = Stella.getSymFromOffset(symbolid);
+    { Symbol symbol = Symbol.getSymFromOffset(symbolid);
 
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(Symbol.cppTranslateSymbolId(symbol), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateSymbolId(symbol), Cons.cons(Stella.NIL, Stella.NIL)))));
     }
   }
 
   public static Cons cppTranslateNull() {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(StringWrapper.wrapString("NULL"), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(StringWrapper.wrapString("NULL"), Cons.cons(Stella.NIL, Stella.NIL)))));
   }
 
   public static String cppGenerateArrayTypedEntity(String entity, String translatedarraytype) {
@@ -17178,7 +19139,7 @@ public class Stella {
   }
 
   public static Cons cppTranslateReturnParameter(int parameternumber, StandardObject parametertype) {
-    return (Stella_Object.cons(StandardObject.cppTranslateAndReferencizeTypeSpec(parametertype), Stella_Object.cons(Symbol.cppTranslateReturnParameterName(Stella.SYM_STELLA__RETURN, parameternumber), Stella.NIL)));
+    return (Cons.cons(StandardObject.cppTranslateAndReferencizeTypeSpec(parametertype), Cons.cons(Symbol.cppTranslateReturnParameterName(Stella.SYM_STELLA__RETURN, parameternumber), Stella.NIL)));
   }
 
   public static Cons cppYieldInitialNullValue() {
@@ -17412,7 +19373,7 @@ public class Stella {
       Cons methods = Stella.NIL;
       HashTable flotsamfunctionht = HashTable.newHashTable();
       HashTable globalsht = HashTable.newHashTable();
-      List codemoduleslist = Stella.list(Stella.NIL);
+      List codemoduleslist = List.list(Stella.NIL);
       Cons verbatimstatements = Stella.NIL;
       Cons classes = Stella.NIL;
       Module codeoutputmodule = null;
@@ -17437,23 +19398,23 @@ public class Stella {
                 startupclassname = StringWrapper.javaTranslateClassNamestring(StringWrapper.wrapString(((StringWrapper)(KeyValueList.dynamicSlotValue(((MethodSlot)(unit.theObject)).dynamicSlots, Stella.SYM_STELLA_METHOD_STARTUP_CLASSNAME, Stella.NULL_STRING_WRAPPER))).wrapperValue));
                 StringHashTable.javaPushIntoStringHashTable(startupht, startupclassname.wrapperValue, unit);
                 if (!(startupclasslist.memberP(startupclassname))) {
-                  startupclasslist = Stella_Object.cons(startupclassname, startupclasslist);
+                  startupclasslist = Cons.cons(startupclassname, startupclasslist);
                 }
               }
               else {
-                methods = Stella_Object.cons(unit, methods);
+                methods = Cons.cons(unit, methods);
               }
             }
             else if (testValue000 == Stella.SYM_STELLA_PRINT_METHOD) {
-              methods = Stella_Object.cons(unit, methods);
+              methods = Cons.cons(unit, methods);
             }
             else if (testValue000 == Stella.SYM_STELLA_TYPE) {
             }
             else if (testValue000 == Stella.SYM_STELLA_VERBATIM) {
-              verbatimstatements = Stella_Object.cons(unit, verbatimstatements);
+              verbatimstatements = Cons.cons(unit, verbatimstatements);
             }
             else if (testValue000 == Stella.SYM_STELLA_CLASS) {
-              classes = Stella_Object.cons(unit, classes);
+              classes = Cons.cons(unit, classes);
             }
             else if (testValue000 == Stella.SYM_STELLA_GLOBAL_VARIABLE) {
               codeoutputmodule = unit.theObject.homeModule();
@@ -17530,7 +19491,7 @@ public class Stella {
    * @param systemname
    */
   public static void javaTranslateSystem(String systemname) {
-    Stella.translateSystem(systemname, Stella.KWD_JAVA, Stella_Object.cons(Stella.KWD_TWO_PASSp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella_Object.cons(Stella.KWD_FORCE_TRANSLATIONp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella_Object.cons(Stella.KWD_PRODUCTION_SETTINGSp, Stella_Object.cons(Stella.TRUE_WRAPPER, Stella.NIL)))))));
+    Stella.translateSystem(systemname, Cons.cons(Stella.KWD_JAVA, Cons.cons(Stella.KWD_TWO_PASSp, Cons.cons(Stella.TRUE_WRAPPER, Cons.cons(Stella.KWD_FORCE_TRANSLATIONp, Cons.cons(Stella.TRUE_WRAPPER, Cons.cons(Stella.KWD_PRODUCTION_SETTINGSp, Cons.cons(Stella.TRUE_WRAPPER, Stella.NIL))))))));
   }
 
   public static String javaYieldNativeClassName() {
@@ -17813,7 +19774,7 @@ public class Stella {
     { StringHashTable table = StringHashTable.newStringHashTable();
 
       { Stella_Object word = null;
-        Cons iter000 = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OBJECT, Stella_Object.cons(Stella.SYM_STELLA_ABSTRACT, Stella_Object.cons(Stella.SYM_STELLA_BOOLEAN, Stella_Object.cons(Stella.SYM_STELLA_BREAK, Stella_Object.cons(Stella.SYM_STELLA_BYTE, Stella_Object.cons(Stella.SYM_STELLA_CASE, Stella_Object.cons(Stella.SYM_STELLA_CATCH, Stella_Object.cons(Stella.SYM_STELLA_CHAR, Stella_Object.cons(Stella.SYM_STELLA_CLASS, Stella_Object.cons(Stella.SYM_STELLA_CONST, Stella_Object.cons(Stella.SYM_STELLA_CONTINUE, Stella_Object.cons(Stella.SYM_STELLA_DEFAULT, Stella_Object.cons(Stella.SYM_STELLA_DO, Stella_Object.cons(Stella.SYM_STELLA_DOUBLE, Stella_Object.cons(Stella.SYM_STELLA_ELSE, Stella_Object.cons(Stella.SYM_STELLA_EXTENDS, Stella_Object.cons(Stella.SYM_STELLA_FINAL, Stella_Object.cons(Stella.SYM_STELLA_FINALLY, Stella_Object.cons(Stella.SYM_STELLA_FLOAT, Stella_Object.cons(Stella.SYM_STELLA_FOR, Stella_Object.cons(Stella.SYM_STELLA_GOTO, Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.SYM_STELLA_IMPLEMENTS, Stella_Object.cons(Stella.SYM_STELLA_IMPORT, Stella_Object.cons(Stella.SYM_STELLA_INSTANCEOF, Stella_Object.cons(Stella.SYM_STELLA_INT, Stella_Object.cons(Stella.SYM_STELLA_INTERFACE, Stella_Object.cons(Stella.SYM_STELLA_LONG, Stella_Object.cons(Stella.SYM_STELLA_NATIVE, Stella_Object.cons(Stella.SYM_STELLA_NEW, Stella_Object.cons(Stella.SYM_STELLA_PACKAGE, Stella_Object.cons(Stella.SYM_STELLA_PRIVATE, Stella_Object.cons(Stella.SYM_STELLA_PROTECTED, Stella_Object.cons(Stella.SYM_STELLA_PUBLIC, Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_SHORT, Stella_Object.cons(Stella.SYM_STELLA_STATIC, Stella_Object.cons(Stella.SYM_STELLA_SUPER, Stella_Object.cons(Stella.SYM_STELLA_SWITCH, Stella_Object.cons(Stella.SYM_STELLA_SYNCHRONIZED, Stella_Object.cons(Stella.SYM_STELLA_THROW, Stella_Object.cons(Stella.SYM_STELLA_THROWS, Stella_Object.cons(Stella.SYM_STELLA_TRANSIENT, Stella_Object.cons(Stella.SYM_STELLA_TRY, Stella_Object.cons(Stella.SYM_STELLA_VOID, Stella_Object.cons(Stella.SYM_STELLA_VOLATILE, Stella_Object.cons(Stella.SYM_STELLA_WHILE, Stella_Object.cons(Stella.SYM_STELLA_ASSERT, Stella_Object.cons(Stella.SYM_STELLA_ENUM, Stella_Object.cons(Stella.NIL, Stella.NIL)))))))))))))))))))))))))))))))))))))))))))))))))));
+        Cons iter000 = Cons.list$(Cons.cons(Stella.SYM_STELLA_OBJECT, Cons.cons(Stella.SYM_STELLA_ABSTRACT, Cons.cons(Stella.SYM_STELLA_BOOLEAN, Cons.cons(Stella.SYM_STELLA_BREAK, Cons.cons(Stella.SYM_STELLA_BYTE, Cons.cons(Stella.SYM_STELLA_CASE, Cons.cons(Stella.SYM_STELLA_CATCH, Cons.cons(Stella.SYM_STELLA_CHAR, Cons.cons(Stella.SYM_STELLA_CLASS, Cons.cons(Stella.SYM_STELLA_CONST, Cons.cons(Stella.SYM_STELLA_CONTINUE, Cons.cons(Stella.SYM_STELLA_DEFAULT, Cons.cons(Stella.SYM_STELLA_DO, Cons.cons(Stella.SYM_STELLA_DOUBLE, Cons.cons(Stella.SYM_STELLA_ELSE, Cons.cons(Stella.SYM_STELLA_EXTENDS, Cons.cons(Stella.SYM_STELLA_FINAL, Cons.cons(Stella.SYM_STELLA_FINALLY, Cons.cons(Stella.SYM_STELLA_FLOAT, Cons.cons(Stella.SYM_STELLA_FOR, Cons.cons(Stella.SYM_STELLA_GOTO, Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Stella.SYM_STELLA_IMPLEMENTS, Cons.cons(Stella.SYM_STELLA_IMPORT, Cons.cons(Stella.SYM_STELLA_INSTANCEOF, Cons.cons(Stella.SYM_STELLA_INT, Cons.cons(Stella.SYM_STELLA_INTERFACE, Cons.cons(Stella.SYM_STELLA_LONG, Cons.cons(Stella.SYM_STELLA_NATIVE, Cons.cons(Stella.SYM_STELLA_NEW, Cons.cons(Stella.SYM_STELLA_PACKAGE, Cons.cons(Stella.SYM_STELLA_PRIVATE, Cons.cons(Stella.SYM_STELLA_PROTECTED, Cons.cons(Stella.SYM_STELLA_PUBLIC, Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_SHORT, Cons.cons(Stella.SYM_STELLA_STATIC, Cons.cons(Stella.SYM_STELLA_SUPER, Cons.cons(Stella.SYM_STELLA_SWITCH, Cons.cons(Stella.SYM_STELLA_SYNCHRONIZED, Cons.cons(Stella.SYM_STELLA_THROW, Cons.cons(Stella.SYM_STELLA_THROWS, Cons.cons(Stella.SYM_STELLA_TRANSIENT, Cons.cons(Stella.SYM_STELLA_TRY, Cons.cons(Stella.SYM_STELLA_VOID, Cons.cons(Stella.SYM_STELLA_VOLATILE, Cons.cons(Stella.SYM_STELLA_WHILE, Cons.cons(Stella.SYM_STELLA_ASSERT, Cons.cons(Stella.SYM_STELLA_ENUM, Cons.cons(Stella.NIL, Stella.NIL)))))))))))))))))))))))))))))))))))))))))))))))))));
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           word = iter000.value;
@@ -17853,14 +19814,14 @@ public class Stella {
   }
 
   public static Cons javaYieldSymbolIdForm(int symbolid) {
-    { Symbol symbol = Stella.getSym(symbolid);
+    { Symbol symbol = Symbol.getSym(symbolid);
 
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_IDENT, Stella_Object.cons(Symbol.javaTranslateSymbolId(symbol), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(Symbol.javaTranslateSymbolId(symbol), Cons.cons(Stella.NIL, Stella.NIL)))));
     }
   }
 
   public static Cons javaTranslateClassObjectLookup(String classname) {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_FUNCTION_CALL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_IDENT, Stella_Object.cons(StringWrapper.wrapString(Stella.javaYieldNativeClassName()), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_IDENT, Stella_Object.cons(StringWrapper.wrapString("find_java_class"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_ACTUALS, Stella_Object.cons(StringWrapper.wrapString(classname), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_FUNCTION_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(StringWrapper.wrapString(Stella.javaYieldNativeClassName()), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(StringWrapper.wrapString("find_java_class"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_ACTUALS, Cons.cons(StringWrapper.wrapString(classname), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))));
   }
 
   public static String yieldClassObjectLookupNameForNativeType(String nativetype) {
@@ -17918,11 +19879,11 @@ public class Stella {
   }
 
   public static Cons javaTranslateNull() {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_IDENT, Stella_Object.cons(StringWrapper.wrapString("null"), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(StringWrapper.wrapString("null"), Cons.cons(Stella.NIL, Stella.NIL)))));
   }
 
   public static Cons javaTranslateEol() {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_EOL, Stella_Object.cons(Symbol.javaTranslateGlobalName(Stella.SYM_STELLA_EOL, false), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_EOL, Cons.cons(Symbol.javaTranslateGlobalName(Stella.SYM_STELLA_EOL, false), Cons.cons(Stella.NIL, Stella.NIL)))));
   }
 
   public static String javaPrependGlobalClassName(String namestring, Module module) {
@@ -17930,7 +19891,7 @@ public class Stella {
   }
 
   public static Cons javaTranslateReturnParameter() {
-    return (Stella.list$(Stella_Object.cons(StringWrapper.wrapString("Object []"), Stella_Object.cons(StringWrapper.wrapString("MV_returnarray"), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+    return (Cons.list$(Cons.cons(StringWrapper.wrapString("Object []"), Cons.cons(StringWrapper.wrapString("MV_returnarray"), Cons.cons(Stella.NIL, Stella.NIL)))));
   }
 
   public static String javaStellaPackage() {
@@ -18232,7 +20193,7 @@ public class Stella {
   }
 
   public static Cons idlTranslateNull() {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IDL_IDENT, Stella_Object.cons(StringWrapper.wrapString("NULL"), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_IDL_IDENT, Cons.cons(StringWrapper.wrapString("NULL"), Cons.cons(Stella.NIL, Stella.NIL)))));
   }
 
   public static String idlCreateCharacterSubstitutionTable() {
@@ -18382,7 +20343,7 @@ public class Stella {
     { StringHashTable table = StringHashTable.newStringHashTable();
 
       { Stella_Object word = null;
-        Cons iter000 = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ASM, Stella_Object.cons(Stella.SYM_STELLA_AUTO, Stella_Object.cons(Stella.SYM_STELLA_BREAK, Stella_Object.cons(Stella.SYM_STELLA_CASE, Stella_Object.cons(Stella.SYM_STELLA_CATCH, Stella_Object.cons(Stella.SYM_STELLA_CHAR, Stella_Object.cons(Stella.SYM_STELLA_CLASS, Stella_Object.cons(Stella.SYM_STELLA_CONST, Stella_Object.cons(Stella.SYM_STELLA_CONTINUE, Stella_Object.cons(Stella.SYM_STELLA_DEFAULT, Stella_Object.cons(Stella.SYM_STELLA_DELETE, Stella_Object.cons(Stella.SYM_STELLA_DO, Stella_Object.cons(Stella.SYM_STELLA_DOUBLE, Stella_Object.cons(Stella.SYM_STELLA_ELSE, Stella_Object.cons(Stella.SYM_STELLA_ENUM, Stella_Object.cons(Stella.SYM_STELLA_EXTERN, Stella_Object.cons(Stella.SYM_STELLA_FLOAT, Stella_Object.cons(Stella.SYM_STELLA_FOR, Stella_Object.cons(Stella.SYM_STELLA_FRIEND, Stella_Object.cons(Stella.SYM_STELLA_GOTO, Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.SYM_STELLA_INLINE, Stella_Object.cons(Stella.SYM_STELLA_INT, Stella_Object.cons(Stella.SYM_STELLA_LONG, Stella_Object.cons(Stella.SYM_STELLA_NEW, Stella_Object.cons(Stella.SYM_STELLA_OPERATOR, Stella_Object.cons(Stella.SYM_STELLA_PRIVATE, Stella_Object.cons(Stella.SYM_STELLA_PROTECTED, Stella_Object.cons(Stella.SYM_STELLA_PUBLIC, Stella_Object.cons(Stella.SYM_STELLA_REGISTER, Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_SHORT, Stella_Object.cons(Stella.SYM_STELLA_SIGNED, Stella_Object.cons(Stella.SYM_STELLA_SIZEOF, Stella_Object.cons(Stella.SYM_STELLA_STATIC, Stella_Object.cons(Stella.SYM_STELLA_STRUCT, Stella_Object.cons(Stella.SYM_STELLA_SWITCH, Stella_Object.cons(Stella.SYM_STELLA_TEMPLATE, Stella_Object.cons(Stella.SYM_STELLA_THROW, Stella_Object.cons(Stella.SYM_STELLA_TRY, Stella_Object.cons(Stella.SYM_STELLA_TYPEDEF, Stella_Object.cons(Stella.SYM_STELLA_UNION, Stella_Object.cons(Stella.SYM_STELLA_UNSIGNED, Stella_Object.cons(Stella.SYM_STELLA_VIRTUAL, Stella_Object.cons(Stella.SYM_STELLA_VOID, Stella_Object.cons(Stella.SYM_STELLA_VOLATILE, Stella_Object.cons(Stella.SYM_STELLA_WHILE, Stella_Object.cons(Stella.SYM_STELLA_TYPENAME, Stella_Object.cons(Stella.NIL, Stella.NIL))))))))))))))))))))))))))))))))))))))))))))))))));
+        Cons iter000 = Cons.list$(Cons.cons(Stella.SYM_STELLA_ASM, Cons.cons(Stella.SYM_STELLA_AUTO, Cons.cons(Stella.SYM_STELLA_BREAK, Cons.cons(Stella.SYM_STELLA_CASE, Cons.cons(Stella.SYM_STELLA_CATCH, Cons.cons(Stella.SYM_STELLA_CHAR, Cons.cons(Stella.SYM_STELLA_CLASS, Cons.cons(Stella.SYM_STELLA_CONST, Cons.cons(Stella.SYM_STELLA_CONTINUE, Cons.cons(Stella.SYM_STELLA_DEFAULT, Cons.cons(Stella.SYM_STELLA_DELETE, Cons.cons(Stella.SYM_STELLA_DO, Cons.cons(Stella.SYM_STELLA_DOUBLE, Cons.cons(Stella.SYM_STELLA_ELSE, Cons.cons(Stella.SYM_STELLA_ENUM, Cons.cons(Stella.SYM_STELLA_EXTERN, Cons.cons(Stella.SYM_STELLA_FLOAT, Cons.cons(Stella.SYM_STELLA_FOR, Cons.cons(Stella.SYM_STELLA_FRIEND, Cons.cons(Stella.SYM_STELLA_GOTO, Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Stella.SYM_STELLA_INLINE, Cons.cons(Stella.SYM_STELLA_INT, Cons.cons(Stella.SYM_STELLA_LONG, Cons.cons(Stella.SYM_STELLA_NEW, Cons.cons(Stella.SYM_STELLA_OPERATOR, Cons.cons(Stella.SYM_STELLA_PRIVATE, Cons.cons(Stella.SYM_STELLA_PROTECTED, Cons.cons(Stella.SYM_STELLA_PUBLIC, Cons.cons(Stella.SYM_STELLA_REGISTER, Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_SHORT, Cons.cons(Stella.SYM_STELLA_SIGNED, Cons.cons(Stella.SYM_STELLA_SIZEOF, Cons.cons(Stella.SYM_STELLA_STATIC, Cons.cons(Stella.SYM_STELLA_STRUCT, Cons.cons(Stella.SYM_STELLA_SWITCH, Cons.cons(Stella.SYM_STELLA_TEMPLATE, Cons.cons(Stella.SYM_STELLA_THROW, Cons.cons(Stella.SYM_STELLA_TRY, Cons.cons(Stella.SYM_STELLA_TYPEDEF, Cons.cons(Stella.SYM_STELLA_UNION, Cons.cons(Stella.SYM_STELLA_UNSIGNED, Cons.cons(Stella.SYM_STELLA_VIRTUAL, Cons.cons(Stella.SYM_STELLA_VOID, Cons.cons(Stella.SYM_STELLA_VOLATILE, Cons.cons(Stella.SYM_STELLA_WHILE, Cons.cons(Stella.SYM_STELLA_TYPENAME, Cons.cons(Stella.NIL, Stella.NIL))))))))))))))))))))))))))))))))))))))))))))))))));
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           word = iter000.value;
@@ -18426,16 +20387,16 @@ public class Stella {
                 if ((testValue000 == Stella.SYM_STELLA_METHOD) ||
                     ((testValue000 == Stella.SYM_STELLA_PRINT_METHOD) ||
                      (testValue000 == Stella.SYM_STELLA_MACRO))) {
-                  methods = Stella_Object.cons(unit.translation, methods);
+                  methods = Cons.cons(unit.translation, methods);
                 }
                 else if (testValue000 == Stella.SYM_STELLA_VERBATIM) {
-                  verbatimstatements = Stella_Object.cons(unit.translation, verbatimstatements);
+                  verbatimstatements = Cons.cons(unit.translation, verbatimstatements);
                 }
                 else if (testValue000 == Stella.SYM_STELLA_GLOBAL_VARIABLE) {
-                  globals = Stella_Object.cons(unit.translation, globals);
+                  globals = Cons.cons(unit.translation, globals);
                 }
                 else {
-                  forms = Stella_Object.cons(unit.translation, forms);
+                  forms = Cons.cons(unit.translation, forms);
                 }
               }
             }
@@ -18540,7 +20501,7 @@ public class Stella {
    * @return String
    */
   public static String stellaVersionString() {
-    return ("STELLA " + Native.integerToString(Stella.$STELLA_MAJOR_VERSION_NUMBER$) + "." + Native.integerToString(Stella.$STELLA_MINOR_VERSION_NUMBER$) + "." + Native.integerToString(Stella.$STELLA_PATCH_LEVEL$) + Stella.$STELLA_RELEASE_STATE$);
+    return ("STELLA " + Native.integerToString(((long)(Stella.$STELLA_MAJOR_VERSION_NUMBER$))) + "." + Native.integerToString(((long)(Stella.$STELLA_MINOR_VERSION_NUMBER$))) + "." + Native.integerToString(((long)(Stella.$STELLA_PATCH_LEVEL$))) + Stella.$STELLA_RELEASE_STATE$);
   }
 
   /** Returns information about the current Stella implementation.
@@ -18687,41 +20648,12 @@ public class Stella {
     Stella.sweepTransients();
   }
 
-  /** Interpret any STELLA-relevant command line <code>arguments</code>.
+  /** Old name for <code>processCommandLineArguments</code> (which see).
    * @param count
    * @param arguments
    */
   public static void interpretCommandLineArguments(int count, String[] arguments) {
-    { int cursor = 0;
-
-      while (cursor < count) {
-        { String testValue000 = arguments[cursor];
-
-          if (Stella.stringEqlP(testValue000, "-e") ||
-              (Stella.stringEqlP(testValue000, "-eval") ||
-               Stella.stringEqlP(testValue000, "--eval"))) {
-            cursor = cursor + 1;
-            if (cursor == count) {
-              Stella.STANDARD_ERROR.nativeStream.println("ERROR: Missing argument to -eval option");
-            }
-            else {
-              try {
-                Stella_Object.evaluate(Stella.readSExpressionFromString(arguments[cursor]));
-              } catch (java.lang.Exception e) {
-                {
-                  Stella.STANDARD_ERROR.nativeStream.println("ERROR during processing of --eval option:");
-                  Stella.STANDARD_ERROR.nativeStream.print("   " + Stella.exceptionMessage(e));
-                }
-;
-              }
-            }
-          }
-          else {
-          }
-        }
-        cursor = cursor + 1;
-      }
-    }
+    Stella.processCommandLineArguments(count, arguments, Stella.KWD_WARN);
   }
 
   /** Convert <code>count</code> command line <code>arguments</code> into a CONS list.
@@ -18741,7 +20673,7 @@ public class Stella {
           i = iter000;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(StringWrapper.wrapString(arguments[i]), Stella.NIL);
+              collect000 = Cons.cons(StringWrapper.wrapString(arguments[i]), Stella.NIL);
               if (result == Stella.NIL) {
                 result = collect000;
               }
@@ -18752,7 +20684,7 @@ public class Stella {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(StringWrapper.wrapString(arguments[i]), Stella.NIL);
+              collect000.rest = Cons.cons(StringWrapper.wrapString(arguments[i]), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -18767,9 +20699,9 @@ public class Stella {
 
       { boolean testingP = count == 0;
 
-        System.out.println("Welcome to " + Stella.stellaVersionString());
         Stella.startup(testingP);
         StartupStellaSystem.startupStellaSystem();
+        System.out.println("Welcome to " + Stella.stellaVersionString());
         Stella.interpretCommandLineArguments(count, arguments);
         if (testingP) {
           System.out.println("Bye!");

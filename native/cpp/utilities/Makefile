@@ -3,7 +3,7 @@
 # Makefile for system utilities
 # Uses various constructs only supported by GNU make!
 
-# Template version: Makefile-default.in,v 1.11 2006/05/16 06:38:14 hans Exp
+# Template version: Makefile-default.in,v 1.12 2010/10/11 22:05:29 hans Exp
 
 # TO DO:
 # - `make' shouldn't remake the system if the library exists (and is younger
@@ -16,7 +16,7 @@ STELLA-ROOT = ../stella
 # g++ settings:
 CXX    = g++
 CC     = gcc
-CFLAGS = -w -g -O2 -fno-common
+CFLAGS = -w -g -O2 -fno-common -fPIC
 
 # Some versions of Unix and/or gcc need special switches; see what we have:
 OS = $(shell if gcc --version | grep -iq "CYGWIN"; then echo "CYGWIN"; \
@@ -83,7 +83,7 @@ RPATH-FLAGS = $(shell if [ $(OS) = "SUNOS" ]; \
 	              then echo ""; \
                       else echo -Xlinker -rpath -Xlinker \'$(RPATH)\'; fi)
 
-LIB-SRCS =   manuals.cc units.cc unit-defs.cc http.cc startup-system.cc 
+LIB-SRCS =   manuals.cc units.cc unit-defs.cc startup-system.cc 
 LIB-OBJS =   $(LIB-SRCS:.cc=.o)
 
 PROG-SRCS =  $(MAIN)

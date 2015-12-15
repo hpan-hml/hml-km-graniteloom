@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -155,7 +155,7 @@ boolean markAsFailedGoalP(Justification* self);
 boolean markAsCutoffGoalP(Justification* self);
 boolean partiallyFollowsP(Justification* self);
 char* makeRuleOriginExplanationPhrase(Justification* self);
-KeyValueList* getExplanationSubstitution(Justification* self);
+KeyValueMap* getExplanationSubstitution(Justification* self);
 void printOneVariableSubstitution(OutputStream* stream, Object* var, Object* value);
 void printExplanationSubstitution(Justification* self, OutputStream* stream, KeyValueList* mapping);
 void printExplanationAntecedents(Justification* self, OutputStream* stream, KeyValueList* mapping, int maxdepth, List* unexplained);
@@ -208,11 +208,13 @@ extern Keyword* KWD_EXPLANATIONS_REVERSE;
 extern Keyword* KWD_EXPLANATIONS_PRIMITIVE_STRATEGY;
 extern Keyword* KWD_EXPLANATIONS_SCAN_PROPOSITIONS;
 extern Symbol* SYM_EXPLANATIONS_LOGIC_MASTER_PROPOSITION;
+extern Keyword* KWD_EXPLANATIONS_FORWARD;
 extern Keyword* KWD_EXPLANATIONS_SCAN_COLLECTION;
 extern Keyword* KWD_EXPLANATIONS_LOOKUP_ASSERTIONS;
 extern Keyword* KWD_EXPLANATIONS_EQUIVALENCE;
 extern Symbol* SYM_EXPLANATIONS_LOGIC_COMPLEMENT_DESCRIPTION;
 extern Surrogate* SGT_EXPLANATIONS_LOGIC_NAMED_DESCRIPTION;
+extern Surrogate* SGT_EXPLANATIONS_LOGIC_FORWARD_JUSTIFICATION;
 extern Surrogate* SGT_EXPLANATIONS_LOGIC_ALTERNATIVE_BINDINGS_SET;
 extern Keyword* KWD_EXPLANATIONS_MODUS_PONENS;
 extern Keyword* KWD_EXPLANATIONS_MODUS_TOLLENS;

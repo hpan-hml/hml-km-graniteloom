@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -2085,6 +2085,7 @@ void startupSpecialize() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT EMPTY-PROPOSITIONS-ITERATOR (ITERATOR OF PROPOSITION) (NEW TRUE-PROPOSITIONS-ITERATOR) :DOCUMENTATION \"This iterator returns no values whenever its called.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *IMPLICATION-SUBSUMPTION-GRAPH* TAXONOMY-GRAPH NULL)");
       initializeImplicationSubsumptionGraph();

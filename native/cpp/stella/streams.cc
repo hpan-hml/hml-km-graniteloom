@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -249,7 +249,7 @@ Object* walkError(Cons* body) {
 Object* walkInform(Cons* body) {
   { Cons* messagearguments = formatMessageArguments(formatWalkMessageArguments(body), false);
 
-    return (listO(4, SYM_STREAMS_STELLA_SPECIAL, cons(listO(3, SYM_STREAMS_STELLA_oPRINTREADABLYpo, SYM_STREAMS_STELLA_TRUE, NIL), NIL), listO(5, SYM_STREAMS_STELLA_UNLESS, cons(SYM_STREAMS_STELLA_SUPPRESS_WARNINGSp, NIL), listO(4, SYM_STREAMS_STELLA_PRINT_ERROR_CONTEXT, wrapString(">> NOTE: "), SYM_STREAMS_STELLA_STANDARD_OUTPUT, NIL), listO(5, SYM_STREAMS_STELLA_PRINT_STREAM, SYM_STREAMS_STELLA_STANDARD_OUTPUT, SYM_STREAMS_STELLA_EOL, wrapString(" "), messagearguments->concatenate(listO(3, wrapString("."), SYM_STREAMS_STELLA_EOL, NIL), 0)), NIL), NIL));
+    return (listO(5, SYM_STREAMS_STELLA_SPECIAL, cons(listO(3, SYM_STREAMS_STELLA_oPRINTREADABLYpo, SYM_STREAMS_STELLA_TRUE, NIL), NIL), cons(SYM_STREAMS_STELLA_SIGNAL_TRANSLATION_NOTE, NIL), listO(5, SYM_STREAMS_STELLA_UNLESS, cons(SYM_STREAMS_STELLA_SUPPRESS_WARNINGSp, NIL), listO(4, SYM_STREAMS_STELLA_PRINT_ERROR_CONTEXT, wrapString(">> NOTE: "), SYM_STREAMS_STELLA_STANDARD_OUTPUT, NIL), listO(5, SYM_STREAMS_STELLA_PRINT_STREAM, SYM_STREAMS_STELLA_STANDARD_OUTPUT, SYM_STREAMS_STELLA_EOL, wrapString(" "), messagearguments->concatenate(listO(3, wrapString("."), SYM_STREAMS_STELLA_EOL, NIL), 0)), NIL), NIL));
   }
 }
 
@@ -757,6 +757,7 @@ InputStream* openNetworkStream(char* host, int port, OutputStream*& _Return1) {
 
       self001->nativeStream = in;
       self001->state = KWD_STREAMS_OPEN;
+      self001->bufferingScheme = KWD_STREAMS_BLOCK;
       { InputStream* value000 = self001;
 
         { OutputStream* self002 = newOutputStream();
@@ -807,6 +808,91 @@ Object* withNetworkStream(Cons* binding, Cons* body) {
     Symbol* varOut = ((Symbol*)(binding->rest->value));
 
     return (listO(4, SYM_STREAMS_STELLA_LET, listO(3, cons(varIn, listO(3, SYM_STREAMS_STELLA_INPUT_STREAM, SYM_STREAMS_STELLA_NULL, NIL)), cons(varOut, listO(3, SYM_STREAMS_STELLA_OUTPUT_STREAM, SYM_STREAMS_STELLA_NULL, NIL)), NIL), listO(5, SYM_STREAMS_STELLA_UNWIND_PROTECT, listO(3, SYM_STREAMS_STELLA_PROGN, listO(4, SYM_STREAMS_STELLA_MV_SETQ, cons(varIn, cons(varOut, NIL)), listO(3, SYM_STREAMS_STELLA_OPEN_NETWORK_STREAM, binding->rest->rest->value, cons(binding->fourth(), NIL)), NIL), body->concatenate(NIL, 0)), listO(4, SYM_STREAMS_STELLA_WHEN, listO(3, SYM_STREAMS_STELLA_DEFINEDp, varIn, NIL), listO(3, SYM_STREAMS_STELLA_FREE, varIn, NIL), NIL), listO(4, SYM_STREAMS_STELLA_WHEN, listO(3, SYM_STREAMS_STELLA_DEFINEDp, varOut, NIL), listO(3, SYM_STREAMS_STELLA_FREE, varOut, NIL), NIL), NIL), NIL));
+  }
+}
+
+long long int nativeFileInputStreamPosition(std::istream* nstream) {
+  nstream->clear(std::ios::goodbit);
+  return (nstream->tellg());
+}
+
+long long int nativeFileInputStreamPositionSetter(std::istream* nstream, long long int newpos) {
+  nstream->clear(std::ios::goodbit);nstream->seekg(newpos);
+  return (newpos);
+}
+
+long long int InputFileStream::streamPosition() {
+  // Return the current position of the file input cursor in `self'.
+  { InputFileStream* self = this;
+
+    { long long int position = nativeFileInputStreamPosition(self->nativeStream);
+      TokenizerStreamState* state = self->tokenizerState;
+
+      if (((boolean)(state))) {
+        position = position - state->bufferedInputLength();
+      }
+      return (position);
+    }
+  }
+}
+
+long long int InputFileStream::streamPositionSetter(long long int newpos) {
+  // Set the current position of the file input cursor in `self' to `newpos'.
+  // If `self' has any tokenizer state associated with it, this will also reset
+  // to the start state of the tokenizer table; otherwise, behavior would be
+  // unpredictable unless the character class of the new position is exactly the
+  // same as the one following the most recent token.
+  { InputFileStream* self = this;
+
+    { std::istream* nstream = self->nativeStream;
+      TokenizerStreamState* state = self->tokenizerState;
+
+      if (((boolean)(state))) {
+        { long long int fileposition = nativeFileInputStreamPosition(nstream);
+          long long int offset = fileposition - newpos;
+          int buffered = 0;
+
+          if (offset > 0) {
+            buffered = state->bufferedInputLength();
+            if (offset <= buffered) {
+              state->cursor = ((int)(longIntegerMod(state->cursor + (buffered - offset), ((long long int)(state->bufferSize)))));
+              state->reset();
+              return (newpos);
+            }
+          }
+          state->clear();
+          state->reset();
+        }
+      }
+      nativeFileInputStreamPositionSetter(nstream, newpos);
+      return (newpos);
+    }
+  }
+}
+
+long long int nativeFileOutputStreamPosition(std::ostream* nstream) {
+  return (nstream->tellp());
+}
+
+long long int nativeFileOutputStreamPositionSetter(std::ostream* nstream, long long int newpos) {
+  nstream->seekp(newpos);
+  return (newpos);
+}
+
+long long int OutputFileStream::streamPosition() {
+  // Return the current position of the file input cursor in `self'.
+  { OutputFileStream* self = this;
+
+    return ((self->nativeStream)->tellp());
+  }
+}
+
+long long int OutputFileStream::streamPositionSetter(long long int newpos) {
+  // Set the current position of the file input cursor in `self' to `newpos'.
+  { OutputFileStream* self = this;
+
+    nativeFileOutputStreamPositionSetter(self->nativeStream, newpos);
+    return (newpos);
   }
 }
 
@@ -971,49 +1057,30 @@ void writeHtmlEscapingUrlSpecialCharacters(std::ostream* stream, char* input) {
           index000 < length000; 
           index000 = index000 + 1) {
       ch = vector000[index000];
-      switch (ch) {
-        case ' ': 
-          *(stream) << "%20";
-        break;
-        case '?': 
-          *(stream) << "%3F";
-        break;
-        case '#': 
-          *(stream) << "%23";
-        break;
-        case '=': 
-          *(stream) << "%3D";
-        break;
-        case '&': 
-          *(stream) << "%26";
-        break;
-        case '%': 
-          *(stream) << "%25";
-        break;
-        case '+': 
-          *(stream) << "%2B";
-        break;
-        case '<': 
-          *(stream) << "%3C";
-        break;
-        case '>': 
-          *(stream) << "%3E";
-        break;
-        case '/': 
-          *(stream) << "%2F";
-        break;
-        case ':': 
-          *(stream) << "%3A";
-        break;
-        case '"': 
-          *(stream) << "%22";
-        break;
-        case '\'': 
-          *(stream) << "%27";
-        break;
-        default:
-          *(stream) << ch;
-        break;
+      if ((oCHARACTER_TYPE_TABLEo[(int)(unsigned char) ch] == KWD_STREAMS_LETTER) ||
+          (oCHARACTER_TYPE_TABLEo[(int)(unsigned char) ch] == KWD_STREAMS_DIGIT)) {
+        *(stream) << ch;
+      }
+      else {
+        switch (ch) {
+          case '-': 
+          case '_': 
+          case '.': 
+          case '~': 
+            *(stream) << ch;
+          break;
+          default:
+            { int code = (int)(unsigned char) ch;
+
+              if (code < 16) {
+                *(stream) << "%0" << integerToHexString(((long long int)(code)));
+              }
+              else {
+                *(stream) << "%" << integerToHexString(((long long int)(code)));
+              }
+            }
+          break;
+        }
       }
     }
   }
@@ -1449,82 +1516,64 @@ Object* lookupLoggingParameter(char* module, Keyword* parameter, Object* defaulT
   }
 }
 
-void setLoggingParameters(char* module, int paramsAvalues, ...) {
+void setLoggingParameters(char* module, Cons* paramsAvalues) {
   // Set logging parameters for `module'.  The supported parameters are:
   //   :LOG-LEVELS - a cons list of legal levels in ascending log level order;
   //                 for example, (:NONE :LOW :MEDIUM :HIGH) or (0 1 2 3).
   //   :LEVEL      - the current log level for `module'
-  //   :STREAM     - the stream to log to (defaults to STANDARD-OUTPUT)
+  //   :STREAM     - the stream or file to log to (defaults to STANDARD-OUTPUT)
   //   :PREFIX     - the prefix to use to identify the module (defaults to `module')
   //   :MAX-WIDTH  - logging output lines will be kept to approximately this width
   //                 (defaults to 10000, minimum width of about 30 is used to
   //                 print line header information).
-  { Cons* arglist000 = NIL;
+  { PropertyList* options = vetOptions(paramsAvalues, getQuotedTree("((:LOG-LEVELS :LEVEL :STREAM :PREFIX :MAX-WIDTH) \"/STELLA\")", "/STELLA"));
+    PropertyList* loginfo = NULL;
 
-    { va_list iter000;
-      int iter000Count = paramsAvalues;
-      Object* arg000 = NULL;
-      Cons* collect000 = NULL;
+    { StringWrapper* mod = NULL;
+      PropertyList* props = NULL;
+      KvCons* iter000 = oLOGGING_REGISTRYo->theKvList;
 
-      va_start(iter000, paramsAvalues);
-            for  (iter000, iter000Count, arg000, collect000; 
-            (iter000Count--) > 0; ) {
-        arg000 = va_arg(iter000, Object*);
-        if (!((boolean)(collect000))) {
-          {
-            collect000 = cons(arg000, NIL);
-            if (arglist000 == NIL) {
-              arglist000 = collect000;
-            }
-            else {
-              addConsToEndOfConsList(arglist000, collect000);
-            }
-          }
-        }
-        else {
-          {
-            collect000->rest = cons(arg000, NIL);
-            collect000 = collect000->rest;
-          }
+      for  (mod, props, iter000; 
+            ((boolean)(iter000)); 
+            iter000 = iter000->rest) {
+        mod = ((StringWrapper*)(iter000->key));
+        props = ((PropertyList*)(iter000->value));
+        if (stringEqualP(module, mod->wrapperValue)) {
+          loginfo = props;
         }
       }
-      va_end(iter000);
     }
-    { PropertyList* options = vetOptions(arglist000, getQuotedTree("((:LOG-LEVELS :LEVEL :STREAM :PREFIX :MAX-WIDTH) \"/STELLA\")", "/STELLA"));
-      PropertyList* loginfo = NULL;
+    if (!((boolean)(loginfo))) {
+      loginfo = newPropertyList();
+      oLOGGING_REGISTRYo->insertAt(wrapString(module), loginfo);
+    }
+    { Object* key = NULL;
+      Object* value = NULL;
+      Cons* iter001 = options->thePlist;
 
-      { StringWrapper* mod = NULL;
-        PropertyList* props = NULL;
-        KvCons* iter001 = oLOGGING_REGISTRYo->theKvList;
-
-        for  (mod, props, iter001; 
-              ((boolean)(iter001)); 
-              iter001 = iter001->rest) {
-          mod = ((StringWrapper*)(iter001->key));
-          props = ((PropertyList*)(iter001->value));
-          if (stringEqualP(module, mod->wrapperValue)) {
-            loginfo = props;
-          }
-        }
-      }
-      if (!((boolean)(loginfo))) {
-        loginfo = newPropertyList();
-        oLOGGING_REGISTRYo->insertAt(wrapString(module), loginfo);
-      }
-      { Object* key = NULL;
-        Object* value = NULL;
-        Cons* iter002 = options->thePlist;
-
-        for  (key, value, iter002; 
-              !(iter002 == NIL); 
-              iter002 = iter002->rest->rest) {
-          key = iter002->value;
-          value = iter002->rest->value;
-          loginfo->insertAt(key, value);
-        }
+      for  (key, value, iter001; 
+            !(iter001 == NIL); 
+            iter001 = iter001->rest->rest) {
+        key = iter001->value;
+        value = iter001->rest->value;
+        loginfo->insertAt(key, value);
       }
     }
   }
+}
+
+void setLoggingParametersEvaluatorWrapper(Cons* arguments) {
+  setLoggingParameters(((StringWrapper*)(arguments->value))->wrapperValue, arguments->rest);
+}
+
+void setLogLevel(char* module, Object* level) {
+  // Set the log-level for `module' to `level'.  This is a
+  // convenience function for this common operation.
+  setLoggingParameters(module, consList(2, KWD_STREAMS_LEVEL, level));
+}
+
+void setLogLevelEvaluatorWrapper(Cons* arguments) {
+  setLogLevel(((StringWrapper*)(arguments->value))->wrapperValue, arguments->rest->value);
 }
 
 boolean logLevelLE(Object* level, char* module) {
@@ -1541,64 +1590,130 @@ boolean logLevelLE(Object* level, char* module) {
   }
 }
 
+// The number of spaces to print before the content of a log message.
+int oLOG_INDENT_LEVELo = 0;
+
+void bumpLogIndent() {
+  // Increase the indentation level for subsequent log messages.
+  oLOG_INDENT_LEVELo = oLOG_INDENT_LEVELo + 2;
+}
+
+void unbumpLogIndent() {
+  // Decrease the indentation level for subsequent log messages.
+  oLOG_INDENT_LEVELo = oLOG_INDENT_LEVELo - 2;
+}
+
+OutputStream* getLogStream(char* module) {
+  // Return a valid log stream for `module'.
+  { Object* streamspec = lookupLoggingParameter(module, KWD_STREAMS_STREAM, STANDARD_OUTPUT);
+
+    { Surrogate* testValue000 = safePrimaryType(streamspec);
+
+      if (subtypeOfStringP(testValue000)) {
+        { Object* streamspec000 = streamspec;
+          StringWrapper* streamspec = ((StringWrapper*)(streamspec000));
+
+          return (openOutputFile(streamspec->wrapperValue, 4, KWD_STREAMS_IF_EXISTS, KWD_STREAMS_APPEND, KWD_STREAMS_IF_NOT_EXISTS, KWD_STREAMS_CREATE));
+        }
+      }
+      else if (subtypeOfP(testValue000, SGT_STREAMS_STELLA_OUTPUT_STREAM)) {
+        { Object* streamspec001 = streamspec;
+          OutputStream* streamspec = ((OutputStream*)(streamspec001));
+
+          return (streamspec);
+        }
+      }
+      else {
+        { OutputStringStream* stream000 = newOutputStringStream();
+
+          *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+          throw *newStellaException(stream000->theStringReader());
+        }
+      }
+    }
+  }
+}
+
 void logMessage(char* module, Object* loglevel, Cons* message) {
   // Log all elements of `message' to `module's log stream if
   // `logLevel' is the same or lower than the `module's log level.  Interprets `EOL'
   // or :EOL to print a line terminator.
   if (logLevelLE(loglevel, module)) {
-    { OutputStream* log = ((OutputStream*)(lookupLoggingParameter(module, KWD_STREAMS_STREAM, STANDARD_OUTPUT)));
+    { OutputStream* log = getLogStream(module);
       char* moduleprefix = ((StringWrapper*)(lookupLoggingParameter(module, KWD_STREAMS_PREFIX, wrapString(module))))->wrapperValue;
       int maxroom = ((IntegerWrapper*)(lookupLoggingParameter(module, KWD_STREAMS_MAX_WIDTH, wrapInteger(10000))))->wrapperValue;
       int room = maxroom;
       char* eltstring = NULL;
 
-      *(log->nativeStream) << "[" << makeCurrentDateTime()->calendarDateToString(oLOGGING_LOCAL_TIME_ZONEo, false, false) << ((stringEqlP(moduleprefix, "") ? (char*)"" : (char*)" ")) << moduleprefix << "] ";
-      room = room - (27 + strlen(moduleprefix));
-      { 
-        BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-        { Object* elt = NULL;
-          Cons* iter000 = message;
+      try {
+        *(log->nativeStream) << "[" << makeCurrentDateTime()->calendarDateToString(oLOGGING_LOCAL_TIME_ZONEo, false, false) << ((stringEqlP(moduleprefix, "") ? (char*)"" : (char*)" ")) << moduleprefix << "] ";
+        { int i = NULL_INTEGER;
+          int iter000 = 1;
+          int upperBound000 = oLOG_INDENT_LEVELo;
+          boolean unboundedP000 = upperBound000 == NULL_INTEGER;
 
-          for (elt, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-            elt = iter000->value;
-            { Surrogate* testValue000 = safePrimaryType(elt);
+          for  (i, iter000, upperBound000, unboundedP000; 
+                unboundedP000 ||
+                    (iter000 <= upperBound000); 
+                iter000 = iter000 + 1) {
+            i = iter000;
+            i = i;
+            *(log->nativeStream) << " ";
+          }
+        }
+        room = room - (27 + strlen(moduleprefix) + oLOG_INDENT_LEVELo);
+        { 
+          BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+          { Object* elt = NULL;
+            Cons* iter001 = message;
 
-              if (subtypeOfStringP(testValue000)) {
-                { Object* elt000 = elt;
-                  StringWrapper* elt = ((StringWrapper*)(elt000));
+            for (elt, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+              elt = iter001->value;
+              { Surrogate* testValue000 = safePrimaryType(elt);
 
-                  eltstring = elt->wrapperValue;
+                if (subtypeOfStringP(testValue000)) {
+                  { Object* elt000 = elt;
+                    StringWrapper* elt = ((StringWrapper*)(elt000));
+
+                    eltstring = elt->wrapperValue;
+                  }
+                }
+                else if (subtypeOfP(testValue000, SGT_STREAMS_STELLA_GENERALIZED_SYMBOL)) {
+                  { Object* elt001 = elt;
+                    GeneralizedSymbol* elt = ((GeneralizedSymbol*)(elt001));
+
+                    if (stringEqlP(elt->symbolName, "EOL")) {
+                      *(log->nativeStream) << std::endl;
+                      room = maxroom;
+                      continue;
+                    }
+                    else {
+                      eltstring = stringify(elt);
+                    }
+                  }
+                }
+                else {
+                  eltstring = stringify(elt);
                 }
               }
-              else if (subtypeOfSymbolP(testValue000)) {
-                { Object* elt001 = elt;
-                  Symbol* elt = ((Symbol*)(elt001));
-
-                  if (stringEqlP(elt->symbolName, "EOL")) {
-                    *(log->nativeStream) << std::endl;
-                    room = maxroom;
-                    continue;
-                  }
-                  else {
-                    eltstring = stringify(elt);
-                  }
-                }
+              if (room < strlen(eltstring)) {
+                *(log->nativeStream) << stringSubsequence(eltstring, 0, room) << "...";
               }
               else {
-                eltstring = stringify(elt);
+                *(log->nativeStream) << eltstring;
               }
-            }
-            if (room < strlen(eltstring)) {
-              *(log->nativeStream) << stringSubsequence(eltstring, 0, room) << "...";
-            }
-            else {
-              *(log->nativeStream) << eltstring;
             }
           }
         }
+        *(log->nativeStream) << std::endl;
+        flushOutput(log);
       }
-      *(log->nativeStream) << std::endl;
-      flushOutput(log);
+catch (...) {
+        throw;
+      }
+      if (isaP(log, SGT_STREAMS_STELLA_FILE_OUTPUT_STREAM)) {
+        closeStream(log);
+      }
     }
   }
 }
@@ -1680,6 +1795,7 @@ void helpStartupStreams1() {
     SYM_STREAMS_STELLA_SUPPRESS_WARNINGSp = ((Symbol*)(internRigidSymbolWrtModule("SUPPRESS-WARNINGS?", NULL, 0)));
     SYM_STREAMS_STELLA_PRINT_ERROR_CONTEXT = ((Symbol*)(internRigidSymbolWrtModule("PRINT-ERROR-CONTEXT", NULL, 0)));
     SYM_STREAMS_STELLA_STANDARD_ERROR = ((Symbol*)(internRigidSymbolWrtModule("STANDARD-ERROR", NULL, 0)));
+    SYM_STREAMS_STELLA_SIGNAL_TRANSLATION_NOTE = ((Symbol*)(internRigidSymbolWrtModule("SIGNAL-TRANSLATION-NOTE", NULL, 0)));
     SYM_STREAMS_STELLA_SIGNAL_TRANSLATION_WARNING = ((Symbol*)(internRigidSymbolWrtModule("SIGNAL-TRANSLATION-WARNING", NULL, 0)));
     SYM_STREAMS_STELLA_WHEN = ((Symbol*)(internRigidSymbolWrtModule("WHEN", NULL, 0)));
     SYM_STREAMS_STELLA_NOT = ((Symbol*)(internRigidSymbolWrtModule("NOT", NULL, 0)));
@@ -1703,12 +1819,12 @@ void helpStartupStreams1() {
     KWD_STREAMS_CREATE = ((Keyword*)(internRigidSymbolWrtModule("CREATE", NULL, 2)));
     KWD_STREAMS_ABORT = ((Keyword*)(internRigidSymbolWrtModule("ABORT", NULL, 2)));
     KWD_STREAMS_PROBE = ((Keyword*)(internRigidSymbolWrtModule("PROBE", NULL, 2)));
-    KWD_STREAMS_APPEND = ((Keyword*)(internRigidSymbolWrtModule("APPEND", NULL, 2)));
   }
 }
 
 void helpStartupStreams2() {
   {
+    KWD_STREAMS_APPEND = ((Keyword*)(internRigidSymbolWrtModule("APPEND", NULL, 2)));
     KWD_STREAMS_OPEN = ((Keyword*)(internRigidSymbolWrtModule("OPEN", NULL, 2)));
     SGT_STREAMS_STELLA_INPUT_FILE_STREAM = ((Surrogate*)(internRigidSymbolWrtModule("INPUT-FILE-STREAM", NULL, 1)));
     SGT_STREAMS_STELLA_OUTPUT_FILE_STREAM = ((Surrogate*)(internRigidSymbolWrtModule("OUTPUT-FILE-STREAM", NULL, 1)));
@@ -1716,6 +1832,7 @@ void helpStartupStreams2() {
     SGT_STREAMS_STELLA_OUTPUT_STRING_STREAM = ((Surrogate*)(internRigidSymbolWrtModule("OUTPUT-STRING-STREAM", NULL, 1)));
     SGT_STREAMS_STELLA_INPUT_STREAM = ((Surrogate*)(internRigidSymbolWrtModule("INPUT-STREAM", NULL, 1)));
     SGT_STREAMS_STELLA_OUTPUT_STREAM = ((Surrogate*)(internRigidSymbolWrtModule("OUTPUT-STREAM", NULL, 1)));
+    KWD_STREAMS_BLOCK = ((Keyword*)(internRigidSymbolWrtModule("BLOCK", NULL, 2)));
     SYM_STREAMS_STELLA_FILE_INPUT_STREAM = ((Symbol*)(internRigidSymbolWrtModule("FILE-INPUT-STREAM", NULL, 0)));
     SYM_STREAMS_STELLA_UNWIND_PROTECT = ((Symbol*)(internRigidSymbolWrtModule("UNWIND-PROTECT", NULL, 0)));
     SYM_STREAMS_STELLA_PROGN = ((Symbol*)(internRigidSymbolWrtModule("PROGN", NULL, 0)));
@@ -1730,16 +1847,20 @@ void helpStartupStreams2() {
     SGT_STREAMS_STELLA_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("OBJECT", NULL, 1)));
     SYM_STREAMS_STELLA_SUBSEQUENCE = ((Symbol*)(internRigidSymbolWrtModule("SUBSEQUENCE", NULL, 0)));
     SYM_STREAMS_STELLA_POSITION = ((Symbol*)(internRigidSymbolWrtModule("POSITION", NULL, 0)));
+    KWD_STREAMS_LETTER = ((Keyword*)(internRigidSymbolWrtModule("LETTER", NULL, 2)));
+    KWD_STREAMS_DIGIT = ((Keyword*)(internRigidSymbolWrtModule("DIGIT", NULL, 2)));
     SYM_STREAMS_STELLA_THE_STREAM = ((Symbol*)(internRigidSymbolWrtModule("THE-STREAM", NULL, 0)));
     SGT_STREAMS_STELLA_S_EXPRESSION_ITERATOR = ((Surrogate*)(internRigidSymbolWrtModule("S-EXPRESSION-ITERATOR", NULL, 1)));
     SGT_STREAMS_STELLA_LINE_ITERATOR = ((Surrogate*)(internRigidSymbolWrtModule("LINE-ITERATOR", NULL, 1)));
     SGT_STREAMS_STELLA_NATIVE_LINE_ITERATOR = ((Surrogate*)(internRigidSymbolWrtModule("NATIVE-LINE-ITERATOR", NULL, 1)));
     SGT_STREAMS_STELLA_CHARACTER_ITERATOR = ((Surrogate*)(internRigidSymbolWrtModule("CHARACTER-ITERATOR", NULL, 1)));
-    KWD_STREAMS_LOG_LEVELS = ((Keyword*)(internRigidSymbolWrtModule("LOG-LEVELS", NULL, 2)));
     KWD_STREAMS_LEVEL = ((Keyword*)(internRigidSymbolWrtModule("LEVEL", NULL, 2)));
+    KWD_STREAMS_LOG_LEVELS = ((Keyword*)(internRigidSymbolWrtModule("LOG-LEVELS", NULL, 2)));
     KWD_STREAMS_STREAM = ((Keyword*)(internRigidSymbolWrtModule("STREAM", NULL, 2)));
     KWD_STREAMS_PREFIX = ((Keyword*)(internRigidSymbolWrtModule("PREFIX", NULL, 2)));
     KWD_STREAMS_MAX_WIDTH = ((Keyword*)(internRigidSymbolWrtModule("MAX-WIDTH", NULL, 2)));
+    SGT_STREAMS_STELLA_GENERALIZED_SYMBOL = ((Surrogate*)(internRigidSymbolWrtModule("GENERALIZED-SYMBOL", NULL, 1)));
+    SGT_STREAMS_STELLA_FILE_OUTPUT_STREAM = ((Surrogate*)(internRigidSymbolWrtModule("FILE-OUTPUT-STREAM", NULL, 1)));
     SYM_STREAMS_STELLA_STARTUP_STREAMS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-STREAMS", NULL, 0)));
     SYM_STREAMS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
   }
@@ -1803,6 +1924,14 @@ void helpStartupStreams4() {
     defineFunctionObject("WITH-INPUT-FILE", "(DEFUN WITH-INPUT-FILE ((BINDING CONS) |&BODY| (BODY CONS)) :TYPE OBJECT :MACRO? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Sets up an unwind-protected form which opens a file for\ninput and closes it afterwards.  The stream for reading is bound to the\nvariable provided in the macro form.\nSyntax is `(WITH-INPUT-FILE (var filename options*) body+)' where `options'\ncan be any that are legal for `open-input-file' (which see).\")", ((cpp_function_code)(&withInputFile)), NULL);
     defineFunctionObject("WITH-OUTPUT-FILE", "(DEFUN WITH-OUTPUT-FILE ((BINDING CONS) |&BODY| (BODY CONS)) :TYPE OBJECT :MACRO? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Sets up an unwind-protected form which opens a file for\noutput and closes it afterwards.  The stream for writing is bound to the\nvariable provided in the macro form.\nSyntax is `(WITH-OUTPUT-FILE (var filename options*) body+)' where `options'\ncan be any that are legal for `open-output-file' (which see).\")", ((cpp_function_code)(&withOutputFile)), NULL);
     defineFunctionObject("WITH-NETWORK-STREAM", "(DEFUN WITH-NETWORK-STREAM ((BINDING CONS) |&BODY| (BODY CONS)) :TYPE OBJECT :MACRO? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Sets up an unwind-protected form which opens a network\nsocket stream to a host and port for input and output and closes it afterwards.\nSeparate variables as provided in the call are bound to the input and output\nstreams. Syntax is (WITH-NETWORK-STREAM (varIn varOut hostname port) body+)\")", ((cpp_function_code)(&withNetworkStream)), NULL);
+    defineFunctionObject("NATIVE-FILE-INPUT-STREAM-POSITION", "(DEFUN (NATIVE-FILE-INPUT-STREAM-POSITION LONG-INTEGER) ((NSTREAM NATIVE-INPUT-STREAM)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (VERBATIM :CPP \"nstream->clear(std::ios::goodbit)\" :OTHERWISE NULL) (RETURN (VERBATIM :COMMON-LISP \"(CL:file-position nstream)\" :CPP \"nstream->tellg()\" :JAVA \"((NativeFileInputStream)nstream).position()\")))", ((cpp_function_code)(&nativeFileInputStreamPosition)), NULL);
+    defineFunctionObject("NATIVE-FILE-INPUT-STREAM-POSITION-SETTER", "(DEFUN (NATIVE-FILE-INPUT-STREAM-POSITION-SETTER LONG-INTEGER) ((NSTREAM NATIVE-INPUT-STREAM) (NEWPOS LONG-INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (VERBATIM :COMMON-LISP \"(CL:file-position nstream newpos)\" :CPP \"nstream->clear(std::ios::goodbit);nstream->seekg(newpos)\" :JAVA \"((NativeFileInputStream)nstream).position(newpos)\") (RETURN NEWPOS))", ((cpp_function_code)(&nativeFileInputStreamPositionSetter)), NULL);
+    defineMethodObject("(DEFMETHOD (STREAM-POSITION LONG-INTEGER) ((SELF FILE-INPUT-STREAM)) :DOCUMENTATION \"Return the current position of the file input cursor in `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&InputFileStream::streamPosition)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (STREAM-POSITION-SETTER LONG-INTEGER) ((SELF FILE-INPUT-STREAM) (NEWPOS LONG-INTEGER)) :DOCUMENTATION \"Set the current position of the file input cursor in `self' to `newpos'.\nIf `self' has any tokenizer state associated with it, this will also reset\nto the start state of the tokenizer table; otherwise, behavior would be\nunpredictable unless the character class of the new position is exactly the\nsame as the one following the most recent token.\" :PUBLIC? TRUE)", ((cpp_method_code)(&InputFileStream::streamPositionSetter)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("NATIVE-FILE-OUTPUT-STREAM-POSITION", "(DEFUN (NATIVE-FILE-OUTPUT-STREAM-POSITION LONG-INTEGER) ((NSTREAM NATIVE-OUTPUT-STREAM)) :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP \"(CL:file-position nstream)\" :CPP \"nstream->tellp()\" :JAVA \"((NativeFileOutputStream)nstream).position()\")))", ((cpp_function_code)(&nativeFileOutputStreamPosition)), NULL);
+    defineFunctionObject("NATIVE-FILE-OUTPUT-STREAM-POSITION-SETTER", "(DEFUN (NATIVE-FILE-OUTPUT-STREAM-POSITION-SETTER LONG-INTEGER) ((NSTREAM NATIVE-OUTPUT-STREAM) (NEWPOS LONG-INTEGER)) :GLOBALLY-INLINE? TRUE (VERBATIM :COMMON-LISP \"(CL:file-position nstream newpos)\" :CPP \"nstream->seekp(newpos)\" :JAVA \"((NativeFileOutputStream)nstream).position(newpos)\") (RETURN NEWPOS))", ((cpp_function_code)(&nativeFileOutputStreamPositionSetter)), NULL);
+    defineMethodObject("(DEFMETHOD (STREAM-POSITION LONG-INTEGER) ((SELF FILE-OUTPUT-STREAM)) :DOCUMENTATION \"Return the current position of the file input cursor in `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&OutputFileStream::streamPosition)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (STREAM-POSITION-SETTER LONG-INTEGER) ((SELF FILE-OUTPUT-STREAM) (NEWPOS LONG-INTEGER)) :DOCUMENTATION \"Set the current position of the file input cursor in `self' to `newpos'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&OutputFileStream::streamPositionSetter)), ((cpp_method_code)(NULL)));
     defineFunctionObject("EXPAND-MARKUP-TAG-FUNCTION", "(DEFUN (EXPAND-MARKUP-TAG-FUNCTION CONS) ((TAG-AND-STREAM CONS) (BODY CONS) (XML? BOOLEAN)))", ((cpp_function_code)(&expandMarkupTagFunction)), NULL);
     defineFunctionObject("WITH-HTML-TAG", "(DEFUN WITH-HTML-TAG ((TAG-AND-STREAM CONS) |&BODY| (BODY CONS)) :TYPE OBJECT :MACRO? TRUE)", ((cpp_function_code)(&withHtmlTag)), NULL);
     defineFunctionObject("WITH-XML-TAG", "(DEFUN WITH-XML-TAG ((TAG-AND-STREAM CONS) |&BODY| (BODY CONS)) :TYPE OBJECT :MACRO? TRUE)", ((cpp_function_code)(&withXmlTag)), NULL);
@@ -1816,14 +1945,6 @@ void helpStartupStreams4() {
     defineFunctionObject("TERMINATE-STREAM-ITERATOR?", "(DEFUN (TERMINATE-STREAM-ITERATOR? BOOLEAN) ((SELF STREAM-ITERATOR)))", ((cpp_function_code)(&terminateStreamIteratorP)), NULL);
     defineFunctionObject("S-EXPRESSIONS", "(DEFUN (S-EXPRESSIONS S-EXPRESSION-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", ((cpp_function_code)(&sExpressions)), NULL);
     defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF S-EXPRESSION-ITERATOR)) :PUBLIC? TRUE)", ((cpp_method_code)(&SExpressionIterator::nextP)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("NATIVE-LINES", "(DEFUN (NATIVE-LINES NATIVE-LINE-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", ((cpp_function_code)(&nativeLines)), NULL);
-    defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF NATIVE-LINE-ITERATOR)) :PUBLIC? TRUE)", ((cpp_method_code)(&NativeLineIterator::nextP)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("LINES", "(DEFUN (LINES LINE-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", ((cpp_function_code)(&lines)), NULL);
-    defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF LINE-ITERATOR)) :PUBLIC? TRUE)", ((cpp_method_code)(&LineIterator::nextP)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("CHARACTERS", "(DEFUN (CHARACTERS CHARACTER-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", ((cpp_function_code)(&characters)), NULL);
-    defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF CHARACTER-ITERATOR)) :PUBLIC? TRUE)", ((cpp_method_code)(&CharacterIterator::nextP)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("LOOKUP-LOGGING-PARAMETER", "(DEFUN (LOOKUP-LOGGING-PARAMETER OBJECT) ((MODULE STRING) (PARAMETER KEYWORD) (DEFAULT OBJECT)) :DOCUMENTATION \"Lookup logging `parameter' for `module'.  Use `default' if no\nvalue is defined.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupLoggingParameter)), NULL);
-    defineFunctionObject("SET-LOGGING-PARAMETERS", "(DEFUN SET-LOGGING-PARAMETERS ((MODULE STRING) |&REST| (|PARAMS&VALUES| OBJECT)) :DOCUMENTATION \"Set logging parameters for `module'.  The supported parameters are:\n  :LOG-LEVELS - a cons list of legal levels in ascending log level order;\n                for example, (:NONE :LOW :MEDIUM :HIGH) or (0 1 2 3).\n  :LEVEL      - the current log level for `module'\n  :STREAM     - the stream to log to (defaults to STANDARD-OUTPUT)\n  :PREFIX     - the prefix to use to identify the module (defaults to `module')\n  :MAX-WIDTH  - logging output lines will be kept to approximately this width\n                (defaults to 10000, minimum width of about 30 is used to\n                print line header information).\" :PUBLIC? TRUE)", ((cpp_function_code)(&setLoggingParameters)), NULL);
   }
 }
 
@@ -1884,7 +2005,19 @@ void startupStreams() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupStreams4();
+      defineFunctionObject("NATIVE-LINES", "(DEFUN (NATIVE-LINES NATIVE-LINE-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", ((cpp_function_code)(&nativeLines)), NULL);
+      defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF NATIVE-LINE-ITERATOR)) :PUBLIC? TRUE)", ((cpp_method_code)(&NativeLineIterator::nextP)), ((cpp_method_code)(NULL)));
+      defineFunctionObject("LINES", "(DEFUN (LINES LINE-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", ((cpp_function_code)(&lines)), NULL);
+      defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF LINE-ITERATOR)) :PUBLIC? TRUE)", ((cpp_method_code)(&LineIterator::nextP)), ((cpp_method_code)(NULL)));
+      defineFunctionObject("CHARACTERS", "(DEFUN (CHARACTERS CHARACTER-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", ((cpp_function_code)(&characters)), NULL);
+      defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF CHARACTER-ITERATOR)) :PUBLIC? TRUE)", ((cpp_method_code)(&CharacterIterator::nextP)), ((cpp_method_code)(NULL)));
+      defineFunctionObject("LOOKUP-LOGGING-PARAMETER", "(DEFUN (LOOKUP-LOGGING-PARAMETER OBJECT) ((MODULE STRING) (PARAMETER KEYWORD) (DEFAULT OBJECT)) :DOCUMENTATION \"Lookup logging `parameter' for `module'.  Use `default' if no\nvalue is defined.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupLoggingParameter)), NULL);
+      defineFunctionObject("SET-LOGGING-PARAMETERS", "(DEFUN SET-LOGGING-PARAMETERS ((MODULE STRING) |&REST| (|PARAMS&VALUES| OBJECT)) :DOCUMENTATION \"Set logging parameters for `module'.  The supported parameters are:\n  :LOG-LEVELS - a cons list of legal levels in ascending log level order;\n                for example, (:NONE :LOW :MEDIUM :HIGH) or (0 1 2 3).\n  :LEVEL      - the current log level for `module'\n  :STREAM     - the stream or file to log to (defaults to STANDARD-OUTPUT)\n  :PREFIX     - the prefix to use to identify the module (defaults to `module')\n  :MAX-WIDTH  - logging output lines will be kept to approximately this width\n                (defaults to 10000, minimum width of about 30 is used to\n                print line header information).\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&setLoggingParameters)), ((cpp_function_code)(&setLoggingParametersEvaluatorWrapper)));
+      defineFunctionObject("SET-LOG-LEVEL", "(DEFUN SET-LOG-LEVEL ((MODULE STRING) (LEVEL OBJECT)) :DOCUMENTATION \"Set the log-level for `module' to `level'.  This is a\nconvenience function for this common operation.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&setLogLevel)), ((cpp_function_code)(&setLogLevelEvaluatorWrapper)));
       defineFunctionObject("LOG-LEVEL<=", "(DEFUN (LOG-LEVEL<= BOOLEAN) ((LEVEL OBJECT) (MODULE STRING)) :DOCUMENTATION \"Return TRUE if `level' is lower than or equal to the current\nlog level of `module'.  Return FALSE if any of them are undefined.\" :PUBLIC? TRUE)", ((cpp_function_code)(&logLevelLE)), NULL);
+      defineFunctionObject("BUMP-LOG-INDENT", "(DEFUN BUMP-LOG-INDENT () :DOCUMENTATION \"Increase the indentation level for subsequent log messages.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&bumpLogIndent)), NULL);
+      defineFunctionObject("UNBUMP-LOG-INDENT", "(DEFUN UNBUMP-LOG-INDENT () :DOCUMENTATION \"Decrease the indentation level for subsequent log messages.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&unbumpLogIndent)), NULL);
+      defineFunctionObject("GET-LOG-STREAM", "(DEFUN (GET-LOG-STREAM OUTPUT-STREAM) ((MODULE STRING)) :DOCUMENTATION \"Return a valid log stream for `module'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getLogStream)), NULL);
       defineFunctionObject("LOG-MESSAGE", "(DEFUN LOG-MESSAGE ((MODULE STRING) (LOGLEVEL OBJECT) (MESSAGE CONS)) :DOCUMENTATION \"Log all elements of `message' to `module's log stream if\n`logLevel' is the same or lower than the `module's log level.  Interprets `EOL'\nor :EOL to print a line terminator.\" :PUBLIC? TRUE)", ((cpp_function_code)(&logMessage)), NULL);
       defineFunctionObject("LOGMSG", "(DEFUN LOGMSG ((MODULE STRING) (LOGLEVEL OBJECT) |&REST| (MESSAGE OBJECT)) :DOCUMENTATION \"Log all elements of `message' to `module's log stream if\n`logLevel' is the same or lower than the `module's log level.  Interprets `EOL'\nor :EOL to print a line terminator.\" :PUBLIC? TRUE)", ((cpp_function_code)(&logmsg)), NULL);
       defineFunctionObject("STARTUP-STREAMS", "(DEFUN STARTUP-STREAMS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupStreams)), NULL);
@@ -1898,6 +2031,7 @@ void startupStreams() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL EOL SYMBOL (QUOTE EOL) :DOCUMENTATION \"Generates a newline character when passed to a stream.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL EOL-STRING STRING \"\n\" :DOCUMENTATION \"A string constant containing the character sequence\nnecessary to generate a newline.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL STANDARD-INPUT INPUT-STREAM NULL :DOCUMENTATION \"Denotes the standard input stream for the host language.\" :PUBLIC? TRUE)");
@@ -1919,6 +2053,7 @@ void startupStreams() {
       oHTML_ESCAPE_TABLEo->insertAt(wrapString("NBSP"), wrapCharacter(' '));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOGGING-REGISTRY* (KEY-VALUE-LIST OF STRING-WRAPPER (PROPERTY-LIST OF KEYWORD OBJECT)) (NEW KEY-VALUE-LIST))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOGGING-LOCAL-TIME-ZONE* FLOAT (GET-LOCAL-TIME-ZONE))");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOG-INDENT-LEVEL* INTEGER 0 :DOCUMENTATION \"The number of spaces to print before the content of a log message.\" :PUBLIC? TRUE)");
     }
   }
 }
@@ -1995,6 +2130,8 @@ Symbol* SYM_STREAMS_STELLA_PRINT_ERROR_CONTEXT = NULL;
 
 Symbol* SYM_STREAMS_STELLA_STANDARD_ERROR = NULL;
 
+Symbol* SYM_STREAMS_STELLA_SIGNAL_TRANSLATION_NOTE = NULL;
+
 Symbol* SYM_STREAMS_STELLA_SIGNAL_TRANSLATION_WARNING = NULL;
 
 Symbol* SYM_STREAMS_STELLA_WHEN = NULL;
@@ -2057,6 +2194,8 @@ Surrogate* SGT_STREAMS_STELLA_INPUT_STREAM = NULL;
 
 Surrogate* SGT_STREAMS_STELLA_OUTPUT_STREAM = NULL;
 
+Keyword* KWD_STREAMS_BLOCK = NULL;
+
 Symbol* SYM_STREAMS_STELLA_FILE_INPUT_STREAM = NULL;
 
 Symbol* SYM_STREAMS_STELLA_UNWIND_PROTECT = NULL;
@@ -2085,6 +2224,10 @@ Symbol* SYM_STREAMS_STELLA_SUBSEQUENCE = NULL;
 
 Symbol* SYM_STREAMS_STELLA_POSITION = NULL;
 
+Keyword* KWD_STREAMS_LETTER = NULL;
+
+Keyword* KWD_STREAMS_DIGIT = NULL;
+
 Symbol* SYM_STREAMS_STELLA_THE_STREAM = NULL;
 
 Surrogate* SGT_STREAMS_STELLA_S_EXPRESSION_ITERATOR = NULL;
@@ -2095,15 +2238,19 @@ Surrogate* SGT_STREAMS_STELLA_NATIVE_LINE_ITERATOR = NULL;
 
 Surrogate* SGT_STREAMS_STELLA_CHARACTER_ITERATOR = NULL;
 
-Keyword* KWD_STREAMS_LOG_LEVELS = NULL;
-
 Keyword* KWD_STREAMS_LEVEL = NULL;
+
+Keyword* KWD_STREAMS_LOG_LEVELS = NULL;
 
 Keyword* KWD_STREAMS_STREAM = NULL;
 
 Keyword* KWD_STREAMS_PREFIX = NULL;
 
 Keyword* KWD_STREAMS_MAX_WIDTH = NULL;
+
+Surrogate* SGT_STREAMS_STELLA_GENERALIZED_SYMBOL = NULL;
+
+Surrogate* SGT_STREAMS_STELLA_FILE_OUTPUT_STREAM = NULL;
 
 Symbol* SYM_STREAMS_STELLA_STARTUP_STREAMS = NULL;
 

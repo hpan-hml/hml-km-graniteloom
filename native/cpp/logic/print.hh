@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -53,7 +53,7 @@ extern DECLARE_STELLA_SPECIAL(oPRINTMODEo, Keyword* );
 extern DECLARE_STELLA_SPECIAL(oPRINTFUNCTIONSASRELATIONSpo, boolean );
 extern char* VARIABLE_BINDING_SEPARATOR;
 extern char* VALUE_OF_SEPARATOR;
-extern DECLARE_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueList* );
+extern DECLARE_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueMap* );
 extern boolean oDEBUG_MODEpo;
 
 // Function signatures:

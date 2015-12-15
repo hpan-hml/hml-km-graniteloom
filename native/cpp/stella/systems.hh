@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -44,14 +44,65 @@
 */
 
 
-
 namespace stella {
 
+// Class definitions:
+class CmdLineOption : public StandardObject {
+public:
+  char* documentation;
+  Cons* keys;
+  Surrogate* valueType;
+  boolean multiValuedP;
+  // The number of args expected by this option.
+  // Common values are 0 or 1, but certain options might take more than one argument.
+  int nArguments;
+  // The value to use for 0-arg options.
+  // Defaults to TRUE for 0-arg options with boolean value type.
+  Object* defaultValue;
+  char* configurationProperty;
+  cpp_function_code handler;
+  // One of :ignore, :warn, :error.
+  Keyword* errorAction;
+public:
+  virtual Surrogate* primaryType();
+};
+
+
 // Global declarations:
+extern Cons* oFILE_LOAD_PATHo;
+extern Cons* oSTELLA_FILE_EXTENSIONSo;
 extern List* oSYSTEMDEFINITIONSo;
+extern DECLARE_STELLA_SPECIAL(oCURRENT_SYSTEM_ACTIONo, PropertyList* );
 extern KeyValueList* oSYSTEM_CONFIGURATION_TABLEo;
+extern KeyValueMap* oREGISTERED_COMMAND_LINE_OPTIONSo;
+extern Cons* oUNPROCESSED_COMMAND_LINE_ARGUMENTSo;
+extern char* oCOMMAND_LINE_HELP_HEADERo;
+extern char* oCOMMAND_LINE_HELP_TRAILERo;
 
 // Function signatures:
+Cons* parseDirectoryPath(char* path);
+Cons* setLoadPath(char* path);
+Cons* setLoadPathEvaluatorWrapper(Cons* arguments);
+Cons* getLoadPath();
+Cons* pushLoadPath(char* path);
+Cons* pushLoadPathEvaluatorWrapper(Cons* arguments);
+char* popLoadPath();
+StringWrapper* popLoadPathEvaluatorWrapper(Cons* arguments);
+Cons* addLoadPath(char* path);
+Cons* addLoadPathEvaluatorWrapper(Cons* arguments);
+Cons* dropLoadPath(char* path);
+Cons* dropLoadPathEvaluatorWrapper(Cons* arguments);
+char* findFileInLoadPath(char* file, Cons* extensions);
+BooleanWrapper* coerceValueToBoolean(Object* value, boolean errorP);
+BooleanWrapper* coerceToBoolean(Object* object);
+char* coerceValueToString(Object* value, boolean errorP);
+char* coerceToString(Object* object);
+double coerceValueToFloat(Object* value, boolean errorP);
+double coerceToFloat(Object* object);
+Object* coerceValueToType(Object* value, Surrogate* type, boolean errorP);
+Object* coerceOptionValue(Object* value, Surrogate* type);
+PropertyList* vetOptions(Object* plist, Cons* legaloptions);
+PropertyList* parseOptions(Object* options, Cons* legaloptionsAtypes, boolean coercionerrorP, boolean allowotherkeysP);
 Object* evaluateCommand(Object* command, boolean finalizeP);
 void loadFile(char* file);
 void loadFileEvaluatorWrapper(Cons* arguments);
@@ -66,18 +117,18 @@ void helpGetSystemFiles(char* filename, List* collection, boolean probefileP);
 List* getSystemFiles(SystemDefinition* system, Keyword* type, boolean probefilesP);
 void cleanSystem(char* systemname);
 void computeOptimizationLevels(SystemDefinition* system, boolean productionmodeP);
-Keyword* lispKeywordToStellaKeyword(Keyword* key);
-PropertyList* vetOptions(Object* plist, Cons* legaloptions);
-boolean makeSystem(char* systemname, Keyword* language, Cons* options);
+boolean makeSystem(char* systemname, Cons* languageAoptions);
 BooleanWrapper* makeSystemEvaluatorWrapper(Cons* arguments);
 void runSystemFinalization(SystemDefinition* system);
 Cons* systemDefinitionSourceFiles(SystemDefinition* system);
 Cons* filesPlusSystemStartup(Cons* files);
 Cons* systemDefinitionNativeFiles(SystemDefinition* system);
 boolean systemLoadedP(char* name);
+boolean systemLoadedOrStartedUpP(char* name);
 void clearSystem(char* name);
 void loadPreprocessedFiles(char* systemname);
-boolean loadSystem(char* systemname, Keyword* language, int options, ...);
+boolean loadSystem(char* systemname, Cons* languageAoptions);
+BooleanWrapper* loadSystemEvaluatorWrapper(Cons* arguments);
 boolean compileAndLoadFiles(Cons* files, Keyword* language, boolean forcerecompilationP);
 void runSystemStartupFunction(SystemDefinition* system);
 char* stringSystemStartupFunctionName(char* systemname);
@@ -92,9 +143,11 @@ Cons* collectStartupFormsFromSystemFile(SystemDefinition* system);
 void createSystemStartupFile(SystemDefinition* system);
 List* helpAllRequiredSystems(char* systemName, List* found);
 Cons* allRequiredSystems(char* systemName);
+cpp_function_code autoload(char* qualifiedname, char* systemname, Surrogate* cache, boolean errorP);
 void makeStella(boolean forcerecompilationP);
 StringWrapper* parseConfigurationFileLine(char* line, Wrapper*& _Return1, Keyword*& _Return2);
 KeyValueList* loadConfigurationFile(char* file);
+KeyValueList* loadConfigurationFileEvaluatorWrapper(Cons* arguments);
 void saveConfigurationValue(OutputStream* stream, Object* value);
 void saveConfigurationFile(KeyValueList* table, char* file, char* title);
 Object* lookupConfigurationProperty(char* property, Wrapper* defaultvalue, KeyValueList* configuration);
@@ -103,14 +156,53 @@ Object* setConfigurationProperty(char* property, Object* value, KeyValueList* co
 Object* addConfigurationProperty(char* property, Object* value, KeyValueList* configuration);
 Object* clearConfigurationProperty(char* property, KeyValueList* configuration);
 Object* removeConfigurationProperty(char* property, Object* value, KeyValueList* configuration);
+void printConfigurationProperties(KeyValueList* configuration, OutputStream* stream);
 void configureStella(char* file);
+Object* getProperty(Object* property, Cons* defaultvalue);
+Object* getPropertyEvaluatorWrapper(Cons* arguments);
+void setProperty(Object* property, Object* value);
+void addPropertyValue(Object* property, Object* value);
+void printProperties();
+CmdLineOption* newCmdLineOption();
+Object* accessCmdLineOptionSlotValue(CmdLineOption* self, Symbol* slotname, Object* value, boolean setvalueP);
+void registerCmdLineOption(int options, ...);
+void unregisterCmdLineOption(char* key);
+void unregisterAllCmdLineOptions();
+void defaultCmdLineOptionHandler(CmdLineOption* option, Object* value);
+void processCommandLineArguments(int count, char** arguments, Keyword* unhandledoptionaction);
+Cons* unprocessedCommandLineArguments();
+void evalOptionHandler(CmdLineOption* option, Object* value);
+void evalInModuleOptionHandler(CmdLineOption* option, Object* value);
+void loadPathOptionHandler(CmdLineOption* option, Object* value);
+void configFileOptionHandler(CmdLineOption* option, Object* value);
+void loadFileOptionHandler(CmdLineOption* option, Object* value);
+void definePropertyOptionHandler(CmdLineOption* option, Object* value);
+void helpOptionHandler(CmdLineOption* option, Object* value);
 void helpStartupSystems1();
 void helpStartupSystems2();
+void helpStartupSystems3();
 void startupSystems();
 
 // Auxiliary global declarations:
-extern Keyword* KWD_SYSTEMS_DEFINE;
+extern Symbol* SYM_SYSTEMS_STELLA_TRUE;
+extern Keyword* KWD_SYSTEMS_TRUE;
+extern Symbol* SYM_SYSTEMS_STELLA_FALSE;
+extern Keyword* KWD_SYSTEMS_FALSE;
+extern Surrogate* SGT_SYSTEMS_STELLA_UNKNOWN;
+extern Surrogate* SGT_SYSTEMS_STELLA_GENERALIZED_SYMBOL;
+extern Surrogate* SGT_SYSTEMS_STELLA_INTEGER;
+extern Surrogate* SGT_SYSTEMS_STELLA_FLOAT;
+extern Surrogate* SGT_SYSTEMS_STELLA_NUMBER;
+extern Surrogate* SGT_SYSTEMS_STELLA_STRING;
+extern Surrogate* SGT_SYSTEMS_STELLA_KEYWORD;
+extern Surrogate* SGT_SYSTEMS_STELLA_SYMBOL;
+extern Surrogate* SGT_SYSTEMS_STELLA_BOOLEAN;
+extern Surrogate* SGT_SYSTEMS_STELLA_MODULE;
+extern Surrogate* SGT_SYSTEMS_STELLA_PROPERTY_LIST;
 extern Surrogate* SGT_SYSTEMS_STELLA_CONS;
+extern Surrogate* SGT_SYSTEMS_STELLA_LIST;
+extern Surrogate* SGT_SYSTEMS_STELLA_IDENTITY;
+extern Keyword* KWD_SYSTEMS_DEFINE;
 extern Symbol* SYM_SYSTEMS_STELLA_IN_MODULE;
 extern Keyword* KWD_SYSTEMS_FINALIZE;
 extern Symbol* SYM_SYSTEMS_STELLA_DEFMODULE;
@@ -122,9 +214,14 @@ extern Symbol* SYM_SYSTEMS_STELLA_DEFMETHOD;
 extern Keyword* KWD_SYSTEMS_DIRECTORY;
 extern Keyword* KWD_SYSTEMS_FILES;
 extern Keyword* KWD_SYSTEMS_REQUIRED_SYSTEMS;
+extern Keyword* KWD_SYSTEMS_LOAD_SYSTEM;
+extern Keyword* KWD_SYSTEMS_ACTION;
+extern Keyword* KWD_SYSTEMS_LANGUAGE;
+extern Keyword* KWD_SYSTEMS_MAKE_SYSTEM;
 extern Keyword* KWD_SYSTEMS_LISP_ONLY_FILES;
 extern Keyword* KWD_SYSTEMS_CPP_ONLY_FILES;
 extern Keyword* KWD_SYSTEMS_JAVA_ONLY_FILES;
+extern Keyword* KWD_SYSTEMS_DATA_FILES;
 extern Keyword* KWD_SYSTEMS_PREPROCESSED_FILES;
 extern Keyword* KWD_SYSTEMS_CARDINAL_MODULE;
 extern Keyword* KWD_SYSTEMS_ROOT_SOURCE_DIRECTORY;
@@ -139,8 +236,6 @@ extern Keyword* KWD_SYSTEMS_JAVA;
 extern Keyword* KWD_SYSTEMS_LISP;
 extern Keyword* KWD_SYSTEMS_CPP;
 extern Keyword* KWD_SYSTEMS_LISP_BINARY;
-extern Surrogate* SGT_SYSTEMS_STELLA_PROPERTY_LIST;
-extern Surrogate* SGT_SYSTEMS_STELLA_LIST;
 extern Keyword* KWD_SYSTEMS_COMMON_LISP;
 extern Keyword* KWD_SYSTEMS_DEVELOPMENT_SETTINGSp;
 extern Keyword* KWD_SYSTEMS_PRODUCTION_SETTINGSp;
@@ -158,9 +253,7 @@ extern Symbol* SYM_SYSTEMS_STELLA_STARTUP_TIME_PROGN;
 extern Keyword* KWD_SYSTEMS_EARLY_INITS;
 extern Keyword* KWD_SYSTEMS_MODULES;
 extern Keyword* KWD_SYSTEMS_PUBLICp;
-extern Symbol* SYM_SYSTEMS_STELLA_TRUE;
 extern Symbol* SYM_SYSTEMS_STELLA_STARTUP;
-extern Symbol* SYM_SYSTEMS_STELLA_FALSE;
 extern Symbol* SYM_SYSTEMS_STELLA_FOREACH;
 extern Symbol* SYM_SYSTEMS_STELLA_PHASE;
 extern Symbol* SYM_SYSTEMS_STELLA_IN;
@@ -175,6 +268,40 @@ extern Keyword* KWD_SYSTEMS_WHITE_SPACE;
 extern Keyword* KWD_SYSTEMS_ADD;
 extern Symbol* SYM_SYSTEMS_STELLA_CONFIGURATION_TABLE;
 extern Keyword* KWD_SYSTEMS_ROOT_DIRECTORY;
+extern Keyword* KWD_SYSTEMS_ERROR;
+extern Surrogate* SGT_SYSTEMS_STELLA_CMD_LINE_OPTION;
+extern Symbol* SYM_SYSTEMS_STELLA_DOCUMENTATION;
+extern Symbol* SYM_SYSTEMS_STELLA_KEYS;
+extern Symbol* SYM_SYSTEMS_STELLA_VALUE_TYPE;
+extern Symbol* SYM_SYSTEMS_STELLA_MULTI_VALUEDp;
+extern Symbol* SYM_SYSTEMS_STELLA_N_ARGUMENTS;
+extern Symbol* SYM_SYSTEMS_STELLA_DEFAULT_VALUE;
+extern Symbol* SYM_SYSTEMS_STELLA_CONFIGURATION_PROPERTY;
+extern Symbol* SYM_SYSTEMS_STELLA_HANDLER;
+extern Symbol* SYM_SYSTEMS_STELLA_ERROR_ACTION;
+extern Keyword* KWD_SYSTEMS_DOCUMENTATION;
+extern Keyword* KWD_SYSTEMS_KEY;
+extern Keyword* KWD_SYSTEMS_KEY2;
+extern Keyword* KWD_SYSTEMS_KEY3;
+extern Keyword* KWD_SYSTEMS_KEYS;
+extern Keyword* KWD_SYSTEMS_VALUE_TYPE;
+extern Surrogate* SGT_SYSTEMS_STELLA_TYPE;
+extern Keyword* KWD_SYSTEMS_MULTI_VALUEDp;
+extern Keyword* KWD_SYSTEMS_N_ARGUMENTS;
+extern Keyword* KWD_SYSTEMS_DEFAULT_VALUE;
+extern Surrogate* SGT_SYSTEMS_STELLA_OBJECT;
+extern Keyword* KWD_SYSTEMS_PROPERTY;
+extern Keyword* KWD_SYSTEMS_HANDLER;
+extern Keyword* KWD_SYSTEMS_ERROR_ACTION;
+extern Keyword* KWD_SYSTEMS_WARN;
+extern Keyword* KWD_SYSTEMS_IGNORE;
+extern Symbol* SYM_SYSTEMS_STELLA_EVAL_OPTION_HANDLER;
+extern Symbol* SYM_SYSTEMS_STELLA_EVAL_IN_MODULE_OPTION_HANDLER;
+extern Symbol* SYM_SYSTEMS_STELLA_LOAD_PATH_OPTION_HANDLER;
+extern Symbol* SYM_SYSTEMS_STELLA_CONFIG_FILE_OPTION_HANDLER;
+extern Symbol* SYM_SYSTEMS_STELLA_LOAD_FILE_OPTION_HANDLER;
+extern Symbol* SYM_SYSTEMS_STELLA_DEFINE_PROPERTY_OPTION_HANDLER;
+extern Symbol* SYM_SYSTEMS_STELLA_HELP_OPTION_HANDLER;
 extern Symbol* SYM_SYSTEMS_STELLA_STARTUP_SYSTEMS;
 extern Symbol* SYM_SYSTEMS_STELLA_METHOD_STARTUP_CLASSNAME;
 

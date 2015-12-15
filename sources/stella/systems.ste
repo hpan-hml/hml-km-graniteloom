@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2010      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,13 +40,348 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: systems.ste,v 1.42 2006/05/14 06:50:46 hans Exp
+;;; Version: systems.ste,v 1.52 2010/09/20 21:23:46 hans Exp
 
 ;;; Command Interpreter and System Definition 'defsystem'
 
 (in-package "STELLA")
 
 (in-module "STELLA")
+
+
+  ;;
+;;;;;; Load path
+  ;;
+
+(defglobal *file-load-path* (CONS OF STRING-WRAPPER) NIL)
+
+(defun (parse-directory-path (CONS OF STRING-WRAPPER)) ((path STRING))
+  ;; Parse a |-separated directory `path' into a list of directories.
+  (let ((separator #\|)
+        (length (length path))
+        (start 0)
+        (end 0)
+        (parsedPath NIL))
+    (loop
+      (setq end (position path separator start))
+      (pushq parsedPath (file-name-as-directory (subsequence path start end)))
+      (if (and (defined? end)
+               (< end (1- length)))
+          (setq start (1+ end))
+        (break)))
+    (return (reverse parsedPath))))
+
+(defun (set-load-path (CONS OF STRING-WRAPPER)) ((path STRING))
+  :documentation "Set the STELLA load path to the |-separated
+directories listed in `path'.  Return the resulting load path."
+  :public? TRUE :command? TRUE
+  (setq *file-load-path* (parse-directory-path path))
+  (return *file-load-path*))
+
+(defun (get-load-path (CONS OF STRING-WRAPPER)) ()
+  :documentation "Return the current STELLA load path."
+  :public? TRUE :command? TRUE
+  (return *file-load-path*))
+
+(defun (push-load-path (CONS OF STRING-WRAPPER)) ((path STRING))
+  :documentation "Add the directories listed in the |-separated
+`path' to the front of the STELLA load path.  Return the
+resulting load path."
+  :public? TRUE :command? TRUE
+  (setq *file-load-path*
+    (concatenate (parse-directory-path path) *file-load-path*))
+  (return *file-load-path*))
+
+(defun (pop-load-path STRING) ()
+  :documentation "Remove the first element from the STELLA load path
+and return the removed element."
+  :public? TRUE :command? TRUE
+  (return (popq *file-load-path*)))
+
+(defun (add-load-path (CONS OF STRING-WRAPPER)) ((path STRING))
+  :documentation "Append the directories listed in the |-separated
+`path' to the end of the STELLA load path.  Return the resulting
+load path."
+  :public? TRUE :command? TRUE
+  (setq *file-load-path*
+    (concatenate *file-load-path* (parse-directory-path path)))
+  (return *file-load-path*))
+
+(defun (drop-load-path (CONS OF STRING-WRAPPER)) ((path STRING))
+  :documentation "Remove the directories listed in the |-separated
+`path' from the PowerLoom load path."
+  :public? TRUE :command? TRUE
+  (foreach dir in (parse-directory-path path)
+      do (setq *file-load-path* (remove *file-load-path* dir)))
+  (return *file-load-path*))
+
+(defglobal *stella-file-extensions* CONS (cons-list ".ste")
+  :documentation "File extensions to append by default when a
+file is looked up by `find-file-in-load-path'."
+  :public? TRUE)
+
+(defun (find-file-in-load-path STRING) ((file STRING)
+                                        (extensions (CONS OF STRING-WRAPPER)))
+  :documentation "Try to find `file' in the current load path and, if found,
+return its full name.  If `file' can't be found literally, try to find it
+with any of the listed `extensions' added.  If `extensions' is NULL it defaults
+to `*stella-file-extensions*', therefore, to not default to any extensions
+the value has to be supplied as NIL."
+  :public? TRUE
+  ;; TO DO: make this smarter with respect to mixing of logical and physical
+  ;;        pathnames; at the least, we should translate load path directories
+  ;;        before we concatenate them.
+  (let ((expandedFile file))
+    (when (null? extensions)
+      (setq extensions *stella-file-extensions*))
+    (foreach dir in (cons "" *file-load-path*)
+        ;; There are things that can go wrong with this, particularly
+        ;; in Lisp where we may prepend a logical path onto a file that
+        ;; violates logical pathname syntax.  If there is an error, we
+        ;; just skip that combination.
+        do (exception-case
+            (progn
+              (setq expandedFile
+                (concatenate (unwrap-string dir) file))
+              (when (probe-file? expandedFile)
+                (return expandedFile))
+              (foreach ext in extensions
+                  do (setq expandedFile
+                       (concatenate (unwrap-string dir) file ext))
+                     (when (probe-file? expandedFile)
+                       (return expandedFile))))
+            (NATIVE-EXCEPTION (e) (ignore e))))
+    (return NULL)))
+
+
+  ;;
+;;;;;; Coercion and option processing
+  ;;
+
+;;; The new "contract" for the coercion functions below is that `coerce-value-to-xxx'
+;;; functions take an `error?' argument and either raise an error or return NULL if
+;;; they can't coerce.  The corresponding `coerce-to-xxxx' functions, on the other
+;;; hand, don't raise an error and either force coercion or return NULL if they can't.
+;;; Of course, there are some legacy functions such as `coerce-to-module' that don't
+;;; yet follow this scheme.
+
+(defun (coerce-value-to-boolean BOOLEAN-WRAPPER) ((value OBJECT) (error? BOOLEAN))
+  :documentation "Return the boolean object represented by `value'.  Return NULL
+if coercion is not possible or raise an error if `error?' is TRUE."
+  :public? TRUE
+  (cond ((or (eql? value (quote TRUE))
+             (eql? value :TRUE))
+         (return TRUE-WRAPPER))
+        ((or (eql? value (quote FALSE))
+             (eql? value :FALSE))
+         (return FALSE-WRAPPER)))
+  ;; careful with this `typecase', since this is called early in the bootstrap:
+  (typecase value
+    ((SYMBOL KEYWORD)
+     (cond ((string-equal? (symbol-name value) "TRUE")
+            (return TRUE-WRAPPER))
+           ((string-equal? (symbol-name value) "FALSE")
+            (return FALSE-WRAPPER))))
+    (BOOLEAN-WRAPPER
+     (return value))
+    (otherwise NULL))
+  (if error?
+      (error "coerce-value-to-boolean: can't coerce " value " of type "
+             (choose (defined? value)
+                     (primary-type value)
+                     @UNKNOWN))
+    (return NULL)))
+
+(defun (coerce-to-boolean BOOLEAN-WRAPPER) ((object OBJECT))
+  :documentation "Return the boolean object represented by `object'.
+Return NULL if coercion is not possible."
+  :public? TRUE
+  (return (coerce-value-to-boolean object FALSE)))
+
+(defun (coerce-value-to-string STRING) ((value OBJECT) (error? BOOLEAN))
+  :documentation "Coerce `value' into a string if possible, return NULL
+otherwise or raise an error if `error?' is true."
+  :public? TRUE
+  (typecase value
+    (STRING (return value))
+    (GENERALIZED-SYMBOL (return (symbol-name value)))
+    ((INTEGER LONG-INTEGER) (return (integer-to-string value)))
+    (FLOAT (return (float-to-string value)))
+    (otherwise NULL))
+  (if error?
+      (error "coerce-value-to-string: don't know how to coerce " value)
+    (return NULL)))
+
+(defun (coerce-to-string STRING) ((object OBJECT))
+  :documentation "Coerce `object' into a string.  If no standard coercion
+is possible, simply stringify `object'."
+  :public? TRUE
+  (let ((string (coerce-value-to-string object FALSE)))
+    (when (null? string)
+      (setq string (stringify object)))
+    (return string)))
+
+(defun (coerce-value-to-float FLOAT) ((value OBJECT) (error? BOOLEAN))
+  :documentation "Coerce `value' to a float value if possible, return
+NULL otherwise or raise an error if `error?' is true."
+  :public? TRUE
+  (typecase value
+    ((INTEGER LONG-INTEGER)
+     (return (* (wrapper-value value) 1.0)))
+    (FLOAT
+     (return (wrapper-value value)))
+    (otherwise NULL))
+  (if error?
+      (error "coerce-value-to-float: don't know how to coerce " value)
+    (return NULL)))
+
+(defun (coerce-to-float FLOAT) ((object OBJECT))
+  :documentation "Coerce `number' to a float value or NULL if not possible."
+  :public? TRUE
+  (return (coerce-value-to-float object FALSE)))
+
+(defun (coerce-value-to-type OBJECT) ((value OBJECT) (type TYPE) (error? BOOLEAN))
+  :documentation "Coerce `value' to `type'.  Return NULL if not possible
+or raise an error if `error?' is TRUE."
+  :public? TRUE
+  ;; TO DO: consider making this extensible by other systems for new types.
+  (case type
+    (@INTEGER
+     (typecase value
+       (INTEGER (return value))
+       (FLOAT (return (floor value)))
+       (LONG-INTEGER
+        (when (regular-integer-valued? value)
+          (return value)))
+       (otherwise NULL)))
+    (@FLOAT
+     (return (coerce-value-to-float value error?)))
+    (@NUMBER
+     (typecase value
+       ((INTEGER LONG-INTEGER FLOAT)
+        (return value))
+       (otherwise NULL)))
+    (@STRING
+     (return (coerce-value-to-string value error?)))
+    (@KEYWORD
+     (typecase value
+       ((GENERALIZED-SYMBOL STRING-WRAPPER)
+        (return (keywordify value)))
+       (otherwise NULL)))
+    (@SYMBOL
+     (typecase value
+       (KEYWORD
+        (return (intern-symbol (symbol-name value))))
+       (SURROGATE
+        (return (intern-derived-symbol value (symbol-name value))))
+       (SYMBOL
+        (return value))
+       (STRING-WRAPPER
+        (return (intern-symbol value)))
+       (otherwise NULL)))
+    (@BOOLEAN
+     (return (coerce-value-to-boolean value error?)))
+    (@MODULE
+     (let ((module (coerce-to-module value FALSE)))
+       (when (defined? module)
+         (return module))))
+    (otherwise
+     (cond ((null? type)
+            (return value))
+           ((isa? value type)
+            (return value))
+           ((isa? value (type-to-wrapped-type type))
+            (return value)))))
+  ;; we failed to coerce:
+  (if error?
+      (error "coerce-value-to-type: don't know how to coerce " value " to type " type)
+    (return NULL)))
+
+(defun (coerce-option-value OBJECT) ((value OBJECT) (type TYPE))
+  :documentation "Coerce `value' to `type'.  Return NULL if not possible."
+  :public? TRUE
+  (return (coerce-value-to-type value type FALSE)))
+
+(defun (vet-options PROPERTY-LIST) ((plist OBJECT) (legalOptions (CONS OF KEYWORD)))
+  ;; Deprecated options processor - use `parse-options' instead.
+  ;; Complain about each key in 'plist' that's not in 'legalOptions'
+  ;;    and remove illegal entries from 'plist'.
+  ;; Also, if a Common Lisp keyword has snuck in, replace it with an
+  ;;    equivalent Stella keyword (and convert the value as well).
+  ;; Note: The logic here is written to avoid triggering STELLA type
+  ;;    checks that would bomb on Common Lisp objects.
+  (let ((propertyList PROPERTY-LIST NULL))
+    (typecase plist
+      (PROPERTY-LIST (setq propertyList plist))
+      (CONS (setq propertyList (new PROPERTY-LIST :the-plist plist)))
+      (LIST (setq propertyList (new PROPERTY-LIST :the-plist (the-cons-list plist))))
+      (otherwise 
+       (warn "Illegal argument passed to 'vet-options'")
+       (return (new PROPERTY-LIST))))
+    (foreach (key value) in propertyList
+             where (or (not (stella-object? key))
+                       (not (keyword? key))
+                       (and (defined? legalOptions)
+                            (not (member? legalOptions key))))
+             do (ignore value)
+             ;; found badness; transform it or excise it:
+             (when (not (stella-object? key))
+               ;; convert Lisp objects within 'propertyList':
+               (let ((newPList (new PROPERTY-LIST)))
+                 (foreach (key value) in propertyList
+                          do (insert-at newPList (stellify key) (stellify value)))
+                 (setf (the-plist propertyList) (the-plist newPList)))
+               (vet-options propertyList legalOptions)
+               (return propertyList))
+             (remove-at propertyList key)
+             (inform "Skipping illegal option: " key EOL)
+             (if (keyword? key)
+               (inform "   Legal options are: " legalOptions EOL)
+               (inform "   Option must be a keyword."))
+             (vet-options propertyList legalOptions)
+             (return propertyList))
+    (return propertyList) ))
+
+;;; More general option processing:
+
+(defun (parse-options PROPERTY-LIST) ((options OBJECT)
+                                      (legalOptions&Types CONS)
+                                      (coercionError? BOOLEAN)
+                                      (allowOtherKeys? BOOLEAN))
+  :documentation "Parse `options', check their validity according to
+`legalOptions&Types' and return the result as a PROPERTY-LIST.
+`legalOptions&Types' has to either be NULL or a flat list of legal
+<keyword> <coercionType> pairs.  A type specifcation of @IDENTITY
+means don't perform any coercion.
+If `coercionError?' is TRUE, raise an error if a coercion failed.
+If `allowOtherKeys?' is TRUE options other than those specified in
+`legalOptions&Types' are allowed but won't be coerced since we don't
+know their type."
+  :public? TRUE
+  (let ((legalOptions (new PROPERTY-LIST :the-plist legalOptions&Types))
+        (parsedOptions PROPERTY-LIST NULL)
+        (type SURROGATE NULL)
+        (coercedValue OBJECT NULL))
+    (typecase options
+      (CONS
+       (when (odd? (length options))
+         (error "Odd-length options list: " options))
+       (setq parsedOptions (new PROPERTY-LIST :the-plist options)))
+      (PROPERTY-LIST (setq parsedOptions options))
+      (otherwise
+       (error "Illegal options specification: " options)))
+    (when (defined? legalOptions)
+      (foreach (key value) in parsedOptions
+          do (setq type (lookup legalOptions key))
+             (when (and (null? type)
+                        (not allowOtherKeys?))
+               (error "Illegal option: " key))
+             (unless (or (eql? type @IDENTITY)
+                         (null? value))
+               (setq coercedValue
+                 (coerce-value-to-type value type coercionError?))
+               (insert-at parsedOptions key coercedValue))))
+    (return parsedOptions)))
 
 
   ;;
@@ -63,6 +398,7 @@
   ;;    the result.
   (special ((*translationErrors* 0)
             (*translationWarnings* 0)
+            (*translationNotes* 0)
             (*ignoreTranslationErrors?* FALSE)
             (*translationUnits* NULL)
             (*translationPhase* :DEFINE)
@@ -76,7 +412,7 @@
            (SYMBOL
             (case operator
               (IN-MODULE
-               (handle-in-module-tree command FALSE))
+               (handle-in-module-tree command FALSE FALSE))
               (otherwise
                (cond ((declaration-tree? command)
                       ;; Handle top-level expressions such as PROGN or macros
@@ -120,8 +456,8 @@ the module within which all remaining commands are to be evaluated
 The remaining commands are evaluated one-by-one, applying the function
 `evaluate' to each of them."
   :command? TRUE :public? TRUE
-  (when (not (probe-file? file))
-    (signal STELLA-EXCEPTION "File " file " does not exist."))
+  (setq file (first-defined (find-file-in-load-path file NULL) file))
+  (ensure-file-exists file "load-file")
   (let ((topLevelInvocation? (null? *currentFile*))
         (skipCommand? FALSE)
         (seenInModule? FALSE)
@@ -135,7 +471,7 @@ The remaining commands are evaluated one-by-one, applying the function
 		do (typecase tree
 		     (CONS
 		      (mv-setq (skipCommand? seenInModule?)
-			(handle-in-module-tree tree seenInModule?))
+			(handle-in-module-tree tree seenInModule? TRUE))
 		      (when skipCommand?
 			(continue))
 		      (let ((operator (first tree)))
@@ -158,8 +494,9 @@ The remaining commands are evaluated one-by-one, applying the function
 		      (evaluate-command tree FALSE))))
 	    (special ((*translationPhase* :FINALIZE))
 	      (run-system-finalization *currentSystemDefinition*))
-	    (foreach tree in (reverse commands)
-		do (evaluate-command tree TRUE))))
+            (let ((finalize? (defined? *currentSystemDefinition*)))
+	      (foreach tree in (reverse commands)
+		do (evaluate-command tree finalize?)))))
       (when topLevelInvocation?
 	(sweep-transients))
       (when (defined? inputStream)
@@ -197,29 +534,50 @@ The remaining commands are evaluated one-by-one, applying the function
        (print "Illegal system name: " name)
        (return NULL)))
     (let ((system (new SYSTEM-DEFINITION :name stringName))
-          (required-system SYSTEM-DEFINITION NULL)
           (pList (new PROPERTY-LIST :the-plist options))
           (oldSystem (some s in *systemDefinitions* where (eql? (name s) stringName))))
       ;; SHOULD WRAP AN 'exception-case' AROUND THIS:
       (foreach (key value) in pList
-               do
-               (case key
-                 (:DIRECTORY (setf (directory system) (implode-pathname value)))
-                 (:FILES (setf (files system) (parse-list-of-file-paths value)))
-                 (:REQUIRED-SYSTEMS 
-                  (setf (required-systems system) value)
-                  (foreach sys in (cast value CONS)
-                    do (setq required-system (get-system-definition (cast sys STRING-WRAPPER)))
-                       (when (and (not (string-equal? (cast sys STRING-WRAPPER) "stella"))
-                                  (not (loaded? required-system)))
-                         (print "Making dependent system " (wrapper-value (cast sys STRING-wRAPPER)) EOL)
-                         (make-system (cast sys STRING-WRAPPER) (translator-output-language))
-                         (print EOL EOL))))
-                 (:LISP-ONLY-FILES (setf (lisp-only-files system) (parse-list-of-file-paths value)))
-                 (:CPP-ONLY-FILES (setf (cpp-only-files system) (parse-list-of-file-paths value)))
-                 (:JAVA-ONLY-FILES (setf (java-only-files system) (parse-list-of-file-paths value)))
-                 (:PREPROCESSED-FILES (setf (preprocessed-files system) (parse-list-of-file-paths value)))
-                 (:CARDINAL-MODULE (setf (cardinal-module system) (cast value STRING-WRAPPER)))
+          do (case key
+               (:DIRECTORY (setf (directory system) (implode-pathname value)))
+               (:FILES (setf (files system) (parse-list-of-file-paths value)))
+               (:REQUIRED-SYSTEMS 
+                (setf (required-systems system) value)
+                (foreach sys in (cast value CONS)
+                    do (get-system-definition sys)
+                       (when (not (system-loaded-or-started-up? sys))
+                         (let ((currentAction :load-system)
+                               (currentLanguage (running-in-language)))
+                           (when (defined? *current-system-action*)
+                             (setq currentAction
+                               (lookup-with-default *current-system-action*
+                                                    :action
+                                                    currentAction))
+                             (setq currentLanguage
+                               (lookup-with-default *current-system-action*
+                                                    :language
+                                                    currentLanguage)))
+                           (case currentAction
+                             (:make-system
+                              ;; consider passing through other options to the required
+                              ;; systems - maybe based on a :propagate-options? option:
+                              (print "Making required system " (unwrap-string sys) EOL)
+                              (make-system sys currentLanguage))
+                             (otherwise
+                              (print "Loading required system " (unwrap-string sys) EOL)
+                              (load-system sys currentLanguage)))))))
+                 (:LISP-ONLY-FILES
+                  (setf (lisp-only-files system) (parse-list-of-file-paths value)))
+                 (:CPP-ONLY-FILES
+                  (setf (cpp-only-files system) (parse-list-of-file-paths value)))
+                 (:JAVA-ONLY-FILES
+                  (setf (java-only-files system) (parse-list-of-file-paths value)))
+                 (:DATA-FILES
+                  (setf (data-files system) (parse-list-of-file-paths value)))
+                 (:PREPROCESSED-FILES
+                  (setf (preprocessed-files system) (parse-list-of-file-paths value)))
+                 (:CARDINAL-MODULE
+                  (setf (cardinal-module system) (cast value STRING-WRAPPER)))
                  (:ROOT-SOURCE-DIRECTORY
                   (setf (source-root-directory system) (cast value STRING-WRAPPER)))
                  (:ROOT-NATIVE-DIRECTORY
@@ -253,6 +611,9 @@ a Stella application.
              of strings; the latter defines exploded paths to files
              in subdirectories.
    Optional options are:
+   :data-files       -- a list of files like the :files keyword, which contain
+                        data or other content that should not be processed, but
+                        instead copied verbatim to the native directory
    :required-systems -- a list of systems (strings) that should be loaded
                         prior to loading this system.
    :cardinal-module -- the name (a string) of the principal module for this
@@ -372,62 +733,19 @@ a Stella application.
     (set-optimization-levels
      (nth settings 0) (nth settings 1) (nth settings 2) (nth settings 3)) ))
 
-(defun (lisp-keyword-to-stella-keyword KEYWORD) ((key KEYWORD))
-  ;; If 'key' is NOT a STELLA keyword, but is in fact a Common Lisp
-  ;;    keyword, convert it to a STELLA keyword.  Otherwise, return
-  ;;    NULL.
-  (let ((stellaKeyword KEYWORD NULL))
-    (verbatim
-      :common-lisp
-      "(cl:when (cl:typep key 'CL:KEYWORD)
-        (cl:setq stellaKeyword (stellify key)))"
-      :otherwise NULL)
-    (return stellaKeyword) ))
+(defspecial *current-system-action* PROPERTY-LIST NULL
+  :documentation "Holds the action and options of the current system action
+such as :make-system, :load-system or :translate-system.  This is used to
+perform the appropriate actions on required systems in `define-system'.")
 
-(defun (vet-options PROPERTY-LIST) ((plist OBJECT) (legalOptions (CONS OF KEYWORD)))
-  ;; Complain about each key in 'plist' that's not in 'legalOptions'
-  ;;    and remove illegal entries from 'plist'.
-  ;; Also, if a Common Lisp keyword has snuck in, replace it with an
-  ;;    equivalent Stella keyword (and convert the value as well).
-  ;; Note: The logic here is written to avoid triggering STELLA type
-  ;;    checks that would bomb on Common Lisp objects.
-  (let ((propertyList PROPERTY-LIST NULL))
-    (typecase plist
-      (PROPERTY-LIST (setq propertyList plist))
-      (CONS (setq propertyList (new PROPERTY-LIST :the-plist plist)))
-      (LIST (setq propertyList (new PROPERTY-LIST :the-plist (the-cons-list plist))))
-      (otherwise 
-       (warn "Illegal argument passed to 'vet-options'")
-       (return (new PROPERTY-LIST))))
-    (foreach (key value) in propertyList
-             where (or (not (stella-object? key))
-                       (not (keyword? key))
-                       (and (defined? legalOptions)
-                            (not (member? legalOptions key))))
-             do (ignore value)
-             ;; found badness; transform it or excise it:
-             (when (not (stella-object? key))
-               ;; convert Lisp objects within 'propertyList':
-               (let ((newPList (new PROPERTY-LIST)))
-                 (foreach (key value) in propertyList
-                          do (insert-at newPList (stellify key) (stellify value)))
-                 (setf (the-plist propertyList) (the-plist newPList)))
-               (vet-options propertyList legalOptions)
-               (return propertyList))
-             (remove-at propertyList key)
-             (inform "Skipping illegal option: " key EOL)
-             (if (keyword? key)
-               (inform "   Legal options are: " legalOptions EOL)
-               (inform "   Option must be a keyword."))
-             (vet-options propertyList legalOptions)
-             (return propertyList))
-    (return propertyList) ))
-
-(defun (make-system BOOLEAN)  
-       ((systemName STRING) (language KEYWORD) &rest (options OBJECT))
+(defun (make-system BOOLEAN) ((systemName STRING) &rest (language&options OBJECT))
   :documentation "Translate all out-of-date files of system `systemName'
-into `language' and then compile and load them (the latter is only possible
-for Lisp right now).  The following keyword/value `options' are recognized:
+into `language' (the first optional argument of `language&options') and
+then compile and load them (the latter is only possible for Lisp right now).
+The following keyword/value `options' are recognized:
+
+`:language': can be used as an alternative to the optional language argument.
+If not specified, the language of the running implementation is assumed.
 
 `:two-pass?': if true, all files will be scanned twice, once to
 load the signatures of objects defined in them, and once to actually
@@ -451,81 +769,94 @@ recompiled whether or not their compilations are up-to-date (only supported
 in Lisp right now).
 
 `:load-system?' (default true): if true, compiled files will be loaded into
-the current STELLA image (only supported in Lisp right now).
+the current STELLA image (only supported in Lisp and Java right now).
 
 `:startup?' (default true): if true, the system startup function will
 be called once all files have been loaded."
   :public? TRUE :command? TRUE
-
-  ;; Set the translator language here, since GET-SYSTEM-DEFINITION now
-  ;; depends on it to do automatic system loading for :COMMON-LISP.
-  (setq language (stellify language))   ; Is this still needed?
-  (special ((*translatorOutputLanguage* language))
-     (set-translator-output-language language)
-     (let ((plist (new PROPERTY-LIST :the-plist (coerce-&rest-to-cons options)))
-           (developmentSettings? FALSE)
-           (forceTranslation? FALSE)
-           (forceRecompilation? FALSE)
-           (twoPass? (and (defined? (get-system-definition systemName))
-                          (not (loaded? (get-system-definition systemName)))))
-           (loadSystem? (eq? language :common-lisp))
-           (startupSystem? (eq? language :common-lisp))
-           (updatedSystem? FALSE)
-           (system (get-system-definition systemName)))
-       (when (null? system)
-         (print "Can't find a declaration for system named " systemName EOL
-                "  Possibly a global path name needs to be set." EOL)
-         (return FALSE))
-       (vet-options 
-        plist (quote (:two-pass?
-                      :development-settings?
-                      :production-settings?
-                      :force-translation? 
-                      :force-recompilation?
-                      :load-system?
-                      :startup?)))
-       (foreach (key value) in plist
-                do (let ((trueValue? (eql? value TRUE-WRAPPER)))
-                     (case key
-                       (:development-settings?
-                        (setq developmentSettings? trueValue?))
-                       (:production-settings?
-                        (setq developmentSettings? (not trueValue?)))
-                       (:force-translation?
-                        (setq forceTranslation? trueValue?))
-                       (:force-recompilation?
-                        (setq forceRecompilation? trueValue?))
-                       (:two-pass?
-                        (setq twoPass? trueValue?))
-                       (:load-system?
-                        (setq loadSystem? trueValue?))
-                       (:startup?
-                        (setq startupSystem? trueValue?)))))
-       ;; Since this step is really a prerequisite for translation, it
-       ;; should probably be moved into `translate-system' (then we also
-       ;; wouldn't have to call `system-needs-translation?' twice):
-       (when (or forceRecompilation?
-                 (and (not (loaded? system))
-		      (or forceTranslation?
-		          (system-needs-translation? systemName language))))
-         (load-preprocessed-files systemName))
-       (setq updatedSystem?
-             (translate-system systemName language
-                               :two-pass? twoPass? 
-                               :force-translation? forceTranslation?
-                               :development-settings? developmentSettings?))
-       (when (and loadSystem?
-                  (load-system systemName language
-                               :force-recompilation? forceRecompilation?
-                               :startup? startupSystem?))
-         (setq updatedSystem? TRUE))
-       (return updatedSystem?) )))
+  (let ((options (coerce-&rest-to-cons language&options))
+        (language KEYWORD
+         (choose (member? (quote (:common-lisp :cpp :java)) (first options))
+                 (first options)
+                 (running-in-language)))
+        (plist (vet-options
+                (choose (eql? (first options) language)
+                        (rest options)
+                        options)
+                (quote (:two-pass?
+                        :development-settings?
+                        :production-settings?
+                        :force-translation? 
+                        :force-recompilation?
+                        :load-system?
+                        :language
+                        :action))))
+        ;; various option default values:
+        (developmentSettings? FALSE)
+        (forceTranslation? FALSE)
+        (forceRecompilation? FALSE)
+        (twoPass? (not (system-loaded-or-started-up? systemName)))
+        (loadSystem? FALSE)    ;; initialized below
+        (startupSystem? FALSE) ;; initialized below
+        (system SYSTEM-DEFINITION NULL)
+        (updatedSystem? FALSE))
+    (setq language (lookup-with-default plist :language language))
+    (insert-at plist :language language) ;; for required system actions
+    (setq loadSystem? (eql? language :common-lisp))
+    (setq startupSystem? (eql? language :common-lisp))
+    ;; initialize :action unless it already has a value:
+    (insert-at plist :action (lookup-with-default plist :action :make-system))
+    (foreach (key value) in plist
+        do (let ((trueValue? (eql? value TRUE-WRAPPER)))
+             (case key
+               (:development-settings?
+                (setq developmentSettings? trueValue?))
+               (:production-settings?
+                (setq developmentSettings? (not trueValue?)))
+               (:force-translation?
+                (setq forceTranslation? trueValue?))
+               (:force-recompilation?
+                (setq forceRecompilation? trueValue?))
+               (:two-pass?
+                (setq twoPass? trueValue?))
+               (:load-system?
+                (setq loadSystem? trueValue?))
+               (:startup?
+                (setq startupSystem? trueValue?))
+               (otherwise NULL))))
+    (special ((*current-system-action* (copy plist)))
+      ;; do this here so we get proper required system actions:
+      (setq system (get-system-definition systemName))
+      (when (null? system)
+        (print "Can't find a declaration for system named " systemName EOL
+               "  Possibly a global path name needs to be set." EOL)
+        (return FALSE))
+      ;; Since this step is really a prerequisite for translation, it
+      ;; should probably be moved into `translate-system' (then we also
+      ;; wouldn't have to call `system-needs-translation?' twice):
+      (when (or forceRecompilation?
+                (and (not (system-loaded-or-started-up? systemName))
+                     (or forceTranslation?
+                         (system-needs-translation? systemName language))))
+        (load-preprocessed-files systemName))
+      (setq updatedSystem?
+        (translate-system systemName language
+                          :two-pass? twoPass? 
+                          :force-translation? forceTranslation?
+                          :development-settings? developmentSettings?))
+      (when (and loadSystem?
+                 (load-system systemName language
+                              :force-recompilation? forceRecompilation?
+                              :startup? startupSystem?))
+        (setq updatedSystem? TRUE))
+      (return updatedSystem?) )))
 
 (defun run-system-finalization ((system SYSTEM-DEFINITION))
   ;; Run the finalization function associated with 'system'
   ;;    if there is one.
   ;; TO DO: DECIDE IF THE FINALIZATION FUNCTION SHOULD BE ATTACHED
   ;;    TO A SYSTEM OR TO A MODULE:
+  (ignore system)
   (let ((fnName STRING NULL) ; (finalization-function system))
         (finalizationFn METHOD-SLOT NULL))
     (when (defined? fnName)
@@ -584,6 +915,17 @@ be called once all files have been loaded."
           where (and (string-equal? (name sys) name)
                      (loaded? sys))))))
 
+(defun (system-loaded-or-started-up? BOOLEAN) ((name STRING))
+  :documentation "Return `true' if system `name' has either been loaded
+or initialized with its startup function."
+  :public? TRUE
+  (return
+    (or (string-equal? name "STELLA")
+        (exists sys in *systemDefinitions*
+          where (and (string-equal? (name sys) name)
+                     (or (loaded? sys)
+                         (system-started-up? (name sys) (cardinal-module sys))))))))
+
 (defun clear-system ((name STRING))
   :documentation "Clears out the system definition named `name'.  If
 `name' is `null', then clear out all system definitions.  This function
@@ -639,46 +981,60 @@ wants to have it reloaded from the standard location in the file system."
                :common-lisp "(CL:funcall (lispify startupFn))"
                :otherwise NULL)))) ))
 
-(defun (load-system BOOLEAN) ((systemName STRING) (language KEYWORD)
-                              &rest (options OBJECT))
+(defun (load-system BOOLEAN) ((systemName STRING) &rest (language&options OBJECT))
   :documentation
   "Natively `language'-compile out-of-date translated files of system
-`systemName' and then load them into the running system (this is only
-supported/possible for Lisp at the moment).  Return true if at least one
-file was compiled. The following keyword/value `options' are recognized:
+`systemName' (only supported for Lisp at the moment) and then load them
+into the running system.  Return true if at least one file was compiled.
+The following keyword/value `options' are recognized:
+
+`:language': can be used as an alternative to the optional language argument.
+If not specified, the language of the running implementation is assumed.
 
 `:force-recompilation?' (default false): if true, files will be compiled
 whether or not their compilations are up-to-date.
 
 `:startup?' (default true): if true, the system startup function will
 be called once all files have been loaded."
-  :public? TRUE
-  (when (not (running-as-lisp?))
-    (return FALSE))
-  (setq language (stellify language))
-  (let ((plist (new PROPERTY-LIST :the-plist (coerce-&rest-to-cons options)))
+  :public? TRUE :command? TRUE
+  (let ((options (coerce-&rest-to-cons language&options))
+        (language KEYWORD
+         (choose (member? (quote (:common-lisp :cpp :java)) (first options))
+                 (first options)
+                 (running-in-language)))
+        (plist (vet-options
+                (choose (eql? (first options) language)
+                        (rest options)
+                        options)
+                (quote (:force-recompilation? :startup? :language :action))))
         (forceRecompilation? FALSE)
         (startupSystem? TRUE)
         (translatedFile? FALSE))
-    (vet-options plist (quote (:force-recompilation? :startup?)))
+    (setq language (lookup-with-default plist :language language))
+    (insert-at plist :language language) ;; for required system actions
+    ;; initialize :action unless it already has a value:
+    (insert-at plist :action (lookup-with-default plist :action :load-system))
     (foreach (key value) in plist
-             do
-             (case key
-               (:force-recompilation? 
-                (setq forceRecompilation? (eql? value TRUE-WRAPPER)))
-               (:startup? (setq startupSystem? (eql? value TRUE-WRAPPER)))))
-    (with-system-definition systemName
-      (when (loaded? *currentSystemDefinition*)
-        (inform "Loading system " systemName " over top of itself." EOL))
-      (setq translatedFile? 
-	(compile-and-load-files (files-plus-system-startup
-				 (system-definition-native-files *currentSystemDefinition*))
-				language 
-				forceRecompilation?))
-      (setf (loaded? *currentSystemDefinition*) TRUE)
-      (when startupSystem?
-        (run-system-startup-function *currentSystemDefinition*)))
-    (return translatedFile?)) )
+        do (case key
+             (:force-recompilation? 
+              (setq forceRecompilation? (eql? value TRUE-WRAPPER)))
+             (:startup? (setq startupSystem? (eql? value TRUE-WRAPPER)))
+             (otherwise NULL)))
+    (special ((*current-system-action* (copy plist)))
+      (with-system-definition systemName
+        (when (loaded? *currentSystemDefinition*)
+          (inform "Loading system " systemName " over top of itself." EOL))
+        (when (running-as-lisp?)
+          (setq translatedFile? 
+            (compile-and-load-files
+             (files-plus-system-startup
+              (system-definition-native-files *currentSystemDefinition*))
+             language 
+             forceRecompilation?)))
+        (setf (loaded? *currentSystemDefinition*) TRUE)
+        (when startupSystem?
+          (run-system-startup-function *currentSystemDefinition*)))
+      (return translatedFile?))))
 
 (defun (compile-and-load-files BOOLEAN)
        ((files (CONS OF STRING-WRAPPER)) (language KEYWORD) (forceRecompilation? BOOLEAN))
@@ -697,11 +1053,34 @@ be called once all files have been loaded."
 (defun run-system-startup-function ((system SYSTEM-DEFINITION))
   ;; Run system startup functions that create meta-objects
   ;;    (Stella classes and stella methods).
-  (when (not (running-as-lisp?))
-    (return))
-  (verbatim 
-    :common-lisp (cl:funcall (lispify (system-startup-function-symbol system)))
-    :otherwise NULL) )
+  (let ((startupFnSymbol (system-startup-function-symbol system)))
+    (if-output-language
+     :common-lisp
+     (verbatim :common-lisp (cl:funcall (lispify startupFnSymbol)))
+     (if-output-language
+     :java
+     (let ((startupFunction (lookup-function startupFnSymbol))
+           (startupfnclass STRING NULL)
+           (startupfnname STRING NULL)
+           (startupfn FUNCTION-CODE NULL))
+       ;; various magic so we can determine the appropriate Java
+       ;; name of the system startup function to call:
+       (when (null? startupFunction)
+         ;; create a stub object to be used by the translation function below:
+         (within-module (home-module startupFnSymbol)
+           (setq startupFunction
+             (define-method-from-parse-tree
+                 (bquote (DEFUN & startupFnSymbol ()))))))
+       ;; mark it as a startup function object for proper translation:
+       (setf (method-startup-classname startupFunction)
+         (java-translate-class-namestring (symbol-name startupFnSymbol)))
+       (mv-setq (startupfnclass startupfnname)
+         (java-yield-translated-class-and-function-names startupFunction))
+       (verbatim
+         :java "startupfn=Native.find_java_method(startupfnclass, startupfnname, new java.lang.Class [] {})")
+       (funcall startupfn))
+     ;; C++:
+     (error "run-system-startup-function: not yet supported in C++")))))
 
 
   ;;
@@ -740,7 +1119,7 @@ be called once all files have been loaded."
                (typecase tree
                  (CONS
                   (mv-setq (unused? seenInModule?)
-                           (handle-in-module-tree tree seenInModule?))
+                           (handle-in-module-tree tree seenInModule? TRUE))
                   (ignore unused?)
                   (when seenInModule?
                     (setq startupFnName (yield-startup-function-name file))
@@ -781,6 +1160,11 @@ be called once all files have been loaded."
 (defun (system-started-up? BOOLEAN)
     ((systemName STRING) (systemModuleName STRING))
   ;; Return TRUE if the startup function of system `systemName' has been run.
+  ;; Bootstrapping safety:  If this is null, nothing has started up
+  ;;    and we will eventually bottom out and startup Stella.
+  (when (null? *function-lookup-table*)
+    (return FALSE))
+  ;; Short circuit test for "STELLA":
   (when (string-equal? systemName "STELLA")
     (return (defined? *function-lookup-table*)))
   (when (null? (get-stella-module systemModuleName FALSE))
@@ -958,6 +1342,65 @@ be called once all files have been loaded."
 
 
   ;;
+;;;;;; Autoloading
+  ;;
+
+(defun (autoload FUNCTION-CODE) ((qualifiedName STRING)
+                                 (systemName STRING)
+                                 (cache SURROGATE)
+                                 (error? BOOLEAN))
+  :documentation "Autoload function `qualifiedName' from system `systemName'.
+If it is already present in the system, simply return its code.  If `cache'
+is defined, return its value if defined, otherwise, set its value to the
+function found.  If the function failed to be defined by loading `systemName'
+and `error?' is true, raise an error.  Otherwise, simply return NULL."
+  :public? TRUE
+  (let ((function FUNCTION-CODE NULL))
+    (when (defined? cache)
+      (let ((functionWrapper FUNCTION-CODE-WRAPPER (surrogate-value cache)))
+        (when (defined? functionWrapper)
+          (return (wrapper-value functionWrapper)))))
+    (exception-case
+        (mv-bind (functionName functionModuleName type)
+          (parse-stella-name qualifiedName FALSE)
+          (ignore type)
+          (let ((functionModule MODULE NULL)
+                (functionNameSymbol SYMBOL NULL)
+                (functionObject METHOD-SLOT NULL))
+            (when (defined? functionModuleName)
+              (setq functionModule
+                (get-stella-module functionModuleName (and error? (null? systemName)))))
+            (when (defined? functionModule)
+              (setq functionNameSymbol
+                (lookup-symbol-in-module functionName functionModule FALSE)))
+            (when (defined? functionNameSymbol)
+              (setq functionObject (lookup-function functionNameSymbol)))
+            (cond ((defined? functionObject)
+                   (setq function (function-code functionObject)))
+                  ((and (defined? systemName)
+                        (not (system-loaded? systemName)))
+                   (within-module *stella-module* ;; setup a safe environment for loading
+                     (if-output-language
+                      :common-lisp
+                      (make-system systemName)
+                      (load-system systemName)))
+                   ;; a NULL system name signals recursive call after loading the system:
+                   (return (autoload qualifiedName NULL cache error?))))))
+      (STELLA-EXCEPTION (e)
+        (when error?
+          (if (defined? systemName)
+              (error "autoload: failed to define " qualifiedName ": " (exception-message e))
+            (signal-exception e)))))
+    (when (null? function)
+      (if error?
+          (error "autoload: failed to define " qualifiedName)
+        (return NULL)))
+    (when (defined? cache)
+      (setf (surrogate-value cache) function))
+    (return function)))
+
+
+  ;;
 ;;;;;; Definition of STELLA system
   ;;
 
@@ -1016,7 +1459,7 @@ be called once all files have been loaded."
            (exception-case
                ;; parse numbers:
                (typecase (setq value (read-s-expression-from-string valueString))
-                 ((INTEGER-WRAPPER FLOAT-WRAPPER) NULL)
+                 ((INTEGER-WRAPPER LONG-INTEGER-WRAPPER FLOAT-WRAPPER) NULL)
                  (otherwise
                   (setq value valueString)))
              (READ-EXCEPTION ()
@@ -1034,7 +1477,9 @@ be called once all files have been loaded."
 Also enter each property read into the global system configuration table.
 Assumes Java-style property file syntax.  Each property name is represented
 as a wrapped string and each value as a wrapped string/integer/float or boolean."
-  :public? TRUE  :constructor? TRUE
+  :public? TRUE :constructor? TRUE :command? TRUE
+  (setq file (first-defined (find-file-in-load-path file NULL) file))
+  (ensure-file-exists file "load-configuration-file")
   (let ((configuration (new KEY-VALUE-LIST)))
     (with-input-file (in file)
       (foreach line in (lines in)
@@ -1060,7 +1505,7 @@ value."
      (if (eq? value TRUE-WRAPPER)
        (print-stream stream "true")
        (print-stream stream "false")))
-    (INTEGER-WRAPPER
+    ((INTEGER-WRAPPER LONG-INTEGER-WRAPPER)
      (print-stream stream (integer-to-string value)))
     (FLOAT-WRAPPER
      (print-stream stream (float-to-string value)))
@@ -1171,13 +1616,436 @@ Use the global system configuration table if `configuration' is NULL."
                  (remove current-value value)))
     (return value)))
 
+(defun print-configuration-properties ((configuration CONFIGURATION-TABLE) (stream OUTPUT-STREAM))
+  :documentation "Print all properties defined in `configuration' to `stream'."
+  :public? TRUE
+  (special ((*printReadably?* TRUE))
+    (foreach entry in (cast (sort-tuples (consify configuration) 0 NULL)
+                            (CONS OF CONS))
+        do (print-stream stream (unwrap-string (first entry)) " = ")
+           (if (string? (second entry))
+               (print-stream stream (unwrap-string (second entry)) EOL)
+             (print-stream stream (second entry) EOL)))))
+
 (defun configure-stella ((file FILE-NAME))
   :documentation "Perform STELLA run-time configuration.  If supplied, load the
 configuration file `file' first which should be supplied with a physical pathname."
   :public? TRUE
   (when (and (defined? file)
-             (probe-file? file))
+             (defined? (find-file-in-load-path file NULL)))
     (load-configuration-file file))
   (define-logical-host-property
     "PL" :ROOT-DIRECTORY
     (lookup-configuration-property "PowerLoomRootDirectory" NULL NULL)))
+
+;;; Evaluable command functions that can be used in scripts:
+
+(defun (get-property OBJECT) ((property NAME) &rest (defaultValue OBJECT))
+  :documentation "Lookup `property' (a string or symbol) in the configuration
+table and return its value.  If it is undefined, return the optional `defaultValue'.
+Note that `property' is evaluated and will need to be quoted if supplied as a
+symbol.  Symbols will also be upcased if this command is run in a non-case-
+sensitive module."
+  :public? TRUE :command? TRUE
+  (let ((key (coerce-to-string property))
+        (default (first (coerce-&rest-to-cons defaultValue))))
+    (return (lookup-configuration-property key default *system-configuration-table*))))
+
+(defun set-property ((property NAME) (value OBJECT))
+  :documentation "Set `property' (a string or symbol) in the configuration
+table to `value'.  Note that `property' is evaluated and will need to be quoted
+if supplied as a symbol.  Symbols will also be upcased if this command is run in
+a non-case-sensitive module."
+  :public? TRUE :command? TRUE
+  (let ((key (coerce-to-string property)))
+    (set-configuration-property key value *system-configuration-table*)))
+
+(defun add-property-value ((property NAME) (value OBJECT))
+  :documentation "Add `value' to the end of `property's (a string or symbol) value
+list in the configuration table.  Coerces the current value to a list or initializes
+the list if it is as yet undefined.  Allows incremental addition of values to
+list-valued propertys.  Note that `property' is evaluated and will need to be quoted
+if supplied as a symbol.  Symbols will also be upcased if this command is run in a
+non-case-sensitive module."
+  :public? TRUE :command? TRUE
+  (let ((key (coerce-to-string property)))
+    (add-configuration-property key value *system-configuration-table*)))
+
+(defun print-properties ()
+  :documentation "Print all current configuration property information to
+standard output."
+  :public? TRUE :command? TRUE
+  (print "------------------------------------------------------------" EOL
+         "# Loaded System Configuration" EOL)
+  (print-configuration-properties *system-configuration-table* STANDARD-OUTPUT)
+  (print "------------------------------------------------------------" EOL))
+
+
+  ;;
+;;;;;; Extensible command-line option handling
+  ;;
+
+(defclass CMD-LINE-OPTION (STANDARD-OBJECT)
+  :slots ((documentation :type STRING :initially "Not documented.")
+          (keys :type (CONS OF STRING-WRAPPER) :initially NIL)
+          (value-type :type TYPE :initially @STRING)
+          (multi-valued? :type BOOLEAN :initially FALSE)
+          (n-arguments :type INTEGER :initially 0
+                       :documentation "The number of args expected by this option.
+Common values are 0 or 1, but certain options might take more than one argument.")
+          (default-value :type OBJECT
+                       :documentation "The value to use for 0-arg options.
+Defaults to TRUE for 0-arg options with boolean value type.")
+          (configuration-property :type STRING)
+          (handler :type FUNCTION-CODE
+                   :initially (the-code :function default-cmd-line-option-handler))
+          (error-action :type KEYWORD :initially :error
+                        :documentation "One of :ignore, :warn, :error.")))
+
+(defglobal *registered-command-line-options* (KEY-VALUE-MAP OF STRING-WRAPPER CMD-LINE-OPTION)
+           (new KEY-VALUE-MAP))
+
+(defun register-cmd-line-option (&rest (options OBJECT))
+  :documentation "Register a command line option.  :key identifies the name of the option which
+will usually start with a dash such as `-e' or `--eval'.  :key2 and :key3 can be used to supply
+additional options (e.g., long option formats).  To supply even more keys, a list can be supplied
+with the :keys option.  If a :property is supplied, this option simply sets or adds to the values
+of the specified system configuration property.  If a :handler name is specified, its function
+will be used to interpret the values of the option.  :documentation can be used to supply a
+documentation string which will be printed by the `help-option-handler' (usually bound to `-?').
+:value-type describes what type an option value should be coerced to before assigning it to the
+specified configuration :property.  :n-arguments describes how many arguments this option
+takes.  This will be 0 for simple switches and can be 1 or greater than one for option handlers
+that need one or more arguments.  :default-value defines the value to use for zero-argument
+:property options.  If :multi-valued? is true, values of multiple occurrences of the option will be
+added to the specified configuration :property.  :error-action can be one of :ignore, :warn or
+:error to specify what to do in case an error is encountered during option processing."
+  :public? TRUE
+  (let ((theOptions
+         (parse-options
+          (coerce-&rest-to-cons options)
+          (bquote (:documentation @STRING
+                   :key @STRING
+                   :key2 @STRING
+                   :key3 @STRING
+                   :keys @CONS
+                   :value-type @TYPE
+                   :multi-valued? @BOOLEAN
+                   :n-arguments @INTEGER
+                   :default-value @OBJECT
+                   :property @STRING
+                   :handler @SYMBOL
+                   :error-action @KEYWORD))
+          TRUE FALSE))
+        (cmdLineOption (new CMD-LINE-OPTION))
+        (value OBJECT NULL))
+    (setf (documentation cmdLineOption)
+      (lookup-with-default theOptions :documentation "Not documented."))
+    (setq value (lookup theOptions :key))
+    (when (defined? value) (pushf (keys cmdLineOption) value))
+    (setq value (lookup theOptions :key2))
+    (when (defined? value) (pushf (keys cmdLineOption) value))
+    (setq value (lookup theOptions :key3))
+    (when (defined? value) (pushf (keys cmdLineOption) value))
+    (foreach val in (cast (lookup-with-default theOptions :keys NIL) CONS)
+        do (setq value (coerce-value-to-type val @STRING TRUE))
+           (pushf (keys cmdLineOption) value))
+    (setf (keys cmdLineOption) (reverse (keys cmdLineOption)))
+    (setf (value-type cmdLineOption) (lookup-with-default theOptions :value-type @STRING))
+    (setf (multi-valued? cmdLineOption) (lookup-with-default theOptions :multi-valued? FALSE))
+    (setf (n-arguments cmdLineOption) (lookup-with-default theOptions :n-arguments 0))
+    (setf (default-value cmdLineOption) (lookup theOptions :default-value))
+    (setf (configuration-property cmdLineOption)
+      (lookup-with-default theOptions :property NULL-STRING-WRAPPER))
+    (setq value (lookup theOptions :handler))
+    (when (defined? value)
+      (setq value (lookup-function value))
+      (when (null? value)
+        (error "register-cmd-line-option: cannot find handler function: " (lookup theOptions :handler)))
+      (setf (handler cmdLineOption) (function-code (cast value METHOD-SLOT))))
+    (setf (error-action cmdLineOption) (lookup-with-default theOptions :error-action :error))
+    (foreach key in (keys cmdLineOption)
+        do (insert-at *registered-command-line-options* key cmdLineOption))))
+
+(defun unregister-cmd-line-option ((key STRING))
+  :documentation "Unregister the command line option identified by `key' under all its keys."
+  :public? TRUE
+  (let ((cmdLineOption (lookup *registered-command-line-options* key)))
+    (when (defined? cmdLineOption)
+      (foreach registeredKey in (keys cmdLineOption)
+          do (remove-at *registered-command-line-options* registeredKey))
+      (remove-at *registered-command-line-options* key))))
+
+(defun unregister-all-cmd-line-options ()
+  :documentation "Unregister all currently registered command line options."
+  :public? TRUE
+  (clear *registered-command-line-options*))
+
+(defun default-cmd-line-option-handler ((option CMD-LINE-OPTION) (value OBJECT))
+  :documentation "Default handler that tries to set a system property based on `option' and `value'."
+  :public? TRUE
+  (let ((property (configuration-property option))
+        (defaultValue (default-value option)))
+    (when (null? property)
+      ;; use its longest key string:
+      (setq property "")
+      (foreach key in (keys option)
+          where (> (length (unwrap-string key)) (length property))
+          do (setq property key)))
+    (when (and (null? defaultValue)
+               (eql? (value-type option) @BOOLEAN))
+      (setq defaultValue TRUE))
+    (when (null? value)
+      (setq value defaultValue))
+    (if (multi-valued? option)
+        (typecase value
+          (CONS
+           (foreach val in value
+               do (add-configuration-property property val NULL)))
+          (otherwise
+           (add-configuration-property property value NULL)))
+      (set-configuration-property property value NULL))))
+
+(defglobal *unprocessed-command-line-arguments* (CONS OF STRING-WRAPPER) NULL)
+
+(defun process-command-line-arguments ((count INTEGER)
+                                       (arguments (ARRAY () OF STRING))
+                                       (unhandledOptionAction KEYWORD))
+  :documentation "Interpret any command line `arguments' for which handlers have been registered.
+Leave any remaining unprocessed arguments in `*unprocessed-command-line-arguments*'.
+If any unprocessed arguments use option syntax (that is they start with a `-'), proceed
+according to `unhandledOptionAction' which can be one of :ignore, :warn or :error.
+This ensures that at any point in the option processing, `*unprocessed-command-line-arguments*'
+accurately reflects the arguments which have been either skipped or not handled yet."
+  :public? TRUE
+  (when (null? *unprocessed-command-line-arguments*)
+    (setq *unprocessed-command-line-arguments* (consify-command-line-arguments count arguments)))
+  (let ((cmdLineArgs (copy-cons-list *unprocessed-command-line-arguments*))
+        (argument STRING NULL)
+        (nArgs (length cmdLineArgs))
+        (option CMD-LINE-OPTION NULL)
+        (value OBJECT NULL)
+        (unprocessedArgs (cons NULL *unprocessed-command-line-arguments*))
+        (unprocessedTrailer unprocessedArgs))
+    (while (non-empty? cmdLineArgs)
+      (setq argument (popq cmdLineArgs))
+      (-- nArgs)
+      (setq option (lookup *registered-command-line-options* argument))
+      (setq value NULL)
+      (cond ((defined? option)
+             (when (< nArgs (n-arguments option))
+               (case (error-action option)
+                 (:error (error "process-command-line-arguments: missing value for option: " argument))
+                 (:warn (warn "process-command-line-arguments: missing value for option: " argument))
+                 (:ignore NULL))
+               (continue))
+             (case (n-arguments option)
+               (0 NULL)
+               (1 (setq value (popq cmdLineArgs))
+                  (-- nArgs))
+               (otherwise
+                (setq value (collect arg in cmdLineArgs
+                                     as i in (interval 1 (n-arguments option))))
+                (setq cmdLineArgs (nth-rest cmdLineArgs (n-arguments option)))
+                (-- nArgs (n-arguments option))))
+             (setf (rest unprocessedTrailer) (nth-rest unprocessedTrailer (+ (n-arguments option) 2)))
+             (setq *unprocessed-command-line-arguments* (rest unprocessedArgs))
+             (exception-case
+                 (funcall (handler option) option value)
+               (NATIVE-EXCEPTION (e)
+                 (case (error-action option)
+                   (:error
+                    (error "Error during processing of " argument " option: " (exception-message e)))
+                   (:warn
+                    (warn "Error during processing of " argument " option: " (exception-message e)))
+                   (:ignore NULL)))))
+            (otherwise
+             (setq unprocessedTrailer (rest unprocessedTrailer)))))
+    (setq *unprocessed-command-line-arguments* (rest unprocessedArgs))
+    (foreach arg in *unprocessed-command-line-arguments*
+        where (starts-with? (unwrap-string arg) "-" 0)
+        do (case unhandledOptionAction
+             (:warn (warn "Unhandled command line option: " (unwrap-string arg)))
+             (:error (error "Unhandled command line option: " (unwrap-string arg)))
+             (:ignore (break))))))
+
+(defun (unprocessed-command-line-arguments (CONS OF STRING-WRAPPER)) ()
+  :documentation "Return all command line arguments which have not yet been processed
+by (or been ignored by) `process-command-line-arguments'.  If arguments have not yet
+been processed, this will return NULL."
+  :public? TRUE :command? TRUE
+  (return *unprocessed-command-line-arguments*))
+
+(defun eval-option-handler ((option CMD-LINE-OPTION) (value OBJECT))
+  :documentation "Interpret an --eval option by evaluating `value'."
+  :public? TRUE
+  (ignore option)
+  (evaluate (choose (string? value)
+                    (read-s-expression-from-string value)
+                    value)))
+
+(startup-time-progn
+  (register-cmd-line-option
+   :key "-e" :key2 "--eval" :key3 "-eval"
+   :documentation "<s-expression>
+  Evaluate the STELLA <s-expression> in the current module."
+   :n-arguments 1
+   :handler (quote eval-option-handler)
+   :error-action :warn))
+
+(defun eval-in-module-option-handler ((option CMD-LINE-OPTION) (value OBJECT))
+  :documentation "Interpret an --eval-in-module option.  `value' is expected
+to be of the form `(<module-name> <s-expression>)'." 
+  :public? TRUE
+  (typecase value
+    (CONS
+     (within-module (coerce-to-module (first value) TRUE)
+       (eval-option-handler option (second value))))
+    (otherwise NULL)))
+
+(startup-time-progn
+  (register-cmd-line-option
+   :key "--eval-in-module"
+   :documentation "<module-name> <s-expression>
+  Evaluate the STELLA <s-expression> in module <module-name>."
+   :n-arguments 2
+   :handler (quote eval-in-module-option-handler)
+   :error-action :warn))
+
+(defun load-path-option-handler ((option CMD-LINE-OPTION) (value OBJECT))
+  :documentation "Modify the current file load path according to `option' and `value'."
+  :public? TRUE
+  (cond ((member? (keys option) "--path=")
+         (set-load-path value))
+        ((member? (keys option) "--path=+")
+         (add-load-path value))
+        (otherwise
+         (push-load-path value))))
+
+(startup-time-progn
+  (register-cmd-line-option
+   :key "--path" :key2 "--path+="
+   :documentation "<path>
+  Add <path> to the front of the current file load path."
+   :n-arguments 1
+   :handler (quote load-path-option-handler)
+   :error-action :warn))
+
+(startup-time-progn
+  (register-cmd-line-option
+   :key "--path="
+   :documentation "<path>
+  Set the current file load path to <path>."
+   :n-arguments 1
+   :handler (quote load-path-option-handler)
+   :error-action :warn))
+
+(startup-time-progn
+  (register-cmd-line-option
+   :key "--path=+"
+   :documentation "<path>
+  Add <path> at the end of the current file load path."
+   :n-arguments 1
+   :handler (quote load-path-option-handler)
+   :error-action :warn))
+
+(defun config-file-option-handler ((option CMD-LINE-OPTION) (value OBJECT))
+  :documentation "Load the configuration file `value'.  This will
+modify currently set system properties defined in `value' with new
+values but leave all other currently set properties as they are."
+  :public? TRUE
+  (ignore option)
+  (let ((currentConfig *system-configuration-table*))
+    (exception-case
+        (progn
+          (setq *system-configuration-table* (copy currentConfig))
+          (load-configuration-file value))
+      (NATIVE-EXCEPTION ()
+        ;; if anything went wrong, this will reset to original value:
+        (setq *system-configuration-table* currentConfig)))))
+
+(startup-time-progn
+  (register-cmd-line-option
+   :key "-c" :key2 "--configuration-file"
+   :documentation "<file>
+  Load the STELLA configuration file <file>."
+   :n-arguments 1
+   :handler (quote config-file-option-handler)
+   :error-action :warn))
+
+(defun load-file-option-handler ((option CMD-LINE-OPTION) (value OBJECT))
+  :documentation "Load the file `value' using the STELLA `load-file' command."
+  :public? TRUE
+  (ignore option)
+  (load-file value))
+
+(startup-time-progn
+  (register-cmd-line-option
+   :key "-l" :key2 "--load"
+   :documentation "<file>
+  Load the STELLA file <file>."
+   :n-arguments 1
+   :handler (quote load-file-option-handler)
+   :error-action :warn))
+
+(defun define-property-option-handler ((option CMD-LINE-OPTION) (value OBJECT))
+  (ignore option)
+  (mv-bind (prop val op)
+      (parse-configuration-file-line value)
+    (if (eql? op :ADD)
+        (add-configuration-property prop val NULL)
+      (set-configuration-property prop val NULL))))
+
+(startup-time-progn
+  (register-cmd-line-option
+   :key "-D" :key2 "--define"
+   :documentation "<property>{=|+=|-=}<value>}
+  Set the STELLA configuration <property> to <value>.  Multi-valued properties can be
+  added to via the `+=' and removed from via the `-=' assignment operator."
+   :n-arguments 1
+   :handler (quote define-property-option-handler)))
+
+(defglobal *command-line-help-header* STRING ""
+  :documentation "Documentation to be printed at the beginning of command line help."
+  :public? TRUE)
+(defglobal *command-line-help-trailer* STRING ""
+  :documentation "Documentation to be printed at the end of command line help."
+  :public? TRUE)
+
+(defun help-option-handler ((option CMD-LINE-OPTION) (value OBJECT))
+  :documentation "Print documentation about all currently registered option handlers."
+  :public? TRUE
+  (ignore value)
+  (let ((sortedOptions (CONS OF CONS) NIL))
+    (foreach (key option) in *registered-command-line-options*
+        where (eql? key (first (keys option)))
+        do (while (starts-with? key "-" 0)
+             (setq key (subsequence (unwrap-string key) 1 NULL)))
+           (setq key (string-downcase key))
+        collect (cons-list key option) into sortedOptions)
+    (setq sortedOptions (sort-tuples (remove-duplicates sortedOptions) 0 NULL))
+    (unless (blank-string? *command-line-help-header*)
+      (print *command-line-help-header* EOL))
+    (print "The following command line options are supported:" EOL)
+    (foreach tuple in sortedOptions
+        do (setq option (second tuple))
+           (foreach key in (keys option)
+               as i in (interval 1 NULL)
+               do (when (> i 1)
+                    (print ", "))
+                  (print (unwrap-string key)))
+           (print " ")
+           (print (documentation option) EOL))
+    (unless (blank-string? *command-line-help-trailer*)
+      (print *command-line-help-trailer* EOL))
+    ;; indicate that we ran to show version or command line info only;
+    ;; main functions can key in on that and exit:
+    (set-configuration-property "stella.showInfoOnly" TRUE NULL)))
+
+(startup-time-progn
+  (register-cmd-line-option
+   :key "-?" :key2 "--help"
+   :documentation "
+  Print this command line help message."
+   :n-arguments 0
+   :handler (quote help-option-handler)))

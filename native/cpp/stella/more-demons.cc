@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -129,6 +129,7 @@ void startupMoreDemons() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineDemon("inverse-slot-demon", 2, KWD_MORE_DEMONS_CODE, wrapFunctionCode(((cpp_function_code)(&inverseSlotDemon))));
       defineDemon("class-extension-constructor-demon", 6, KWD_MORE_DEMONS_DOCUMENTATION, wrapString("Demon that inserts the instance 'self' into the extension of\nthe class 'class'."), KWD_MORE_DEMONS_CREATE, KWD_MORE_DEMONS_ALL, KWD_MORE_DEMONS_CODE, wrapFunctionCode(((cpp_function_code)(&classExtensionConstructorDemon))));
       defineDemon("class-extension-destructor-demon", 6, KWD_MORE_DEMONS_DOCUMENTATION, wrapString("Demon that removes the instance 'self' from the extension of\nthe class 'class'.  Removal removes the instance forever.  Deletion without\nremoval can be achieved in constant time by setting 'deleted?' on 'self'."), KWD_MORE_DEMONS_DESTROY, KWD_MORE_DEMONS_ALL, KWD_MORE_DEMONS_CODE, wrapFunctionCode(((cpp_function_code)(&classExtensionDestructorDemon))));

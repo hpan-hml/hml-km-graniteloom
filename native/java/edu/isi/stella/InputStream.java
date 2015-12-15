@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -104,18 +104,18 @@ public class InputStream extends Stream {
               if (regiontag000 == Stella.NIL) {
               }
               else if (regiontag000.rest == null) {
-                iterator.regionTag = Stella_Object.cons(Stella_Object.coerceToXmlElement(regiontag000.value), Stella_Object.cons(Stella.NIL, Stella.NIL));
+                iterator.regionTag = Cons.cons(Stella_Object.coerceToXmlElement(regiontag000.value), Cons.cons(Stella.NIL, Stella.NIL));
               }
               else if (regiontag000.rest.rest == null) {
-                iterator.regionTag = Stella_Object.cons(Stella_Object.coerceToXmlElement(regiontag000.value), Stella_Object.cons(regiontag000.rest.value, Stella.NIL));
+                iterator.regionTag = Cons.cons(Stella_Object.coerceToXmlElement(regiontag000.value), Cons.cons(regiontag000.rest.value, Stella.NIL));
               }
               else {
-                iterator.regionTag = Stella_Object.cons(Stella_Object.coerceToXmlElement(regiontag000.value), Stella_Object.cons(regiontag000.rest, Stella.NIL));
+                iterator.regionTag = Cons.cons(Stella_Object.coerceToXmlElement(regiontag000.value), Cons.cons(regiontag000.rest, Stella.NIL));
               }
             }
           }
           else {
-            iterator.regionTag = Stella_Object.cons(Stella_Object.coerceToXmlElement(regiontag), Stella_Object.cons(Stella.NIL, Stella.NIL));
+            iterator.regionTag = Cons.cons(Stella_Object.coerceToXmlElement(regiontag), Cons.cons(Stella.NIL, Stella.NIL));
           }
         }
         return (iterator);
@@ -210,9 +210,10 @@ public class InputStream extends Stream {
                   tok_endoftokensP_ = InputStream.readIntoTokenizerBuffer(tok_inputstream_, tok_streamstate_, tok_tokenstart_);
                   tok_buffer_ = tok_streamstate_.buffer;
                   tok_size_ = tok_streamstate_.bufferSize;
-                  tok_cursor_ = Stella.mod(tok_streamstate_.cursor, tok_size_);
+                  tok_cursor_ = Stella.integer_mod(tok_streamstate_.cursor, tok_size_);
                   tok_end_ = tok_streamstate_.end;
                   if (tok_endoftokensP_) {
+                    tok_checkpoint_ = tok_cursor_;
                     if (tok_nextstate_ == -1) {
                     }
                     else if (BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)((tok_table_.legalEofStates.theArray)[tok_state_])))) {
@@ -542,9 +543,10 @@ public class InputStream extends Stream {
                   tok_endoftokensP_ = InputStream.readIntoTokenizerBuffer(tok_inputstream_, tok_streamstate_, tok_tokenstart_);
                   tok_buffer_ = tok_streamstate_.buffer;
                   tok_size_ = tok_streamstate_.bufferSize;
-                  tok_cursor_ = Stella.mod(tok_streamstate_.cursor, tok_size_);
+                  tok_cursor_ = Stella.integer_mod(tok_streamstate_.cursor, tok_size_);
                   tok_end_ = tok_streamstate_.end;
                   if (tok_endoftokensP_) {
+                    tok_checkpoint_ = tok_cursor_;
                     if (tok_nextstate_ == -1) {
                     }
                     else if (BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)((tok_table_.legalEofStates.theArray)[tok_state_])))) {
@@ -720,9 +722,10 @@ public class InputStream extends Stream {
                 tok_endoftokensP_ = InputStream.readIntoTokenizerBuffer(tok_inputstream_, tok_streamstate_, tok_tokenstart_);
                 tok_buffer_ = tok_streamstate_.buffer;
                 tok_size_ = tok_streamstate_.bufferSize;
-                tok_cursor_ = Stella.mod(tok_streamstate_.cursor, tok_size_);
+                tok_cursor_ = Stella.integer_mod(tok_streamstate_.cursor, tok_size_);
                 tok_end_ = tok_streamstate_.end;
                 if (tok_endoftokensP_) {
+                  tok_checkpoint_ = tok_cursor_;
                   if (tok_nextstate_ == -1) {
                   }
                   else if (BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)((tok_table_.legalEofStates.theArray)[tok_state_])))) {
@@ -976,9 +979,10 @@ public class InputStream extends Stream {
                       tok_endoftokensP_ = InputStream.readIntoTokenizerBuffer(tok_inputstream_, tok_streamstate_, tok_tokenstart_);
                       tok_buffer_ = tok_streamstate_.buffer;
                       tok_size_ = tok_streamstate_.bufferSize;
-                      tok_cursor_ = Stella.mod(tok_streamstate_.cursor, tok_size_);
+                      tok_cursor_ = Stella.integer_mod(tok_streamstate_.cursor, tok_size_);
                       tok_end_ = tok_streamstate_.end;
                       if (tok_endoftokensP_) {
+                        tok_checkpoint_ = tok_cursor_;
                         if (tok_nextstate_ == -1) {
                         }
                         else if (BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)((tok_table_.legalEofStates.theArray)[tok_state_])))) {
@@ -1487,6 +1491,27 @@ public class InputStream extends Stream {
         state.end = end;
         return (eofP ||
             (start == end));
+      }
+    }
+  }
+
+  /** Copy <code>in</code> verbatimely to <code>out</code>.  Does the right thing for binary data.
+   * @param in
+   * @param out
+   */
+  public static void copyStreamToStream(InputStream in, OutputStream out) {
+    { byte[] buffer = new byte[Stella.$TOKENIZER_INITIAL_BUFFER_SIZE$];
+      int bytesread = 0;
+
+      loop000 : for (;;) {
+        bytesread = Stella.nativeByteArrayReadSequence(buffer, in.nativeStream, 0, Stella.$TOKENIZER_INITIAL_BUFFER_SIZE$);
+        if (bytesread > 0) {
+          Stella.nativeByteArrayWriteSequence(buffer, out.nativeStream, 0, bytesread);
+        }
+        else {
+          OutputStream.flushOutput(out);
+          break loop000;
+        }
       }
     }
   }

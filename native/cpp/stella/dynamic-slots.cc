@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -138,7 +138,7 @@ Cons* yieldStandardDynamicSlotValueSetterTree(StorageSlot* slot, Object* objectr
       Cons* settertree = NULL;
 
       if (literalslotP) {
-        settertree = listO(6, SYM_DYNAMIC_SLOTS_STELLA_SET_DYNAMIC_SLOT_VALUE, listO(3, SYM_DYNAMIC_SLOTS_STELLA_DYNAMIC_SLOTS, objectref, NIL), listO(3, SYM_DYNAMIC_SLOTS_STELLA_BQUOTE, slotname, NIL), cons(lookupLiteralTypeInfo(slot->type(), KWD_DYNAMIC_SLOTS_WRAP_FUNCTION), cons(valueref, NIL)), lookupLiteralTypeInfo(slot->type(), KWD_DYNAMIC_SLOTS_NULL_WRAPPER), NIL);
+        settertree = listO(5, SYM_DYNAMIC_SLOTS_STELLA_SET_DYNAMIC_SLOT_VALUE, listO(3, SYM_DYNAMIC_SLOTS_STELLA_DYNAMIC_SLOTS, objectref, NIL), listO(3, SYM_DYNAMIC_SLOTS_STELLA_BQUOTE, slotname, NIL), valueref, cons(lookupLiteralTypeInfo(slot->type(), KWD_DYNAMIC_SLOTS_NULL_WRAPPER), NIL));
       }
       else {
         settertree = listO(5, SYM_DYNAMIC_SLOTS_STELLA_SET_DYNAMIC_SLOT_VALUE, listO(3, SYM_DYNAMIC_SLOTS_STELLA_DYNAMIC_SLOTS, objectref, NIL), listO(3, SYM_DYNAMIC_SLOTS_STELLA_BQUOTE, slotname, NIL), valueref, cons(SYM_DYNAMIC_SLOTS_STELLA_NULL, NIL));
@@ -173,7 +173,6 @@ void startupDynamicSlots() {
       SYM_DYNAMIC_SLOTS_STELLA_NULL = ((Symbol*)(internRigidSymbolWrtModule("NULL", NULL, 0)));
       SYM_DYNAMIC_SLOTS_STELLA_SET_DYNAMIC_SLOT_VALUE = ((Symbol*)(internRigidSymbolWrtModule("SET-DYNAMIC-SLOT-VALUE", NULL, 0)));
       SYM_DYNAMIC_SLOTS_STELLA_BQUOTE = ((Symbol*)(internRigidSymbolWrtModule("BQUOTE", NULL, 0)));
-      KWD_DYNAMIC_SLOTS_WRAP_FUNCTION = ((Keyword*)(internRigidSymbolWrtModule("WRAP-FUNCTION", NULL, 2)));
       SYM_DYNAMIC_SLOTS_STELLA_STARTUP_DYNAMIC_SLOTS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-DYNAMIC-SLOTS", NULL, 0)));
       SYM_DYNAMIC_SLOTS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
     }
@@ -196,6 +195,9 @@ void startupDynamicSlots() {
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
+    }
+    if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
     }
   }
 }
@@ -223,8 +225,6 @@ Symbol* SYM_DYNAMIC_SLOTS_STELLA_NULL = NULL;
 Symbol* SYM_DYNAMIC_SLOTS_STELLA_SET_DYNAMIC_SLOT_VALUE = NULL;
 
 Symbol* SYM_DYNAMIC_SLOTS_STELLA_BQUOTE = NULL;
-
-Keyword* KWD_DYNAMIC_SLOTS_WRAP_FUNCTION = NULL;
 
 Symbol* SYM_DYNAMIC_SLOTS_STELLA_STARTUP_DYNAMIC_SLOTS = NULL;
 

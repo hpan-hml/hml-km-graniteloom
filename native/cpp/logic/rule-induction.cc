@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -215,7 +215,7 @@ void induceInferenceRules(Symbol* relationName, Symbol* className) {
     Surrogate* relation = getDescription(relationName)->surrogateValueInverse;
     List* ilist = allClassInstances(clasS)->listify();
     int num = ilist->length();
-    Vector* instances = newVector(num);
+    Vector* instances = stella::newVector(num);
 
     { Object* instance = NULL;
       Cons* iter000 = ilist->theConsList;
@@ -239,7 +239,7 @@ void induceInferenceRules(Symbol* relationName, Symbol* className) {
       generateClassificationRule(instances, relationName, className, true);
       { List* clauses = ((List*)(oCASE_ANTECEDENT_TABLEo->lookup(stringConcatenate(className->symbolName, "-match", 0))));
 
-        oCANDIDATE_CLAUSESo = newVector(clauses->length());
+        oCANDIDATE_CLAUSESo = stella::newVector(clauses->length());
         { Cons* clause = NULL;
           Cons* iter002 = clauses->theConsList;
           int i = NULL_INTEGER;
@@ -286,7 +286,7 @@ void modularInduceInferenceRules(Symbol* relationName, Symbol* className, List* 
     Module* home = oMODULEo.get();
     boolean failUnbound = oFAIL_UNBOUND_CLAUSESpo;
     int num = ilist->length();
-    Vector* instanceVec = newVector(modules->length());
+    Vector* instanceVec = stella::newVector(modules->length());
     Vector* instances = NULL;
 
     oFAIL_UNBOUND_CLAUSESpo = true;
@@ -310,7 +310,7 @@ void modularInduceInferenceRules(Symbol* relationName, Symbol* className, List* 
           module->changeModule();
           ilist = allClassInstances(clasS)->listify();
           num = ilist->length();
-          instances = newVector(num);
+          instances = stella::newVector(num);
           { Object* instance = NULL;
             Cons* iter002 = ilist->theConsList;
             int i = NULL_INTEGER;
@@ -333,7 +333,7 @@ void modularInduceInferenceRules(Symbol* relationName, Symbol* className, List* 
       buildClassificationRule(relationName, className);
       { List* clauses = ((List*)(oCASE_ANTECEDENT_TABLEo->lookup(stringConcatenate(className->symbolName, "-match", 0))));
 
-        oCANDIDATE_CLAUSESo = newVector(clauses->length());
+        oCANDIDATE_CLAUSESo = stella::newVector(clauses->length());
         { Cons* clause = NULL;
           Cons* iter004 = clauses->theConsList;
           int i = NULL_INTEGER;
@@ -795,11 +795,11 @@ Cons* generalizeInequality(Cons* probe, Cons* match, List* bindings) {
 
               if ((testValue000 == SYM_RULE_INDUCTION_STELLA_g) ||
                   (testValue000 == SYM_RULE_INDUCTION_STELLA_ge)) {
-                newClause = cons(wrapInteger(stella::min(((IntegerWrapper*)(arg1))->wrapperValue, ((IntegerWrapper*)(arg2))->wrapperValue)), newClause);
+                newClause = cons(((NumberWrapper*)(arg1))->min(((NumberWrapper*)(arg2))), newClause);
               }
               else if ((testValue000 == SYM_RULE_INDUCTION_STELLA_l) ||
                   (testValue000 == SYM_RULE_INDUCTION_STELLA_el)) {
-                newClause = cons(wrapInteger(stella::max(((IntegerWrapper*)(arg1))->wrapperValue, ((IntegerWrapper*)(arg2))->wrapperValue)), newClause);
+                newClause = cons(((NumberWrapper*)(arg1))->max(((NumberWrapper*)(arg2))), newClause);
               }
               else {
                 std::cout << "Bug in generalize-inequality." << std::endl;
@@ -1129,7 +1129,7 @@ Cons* learnOneRuleBottomUpFromSignatures(List* positive, List* negative, List* c
           }
         }
       }
-      lgg = newVector(vecSize);
+      lgg = stella::newVector(vecSize);
       { int i = NULL_INTEGER;
         int iter002 = 0;
         int upperBound001 = vecSize - 1;
@@ -1308,8 +1308,8 @@ void topDownRuleInduction(List* examples) {
       ((TrainingExample*)(oTRAINING_EXAMPLESo->first()))->module->changeModule();
     }
     props = getClassificationRelations(((TrainingExample*)(oTRAINING_EXAMPLESo->first()))->query);
-    consProps = newVector(props->length());
-    propositionVector = newVector(props->length());
+    consProps = stella::newVector(props->length());
+    propositionVector = stella::newVector(props->length());
     { int i = NULL_INTEGER;
       int iter000 = 0;
       int upperBound000 = props->length() - 1;
@@ -1529,7 +1529,7 @@ Cons* learnOneRuleTopDownFromSignatures(List* positive, List* negative, List* co
       return (NIL);
     }
     num_features = ((TrainingExample*)(positive->first()))->input->length();
-    variableTable = newVector(num_features + 1);
+    variableTable = stella::newVector(num_features + 1);
     { int i = NULL_INTEGER;
       int iter000 = 1;
       int upperBound000 = num_features;
@@ -1824,7 +1824,7 @@ Cons* specializeRule(Cons* rule, Vector* propositions, List* positive, List* neg
     if (!vars->memberP(SYM_RULE_INDUCTION_LOGIC_pY)) {
       vars->push(SYM_RULE_INDUCTION_LOGIC_pY);
     }
-    variableTable = newVector(propositions->length() + 1);
+    variableTable = stella::newVector(propositions->length() + 1);
     { int i = NULL_INTEGER;
       int iter002 = 1;
       int upperBound000 = propositions->length();
@@ -2326,9 +2326,9 @@ Vector* evaluateRuleInduction(Symbol* relationName, Symbol* className, int numTr
     double numTrain = (1 * num) / 2.0;
     double currentSplit = numTrain;
     Vector* trainingInstances = NULL;
-    Vector* instances = newVector(num);
+    Vector* instances = stella::newVector(num);
     double result = 0.0;
-    Vector* results = newVector(curveSplits);
+    Vector* results = stella::newVector(curveSplits);
 
     { Object* instance = NULL;
       Cons* iter000 = ilist->theConsList;
@@ -2376,7 +2376,7 @@ Vector* evaluateRuleInduction(Symbol* relationName, Symbol* className, int numTr
             std::cout << "Starting Trial " << (i + 1) << " of split " << (split + 1) << " with " << currentSplit << " examples" << std::endl;
             clearTrainingExamples();
             clearCases();
-            trainingInstances = newVector(((int)(currentSplit)));
+            trainingInstances = stella::newVector(((int)(currentSplit)));
             { int j = NULL_INTEGER;
               int iter005 = 0;
               int upperBound003 = ((int)(currentSplit - 1));
@@ -2497,7 +2497,7 @@ void induceDecisionRules(Symbol* relationName, Symbol* className) {
     List* ilist = allClassInstances(clasS)->listify();
     int num = ilist->length();
     DecisionTree* tree = NULL;
-    Vector* instances = newVector(num);
+    Vector* instances = stella::newVector(num);
 
     { Object* instance = NULL;
       Cons* iter000 = ilist->theConsList;
@@ -2537,7 +2537,7 @@ void modularInduceDecisionRules(Symbol* relationName, Symbol* className, List* m
     DecisionTree* tree = NULL;
     Module* home = oMODULEo.get();
     int num = ilist->length();
-    Vector* instanceVec = newVector(modules->length());
+    Vector* instanceVec = stella::newVector(modules->length());
     Vector* instances = NULL;
 
     if (!oALLOW_RECURSIVE_DECISION_NODESo) {
@@ -2558,7 +2558,7 @@ void modularInduceDecisionRules(Symbol* relationName, Symbol* className, List* m
         module->changeModule();
         ilist = allClassInstances(clasS)->listify();
         num = ilist->length();
-        instances = newVector(num);
+        instances = stella::newVector(num);
         { Object* instance = NULL;
           Cons* iter002 = ilist->theConsList;
           int i = NULL_INTEGER;
@@ -3061,7 +3061,7 @@ void assertInducedRules() {
 void setCandidateClauses(Symbol* className) {
   { List* clauses = ((List*)(oCASE_ANTECEDENT_TABLEo->lookup(stringConcatenate(className->symbolName, "-match", 0))));
 
-    oCANDIDATE_CLAUSESo = newVector(clauses->length());
+    oCANDIDATE_CLAUSESo = stella::newVector(clauses->length());
     { Cons* clause = NULL;
       Cons* iter000 = clauses->theConsList;
       int k = NULL_INTEGER;
@@ -3383,6 +3383,7 @@ void startupRuleInduction() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *RULE-INDUCTION-STRATEGY* KEYWORD :TOP-DOWN)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SIGNATURE-STRATEGY* KEYWORD :TOP-DOWN)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *ENABLE-USER-THING* BOOLEAN TRUE)");

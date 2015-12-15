@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -503,7 +503,7 @@ void cppStandaloneTranslateFile(char* filename) {
 
 void cppTranslateSystem(char* systemname) {
   // Translate the system `systemName' to C++.
-  translateSystem(systemname, KWD_CPP_TRANSLATE_FILE_CPP, 6, KWD_CPP_TRANSLATE_FILE_TWO_PASSp, TRUE_WRAPPER, KWD_CPP_TRANSLATE_FILE_FORCE_TRANSLATIONp, TRUE_WRAPPER, KWD_CPP_TRANSLATE_FILE_PRODUCTION_SETTINGSp, TRUE_WRAPPER);
+  translateSystem(systemname, consList(7, KWD_CPP_TRANSLATE_FILE_CPP, KWD_CPP_TRANSLATE_FILE_TWO_PASSp, TRUE_WRAPPER, KWD_CPP_TRANSLATE_FILE_FORCE_TRANSLATIONp, TRUE_WRAPPER, KWD_CPP_TRANSLATE_FILE_PRODUCTION_SETTINGSp, TRUE_WRAPPER));
 }
 
 void cppTranslateWalkedSystemUnits(KeyValueList* systemunits) {
@@ -816,33 +816,39 @@ catch (...) {
   }
 }
 
+void helpStartupCppTranslateFile1() {
+  {
+    KWD_CPP_TRANSLATE_FILE_CPP = ((Keyword*)(internRigidSymbolWrtModule("CPP", NULL, 2)));
+    KWD_CPP_TRANSLATE_FILE_CPP_CODE = ((Keyword*)(internRigidSymbolWrtModule("CPP-CODE", NULL, 2)));
+    KWD_CPP_TRANSLATE_FILE_CPP_HEADER = ((Keyword*)(internRigidSymbolWrtModule("CPP-HEADER", NULL, 2)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_METHOD = ((Symbol*)(internRigidSymbolWrtModule("METHOD", NULL, 0)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_PRINT_METHOD = ((Symbol*)(internRigidSymbolWrtModule("PRINT-METHOD", NULL, 0)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_MACRO = ((Symbol*)(internRigidSymbolWrtModule("MACRO", NULL, 0)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_VERBATIM = ((Symbol*)(internRigidSymbolWrtModule("VERBATIM", NULL, 0)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_CLASS = ((Symbol*)(internRigidSymbolWrtModule("CLASS", NULL, 0)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_GLOBAL_VARIABLE = ((Symbol*)(internRigidSymbolWrtModule("GLOBAL-VARIABLE", NULL, 0)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_TYPE = ((Symbol*)(internRigidSymbolWrtModule("TYPE", NULL, 0)));
+    KWD_CPP_TRANSLATE_FILE_WHITE_SPACE = ((Keyword*)(internRigidSymbolWrtModule("WHITE-SPACE", NULL, 2)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_AUXILIARY_VARIABLE = ((Symbol*)(internRigidSymbolWrtModule("AUXILIARY-VARIABLE", NULL, 0)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_CPP_FUNCTION = ((Symbol*)(internRigidSymbolWrtModule("CPP_FUNCTION", NULL, 0)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_CPP_DEFPRINT = ((Symbol*)(internRigidSymbolWrtModule("CPP_DEFPRINT", NULL, 0)));
+    KWD_CPP_TRANSLATE_FILE_CPP_STANDALONE = ((Keyword*)(internRigidSymbolWrtModule("CPP-STANDALONE", NULL, 2)));
+    KWD_CPP_TRANSLATE_FILE_TWO_PASSp = ((Keyword*)(internRigidSymbolWrtModule("TWO-PASS?", NULL, 2)));
+    KWD_CPP_TRANSLATE_FILE_FORCE_TRANSLATIONp = ((Keyword*)(internRigidSymbolWrtModule("FORCE-TRANSLATION?", NULL, 2)));
+    KWD_CPP_TRANSLATE_FILE_PRODUCTION_SETTINGSp = ((Keyword*)(internRigidSymbolWrtModule("PRODUCTION-SETTINGS?", NULL, 2)));
+    KWD_CPP_TRANSLATE_FILE_UPPERCASE = ((Keyword*)(internRigidSymbolWrtModule("UPPERCASE", NULL, 2)));
+    KWD_CPP_TRANSLATE_FILE_STELLA = ((Keyword*)(internRigidSymbolWrtModule("STELLA", NULL, 2)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_STARTUP_CPP_TRANSLATE_FILE = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-CPP-TRANSLATE-FILE", NULL, 0)));
+    SYM_CPP_TRANSLATE_FILE_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
+  }
+}
+
 void startupCppTranslateFile() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
     if (currentStartupTimePhaseP(2)) {
-      KWD_CPP_TRANSLATE_FILE_CPP = ((Keyword*)(internRigidSymbolWrtModule("CPP", NULL, 2)));
-      KWD_CPP_TRANSLATE_FILE_CPP_CODE = ((Keyword*)(internRigidSymbolWrtModule("CPP-CODE", NULL, 2)));
-      KWD_CPP_TRANSLATE_FILE_CPP_HEADER = ((Keyword*)(internRigidSymbolWrtModule("CPP-HEADER", NULL, 2)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_METHOD = ((Symbol*)(internRigidSymbolWrtModule("METHOD", NULL, 0)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_PRINT_METHOD = ((Symbol*)(internRigidSymbolWrtModule("PRINT-METHOD", NULL, 0)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_MACRO = ((Symbol*)(internRigidSymbolWrtModule("MACRO", NULL, 0)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_VERBATIM = ((Symbol*)(internRigidSymbolWrtModule("VERBATIM", NULL, 0)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_CLASS = ((Symbol*)(internRigidSymbolWrtModule("CLASS", NULL, 0)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_GLOBAL_VARIABLE = ((Symbol*)(internRigidSymbolWrtModule("GLOBAL-VARIABLE", NULL, 0)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_TYPE = ((Symbol*)(internRigidSymbolWrtModule("TYPE", NULL, 0)));
-      KWD_CPP_TRANSLATE_FILE_WHITE_SPACE = ((Keyword*)(internRigidSymbolWrtModule("WHITE-SPACE", NULL, 2)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_AUXILIARY_VARIABLE = ((Symbol*)(internRigidSymbolWrtModule("AUXILIARY-VARIABLE", NULL, 0)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_CPP_FUNCTION = ((Symbol*)(internRigidSymbolWrtModule("CPP_FUNCTION", NULL, 0)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_CPP_DEFPRINT = ((Symbol*)(internRigidSymbolWrtModule("CPP_DEFPRINT", NULL, 0)));
-      KWD_CPP_TRANSLATE_FILE_CPP_STANDALONE = ((Keyword*)(internRigidSymbolWrtModule("CPP-STANDALONE", NULL, 2)));
-      KWD_CPP_TRANSLATE_FILE_TWO_PASSp = ((Keyword*)(internRigidSymbolWrtModule("TWO-PASS?", NULL, 2)));
-      KWD_CPP_TRANSLATE_FILE_FORCE_TRANSLATIONp = ((Keyword*)(internRigidSymbolWrtModule("FORCE-TRANSLATION?", NULL, 2)));
-      KWD_CPP_TRANSLATE_FILE_PRODUCTION_SETTINGSp = ((Keyword*)(internRigidSymbolWrtModule("PRODUCTION-SETTINGS?", NULL, 2)));
-      KWD_CPP_TRANSLATE_FILE_UPPERCASE = ((Keyword*)(internRigidSymbolWrtModule("UPPERCASE", NULL, 2)));
-      KWD_CPP_TRANSLATE_FILE_STELLA = ((Keyword*)(internRigidSymbolWrtModule("STELLA", NULL, 2)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_STARTUP_CPP_TRANSLATE_FILE = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-CPP-TRANSLATE-FILE", NULL, 0)));
-      SYM_CPP_TRANSLATE_FILE_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
+      helpStartupCppTranslateFile1();
     }
     if (currentStartupTimePhaseP(4)) {
       oCURRENT_STREAMo.set(STANDARD_OUTPUT);
@@ -893,6 +899,7 @@ void startupCppTranslateFile() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CURRENT-STREAM* OUTPUT-STREAM STANDARD-OUTPUT)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CPP-TRANSLATED-FILE-SUFFIX* STRING \"\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAKEFILE-TEMPLATE-VARIABLE-PREFIX* STRING \"#$\")");

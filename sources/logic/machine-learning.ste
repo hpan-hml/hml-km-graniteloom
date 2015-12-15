@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2009      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: machine-learning.ste,v 1.22 2006/05/11 07:05:22 hans Exp
+;;; Version: machine-learning.ste,v 1.24 2010/07/09 21:14:50 tar Exp
 
 ;;; General machine learning support
 
@@ -941,7 +941,7 @@
        (return result))
       ((:PREDICATE :FUNCTION)
        (setq result
-	 (cons (surrogate-to-symbol (cast (operator prop) SURROGATE))
+	 (cons (type-to-symbol (cast (operator prop) SURROGATE))
 	       (reverse result))))
       (:EQUIVALENT
        (setq result (cons (quote =) (reverse result))))
@@ -982,10 +982,3 @@
   (foreach item in (all-named-instances *module* true)
       where (empty? (all-asserted-types item))
       do (assert-isa-proposition item @THING)))
-				 
-    
-(defun print-facts ((instanceRef OBJECT))
-  :command? TRUE :public? TRUE :evaluate-arguments? FALSE
-  (let ((instance (coerce-to-instance instanceRef NULL)))
-    (foreach fact in (all-facts-of-instance instance false false)
-	do (print fact EOL))))

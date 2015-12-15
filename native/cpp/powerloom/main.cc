@@ -16,11 +16,14 @@ int main(int count, char** arguments) {
   std::cout << "Initializing PowerLoom..." << std::endl;
   startupLogicSystem();
   startupPowerloomExtensionsSystem();
+  startupPowerloomSystem();
   stella::stringChangeModule("PL-USER");
-  interpretCommandLineArguments(count, arguments);
-  if (!(consifyCommandLineArguments(count, arguments)->memberP(wrapString("--batch")))) {
+  processCommandLineArguments(count, arguments, KWD_POWERLOOM_WARN);
+  if ((!eqlP(getProperty(wrapString("powerloom.runInteractively"), NIL), FALSE_WRAPPER)) &&
+      (!eqlP(getProperty(wrapString("stella.showInfoOnly"), NIL), TRUE_WRAPPER))) {
     powerloom();
   }
+  runHooks(oSTELLA_EXIT_HOOKSo, NULL);
   return (1);
 }
 

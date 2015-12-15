@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -58,7 +58,7 @@ public class _StartupUnitDefs {
         Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/UTILITIES", Stella.$STARTUP_TIME_PHASE$ > 1));
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Utilities.SYM_UTILITIES_STARTUP_UNIT_DEFS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-UNIT-DEFS", null, 0)));
+          Utilities.SYM_UTILITIES_STARTUP_UNIT_DEFS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-UNIT-DEFS", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -74,6 +74,9 @@ public class _StartupUnitDefs {
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
           Stella.cleanupUnfinalizedClasses();
+        }
+        if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("UTILITIES")))));
         }
 
       } finally {

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -99,6 +99,23 @@ boolean subtypeOfIntegerP(Surrogate* type) {
   }
   else {
     return (bootstrapSubtypeOfP(type, SGT_TYPE_PREDICATES_STELLA_INTEGER_WRAPPER));
+  }
+}
+
+boolean longIntegerP(Object* x) {
+  if (oCLASS_HIERARCHY_BOOTEDpo) {
+    return (((boolean)(x)) &&
+        isaP(x, SGT_TYPE_PREDICATES_STELLA_LONG_INTEGER_WRAPPER));
+  }
+  return (bootstrapIsaP(x, SGT_TYPE_PREDICATES_STELLA_LONG_INTEGER_WRAPPER));
+}
+
+boolean subtypeOfLongIntegerP(Surrogate* type) {
+  if (oCLASS_HIERARCHY_BOOTEDpo) {
+    return (subclassOfP(((Class*)(type->surrogateValue)), ((Class*)(SGT_TYPE_PREDICATES_STELLA_LONG_INTEGER_WRAPPER->surrogateValue))));
+  }
+  else {
+    return (bootstrapSubtypeOfP(type, SGT_TYPE_PREDICATES_STELLA_LONG_INTEGER_WRAPPER));
   }
 }
 
@@ -179,10 +196,11 @@ boolean wrapperP(Object* x) {
   }
   return (booleanP(x) ||
       (integerP(x) ||
-       (floatP(x) ||
-        (stringP(x) ||
-         (characterP(x) ||
-          bootstrapIsaP(x, SGT_TYPE_PREDICATES_STELLA_WRAPPER))))));
+       (longIntegerP(x) ||
+        (floatP(x) ||
+         (stringP(x) ||
+          (characterP(x) ||
+           bootstrapIsaP(x, SGT_TYPE_PREDICATES_STELLA_WRAPPER)))))));
 }
 
 boolean subtypeOfWrapperP(Surrogate* type) {
@@ -192,10 +210,11 @@ boolean subtypeOfWrapperP(Surrogate* type) {
   else {
     return (subtypeOfBooleanP(type) ||
         (subtypeOfIntegerP(type) ||
-         (subtypeOfFloatP(type) ||
-          (subtypeOfStringP(type) ||
-           (subtypeOfCharacterP(type) ||
-            bootstrapSubtypeOfP(type, SGT_TYPE_PREDICATES_STELLA_WRAPPER))))));
+         (subtypeOfLongIntegerP(type) ||
+          (subtypeOfFloatP(type) ||
+           (subtypeOfStringP(type) ||
+            (subtypeOfCharacterP(type) ||
+             bootstrapSubtypeOfP(type, SGT_TYPE_PREDICATES_STELLA_WRAPPER)))))));
   }
 }
 
@@ -410,6 +429,7 @@ void helpStartupTypePredicates1() {
     SGT_TYPE_PREDICATES_STELLA_UNKNOWN = ((Surrogate*)(internRigidSymbolWrtModule("UNKNOWN", NULL, 1)));
     SGT_TYPE_PREDICATES_STELLA_BOOLEAN_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN-WRAPPER", NULL, 1)));
     SGT_TYPE_PREDICATES_STELLA_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-WRAPPER", NULL, 1)));
+    SGT_TYPE_PREDICATES_STELLA_LONG_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("LONG-INTEGER-WRAPPER", NULL, 1)));
     SGT_TYPE_PREDICATES_STELLA_FLOAT_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT-WRAPPER", NULL, 1)));
     SGT_TYPE_PREDICATES_STELLA_STRING_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("STRING-WRAPPER", NULL, 1)));
     SGT_TYPE_PREDICATES_STELLA_VERBATIM_STRING_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("VERBATIM-STRING-WRAPPER", NULL, 1)));
@@ -448,6 +468,8 @@ void startupTypePredicates() {
       defineFunctionObject("SUBTYPE-OF-BOOLEAN?", "(DEFUN (SUBTYPE-OF-BOOLEAN? BOOLEAN) ((TYPE TYPE)) :PUBLIC? TRUE)", ((cpp_function_code)(&subtypeOfBooleanP)), NULL);
       defineFunctionObject("INTEGER?", "(DEFUN (INTEGER? BOOLEAN) ((X OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&integerP)), NULL);
       defineFunctionObject("SUBTYPE-OF-INTEGER?", "(DEFUN (SUBTYPE-OF-INTEGER? BOOLEAN) ((TYPE TYPE)) :PUBLIC? TRUE)", ((cpp_function_code)(&subtypeOfIntegerP)), NULL);
+      defineFunctionObject("LONG-INTEGER?", "(DEFUN (LONG-INTEGER? BOOLEAN) ((X OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&longIntegerP)), NULL);
+      defineFunctionObject("SUBTYPE-OF-LONG-INTEGER?", "(DEFUN (SUBTYPE-OF-LONG-INTEGER? BOOLEAN) ((TYPE TYPE)) :PUBLIC? TRUE)", ((cpp_function_code)(&subtypeOfLongIntegerP)), NULL);
       defineFunctionObject("FLOAT?", "(DEFUN (FLOAT? BOOLEAN) ((X OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&floatP)), NULL);
       defineFunctionObject("SUBTYPE-OF-FLOAT?", "(DEFUN (SUBTYPE-OF-FLOAT? BOOLEAN) ((TYPE TYPE)) :PUBLIC? TRUE)", ((cpp_function_code)(&subtypeOfFloatP)), NULL);
       defineFunctionObject("STRING?", "(DEFUN (STRING? BOOLEAN) ((X OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&stringP)), NULL);
@@ -493,6 +515,7 @@ void startupTypePredicates() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CLASS-HIERARCHY-BOOTED?* BOOLEAN FALSE)");
     }
   }
@@ -503,6 +526,8 @@ Surrogate* SGT_TYPE_PREDICATES_STELLA_UNKNOWN = NULL;
 Surrogate* SGT_TYPE_PREDICATES_STELLA_BOOLEAN_WRAPPER = NULL;
 
 Surrogate* SGT_TYPE_PREDICATES_STELLA_INTEGER_WRAPPER = NULL;
+
+Surrogate* SGT_TYPE_PREDICATES_STELLA_LONG_INTEGER_WRAPPER = NULL;
 
 Surrogate* SGT_TYPE_PREDICATES_STELLA_FLOAT_WRAPPER = NULL;
 

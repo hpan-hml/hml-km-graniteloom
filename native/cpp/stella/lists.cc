@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -359,6 +359,17 @@ Collection* List::removeDuplicates() {
 
     if (!(self->theConsList == NIL)) {
       self->theConsList = self->theConsList->removeDuplicates();
+    }
+    return (self);
+  }
+}
+
+List* List::removeDuplicatesEqual() {
+  // `remove-duplicates' (which see) using an `equal?' test.
+  { List* self = this;
+
+    if (!(self->theConsList == NIL)) {
+      self->theConsList = self->theConsList->removeDuplicatesEqual();
     }
     return (self);
   }
@@ -961,22 +972,26 @@ KvCons* kvCons(Object* key, Object* value, KvCons* rest) {
 }
 
 Object* KvCons::lookup(Object* key) {
-  { KvCons* cursor = this;
+  { KvCons* self = this;
 
-    while (((boolean)(cursor))) {
-      if (eqlP(cursor->key, key)) {
-        return (cursor->value);
+    { KvCons* cursor = self;
+
+      while (((boolean)(cursor))) {
+        if (eqlP(cursor->key, key)) {
+          return (cursor->value);
+        }
+        cursor = cursor->rest;
       }
-      cursor = cursor->rest;
+      return (NULL);
     }
-    return (NULL);
   }
 }
 
 int KvCons::length() {
-  { KvCons* cursor = this;
+  { KvCons* self = this;
 
-    { int length = 0;
+    { KvCons* cursor = self;
+      int length = 0;
 
       while (((boolean)(cursor))) {
         length = length + 1;
@@ -1834,6 +1849,7 @@ void helpStartupLists2() {
     defineMethodObject("(DEFMETHOD (REMOVE (LIKE SELF)) ((SELF LIST) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Destructively remove all entries in `self' that match `value'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&List::remove)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (REMOVE-IF (LIKE SELF)) ((SELF LIST) (TEST? FUNCTION-CODE)) :DOCUMENTATION \"Destructively remove all members of the list `self' for which\n'test?' evaluates to TRUE.  `test' takes a single argument of type OBJECT and\nreturns TRUE or FALSE.  Returns `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&List::removeIf)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (REMOVE-DUPLICATES (LIKE SELF)) ((SELF LIST)) :DOCUMENTATION \"Destructively remove duplicates from `self' and return the result.\nPreserves the original order of the remaining members.\" :PUBLIC? TRUE)", ((cpp_method_code)(&List::removeDuplicates)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (REMOVE-DUPLICATES-EQUAL (LIKE SELF)) ((SELF LIST)) :DOCUMENTATION \"`remove-duplicates' (which see) using an `equal?' test.\" :PUBLIC? TRUE)", ((cpp_method_code)(&List::removeDuplicatesEqual)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (POP (LIKE (ANY-VALUE SELF))) ((SELF LIST)) :DOCUMENTATION \"Remove and return the first element in the list `self'.\nReturn NULL if the list is empty.\" :PUBLIC? TRUE)", ((cpp_method_code)(&List::pop)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (REVERSE (LIKE SELF)) ((SELF LIST)) :DOCUMENTATION \"Reverse the members of `self' (in place).\" :PUBLIC? TRUE)", ((cpp_method_code)(&List::reverse)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (SUBSTITUTE (LIKE SELF)) ((SELF LIST) (INVALUE OBJECT) (OUTVALUE OBJECT)) :DOCUMENTATION \"Destructively replace each appearance of `outValue' by\n`inValue' in the list `self'.\")", ((cpp_method_code)(&List::substitute)), ((cpp_method_code)(NULL)));
@@ -1862,7 +1878,6 @@ void helpStartupLists2() {
     defineMethodObject("(DEFMETHOD (REMOVE-AT OBJECT) ((SELF PROPERTY-LIST) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Remove the entry that matches the key `key'.  Return the\nvalue of the matching entry, or NULL if there is no matching entry.  Assumes that at\nmost one entry matches `key'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&PropertyList::removeAt)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF PROPERTY-LIST)) :PUBLIC? TRUE)", ((cpp_method_code)(&PropertyList::emptyP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF PROPERTY-LIST)) :PUBLIC? TRUE)", ((cpp_method_code)(&PropertyList::nonEmptyP)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (COPY (LIKE SELF)) ((SELF PROPERTY-LIST)) :DOCUMENTATION \"Return a copy of the list `self'.  The conses in the copy are\nfreshly allocated.\" :PUBLIC? TRUE)", ((cpp_method_code)(&PropertyList::copy)), ((cpp_method_code)(NULL)));
   }
 }
 
@@ -1884,6 +1899,7 @@ void startupLists() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupLists2();
+      defineMethodObject("(DEFMETHOD (COPY (LIKE SELF)) ((SELF PROPERTY-LIST)) :DOCUMENTATION \"Return a copy of the list `self'.  The conses in the copy are\nfreshly allocated.\" :PUBLIC? TRUE)", ((cpp_method_code)(&PropertyList::copy)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD CLEAR ((SELF PROPERTY-LIST)) :DOCUMENTATION \"Make `self' an empty property list.\")", ((cpp_method_code)(&PropertyList::clear)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (OBJECT-EQUAL? BOOLEAN) ((X PROPERTY-LIST) (Y OBJECT)) :DOCUMENTATION \"Return TRUE if `x' and `y' represent the same set of key/value pairs..\" :PUBLIC? TRUE)", ((cpp_method_code)(&PropertyList::objectEqualP)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF PROPERTY-LIST)) :DOCUMENTATION \"Return an `equal?' hash code for `self'.  Note that this\nis O(N) in the number of entries of `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&PropertyList::equalHashCode)), ((cpp_method_code)(NULL)));
@@ -1897,9 +1913,9 @@ void startupLists() {
       defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF PROPERTY-LIST-ITERATOR)) :PUBLIC? TRUE)", ((cpp_method_code)(&PropertyListIterator::nextP)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (VALUE-SETTER (LIKE (ANY-VALUE SELF))) ((SELF PROPERTY-LIST-ITERATOR) (VALUE (LIKE (ANY-VALUE SELF)))))", ((cpp_method_code)(&PropertyListIterator::valueSetter)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (KEY-SETTER (LIKE (ANY-KEY SELF))) ((SELF PROPERTY-LIST-ITERATOR) (KEY (LIKE (ANY-KEY SELF)))))", ((cpp_method_code)(&PropertyListIterator::keySetter)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("KV-CONS", "(DEFUN (KV-CONS KV-CONS) ((KEY OBJECT) (VALUE OBJECT) (REST KV-CONS)) :DOCUMENTATION \"Create, fill-in, and return a new KV-CONS.\")", ((cpp_function_code)(&kvCons)), NULL);
-      defineMethodObject("(DEFMETHOD (LOOKUP (LIKE (ANY-VALUE SELF))) ((CURSOR KV-CONS) (KEY (LIKE (ANY-KEY SELF)))) :PUBLIC? TRUE)", ((cpp_method_code)(&KvCons::lookup)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((CURSOR KV-CONS)) :PUBLIC? TRUE)", ((cpp_method_code)(&KvCons::length)), ((cpp_method_code)(NULL)));
+      defineFunctionObject("KV-CONS", "(DEFUN (KV-CONS KV-CONS) ((KEY OBJECT) (VALUE OBJECT) (REST KV-CONS)) :DOCUMENTATION \"Create, fill-in, and return a new KV-CONS.\" :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&kvCons)), NULL);
+      defineMethodObject("(DEFMETHOD (LOOKUP (LIKE (ANY-VALUE SELF))) ((SELF KV-CONS) (KEY (LIKE (ANY-KEY SELF)))) :PUBLIC? TRUE)", ((cpp_method_code)(&KvCons::lookup)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF KV-CONS)) :PUBLIC? TRUE)", ((cpp_method_code)(&KvCons::length)), ((cpp_method_code)(NULL)));
       defineFunctionObject("FREE-KV-CONS", "(DEFUN FREE-KV-CONS ((KVCONS KV-CONS)))", ((cpp_function_code)(&freeKvCons)), NULL);
       defineMethodObject("(DEFMETHOD (LOOKUP (LIKE (ANY-VALUE SELF))) ((SELF KEY-VALUE-LIST) (KEY (LIKE (ANY-KEY SELF)))) :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueList::lookup)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (LOOKUP-WITH-DEFAULT (LIKE (ANY-VALUE SELF))) ((SELF KEY-VALUE-LIST) (KEY (LIKE (ANY-KEY SELF))) (DEFAULT (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Lookup `key' in `self' and return the result.\nReturn `default' if no value was found.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueList::lookupWithDefault)), ((cpp_method_code)(NULL)));
@@ -1926,9 +1942,9 @@ void startupLists() {
       defineFunctionObject("KVLIST-TO-PLIST", "(DEFUN (KVLIST-TO-PLIST (PROPERTY-LIST OF (LIKE (ANY-KEY SELF)) (LIKE (ANY-VALUE SELF)))) ((SELF KEY-VALUE-LIST)) :DOCUMENTATION \"Convert `self' into a property list with identical and identically\nordered keys and values.\" :PUBLIC? TRUE)", ((cpp_function_code)(&kvlistToPlist)), NULL);
       defineFunctionObject("PLIST-TO-KVLIST", "(DEFUN (PLIST-TO-KVLIST (KEY-VALUE-LIST OF (LIKE (ANY-KEY SELF)) (LIKE (ANY-VALUE SELF)))) ((SELF PROPERTY-LIST)) :DOCUMENTATION \"Convert `self' into a key-value list with identical and identically\nordered keys and values.\" :PUBLIC? TRUE)", ((cpp_function_code)(&plistToKvlist)), NULL);
       defineMethodObject("(DEFMETHOD (MEMBER? BOOLEAN) ((SELF SEQUENCE) (VALUE OBJECT)) :DOCUMENTATION \"Return TRUE if `value' is a member of the sequence `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Sequence::memberP)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("LIST", "(DEFUN (LIST LIST) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return a list containing `values', in order.\" :PUBLIC? TRUE)", ((cpp_function_code)(&list)), NULL);
-      defineFunctionObject("SEQUENCE", "(DEFUN (SEQUENCE (SEQUENCE OF OBJECT)) ((COLLECTIONTYPE TYPE) |&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return a sequence containing `values', in order.\" :PUBLIC? TRUE)", ((cpp_function_code)(&sequence)), NULL);
-      defineFunctionObject("DICTIONARY", "(DEFUN (DICTIONARY (ABSTRACT-DICTIONARY OF OBJECT OBJECT)) ((COLLECTIONTYPE TYPE) |&REST| (ALTERNATINGKEYSANDVALUES OBJECT)) :DOCUMENTATION \"Return a dictionary of `collectionType' containing `values', in order.\nCurrently supported `collectionType's are @HASH-TABLE, @STELLA-HASH-TABLE,\n@KEY-VALUE-LIST, @KEY-VALUE-MAP and @PROPERTY-LIST.\" :PUBLIC? TRUE)", ((cpp_function_code)(&dictionary)), NULL);
+      defineFunctionObject("LIST", "(DEFUN (LIST LIST) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return a list containing `values', in order.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&list)), NULL);
+      defineFunctionObject("SEQUENCE", "(DEFUN (SEQUENCE (SEQUENCE OF OBJECT)) ((COLLECTIONTYPE TYPE) |&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return a sequence containing `values', in order.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&sequence)), NULL);
+      defineFunctionObject("DICTIONARY", "(DEFUN (DICTIONARY (ABSTRACT-DICTIONARY OF OBJECT OBJECT)) ((COLLECTIONTYPE TYPE) |&REST| (ALTERNATINGKEYSANDVALUES OBJECT)) :DOCUMENTATION \"Return a dictionary of `collectionType' containing `values', in order.\nCurrently supported `collectionType's are @HASH-TABLE, @STELLA-HASH-TABLE,\n@KEY-VALUE-LIST, @KEY-VALUE-MAP and @PROPERTY-LIST.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&dictionary)), NULL);
       defineMethodObject("(DEFMETHOD (LISTIFY (LIST OF (LIKE (ANY-VALUE SELF)))) ((SELF LIST)) :DOCUMENTATION \"Return `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&List::listify)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (LISTIFY (LIST OF (LIKE (ANY-VALUE SELF)))) ((SELF CONS)) :DOCUMENTATION \"Return a list of elements in `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::listify)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (LISTIFY (LIST OF (LIKE (ANY-VALUE SELF)))) ((SELF KEY-VALUE-LIST)) :DOCUMENTATION \"Return a list of key-value pairs in `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueList::listify)), ((cpp_method_code)(NULL)));
@@ -1946,6 +1962,7 @@ void startupLists() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NIL-LIST LIST NULL :PUBLIC? TRUE)");
     }
   }

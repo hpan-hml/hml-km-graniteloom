@@ -14,7 +14,6 @@ class Ratio;
 class Measure;
 class IncompatibleUnitsException;
 class DimNumber;
-class HttpException;
 
 } // end of namespace stella_utilities
 
@@ -23,7 +22,6 @@ class HttpException;
 #include "utilities/manuals.hh"
 #include "utilities/units.hh"
 #include "utilities/unit-defs.hh"
-#include "utilities/http.hh"
 #include "utilities/startup-system.hh"
 
 #endif

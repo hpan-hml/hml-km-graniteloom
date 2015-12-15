@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -66,6 +66,28 @@ public class OutputFileStream extends OutputStream {
     }
   }
 
+  /** Set the current position of the file input cursor in <code>self</code> to <code>newpos</code>.
+   * @param newpos
+   * @return long
+   */
+  public long streamPositionSetter(long newpos) {
+    { OutputFileStream self = this;
+
+      Stella.nativeFileOutputStreamPositionSetter(self.nativeStream, newpos);
+      return (newpos);
+    }
+  }
+
+  /** Return the current position of the file input cursor in <code>self</code>.
+   * @return long
+   */
+  public long streamPosition() {
+    { OutputFileStream self = this;
+
+      return (((NativeFileOutputStream)(self.nativeStream)).position());
+    }
+  }
+
   public static boolean terminateFileOutputStreamP(OutputFileStream self) {
     { java.io.PrintStream nativeStream = self.nativeStream;
 
@@ -92,7 +114,7 @@ public class OutputFileStream extends OutputStream {
         }
         else if ((testValue000 == Stella.KWD_ABORT) ||
             (testValue000 == Stella.KWD_PROBE)) {
-          if (!(Native.probeFileP(filename))) {
+          if (!(Stella.probeFileP(filename))) {
             return;
           }
         }
@@ -116,7 +138,7 @@ public class OutputFileStream extends OutputStream {
         }
         else if ((testValue001 == Stella.KWD_ABORT) ||
             (testValue001 == Stella.KWD_PROBE)) {
-          if (Native.probeFileP(filename)) {
+          if (Stella.probeFileP(filename)) {
             return;
           }
         }
@@ -131,7 +153,7 @@ public class OutputFileStream extends OutputStream {
           }
         }
       }
-      self.nativeStream = new java.io.PrintStream(Native.openOutputFileStream(filename, append));
+      self.nativeStream = NativeFileOutputStream.open(filename, append);
       if (self.nativeStream == null) {
         { OutputStringStream stream002 = OutputStringStream.newOutputStringStream();
 

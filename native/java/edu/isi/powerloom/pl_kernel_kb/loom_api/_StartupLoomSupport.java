@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -54,39 +54,39 @@ import edu.isi.powerloom.pl_kernel_kb.*;
 public class _StartupLoomSupport {
   static void helpStartupLoomSupport1() {
     {
-      LoomApi.SGT_LOOM_API_LOOM_ROLE = ((Surrogate)(Stella.internRigidSymbolWrtModule("LOOM-ROLE", null, 1)));
-      LoomApi.SYM_LOOM_API_LOOM_ROLE_OF = ((Symbol)(Stella.internRigidSymbolWrtModule("LOOM-ROLE-OF", null, 0)));
-      LoomApi.KWD_DOCUMENTATION = ((Keyword)(Stella.internRigidSymbolWrtModule("DOCUMENTATION", null, 2)));
-      LoomApi.KWD_AXIOMS = ((Keyword)(Stella.internRigidSymbolWrtModule("AXIOMS", null, 2)));
-      LoomApi.SYM_LOOM_API_pI = ((Symbol)(Stella.internRigidSymbolWrtModule("?I", null, 0)));
-      LoomApi.SYM_LOOM_API_pR = ((Symbol)(Stella.internRigidSymbolWrtModule("?R", null, 0)));
-      LoomApi.SYM_LOOM_API_pROLE = ((Symbol)(Stella.internRigidSymbolWrtModule("?ROLE", null, 0)));
-      LoomApi.SYM_LOOM_API_F_FIND_OR_CREATE_LOOM_ROLE_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-FIND-OR-CREATE-LOOM-ROLE-QUERY-000", null, 0)));
-      LoomApi.SGT_LOOM_API_LOOM_ROLE_OF = ((Surrogate)(Stella.internRigidSymbolWrtModule("LOOM-ROLE-OF", null, 1)));
-      LoomApi.SYM_LOOM_API_F_GET_LOOM_ROLES_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-GET-LOOM-ROLES-QUERY-000", null, 0)));
-      LoomApi.SYM_LOOM_API_pFR = ((Symbol)(Stella.internRigidSymbolWrtModule("?FR", null, 0)));
-      LoomApi.SYM_LOOM_API_pV = ((Symbol)(Stella.internRigidSymbolWrtModule("?V", null, 0)));
-      LoomApi.SYM_LOOM_API_FRAME_PREDICATE = ((Symbol)(Stella.internRigidSymbolWrtModule("FRAME-PREDICATE", null, 0)));
-      LoomApi.SYM_PL_KERNEL_KB_RANGE_MAX_CARDINALITY = ((Symbol)(Stella.internRigidSymbolWrtModule("RANGE-MAX-CARDINALITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      LoomApi.SYM_LOOM_API_INSTANCE_OF = ((Symbol)(Stella.internRigidSymbolWrtModule("INSTANCE-OF", null, 0)));
-      LoomApi.SYM_LOOM_API_F_GET_RELATION_INDUCED_ROLES_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-GET-RELATION-INDUCED-ROLES-QUERY-000", null, 0)));
-      LoomApi.SYM_LOOM_API_F_RELATION_OF_LOOM_ROLE_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-RELATION-OF-LOOM-ROLE-QUERY-000", null, 0)));
-      LoomApi.KWD_CONCEPTS = ((Keyword)(Stella.internRigidSymbolWrtModule("CONCEPTS", null, 2)));
-      LoomApi.SYM_LOOM_API_F_LIST_CONTEXT_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-LIST-CONTEXT-QUERY-000", null, 0)));
-      LoomApi.KWD_RELATIONS = ((Keyword)(Stella.internRigidSymbolWrtModule("RELATIONS", null, 2)));
-      LoomApi.SYM_LOOM_API_F_LIST_CONTEXT_QUERY_001 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-LIST-CONTEXT-QUERY-001", null, 0)));
-      LoomApi.KWD_INSTANCES = ((Keyword)(Stella.internRigidSymbolWrtModule("INSTANCES", null, 2)));
-      LoomApi.KWD_DIRECT = ((Keyword)(Stella.internRigidSymbolWrtModule("DIRECT", null, 2)));
-      LoomApi.KWD_ASSERTED = ((Keyword)(Stella.internRigidSymbolWrtModule("ASSERTED", null, 2)));
-      LoomApi.SYM_LOOM_API_pD = ((Symbol)(Stella.internRigidSymbolWrtModule("?D", null, 0)));
-      LoomApi.SYM_LOOM_API_F_GET_DOMAIN_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-GET-DOMAIN-QUERY-000", null, 0)));
-      LoomApi.SYM_LOOM_API_F_GET_RANGE_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-GET-RANGE-QUERY-000", null, 0)));
-      LoomApi.SYM_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION = ((Symbol)(Stella.internRigidSymbolWrtModule("MUTUALLY-DISJOINT-COLLECTION", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      LoomApi.SYM_LOOM_API_F_GET_PARTITIONS_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-GET-PARTITIONS-QUERY-000", null, 0)));
-      LoomApi.SYM_LOOM_API_pCOVERED = ((Symbol)(Stella.internRigidSymbolWrtModule("?COVERED", null, 0)));
-      LoomApi.SYM_LOOM_API_COVERING = ((Symbol)(Stella.internRigidSymbolWrtModule("COVERING", null, 0)));
-      LoomApi.SYM_LOOM_API_F_COVERINGp_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-COVERING?-QUERY-000", null, 0)));
-      LoomApi.SYM_LOOM_API_STARTUP_LOOM_SUPPORT = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-LOOM-SUPPORT", null, 0)));
+      LoomApi.SGT_LOOM_API_LOOM_ROLE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOM-ROLE", null, 1)));
+      LoomApi.SYM_LOOM_API_LOOM_ROLE_OF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOM-ROLE-OF", null, 0)));
+      LoomApi.KWD_DOCUMENTATION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DOCUMENTATION", null, 2)));
+      LoomApi.KWD_AXIOMS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("AXIOMS", null, 2)));
+      LoomApi.SYM_LOOM_API_pI = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?I", null, 0)));
+      LoomApi.SYM_LOOM_API_pR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?R", null, 0)));
+      LoomApi.SYM_LOOM_API_pROLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?ROLE", null, 0)));
+      LoomApi.SYM_LOOM_API_F_FIND_OR_CREATE_LOOM_ROLE_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-FIND-OR-CREATE-LOOM-ROLE-QUERY-000", null, 0)));
+      LoomApi.SGT_LOOM_API_LOOM_ROLE_OF = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOM-ROLE-OF", null, 1)));
+      LoomApi.SYM_LOOM_API_F_GET_LOOM_ROLES_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-GET-LOOM-ROLES-QUERY-000", null, 0)));
+      LoomApi.SYM_LOOM_API_pFR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?FR", null, 0)));
+      LoomApi.SYM_LOOM_API_pV = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?V", null, 0)));
+      LoomApi.SYM_LOOM_API_FRAME_PREDICATE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FRAME-PREDICATE", null, 0)));
+      LoomApi.SYM_PL_KERNEL_KB_RANGE_MAX_CARDINALITY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE-MAX-CARDINALITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      LoomApi.SYM_LOOM_API_INSTANCE_OF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INSTANCE-OF", null, 0)));
+      LoomApi.SYM_LOOM_API_F_GET_RELATION_INDUCED_ROLES_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-GET-RELATION-INDUCED-ROLES-QUERY-000", null, 0)));
+      LoomApi.SYM_LOOM_API_F_RELATION_OF_LOOM_ROLE_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-RELATION-OF-LOOM-ROLE-QUERY-000", null, 0)));
+      LoomApi.KWD_CONCEPTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONCEPTS", null, 2)));
+      LoomApi.SYM_LOOM_API_F_LIST_CONTEXT_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-LIST-CONTEXT-QUERY-000", null, 0)));
+      LoomApi.KWD_RELATIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RELATIONS", null, 2)));
+      LoomApi.SYM_LOOM_API_F_LIST_CONTEXT_QUERY_001 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-LIST-CONTEXT-QUERY-001", null, 0)));
+      LoomApi.KWD_INSTANCES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INSTANCES", null, 2)));
+      LoomApi.KWD_DIRECT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DIRECT", null, 2)));
+      LoomApi.KWD_ASSERTED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ASSERTED", null, 2)));
+      LoomApi.SYM_LOOM_API_pD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?D", null, 0)));
+      LoomApi.SYM_LOOM_API_F_GET_DOMAIN_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-GET-DOMAIN-QUERY-000", null, 0)));
+      LoomApi.SYM_LOOM_API_F_GET_RANGE_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-GET-RANGE-QUERY-000", null, 0)));
+      LoomApi.SYM_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MUTUALLY-DISJOINT-COLLECTION", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      LoomApi.SYM_LOOM_API_F_GET_PARTITIONS_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-GET-PARTITIONS-QUERY-000", null, 0)));
+      LoomApi.SYM_LOOM_API_pCOVERED = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?COVERED", null, 0)));
+      LoomApi.SYM_PL_KERNEL_KB_COVERING = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COVERING", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      LoomApi.SYM_LOOM_API_F_COVERINGp_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-COVERING?-QUERY-000", null, 0)));
+      LoomApi.SYM_LOOM_API_STARTUP_LOOM_SUPPORT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-LOOM-SUPPORT", null, 0)));
     }
   }
 
@@ -172,7 +172,8 @@ public class _StartupLoomSupport {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
-          Logic.defrelation(Stella_Object.cons(((Symbol)(Stella_Object.copyConsTree(LoomApi.SYM_LOOM_API_LOOM_ROLE_OF))), Stella_Object.cons(((Cons)(Stella_Object.copyConsTree(Stella.getQuotedTree("(((?C CLASS) (?R RELATION) (?ROLE LOOM-ROLE)) \"/PL-KERNEL-KB/LOOM-API\")", "/PL-KERNEL-KB/LOOM-API")))), Stella_Object.cons(LoomApi.KWD_DOCUMENTATION, Stella_Object.cons(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("")))), Stella_Object.cons(LoomApi.KWD_AXIOMS, Stella_Object.cons(((Cons)(Stella_Object.copyConsTree(Stella.getQuotedTree("((SINGLE-VALUED LOOM-ROLE-OF) \"/PL-KERNEL-KB/LOOM-API\")", "/PL-KERNEL-KB/LOOM-API")))), Stella.NIL)))))));
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOOM-API")))));
+          Logic.defrelation(Cons.cons(((Symbol)(Stella_Object.copyConsTree(LoomApi.SYM_LOOM_API_LOOM_ROLE_OF))), Cons.cons(((Cons)(Stella_Object.copyConsTree(Stella.getQuotedTree("(((?C CLASS) (?R RELATION) (?ROLE LOOM-ROLE)) \"/PL-KERNEL-KB/LOOM-API\")", "/PL-KERNEL-KB/LOOM-API")))), Cons.cons(LoomApi.KWD_DOCUMENTATION, Cons.cons(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("")))), Cons.cons(LoomApi.KWD_AXIOMS, Cons.cons(((Cons)(Stella_Object.copyConsTree(Stella.getQuotedTree("((SINGLE-VALUED LOOM-ROLE-OF) \"/PL-KERNEL-KB/LOOM-API\")", "/PL-KERNEL-KB/LOOM-API")))), Stella.NIL)))))));
         }
 
       } finally {

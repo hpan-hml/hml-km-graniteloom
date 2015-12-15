@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -146,8 +146,7 @@ public class WhynotPartialMatch extends IncrementalPartialMatch {
                 testValue000 = !testValue000;
                 if (testValue000) {
                   {
-                    if (!((baseframe.truthValue == Logic.UNKNOWN_TRUTH_VALUE) ||
-                        (baseframe.truthValue == null))) {
+                    if (TruthValue.knownTruthValueP(baseframe.truthValue)) {
                       strictproofs.push(currentproof);
                       continue loop000;
                     }
@@ -162,7 +161,7 @@ public class WhynotPartialMatch extends IncrementalPartialMatch {
               if (Logic.insertWhynotProof(partialproofclasses, currentproof).length() == Logic.$SIMILAR_WHYNOT_PROOF_CUTOFF$) {
                 QueryIterator.cutoffSimilarWhynotProofs(query);
               }
-              topnpartialproofs = ((howmany == Stella.NULL_INTEGER) ? topn : Stella.max(topn, howmany - strictproofs.length()));
+              topnpartialproofs = ((howmany == Stella.NULL_INTEGER) ? topn : Stella.integer_max(topn, howmany - strictproofs.length()));
               if (haveenoughpartialproofsP ||
                   (partialproofclasses.length() >= topnpartialproofs)) {
                 haveenoughpartialproofsP = true;
@@ -201,7 +200,7 @@ public class WhynotPartialMatch extends IncrementalPartialMatch {
               i = iter002;
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(renamed_Class.representative, Stella.NIL);
+                  collect000 = Cons.cons(renamed_Class.representative, Stella.NIL);
                   if (into000.theConsList == Stella.NIL) {
                     into000.theConsList = collect000;
                   }
@@ -212,7 +211,7 @@ public class WhynotPartialMatch extends IncrementalPartialMatch {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(renamed_Class.representative, Stella.NIL);
+                  collect000.rest = Cons.cons(renamed_Class.representative, Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -287,8 +286,7 @@ public class WhynotPartialMatch extends IncrementalPartialMatch {
                 partialmatchframe.dynamicCutoff = ((WhynotProofClass)(proofclasses.nth(topnproofs - 1))).representative.positiveScore + 0.01;
               }
               if ((!maximizescoreP) ||
-                  (!((baseframe.truthValue == Logic.UNKNOWN_TRUTH_VALUE) ||
-                  (baseframe.truthValue == null)))) {
+                  TruthValue.knownTruthValueP(baseframe.truthValue)) {
                 break loop000;
               }
             }
@@ -312,7 +310,7 @@ public class WhynotPartialMatch extends IncrementalPartialMatch {
             renamed_Class = ((WhynotProofClass)(iter000.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(renamed_Class.representative, Stella.NIL);
+                collect000 = Cons.cons(renamed_Class.representative, Stella.NIL);
                 if (into000.theConsList == Stella.NIL) {
                   into000.theConsList = collect000;
                 }
@@ -323,7 +321,7 @@ public class WhynotPartialMatch extends IncrementalPartialMatch {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(renamed_Class.representative, Stella.NIL);
+                collect000.rest = Cons.cons(renamed_Class.representative, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -477,7 +475,7 @@ public class WhynotPartialMatch extends IncrementalPartialMatch {
         }
         if (!((lastmove == Logic.KWD_UP_TRUE) ||
             (allottedclockticks == Stella.NULL_INTEGER))) {
-          frame.allottedClockTicks = ((int)(((double)(((IntegerWrapper)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_REAL_ALLOTTED_CLOCK_TICKS, Stella.NULL_INTEGER_WRAPPER))).wrapperValue - (currentclockticks - frame.startingClockTicks))) / Stella.max(Logic.numberOfRemainingAntecedents(iterator), 1)));
+          frame.allottedClockTicks = ((int)(((double)(((IntegerWrapper)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_REAL_ALLOTTED_CLOCK_TICKS, Stella.NULL_INTEGER_WRAPPER))).wrapperValue - (currentclockticks - frame.startingClockTicks))) / Stella.integer_max(Logic.numberOfRemainingAntecedents(iterator), 1)));
           if ((frame.allottedClockTicks < Logic.$MIN_CLOCK_TICKS_PER_WHYNOT_ANTECEDENT$) &&
               (Logic.numberOfRemainingAntecedents(iterator) > 0)) {
             if ((Stella.$TRACED_KEYWORDS$ != null) &&
@@ -731,7 +729,7 @@ public class WhynotPartialMatch extends IncrementalPartialMatch {
                   siblingunknowns = siblingunknowns + ((WhynotPartialMatch)(((ControlFrame)((((Vector)(KeyValueList.dynamicSlotValue(parentframe.dynamicSlots, Logic.SYM_STELLA_ARGUMENTS, null))).theArray)[i])).partialMatchFrame)).numberOfFailedSubgoals();
                 }
               }
-              cutoff = Stella.max(parentcutoff - siblingunknowns, 0);
+              cutoff = Stella.integer_max(parentcutoff - siblingunknowns, 0);
             }
           }
           else {

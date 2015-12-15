@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -67,7 +67,7 @@ public class Justification extends StandardObject {
     public Justification patternJustification;
     /** List of variable bindings recorded for :PATTERN justifications.
      */
-    public KeyValueList substitution;
+    public KeyValueMap substitution;
     /** True if proposition was derived in reverse polarity.
      */
     public boolean reversePolarityP;
@@ -247,7 +247,7 @@ public class Justification extends StandardObject {
 
   public static Cons retrievalProofSolution(Justification proof, QueryIterator query) {
     { Cons solution = Stella.NIL;
-      KeyValueList substitution = proof.substitution;
+      KeyValueMap substitution = proof.substitution;
 
       { PatternVariable extvar = null;
         Vector vector000 = query.externalVariables;
@@ -258,13 +258,13 @@ public class Justification extends StandardObject {
           extvar = ((PatternVariable)((vector000.theArray)[index000]));
           { PatternVariable var = null;
             Stella_Object value = null;
-            KvCons iter000 = substitution.theKvList;
+            DictionaryIterator iter000 = ((DictionaryIterator)(substitution.allocateIterator()));
 
-            loop001 : for (;iter000 != null; iter000 = iter000.rest) {
+            loop001 : while (iter000.nextP()) {
               var = ((PatternVariable)(iter000.key));
               value = iter000.value;
               if (var.skolemName == extvar.skolemName) {
-                solution = Stella_Object.cons(value, solution);
+                solution = Cons.cons(value, solution);
                 break loop001;
               }
             }
@@ -292,13 +292,13 @@ public class Justification extends StandardObject {
         if (proof1.inferenceRule == Logic.KWD_PATTERN) {
           { PatternVariable var1 = null;
             Stella_Object value1 = null;
-            KvCons iter000 = proof1.substitution.theKvList;
+            DictionaryIterator iter000 = ((DictionaryIterator)(proof1.substitution.allocateIterator()));
             PatternVariable var2 = null;
             Stella_Object value2 = null;
-            KvCons iter001 = proof2.substitution.theKvList;
+            DictionaryIterator iter001 = ((DictionaryIterator)(proof2.substitution.allocateIterator()));
 
-            for (;(iter000 != null) &&
-                      (iter001 != null); iter000 = iter000.rest, iter001 = iter001.rest) {
+            while (iter000.nextP() &&
+                iter001.nextP()) {
               var1 = ((PatternVariable)(iter000.key));
               value1 = iter000.value;
               var2 = ((PatternVariable)(iter001.key));
@@ -448,10 +448,10 @@ public class Justification extends StandardObject {
           info = Justification.explanationInfo(antecedent, mapping);
           if (info == null) {
             info = Justification.registerJustification(antecedent, mapping);
-            info.label = label + "." + Native.integerToString(newantecedentsindex = newantecedentsindex + 1);
+            info.label = label + "." + Native.integerToString(((long)(newantecedentsindex = newantecedentsindex + 1)));
             info.depth = depth + 1;
           }
-          maxlabellength = Stella.max(maxlabellength, (info.label).length());
+          maxlabellength = Stella.integer_max(maxlabellength, (info.label).length());
           if (!havemarkedantecedentP) {
             havemarkedantecedentP = Justification.markAsExplicitAssertionP(antecedent) ||
                 Justification.markAsFailedGoalP(antecedent);
@@ -484,7 +484,7 @@ public class Justification extends StandardObject {
                (Justification.markAsFailedGoalP(antecedent) ||
                 ((maxdepth != Stella.NULL_INTEGER) &&
                  (info.depth > maxdepth)))))) {
-            newantecedents = Stella_Object.cons(antecedent, newantecedents);
+            newantecedents = Cons.cons(antecedent, newantecedents);
           }
           if (((Keyword)(Logic.$EXPLANATION_FORMAT$.get())) == Logic.KWD_ASCII) {
             stream.nativeStream.print(Logic.$EXPLANATION_TAB_STRING$ + (((i == 1) ? "since " : "and   ")));
@@ -573,7 +573,7 @@ public class Justification extends StandardObject {
     mapping = mapping;
     if ((self.inferenceRule == Logic.KWD_MODUS_PONENS) ||
         (self.inferenceRule == Logic.KWD_MODUS_TOLLENS)) {
-      { KeyValueList substitution = Justification.getExplanationSubstitution(self);
+      { KeyValueMap substitution = Justification.getExplanationSubstitution(self);
         int nofvars = Stella.NULL_INTEGER;
 
         if (substitution != null) {
@@ -602,15 +602,15 @@ public class Justification extends StandardObject {
           }
           { Stella_Object var = null;
             Stella_Object value = null;
-            KvCons iter000 = substitution.theKvList;
+            DictionaryIterator iter000 = ((DictionaryIterator)(substitution.allocateIterator()));
             int i = Stella.NULL_INTEGER;
             int iter001 = 1;
             int upperBound000 = nofvars;
             boolean unboundedP000 = upperBound000 == Stella.NULL_INTEGER;
 
-            for (;(iter000 != null) &&
+            for (;iter000.nextP() &&
                       (unboundedP000 ||
-                       (iter001 <= upperBound000)); iter000 = iter000.rest, iter001 = iter001 + 1) {
+                       (iter001 <= upperBound000)); iter001 = iter001 + 1) {
               var = iter000.key;
               value = iter000.value;
               i = iter001;
@@ -653,13 +653,16 @@ public class Justification extends StandardObject {
     }
   }
 
-  public static KeyValueList getExplanationSubstitution(Justification self) {
-    { Justification rulejustification = ((Justification)(self.antecedents.value));
-      Proposition rule = rulejustification.proposition;
-      Justification antecedentjustification = ((Justification)(self.antecedents.rest.value));
-      KeyValueList antecedentsubstitution = antecedentjustification.substitution;
+  public static KeyValueMap getExplanationSubstitution(Justification self) {
+    { Justification ruleJustification = ((Justification)(self.antecedents.value));
+      Proposition rule = ruleJustification.proposition;
+      Justification antecedentJustification = ((Justification)(self.antecedents.rest.value));
+      KeyValueMap antecedentSubstitution = antecedentJustification.substitution;
 
-      return (antecedentsubstitution);
+      if (Stella_Object.isaP(self, Logic.SGT_LOGIC_FORWARD_JUSTIFICATION)) {
+        antecedentSubstitution = self.substitution;
+      }
+      return (antecedentSubstitution);
     }
   }
 
@@ -753,18 +756,18 @@ public class Justification extends StandardObject {
 
   public static void printExplanationText(Justification self, OutputStream stream, KeyValueList mapping) {
     { String introduction = "";
-      String inference = "";
+      String inference = null;
       String amplification = "";
       Cons modifiers = Stella.NIL;
-      Cons modifiersI = Stella_Object.cons(Logic.KWD_AMPLIFICATION, Stella.NIL);
+      Cons modifiersI = Cons.cons(Logic.KWD_AMPLIFICATION, Stella.NIL);
 
       if (self.reversePolarityP) {
-        modifiers = Stella_Object.cons(Logic.KWD_REVERSE, modifiers);
-        modifiersI = Stella_Object.cons(Logic.KWD_REVERSE, modifiersI);
+        modifiers = Cons.cons(Logic.KWD_REVERSE, modifiers);
+        modifiersI = Cons.cons(Logic.KWD_REVERSE, modifiersI);
       }
       if (Justification.partiallyFollowsP(self)) {
-        modifiers = Stella_Object.cons(Logic.KWD_PARTIAL, modifiers);
-        modifiersI = Stella_Object.cons(Logic.KWD_PARTIAL, modifiersI);
+        modifiers = Cons.cons(Logic.KWD_PARTIAL, modifiers);
+        modifiersI = Cons.cons(Logic.KWD_PARTIAL, modifiersI);
       }
       if (Justification.failedGoalJustificationP(self)) {
         introduction = Logic.lookupExplanationPhrase(Logic.KWD_FAILED, modifiers, null);
@@ -796,6 +799,9 @@ public class Justification extends StandardObject {
             (!Stella.stringEqlP(amplification, inference))) {
           stream.nativeStream.print(" " + amplification);
         }
+        if (self.inferenceDirection() == Logic.KWD_FORWARD) {
+          stream.nativeStream.print(" [Forward]");
+        }
         stream.nativeStream.println();
       }
       else if (((Keyword)(Logic.$EXPLANATION_FORMAT$.get())) == Logic.KWD_HTML) {
@@ -805,10 +811,17 @@ public class Justification extends StandardObject {
             (!Stella.stringEqlP(amplification, inference))) {
           stream.nativeStream.print(" " + amplification);
         }
+        if (self.inferenceDirection() == Logic.KWD_FORWARD) {
+          stream.nativeStream.print(" [Forward]");
+        }
         stream.nativeStream.println();
       }
       else if (((Keyword)(Logic.$EXPLANATION_FORMAT$.get())) == Logic.KWD_XML) {
-        stream.nativeStream.println("<method>" + inference + "</method>");
+        stream.nativeStream.print("<method");
+        if (self.inferenceDirection() == Logic.KWD_FORWARD) {
+          stream.nativeStream.print(" direction='forward'");
+        }
+        stream.nativeStream.println(">" + inference + "</method>");
       }
       else {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -1206,7 +1219,7 @@ public class Justification extends StandardObject {
           if (self.positiveScore != Stella.NULL_FLOAT) {
             keys.insertAt(Logic.KWD_POSITIVE_SCORE, FloatWrapper.wrapFloat(self.positiveScore));
           }
-          { KeyValueList thesubstitution = self.substitution;
+          { KeyValueMap thesubstitution = self.substitution;
 
             if (thesubstitution == null) {
               { Justification ant = null;
@@ -1224,13 +1237,13 @@ public class Justification extends StandardObject {
             if (thesubstitution != null) {
               { PatternVariable var = null;
                 Stella_Object binding = null;
-                KvCons iter001 = thesubstitution.theKvList;
+                DictionaryIterator iter001 = ((DictionaryIterator)(thesubstitution.allocateIterator()));
 
-                for (;iter001 != null; iter001 = iter001.rest) {
+                while (iter001.nextP()) {
                   var = ((PatternVariable)(iter001.key));
                   binding = iter001.value;
-                  substitution = Stella_Object.cons(Logic.generateTerm(var), substitution);
-                  substitution = Stella_Object.cons(Logic.generateTerm(binding), substitution);
+                  substitution = Cons.cons(Logic.generateTerm(var), substitution);
+                  substitution = Cons.cons(Logic.generateTerm(binding), substitution);
                 }
               }
               keys.insertAt(Logic.KWD_SUBSTITUTION, substitution.reverse());
@@ -1242,14 +1255,14 @@ public class Justification extends StandardObject {
               Native.setSpecial(Logic.$CURRENTJUSTIFICATION$, self);
               proposition = Proposition.generateProposition(self.proposition);
               if (self.reversePolarityP) {
-                proposition = Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(proposition, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+                proposition = Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(proposition, Cons.cons(Stella.NIL, Stella.NIL))));
               }
 
             } finally {
               Logic.$CURRENTJUSTIFICATION$.set(old$Currentjustification$000);
             }
           }
-          consifiedself = Stella.consList(Stella_Object.cons(proposition, Stella_Object.cons(keys.thePlist, Stella.NIL)));
+          consifiedself = Cons.consList(Cons.cons(proposition, Cons.cons(keys.thePlist, Stella.NIL)));
           { Justification antecedent = null;
             Cons iter002 = antecedents;
             Cons collect000 = null;
@@ -1258,7 +1271,7 @@ public class Justification extends StandardObject {
               antecedent = ((Justification)(iter002.value));
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(Justification.consifyJustification(antecedent, style), Stella.NIL);
+                  collect000 = Cons.cons(Justification.consifyJustification(antecedent, style), Stella.NIL);
                   if (consifiedself == Stella.NIL) {
                     consifiedself = collect000;
                   }
@@ -1269,7 +1282,7 @@ public class Justification extends StandardObject {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(Justification.consifyJustification(antecedent, style), Stella.NIL);
+                  collect000.rest = Cons.cons(Justification.consifyJustification(antecedent, style), Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -1383,7 +1396,7 @@ public class Justification extends StandardObject {
             antecedent = ((Justification)(iter000.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(antecedent.copy(), Stella.NIL);
+                collect000 = Cons.cons(antecedent.copy(), Stella.NIL);
                 if (antecedents == Stella.NIL) {
                   antecedents = collect000;
                 }
@@ -1394,7 +1407,7 @@ public class Justification extends StandardObject {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(antecedent.copy(), Stella.NIL);
+                collect000.rest = Cons.cons(antecedent.copy(), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -1426,7 +1439,7 @@ public class Justification extends StandardObject {
            Proposition.justificationPropositionsEqlP(just1.proposition, just1, just2.proposition, just2)))));
   }
 
-  public static KeyValueList yieldJustificationSubstitution(Justification justification, KeyValueList substitution, Proposition argument) {
+  public static KeyValueMap yieldJustificationSubstitution(Justification justification, KeyValueMap substitution, Proposition argument) {
     { Proposition top = justification.proposition;
       Proposition proposition = ((argument == null) ? top : argument);
 
@@ -1444,7 +1457,7 @@ public class Justification extends StandardObject {
 
                 if (PatternVariable.freeVariableP(arg000, top)) {
                   if (substitution == null) {
-                    substitution = KeyValueList.newKeyValueList();
+                    substitution = KeyValueMap.newKeyValueMap();
                   }
                   substitution.insertAt(arg000, Logic.justificationArgumentBoundTo(arg000, justification));
                 }
@@ -1500,7 +1513,7 @@ public class Justification extends StandardObject {
     }
     else if (slotname == Logic.SYM_LOGIC_SUBSTITUTION) {
       if (setvalueP) {
-        self.substitution = ((KeyValueList)(value));
+        self.substitution = ((KeyValueMap)(value));
       }
       else {
         value = self.substitution;
@@ -1546,6 +1559,13 @@ public class Justification extends StandardObject {
       }
     }
     return (value);
+  }
+
+  public Keyword inferenceDirection() {
+    { Justification self = this;
+
+      return (Logic.KWD_BACKWARD);
+    }
   }
 
   public Keyword inferenceStrategy() {

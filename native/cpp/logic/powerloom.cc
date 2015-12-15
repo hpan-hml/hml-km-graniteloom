@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -48,11 +48,11 @@
 namespace logic {
   using namespace stella;
 
-int oPOWERLOOM_MAJOR_VERSION_NUMBERo = 3;
+int oPOWERLOOM_MAJOR_VERSION_NUMBERo = 4;
 
-int oPOWERLOOM_MINOR_VERSION_NUMBERo = 2;
+int oPOWERLOOM_MINOR_VERSION_NUMBERo = 0;
 
-char* oPOWERLOOM_RELEASE_STATEo = "";
+char* oPOWERLOOM_RELEASE_STATEo = ".beta";
 
 int oPOWERLOOM_PATCH_LEVELo = 0;
 
@@ -131,7 +131,7 @@ char* powerloomCopyrightHeader() {
       return (substituteTemplateVariablesInString(logicsystem->banner, substitutionList));
     }
     else {
-      return ("---------------------------- BEGIN LICENSE BLOCK ---------------------------+\n |                                                                            |\n | Version: MPL 1.1/GPL 2.0/LGPL 2.1                                          |\n |                                                                            |\n | The contents of this file are subject to the Mozilla Public License        |\n | Version 1.1 (the \"License\"); you may not use this file except in           |\n | compliance with the License. You may obtain a copy of the License at       |\n | http://www.mozilla.org/MPL/                                                |\n |                                                                            |\n | Software distributed under the License is distributed on an \"AS IS\" basis, |\n | WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License   |\n | for the specific language governing rights and limitations under the       |\n | License.                                      " "                             |\n |                                                                            |\n | The Original Code is the PowerLoom KR&R System.                            |\n |                                                                            |\n | The Initial Developer of the Original Code is                              |\n | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |\n | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |\n |                                                                            |\n | Portions created by the Initial Developer are Copyright (C) 1997-2006      |\n | the Initial Developer. All Rights Reserved.                                |\n |                                                                            |\n | Contributor(s):                                                            |\n |                                                                            |\n | Alternatively, t" "he contents of this file may be used under the terms of    |\n | either the GNU General Public License Version 2 or later (the \"GPL\"), or   |\n | the GNU Lesser General Public License Version 2.1 or later (the \"LGPL\"),   |\n | in which case the provisions of the GPL or the LGPL are applicable instead |\n | of those above. If you wish to allow use of your version of this file only |\n | under the terms of either the GPL or the LGPL, and not to allow others to  |\n | use your version of this file under the terms of the MPL, indicate your    |\n | decision by deleting the provisions above and replace them with the notice |\n | and other provisions required by the GPL or the LGPL. If you do not delete |\n | the provisions above, a recipient may use your version of this file under  |\n | the terms of any one of the MPL, the GPL or the LGPL.                      |\n |                                                                            |\n +----------------------------- END LICENSE BLOCK ----------------" "------------");
+      return ("---------------------------- BEGIN LICENSE BLOCK ---------------------------+\n |                                                                            |\n | Version: MPL 1.1/GPL 2.0/LGPL 2.1                                          |\n |                                                                            |\n | The contents of this file are subject to the Mozilla Public License        |\n | Version 1.1 (the \"License\"); you may not use this file except in           |\n | compliance with the License. You may obtain a copy of the License at       |\n | http://www.mozilla.org/MPL/                                                |\n |                                                                            |\n | Software distributed under the License is distributed on an \"AS IS\" basis, |\n | WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License   |\n | for the specific language governing rights and limitations under the       |\n | License.                                      " "                             |\n |                                                                            |\n | The Original Code is the PowerLoom KR&R System.                            |\n |                                                                            |\n | The Initial Developer of the Original Code is                              |\n | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |\n | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |\n |                                                                            |\n | Portions created by the Initial Developer are Copyright (C) 1997-2010      |\n | the Initial Developer. All Rights Reserved.                                |\n |                                                                            |\n | Contributor(s):                                                            |\n |                                                                            |\n | Alternatively, t" "he contents of this file may be used under the terms of    |\n | either the GNU General Public License Version 2 or later (the \"GPL\"), or   |\n | the GNU Lesser General Public License Version 2.1 or later (the \"LGPL\"),   |\n | in which case the provisions of the GPL or the LGPL are applicable instead |\n | of those above. If you wish to allow use of your version of this file only |\n | under the terms of either the GPL or the LGPL, and not to allow others to  |\n | use your version of this file under the terms of the MPL, indicate your    |\n | decision by deleting the provisions above and replace them with the notice |\n | and other provisions required by the GPL or the LGPL. If you do not delete |\n | the provisions above, a recipient may use your version of this file under  |\n | the terms of any one of the MPL, the GPL or the LGPL.                      |\n |                                                                            |\n +----------------------------- END LICENSE BLOCK ----------------" "------------");
     }
   }
 }
@@ -188,7 +188,7 @@ void startupPowerloom() {
       SYM_POWERLOOM_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
     }
     if (currentStartupTimePhaseP(4)) {
-      oPOWERLOOM_VERSION_STRINGo = stringConcatenate("PowerLoom ", integerToString(oPOWERLOOM_MAJOR_VERSION_NUMBERo), 5, ".", integerToString(oPOWERLOOM_MINOR_VERSION_NUMBERo), ".", integerToString(oPOWERLOOM_PATCH_LEVELo), oPOWERLOOM_RELEASE_STATEo);
+      oPOWERLOOM_VERSION_STRINGo = stringConcatenate("PowerLoom ", integerToString(((long long int)(oPOWERLOOM_MAJOR_VERSION_NUMBERo))), 5, ".", integerToString(((long long int)(oPOWERLOOM_MINOR_VERSION_NUMBERo))), ".", integerToString(((long long int)(oPOWERLOOM_PATCH_LEVELo))), oPOWERLOOM_RELEASE_STATEo);
       oPOWERLOOM_EXECUTION_MODEo = KWD_POWERLOOM_RELEASE;
       oPOWERLOOM_LOCKo = makeProcessLock();
     }
@@ -213,13 +213,14 @@ void startupPowerloom() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
-      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-MAJOR-VERSION-NUMBER* INTEGER 3)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-MINOR-VERSION-NUMBER* INTEGER 2)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-RELEASE-STATE* STRING \"\")");
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-MAJOR-VERSION-NUMBER* INTEGER 4)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-MINOR-VERSION-NUMBER* INTEGER 0)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-RELEASE-STATE* STRING \".beta\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-PATCH-LEVEL* INTEGER 0)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-VERSION-STRING* STRING (CONCATENATE \"PowerLoom \" (INTEGER-TO-STRING *POWERLOOM-MAJOR-VERSION-NUMBER*) \".\" (INTEGER-TO-STRING *POWERLOOM-MINOR-VERSION-NUMBER*) \".\" (INTEGER-TO-STRING *POWERLOOM-PATCH-LEVEL*) *POWERLOOM-RELEASE-STATE*))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-EXECUTION-MODE* KEYWORD :RELEASE :DOCUMENTATION \"Either :development, :debugging or :release (so far) which controls\nwhether certain internal error and warning messages are surfaced to the user.\")");
-      setLoggingParameters("PowerLoom", 8, KWD_POWERLOOM_LOG_LEVELS, getQuotedTree("((:NONE :LOW :MEDIUM :HIGH) \"/LOGIC\")", "/LOGIC"), KWD_POWERLOOM_LEVEL, ((oPOWERLOOM_EXECUTION_MODEo == KWD_POWERLOOM_DEVELOPMENT) ? KWD_POWERLOOM_MEDIUM : KWD_POWERLOOM_LOW), KWD_POWERLOOM_PREFIX, wrapString("PL"), KWD_POWERLOOM_MAX_WIDTH, wrapInteger(250));
+      setLoggingParameters("PowerLoom", consList(8, KWD_POWERLOOM_LOG_LEVELS, getQuotedTree("((:NONE :LOW :MEDIUM :HIGH) \"/LOGIC\")", "/LOGIC"), KWD_POWERLOOM_LEVEL, ((oPOWERLOOM_EXECUTION_MODEo == KWD_POWERLOOM_DEVELOPMENT) ? KWD_POWERLOOM_MEDIUM : KWD_POWERLOOM_LOW), KWD_POWERLOOM_PREFIX, wrapString("PL"), KWD_POWERLOOM_MAX_WIDTH, wrapInteger(250)));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-LOCK* PROCESS-LOCK-OBJECT (MAKE-PROCESS-LOCK) :PUBLIC? TRUE :DOCUMENTATION \"Lock object for synchronizing safe multi-process access to PowerLoom\")");
     }
   }

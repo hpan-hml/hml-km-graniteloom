@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -68,7 +68,7 @@ public class Measure extends StandardObject {
       { Measure m = self000;
 
         m.scale.insertAt(StringWrapper.wrapString(""), FloatWrapper.wrapFloat(1.0));
-        Utilities.$BASE_MEASURES$ = ((Cons)((Utilities.$BASE_MEASURES$.memberP(m) ? Utilities.$BASE_MEASURES$ : Stella_Object.cons(m, Utilities.$BASE_MEASURES$))));
+        Utilities.$BASE_MEASURES$ = ((Cons)((Utilities.$BASE_MEASURES$.memberP(m) ? Utilities.$BASE_MEASURES$ : Cons.cons(m, Utilities.$BASE_MEASURES$))));
         m.setupIndices();
         return (m);
       }
@@ -111,7 +111,7 @@ public class Measure extends StandardObject {
 
           m.scale.insertAt(StringWrapper.wrapString(measureBaseUnit), FloatWrapper.wrapFloat(1.0));
           Utilities.$PRIME_TO_BASE_MEASURE_TABLE$.insertAt(prime, m);
-          Utilities.$BASE_MEASURES$ = ((Cons)((Utilities.$BASE_MEASURES$.memberP(m) ? Utilities.$BASE_MEASURES$ : Stella_Object.cons(m, Utilities.$BASE_MEASURES$))));
+          Utilities.$BASE_MEASURES$ = ((Cons)((Utilities.$BASE_MEASURES$.memberP(m) ? Utilities.$BASE_MEASURES$ : Cons.cons(m, Utilities.$BASE_MEASURES$))));
           m.setupIndices();
           return (m);
         }
@@ -147,7 +147,7 @@ public class Measure extends StandardObject {
             unused = unused;
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(key, Stella.NIL);
+                collect000 = Cons.cons(key, Stella.NIL);
                 if (result.theConsList == Stella.NIL) {
                   result.theConsList = collect000;
                 }
@@ -158,7 +158,7 @@ public class Measure extends StandardObject {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(key, Stella.NIL);
+                collect000.rest = Cons.cons(key, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -210,7 +210,7 @@ public class Measure extends StandardObject {
   public void setupIndices() {
     { Measure m = this;
 
-      Utilities.$ALL_MEASURES$ = ((Cons)((Utilities.$ALL_MEASURES$.memberP(m) ? Utilities.$ALL_MEASURES$ : Stella_Object.cons(m, Utilities.$ALL_MEASURES$))));
+      Utilities.$ALL_MEASURES$ = ((Cons)((Utilities.$ALL_MEASURES$.memberP(m) ? Utilities.$ALL_MEASURES$ : Cons.cons(m, Utilities.$ALL_MEASURES$))));
       Utilities.$PRIME_TO_MEASURE_TABLE$.insertAt(m.primeId, m);
       Utilities.$NAME_TO_MEASURE_TABLE$.insertAt(m.name, m);
       Utilities.$UNIT_TO_MEASURE_TABLE$.insertAt(m.baseUnit, m);

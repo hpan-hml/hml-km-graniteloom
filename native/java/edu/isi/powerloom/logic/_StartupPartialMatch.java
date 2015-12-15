@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,30 +52,30 @@ import edu.isi.stella.*;
 public class _StartupPartialMatch {
   static void helpStartupPartialMatch1() {
     {
-      Logic.KWD_BASIC = ((Keyword)(Stella.internRigidSymbolWrtModule("BASIC", null, 2)));
-      Logic.KWD_MAX = ((Keyword)(Stella.internRigidSymbolWrtModule("MAX", null, 2)));
-      Logic.SYM_LOGIC_CHILD = ((Symbol)(Stella.internRigidSymbolWrtModule("CHILD", null, 0)));
-      Logic.SYM_LOGIC_NEGATIVE_SCORE = ((Symbol)(Stella.internRigidSymbolWrtModule("NEGATIVE-SCORE", null, 0)));
-      Logic.SYM_LOGIC_DYNAMIC_CUTOFF = ((Symbol)(Stella.internRigidSymbolWrtModule("DYNAMIC-CUTOFF", null, 0)));
-      Logic.SYM_LOGIC_ARGUMENT_WEIGHTS = ((Symbol)(Stella.internRigidSymbolWrtModule("ARGUMENT-WEIGHTS", null, 0)));
-      Logic.SYM_LOGIC_UNBOUND_VARS = ((Symbol)(Stella.internRigidSymbolWrtModule("UNBOUND-VARS", null, 0)));
-      Logic.KWD_CONTROL_FRAME = ((Keyword)(Stella.internRigidSymbolWrtModule("CONTROL-FRAME", null, 2)));
-      Logic.KWD_KIND = ((Keyword)(Stella.internRigidSymbolWrtModule("KIND", null, 2)));
-      Logic.SGT_LOGIC_INCREMENTAL_PARTIAL_MATCH = ((Surrogate)(Stella.internRigidSymbolWrtModule("INCREMENTAL-PARTIAL-MATCH", null, 1)));
-      Logic.SYM_LOGIC_ACCUMULATED_SCORE = ((Symbol)(Stella.internRigidSymbolWrtModule("ACCUMULATED-SCORE", null, 0)));
-      Logic.SYM_LOGIC_ACCUMULATED_WEIGHT = ((Symbol)(Stella.internRigidSymbolWrtModule("ACCUMULATED-WEIGHT", null, 0)));
-      Logic.SYM_LOGIC_TOTAL_WEIGHT = ((Symbol)(Stella.internRigidSymbolWrtModule("TOTAL-WEIGHT", null, 0)));
-      Logic.SYM_LOGIC_MAXIMUM_SCORE = ((Symbol)(Stella.internRigidSymbolWrtModule("MAXIMUM-SCORE", null, 0)));
-      Logic.KWD_SKIPPED_CONJUNCT = ((Keyword)(Stella.internRigidSymbolWrtModule("SKIPPED-CONJUNCT", null, 2)));
-      Logic.KWD_NOISY_OR = ((Keyword)(Stella.internRigidSymbolWrtModule("NOISY-OR", null, 2)));
-      Logic.SYM_LOGIC_INFERENCE_CUTOFF_REASON = ((Symbol)(Stella.internRigidSymbolWrtModule("INFERENCE-CUTOFF-REASON", null, 0)));
-      Logic.SYM_LOGIC_RULES = ((Symbol)(Stella.internRigidSymbolWrtModule("RULES", null, 0)));
-      Logic.SYM_STELLA_ARITY = ((Symbol)(Stella.internRigidSymbolWrtModule("ARITY", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.KWD_INCREMENTAL = ((Keyword)(Stella.internRigidSymbolWrtModule("INCREMENTAL", null, 2)));
-      Logic.KWD_NN = ((Keyword)(Stella.internRigidSymbolWrtModule("NN", null, 2)));
-      Logic.KWD_NEURAL_NETWORK = ((Keyword)(Stella.internRigidSymbolWrtModule("NEURAL-NETWORK", null, 2)));
-      Logic.SGT_PL_KERNEL_KB_NULL = ((Surrogate)(Stella.internRigidSymbolWrtModule("NULL", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SYM_LOGIC_STARTUP_PARTIAL_MATCH = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-PARTIAL-MATCH", null, 0)));
+      Logic.KWD_BASIC = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("BASIC", null, 2)));
+      Logic.KWD_MAX = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MAX", null, 2)));
+      Logic.SYM_LOGIC_CHILD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CHILD", null, 0)));
+      Logic.SYM_LOGIC_NEGATIVE_SCORE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NEGATIVE-SCORE", null, 0)));
+      Logic.SYM_LOGIC_DYNAMIC_CUTOFF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DYNAMIC-CUTOFF", null, 0)));
+      Logic.SYM_LOGIC_ARGUMENT_WEIGHTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ARGUMENT-WEIGHTS", null, 0)));
+      Logic.SYM_LOGIC_UNBOUND_VARS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNBOUND-VARS", null, 0)));
+      Logic.KWD_CONTROL_FRAME = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTROL-FRAME", null, 2)));
+      Logic.KWD_KIND = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("KIND", null, 2)));
+      Logic.SGT_LOGIC_INCREMENTAL_PARTIAL_MATCH = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("INCREMENTAL-PARTIAL-MATCH", null, 1)));
+      Logic.SYM_LOGIC_ACCUMULATED_SCORE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ACCUMULATED-SCORE", null, 0)));
+      Logic.SYM_LOGIC_ACCUMULATED_WEIGHT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ACCUMULATED-WEIGHT", null, 0)));
+      Logic.SYM_LOGIC_TOTAL_WEIGHT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TOTAL-WEIGHT", null, 0)));
+      Logic.SYM_LOGIC_MAXIMUM_SCORE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MAXIMUM-SCORE", null, 0)));
+      Logic.KWD_SKIPPED_CONJUNCT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SKIPPED-CONJUNCT", null, 2)));
+      Logic.KWD_NOISY_OR = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NOISY-OR", null, 2)));
+      Logic.SYM_LOGIC_INFERENCE_CUTOFF_REASON = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INFERENCE-CUTOFF-REASON", null, 0)));
+      Logic.SYM_LOGIC_RULES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RULES", null, 0)));
+      Logic.SYM_STELLA_ARITY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ARITY", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.KWD_INCREMENTAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INCREMENTAL", null, 2)));
+      Logic.KWD_NN = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NN", null, 2)));
+      Logic.KWD_NEURAL_NETWORK = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NEURAL-NETWORK", null, 2)));
+      Logic.SGT_PL_KERNEL_KB_NULL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SYM_LOGIC_STARTUP_PARTIAL_MATCH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-PARTIAL-MATCH", null, 0)));
     }
   }
 
@@ -241,6 +241,7 @@ public class _StartupPartialMatch {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *PARTIAL-MATCH-MODE* KEYWORD :BASIC)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *GREEDY-NETWORK-PRUNING* BOOLEAN TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *RULE-COMBINATION* KEYWORD :MAX)");

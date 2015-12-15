@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -1034,7 +1034,7 @@ int oGENSYM_COUNTERo = 0;
 char* oGENSYM_MASKo = "-000";
 
 char* yieldGensymName(char* prefix, int counter) {
-  { char* suffix = integerToString(counter);
+  { char* suffix = integerToString(((long long int)(counter)));
     int maskend = 4 - strlen(suffix);
 
     if (maskend < 1) {
@@ -1272,30 +1272,38 @@ char* computeFullName(char* name, Module* module) {
   }
 }
 
-char* GeneralizedSymbol::localPrintName() {
+char* GeneralizedSymbol::localPrintName(boolean readableP) {
   { GeneralizedSymbol* self = this;
 
-    return (self->symbolName);
+    if (readableP) {
+      return (readableSymbolName(self->symbolName, oMODULEo.get()->caseSensitiveP));
+    }
+    else {
+      return (self->symbolName);
+    }
   }
 }
 
-char* Surrogate::localPrintName() {
+char* Surrogate::localPrintName(boolean readableP) {
   { Surrogate* self = this;
 
-    return (stringConcatenate("@", self->symbolName, 0));
+    { char* localName = (readableP ? readableSymbolName(self->symbolName, oMODULEo.get()->caseSensitiveP) : self->symbolName);
+
+      return (stringConcatenate("@", localName, 0));
+    }
   }
 }
 
-char* GeneralizedSymbol::relativeName() {
+char* GeneralizedSymbol::relativeName(boolean readableP) {
   { GeneralizedSymbol* self = this;
 
     { char* string = NULL;
 
       if (((Module*)(self->homeContext)) == oMODULEo.get()) {
-        string = self->localPrintName();
+        string = self->localPrintName(readableP);
       }
       else {
-        string = computeFullName(self->localPrintName(), ((Module*)(self->homeContext)));
+        string = computeFullName(self->localPrintName(readableP), ((Module*)(self->homeContext)));
       }
       if (self->symbolId == -1) {
         string = stringConcatenate("<<UNINTERNED>>/", string, 0);
@@ -1315,7 +1323,7 @@ boolean visibleSurrogateP(Surrogate* self) {
   return (self == lookupSurrogateInModule(self->symbolName, oMODULEo.get(), false));
 }
 
-char* GeneralizedSymbol::visibleName() {
+char* GeneralizedSymbol::visibleName(boolean readableP) {
   { GeneralizedSymbol* self = this;
 
     { boolean visibleP = false;
@@ -1345,10 +1353,10 @@ char* GeneralizedSymbol::visibleName() {
         }
       }
       if (visibleP) {
-        return (self->localPrintName());
+        return (self->localPrintName(readableP));
       }
       else {
-        return (computeFullName(self->localPrintName(), ((Module*)(self->homeContext))));
+        return (computeFullName(self->localPrintName(readableP), ((Module*)(self->homeContext))));
       }
     }
   }
@@ -1698,6 +1706,32 @@ void printSymbolNameReadably(char* name, std::ostream* stream, boolean casesensi
   }
 }
 
+char* readableSymbolName(char* name, boolean casesensitiveP) {
+  { Keyword* testValue000 = computeSymbolEscapeCode(name, casesensitiveP);
+
+    if (testValue000 == KWD_SYMBOLS_UNESCAPED) {
+      return (name);
+    }
+    else if (testValue000 == KWD_SYMBOLS_ESCAPED) {
+      return (stringConcatenate("|", name, 1, "|"));
+    }
+    else if (testValue000 == KWD_SYMBOLS_COMPLEX_ESCAPED) {
+      { OutputStringStream* s = newOutputStringStream();
+
+        printSymbolNameReadably(name, s->nativeStream, casesensitiveP);
+        return (s->theStringReader());
+      }
+    }
+    else {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+        throw *newStellaException(stream000->theStringReader());
+      }
+    }
+  }
+}
+
 void printSymbol(Symbol* self, std::ostream* stream) {
   { boolean visibleP = self == lookupSymbolInModule(self->symbolName, oMODULEo.get(), false);
     Module* module = ((Module*)(self->homeContext));
@@ -1790,39 +1824,39 @@ void helpStartupSymbols2() {
     defineFunctionObject("ADD-TO-SYMBOL-ARRAY-AT", "(DEFUN ADD-TO-SYMBOL-ARRAY-AT ((ARRAY EXTENSIBLE-SYMBOL-ARRAY) (OFFSET INTEGER) (SYMBOL GENERALIZED-SYMBOL)))", ((cpp_function_code)(&addToSymbolArrayAt)), NULL);
     defineFunctionObject("ADD-TO-SYMBOL-ARRAY", "(DEFUN (ADD-TO-SYMBOL-ARRAY INTEGER) ((ARRAY EXTENSIBLE-SYMBOL-ARRAY) (SYMBOL GENERALIZED-SYMBOL)))", ((cpp_function_code)(&addToSymbolArray)), NULL);
     defineFunctionObject("LEGAL-SYMBOL-ARRAY-OFFSET?", "(DEFUN (LEGAL-SYMBOL-ARRAY-OFFSET? BOOLEAN) ((ARRAY EXTENSIBLE-SYMBOL-ARRAY) (OFFSET INTEGER)))", ((cpp_function_code)(&legalSymbolArrayOffsetP)), NULL);
-    defineFunctionObject("GET-SYM", "(DEFUN (GET-SYM SYMBOL) ((OFFSET INTEGER)))", ((cpp_function_code)(&getSym)), NULL);
-    defineFunctionObject("GET-SGT", "(DEFUN (GET-SGT SURROGATE) ((OFFSET INTEGER)))", ((cpp_function_code)(&getSgt)), NULL);
-    defineFunctionObject("GET-KWD", "(DEFUN (GET-KWD KEYWORD) ((OFFSET INTEGER)))", ((cpp_function_code)(&getKwd)), NULL);
-    defineFunctionObject("GET-GENERALIZED-SYMBOL-FROM-OFFSET", "(DEFUN (GET-GENERALIZED-SYMBOL-FROM-OFFSET GENERALIZED-SYMBOL) ((SYMBOLARRAY EXTENSIBLE-SYMBOL-ARRAY) (OFFSET INTEGER)))", ((cpp_function_code)(&getGeneralizedSymbolFromOffset)), NULL);
-    defineFunctionObject("GET-SYM-FROM-OFFSET", "(DEFUN (GET-SYM-FROM-OFFSET SYMBOL) ((OFFSET INTEGER)))", ((cpp_function_code)(&getSymFromOffset)), NULL);
-    defineFunctionObject("GET-SGT-FROM-OFFSET", "(DEFUN (GET-SGT-FROM-OFFSET SURROGATE) ((OFFSET INTEGER)))", ((cpp_function_code)(&getSgtFromOffset)), NULL);
-    defineFunctionObject("GET-KWD-FROM-OFFSET", "(DEFUN (GET-KWD-FROM-OFFSET KEYWORD) ((OFFSET INTEGER)))", ((cpp_function_code)(&getKwdFromOffset)), NULL);
+    defineFunctionObject("GET-SYM", "(DEFUN (GET-SYM SYMBOL) ((OFFSET INTEGER)) :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&getSym)), NULL);
+    defineFunctionObject("GET-SGT", "(DEFUN (GET-SGT SURROGATE) ((OFFSET INTEGER)) :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&getSgt)), NULL);
+    defineFunctionObject("GET-KWD", "(DEFUN (GET-KWD KEYWORD) ((OFFSET INTEGER)) :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&getKwd)), NULL);
+    defineFunctionObject("GET-GENERALIZED-SYMBOL-FROM-OFFSET", "(DEFUN (GET-GENERALIZED-SYMBOL-FROM-OFFSET GENERALIZED-SYMBOL) ((SYMBOLARRAY EXTENSIBLE-SYMBOL-ARRAY) (OFFSET INTEGER)) :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&getGeneralizedSymbolFromOffset)), NULL);
+    defineFunctionObject("GET-SYM-FROM-OFFSET", "(DEFUN (GET-SYM-FROM-OFFSET SYMBOL) ((OFFSET INTEGER)) :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&getSymFromOffset)), NULL);
+    defineFunctionObject("GET-SGT-FROM-OFFSET", "(DEFUN (GET-SGT-FROM-OFFSET SURROGATE) ((OFFSET INTEGER)) :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&getSgtFromOffset)), NULL);
+    defineFunctionObject("GET-KWD-FROM-OFFSET", "(DEFUN (GET-KWD-FROM-OFFSET KEYWORD) ((OFFSET INTEGER)) :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&getKwdFromOffset)), NULL);
     defineFunctionObject("SELECT-SYMBOL-OFFSET-TABLE", "(DEFUN (SELECT-SYMBOL-OFFSET-TABLE STRING-TO-INTEGER-HASH-TABLE) ((MODULE MODULE) (KINDOFSYM INTEGER)))", ((cpp_function_code)(&selectSymbolOffsetTable)), NULL);
     defineFunctionObject("SELECT-SYMBOL-ARRAY", "(DEFUN (SELECT-SYMBOL-ARRAY EXTENSIBLE-SYMBOL-ARRAY) ((KINDOFSYM INTEGER)))", ((cpp_function_code)(&selectSymbolArray)), NULL);
-    defineFunctionObject("LOOKUP-RIGID-SYMBOL-LOCALLY", "(DEFUN (LOOKUP-RIGID-SYMBOL-LOCALLY GENERALIZED-SYMBOL) ((NAME STRING) (MODULE MODULE) (KINDOFSYM INTEGER)))", ((cpp_function_code)(&lookupRigidSymbolLocally)), NULL);
+    defineFunctionObject("LOOKUP-RIGID-SYMBOL-LOCALLY", "(DEFUN (LOOKUP-RIGID-SYMBOL-LOCALLY GENERALIZED-SYMBOL) ((NAME STRING) (MODULE MODULE) (KINDOFSYM INTEGER)) :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&lookupRigidSymbolLocally)), NULL);
     defineFunctionObject("YIELD-VISIBLE-RIGID-SYMBOLS-WRT-MODULE", "(DEFUN (YIELD-VISIBLE-RIGID-SYMBOLS-WRT-MODULE (CONS OF GENERALIZED-SYMBOL)) ((NAME STRING) (MODULE MODULE) (KINDOFSYM INTEGER)))", ((cpp_function_code)(&yieldVisibleRigidSymbolsWrtModule)), NULL);
     defineFunctionObject("VISIBLE-RIGID-SYMBOLS-WRT-MODULE", "(DEFUN (VISIBLE-RIGID-SYMBOLS-WRT-MODULE (ITERATOR OF GENERALIZED-SYMBOL)) ((NAME STRING) (MODULE MODULE) (KINDOFSYM INTEGER)))", ((cpp_function_code)(&visibleRigidSymbolsWrtModule)), NULL);
     defineFunctionObject("REMOVE-SHADOWED-SYMBOLS", "(DEFUN (REMOVE-SHADOWED-SYMBOLS (CONS OF GENERALIZED-SYMBOL)) ((VISIBLESYMBOLS (CONS OF GENERALIZED-SYMBOL))))", ((cpp_function_code)(&removeShadowedSymbols)), NULL);
     defineFunctionObject("LOOKUP-RIGID-SYMBOL-OFFSET-WRT-MODULE", "(DEFUN (LOOKUP-RIGID-SYMBOL-OFFSET-WRT-MODULE INTEGER) ((NAME STRING) (MODULE MODULE) (KINDOFSYM INTEGER)))", ((cpp_function_code)(&lookupRigidSymbolOffsetWrtModule)), NULL);
     defineFunctionObject("LOOKUP-RIGID-SYMBOL-WRT-MODULE", "(DEFUN (LOOKUP-RIGID-SYMBOL-WRT-MODULE GENERALIZED-SYMBOL) ((NAME STRING) (MODULE MODULE) (KINDOFSYM INTEGER)))", ((cpp_function_code)(&lookupRigidSymbolWrtModule)), NULL);
-    defineFunctionObject("LOOKUP-RIGID-SYMBOL", "(DEFUN (LOOKUP-RIGID-SYMBOL GENERALIZED-SYMBOL) ((NAME STRING) (KINDOFSYM INTEGER)) :DOCUMENTATION \"Return the permanent symbol with name 'name' and type\n`kindOfSym' visible from the current module (case-sensitive).\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupRigidSymbol)), NULL);
-    defineFunctionObject("LOOKUP-SYMBOL", "(DEFUN (LOOKUP-SYMBOL SYMBOL) ((NAME STRING)) :DOCUMENTATION \"Return the first symbol with `name' visible from the current module.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupSymbol)), NULL);
-    defineFunctionObject("LOOKUP-SYMBOL-IN-MODULE", "(DEFUN (LOOKUP-SYMBOL-IN-MODULE SYMBOL) ((NAME STRING) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Return the first symbol with `name' visible from `module'.\nIf `local?' only consider symbols directly interned in `module'.\nIf `module' is `null', use `*MODULE*' instead.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupSymbolInModule)), NULL);
+    defineFunctionObject("LOOKUP-RIGID-SYMBOL", "(DEFUN (LOOKUP-RIGID-SYMBOL GENERALIZED-SYMBOL) ((NAME STRING) (KINDOFSYM INTEGER)) :DOCUMENTATION \"Return the permanent symbol with name 'name' and type\n`kindOfSym' visible from the current module (case-sensitive).\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&lookupRigidSymbol)), NULL);
+    defineFunctionObject("LOOKUP-SYMBOL", "(DEFUN (LOOKUP-SYMBOL SYMBOL) ((NAME STRING)) :DOCUMENTATION \"Return the first symbol with `name' visible from the current module.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&lookupSymbol)), NULL);
+    defineFunctionObject("LOOKUP-SYMBOL-IN-MODULE", "(DEFUN (LOOKUP-SYMBOL-IN-MODULE SYMBOL) ((NAME STRING) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Return the first symbol with `name' visible from `module'.\nIf `local?' only consider symbols directly interned in `module'.\nIf `module' is `null', use `*MODULE*' instead.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&lookupSymbolInModule)), NULL);
     defineFunctionObject("LOOKUP-VISIBLE-SYMBOLS-IN-MODULE", "(DEFUN (LOOKUP-VISIBLE-SYMBOLS-IN-MODULE (CONS OF SYMBOL)) ((NAME STRING) (MODULE MODULE) (ENFORCESHADOWING? BOOLEAN)) :DOCUMENTATION \"Return the list of symbols with `name' visible from `module'.\nMore specific symbols (relative to the module precedence order defined by\n`visible-modules') come earlier in the list.  If `module' is `null', start\nfrom `*MODULE*' instead.  If `enforceShadowing?' is true, do not return any\nsymbols that are shadowed due to some :SHADOW declaration.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupVisibleSymbolsInModule)), NULL);
-    defineFunctionObject("LOOKUP-SURROGATE", "(DEFUN (LOOKUP-SURROGATE SURROGATE) ((NAME STRING)) :DOCUMENTATION \"Return the first surrogate with `name' visible from the current module.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupSurrogate)), NULL);
-    defineFunctionObject("LOOKUP-SURROGATE-IN-MODULE", "(DEFUN (LOOKUP-SURROGATE-IN-MODULE SURROGATE) ((NAME STRING) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Return the first surrogate with `name' visible from `module'.\nIf `local?' only consider surrogates directly interned in `module'.\nIf `module' is `null', use `*MODULE*' instead.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupSurrogateInModule)), NULL);
+    defineFunctionObject("LOOKUP-SURROGATE", "(DEFUN (LOOKUP-SURROGATE SURROGATE) ((NAME STRING)) :DOCUMENTATION \"Return the first surrogate with `name' visible from the current module.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&lookupSurrogate)), NULL);
+    defineFunctionObject("LOOKUP-SURROGATE-IN-MODULE", "(DEFUN (LOOKUP-SURROGATE-IN-MODULE SURROGATE) ((NAME STRING) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Return the first surrogate with `name' visible from `module'.\nIf `local?' only consider surrogates directly interned in `module'.\nIf `module' is `null', use `*MODULE*' instead.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&lookupSurrogateInModule)), NULL);
     defineFunctionObject("LOOKUP-VISIBLE-SURROGATES-IN-MODULE", "(DEFUN (LOOKUP-VISIBLE-SURROGATES-IN-MODULE (CONS OF SURROGATE)) ((NAME STRING) (MODULE MODULE) (ENFORCESHADOWING? BOOLEAN)) :DOCUMENTATION \"Return the list of surrogates with `name' visible from `module'.\nMore specific surrogates (relative to the module precedence order defined by\n`visible-modules') come earlier in the list.  If `module' is `null', start\nfrom `*MODULE*' instead.  If `enforceShadowing?' is true, do not return any\nsurrogates that are shadowed due to some :SHADOW declaration.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupVisibleSurrogatesInModule)), NULL);
-    defineFunctionObject("LOOKUP-KEYWORD", "(DEFUN (LOOKUP-KEYWORD KEYWORD) ((NAME STRING)) :DOCUMENTATION \"Return the keyword with `name' if it exists.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupKeyword)), NULL);
-    defineFunctionObject("HELP-INTERN-GENERALIZED-SYMBOL", "(DEFUN (HELP-INTERN-GENERALIZED-SYMBOL GENERALIZED-SYMBOL) ((NAME STRING) (KINDOFSYM INTEGER) (ARRAY EXTENSIBLE-SYMBOL-ARRAY) (OFFSET INTEGER) (MODULE MODULE)))", ((cpp_function_code)(&helpInternGeneralizedSymbol)), NULL);
-    defineFunctionObject("INTERN-RIGID-SYMBOL-WRT-MODULE", "(DEFUN (INTERN-RIGID-SYMBOL-WRT-MODULE GENERALIZED-SYMBOL) ((NAME STRING) (MODULE MODULE) (KINDOFSYM INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Return a newly-created or existing rigid symbol with\nname `name'.\")", ((cpp_function_code)(&internRigidSymbolWrtModule)), NULL);
-    defineFunctionObject("INTERN-RIGID-SYMBOL-LOCALLY", "(DEFUN (INTERN-RIGID-SYMBOL-LOCALLY GENERALIZED-SYMBOL) ((NAME STRING) (MODULE MODULE) (KINDOFSYM INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Return a newly-created or existing rigid symbol\ninterned into the module `module' with name `name'.\")", ((cpp_function_code)(&internRigidSymbolLocally)), NULL);
-    defineFunctionObject("INTERN-RIGID-SYMBOL-CASE-SENSITIVELY", "(DEFUN (INTERN-RIGID-SYMBOL-CASE-SENSITIVELY GENERALIZED-SYMBOL) ((NAME STRING) (KINDOFSYM INTEGER) (TRYUPCASING? BOOLEAN)) :PUBLIC? TRUE)", ((cpp_function_code)(&internRigidSymbolCaseSensitively)), NULL);
-    defineFunctionObject("INTERN-PERMANENT-SYMBOL", "(DEFUN (INTERN-PERMANENT-SYMBOL SYMBOL) ((NAME STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return a newly-created or existing permanent symbol with\nname `name'.\")", ((cpp_function_code)(&internPermanentSymbol)), NULL);
-    defineFunctionObject("INTERN-SYMBOL", "(DEFUN (INTERN-SYMBOL SYMBOL) ((NAME STRING)) :DOCUMENTATION \"Return a newly-created or existing symbol with name `name'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&internSymbol)), NULL);
-    defineFunctionObject("INTERN-SYMBOL-IN-MODULE", "(DEFUN (INTERN-SYMBOL-IN-MODULE SYMBOL) ((NAME STRING) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Look for a symbol named `name' in `module' (if `local?' do\nnot consider inherited modules).  If none exists, intern it locally in\n`module'.  Return the existing or newly-created symbol.\" :PUBLIC? TRUE)", ((cpp_function_code)(&internSymbolInModule)), NULL);
-    defineFunctionObject("INTERN-DERIVED-SYMBOL", "(DEFUN (INTERN-DERIVED-SYMBOL SYMBOL) ((BASESYMBOL GENERALIZED-SYMBOL) (NEWNAME STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return a newly-created or existing symbol with name\n`newName' which is interned in the same module as `baseSymbol'.\")", ((cpp_function_code)(&internDerivedSymbol)), NULL);
-    defineFunctionObject("INTERN-SURROGATE", "(DEFUN (INTERN-SURROGATE SURROGATE) ((NAME STRING)) :DOCUMENTATION \"Return a newly-created or existing surrogate with name `name'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&internSurrogate)), NULL);
-    defineFunctionObject("INTERN-SURROGATE-IN-MODULE", "(DEFUN (INTERN-SURROGATE-IN-MODULE SURROGATE) ((NAME STRING) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Look for a symbol named `name' in `module' (if `local?' do\nnot consider inherited modules).  If none exists, intern it locally in\n`module'.  Return the existing or newly-created symbol.\" :PUBLIC? TRUE)", ((cpp_function_code)(&internSurrogateInModule)), NULL);
+    defineFunctionObject("LOOKUP-KEYWORD", "(DEFUN (LOOKUP-KEYWORD KEYWORD) ((NAME STRING)) :DOCUMENTATION \"Return the keyword with `name' if it exists.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&lookupKeyword)), NULL);
+    defineFunctionObject("HELP-INTERN-GENERALIZED-SYMBOL", "(DEFUN (HELP-INTERN-GENERALIZED-SYMBOL GENERALIZED-SYMBOL) ((NAME STRING) (KINDOFSYM INTEGER) (ARRAY EXTENSIBLE-SYMBOL-ARRAY) (OFFSET INTEGER) (MODULE MODULE)) :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&helpInternGeneralizedSymbol)), NULL);
+    defineFunctionObject("INTERN-RIGID-SYMBOL-WRT-MODULE", "(DEFUN (INTERN-RIGID-SYMBOL-WRT-MODULE GENERALIZED-SYMBOL) ((NAME STRING) (MODULE MODULE) (KINDOFSYM INTEGER)) :PUBLIC? TRUE :CONSTRUCTOR? TRUE :DOCUMENTATION \"Return a newly-created or existing rigid symbol with\nname `name'.\")", ((cpp_function_code)(&internRigidSymbolWrtModule)), NULL);
+    defineFunctionObject("INTERN-RIGID-SYMBOL-LOCALLY", "(DEFUN (INTERN-RIGID-SYMBOL-LOCALLY GENERALIZED-SYMBOL) ((NAME STRING) (MODULE MODULE) (KINDOFSYM INTEGER)) :PUBLIC? TRUE :CONSTRUCTOR? TRUE :DOCUMENTATION \"Return a newly-created or existing rigid symbol\ninterned into the module `module' with name `name'.\")", ((cpp_function_code)(&internRigidSymbolLocally)), NULL);
+    defineFunctionObject("INTERN-RIGID-SYMBOL-CASE-SENSITIVELY", "(DEFUN (INTERN-RIGID-SYMBOL-CASE-SENSITIVELY GENERALIZED-SYMBOL) ((NAME STRING) (KINDOFSYM INTEGER) (TRYUPCASING? BOOLEAN)) :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&internRigidSymbolCaseSensitively)), NULL);
+    defineFunctionObject("INTERN-PERMANENT-SYMBOL", "(DEFUN (INTERN-PERMANENT-SYMBOL SYMBOL) ((NAME STRING)) :PUBLIC? TRUE :CONSTRUCTOR? TRUE :DOCUMENTATION \"Return a newly-created or existing permanent symbol with\nname `name'.\")", ((cpp_function_code)(&internPermanentSymbol)), NULL);
+    defineFunctionObject("INTERN-SYMBOL", "(DEFUN (INTERN-SYMBOL SYMBOL) ((NAME STRING)) :DOCUMENTATION \"Return a newly-created or existing symbol with name `name'.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&internSymbol)), NULL);
+    defineFunctionObject("INTERN-SYMBOL-IN-MODULE", "(DEFUN (INTERN-SYMBOL-IN-MODULE SYMBOL) ((NAME STRING) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Look for a symbol named `name' in `module' (if `local?' do\nnot consider inherited modules).  If none exists, intern it locally in\n`module'.  Return the existing or newly-created symbol.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&internSymbolInModule)), NULL);
+    defineFunctionObject("INTERN-DERIVED-SYMBOL", "(DEFUN (INTERN-DERIVED-SYMBOL SYMBOL) ((BASESYMBOL GENERALIZED-SYMBOL) (NEWNAME STRING)) :PUBLIC? TRUE :CONSTRUCTOR? TRUE :DOCUMENTATION \"Return a newly-created or existing symbol with name\n`newName' which is interned in the same module as `baseSymbol'.\")", ((cpp_function_code)(&internDerivedSymbol)), NULL);
+    defineFunctionObject("INTERN-SURROGATE", "(DEFUN (INTERN-SURROGATE SURROGATE) ((NAME STRING)) :DOCUMENTATION \"Return a newly-created or existing surrogate with name `name'.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&internSurrogate)), NULL);
+    defineFunctionObject("INTERN-SURROGATE-IN-MODULE", "(DEFUN (INTERN-SURROGATE-IN-MODULE SURROGATE) ((NAME STRING) (MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Look for a symbol named `name' in `module' (if `local?' do\nnot consider inherited modules).  If none exists, intern it locally in\n`module'.  Return the existing or newly-created symbol.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&internSurrogateInModule)), NULL);
     defineFunctionObject("INTERN-DERIVED-SURROGATE", "(DEFUN (INTERN-DERIVED-SURROGATE SURROGATE) ((BASESYMBOL GENERALIZED-SYMBOL) (NEWNAME STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return a newly-created or existing surrogate with name\n`newName' which is interned in the same module as `baseSymbol'.\")", ((cpp_function_code)(&internDerivedSurrogate)), NULL);
     defineFunctionObject("INTERN-KEYWORD", "(DEFUN (INTERN-KEYWORD KEYWORD) ((NAME STRING)) :DOCUMENTATION \"Return a newly-created or existing keyword with name\n`name'.  Storage note: a COPY of `name' is stored in the keyword\" :PUBLIC? TRUE)", ((cpp_function_code)(&internKeyword)), NULL);
     defineFunctionObject("IMPORT-SYMBOL", "(DEFUN (IMPORT-SYMBOL SYMBOL) ((SYMBOL SYMBOL) (MODULE MODULE)) :DOCUMENTATION \"Import `symbol' into `module' and return the imported `symbol'.\nSignal an error if a different symbol with the same name already exists\nlocally in `module'.  Any symbol with the same name visible in `module' by\ninheritance will be shadowed by the newly imported `symbol'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&importSymbol)), NULL);
@@ -1875,12 +1909,12 @@ void helpStartupSymbols3() {
     defineFunctionObject("KEYWORD-NAME?", "(DEFUN (KEYWORD-NAME? BOOLEAN) ((NAME STRING)) :DOCUMENTATION \"Return TRUE if name is prefixed by ':'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&keywordNameP)), NULL);
     defineFunctionObject("INTERN-STELLA-NAME", "(DEFUN (INTERN-STELLA-NAME GENERALIZED-SYMBOL) ((NAME STRING)) :DOCUMENTATION \"Parse `name' which is assumed to be the printed\nrepresentation of a STELLA symbol, surrogate or keyword, intern\nit into the current or specified module and return the result.\nThis is identical to calling `unstringify' on `name' but 10-15\ntimes faster.\" :PUBLIC? TRUE)", ((cpp_function_code)(&internStellaName)), NULL);
     defineFunctionObject("COMPUTE-FULL-NAME", "(DEFUN (COMPUTE-FULL-NAME STRING) ((NAME STRING) (MODULE MODULE)) :PUBLIC? TRUE)", ((cpp_function_code)(&computeFullName)), NULL);
-    defineMethodObject("(DEFMETHOD (LOCAL-PRINT-NAME STRING) ((SELF GENERALIZED-SYMBOL)))", ((cpp_method_code)(&GeneralizedSymbol::localPrintName)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (LOCAL-PRINT-NAME STRING) ((SELF SURROGATE)))", ((cpp_method_code)(&Surrogate::localPrintName)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (RELATIVE-NAME STRING) ((SELF GENERALIZED-SYMBOL)))", ((cpp_method_code)(&GeneralizedSymbol::relativeName)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LOCAL-PRINT-NAME STRING) ((SELF GENERALIZED-SYMBOL) (READABLE? BOOLEAN)))", ((cpp_method_code)(&GeneralizedSymbol::localPrintName)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LOCAL-PRINT-NAME STRING) ((SELF SURROGATE) (READABLE? BOOLEAN)))", ((cpp_method_code)(&Surrogate::localPrintName)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (RELATIVE-NAME STRING) ((SELF GENERALIZED-SYMBOL) (READABLE? BOOLEAN)))", ((cpp_method_code)(&GeneralizedSymbol::relativeName)), ((cpp_method_code)(NULL)));
     defineFunctionObject("VISIBLE-SYMBOL?", "(DEFUN (VISIBLE-SYMBOL? BOOLEAN) ((SELF SYMBOL)) :DOCUMENTATION \"Return `true' if `self' is visible from the current module.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (EQL? SELF (LOOKUP-SYMBOL-IN-MODULE (SYMBOL-NAME SELF) *MODULE* FALSE))))", ((cpp_function_code)(&visibleSymbolP)), NULL);
     defineFunctionObject("VISIBLE-SURROGATE?", "(DEFUN (VISIBLE-SURROGATE? BOOLEAN) ((SELF SURROGATE)) :DOCUMENTATION \"Return `true' if `self' is visible from the current module.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (EQL? SELF (LOOKUP-SURROGATE-IN-MODULE (SYMBOL-NAME SELF) *MODULE* FALSE))))", ((cpp_function_code)(&visibleSurrogateP)), NULL);
-    defineMethodObject("(DEFMETHOD (VISIBLE-NAME STRING) ((SELF GENERALIZED-SYMBOL)) :PUBLIC? TRUE)", ((cpp_method_code)(&GeneralizedSymbol::visibleName)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (VISIBLE-NAME STRING) ((SELF GENERALIZED-SYMBOL) (READABLE? BOOLEAN)) :PUBLIC? TRUE)", ((cpp_method_code)(&GeneralizedSymbol::visibleName)), ((cpp_method_code)(NULL)));
     defineFunctionObject("SYMBOL-VALUE", "(DEFUN (SYMBOL-VALUE OBJECT) ((SYMBOL SYMBOL)) :DOCUMENTATION \"Return the value of `symbol'.  Note, that this value is not\nvisible to code that references a variable with the same name as `symbol'.\nThe `symbol-value' is simply a special property that can always be accessed\nin constant time.  The `symbol-value' of a symbol can be changed with `setf'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VALUE (SYMBOL-VALUE-AND-PLIST SYMBOL))))", ((cpp_function_code)(&symbolValue)), NULL);
     defineFunctionObject("SYMBOL-VALUE-SETTER", "(DEFUN (SYMBOL-VALUE-SETTER OBJECT) ((SYMBOL SYMBOL) (VALUE OBJECT)))", ((cpp_function_code)(&symbolValueSetter)), NULL);
     defineFunctionObject("SYMBOL-PLIST", "(DEFUN (SYMBOL-PLIST CONS) ((SYMBOL SYMBOL)) :DOCUMENTATION \"Return the property list of `symbol'.  The `symbol-plist'\nof a symbol can be set with `setf'.  IMPORTANT: Property list are modified \ndestructively, hence, if you supply it as a whole make sure to always supply\na modfiable copy, e.g., by using `bquote'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (REST (SYMBOL-VALUE-AND-PLIST SYMBOL))))", ((cpp_function_code)(&symbolPlist)), NULL);
@@ -1891,6 +1925,7 @@ void helpStartupSymbols3() {
     defineFunctionObject("INITIALIZE-SYMBOL-ESCAPE-CODE-TABLE", "(DEFUN (INITIALIZE-SYMBOL-ESCAPE-CODE-TABLE STRING) ((CASESENSITIVE? BOOLEAN)))", ((cpp_function_code)(&initializeSymbolEscapeCodeTable)), NULL);
     defineFunctionObject("COMPUTE-SYMBOL-ESCAPE-CODE", "(DEFUN (COMPUTE-SYMBOL-ESCAPE-CODE KEYWORD) ((NAME STRING) (CASESENSITIVE? BOOLEAN)))", ((cpp_function_code)(&computeSymbolEscapeCode)), NULL);
     defineFunctionObject("PRINT-SYMBOL-NAME-READABLY", "(DEFUN PRINT-SYMBOL-NAME-READABLY ((NAME STRING) (STREAM NATIVE-OUTPUT-STREAM) (CASESENSITIVE? BOOLEAN)))", ((cpp_function_code)(&printSymbolNameReadably)), NULL);
+    defineFunctionObject("READABLE-SYMBOL-NAME", "(DEFUN (READABLE-SYMBOL-NAME STRING) ((NAME STRING) (CASESENSITIVE? BOOLEAN)) :PUBLIC? TRUE)", ((cpp_function_code)(&readableSymbolName)), NULL);
     defineFunctionObject("PRINT-SYMBOL", "(DEFUN PRINT-SYMBOL ((SELF SYMBOL) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printSymbol)), NULL);
     defineFunctionObject("PRINT-SURROGATE", "(DEFUN PRINT-SURROGATE ((SELF SURROGATE) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printSurrogate)), NULL);
     defineFunctionObject("PRINT-KEYWORD", "(DEFUN PRINT-KEYWORD ((SELF KEYWORD) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printKeyword)), NULL);
@@ -1919,9 +1954,9 @@ void startupSymbols() {
       setDynamicSlotValue(oSTELLA_MODULEo->dynamicSlots, SYM_SYMBOLS_STELLA_JAVA_PACKAGE, wrapString("edu.isi.stella"), NULL_STRING_WRAPPER);
       setDynamicSlotValue(oSTELLA_MODULEo->dynamicSlots, SYM_SYMBOLS_STELLA_MODULE_LISP_PACKAGE, wrapString("STELLA"), NULL_STRING_WRAPPER);
       setDynamicSlotValue(oSTELLA_MODULEo->dynamicSlots, SYM_SYMBOLS_STELLA_MODULE_CPP_PACKAGE, wrapString("stella"), NULL_STRING_WRAPPER);
-      setDynamicSlotValue(oROOT_MODULEo->dynamicSlots, SYM_SYMBOLS_STELLA_CODE_ONLYp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
-      setDynamicSlotValue(oSTELLA_MODULEo->dynamicSlots, SYM_SYMBOLS_STELLA_CODE_ONLYp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
-      setDynamicSlotValue(oCOMMON_LISP_MODULEo->dynamicSlots, SYM_SYMBOLS_STELLA_CODE_ONLYp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(oROOT_MODULEo->dynamicSlots, SYM_SYMBOLS_STELLA_CODE_ONLYp, TRUE_WRAPPER, FALSE_WRAPPER);
+      setDynamicSlotValue(oSTELLA_MODULEo->dynamicSlots, SYM_SYMBOLS_STELLA_CODE_ONLYp, TRUE_WRAPPER, FALSE_WRAPPER);
+      setDynamicSlotValue(oCOMMON_LISP_MODULEo->dynamicSlots, SYM_SYMBOLS_STELLA_CODE_ONLYp, TRUE_WRAPPER, FALSE_WRAPPER);
       oSYMBOL_ESCAPE_CODE_TABLEo = initializeSymbolEscapeCodeTable(false);
       oCASE_SENSITIVE_SYMBOL_ESCAPE_CODE_TABLEo = initializeSymbolEscapeCodeTable(true);
     }
@@ -1937,6 +1972,7 @@ void startupSymbols() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SYMBOL-ARRAY* (EXTENSIBLE-SYMBOL-ARRAY OF SYMBOL) NULL :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SURROGATE-ARRAY* (EXTENSIBLE-SYMBOL-ARRAY OF SURROGATE) NULL :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *KEYWORD-ARRAY* (EXTENSIBLE-SYMBOL-ARRAY OF KEYWORD) NULL :PUBLIC? TRUE)");

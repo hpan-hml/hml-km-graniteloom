@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -174,9 +174,8 @@ void startupDefclass();
 extern Surrogate* SGT_DEFCLASS_STELLA_LITERAL;
 extern Surrogate* SGT_DEFCLASS_STELLA_SECOND_CLASS_OBJECT;
 extern Symbol* SYM_DEFCLASS_STELLA_NULL;
-extern Symbol* SYM_DEFCLASS_STELLA_VERBATIM;
 extern Keyword* KWD_DEFCLASS_COMMON_LISP;
-extern Keyword* KWD_DEFCLASS_OTHERWISE;
+extern Symbol* SYM_DEFCLASS_STELLA_VERBATIM;
 extern Symbol* SYM_DEFCLASS_STELLA_DEFINE_CLASS_FROM_STRINGIFIED_SOURCE;
 extern Symbol* SYM_DEFCLASS_STELLA_CLASS_CL_NATIVE_TYPE;
 extern Keyword* KWD_DEFCLASS_IDL;

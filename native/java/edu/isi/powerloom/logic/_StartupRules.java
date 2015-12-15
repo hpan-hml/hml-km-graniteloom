@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -58,13 +58,11 @@ public class _StartupRules {
         Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/LOGIC", Stella.$STARTUP_TIME_PHASE$ > 1));
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Logic.KWD_HEAD = ((Keyword)(Stella.internRigidSymbolWrtModule("HEAD", null, 2)));
-          Logic.KWD_TAIL = ((Keyword)(Stella.internRigidSymbolWrtModule("TAIL", null, 2)));
-          Logic.KWD_POSITIVE = ((Keyword)(Stella.internRigidSymbolWrtModule("POSITIVE", null, 2)));
-          Logic.KWD_CONTRAPOSITIVE = ((Keyword)(Stella.internRigidSymbolWrtModule("CONTRAPOSITIVE", null, 2)));
-          Logic.SYM_LOGIC_RULES_WITH_DEFERRED_SATELLITES = ((Symbol)(Stella.internRigidSymbolWrtModule("RULES-WITH-DEFERRED-SATELLITES", null, 0)));
-          Logic.KWD_POSITIVE_AND_CONTRAPOSITIVE = ((Keyword)(Stella.internRigidSymbolWrtModule("POSITIVE-AND-CONTRAPOSITIVE", null, 2)));
-          Logic.SYM_LOGIC_STARTUP_RULES = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-RULES", null, 0)));
+          Logic.KWD_POSITIVE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("POSITIVE", null, 2)));
+          Logic.KWD_CONTRAPOSITIVE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTRAPOSITIVE", null, 2)));
+          Logic.SYM_LOGIC_RULES_WITH_DEFERRED_SATELLITES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RULES-WITH-DEFERRED-SATELLITES", null, 0)));
+          Logic.KWD_POSITIVE_AND_CONTRAPOSITIVE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("POSITIVE-AND-CONTRAPOSITIVE", null, 2)));
+          Logic.SYM_LOGIC_STARTUP_RULES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-RULES", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Logic.$DERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONS$.setDefaultValue(null);
@@ -85,7 +83,7 @@ public class _StartupRules {
           Stella.defineFunctionObject("SUBSTITUTE-PROPOSITION", "(DEFUN (SUBSTITUTE-PROPOSITION PROPOSITION) ((PROPOSITION PROPOSITION) (OUTPROP PROPOSITION) (INPROP PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "substituteProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("EXTRACT-INVERTED-GOAL", "(DEFUN (EXTRACT-INVERTED-GOAL PROPOSITION) ((PROPOSITION PROPOSITION) (GOAL PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "extractInvertedGoal", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("INVERT-FORALL-AROUND-GOAL", "(DEFUN (INVERT-FORALL-AROUND-GOAL PROPOSITION) ((FORALLPROP PROPOSITION) (GOAL PROPOSITION) (HEADORTAIL KEYWORD) (CONTRAPOSITIVE? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "invertForallAroundGoal", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Keyword"), java.lang.Boolean.TYPE}), null);
-          Stella.defineFunctionObject("CONSTRUCT-DESCRIPTION-FROM-FORALL-PROPOSITION", "(DEFUN (CONSTRUCT-DESCRIPTION-FROM-FORALL-PROPOSITION OBJECT) ((FORALLPROP PROPOSITION) (HEADORTAIL KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "constructDescriptionFromForallProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
+          Stella.defineFunctionObject("CONSTRUCT-DESCRIPTION-FROM-FORALL-PROPOSITION", "(DEFUN (CONSTRUCT-DESCRIPTION-FROM-FORALL-PROPOSITION DESCRIPTION) ((FORALLPROP PROPOSITION) (HEADORTAIL KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "constructDescriptionFromForallProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
           Stella.defineFunctionObject("MARK-AS-FORWARD-RULE", "(DEFUN MARK-AS-FORWARD-RULE ((IMPLIESPROP PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "markAsForwardRule", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("DERIVE-ONE-SATELLITE-RULE", "(DEFUN DERIVE-ONE-SATELLITE-RULE ((MASTERFORALL PROPOSITION) (GOAL PROPOSITION) (HEADORTAIL KEYWORD) (CONTRAPOSITIVE? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "deriveOneSatelliteRule", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Keyword"), java.lang.Boolean.TYPE}), null);
           Stella.defineFunctionObject("DERIVE-SATELLITE-RULES-FOR-GOAL?", "(DEFUN (DERIVE-SATELLITE-RULES-FOR-GOAL? BOOLEAN) ((FORALLPROP PROPOSITION) (GOALDESCRIPTION DESCRIPTION) (DIRECTION KEYWORD) (LAZYSATELLITES? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "deriveSatelliteRulesForGoalP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.Keyword"), java.lang.Boolean.TYPE}), null);
@@ -120,6 +118,7 @@ public class _StartupRules {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LAZY-SATELLITE-RULES?* BOOLEAN FALSE :DOCUMENTATION \"If true, inversion of forall propositions happens lazily.\nI.e., satellite rules are generated on-demand during inference only if they\nare actually needed.\" :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *DERIVE-DEFERRED-SATELLITE-RULES-INVOCATIONS* (LIST OF DESCRIPTION) NULL)");
         }

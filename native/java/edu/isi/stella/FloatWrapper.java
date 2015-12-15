@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -116,7 +116,8 @@ public class FloatWrapper extends NumberWrapper {
     { FloatWrapper x = this;
 
       return ((y != null) &&
-          ((y.primaryType() == Stella.SGT_STELLA_FLOAT_WRAPPER) &&
+          (((y.primaryType() == Stella.SGT_STELLA_FLOAT_WRAPPER) ||
+          Stella_Object.isaP(y, Stella.SGT_STELLA_FLOAT_WRAPPER)) &&
            (x.wrapperValue == ((FloatWrapper)(y)).wrapperValue)));
     }
   }

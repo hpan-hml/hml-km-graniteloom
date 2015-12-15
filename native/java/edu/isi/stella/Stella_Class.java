@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -115,7 +115,7 @@ public class Stella_Class extends Relation {
 
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             c = ((Surrogate)(iter000.value));
-            c.helpPrintOutline(stream, currentDepth, depth, namedP);
+            Surrogate.typeToClass(c).helpPrintOutline(stream, currentDepth, depth, namedP);
           }
         }
       }
@@ -189,7 +189,7 @@ public class Stella_Class extends Relation {
                    (!MethodSlot.methodContainsUnknownTypeP(((MethodSlot)(slot)))))))))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(MethodSlot.idlYieldOperationSignatureTree(((MethodSlot)(slot))), Stella.NIL);
+                collect000 = Cons.cons(MethodSlot.idlYieldOperationSignatureTree(((MethodSlot)(slot))), Stella.NIL);
                 if (operationdefs == Stella.NIL) {
                   operationdefs = collect000;
                 }
@@ -200,7 +200,7 @@ public class Stella_Class extends Relation {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(MethodSlot.idlYieldOperationSignatureTree(((MethodSlot)(slot))), Stella.NIL);
+                collect000.rest = Cons.cons(MethodSlot.idlYieldOperationSignatureTree(((MethodSlot)(slot))), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -215,7 +215,7 @@ public class Stella_Class extends Relation {
           auxiliary = ((MethodSlot)(iter001.value));
           if (collect001 == null) {
             {
-              collect001 = Stella_Object.cons(MethodSlot.idlYieldOperationSignatureTree(auxiliary), Stella.NIL);
+              collect001 = Cons.cons(MethodSlot.idlYieldOperationSignatureTree(auxiliary), Stella.NIL);
               if (operationdefs == Stella.NIL) {
                 operationdefs = collect001;
               }
@@ -226,7 +226,7 @@ public class Stella_Class extends Relation {
           }
           else {
             {
-              collect001.rest = Stella_Object.cons(MethodSlot.idlYieldOperationSignatureTree(auxiliary), Stella.NIL);
+              collect001.rest = Cons.cons(MethodSlot.idlYieldOperationSignatureTree(auxiliary), Stella.NIL);
               collect001 = collect001.rest;
             }
           }
@@ -251,7 +251,7 @@ public class Stella_Class extends Relation {
                 MethodSlot.idlConstructorP(((MethodSlot)(slot)))))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(MethodSlot.idlYieldConstructorSignatureTree(((MethodSlot)(slot))), Stella.NIL);
+                collect000 = Cons.cons(MethodSlot.idlYieldConstructorSignatureTree(((MethodSlot)(slot))), Stella.NIL);
                 if (constructordefs == Stella.NIL) {
                   constructordefs = collect000;
                 }
@@ -262,7 +262,7 @@ public class Stella_Class extends Relation {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(MethodSlot.idlYieldConstructorSignatureTree(((MethodSlot)(slot))), Stella.NIL);
+                collect000.rest = Cons.cons(MethodSlot.idlYieldConstructorSignatureTree(((MethodSlot)(slot))), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -287,7 +287,7 @@ public class Stella_Class extends Relation {
                 ((!StorageSlot.slotHasUnknownTypeP(((StorageSlot)(slot)), renamed_Class)) &&
                  ((!((StorageSlot)(slot)).slotHardwiredP) &&
                   (!slot.slotMarkedP)))))) {
-            staticattributedefs = Stella_Object.cons(StorageSlot.idlYieldStaticMemberAllocationTree(((StorageSlot)(slot)), renamed_Class), staticattributedefs);
+            staticattributedefs = Cons.cons(StorageSlot.idlYieldStaticMemberAllocationTree(((StorageSlot)(slot)), renamed_Class), staticattributedefs);
           }
         }
       }
@@ -306,7 +306,7 @@ public class Stella_Class extends Relation {
           if (Stella_Object.storageSlotP(slot) &&
               (StorageSlot.nativeSlotP(((StorageSlot)(slot))) &&
                (Slot.nativeSlotHome(slot, renamed_Class) == renamed_Class))) {
-            attributedefs = Stella_Object.cons(StorageSlot.idlYieldAttributeTree(((StorageSlot)(slot)), renamed_Class), attributedefs);
+            attributedefs = Cons.cons(StorageSlot.idlYieldAttributeTree(((StorageSlot)(slot)), renamed_Class), attributedefs);
           }
         }
       }
@@ -328,7 +328,7 @@ public class Stella_Class extends Relation {
                StorageSlot.slotHasClassParameterTypeP(((StorageSlot)(slot)), renamed_Class))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(StorageSlot.idlYieldParameterizedAttributeTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
+                collect000 = Cons.cons(StorageSlot.idlYieldParameterizedAttributeTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
                 if (attributedefs == Stella.NIL) {
                   attributedefs = collect000;
                 }
@@ -339,7 +339,7 @@ public class Stella_Class extends Relation {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(StorageSlot.idlYieldParameterizedAttributeTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
+                collect000.rest = Cons.cons(StorageSlot.idlYieldParameterizedAttributeTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -368,10 +368,10 @@ public class Stella_Class extends Relation {
             return (Stella.NIL);
           }
           if (renamed_Class.abstractP) {
-            modifiers = Stella_Object.cons(StringWrapper.wrapString("abstract"), modifiers);
+            modifiers = Cons.cons(StringWrapper.wrapString("abstract"), modifiers);
           }
           if (renamed_Class.publicP()) {
-            modifiers = Stella_Object.cons(StringWrapper.wrapString("public"), modifiers);
+            modifiers = Cons.cons(StringWrapper.wrapString("public"), modifiers);
           }
           if (((Surrogate)(renamed_Class.classDirectSupers.first())) != null) {
             parentclass = GeneralizedSymbol.javaTranslateClassName(Surrogate.symbolize(((Surrogate)(renamed_Class.classDirectSupers.first()))));
@@ -382,7 +382,7 @@ public class Stella_Class extends Relation {
             constructordefs = Stella_Class.javaGetConstructorAndMethodDefinitions(renamed_Class, caller_MV_returnarray);
             methoddefs = ((Cons)(caller_MV_returnarray[0]));
           }
-          return (Stella_Object.cons((Stella_Class.exceptionClassP(renamed_Class) ? Stella.SYM_STELLA_JAVA_EXCEPTION_CLASS : Stella.SYM_STELLA_JAVA_CLASS), Stella_Object.cons(((((StringWrapper)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_DOCUMENTATION, Stella.NULL_STRING_WRAPPER))).wrapperValue != null) ? StringWrapper.wrapString(((StringWrapper)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_DOCUMENTATION, Stella.NULL_STRING_WRAPPER))).wrapperValue) : null), Stella_Object.cons(modifiers, Stella_Object.cons((renamed_Class.mixinP ? StringWrapper.wrapString("interface") : StringWrapper.wrapString("class")), Stella_Object.cons(GeneralizedSymbol.javaTranslateClassName(Stella.internSymbolInModule(renamed_Class.classType.symbolName, ((Module)(renamed_Class.classType.homeContext)), false)), Stella_Object.cons(parentclass, Stella_Object.cons(interfaceclasses, Stella_Object.cons(((!(instancevardefs == Stella.NIL)) ? Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_JAVA_DECLARATIONS, instancevardefs.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL) : Stella.NIL), Stella_Object.cons(constructordefs, Stella_Object.cons(methoddefs, Stella.NIL)))))))))));
+          return (Cons.cons((Stella_Class.exceptionClassP(renamed_Class) ? Stella.SYM_STELLA_JAVA_EXCEPTION_CLASS : Stella.SYM_STELLA_JAVA_CLASS), Cons.cons(((((StringWrapper)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_DOCUMENTATION, Stella.NULL_STRING_WRAPPER))).wrapperValue != null) ? StringWrapper.wrapString(((StringWrapper)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_DOCUMENTATION, Stella.NULL_STRING_WRAPPER))).wrapperValue) : null), Cons.cons(modifiers, Cons.cons((renamed_Class.mixinP ? StringWrapper.wrapString("interface") : StringWrapper.wrapString("class")), Cons.cons(GeneralizedSymbol.javaTranslateClassName(Symbol.internSymbolInModule(renamed_Class.classType.symbolName, ((Module)(renamed_Class.classType.homeContext)), false)), Cons.cons(parentclass, Cons.cons(interfaceclasses, Cons.cons(((!(instancevardefs == Stella.NIL)) ? Cons.cons(Cons.cons(Stella.SYM_STELLA_JAVA_DECLARATIONS, instancevardefs.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL) : Stella.NIL), Cons.cons(constructordefs, Cons.cons(methoddefs, Stella.NIL)))))))))));
 
         } finally {
           Stella.$MODULE$.set(old$Module$000);
@@ -407,7 +407,7 @@ public class Stella_Class extends Relation {
                (tu.category == Stella.SYM_STELLA_PRINT_METHOD))) {
             if (tu.category == Stella.SYM_STELLA_PRINT_METHOD) {
               if (Surrogate.canonicalType(((Stella_Class)(tu.theObject)).classType) == renamed_Class.classType) {
-                methoddefinitions = Stella_Object.cons(tu, methoddefinitions);
+                methoddefinitions = Cons.cons(tu, methoddefinitions);
               }
             }
             else {
@@ -418,11 +418,11 @@ public class Stella_Class extends Relation {
                 }
                 else if (((BooleanWrapper)(KeyValueList.dynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_CONSTRUCTORp, Stella.FALSE_WRAPPER))).wrapperValue) {
                   if (Surrogate.canonicalType(method.slotBaseType) == renamed_Class.classType) {
-                    constructordefinitions = Stella_Object.cons(tu, constructordefinitions);
+                    constructordefinitions = Cons.cons(tu, constructordefinitions);
                   }
                 }
                 else if (Surrogate.canonicalType(method.slotOwner) == renamed_Class.classType) {
-                  methoddefinitions = Stella_Object.cons(tu, methoddefinitions);
+                  methoddefinitions = Cons.cons(tu, methoddefinitions);
                 }
               }
             }
@@ -455,7 +455,7 @@ public class Stella_Class extends Relation {
                (Slot.nativeSlotHome(slot, renamed_Class) == renamed_Class))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(StorageSlot.javaYieldInstanceVarTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
+                collect000 = Cons.cons(StorageSlot.javaYieldInstanceVarTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
                 if (instancevardefs == Stella.NIL) {
                   instancevardefs = collect000;
                 }
@@ -466,7 +466,7 @@ public class Stella_Class extends Relation {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(StorageSlot.javaYieldInstanceVarTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
+                collect000.rest = Cons.cons(StorageSlot.javaYieldInstanceVarTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -491,7 +491,7 @@ public class Stella_Class extends Relation {
                      (Slot.nativeSlotHome(slot, superclass) == superclass))) {
                   if (collect001 == null) {
                     {
-                      collect001 = Stella_Object.cons(StorageSlot.javaYieldInstanceVarTree(((StorageSlot)(slot)), superclass), Stella.NIL);
+                      collect001 = Cons.cons(StorageSlot.javaYieldInstanceVarTree(((StorageSlot)(slot)), superclass), Stella.NIL);
                       if (instancevardefs == Stella.NIL) {
                         instancevardefs = collect001;
                       }
@@ -502,7 +502,7 @@ public class Stella_Class extends Relation {
                   }
                   else {
                     {
-                      collect001.rest = Stella_Object.cons(StorageSlot.javaYieldInstanceVarTree(((StorageSlot)(slot)), superclass), Stella.NIL);
+                      collect001.rest = Cons.cons(StorageSlot.javaYieldInstanceVarTree(((StorageSlot)(slot)), superclass), Stella.NIL);
                       collect001 = collect001.rest;
                     }
                   }
@@ -657,10 +657,10 @@ public class Stella_Class extends Relation {
                    ((!MethodSlot.cppConstructorP(slot000)) &&
                     (!MethodSlot.cppNativeMethodP(slot000))))) {
                 if (slot000.slotPublicP) {
-                  publicmemberfuncdefs = Stella_Object.cons(MethodSlot.cppYieldMemberFuncSignatureTree(slot000), publicmemberfuncdefs);
+                  publicmemberfuncdefs = Cons.cons(MethodSlot.cppYieldMemberFuncSignatureTree(slot000), publicmemberfuncdefs);
                 }
                 else {
-                  protectedmemberfuncdefs = Stella_Object.cons(MethodSlot.cppYieldMemberFuncSignatureTree(slot000), protectedmemberfuncdefs);
+                  protectedmemberfuncdefs = Cons.cons(MethodSlot.cppYieldMemberFuncSignatureTree(slot000), protectedmemberfuncdefs);
                 }
               }
             }
@@ -675,10 +675,10 @@ public class Stella_Class extends Relation {
         for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
           method = ((MethodSlot)(iter001.value));
           if (method.slotPublicP) {
-            publicmemberfuncdefs = Stella_Object.cons(MethodSlot.cppYieldMemberFuncSignatureTree(method), publicmemberfuncdefs);
+            publicmemberfuncdefs = Cons.cons(MethodSlot.cppYieldMemberFuncSignatureTree(method), publicmemberfuncdefs);
           }
           else {
-            protectedmemberfuncdefs = Stella_Object.cons(MethodSlot.cppYieldMemberFuncSignatureTree(method), protectedmemberfuncdefs);
+            protectedmemberfuncdefs = Cons.cons(MethodSlot.cppYieldMemberFuncSignatureTree(method), protectedmemberfuncdefs);
           }
         }
       }
@@ -705,7 +705,7 @@ public class Stella_Class extends Relation {
                 MethodSlot.cppConstructorP(((MethodSlot)(slot)))))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(MethodSlot.cppYieldConstructorSignatureTree(((MethodSlot)(slot))), Stella.NIL);
+                collect000 = Cons.cons(MethodSlot.cppYieldConstructorSignatureTree(((MethodSlot)(slot))), Stella.NIL);
                 if (constructordefs == Stella.NIL) {
                   constructordefs = collect000;
                 }
@@ -716,7 +716,7 @@ public class Stella_Class extends Relation {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(MethodSlot.cppYieldConstructorSignatureTree(((MethodSlot)(slot))), Stella.NIL);
+                collect000.rest = Cons.cons(MethodSlot.cppYieldConstructorSignatureTree(((MethodSlot)(slot))), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -741,7 +741,7 @@ public class Stella_Class extends Relation {
                 ((!((StorageSlot)(slot)).slotHardwiredP) &&
                  ((!slot.slotMarkedP) &&
                   (Slot.nativeSlotHome(slot, renamed_Class) == renamed_Class)))))) {
-            staticmembervardefs = Stella_Object.cons(StorageSlot.cppYieldStaticMemberAllocationTree(((StorageSlot)(slot)), renamed_Class), staticmembervardefs);
+            staticmembervardefs = Cons.cons(StorageSlot.cppYieldStaticMemberAllocationTree(((StorageSlot)(slot)), renamed_Class), staticmembervardefs);
           }
         }
       }
@@ -762,10 +762,10 @@ public class Stella_Class extends Relation {
               (StorageSlot.nativeSlotP(((StorageSlot)(slot))) &&
                (Slot.nativeSlotHome(slot, renamed_Class) == renamed_Class))) {
             if (slot.slotPublicP) {
-              publicmembervardefs = Stella_Object.cons(StorageSlot.cppYieldMemberVarTree(((StorageSlot)(slot)), renamed_Class), publicmembervardefs);
+              publicmembervardefs = Cons.cons(StorageSlot.cppYieldMemberVarTree(((StorageSlot)(slot)), renamed_Class), publicmembervardefs);
             }
             else {
-              protectedmembervardefs = Stella_Object.cons(StorageSlot.cppYieldMemberVarTree(((StorageSlot)(slot)), renamed_Class), protectedmembervardefs);
+              protectedmembervardefs = Cons.cons(StorageSlot.cppYieldMemberVarTree(((StorageSlot)(slot)), renamed_Class), protectedmembervardefs);
             }
           }
         }
@@ -792,7 +792,7 @@ public class Stella_Class extends Relation {
                StorageSlot.slotHasClassParameterTypeP(((StorageSlot)(slot)), renamed_Class))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(StorageSlot.cppYieldParameterizedMemberVarTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
+                collect000 = Cons.cons(StorageSlot.cppYieldParameterizedMemberVarTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
                 if (membervardefs == Stella.NIL) {
                   membervardefs = collect000;
                 }
@@ -803,7 +803,7 @@ public class Stella_Class extends Relation {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(StorageSlot.cppYieldParameterizedMemberVarTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
+                collect000.rest = Cons.cons(StorageSlot.cppYieldParameterizedMemberVarTree(((StorageSlot)(slot)), renamed_Class), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -830,7 +830,7 @@ public class Stella_Class extends Relation {
       }
       { Surrogate renamed_Super = value000;
 
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_FUNCTION, Stella_Object.cons(Stella.NIL, Stella_Object.cons(GeneralizedSymbol.cppTranslateClassName(renamed_Class.classType), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(StringWrapper.wrapString("const std::string&"), Stella_Object.cons(StringWrapper.wrapString("msg"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.NIL, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(GeneralizedSymbol.cppTranslateClassName(renamed_Super), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_ACTUALS, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(StringWrapper.wrapString("msg"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL))))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_FUNCTION, Cons.cons(Stella.NIL, Cons.cons(GeneralizedSymbol.cppTranslateClassName(renamed_Class.classType), Cons.cons(Cons.list$(Cons.cons(Cons.cons(Cons.list$(Cons.cons(StringWrapper.wrapString("const std::string&"), Cons.cons(StringWrapper.wrapString("msg"), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Stella.NIL, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(GeneralizedSymbol.cppTranslateClassName(renamed_Super), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ACTUALS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(StringWrapper.wrapString("msg"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL))))));
       }
     }
   }
@@ -1112,7 +1112,7 @@ public class Stella_Class extends Relation {
       { Surrogate renamed_Super = value000;
         String documentation = ((StringWrapper)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_DOCUMENTATION, Stella.NULL_STRING_WRAPPER))).wrapperValue;
 
-        return (Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("DEFCLASS"), Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella_Class.classSymbol(renamed_Class)), Stella_Object.cons(Stella_Object.cons(((renamed_Super != null) ? Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella.internSymbolInModule(renamed_Super.symbolName, ((Module)(renamed_Super.homeContext)), true)), Stella.NIL) : Stella.NIL), Stella_Object.cons(Stella.NIL, (((documentation != null) ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_DOCUMENTATION, Stella_Object.cons(StringWrapper.wrapString(documentation), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL))), Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.internCommonLispSymbol("DEFCLASS"), Cons.cons(Symbol.clTranslateGlobalSymbol(Stella_Class.classSymbol(renamed_Class)), Cons.cons(Cons.cons(((renamed_Super != null) ? Cons.cons(Symbol.clTranslateGlobalSymbol(Symbol.internSymbolInModule(renamed_Super.symbolName, ((Module)(renamed_Super.homeContext)), true)), Stella.NIL) : Stella.NIL), Cons.cons(Stella.NIL, (((documentation != null) ? Cons.cons(Cons.list$(Cons.cons(Stella.KWD_DOCUMENTATION, Cons.cons(StringWrapper.wrapString(documentation), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL))), Stella.NIL)))));
       }
     }
   }
@@ -1140,12 +1140,12 @@ public class Stella_Class extends Relation {
         String documentation = ((StringWrapper)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_DOCUMENTATION, Stella.NULL_STRING_WRAPPER))).wrapperValue;
 
         if (renamed_Super != null) {
-          translatedsuper = Symbol.clTranslateGlobalSymbol(Stella.internSymbolInModule(renamed_Super.symbolName, ((Module)(renamed_Super.homeContext)), true));
+          translatedsuper = Symbol.clTranslateGlobalSymbol(Symbol.internSymbolInModule(renamed_Super.symbolName, ((Module)(renamed_Super.homeContext)), true));
         }
         else {
           translatedsuper = Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_CLSYS_ROOT_STRUCT);
         }
-        return (Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("DEFSTRUCT"), Stella_Object.cons(Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella_Class.classSymbol(renamed_Class)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_CONC_NAME, Stella_Object.cons(Surrogate.yieldStructSlotAccessorName(renamed_Class.classType, Stella.SYM_STELLA_), Stella_Object.cons(Stella.NIL, Stella.NIL)))), (((translatedsuper != null) ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_INCLUDE, Stella_Object.cons(translatedsuper, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_CONSTRUCTOR, Stella_Object.cons(Stella_Class.yieldStructConstructorName(renamed_Class), Stella_Object.cons(Stella_Object.cons(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_COPIER, Stella_Object.cons(Stella.NIL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_PREDICATE, Stella_Object.cons(Stella.NIL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL))), Stella_Object.cons((((documentation != null) ? Stella_Object.cons(StringWrapper.wrapString(documentation), Stella.NIL) : Stella.NIL)).concatenate(Stella_Class.yieldStructSlotTrees(renamed_Class).concatenate(Stella.NIL, Stella.NIL), Stella.NIL), Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.internCommonLispSymbol("DEFSTRUCT"), Cons.cons(Cons.cons(Symbol.clTranslateGlobalSymbol(Stella_Class.classSymbol(renamed_Class)), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_CONC_NAME, Cons.cons(Surrogate.yieldStructSlotAccessorName(renamed_Class.classType, Stella.SYM_STELLA_), Cons.cons(Stella.NIL, Stella.NIL)))), (((translatedsuper != null) ? Cons.cons(Cons.list$(Cons.cons(Stella.KWD_INCLUDE, Cons.cons(translatedsuper, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.KWD_CONSTRUCTOR, Cons.cons(Stella_Class.yieldStructConstructorName(renamed_Class), Cons.cons(Cons.cons(Stella.NIL, Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_COPIER, Cons.cons(Stella.NIL, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_PREDICATE, Cons.cons(Stella.NIL, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL))), Cons.cons((((documentation != null) ? Cons.cons(StringWrapper.wrapString(documentation), Stella.NIL) : Stella.NIL)).concatenate(Stella_Class.yieldStructSlotTrees(renamed_Class).concatenate(Stella.NIL, Stella.NIL), Stella.NIL), Stella.NIL)))));
       }
     }
   }
@@ -1172,7 +1172,7 @@ public class Stella_Class extends Relation {
           }
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(StorageSlot.yieldStructSlotTree(slot), Stella.NIL);
+              collect000 = Cons.cons(StorageSlot.yieldStructSlotTree(slot), Stella.NIL);
               if (structslotdefs == Stella.NIL) {
                 structslotdefs = collect000;
               }
@@ -1183,7 +1183,7 @@ public class Stella_Class extends Relation {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(StorageSlot.yieldStructSlotTree(slot), Stella.NIL);
+              collect000.rest = Cons.cons(StorageSlot.yieldStructSlotTree(slot), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -1241,7 +1241,7 @@ public class Stella_Class extends Relation {
                       StorageSlot.nativeSlotP(((StorageSlot)(slot)))) {
                     if (collect000 == null) {
                       {
-                        collect000 = Stella_Object.cons(slot, Stella.NIL);
+                        collect000 = Cons.cons(slot, Stella.NIL);
                         if (result.theConsList == Stella.NIL) {
                           result.theConsList = collect000;
                         }
@@ -1252,7 +1252,7 @@ public class Stella_Class extends Relation {
                     }
                     else {
                       {
-                        collect000.rest = Stella_Object.cons(slot, Stella.NIL);
+                        collect000.rest = Cons.cons(slot, Stella.NIL);
                         collect000 = collect000.rest;
                       }
                     }
@@ -1272,7 +1272,7 @@ public class Stella_Class extends Relation {
                 StorageSlot.nativeSlotP(((StorageSlot)(slot)))) {
               if (collect001 == null) {
                 {
-                  collect001 = Stella_Object.cons(slot, Stella.NIL);
+                  collect001 = Cons.cons(slot, Stella.NIL);
                   if (result.theConsList == Stella.NIL) {
                     result.theConsList = collect001;
                   }
@@ -1283,7 +1283,7 @@ public class Stella_Class extends Relation {
               }
               else {
                 {
-                  collect001.rest = Stella_Object.cons(slot, Stella.NIL);
+                  collect001.rest = Cons.cons(slot, Stella.NIL);
                   collect001 = collect001.rest;
                 }
               }
@@ -1310,7 +1310,7 @@ public class Stella_Class extends Relation {
               (!Stella.translateToSingleInheritanceLanguageP())) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Stella_Class.clTranslateClassName(Surrogate.typeToClass(renamed_Super)), Stella.NIL);
+                collect000 = Cons.cons(Stella_Class.clTranslateClassName(Surrogate.typeToClass(renamed_Super)), Stella.NIL);
                 if (directsupers == Stella.NIL) {
                   directsupers = collect000;
                 }
@@ -1321,7 +1321,7 @@ public class Stella_Class extends Relation {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Stella_Class.clTranslateClassName(Surrogate.typeToClass(renamed_Super)), Stella.NIL);
+                collect000.rest = Cons.cons(Stella_Class.clTranslateClassName(Surrogate.typeToClass(renamed_Super)), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -1329,7 +1329,7 @@ public class Stella_Class extends Relation {
         }
       }
       if (directsupers == Stella.NIL) {
-        directsupers = Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_CLSYS_ROOT_OBJECT), directsupers);
+        directsupers = Cons.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_CLSYS_ROOT_OBJECT), directsupers);
       }
       { Slot slot = null;
         Iterator iter001 = renamed_Class.classSlots();
@@ -1352,7 +1352,7 @@ public class Stella_Class extends Relation {
             }
             if (collect001 == null) {
               {
-                collect001 = Stella_Object.cons(StorageSlot.yieldClosSlotTree(((StorageSlot)(slot))), Stella.NIL);
+                collect001 = Cons.cons(StorageSlot.yieldClosSlotTree(((StorageSlot)(slot))), Stella.NIL);
                 if (closslotdefs == Stella.NIL) {
                   closslotdefs = collect001;
                 }
@@ -1363,14 +1363,14 @@ public class Stella_Class extends Relation {
             }
             else {
               {
-                collect001.rest = Stella_Object.cons(StorageSlot.yieldClosSlotTree(((StorageSlot)(slot))), Stella.NIL);
+                collect001.rest = Cons.cons(StorageSlot.yieldClosSlotTree(((StorageSlot)(slot))), Stella.NIL);
                 collect001 = collect001.rest;
               }
             }
           }
         }
       }
-      return (Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("DEFCLASS"), Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella_Class.classSymbol(renamed_Class)), Stella_Object.cons(Stella_Object.cons(directsupers, Stella_Object.cons(closslotdefs, (((documentation != null) ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_DOCUMENTATION, Stella_Object.cons(StringWrapper.wrapString(documentation), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL))), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.internCommonLispSymbol("DEFCLASS"), Cons.cons(Symbol.clTranslateGlobalSymbol(Stella_Class.classSymbol(renamed_Class)), Cons.cons(Cons.cons(directsupers, Cons.cons(closslotdefs, (((documentation != null) ? Cons.cons(Cons.list$(Cons.cons(Stella.KWD_DOCUMENTATION, Cons.cons(StringWrapper.wrapString(documentation), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL))), Stella.NIL)))));
     }
   }
 
@@ -1402,7 +1402,7 @@ public class Stella_Class extends Relation {
 
   public static void createDefprintUnit(Stella_Class renamed_Class) {
     if (!(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_PRINT_FORM, null) == null)) {
-      Cons.walkAuxiliaryTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella.SYM_STELLA_PRINT_OBJECT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(renamed_Class.classType, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_STREAM, Stella_Object.cons(Stella.SYM_STELLA_NATIVE_OUTPUT_STREAM, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.KWD_PUBLICp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella_Object.copyConsTree(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_PRINT_FORM, null)), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))));
+      Cons.walkAuxiliaryTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Stella.SYM_STELLA_PRINT_OBJECT, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(renamed_Class.classType, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_STREAM, Cons.cons(Stella.SYM_STELLA_NATIVE_OUTPUT_STREAM, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.KWD_PUBLICp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella_Object.copyConsTree(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_PRINT_FORM, null)), Cons.cons(Stella.NIL, Stella.NIL)))))))));
       { boolean testValue000 = false;
 
         testValue000 = ((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_CPP;
@@ -1432,7 +1432,7 @@ public class Stella_Class extends Relation {
             self000.theObject = renamed_Class;
             self000.category = Stella.SYM_STELLA_PRINT_METHOD;
             self000.tuHomeModule = ((Module)(Stella.$MODULE$.get()));
-            self000.codeRegister = Stella_Object.walkATree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NULLp, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PRINT_NATIVE_STREAM, Stella_Object.cons(Stella.SYM_STELLA_STREAM, Stella_Object.cons(StringWrapper.wrapString("!NULL!"), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PRINT_OBJECT, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.SYM_STELLA_STREAM, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), new Object[1]);
+            self000.codeRegister = Stella_Object.walkATree(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NULLp, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PRINT_NATIVE_STREAM, Cons.cons(Stella.SYM_STELLA_STREAM, Cons.cons(StringWrapper.wrapString("!NULL!"), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PRINT_OBJECT, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.SYM_STELLA_STREAM, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), new Object[1]);
             self000.auxiliaryP = true;
             ((List)(Stella.$TRANSLATIONUNITS$.get())).push(self000);
           }
@@ -1466,14 +1466,14 @@ public class Stella_Class extends Relation {
 
             try {
               Native.setSpecial(Stella.$METHODBEINGWALKED$, MethodSlot.newMethodSlot());
-              ((MethodSlot)(Stella.$METHODBEINGWALKED$.get())).methodReturnTypeSpecifiers = Stella.list(Stella_Object.cons(Stella.SGT_STELLA_STRING, Stella.NIL));
+              ((MethodSlot)(Stella.$METHODBEINGWALKED$.get())).methodReturnTypeSpecifiers = List.list(Cons.cons(Stella.SGT_STELLA_STRING, Stella.NIL));
               Symbol.pushVariableBinding(Stella.SYM_STELLA_SELF, renamed_Class.classType);
               { TranslationUnit self002 = TranslationUnit.newTranslationUnit();
 
                 self002.theObject = renamed_Class;
                 self002.category = Stella.SYM_STELLA_PRINT_METHOD;
                 self002.tuHomeModule = ((Module)(Stella.$MODULE$.get()));
-                self002.codeRegister = Stella_Object.walkATree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NULLp, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(StringWrapper.wrapString("!NULL!"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VERBATIM, Stella_Object.cons(Stella.KWD_JAVA, Stella_Object.cons(StringWrapper.wrapString("#$(STELLAROOT).javalib.Native.stringify_via_print(self)"), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), new Object[1]);
+                self002.codeRegister = Stella_Object.walkATree(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NULLp, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(StringWrapper.wrapString("!NULL!"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VERBATIM, Cons.cons(Stella.KWD_JAVA, Cons.cons(StringWrapper.wrapString("#$(STELLAROOT).javalib.Native.stringify_via_print(self)"), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), new Object[1]);
                 self002.auxiliaryP = true;
                 ((List)(Stella.$TRANSLATIONUNITS$.get())).push(self002);
               }
@@ -1505,6 +1505,7 @@ public class Stella_Class extends Relation {
     }
     else {
       { List mixinmethods = List.newList();
+        List supermethods = List.newList();
 
         { Surrogate renamed_Super = null;
           Cons iter001 = renamed_Class.classDirectSupers.theConsList;
@@ -1519,7 +1520,12 @@ public class Stella_Class extends Relation {
                   slot = ((Slot)(iter002.value));
                   if (Stella_Object.methodSlotP(slot) &&
                       (Slot.nativeSlotHome(slot, renamed_Class) == renamed_Class)) {
-                    mixinmethods.insertNew(((MethodSlot)(slot)));
+                    if (slot.slotDirectEquivalent != null) {
+                      supermethods.insertNew(((MethodSlot)(slot.slotDirectEquivalent)));
+                    }
+                    if (!(supermethods.memberP(slot))) {
+                      mixinmethods.insertNew(((MethodSlot)(slot)));
+                    }
                   }
                 }
               }
@@ -1690,9 +1696,9 @@ public class Stella_Class extends Relation {
   public static Cons yieldConstructorAttachment(Stella_Class renamed_Class, Symbol classref) {
     if ((!renamed_Class.abstractP) &&
         Stella_Class.createNativeClassP(renamed_Class)) {
-      { Cons constructorfncode = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CODE, Stella_Object.cons(Stella.KWD_FUNCTION, Stella_Object.cons(Stella_Class.yieldConstructorName(renamed_Class), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      { Cons constructorfncode = Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CODE, Cons.cons(Stella.KWD_FUNCTION, Cons.cons(Stella_Class.yieldConstructorName(renamed_Class), Cons.cons(Stella.NIL, Stella.NIL)))));
 
-        return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CLASS_CONSTRUCTOR_CODE, Stella_Object.cons(classref, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(constructorfncode, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+        return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CLASS_CONSTRUCTOR_CODE, Cons.cons(classref, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(constructorfncode, Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
       }
     }
     else {
@@ -1714,7 +1720,7 @@ public class Stella_Class extends Relation {
 
                 if (slot000.slotHardwiredP &&
                     (slot000.initialValue() != null)) {
-                  hardwiredslotinitializers = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(StorageSlot.yieldHardwiredSlotVariable(slot000), Stella_Object.cons(Stella_Object.cons(slot000.initialValue(), Stella.NIL), Stella.NIL)))), hardwiredslotinitializers);
+                  hardwiredslotinitializers = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(StorageSlot.yieldHardwiredSlotVariable(slot000), Cons.cons(Cons.cons(slot000.initialValue(), Stella.NIL), Stella.NIL)))), hardwiredslotinitializers);
                 }
               }
             }
@@ -1784,7 +1790,7 @@ public class Stella_Class extends Relation {
           slotname = ((Slot)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_EQp, Stella_Object.cons(Stella_Object.cons(slotname, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(slotname, Stella_Object.cons(Stella.SYM_STELLA_OTHER, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL);
+              collect000 = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_EQp, Cons.cons(Cons.cons(slotname, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(Cons.cons(slotname, Cons.cons(Stella.SYM_STELLA_OTHER, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL);
               if (testtrees == Stella.NIL) {
                 testtrees = collect000;
               }
@@ -1795,13 +1801,13 @@ public class Stella_Class extends Relation {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_EQp, Stella_Object.cons(Stella_Object.cons(slotname, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(slotname, Stella_Object.cons(Stella.SYM_STELLA_OTHER, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL);
+              collect000.rest = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_EQp, Cons.cons(Cons.cons(slotname, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(Cons.cons(slotname, Cons.cons(Stella.SYM_STELLA_OTHER, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
         }
       }
-      Cons.walkAuxiliaryTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_EQUAL, Stella_Object.cons(Stella.SYM_STELLA_BOOLEAN, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella_Class.classSymbol(renamed_Class), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_OTHER, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_AND, testtrees.concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+      Cons.walkAuxiliaryTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_EQUAL, Cons.cons(Stella.SYM_STELLA_BOOLEAN, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella_Class.classSymbol(renamed_Class), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_OTHER, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.cons(Stella.SYM_STELLA_AND, testtrees.concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))));
     }
   }
 
@@ -1817,7 +1823,7 @@ public class Stella_Class extends Relation {
           if (!Surrogate.typeToClass(sub).mixinP) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Stella.internSymbolInModule(sub.symbolName, ((Module)(sub.homeContext)), true), Stella.NIL);
+                collect000 = Cons.cons(Symbol.internSymbolInModule(sub.symbolName, ((Module)(sub.homeContext)), true), Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect000;
                 }
@@ -1828,7 +1834,7 @@ public class Stella_Class extends Relation {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Stella.internSymbolInModule(sub.symbolName, ((Module)(sub.homeContext)), true), Stella.NIL);
+                collect000.rest = Cons.cons(Symbol.internSymbolInModule(sub.symbolName, ((Module)(sub.homeContext)), true), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -1855,7 +1861,7 @@ public class Stella_Class extends Relation {
         }
       }
       if (foundP000) {
-        return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CLASS_SLOT_ACCESSOR_CODE, Stella_Object.cons(classref, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CODE, Stella_Object.cons(Stella.KWD_FUNCTION, Stella_Object.cons(Stella_Class.yieldGenericSlotAccessorName(renamed_Class), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+        return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CLASS_SLOT_ACCESSOR_CODE, Cons.cons(classref, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CODE, Cons.cons(Stella.KWD_FUNCTION, Cons.cons(Stella_Class.yieldGenericSlotAccessorName(renamed_Class), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
       }
       else {
         return (Stella.NIL);
@@ -1893,17 +1899,17 @@ public class Stella_Class extends Relation {
                  (!StorageSlot.slotAccessMethodP(((StorageSlot)(slot)))))) {
               continue loop000;
             }
-            accesstree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+            accesstree = Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Cons.cons(slot.slotName, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))));
             if (!((StorageSlot)(slot)).slotHardwiredP) {
               slottype = Surrogate.canonicalType(slot.type());
               valuetree = Stella.SYM_STELLA_VALUE;
               if (Surrogate.subtypeOfP(slottype, Stella.SGT_STELLA_LITERAL) &&
                   (Surrogate.lookupLiteralTypeInfo(slottype, Stella.KWD_WRAP_FUNCTION) != null)) {
-                valuetree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CAST, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(slottype.typeToWrappedType(), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+                valuetree = Cons.list$(Cons.cons(Stella.SYM_STELLA_CAST, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(slottype.typeToWrappedType(), Cons.cons(Stella.NIL, Stella.NIL)))));
               }
-              accesstree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.SYM_STELLA_SETVALUEp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(valuetree, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(accesstree, Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+              accesstree = Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Stella.SYM_STELLA_SETVALUEp, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.cons(slot.slotName, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(valuetree, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(accesstree, Cons.cons(Stella.NIL, Stella.NIL))))));
             }
-            clauses = Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(accesstree, Stella.NIL)), clauses);
+            clauses = Cons.cons(Cons.cons(slot.slotName, Cons.cons(accesstree, Stella.NIL)), clauses);
           }
         }
       }
@@ -1923,7 +1929,7 @@ public class Stella_Class extends Relation {
                      (!(slot == StorageSlot.canonicalSlot(((StorageSlot)(slot))))))))) {
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SLOTNAME, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_QUOTE, Stella_Object.cons(StorageSlot.canonicalSlot(((StorageSlot)(slot))).slotName, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL)), Stella.NIL);
+                    collect000 = Cons.cons(Cons.cons(slot.slotName, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SLOTNAME, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_QUOTE, Cons.cons(StorageSlot.canonicalSlot(((StorageSlot)(slot))).slotName, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL)), Stella.NIL);
                     if (renameclauses == Stella.NIL) {
                       renameclauses = collect000;
                     }
@@ -1934,7 +1940,7 @@ public class Stella_Class extends Relation {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SLOTNAME, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_QUOTE, Stella_Object.cons(StorageSlot.canonicalSlot(((StorageSlot)(slot))).slotName, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL)), Stella.NIL);
+                    collect000.rest = Cons.cons(Cons.cons(slot.slotName, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SLOTNAME, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_QUOTE, Cons.cons(StorageSlot.canonicalSlot(((StorageSlot)(slot))).slotName, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL)), Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -1942,16 +1948,16 @@ public class Stella_Class extends Relation {
             }
           }
           if (!(renameclauses == Stella.NIL)) {
-            renameclauses = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CASE, Stella_Object.cons(Stella.SYM_STELLA_SLOTNAME, Stella_Object.cons(renameclauses.concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)))), Stella.NIL);
+            renameclauses = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CASE, Cons.cons(Stella.SYM_STELLA_SLOTNAME, Cons.cons(renameclauses.concatenate(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)))), Stella.NIL);
           }
-          clauses = Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, renameclauses.concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.SYM_STELLA_SETVALUEp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SET_DYNAMIC_SLOT_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_SLOTNAME, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LOOKUP, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_SLOTNAME, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL), Stella.NIL)), clauses);
+          clauses = Cons.cons(Cons.cons(Stella.SYM_STELLA_OTHERWISE, renameclauses.concatenate(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Stella.SYM_STELLA_SETVALUEp, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SET_DYNAMIC_SLOT_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_SLOTNAME, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOOKUP, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_SLOTNAME, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL), Stella.NIL)), clauses);
         }
       }
       if (clauses == Stella.NIL) {
         return (null);
       }
       else {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(Stella_Object.cons(Stella_Class.yieldGenericSlotAccessorName(renamed_Class), Stella_Object.cons(Stella.SYM_STELLA_OBJECT, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(renamed_Class.classType, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOTNAME, Stella_Object.cons(Stella.SYM_STELLA_SYMBOL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.SYM_STELLA_OBJECT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETVALUEp, Stella_Object.cons(Stella.SYM_STELLA_BOOLEAN, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CASE, Stella_Object.cons(Stella.SYM_STELLA_SLOTNAME, Stella_Object.cons(clauses.reverse().concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(Cons.cons(Stella_Class.yieldGenericSlotAccessorName(renamed_Class), Cons.cons(Stella.SYM_STELLA_OBJECT, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(renamed_Class.classType, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOTNAME, Cons.cons(Stella.SYM_STELLA_SYMBOL, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.SYM_STELLA_OBJECT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETVALUEp, Cons.cons(Stella.SYM_STELLA_BOOLEAN, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CASE, Cons.cons(Stella.SYM_STELLA_SLOTNAME, Cons.cons(clauses.reverse().concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))))));
       }
     }
   }
@@ -1961,7 +1967,7 @@ public class Stella_Class extends Relation {
       String prefix = (Stella.allUpperCaseStringP(baseName) ? "ACCESS-" : "access-");
       String suffix = (Stella.allUpperCaseStringP(baseName) ? "-SLOT-VALUE" : "-Slot-Value");
 
-      return (GeneralizedSymbol.internDerivedSymbol(renamed_Class.classType, prefix + baseName + suffix));
+      return (Symbol.internDerivedSymbol(renamed_Class.classType, prefix + baseName + suffix));
     }
   }
 
@@ -1973,7 +1979,7 @@ public class Stella_Class extends Relation {
         if (hasinitializerP) {
           Cons.walkAuxiliaryTree(Stella_Class.yieldInitializerDefinition(renamed_Class));
         }
-        Cons.helpWalkAuxiliaryTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(classname, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(classname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.KWD_PUBLICp, Stella_Object.cons((renamed_Class.publicP() ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella_Object.cons(((hasinitializerP ? Stella_Object.cons(Stella_Object.cons(Stella_Class.yieldInitializerName(renamed_Class), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella.NIL) : Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL))).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))), Stella.NIL)))), false);
+        Cons.helpWalkAuxiliaryTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(classname, Cons.cons(Cons.list$(Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(classname, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Stella.KWD_PUBLICp, Cons.cons((renamed_Class.publicP() ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Cons.cons(((hasinitializerP ? Cons.cons(Cons.cons(Stella_Class.yieldInitializerName(renamed_Class), Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella.NIL) : Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL))).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))), Stella.NIL)))), false);
       }
     }
   }
@@ -1990,7 +1996,7 @@ public class Stella_Class extends Relation {
           if (Stella_Class.classWithInitializerP(((Stella_Class)(renamed_Super.surrogateValue)))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Stella_Object.cons(Stella_Class.yieldInitializerName(((Stella_Class)(renamed_Super.surrogateValue))), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella.NIL);
+                collect000 = Cons.cons(Cons.cons(Stella_Class.yieldInitializerName(((Stella_Class)(renamed_Super.surrogateValue))), Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella.NIL);
                 if (parentinitforms == Stella.NIL) {
                   parentinitforms = collect000;
                 }
@@ -2001,14 +2007,14 @@ public class Stella_Class extends Relation {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Stella_Object.cons(Stella_Class.yieldInitializerName(((Stella_Class)(renamed_Super.surrogateValue))), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella.NIL);
+                collect000.rest = Cons.cons(Cons.cons(Stella_Class.yieldInitializerName(((Stella_Class)(renamed_Super.surrogateValue))), Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
           }
         }
       }
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(Stella_Class.yieldInitializerName(renamed_Class), Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(StandardObject.yieldTypeSpecTree(renamed_Class.classType), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), parentinitforms.concatenate(Stella_Class.yieldLocalInitialValueAssignments(renamed_Class).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(Stella_Class.yieldInitializerName(renamed_Class), Cons.cons(Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(StandardObject.yieldTypeSpecTree(renamed_Class.classType), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), parentinitforms.concatenate(Stella_Class.yieldLocalInitialValueAssignments(renamed_Class).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), Stella.NIL)))));
     }
   }
 
@@ -2016,7 +2022,7 @@ public class Stella_Class extends Relation {
     { String baseName = Stella_Class.className(renamed_Class);
       String prefix = (Stella.allUpperCaseStringP(baseName) ? "INITIALIZE-" : "initialize-");
 
-      return (GeneralizedSymbol.internDerivedSymbol(renamed_Class.classType, prefix + baseName));
+      return (Symbol.internDerivedSymbol(renamed_Class.classType, prefix + baseName));
     }
   }
 
@@ -2083,14 +2089,14 @@ public class Stella_Class extends Relation {
           Symbol recyclelist = Stella_Class.yieldRecycleListName(renamed_Class);
 
           if (Stella_Class.useFreeListP(renamed_Class)) {
-            definitions = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella.SYM_STELLA_FREE, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(classname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_AND, Stella_Object.cons(Stella.SYM_STELLA_$RECYCLING_ENABLEDp$, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons((((Stella_Class.useSweepListP(renamed_Class) &&
-                (!Surrogate.subtypeOfP(renamed_Class.classType, Stella.SGT_STELLA_STANDARD_OBJECT))) ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ALL_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))), Stella_Object.cons(Stella_Class.yieldTerminateObjectTrees(renamed_Class).concatenate(Stella.yieldRegisterRecycledItemTrees().concatenate((((recycleslot != null) ? Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(recycleslot.slotName, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PUSH, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LIST_OF_RECYCLED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL))).concatenate((((!Stella_Class.useSweepListP(renamed_Class)) ? Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ii, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CURRENT_LENGTH, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_e, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA___, Stella_Object.cons(Stella.SYM_STELLA_$RECYCLE_LISTS_MAINTENANCE_TIMER$, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(IntegerWrapper.wrapInteger(0), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_MAINTAIN_RECYCLE_LISTS, Stella.NIL), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), definitions);
+            definitions = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Stella.SYM_STELLA_FREE, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(classname, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_AND, Cons.cons(Stella.SYM_STELLA_$RECYCLING_ENABLEDp$, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons((((Stella_Class.useSweepListP(renamed_Class) &&
+                (!Surrogate.subtypeOfP(renamed_Class.classType, Stella.SGT_STELLA_STANDARD_OBJECT))) ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ALL_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))), Cons.cons(Stella_Class.yieldTerminateObjectTrees(renamed_Class).concatenate(Stella.yieldRegisterRecycledItemTrees().concatenate((((recycleslot != null) ? Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(recycleslot.slotName, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))) : Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PUSH, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LIST_OF_RECYCLED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL))).concatenate((((!Stella_Class.useSweepListP(renamed_Class)) ? Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ii, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CURRENT_LENGTH, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA___, Cons.cons(Stella.SYM_STELLA_$RECYCLE_LISTS_MAINTENANCE_TIMER$, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.cons(Stella.SYM_STELLA_MAINTAIN_RECYCLE_LISTS, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), definitions);
           }
           if (Stella_Class.useSweepListP(renamed_Class)) {
             if (!Stella_Class.useFreeListP(renamed_Class)) {
-              definitions = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella.SYM_STELLA_FREE, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(classname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), definitions);
+              definitions = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Stella.SYM_STELLA_FREE, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(classname, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))))), definitions);
             }
-            definitions = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella.SYM_STELLA_SWEEP, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(classname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_AND, Stella_Object.cons(Stella.SYM_STELLA_$RECYCLING_ENABLEDp$, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(((Stella_Class.useFreeListP(renamed_Class) ? (((Stella_Class.recycleSlot(renamed_Class) != null) ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL) : Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CLEAR, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LIST_OF_RECYCLED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))) : Stella.NIL)).concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UNUSED, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ALL_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHILE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NOT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_EQLp, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.SYM_STELLA_UNUSED, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella_Class.yieldTerminateObjectTrees(renamed_Class).concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ALL_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella.NIL), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), definitions);
+            definitions = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Stella.SYM_STELLA_SWEEP, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(classname, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_AND, Cons.cons(Stella.SYM_STELLA_$RECYCLING_ENABLEDp$, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(((Stella_Class.useFreeListP(renamed_Class) ? (((Stella_Class.recycleSlot(renamed_Class) != null) ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL) : Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CLEAR, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LIST_OF_RECYCLED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))) : Stella.NIL)).concatenate(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNUSED, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ALL_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHILE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NOT, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_EQLp, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.SYM_STELLA_UNUSED, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella_Class.yieldTerminateObjectTrees(renamed_Class).concatenate(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ALL_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))))), Stella.NIL), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), definitions);
           }
         }
       }
@@ -2100,7 +2106,7 @@ public class Stella_Class extends Relation {
           destructor = Stella.SYM_STELLA_UNMAKE;
         }
         if (!(destructor == Stella.SYM_STELLA_FREE)) {
-          definitions = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella.SYM_STELLA_FREE, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(classname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(((terminator != null) ? Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella_Object.cons(terminator, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(destructor, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))) : Stella_Object.cons(destructor, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), definitions);
+          definitions = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Stella.SYM_STELLA_FREE, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(classname, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(((terminator != null) ? Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.cons(terminator, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(Cons.cons(destructor, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))) : Cons.cons(destructor, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL))), Cons.cons(Stella.NIL, Stella.NIL)))))), definitions);
         }
       }
       return (definitions.reverse());
@@ -2120,12 +2126,12 @@ public class Stella_Class extends Relation {
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           slotname = ((Symbol)(iter000.value));
           if (!(slotname == messageparameter)) {
-            assignments = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella_Object.cons(slotname, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), assignments);
+            assignments = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.cons(slotname, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL))))), assignments);
           }
           slot = Stella_Class.lookupSlot(renamed_Class, slotname);
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Stella_Object.cons(slotname, Stella_Object.cons(Surrogate.typeToSymbol(slot.type()), Stella.NIL)), Stella.NIL);
+              collect000 = Cons.cons(Cons.cons(slotname, Cons.cons(Surrogate.typeToSymbol(slot.type()), Stella.NIL)), Stella.NIL);
               if (requiredparameters == Stella.NIL) {
                 requiredparameters = collect000;
               }
@@ -2136,13 +2142,13 @@ public class Stella_Class extends Relation {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Stella_Object.cons(slotname, Stella_Object.cons(Surrogate.typeToSymbol(slot.type()), Stella.NIL)), Stella.NIL);
+              collect000.rest = Cons.cons(Cons.cons(slotname, Cons.cons(Surrogate.typeToSymbol(slot.type()), Stella.NIL)), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
         }
       }
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(Stella_Object.cons(Stella_Class.yieldConstructorName(renamed_Class), Stella_Object.cons(Stella_Class.classSymbol(renamed_Class), Stella.NIL)), Stella_Object.cons(requiredparameters.concatenate(Stella.NIL, Stella.NIL), Stella_Object.cons(Stella.KWD_CONSTRUCTORp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.KWD_PUBLICp, Stella_Object.cons((renamed_Class.publicP() ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella_Class.classSymbol(renamed_Class), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella_Class.yieldExceptionConstructorBody(renamed_Class, messageparameter, assignments.reverse()).concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))))))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(Cons.cons(Stella_Class.yieldConstructorName(renamed_Class), Cons.cons(Stella_Class.classSymbol(renamed_Class), Stella.NIL)), Cons.cons(requiredparameters.concatenate(Stella.NIL, Stella.NIL), Cons.cons(Stella.KWD_CONSTRUCTORp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.KWD_PUBLICp, Cons.cons((renamed_Class.publicP() ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella_Class.classSymbol(renamed_Class), Cons.cons(Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL)))), Stella.NIL), Cons.cons(Stella_Class.yieldExceptionConstructorBody(renamed_Class, messageparameter, assignments.reverse()).concatenate(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))))))))));
     }
   }
 
@@ -2154,9 +2160,9 @@ public class Stella_Class extends Relation {
            ((!(renamed_Class.initializer() != null)) &&
             ((!renamed_Class.activeP()) &&
              (!Stella_Class.decidedToRecycleP(renamed_Class)))))) {
-        return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_MAKE, Stella_Object.cons(Stella_Class.classSymbol(renamed_Class), Stella_Object.cons(Stella_Object.cons(messageparameter, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+        return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MAKE, Cons.cons(Stella_Class.classSymbol(renamed_Class), Cons.cons(Cons.cons(messageparameter, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
       }
-      return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_MAKE, Stella_Object.cons(Stella_Class.classSymbol(renamed_Class), Stella_Object.cons(Stella_Object.cons(messageparameter, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), requiredassignments.concatenate(initialvalueassignments.concatenate(Stella_Class.yieldInitializerTrees(renamed_Class).concatenate(((renamed_Class.activeP() ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RUN_CONSTRUCTOR_DEMONS, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL)));
+      return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MAKE, Cons.cons(Stella_Class.classSymbol(renamed_Class), Cons.cons(Cons.cons(messageparameter, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), requiredassignments.concatenate(initialvalueassignments.concatenate(Stella_Class.yieldInitializerTrees(renamed_Class).concatenate(((renamed_Class.activeP() ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RUN_CONSTRUCTOR_DEMONS, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL)));
     }
   }
 
@@ -2174,11 +2180,11 @@ public class Stella_Class extends Relation {
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           slotname = ((Symbol)(iter000.value));
-          assignments = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella_Object.cons(slotname, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), assignments);
+          assignments = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.cons(slotname, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL))))), assignments);
           slot = Stella_Class.lookupSlot(renamed_Class, slotname);
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Stella_Object.cons(slotname, Stella_Object.cons(Surrogate.typeToSymbol(slot.type()), Stella.NIL)), Stella.NIL);
+              collect000 = Cons.cons(Cons.cons(slotname, Cons.cons(Surrogate.typeToSymbol(slot.type()), Stella.NIL)), Stella.NIL);
               if (requiredparameters == Stella.NIL) {
                 requiredparameters = collect000;
               }
@@ -2189,13 +2195,13 @@ public class Stella_Class extends Relation {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Stella_Object.cons(slotname, Stella_Object.cons(Surrogate.typeToSymbol(slot.type()), Stella.NIL)), Stella.NIL);
+              collect000.rest = Cons.cons(Cons.cons(slotname, Cons.cons(Surrogate.typeToSymbol(slot.type()), Stella.NIL)), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
         }
       }
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(Stella_Object.cons(Stella_Class.yieldConstructorName(renamed_Class), Stella_Object.cons(Stella_Class.classSymbol(renamed_Class), Stella.NIL)), Stella_Object.cons(requiredparameters.concatenate(Stella.NIL, Stella.NIL), Stella_Object.cons(Stella.KWD_CONSTRUCTORp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.KWD_PUBLICp, Stella_Object.cons((renamed_Class.publicP() ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella_Class.classSymbol(renamed_Class), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella_Class.yieldConstructorBody(renamed_Class, assignments.reverse()).concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))))))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(Cons.cons(Stella_Class.yieldConstructorName(renamed_Class), Cons.cons(Stella_Class.classSymbol(renamed_Class), Stella.NIL)), Cons.cons(requiredparameters.concatenate(Stella.NIL, Stella.NIL), Cons.cons(Stella.KWD_CONSTRUCTORp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.KWD_PUBLICp, Cons.cons((renamed_Class.publicP() ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella_Class.classSymbol(renamed_Class), Cons.cons(Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL)))), Stella.NIL), Cons.cons(Stella_Class.yieldConstructorBody(renamed_Class, assignments.reverse()).concatenate(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))))))))));
     }
   }
 
@@ -2209,7 +2215,7 @@ public class Stella_Class extends Relation {
              (!Stella_Class.decidedToRecycleP(renamed_Class)))))) {
         return (Stella_Class.yieldCreationTrees(renamed_Class));
       }
-      return (Stella_Class.yieldCreationTrees(renamed_Class).concatenate(requiredassignments.concatenate(initialvalueassignments.concatenate(Stella_Class.yieldInitializerTrees(renamed_Class).concatenate(((renamed_Class.activeP() ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RUN_CONSTRUCTOR_DEMONS, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL));
+      return (Stella_Class.yieldCreationTrees(renamed_Class).concatenate(requiredassignments.concatenate(initialvalueassignments.concatenate(Stella_Class.yieldInitializerTrees(renamed_Class).concatenate(((renamed_Class.activeP() ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RUN_CONSTRUCTOR_DEMONS, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL));
     }
   }
 
@@ -2218,7 +2224,7 @@ public class Stella_Class extends Relation {
       Cons cursor = Stella.NIL;
 
       if (((Symbol)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_CLASS_INITIALIZER, null))) != null) {
-        initializers = Stella_Object.cons(((Symbol)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_CLASS_INITIALIZER, null))), initializers);
+        initializers = Cons.cons(((Symbol)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_CLASS_INITIALIZER, null))), initializers);
       }
       { Stella_Class renamed_Super = null;
         Cons iter000 = renamed_Class.classAllSuperClasses;
@@ -2227,13 +2233,13 @@ public class Stella_Class extends Relation {
           renamed_Super = ((Stella_Class)(iter000.value));
           if ((((Symbol)(KeyValueList.dynamicSlotValue(renamed_Super.dynamicSlots, Stella.SYM_STELLA_CLASS_INITIALIZER, null))) != null) &&
               (!initializers.membP(((Symbol)(KeyValueList.dynamicSlotValue(renamed_Super.dynamicSlots, Stella.SYM_STELLA_CLASS_INITIALIZER, null)))))) {
-            initializers = Stella_Object.cons(((Symbol)(KeyValueList.dynamicSlotValue(renamed_Super.dynamicSlots, Stella.SYM_STELLA_CLASS_INITIALIZER, null))), initializers);
+            initializers = Cons.cons(((Symbol)(KeyValueList.dynamicSlotValue(renamed_Super.dynamicSlots, Stella.SYM_STELLA_CLASS_INITIALIZER, null))), initializers);
           }
         }
       }
       cursor = initializers;
       while (!(cursor == Stella.NIL)) {
-        cursor.firstSetter(Stella_Object.cons(cursor.value, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)));
+        cursor.firstSetter(Cons.cons(cursor.value, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)));
         cursor = cursor.rest;
       }
       return (initializers);
@@ -2269,7 +2275,7 @@ public class Stella_Class extends Relation {
               Stella_Object.storageSlotP(slot)) {
             initialvalueassignment = StorageSlot.yieldInitialValueAssignment(((StorageSlot)(slot)), Stella.KWD_ANY_INITIAL_VALUE);
             if (initialvalueassignment != null) {
-              assignments = Stella_Object.cons(initialvalueassignment, assignments);
+              assignments = Cons.cons(initialvalueassignment, assignments);
             }
           }
         }
@@ -2307,7 +2313,7 @@ public class Stella_Class extends Relation {
               Stella_Object.storageSlotP(slot)) {
             initialvalueassignment = StorageSlot.yieldInitialValueAssignment(((StorageSlot)(slot)), mode);
             if (initialvalueassignment != null) {
-              assignments = Stella_Object.cons(initialvalueassignment, assignments);
+              assignments = Cons.cons(initialvalueassignment, assignments);
             }
           }
         }
@@ -2322,7 +2328,7 @@ public class Stella_Class extends Relation {
       Symbol recyclelist = Stella_Class.yieldRecycleListName(renamed_Class);
 
       recyclelist = Stella_Class.yieldRecycleListName(renamed_Class);
-      return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_COND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_AND, Stella_Object.cons(Stella.SYM_STELLA_$RECYCLING_ENABLEDp$, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(((recycleslot != null) ? Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_POP, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LIST_OF_RECYCLED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_COND, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), (((recycleslot != null) ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(recycleslot.slotName, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL) : Stella.NIL)).concatenate((((recycleslotresettree != null) ? Stella_Object.cons(recycleslotresettree, Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_COND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Class.yieldMakeTrees(renamed_Class).concatenate(Stella_Class.yieldInitialValueAssignments(renamed_Class, Stella.KWD_NULL_VALUE_ONLY).concatenate(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ALL_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ALL_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ii, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CURRENT_LENGTH, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_e, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA___, Stella_Object.cons(Stella.SYM_STELLA_$RECYCLE_LISTS_MAINTENANCE_TIMER$, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(IntegerWrapper.wrapInteger(0), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_MAINTAIN_RECYCLE_LISTS, Stella.NIL), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL), Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Class.yieldMakeTrees(renamed_Class).concatenate(Stella_Class.yieldInitialValueAssignments(renamed_Class, Stella.KWD_NULL_VALUE_ONLY).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+      return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_AND, Cons.cons(Stella.SYM_STELLA_$RECYCLING_ENABLEDp$, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(((recycleslot != null) ? Cons.list$(Cons.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))) : Cons.list$(Cons.cons(Stella.SYM_STELLA_POP, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LIST_OF_RECYCLED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), (((recycleslot != null) ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(recycleslot.slotName, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL) : Stella.NIL)).concatenate((((recycleslotresettree != null) ? Cons.cons(recycleslotresettree, Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Class.yieldMakeTrees(renamed_Class).concatenate(Stella_Class.yieldInitialValueAssignments(renamed_Class, Stella.KWD_NULL_VALUE_ONLY).concatenate(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ALL_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ALL_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ii, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CURRENT_LENGTH, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA___, Cons.cons(Stella.SYM_STELLA_$RECYCLE_LISTS_MAINTENANCE_TIMER$, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.cons(Stella.SYM_STELLA_MAINTAIN_RECYCLE_LISTS, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL), Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Class.yieldMakeTrees(renamed_Class).concatenate(Stella_Class.yieldInitialValueAssignments(renamed_Class, Stella.KWD_NULL_VALUE_ONLY).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
     }
   }
 
@@ -2330,7 +2336,7 @@ public class Stella_Class extends Relation {
     { Symbol recyclelist = Stella_Class.yieldRecycleListName(renamed_Class);
 
       recyclelist = Stella_Class.yieldRecycleListName(renamed_Class);
-      return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_COND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_AND, Stella_Object.cons(Stella.SYM_STELLA_$RECYCLING_ENABLEDp$, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_COND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Class.yieldMakeTrees(renamed_Class).concatenate(Stella_Class.yieldInitialValueAssignments(renamed_Class, Stella.KWD_NULL_VALUE_ONLY).concatenate(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ALL_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ALL_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ii, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CURRENT_LENGTH, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_e, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA___, Stella_Object.cons(Stella.SYM_STELLA_$RECYCLE_LISTS_MAINTENANCE_TIMER$, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(IntegerWrapper.wrapInteger(0), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_MAINTAIN_RECYCLE_LISTS, Stella.NIL), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL), Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Class.yieldMakeTrees(renamed_Class).concatenate(Stella_Class.yieldInitialValueAssignments(renamed_Class, Stella.KWD_NULL_VALUE_ONLY).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+      return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_AND, Cons.cons(Stella.SYM_STELLA_$RECYCLING_ENABLEDp$, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNUSED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Class.yieldMakeTrees(renamed_Class).concatenate(Stella_Class.yieldInitialValueAssignments(renamed_Class, Stella.KWD_NULL_VALUE_ONLY).concatenate(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ALL_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ALL_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ii, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CURRENT_LENGTH, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA___, Cons.cons(Stella.SYM_STELLA_$RECYCLE_LISTS_MAINTENANCE_TIMER$, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.cons(Stella.SYM_STELLA_MAINTAIN_RECYCLE_LISTS, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL), Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Class.yieldMakeTrees(renamed_Class).concatenate(Stella_Class.yieldInitialValueAssignments(renamed_Class, Stella.KWD_NULL_VALUE_ONLY).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
     }
   }
 
@@ -2340,7 +2346,7 @@ public class Stella_Class extends Relation {
       Symbol recyclelist = Stella_Class.yieldRecycleListName(renamed_Class);
 
       recyclelist = Stella_Class.yieldRecycleListName(renamed_Class);
-      return (Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_AND, Stella_Object.cons(Stella.SYM_STELLA_$RECYCLING_ENABLEDp$, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(((recycleslot != null) ? Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_POP, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LIST_OF_RECYCLED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_COND, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), (((recycleslot != null) ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(recycleslot.slotName, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL) : Stella.NIL)).concatenate((((recycleslotresettree != null) ? Stella_Object.cons(recycleslotresettree, Stella.NIL) : Stella.NIL)).concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA___, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CURRENT_LENGTH, Stella_Object.cons(recyclelist, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.yieldUnregisterRecycledItemTrees().concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Class.yieldMakeTrees(renamed_Class).concatenate(Stella_Class.yieldInitialValueAssignments(renamed_Class, Stella.KWD_NULL_VALUE_ONLY).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_AND, Cons.cons(Stella.SYM_STELLA_$RECYCLING_ENABLEDp$, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(((recycleslot != null) ? Cons.list$(Cons.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))) : Cons.list$(Cons.cons(Stella.SYM_STELLA_POP, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LIST_OF_RECYCLED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), (((recycleslot != null) ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RECYCLED_ITEMS, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(recycleslot.slotName, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL) : Stella.NIL)).concatenate((((recycleslotresettree != null) ? Cons.cons(recycleslotresettree, Stella.NIL) : Stella.NIL)).concatenate(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA___, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CURRENT_LENGTH, Cons.cons(recyclelist, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.yieldUnregisterRecycledItemTrees().concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)), Cons.cons(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Class.yieldMakeTrees(renamed_Class).concatenate(Stella_Class.yieldInitialValueAssignments(renamed_Class, Stella.KWD_NULL_VALUE_ONLY).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))));
     }
   }
 
@@ -2377,7 +2383,7 @@ public class Stella_Class extends Relation {
             { StorageSlot slot000 = ((StorageSlot)(slot));
 
               if (slot000.componentP()) {
-                trees = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella_Object.cons(slot000.slotName, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_FREE, Stella_Object.cons(Stella_Object.cons(slot000.slotName, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), trees);
+                trees = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Cons.cons(slot000.slotName, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_FREE, Cons.cons(Cons.cons(slot000.slotName, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), trees);
               }
             }
           }
@@ -2386,14 +2392,14 @@ public class Stella_Class extends Relation {
         }
       }
       if (Stella_Class.lookupSlot(renamed_Class, Stella.SYM_STELLA_DYNAMIC_SLOTS) != null) {
-        trees = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CLEAR, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), trees);
+        trees = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CLEAR, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), trees);
       }
       if (terminator != null) {
         if (Stella_Class.useSweepListP(renamed_Class)) {
-          trees = Stella_Object.cons(Stella_Object.cons(terminator, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), trees);
+          trees = Cons.cons(Cons.cons(terminator, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), trees);
         }
         else {
-          trees = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UNLESS, Stella_Object.cons(Stella_Object.cons(terminator, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella.NIL), Stella_Object.cons(Stella.NIL, Stella.NIL))))), trees);
+          trees = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNLESS, Cons.cons(Cons.cons(terminator, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(Cons.cons(Stella.SYM_STELLA_RETURN, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL))))), trees);
         }
       }
       return (trees.reverse().concatenate(Stella_Class.yieldInitialValueAssignments(renamed_Class, Stella.KWD_FORCE_NULL_VALUE), Stella.NIL));
@@ -2410,7 +2416,7 @@ public class Stella_Class extends Relation {
 ;
         return (Stella_Class.yieldMakeTrees(renamed_Class));
       }
-      return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella_Object.cons(((Symbol)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_CLASS_CREATOR, null))), Stella.NIL), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+      return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.cons(((Symbol)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Stella.SYM_STELLA_CLASS_CREATOR, null))), Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
     }
     else if (Stella_Class.decidedToRecycleP(renamed_Class)) {
       return (Stella_Class.yieldCreationOrReuseTrees(renamed_Class));
@@ -2424,17 +2430,17 @@ public class Stella_Class extends Relation {
     { String baseName = Stella_Class.className(renamed_Class);
       String prefix = (Stella.allUpperCaseStringP(baseName) ? "NEW-" : "new-");
 
-      return (GeneralizedSymbol.internDerivedSymbol(renamed_Class.classType, prefix + baseName));
+      return (Symbol.internDerivedSymbol(renamed_Class.classType, prefix + baseName));
     }
   }
 
   public static Cons yieldMakeTrees(Stella_Class renamed_Class) {
-    return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_MAKE, Stella_Object.cons(Stella_Class.classSymbol(renamed_Class), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+    return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MAKE, Cons.cons(Stella_Class.classSymbol(renamed_Class), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
   }
 
   public static Cons yieldRecycleListDefinitions(Stella_Class renamed_Class) {
     if (Stella_Class.decidedToRecycleP(renamed_Class)) {
-      return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFGLOBAL, Stella_Object.cons(Stella_Class.yieldRecycleListName(renamed_Class), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RECYCLE_LIST, Stella_Object.cons(Stella.SYM_STELLA_OF, Stella_Object.cons(Stella_Class.classSymbol(renamed_Class), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CREATE_RECYCLE_LIST, Stella_Object.cons(renamed_Class.classType, Stella_Object.cons(Stella_Object.cons(IntegerWrapper.wrapInteger(Stella_Class.computeRecycledItemSize(renamed_Class)), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL));
+      return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFGLOBAL, Cons.cons(Stella_Class.yieldRecycleListName(renamed_Class), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RECYCLE_LIST, Cons.cons(Stella.SYM_STELLA_OF, Cons.cons(Stella_Class.classSymbol(renamed_Class), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CREATE_RECYCLE_LIST, Cons.cons(renamed_Class.classType, Cons.cons(Cons.cons(IntegerWrapper.wrapInteger(Stella_Class.computeRecycledItemSize(renamed_Class)), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL));
     }
     else {
       return (Stella.NIL);
@@ -2541,7 +2547,7 @@ public class Stella_Class extends Relation {
   }
 
   public static Symbol yieldRecycleListName(Stella_Class renamed_Class) {
-    return (GeneralizedSymbol.internDerivedSymbol(renamed_Class.classType, "*RECYCLE-LIST-FOR-" + Stella_Class.className(renamed_Class) + "-S*"));
+    return (Symbol.internDerivedSymbol(renamed_Class.classType, "*RECYCLE-LIST-FOR-" + Stella_Class.className(renamed_Class) + "-S*"));
   }
 
   public static void warnAboutNonDirectSupers(Stella_Class renamed_Class) {
@@ -2692,7 +2698,7 @@ public class Stella_Class extends Relation {
    * @return Cons
    */
   public static Cons yieldDefineStellaClass(Stella_Class renamed_Class) {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINE_CLASS_FROM_STRINGIFIED_SOURCE, Stella_Object.cons(StringWrapper.wrapString(renamed_Class.name()), Stella_Object.cons(Stella_Object.cons(Stella.yieldStringConstantTree(renamed_Class.classStringifiedSource), Stella.NIL), Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINE_CLASS_FROM_STRINGIFIED_SOURCE, Cons.cons(StringWrapper.wrapString(renamed_Class.name()), Cons.cons(Cons.cons(Stella.yieldStringConstantTree(renamed_Class.classStringifiedSource), Stella.NIL), Stella.NIL)))));
   }
 
   public static Cons yieldClassParameterTypes(Stella_Class renamed_Class) {
@@ -2706,7 +2712,7 @@ public class Stella_Class extends Relation {
           pname = ((Symbol)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Stella_Class.lookupSlot(renamed_Class, pname).slotBaseType, Stella.NIL);
+              collect000 = Cons.cons(Stella_Class.lookupSlot(renamed_Class, pname).slotBaseType, Stella.NIL);
               if (types == Stella.NIL) {
                 types = collect000;
               }
@@ -2717,7 +2723,7 @@ public class Stella_Class extends Relation {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Stella_Class.lookupSlot(renamed_Class, pname).slotBaseType, Stella.NIL);
+              collect000.rest = Cons.cons(Stella_Class.lookupSlot(renamed_Class, pname).slotBaseType, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -2876,7 +2882,7 @@ public class Stella_Class extends Relation {
                 testValue000 = !testValue000;
               }
               if (testValue000) {
-                publicslots = ((Cons)(Stella_Object.cons(slot, publicslots)));
+                publicslots = ((Cons)(Cons.cons(slot, publicslots)));
               }
             }
           }
@@ -3176,7 +3182,7 @@ public class Stella_Class extends Relation {
           if (onlyparent == null) {
             return;
           }
-          renamed_Class.classAllSuperClasses = Stella_Object.cons(onlyparent, onlyparent.classAllSuperClasses);
+          renamed_Class.classAllSuperClasses = Cons.cons(onlyparent, onlyparent.classAllSuperClasses);
           return;
         }
       }
@@ -3199,7 +3205,7 @@ public class Stella_Class extends Relation {
                 if (!allsuperclasses.memberP(ancestor)) {
                   if (collect000 == null) {
                     {
-                      collect000 = Stella_Object.cons(ancestor, Stella.NIL);
+                      collect000 = Cons.cons(ancestor, Stella.NIL);
                       if (sublist == Stella.NIL) {
                         sublist = collect000;
                       }
@@ -3210,14 +3216,14 @@ public class Stella_Class extends Relation {
                   }
                   else {
                     {
-                      collect000.rest = Stella_Object.cons(ancestor, Stella.NIL);
+                      collect000.rest = Cons.cons(ancestor, Stella.NIL);
                       collect000 = collect000.rest;
                     }
                   }
                 }
               }
             }
-            sublist = Stella_Object.cons(parent, sublist);
+            sublist = Cons.cons(parent, sublist);
             allsuperclasses = sublist.concatenate(allsuperclasses, Stella.NIL);
           }
         }
@@ -3239,7 +3245,7 @@ public class Stella_Class extends Relation {
           if (((Stella_Class)(supertype.surrogateValue)) != null) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(((Stella_Class)(supertype.surrogateValue)), Stella.NIL);
+                collect000 = Cons.cons(((Stella_Class)(supertype.surrogateValue)), Stella.NIL);
                 if (parents.theConsList == Stella.NIL) {
                   parents.theConsList = collect000;
                 }
@@ -3250,7 +3256,7 @@ public class Stella_Class extends Relation {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(((Stella_Class)(supertype.surrogateValue)), Stella.NIL);
+                collect000.rest = Cons.cons(((Stella_Class)(supertype.surrogateValue)), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -3385,6 +3391,7 @@ public class Stella_Class extends Relation {
 
   public static void unfinalizeClassSlots(Stella_Class renamed_Class) {
     if (!renamed_Class.classSlotsFinalizedP) {
+      Stella_Class.clearSlotAndMethodCache(renamed_Class);
       return;
     }
     { Surrogate subtype = null;
@@ -3549,7 +3556,7 @@ public class Stella_Class extends Relation {
                 ((!(((Stella_Class)(alias.surrogateValue)) == renamed_Class)) &&
                  (!Stella.stringEqlP(Stella_Class.className(((Stella_Class)(alias.surrogateValue))), Stella_Class.className(renamed_Class))))) {
               {
-                Stella.STANDARD_WARNING.nativeStream.println("Warning: Alias `" + Stella.internSymbolInModule(alias.symbolName, ((Module)(alias.homeContext)), true) + "' can't point to `" + Stella_Class.classSymbol(renamed_Class) + "' because it already points to ");
+                Stella.STANDARD_WARNING.nativeStream.println("Warning: Alias `" + Symbol.internSymbolInModule(alias.symbolName, ((Module)(alias.homeContext)), true) + "' can't point to `" + Stella_Class.classSymbol(renamed_Class) + "' because it already points to ");
                 Stella.STANDARD_WARNING.nativeStream.println("the class `" + Stella_Class.classSymbol(((Stella_Class)(alias.surrogateValue))) + "'.");
               }
 ;
@@ -3602,7 +3609,7 @@ public class Stella_Class extends Relation {
           }
         }
         if (testValue000) {
-          slottree = Stella.list$(Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.internSymbolInModule(classtype.symbolName, ((Module)(classtype.homeContext)), true), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.KWD_TYPE, Stella_Object.cons(Stella.SYM_STELLA_TYPE, Stella_Object.cons(Stella.KWD_AUXILIARYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(classtype, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))));
+          slottree = Cons.list$(Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Symbol.internSymbolInModule(classtype.symbolName, ((Module)(classtype.homeContext)), true), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Stella.KWD_TYPE, Cons.cons(Stella.SYM_STELLA_TYPE, Cons.cons(Stella.KWD_AUXILIARYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(classtype, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))))));
           renamed_Class.classLocalSlots.push(Symbol.defineInlineMethod(Stella.SYM_STELLA_PRIMARY_TYPE, slottree));
         }
       }
@@ -3760,7 +3767,7 @@ public class Stella_Class extends Relation {
           oldsub = ((Surrogate)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(oldsub, Stella.NIL);
+              collect000 = Cons.cons(oldsub, Stella.NIL);
               if (newsubs == Stella.NIL) {
                 newsubs = collect000;
               }
@@ -3771,7 +3778,7 @@ public class Stella_Class extends Relation {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(oldsub, Stella.NIL);
+              collect000.rest = Cons.cons(oldsub, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -3809,7 +3816,7 @@ public class Stella_Class extends Relation {
     }
     newclass.classConstructorCode = oldclass.classConstructorCode;
     Stella_Class.transferDemonsFromOldclass(oldclass, newclass);
-    HookList.runHooks(Stella.$REDEFINE_RELATION_HOOKS$, Stella.list(Stella_Object.cons(oldclass, Stella_Object.cons(newclass, Stella.NIL))));
+    HookList.runHooks(Stella.$REDEFINE_RELATION_HOOKS$, List.list(Cons.cons(oldclass, Cons.cons(newclass, Stella.NIL))));
     oldclass.free();
   }
 
@@ -3935,7 +3942,7 @@ public class Stella_Class extends Relation {
               slotname = iter001.value;
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(slotname, Stella.NIL);
+                  collect000 = Cons.cons(slotname, Stella.NIL);
                   if (into000.theConsList == Stella.NIL) {
                     into000.theConsList = collect000;
                   }
@@ -3946,7 +3953,7 @@ public class Stella_Class extends Relation {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(slotname, Stella.NIL);
+                  collect000.rest = Cons.cons(slotname, Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -3964,7 +3971,7 @@ public class Stella_Class extends Relation {
               slot = ((Slot)(iter002.value));
               if (collect001 == null) {
                 {
-                  collect001 = Stella_Object.cons(slot.slotName, Stella.NIL);
+                  collect001 = Cons.cons(slot.slotName, Stella.NIL);
                   if (into001.theConsList == Stella.NIL) {
                     into001.theConsList = collect001;
                   }
@@ -3975,7 +3982,7 @@ public class Stella_Class extends Relation {
               }
               else {
                 {
-                  collect001.rest = Stella_Object.cons(slot.slotName, Stella.NIL);
+                  collect001.rest = Cons.cons(slot.slotName, Stella.NIL);
                   collect001 = collect001.rest;
                 }
               }
@@ -3993,7 +4000,7 @@ public class Stella_Class extends Relation {
               type = ((Surrogate)(iter003.value));
               if (collect002 == null) {
                 {
-                  collect002 = Stella_Object.cons(type, Stella.NIL);
+                  collect002 = Cons.cons(type, Stella.NIL);
                   if (into002.theConsList == Stella.NIL) {
                     into002.theConsList = collect002;
                   }
@@ -4004,7 +4011,7 @@ public class Stella_Class extends Relation {
               }
               else {
                 {
-                  collect002.rest = Stella_Object.cons(type, Stella.NIL);
+                  collect002.rest = Cons.cons(type, Stella.NIL);
                   collect002 = collect002.rest;
                 }
               }
@@ -4079,7 +4086,7 @@ public class Stella_Class extends Relation {
   }
 
   public static Symbol classSymbol(Stella_Class renamed_Class) {
-    return (Stella.internSymbolInModule(renamed_Class.classType.symbolName, ((Module)(renamed_Class.classType.homeContext)), true));
+    return (Symbol.internSymbolInModule(renamed_Class.classType.symbolName, ((Module)(renamed_Class.classType.homeContext)), true));
   }
 
   public static String className(Stella_Class renamed_Class) {
@@ -4091,7 +4098,7 @@ public class Stella_Class extends Relation {
    * @return Iterator
    */
   public static Iterator privateClassStorageSlots(Stella_Class renamed_Class) {
-    return (Stella_Class.classStorageSlots(renamed_Class, Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterPrivateSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonParameterSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonExternalSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonAuxiliarySlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella.NIL))))));
+    return (Stella_Class.classStorageSlots(renamed_Class, Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterPrivateSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonParameterSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonExternalSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonAuxiliarySlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella.NIL))))));
   }
 
   /** Iterate over all public storage-slots attached to 'class'.
@@ -4099,7 +4106,7 @@ public class Stella_Class extends Relation {
    * @return Iterator
    */
   public static Iterator publicClassStorageSlots(Stella_Class renamed_Class) {
-    return (Stella_Class.classStorageSlots(renamed_Class, Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterPublicSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonParameterSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonExternalSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonAuxiliarySlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella.NIL))))));
+    return (Stella_Class.classStorageSlots(renamed_Class, Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterPublicSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonParameterSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonExternalSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonAuxiliarySlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella.NIL))))));
   }
 
   public static Iterator classTables(Stella_Class renamed_Class, Cons filters) {
@@ -4129,7 +4136,7 @@ public class Stella_Class extends Relation {
    * @return Iterator
    */
   public static Iterator privateClassMethods(Stella_Class renamed_Class) {
-    return (Stella_Class.classMethods(renamed_Class, Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterPrivateSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonExternalSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonAuxiliarySlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella.NIL)))));
+    return (Stella_Class.classMethods(renamed_Class, Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterPrivateSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonExternalSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonAuxiliarySlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella.NIL)))));
   }
 
   /** Iterate over all private methods attached to 'class'.
@@ -4137,7 +4144,7 @@ public class Stella_Class extends Relation {
    * @return Iterator
    */
   public static Iterator publicClassMethods(Stella_Class renamed_Class) {
-    return (Stella_Class.classMethods(renamed_Class, Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterPublicSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonExternalSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella_Object.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonAuxiliarySlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella.NIL)))));
+    return (Stella_Class.classMethods(renamed_Class, Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterPublicSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonExternalSlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Cons.cons(FunctionCodeWrapper.wrapFunctionCode(Native.find_java_method("edu.isi.stella.Slot", "filterNonAuxiliarySlotP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")})), Stella.NIL)))));
   }
 
   public static Iterator classMethods(Stella_Class renamed_Class, Cons filters) {
@@ -4154,7 +4161,7 @@ public class Stella_Class extends Relation {
   public void printObject(java.io.PrintStream stream) {
     { Stella_Class self = this;
 
-      stream.print("|C|" + (((self.classType != null) ? Stella_Class.classSymbol(self).relativeName() : "??")));
+      stream.print("|C|" + (((self.classType != null) ? Stella_Class.classSymbol(self).relativeName(false) : "??")));
     }
   }
 

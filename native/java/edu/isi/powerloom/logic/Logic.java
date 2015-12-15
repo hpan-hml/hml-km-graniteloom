@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -177,6 +177,8 @@ public class Logic {
   public static Symbol SYM_STELLA_1_ = null;
 
   public static Symbol SYM_LOGIC_PROPOSITION = null;
+
+  public static Symbol SYM_LOGIC_ARGUMENT_BOUND_TO = null;
 
   public static Symbol SYM_STELLA_NTH = null;
 
@@ -615,6 +617,8 @@ public class Logic {
 
   public static Surrogate SGT_LOGIC_STRING_LOGIC_WRAPPER = null;
 
+  public static Symbol SYM_LOGIC_ENTITY_MAPPING = null;
+
   /** Maps names of KIF operators to relational surrogates.
    */
   public static PropertyList $OPERATOR_NAME_TO_SURROGATE_TABLE$ = null;
@@ -914,6 +918,8 @@ public class Logic {
 
   public static Symbol SYM_LOGIC_SUBRELATION_LINKp = null;
 
+  public static Surrogate SGT_PL_KERNEL_KB_HOLDS = null;
+
   public static Surrogate SGT_PL_KERNEL_KB_MEMBER_OF = null;
 
   public final static StellaSpecialVariable $DEFAULTCREATIONTYPE$ = new StellaSpecialVariable();
@@ -962,8 +968,6 @@ public class Logic {
 
   public static Symbol SYM_LOGIC_EQUIVALENT = null;
 
-  public static Surrogate SGT_PL_KERNEL_KB_HOLDS = null;
-
   public static Surrogate SGT_STELLA_TABLE = null;
 
   public static Surrogate SGT_PL_KERNEL_KB_POLYMORPHIC = null;
@@ -973,8 +977,6 @@ public class Logic {
    * doesn't indicate that.
    */
   public static boolean $AUTO_COERCE_PROPOSITIONAL_ARGUMENTSp$ = false;
-
-  public static Symbol SYM_PL_KERNEL_KB_CUT = null;
 
   public static Surrogate SGT_PL_KERNEL_KB_VALUE = null;
 
@@ -1026,7 +1028,7 @@ public class Logic {
   /** List of propositions that have failed a type check,
    * but might pass once finalization is complete.
    */
-  public static KeyValueList $CHECK_TYPES_AGENDA$ = null;
+  public static VectorSequence $CHECK_TYPES_AGENDA$ = null;
 
   public static Keyword KWD_MEDIUM = null;
 
@@ -1107,6 +1109,8 @@ public class Logic {
    */
   public static boolean $BACKLINK_ALL_PROPOSITION_ARGUMENTSp$ = false;
 
+  public static Surrogate SGT_LOGIC_BACKLINKS_MIXIN = null;
+
   public static Symbol SYM_LOGIC_SUBSUMPTION_LINKp = null;
 
   public static Keyword KWD_RULES = null;
@@ -1126,6 +1130,22 @@ public class Logic {
 
   public static Symbol SYM_LOGIC_STARTUP_BACKLINKS = null;
 
+  public static Surrogate SGT_LOGIC_PROPAGATION_ENVIRONMENT = null;
+
+  public static Symbol SYM_LOGIC_EVALUATION_QUEUE = null;
+
+  public static Symbol SYM_LOGIC_EVALUATION_STATES = null;
+
+  public static Symbol SYM_LOGIC_FORWARD_CHAINING_QUEUE = null;
+
+  public static Symbol SYM_LOGIC_FORWARD_CHAINING_SET = null;
+
+  public static Symbol SYM_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS = null;
+
+  public static Symbol SYM_LOGIC_ELABORATED_OBJECTS = null;
+
+  public static Symbol SYM_LOGIC_PROPAGATION_ENVIRONMENT = null;
+
   /** True if we are inside of 'react-to-kb-update'.
    */
   public final static StellaSpecialVariable $FILLINGCONSTRAINTPROPAGATIONQUEUESp$ = new StellaSpecialVariable();
@@ -1135,28 +1155,18 @@ public class Logic {
    */
   public final static StellaSpecialVariable $DEFERINGDEFAULTFORWARDINFERENCESp$ = new StellaSpecialVariable();
 
-  public static Symbol SYM_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS_INTERNAL = null;
-
-  public static Symbol SYM_LOGIC_EVALUATION_STATE_TABLE = null;
-
   public static Keyword KWD_POSTED = null;
 
-  public static Symbol SYM_LOGIC_EVALUATION_QUEUE = null;
-
-  /** Points to an active queue of propositions that will trigger
-   * forward inference.  New queue entries are posted to a separate queue
-   * attached to *context*.
-   */
-  public final static StellaSpecialVariable $CURRENTLYEXECUTINGFORWARDCHAININGQUEUE$ = new StellaSpecialVariable();
-
   public static Surrogate SGT_LOGIC_F_COLLECT_FORWARD_CHAINING_RULES_MEMO_TABLE_000 = null;
-
-  public static Symbol SYM_LOGIC_FORWARD_CHAINING_QUEUE = null;
 
   /** Collect goes-true propositions produced by forward
    * chaining.
    */
   public final static StellaSpecialVariable $COLLECTFORWARDPROPOSITIONS$ = new StellaSpecialVariable();
+
+  public static Symbol SYM_LOGIC_SKOLEM_GENERATION_COUNT = null;
+
+  public static int $MAX_SKOLEM_GENERATION_COUNT$ = 3;
 
   public static Keyword KWD_PROPAGATE = null;
 
@@ -1164,14 +1174,16 @@ public class Logic {
 
   public static Keyword KWD_SINGLETONSp = null;
 
+  public static Keyword KWD_INFERENCE_LEVEL = null;
+
+  public static Keyword KWD_SHALLOW = null;
+
   public static Keyword KWD_EVALUATED = null;
 
   /** If TRUE, ensures that forward propagation has
    * been applied to each instance 'touched' during a query.
    */
   public static boolean $JUST_IN_TIME_FORWARD_INFERENCEp$ = true;
-
-  public static Symbol SYM_LOGIC_ELABORATED_IN_WORLDS = null;
 
   public static Keyword KWD_ELABORATE = null;
 
@@ -1424,8 +1436,6 @@ public class Logic {
    */
   public final static StellaSpecialVariable $VARIABLETYPEPROPOSITIONS$ = new StellaSpecialVariable();
 
-  public static Symbol SYM_LOGIC_ENTITY_MAPPING = null;
-
   public static Surrogate SGT_STELLA_LIST = null;
 
   public final static StellaSpecialVariable $UNIFY_PROPOSITIONSp$ = new StellaSpecialVariable();
@@ -1434,11 +1444,15 @@ public class Logic {
 
   public static Surrogate SGT_STELLA_PROPOSITIONdIF = null;
 
+  public static Keyword KWD_HEAD = null;
+
   /** Used by 'evaluate-DESCRIPTION-term' for collecting
    * a list of variables declared external to the description in which they
    * are referenced.
    */
   public final static StellaSpecialVariable $EXTERNALVARIABLES$ = new StellaSpecialVariable();
+
+  public static Keyword KWD_TOP_LEVEL = null;
 
   /** Used to prevent infinite looping.
    */
@@ -1476,6 +1490,8 @@ public class Logic {
 
   public static Symbol SYM_LOGIC_DONT_OPTIMIZEp = null;
 
+  public static Keyword KWD_TAIL = null;
+
   public static Surrogate SGT_LOGIC_NOT = null;
 
   public static Surrogate SGT_LOGIC_FORALL = null;
@@ -1487,10 +1503,6 @@ public class Logic {
   public static Surrogate SGT_LOGIC_AND = null;
 
   public static Symbol SYM_LOGIC_STARTUP_NORMALIZE = null;
-
-  public static Keyword KWD_HEAD = null;
-
-  public static Keyword KWD_TAIL = null;
 
   /** If true, inversion of forall propositions happens lazily.
    * I.e., satellite rules are generated on-demand during inference only if they
@@ -1539,8 +1551,6 @@ public class Logic {
   public static Keyword KWD_SUBSUMPTION = null;
 
   public static ShallowInferenceLevel SHALLOW_INFERENCE = null;
-
-  public static Keyword KWD_SHALLOW = null;
 
   public static AssertionInferenceLevel ASSERTION_INFERENCE = null;
 
@@ -1657,6 +1667,8 @@ public class Logic {
   public static Symbol SYM_LOGIC_ALLOTTED_TIME = null;
 
   public static Symbol SYM_LOGIC_TIMEOUTp = null;
+
+  public static Symbol SYM_LOGIC_DEPTH_CUTOFFSp = null;
 
   public static Symbol SYM_LOGIC_NEGATED_QUERY = null;
 
@@ -1876,6 +1888,13 @@ public class Logic {
 
   public static Keyword KWD_FAILED_OVERLAY = null;
 
+  /** If true and goal tracing is on, subgoals of disjointness
+   * queries will also be traced.
+   */
+  public static boolean $TRACE_DISJOINTNESS_SUBGOALSp$ = false;
+
+  public static Surrogate SGT_PL_KERNEL_KB_PARTITION_MEMBERSHIP = null;
+
   public static Surrogate SGT_PL_KERNEL_KB_DISJOINT = null;
 
   public static Symbol SYM_LOGIC_pD1 = null;
@@ -1885,6 +1904,10 @@ public class Logic {
   public static Symbol SYM_LOGIC_DISJOINT = null;
 
   public static Symbol SYM_LOGIC_F_DISJOINT_TERMSp_QUERY_000 = null;
+
+  public static Surrogate SGT_LOGIC_F_DISJOINT_TERMSp_MEMO_TABLE_000 = null;
+
+  public static Symbol SYM_LOGIC_F_DISJOINT_TERMSp_QUERY_001 = null;
 
   public static Symbol SYM_PL_KERNEL_KB_CLASS = null;
 
@@ -1971,13 +1994,23 @@ public class Logic {
 
   public static Keyword KWD_SCORE = null;
 
+  public static Keyword KWD_CHECK_VARIABLESp = null;
+
   public static Keyword KWD_MOVEOUT = null;
 
   public static Keyword KWD_MAXIMUM_DEPTH = null;
 
-  public static Keyword KWD_INFERENCE_LEVEL = null;
-
   public static Keyword KWD_THREE_VALUEDp = null;
+
+  public static Keyword KWD_ATOMIC_SINGLETONSp = null;
+
+  public static Keyword KWD_ALL_PROOFSp = null;
+
+  public static Keyword KWD_VALUES = null;
+
+  public static Keyword KWD_VALUES_DESCENDING = null;
+
+  public static Keyword KWD_VALUES_ASCENDING = null;
 
   public static Keyword KWD_MINIMUM_SCORE = null;
 
@@ -1989,11 +2022,12 @@ public class Logic {
 
   public static QueryIterator $MOST_RECENT_QUERY$ = null;
 
-  /** Caches in-line queries, so that they
-   * don't have to be reparsed and reoptimized each time they
-   * are invoked.
+  /** Caches queries used in-line by code, so that they don't have to
+   * be reparsed and reoptimized each time they are invoked.
    */
-  public static HashTable $QUERY_CACHE$ = null;
+  public static KeyValueMap $INLINE_QUERY_CACHE$ = null;
+
+  public static int $MAX_CACHED_QUERIES_PER_ID$ = 10;
 
   public static Keyword KWD_DYNAMIC = null;
 
@@ -2013,7 +2047,11 @@ public class Logic {
 
   public static Keyword KWD_UPDATE_FROM_QUERY = null;
 
+  public static Keyword KWD_ASSERT_FROM_QUERY = null;
+
   public static Keyword KWD_MODULE = null;
+
+  public static Keyword KWD_RECORD_JUSTIFICATIONSp = null;
 
   public static Symbol SYM_LOGIC_STARTUP_QUERY = null;
 
@@ -2449,6 +2487,8 @@ public class Logic {
    */
   public static List $PARALLEL_STRATEGIES$ = null;
 
+  public static Keyword KWD_DEBUG = null;
+
   public static int $FAILED_GOAL_CUTOFFS$ = 0;
 
   public static int $SUCCEEDED_GOAL_CUTOFFS$ = 0;
@@ -2502,15 +2542,17 @@ public class Logic {
 
   public static Keyword KWD_COMPUTED_PREDICATE = null;
 
+  public static Keyword KWD_SUBSUMPTION_REASONING = null;
+
   public static Surrogate SGT_STELLA_KEY_VALUE_LIST = null;
+
+  public static Keyword KWD_AND_INTRODUCTION = null;
 
   public static Keyword KWD_MODUS_TOLLENS = null;
 
   public static Keyword KWD_MODUS_PONENS = null;
 
   public static Keyword KWD_AMPLIFICATION = null;
-
-  public static Keyword KWD_AND_INTRODUCTION = null;
 
   public static Keyword KWD_PARTIAL = null;
 
@@ -2545,6 +2587,8 @@ public class Logic {
   public static Surrogate SGT_LOGIC_FORWARD_JUSTIFICATION = null;
 
   public static Symbol SYM_LOGIC_FORWARD_JUSTIFICATIONS = null;
+
+  public static Keyword KWD_FORWARD_INFERENCE = null;
 
   public static Symbol SYM_LOGIC_STARTUP_JUSTIFICATIONS = null;
 
@@ -2845,6 +2889,16 @@ public class Logic {
 
   public static Symbol SYM_STELLA_DUMMY = null;
 
+  public static Surrogate SGT_LOGIC_FORK_PROOF_ADJUNCT = null;
+
+  public static Symbol SYM_LOGIC_CONDITION_JUSTIFICATION = null;
+
+  public static Symbol SYM_LOGIC_DOWN_FRAME = null;
+
+  public static Keyword KWD_FORK_ELSE = null;
+
+  public static Keyword KWD_FORK_THEN = null;
+
   public static Keyword KWD_INHERIT = null;
 
   public static Keyword KWD_ALL = null;
@@ -2852,6 +2906,24 @@ public class Logic {
   public static Keyword KWD_CURRENT = null;
 
   public static Symbol SYM_LOGIC_QUERY_SPECIALIST_IO_VARIABLES = null;
+
+  public static Surrogate SGT_LOGIC_SAVED_INFERENCE_LEVEL_PROOF_ADJUNCT = null;
+
+  public static Symbol SYM_LOGIC_SAVED_INFERENCE_LEVEL = null;
+
+  public static Surrogate SGT_PL_KERNEL_KB_ASSERTION_QUERY = null;
+
+  public static Surrogate SGT_PL_KERNEL_KB_SHALLOW_QUERY = null;
+
+  public static Surrogate SGT_PL_KERNEL_KB_SUBSUMPTION_QUERY = null;
+
+  public static Surrogate SGT_PL_KERNEL_KB_BACKTRACKING_QUERY = null;
+
+  public static Surrogate SGT_PL_KERNEL_KB_NORMAL_QUERY = null;
+
+  public static Surrogate SGT_PL_KERNEL_KB_REFUTATION_QUERY = null;
+
+  public static Keyword KWD_LEVELED_QUERY = null;
 
   public static int $PROTOTYPE_ID_COUNTER$ = 0;
 
@@ -2865,6 +2937,12 @@ public class Logic {
 
   public static Surrogate SGT_LOGIC_F_SINGLE_VALUED_TERMp_MEMO_TABLE_000 = null;
 
+  public static Surrogate SGT_PL_KERNEL_KB_COLLECT_INTO_LIST = null;
+
+  public static Surrogate SGT_PL_KERNEL_KB_COLLECT_INTO_ORDERED_SET = null;
+
+  public static Keyword KWD_COLLECT_MEMBERS = null;
+
   public static Symbol SYM_LOGIC_pSUPER = null;
 
   public static Symbol SYM_LOGIC_pMDC = null;
@@ -2876,8 +2954,6 @@ public class Logic {
   public static Symbol SYM_LOGIC_F_HELP_DERIVE_PARTITION_MEMBERSHIPS_QUERY_000 = null;
 
   public static Surrogate SGT_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION = null;
-
-  public static Surrogate SGT_PL_KERNEL_KB_PARTITION_MEMBERSHIP = null;
 
   public static Surrogate SGT_PL_KERNEL_KB_HAS_PARTITION_MEMBERSHIP = null;
 
@@ -3097,12 +3173,20 @@ public class Logic {
    */
   public static Keyword $QUERY_OPTIMIZATION_STRATEGY$ = null;
 
+  public static Surrogate SGT_LOGIC_F_DYNAMICALLY_ESTIMATE_INFERENCE_COST_MEMO_TABLE_000 = null;
+
   public static Surrogate SGT_PL_KERNEL_KB_INSTANCE_OF = null;
 
   /** Used by 'simplify-description' to permit application
    * of order-dependent optimizations.
    */
   public final static StellaSpecialVariable $POSTOPTIMIZATIONp$ = new StellaSpecialVariable();
+
+  public static Keyword KWD_CREATED_SKOLEMS = null;
+
+  public static Surrogate SGT_LOGIC_F_FILTER_IMPLIED_SKOLEM_PROPOSITIONS_MEMO_TABLE_000 = null;
+
+  public static Symbol SYM_LOGIC_STRUCTURAL_FUNCTION_EVALUATION_ORDER = null;
 
   public static Symbol SYM_LOGIC_STARTUP_OPTIMIZE = null;
 
@@ -3204,10 +3288,6 @@ public class Logic {
 
   public static Keyword KWD_CLOSED_WORLD = null;
 
-  public static Surrogate SGT_STELLA_KEYWORD = null;
-
-  public static Surrogate SGT_LOGIC_IDENTITY = null;
-
   /** The prompt used by the PowerLoom listener.
    */
   public static String $LOGIC_PROMPT$ = "|= ";
@@ -3240,8 +3320,6 @@ public class Logic {
 
   public static Keyword KWD_FINALIZE = null;
 
-  public static Cons $FILE_LOAD_PATH$ = null;
-
   /** If the extension of a KB file is unspecified in a
    * <code>load</code> or <code>demo</code> command, try to find it with one of these extensions.
    */
@@ -3265,6 +3343,8 @@ public class Logic {
 
   public static Symbol SYM_LOGIC_DEFINSTANCE = null;
 
+  public static Keyword KWD_LOW = null;
+
   public final static StellaSpecialVariable $DEMO_LEVEL$ = new StellaSpecialVariable();
 
   public static Keyword KWD_WHITE_SPACE = null;
@@ -3276,7 +3356,13 @@ public class Logic {
 
   public static Keyword KWD_LEVEL = null;
 
-  public static Keyword KWD_LOW = null;
+  public static Keyword KWD_PORT = null;
+
+  public static Keyword KWD_HOST = null;
+
+  public static Keyword KWD_DEBUG_LEVEL = null;
+
+  public static Symbol SYM_LOGIC_POWERLOOM_GUI_EXIT_HOOK = null;
 
   /** Points to the source of the relation being parsed.
    */
@@ -3362,6 +3448,8 @@ public class Logic {
 
   public static Surrogate SGT_PL_KERNEL_KB_SCALAR = null;
 
+  public static Surrogate SGT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000 = null;
+
   public static Surrogate SGT_LOGIC_F_ALL_TYPES_MEMO_TABLE_000 = null;
 
   public static Surrogate SGT_LOGIC_F_ALL_EQUIVALENT_RELATIONS_MEMO_TABLE_000 = null;
@@ -3379,6 +3467,11 @@ public class Logic {
   public static Surrogate SGT_PL_KERNEL_KB_RANGE_MAX_CARDINALITY = null;
 
   public static Surrogate SGT_PL_KERNEL_KB_RANGE_TYPE = null;
+
+  /** KLUDGE: until we know how to handle recursive subgoals
+   * across recursive query invocations, this allows us to disable chaining.
+   */
+  public static boolean $LEVELLIZED_BACKCHAINING_ENABLEDp$ = false;
 
   public static Symbol SYM_LOGIC_pCONCEPT = null;
 
@@ -3456,21 +3549,23 @@ public class Logic {
 
   public static Symbol SYM_LOGIC_NOT_FILLED_BY = null;
 
-  public static Symbol SYM_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND = null;
-
-  public static Symbol SYM_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND = null;
-
-  public static Symbol SYM_PL_KERNEL_KB_RANGE_CARDINALITY = null;
-
   public static Symbol SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_LOWER_BOUND = null;
 
   public static Symbol SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_UPPER_BOUND = null;
 
   public static Symbol SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY = null;
 
+  public static Symbol SYM_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND = null;
+
+  public static Symbol SYM_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND = null;
+
+  public static Symbol SYM_PL_KERNEL_KB_RANGE_CARDINALITY = null;
+
   public static Symbol SYM_PL_KERNEL_KB_RANGE_TYPE = null;
 
   public static Symbol SYM_LOGIC_RELATES = null;
+
+  public static Symbol SYM_LOGIC_FOR_SOME = null;
 
   public static Symbol SYM_LOGIC_THROUGH = null;
 
@@ -3546,19 +3641,17 @@ public class Logic {
 
   public static Symbol SYM_STELLA_NIL = null;
 
-  public static Symbol SYM_LOGIC_COVERING = null;
-
   public static Keyword KWD_SINGLE_VALUED = null;
 
-  public static Symbol SYM_LOGIC_CLOSED = null;
+  public static Symbol SYM_PL_KERNEL_KB_CLOSED = null;
 
   public static Keyword KWD_COMMUTATIVE = null;
 
-  public static Symbol SYM_LOGIC_COMMUTATIVE = null;
+  public static Symbol SYM_PL_KERNEL_KB_COMMUTATIVE = null;
 
   public static Keyword KWD_SYMMETRIC = null;
 
-  public static Symbol SYM_LOGIC_SYMMETRIC = null;
+  public static Symbol SYM_PL_KERNEL_KB_SYMMETRIC = null;
 
   public static Keyword KWD_CLOS_CLASS = null;
 
@@ -3624,11 +3717,11 @@ public class Logic {
 
   public static Symbol SYM_LOGIC_STARTUP_API_SUPPORT = null;
 
-  public static int $POWERLOOM_MAJOR_VERSION_NUMBER$ = 3;
+  public static int $POWERLOOM_MAJOR_VERSION_NUMBER$ = 4;
 
-  public static int $POWERLOOM_MINOR_VERSION_NUMBER$ = 2;
+  public static int $POWERLOOM_MINOR_VERSION_NUMBER$ = 0;
 
-  public static String $POWERLOOM_RELEASE_STATE$ = "";
+  public static String $POWERLOOM_RELEASE_STATE$ = ".beta";
 
   public static int $POWERLOOM_PATCH_LEVEL$ = 0;
 
@@ -3661,7 +3754,7 @@ public class Logic {
     { Symbol streamvar = Stella.localGensym("STREAM");
 
       message = Cons.formatMessageArguments(message, false);
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(streamvar, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NEW, Stella_Object.cons(Logic.SYM_STELLA_OUTPUT_STRING_STREAM, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SPECIAL, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_$PRINTREADABLYp$, Stella_Object.cons(Logic.SYM_STELLA_TRUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_PRINT_STREAM, Stella_Object.cons(streamvar, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("PARSING ERROR: "), message.concatenate(Stella.list$(Stella_Object.cons(StringWrapper.wrapString("."), Stella_Object.cons(Logic.SYM_STELLA_EOL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_HELP_SIGNAL_PROPOSITION_ERROR, Stella_Object.cons(streamvar, Stella_Object.cons(Stella_Object.cons(Logic.KWD_ERROR, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SIGNAL_EXCEPTION, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NEW, Stella_Object.cons(Logic.SYM_LOGIC_PARSING_ERROR, Stella_Object.cons(Logic.KWD_MESSAGE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_THE_STRING, Stella_Object.cons(streamvar, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.cons(streamvar, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NEW, Cons.cons(Logic.SYM_STELLA_OUTPUT_STRING_STREAM, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SPECIAL, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_$PRINTREADABLYp$, Cons.cons(Logic.SYM_STELLA_TRUE, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_PRINT_STREAM, Cons.cons(streamvar, Cons.cons(Cons.cons(StringWrapper.wrapString("PARSING ERROR: "), message.concatenate(Cons.list$(Cons.cons(StringWrapper.wrapString("."), Cons.cons(Logic.SYM_STELLA_EOL, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_HELP_SIGNAL_PROPOSITION_ERROR, Cons.cons(streamvar, Cons.cons(Cons.cons(Logic.KWD_ERROR, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SIGNAL_EXCEPTION, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NEW, Cons.cons(Logic.SYM_LOGIC_PARSING_ERROR, Cons.cons(Logic.KWD_MESSAGE, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_THE_STRING, Cons.cons(streamvar, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))));
     }
   }
 
@@ -3669,12 +3762,12 @@ public class Logic {
     { Symbol streamvar = Stella.localGensym("STREAM");
 
       message = Cons.formatMessageArguments(message, false);
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(streamvar, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NEW, Stella_Object.cons(Logic.SYM_STELLA_OUTPUT_STRING_STREAM, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SPECIAL, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_$PRINTREADABLYp$, Stella_Object.cons(Logic.SYM_STELLA_TRUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_PRINT_STREAM, Stella_Object.cons(streamvar, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("ERROR: "), message.concatenate(Stella.list$(Stella_Object.cons(StringWrapper.wrapString("."), Stella_Object.cons(Logic.SYM_STELLA_EOL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_HELP_SIGNAL_PROPOSITION_ERROR, Stella_Object.cons(streamvar, Stella_Object.cons(Stella_Object.cons(Logic.KWD_ERROR, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SIGNAL_EXCEPTION, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NEW, Stella_Object.cons(Logic.SYM_LOGIC_PROPOSITION_ERROR, Stella_Object.cons(Logic.KWD_MESSAGE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_THE_STRING, Stella_Object.cons(streamvar, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.cons(streamvar, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NEW, Cons.cons(Logic.SYM_STELLA_OUTPUT_STRING_STREAM, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SPECIAL, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_$PRINTREADABLYp$, Cons.cons(Logic.SYM_STELLA_TRUE, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_PRINT_STREAM, Cons.cons(streamvar, Cons.cons(Cons.cons(StringWrapper.wrapString("ERROR: "), message.concatenate(Cons.list$(Cons.cons(StringWrapper.wrapString("."), Cons.cons(Logic.SYM_STELLA_EOL, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_HELP_SIGNAL_PROPOSITION_ERROR, Cons.cons(streamvar, Cons.cons(Cons.cons(Logic.KWD_ERROR, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SIGNAL_EXCEPTION, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NEW, Cons.cons(Logic.SYM_LOGIC_PROPOSITION_ERROR, Cons.cons(Logic.KWD_MESSAGE, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_THE_STRING, Cons.cons(streamvar, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))));
     }
   }
 
   public static Stella_Object signalPropositionWarning(Cons message) {
-    return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SPECIAL, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_$PRINTREADABLYp$, Stella_Object.cons(Logic.SYM_STELLA_TRUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_PRINT_STREAM, Stella_Object.cons(Logic.SYM_STELLA_STANDARD_WARNING, Stella_Object.cons(StringWrapper.wrapString("WARNING: "), Stella_Object.cons(message.concatenate(Stella_Object.cons(Logic.SYM_STELLA_EOL, Stella.NIL), Stella.NIL), Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_HELP_SIGNAL_PROPOSITION_ERROR, Stella_Object.cons(Logic.SYM_STELLA_STANDARD_WARNING, Stella_Object.cons(Logic.KWD_WARNING, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+    return (Cons.list$(Cons.cons(Logic.SYM_STELLA_SPECIAL, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_$PRINTREADABLYp$, Cons.cons(Logic.SYM_STELLA_TRUE, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_PRINT_STREAM, Cons.cons(Logic.SYM_STELLA_STANDARD_WARNING, Cons.cons(StringWrapper.wrapString("WARNING: "), Cons.cons(message.concatenate(Cons.cons(Logic.SYM_STELLA_EOL, Stella.NIL), Stella.NIL), Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_HELP_SIGNAL_PROPOSITION_ERROR, Cons.cons(Logic.SYM_STELLA_STANDARD_WARNING, Cons.cons(Logic.KWD_WARNING, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))));
   }
 
   public static Stella_Object defDisplayGlobals(Symbol displayfunctionname, Cons globalvariablenames) {
@@ -3685,19 +3778,19 @@ public class Logic {
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           g = ((Symbol)(iter000.value));
-          printclauses = Cons.append(Stella_Object.cons(StringWrapper.wrapString(g.symbolName), Stella.list$(Stella_Object.cons(StringWrapper.wrapString(" =  "), Stella_Object.cons(g, Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_EOL, Stella.NIL), Stella.NIL))))), printclauses);
+          printclauses = Cons.append(Cons.cons(StringWrapper.wrapString(g.symbolName), Cons.list$(Cons.cons(StringWrapper.wrapString(" =  "), Cons.cons(g, Cons.cons(Cons.cons(Logic.SYM_STELLA_EOL, Stella.NIL), Stella.NIL))))), printclauses);
         }
       }
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_DEFUN, Stella_Object.cons(Stella_Object.cons(displayfunctionname, Stella_Object.cons(Logic.SYM_STELLA_STRING, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_PRINT, Stella_Object.cons(Logic.SYM_STELLA_EOL, Stella_Object.cons(printclauses.concatenate(Stella_Object.cons(Logic.SYM_STELLA_EOL, Stella.NIL), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_RETURN, Stella_Object.cons(StringWrapper.wrapString(""), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_DEFUN, Cons.cons(Cons.cons(displayfunctionname, Cons.cons(Logic.SYM_STELLA_STRING, Stella.NIL)), Cons.cons(Stella.NIL, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_PRINT, Cons.cons(Logic.SYM_STELLA_EOL, Cons.cons(printclauses.concatenate(Cons.cons(Logic.SYM_STELLA_EOL, Stella.NIL), Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_RETURN, Cons.cons(StringWrapper.wrapString(""), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))))));
     }
   }
 
   public static Stella_Object moveInPlace() {
-    return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_TRUTH_VALUE, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_JUSTIFICATION, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_PARTIAL_MATCH_FRAME, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CLEAR_FRAME_PARTIAL_TRUTH, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_PARTIAL_MATCH_FRAME, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_LASTMOVE, Stella_Object.cons(Logic.KWD_DOWN, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_COND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CHECKFORMOVEOUTp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_LET, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_PARENT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_UP, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_STARTTICKS, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_AVAILABLETICKS, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA__, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_PARENT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA__, Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella_Object.cons(Logic.SYM_LOGIC_STARTTICKS, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(IntegerWrapper.wrapInteger(1), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_PARENT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_LOGIC_AVAILABLETICKS, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA___, Stella_Object.cons(Logic.SYM_LOGIC_AVAILABLETICKS, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_LOGIC_AVAILABLETICKS, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CURRENT_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_QUERY, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_ii, Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_le, Stella_Object.cons(Logic.SYM_LOGIC_AVAILABLETICKS, Stella_Object.cons(IntegerWrapper.wrapInteger(0), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_POP_FRAMES_UP_TO, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_MV_SETQ, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Logic.SYM_STELLA_DEPTH, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_HANDLE_TIMEOUT, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Logic.SYM_STELLA_DEPTH, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_LASTMOVE, Stella_Object.cons(Logic.KWD_UP_FAIL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA___, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_1i, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA__, Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella_Object.cons(Logic.SYM_LOGIC_STARTTICKS, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_OTHERWISE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CURRENT_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_QUERY, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_ii, Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))));
+    return (Cons.list$(Cons.cons(Logic.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_TRUTH_VALUE, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_JUSTIFICATION, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_DEFINEDp, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_PARTIAL_MATCH_FRAME, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CLEAR_FRAME_PARTIAL_TRUTH, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_PARTIAL_MATCH_FRAME, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_LASTMOVE, Cons.cons(Logic.KWD_DOWN, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CHECKFORMOVEOUTp, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_LET, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_PARENT, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_UP, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_STARTTICKS, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_AVAILABLETICKS, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA__, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_PARENT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA__, Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Cons.cons(Logic.SYM_LOGIC_STARTTICKS, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(IntegerWrapper.wrapInteger(1), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_PARENT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_LOGIC_AVAILABLETICKS, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA___, Cons.cons(Logic.SYM_LOGIC_AVAILABLETICKS, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_LOGIC_AVAILABLETICKS, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CURRENT_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_QUERY, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_ii, Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_le, Cons.cons(Logic.SYM_LOGIC_AVAILABLETICKS, Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_POP_FRAMES_UP_TO, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_MV_SETQ, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Logic.SYM_STELLA_DEPTH, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_HANDLE_TIMEOUT, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Logic.SYM_STELLA_DEPTH, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_LASTMOVE, Cons.cons(Logic.KWD_UP_FAIL, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA___, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_1i, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA__, Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Cons.cons(Logic.SYM_LOGIC_STARTTICKS, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))))), Cons.cons(Stella.NIL, Stella.NIL)))))))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CURRENT_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_QUERY, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_ii, Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))))));
   }
 
   public static Stella_Object moveDown() {
-    return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_LET, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_UPFRAME, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_DOWNFRAME, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_DOWN, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_STELLA_DEPTH, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_1i, Stella_Object.cons(Logic.SYM_STELLA_DEPTH, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CURRENT_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_QUERY, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_ii, Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_COND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_DEFINEDp, Stella_Object.cons(Logic.SYM_LOGIC_DOWNFRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Logic.SYM_LOGIC_DOWNFRAME, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Logic.SYM_LOGIC_CHECKFORMOVEOUTp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NULLp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_1_, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_UPFRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_TRUTH_VALUE, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_JUSTIFICATION, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_PARTIAL_MATCH_FRAME, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CLEAR_FRAME_PARTIAL_TRUTH, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_PARTIAL_MATCH_FRAME, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_LASTMOVE, Stella_Object.cons(Logic.KWD_DOWN, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_OTHERWISE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_PROPOSITION, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NTH, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_ARGUMENTS, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_PROPOSITION, Stella_Object.cons(Logic.SYM_LOGIC_UPFRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ARGUMENT_CURSOR, Stella_Object.cons(Logic.SYM_LOGIC_UPFRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_DOWNFRAME, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CREATE_DOWN_FRAME, Stella_Object.cons(Logic.SYM_LOGIC_UPFRAME, Stella_Object.cons(Logic.SYM_LOGIC_PROPOSITION, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Logic.SYM_LOGIC_DOWNFRAME, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Logic.SYM_LOGIC_CHECKFORMOVEOUTp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_1_, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_UPFRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_LASTMOVE, Stella_Object.cons(Logic.KWD_DOWN, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_g, Stella_Object.cons(Logic.SYM_STELLA_DEPTH, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CURRENT_DEPTH_CUTOFF, Stella_Object.cons(Logic.SYM_LOGIC_QUERY, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EQLp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_STATE, Stella_Object.cons(Logic.SYM_LOGIC_UPFRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.KWD_PATTERN, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_POP_FRAMES_UP_TO, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_MV_SETQ, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Logic.SYM_STELLA_DEPTH, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_HANDLE_DEPTH_VIOLATION, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Logic.SYM_STELLA_DEPTH, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_LASTMOVE, Stella_Object.cons(Logic.KWD_UP_FAIL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Logic.SYM_LOGIC_CHECKFORMOVEOUTp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_le, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(IntegerWrapper.wrapInteger(0), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EQLp, Stella_Object.cons(Logic.SYM_LOGIC_LASTMOVE, Stella_Object.cons(Logic.KWD_UP_FAIL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_POP_FRAMES_UP_TO, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_MV_SETQ, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Logic.SYM_STELLA_DEPTH, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_HANDLE_TIMEOUT, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Logic.SYM_STELLA_DEPTH, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_LASTMOVE, Stella_Object.cons(Logic.KWD_UP_FAIL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EQLp, Stella_Object.cons(Logic.SYM_LOGIC_LASTMOVE, Stella_Object.cons(Logic.KWD_UP_FAIL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA___, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_1i, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA__, Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_DOWNFRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))))));
+    return (Cons.list$(Cons.cons(Logic.SYM_STELLA_LET, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_UPFRAME, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_DOWNFRAME, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_DOWN, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_STELLA_DEPTH, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_1i, Cons.cons(Logic.SYM_STELLA_DEPTH, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CURRENT_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_QUERY, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_ii, Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_DEFINEDp, Cons.cons(Logic.SYM_LOGIC_DOWNFRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Logic.SYM_LOGIC_DOWNFRAME, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Logic.SYM_LOGIC_CHECKFORMOVEOUTp, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NULLp, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_1_, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_UPFRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_TRUTH_VALUE, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_JUSTIFICATION, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_DEFINEDp, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_PARTIAL_MATCH_FRAME, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CLEAR_FRAME_PARTIAL_TRUTH, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_PARTIAL_MATCH_FRAME, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_LASTMOVE, Cons.cons(Logic.KWD_DOWN, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_PROPOSITION, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ARGUMENT_BOUND_TO, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NTH, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_ARGUMENTS, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_PROPOSITION, Cons.cons(Logic.SYM_LOGIC_UPFRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ARGUMENT_CURSOR, Cons.cons(Logic.SYM_LOGIC_UPFRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_DOWNFRAME, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CREATE_DOWN_FRAME, Cons.cons(Logic.SYM_LOGIC_UPFRAME, Cons.cons(Logic.SYM_LOGIC_PROPOSITION, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Logic.SYM_LOGIC_DOWNFRAME, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Logic.SYM_LOGIC_CHECKFORMOVEOUTp, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_1_, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_UPFRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_LASTMOVE, Cons.cons(Logic.KWD_DOWN, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_g, Cons.cons(Logic.SYM_STELLA_DEPTH, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CURRENT_DEPTH_CUTOFF, Cons.cons(Logic.SYM_LOGIC_QUERY, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_EQLp, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_STATE, Cons.cons(Logic.SYM_LOGIC_UPFRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.KWD_PATTERN, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_POP_FRAMES_UP_TO, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_MV_SETQ, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Logic.SYM_STELLA_DEPTH, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_HANDLE_DEPTH_VIOLATION, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Logic.SYM_STELLA_DEPTH, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_LASTMOVE, Cons.cons(Logic.KWD_UP_FAIL, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Logic.SYM_LOGIC_CHECKFORMOVEOUTp, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_le, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_EQLp, Cons.cons(Logic.SYM_LOGIC_LASTMOVE, Cons.cons(Logic.KWD_UP_FAIL, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_POP_FRAMES_UP_TO, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_MV_SETQ, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Logic.SYM_STELLA_DEPTH, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_HANDLE_TIMEOUT, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Logic.SYM_STELLA_DEPTH, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_LASTMOVE, Cons.cons(Logic.KWD_UP_FAIL, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_EQLp, Cons.cons(Logic.SYM_LOGIC_LASTMOVE, Cons.cons(Logic.KWD_UP_FAIL, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA___, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_1i, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA__, Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_DOWNFRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))))))));
   }
 
   public static Stella_Object moveUp(Symbol successP, Symbol keepframeP) {
@@ -3717,7 +3810,7 @@ public class Logic {
           throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
         }
       }
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_PARENT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_UP, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_DEFINEDp, Stella_Object.cons(Logic.SYM_LOGIC_PARENT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_RESULT, Stella_Object.cons(Logic.SYM_LOGIC_PARENT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_IF, Stella_Object.cons(Stella_Object.cons(Logic.SYM_LOGIC_CACHE_QUERY_RESULTSp, Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CACHE_GOAL, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(successP, Stella_Object.cons(Stella_Object.cons(((keepframeP == Logic.SYM_LOGIC_KEEP_FRAME) ? Logic.SYM_STELLA_TRUE : Logic.SYM_STELLA_FALSE), Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella.NIL)), Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_UPDATE_GOAL_CACHE, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(successP, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_STELLA_DEPTH, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_1_, Stella_Object.cons(Logic.SYM_STELLA_DEPTH, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Logic.SYM_LOGIC_CHECKFORMOVEOUTp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_DEFINEDp, Stella_Object.cons(Logic.SYM_LOGIC_PARENT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_PARENT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA__, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_PARENT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA__, Stella_Object.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(IntegerWrapper.wrapInteger(1), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Logic.SYM_LOGIC_PARENT, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NULLp, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_SUCCESSp, Stella_Object.cons(successP, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_BREAK, Stella.NIL), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons((((keepframeP == Logic.SYM_LOGIC_KEEP_FRAME) ? Stella.NIL : Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_POP_DOWN_FRAME, Stella_Object.cons(Logic.SYM_LOGIC_FRAME, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))).concatenate(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_LASTMOVE, Stella_Object.cons(lastmove, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Logic.SYM_LOGIC_LASTMOVE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL))))))))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_PARENT, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_UP, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_DEFINEDp, Cons.cons(Logic.SYM_LOGIC_PARENT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_RESULT, Cons.cons(Logic.SYM_LOGIC_PARENT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_IF, Cons.cons(Cons.cons(Logic.SYM_LOGIC_CACHE_QUERY_RESULTSp, Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CACHE_GOAL, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(successP, Cons.cons(Cons.cons(((keepframeP == Logic.SYM_LOGIC_KEEP_FRAME) ? Logic.SYM_STELLA_TRUE : Logic.SYM_STELLA_FALSE), Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Stella.NIL)), Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_UPDATE_GOAL_CACHE, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(successP, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_STELLA_DEPTH, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_1_, Cons.cons(Logic.SYM_STELLA_DEPTH, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Logic.SYM_LOGIC_CHECKFORMOVEOUTp, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_DEFINEDp, Cons.cons(Logic.SYM_LOGIC_PARENT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_PARENT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA__, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALLOTTED_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_PARENT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA__, Cons.cons(Logic.SYM_LOGIC_CLOCKTICKS, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_STARTING_CLOCK_TICKS, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(IntegerWrapper.wrapInteger(1), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Logic.SYM_LOGIC_PARENT, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NULLp, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_SUCCESSp, Cons.cons(successP, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.cons(Logic.SYM_STELLA_BREAK, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons((((keepframeP == Logic.SYM_LOGIC_KEEP_FRAME) ? Stella.NIL : Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_POP_DOWN_FRAME, Cons.cons(Logic.SYM_LOGIC_FRAME, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))).concatenate(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_LASTMOVE, Cons.cons(lastmove, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Logic.SYM_LOGIC_LASTMOVE, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL))))))))));
     }
   }
 
@@ -3725,7 +3818,8 @@ public class Logic {
    * and body <code>queryBody</code>.  Before executing, bind variables to <code>inputBindings</code>
    * (in sequence). If one variable is left unbound, returns a cons list of
    * bindings of that variable.  If two or more are unbound, returns
-   * a cons list of cons lists of bindings:
+   * a cons list of cons lists of bindings.  Setting the option :singletons?
+   * to FALSE always returns a list of lists.  Example call:
    *   <code>_apply_retrieve_variables_queryBody_inputBindings_</code>
    * @param body
    * @return Stella_Object
@@ -3733,7 +3827,7 @@ public class Logic {
   public static Stella_Object applyRetrieve(Cons body) {
     { Symbol gensymname = Stella.methodGensym("QUERY");
 
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_APPLY_CACHED_RETRIEVE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_BQUOTE, Stella_Object.cons(body.value, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_BQUOTE, Stella_Object.cons(body.rest.value, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_CONS_LIST, ((Cons)(body.rest.rest.value)).concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_CONS_LIST, body.nthRest(3).concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_QUOTE, Stella_Object.cons(gensymname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))));
+      return (Cons.list$(Cons.cons(Logic.SYM_LOGIC_APPLY_CACHED_RETRIEVE, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_BQUOTE, Cons.cons(body.value, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_BQUOTE, Cons.cons(body.rest.value, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.cons(Logic.SYM_STELLA_CONS_LIST, ((Cons)(body.rest.rest.value)).concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Cons.cons(Logic.SYM_STELLA_CONS_LIST, body.nthRest(3).concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_QUOTE, Cons.cons(gensymname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))))));
     }
   }
 
@@ -3747,7 +3841,7 @@ public class Logic {
   public static Stella_Object applyAsk(Cons body) {
     { Symbol gensymname = Stella.methodGensym("QUERY");
 
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_APPLY_CACHED_ASK, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_BQUOTE, Stella_Object.cons(body.value, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_BQUOTE, Stella_Object.cons(body.rest.value, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_CONS_LIST, ((Cons)(body.rest.rest.value)).concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_CONS_LIST, body.nthRest(3).concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_QUOTE, Stella_Object.cons(gensymname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))));
+      return (Cons.list$(Cons.cons(Logic.SYM_LOGIC_APPLY_CACHED_ASK, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_BQUOTE, Cons.cons(body.value, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_BQUOTE, Cons.cons(body.rest.value, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.cons(Logic.SYM_STELLA_CONS_LIST, ((Cons)(body.rest.rest.value)).concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Cons.cons(Logic.SYM_STELLA_CONS_LIST, body.nthRest(3).concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_QUOTE, Cons.cons(gensymname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))))));
     }
   }
 
@@ -3757,7 +3851,7 @@ public class Logic {
    * @return Stella_Object
    */
   public static Stella_Object withinMetaCache(Cons body) {
-    return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SPECIAL, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_$CONTEXT$, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_GET_INFERENCE_CACHE, Stella_Object.cons(Logic.SYM_STELLA_$MODULE$, Stella_Object.cons(Logic.KWD_META, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Logic.SYM_STELLA_SPECIAL, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_$CONTEXT$, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_GET_INFERENCE_CACHE, Cons.cons(Logic.SYM_STELLA_$MODULE$, Cons.cons(Logic.KWD_META, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
   }
 
   /** Used during classification.  Execute <code>body</code> within the indicated
@@ -3767,7 +3861,7 @@ public class Logic {
    * @return Stella_Object
    */
   public static Stella_Object withinClassificationSession(Keyword descriptionorinstance, Cons body) {
-    return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SPECIAL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_$CLASSIFICATIONSESSION$, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_GET_CLASSIFICATION_SESSION, Stella_Object.cons(descriptionorinstance, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_$CONTEXT$, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CLASSIFICATION_WORLD, Stella_Object.cons(Logic.SYM_LOGIC_$CLASSIFICATIONSESSION$, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Logic.SYM_STELLA_SPECIAL, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_$CLASSIFICATIONSESSION$, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_GET_CLASSIFICATION_SESSION, Cons.cons(descriptionorinstance, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_$CONTEXT$, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CLASSIFICATION_WORLD, Cons.cons(Logic.SYM_LOGIC_$CLASSIFICATIONSESSION$, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
   }
 
   /** Defines <code>name</code> to be a constraint computation which uses
@@ -3795,7 +3889,7 @@ public class Logic {
    */
   public static Stella_Object defineComputedConstraint(Symbol name, Cons varList, Cons constraintTest, Cons positionComputations) {
     { Cons valuecomputationcode = Stella.NIL;
-      Symbol valuesymbol = Stella.internSymbol("VALUE");
+      Symbol valuesymbol = Symbol.internSymbol("VALUE");
 
       { Stella_Object computation = null;
         Cons iter000 = positionComputations;
@@ -3808,7 +3902,7 @@ public class Logic {
           i = iter001;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Stella_Object.cons(IntegerWrapper.wrapInteger(i), Stella_Object.cons(computation, Stella.NIL)), Stella.NIL);
+              collect000 = Cons.cons(Cons.cons(IntegerWrapper.wrapInteger(i), Cons.cons(computation, Stella.NIL)), Stella.NIL);
               if (valuecomputationcode == Stella.NIL) {
                 valuecomputationcode = collect000;
               }
@@ -3819,13 +3913,13 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Stella_Object.cons(IntegerWrapper.wrapInteger(i), Stella_Object.cons(computation, Stella.NIL)), Stella.NIL);
+              collect000.rest = Cons.cons(Cons.cons(IntegerWrapper.wrapInteger(i), Cons.cons(computation, Stella.NIL)), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
         }
       }
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_DEFUN, Stella_Object.cons(Stella_Object.cons(name, Stella_Object.cons(Logic.SYM_STELLA_OBJECT, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_MISSING_ARGUMENT, Stella_Object.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Stella_Object.cons(Stella.NIL, Stella.NIL)))), varList.concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(valuesymbol, Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_OBJECT, Stella_Object.cons(Logic.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_CASE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_LOGIC_MISSING_ARGUMENT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(IntegerWrapper.wrapInteger(-1), Stella_Object.cons(constraintTest, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(valuecomputationcode.concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_OTHERWISE, Stella_Object.cons(Logic.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_RETURN, Stella_Object.cons(valuesymbol, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_DEFUN, Cons.cons(Cons.cons(name, Cons.cons(Logic.SYM_STELLA_OBJECT, Stella.NIL)), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_MISSING_ARGUMENT, Cons.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Cons.cons(Stella.NIL, Stella.NIL)))), varList.concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.cons(valuesymbol, Cons.list$(Cons.cons(Logic.SYM_STELLA_OBJECT, Cons.cons(Logic.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_CASE, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_LOGIC_MISSING_ARGUMENT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(constraintTest, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(valuecomputationcode.concatenate(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_OTHERWISE, Cons.cons(Logic.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_RETURN, Cons.cons(valuesymbol, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))))));
     }
   }
 
@@ -3838,7 +3932,7 @@ public class Logic {
    * @return Stella_Object
    */
   public static Stella_Object defineArithmeticTestOnWrappers(Symbol name, Symbol testName) {
-    return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_DEFUN, Stella_Object.cons(Stella_Object.cons(name, Stella_Object.cons(Logic.SYM_STELLA_BOOLEAN, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_X, Stella_Object.cons(Logic.SYM_STELLA_NUMBER_WRAPPER, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Logic.SYM_STELLA_NUMBER_WRAPPER, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.KWD_PUBLICp, Stella_Object.cons(Logic.SYM_STELLA_TRUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_TYPECASE, Stella_Object.cons(Logic.SYM_STELLA_X, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_TYPECASE, Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_RETURN, Stella_Object.cons(Stella_Object.cons(testName, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_X, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_RETURN, Stella_Object.cons(Stella_Object.cons(testName, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_CAST, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_X, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_STELLA_FLOAT, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_TYPECASE, Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_RETURN, Stella_Object.cons(Stella_Object.cons(testName, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_X, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_CAST, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.SYM_STELLA_FLOAT, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_RETURN, Stella_Object.cons(Stella_Object.cons(testName, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_X, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))));
+    return (Cons.list$(Cons.cons(Logic.SYM_STELLA_DEFUN, Cons.cons(Cons.cons(name, Cons.cons(Logic.SYM_STELLA_BOOLEAN, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_X, Cons.cons(Logic.SYM_STELLA_NUMBER_WRAPPER, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Logic.SYM_STELLA_NUMBER_WRAPPER, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.KWD_PUBLICp, Cons.cons(Logic.SYM_STELLA_TRUE, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_TYPECASE, Cons.cons(Logic.SYM_STELLA_X, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_TYPECASE, Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_RETURN, Cons.cons(Cons.cons(testName, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_X, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_RETURN, Cons.cons(Cons.cons(testName, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_CAST, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_X, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_STELLA_FLOAT, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_TYPECASE, Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_RETURN, Cons.cons(Cons.cons(testName, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_X, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_CAST, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.SYM_STELLA_FLOAT, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_RETURN, Cons.cons(Cons.cons(testName, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_X, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))))))));
   }
 
   /** Defines <code>name</code> as an arithmetic comparision operation using the
@@ -3857,7 +3951,7 @@ public class Logic {
    * @return Stella_Object
    */
   public static Stella_Object defineArithmeticOperationOnWrappers(Symbol name, Symbol operationName) {
-    return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_DEFUN, Stella_Object.cons(Stella_Object.cons(name, Stella_Object.cons(Logic.SYM_STELLA_NUMBER_WRAPPER, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_X, Stella_Object.cons(Logic.SYM_STELLA_NUMBER_WRAPPER, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Logic.SYM_STELLA_NUMBER_WRAPPER, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Logic.KWD_PUBLICp, Stella_Object.cons(Logic.SYM_STELLA_TRUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FLOATRESULT, Stella_Object.cons(Logic.SYM_STELLA_FLOAT, Stella_Object.cons(Logic.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_TYPECASE, Stella_Object.cons(Logic.SYM_STELLA_X, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_TYPECASE, Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_RETURN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAP_LITERAL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SAFE_CAST, Stella_Object.cons(Stella_Object.cons(operationName, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_X, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Logic.SYM_STELLA_INTEGER, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_FLOATRESULT, Stella_Object.cons(Stella_Object.cons(operationName, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_X, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_TYPECASE, Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Stella_Object.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(Logic.SYM_LOGIC_FLOATRESULT, Stella_Object.cons(Stella_Object.cons(operationName, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_X, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Logic.SYM_STELLA_Y, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_RETURN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WRAP_LITERAL, Stella_Object.cons(Logic.SYM_LOGIC_FLOATRESULT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))));
+    return (Cons.list$(Cons.cons(Logic.SYM_STELLA_DEFUN, Cons.cons(Cons.cons(name, Cons.cons(Logic.SYM_STELLA_NUMBER_WRAPPER, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_X, Cons.cons(Logic.SYM_STELLA_NUMBER_WRAPPER, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Logic.SYM_STELLA_NUMBER_WRAPPER, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Logic.KWD_PUBLICp, Cons.cons(Logic.SYM_STELLA_TRUE, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_FLOATRESULT, Cons.cons(Logic.SYM_STELLA_FLOAT, Cons.cons(Logic.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_TYPECASE, Cons.cons(Logic.SYM_STELLA_X, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_TYPECASE, Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_RETURN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAP_LITERAL, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SAFE_CAST, Cons.cons(Cons.cons(operationName, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_X, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Logic.SYM_STELLA_INTEGER, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_FLOATRESULT, Cons.cons(Cons.cons(operationName, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_X, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_TYPECASE, Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_INTEGER_WRAPPER, Cons.cons(Logic.SYM_STELLA_FLOAT_WRAPPER, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(Logic.SYM_LOGIC_FLOATRESULT, Cons.cons(Cons.cons(operationName, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_X, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Logic.SYM_STELLA_Y, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_RETURN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WRAP_LITERAL, Cons.cons(Logic.SYM_LOGIC_FLOATRESULT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))))))));
   }
 
   /** Execute <code>body</code> within the module resulting from <code>moduleform</code>.
@@ -3872,13 +3966,13 @@ public class Logic {
     { Symbol modulevar = Stella.localGensym("MDL");
       Symbol contextvar = Stella.localGensym("CXT");
 
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_LET, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella_Object.cons(modulevar, Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_MODULE, Stella_Object.cons(moduleform, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella_Object.cons(contextvar, Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_CONTEXT, Stella_Object.cons(modulevar, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NULLp, Stella_Object.cons(modulevar, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(modulevar, Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_$MODULE$, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SETQ, Stella_Object.cons(contextvar, Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_$CONTEXT$, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SPECIAL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_$MODULE$, Stella_Object.cons(modulevar, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_$CONTEXT$, Stella_Object.cons(contextvar, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons((((Stella_Object.symbolP(environment) &&
-          (!(environment == Logic.SYM_STELLA_NULL))) ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_IGNORE, Stella_Object.cons(environment, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WITH_PROCESS_LOCK, Stella_Object.cons(Logic.SYM_LOGIC_$POWERLOOM_LOCK$, Stella_Object.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_LET, Cons.cons(Cons.list$(Cons.cons(Cons.cons(modulevar, Cons.list$(Cons.cons(Logic.SYM_STELLA_MODULE, Cons.cons(moduleform, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.cons(contextvar, Cons.list$(Cons.cons(Logic.SYM_STELLA_CONTEXT, Cons.cons(modulevar, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NULLp, Cons.cons(modulevar, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(modulevar, Cons.cons(Cons.cons(Logic.SYM_STELLA_$MODULE$, Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SETQ, Cons.cons(contextvar, Cons.cons(Cons.cons(Logic.SYM_STELLA_$CONTEXT$, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SPECIAL, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_$MODULE$, Cons.cons(modulevar, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_$CONTEXT$, Cons.cons(contextvar, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons((((Stella_Object.symbolP(environment) &&
+          (!(environment == Logic.SYM_STELLA_NULL))) ? Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_IGNORE, Cons.cons(environment, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_WITH_PROCESS_LOCK, Cons.cons(Logic.SYM_LOGIC_$POWERLOOM_LOCK$, Cons.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))));
     }
   }
 
   public static Stella_Object whenCycKludgesEnabled(Cons body) {
-    return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_WHEN, Stella_Object.cons(Logic.SYM_LOGIC_$CYC_KLUDGES_ENABLEDp$, Stella_Object.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Logic.SYM_STELLA_WHEN, Cons.cons(Logic.SYM_LOGIC_$CYC_KLUDGES_ENABLEDp$, Cons.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
   }
 
   public static ObjectStore homeObjectStore(Stella_Object self) {
@@ -4086,7 +4180,7 @@ public class Logic {
         if (tree000.rest.value != null) {
           {
             tree000.secondSetter(Logic.kifSymbolToStellaSymbol(((Symbol)(tree000.rest.value))));
-            return (Stella_Object.cons(Logic.SYM_STELLA_ISA, tree000.concatenate(Stella.NIL, Stella.NIL)));
+            return (Cons.cons(Logic.SYM_STELLA_ISA, tree000.concatenate(Stella.NIL, Stella.NIL)));
           }
         }
         else {
@@ -4124,7 +4218,7 @@ public class Logic {
     else {
       if (Logic.kifVariableDeclarationP(tree)) {
         {
-          return (Stella_Object.cons(Logic.oneKifVariableDeclarationToStella(tree), Stella.NIL));
+          return (Cons.cons(Logic.oneKifVariableDeclarationToStella(tree), Stella.NIL));
         }
       }
       else {
@@ -4283,13 +4377,13 @@ public class Logic {
       }
       switch (sentences.length()) {
         case 0: 
-          tree.rest.rest = Stella_Object.cons(Logic.SYM_STELLA_TRUE, Stella.NIL);
+          tree.rest.rest = Cons.cons(Logic.SYM_STELLA_TRUE, Stella.NIL);
         break;
         case 1: 
           tree.thirdSetter(tree.rest.rest.value);
         break;
         default:
-          tree.rest.rest = Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_AND, sentences.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL);
+          tree.rest.rest = Cons.cons(Cons.cons(Logic.SYM_STELLA_AND, sentences.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL);
         break;
       }
       return (tree);
@@ -4304,9 +4398,9 @@ public class Logic {
           (!Logic.questionMarkSymbolP(variables.rest.value));
 
       if (openquantifierP) {
-        variables = Stella_Object.cons(variables, Stella.NIL);
+        variables = Cons.cons(variables, Stella.NIL);
       }
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_KAPPA, Stella_Object.cons(variables.concatenate(Stella_Object.cons(valuevariable, Stella.NIL), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_e, Stella_Object.cons(valuevariable, Stella_Object.cons(Stella_Object.cons(term, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+      return (Cons.list$(Cons.cons(Logic.SYM_LOGIC_KAPPA, Cons.cons(variables.concatenate(Cons.cons(valuevariable, Stella.NIL), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_e, Cons.cons(valuevariable, Cons.cons(Cons.cons(term, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))));
     }
   }
 
@@ -4338,9 +4432,9 @@ public class Logic {
           Cons valueterm = Logic.kifCondToIf(conditions.rest);
 
           if (!(valueterm == Stella.NIL)) {
-            valueterm = Stella.consList(Stella_Object.cons(valueterm, Stella.NIL));
+            valueterm = Cons.consList(Cons.cons(valueterm, Stella.NIL));
           }
-          return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_IF, Stella_Object.cons(((Cons)(firstcondition.value)), Stella_Object.cons(Stella_Object.cons(((Cons)(firstcondition.rest.value)), valueterm.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Logic.SYM_STELLA_IF, Cons.cons(((Cons)(firstcondition.value)), Cons.cons(Cons.cons(((Cons)(firstcondition.rest.value)), valueterm.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL)))));
         }
       }
     }
@@ -4352,7 +4446,7 @@ public class Logic {
       return (((Cons)(tree)).rest.value);
     }
     else {
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(tree, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(tree, Cons.cons(Stella.NIL, Stella.NIL)))));
     }
   }
 
@@ -4389,7 +4483,7 @@ public class Logic {
         return (tree);
       default:
         tree.rest = tree.rest.reverse();
-        tree.rest.rest = Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_AND, tree.rest.rest.reverse().concatenate(Stella.NIL, Stella.NIL)), Stella.NIL);
+        tree.rest.rest = Cons.cons(Cons.cons(Logic.SYM_STELLA_AND, tree.rest.rest.reverse().concatenate(Stella.NIL, Stella.NIL)), Stella.NIL);
         tree.rest = tree.rest.reverse();
         tree.secondSetter(Logic.kifInvertSentence(tree.rest.value));
         return (tree);
@@ -4452,7 +4546,7 @@ public class Logic {
       }
       copy.firstSetter(forwardarrow);
       tree.firstSetter(backwardarrow);
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(tree, Stella_Object.cons(Stella_Object.cons(copy, Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(tree, Cons.cons(Cons.cons(copy, Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -4480,7 +4574,7 @@ public class Logic {
 
       tree.secondSetter(Logic.kifVariableDeclarationsToStella(tree.rest.value, true));
       if (sentence2 != null) {
-        return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EXISTS, Stella_Object.cons(tree.rest.value, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(sentence1, Stella_Object.cons(Stella_Object.cons(sentence2, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(tree.rest.value, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(sentence1, Cons.cons(Cons.cons(sentence2, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL)))));
       }
       tree.thirdSetter(sentence1);
       return (tree);
@@ -4491,7 +4585,7 @@ public class Logic {
     { Stella_Object antecedent = Logic.kifSentenceToUntypedStellaSentence(tree.rest.rest.value);
       Stella_Object consequent = Logic.kifSentenceToUntypedStellaSentence(tree.fourth());
 
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FORALL, Stella_Object.cons(declarations, Stella_Object.cons(Stella_Object.cons(antecedent, Stella_Object.cons(consequent, Stella.NIL)), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_FORALL, Cons.cons(declarations, Cons.cons(Cons.cons(antecedent, Cons.cons(consequent, Stella.NIL)), Stella.NIL)))));
     }
   }
 
@@ -4511,17 +4605,17 @@ public class Logic {
 
                   for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
                     conjunct = iter000.value;
-                    foralls = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FORALL, Stella_Object.cons(Stella_Object.copyConsTree(tree.rest.value), Stella_Object.cons(Stella_Object.cons(conjunct, Stella.NIL), Stella.NIL)))), foralls);
+                    foralls = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_FORALL, Cons.cons(Stella_Object.copyConsTree(tree.rest.value), Cons.cons(Cons.cons(conjunct, Stella.NIL), Stella.NIL)))), foralls);
                   }
                 }
-                return (((Cons)(Logic.kifSentenceToUntypedStellaSentence(Stella_Object.cons(Logic.SYM_STELLA_AND, foralls.concatenate(Stella.NIL, Stella.NIL))))));
+                return (((Cons)(Logic.kifSentenceToUntypedStellaSentence(Cons.cons(Logic.SYM_STELLA_AND, foralls.concatenate(Stella.NIL, Stella.NIL))))));
               }
             }
             else if (testValue000 == Logic.SYM_STELLA_OR) {
               { Stella_Object antecedent = Logic.kifInvertSentence(sentence000.rest.value);
                 Stella_Object consequent = sentence000.rest.rest.value;
 
-                return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FORALL, Stella_Object.cons(declarations, Stella_Object.cons(Stella_Object.cons(antecedent, Stella_Object.cons(consequent, Stella.NIL)), Stella.NIL)))));
+                return (Cons.list$(Cons.cons(Logic.SYM_STELLA_FORALL, Cons.cons(declarations, Cons.cons(Cons.cons(antecedent, Cons.cons(consequent, Stella.NIL)), Stella.NIL)))));
               }
             }
             else if (testValue000 == Logic.SYM_STELLA_FORALL) {
@@ -4530,13 +4624,13 @@ public class Logic {
 
                 for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                   v = iter001.value;
-                  sentence000.secondSetter(Stella_Object.cons(v, ((Cons)(sentence000.rest.value))));
+                  sentence000.secondSetter(Cons.cons(v, ((Cons)(sentence000.rest.value))));
                 }
               }
               return (sentence000);
             }
             else if (testValue000 == Logic.SYM_LOGIC_ABOUT) {
-              return (Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ABOUT, Stella_Object.cons(Logic.kifSentenceToUntypedStellaSentence(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FORALL, Stella_Object.cons(declarations, Stella_Object.cons(Stella_Object.cons(sentence000.rest.value, Stella.NIL), Stella.NIL))))), Stella_Object.cons(sentence000.rest.rest.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
+              return (Cons.list$(Cons.cons(Logic.SYM_LOGIC_ABOUT, Cons.cons(Logic.kifSentenceToUntypedStellaSentence(Cons.list$(Cons.cons(Logic.SYM_STELLA_FORALL, Cons.cons(declarations, Cons.cons(Cons.cons(sentence000.rest.value, Stella.NIL), Stella.NIL))))), Cons.cons(sentence000.rest.rest.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
             }
             else {
             }
@@ -4545,7 +4639,7 @@ public class Logic {
       }
       else {
       }
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FORALL, Stella_Object.cons(declarations, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_TRUE, Stella_Object.cons(sentence, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_FORALL, Cons.cons(declarations, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_TRUE, Cons.cons(sentence, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))));
     }
   }
 
@@ -4601,7 +4695,7 @@ public class Logic {
         { Cons arg2000 = ((Cons)(arg2));
 
           if (!Logic.termKifSpecialFormP(arg2000.value)) {
-            return (arg2000.concatenate(Stella_Object.cons(arg1, Stella.NIL), Stella.NIL));
+            return (arg2000.concatenate(Cons.cons(arg1, Stella.NIL), Stella.NIL));
           }
         }
       }
@@ -4631,7 +4725,7 @@ public class Logic {
           }
           if (testValue000) {
             if (Stella_Object.consP(functiontree.value)) {
-              functiontree = Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_VALUE, functiontree);
+              functiontree = Cons.cons(Logic.SYM_PL_KERNEL_KB_VALUE, functiontree);
             }
             functiontree.firstSetter(Logic.kifOperatorToInternalStella(((Symbol)(functiontree.value))));
             Logic.changeKifExpressionsToStellaExpressions(functiontree.rest, true);
@@ -4675,7 +4769,7 @@ public class Logic {
           entry = ((Cons)(iter000.value));
           if (Stella_Object.eqlP(operator, entry.value)) {
             tree.firstSetter(entry.rest.value);
-            return (Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ABOUT, Stella_Object.cons(tree, Stella_Object.cons(((Cons)(Stella_Object.copyConsTree(((Cons)(entry.rest.rest.value))))).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
+            return (Cons.list$(Cons.cons(Logic.SYM_LOGIC_ABOUT, Cons.cons(tree, Cons.cons(((Cons)(Stella_Object.copyConsTree(((Cons)(entry.rest.rest.value))))).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
           }
         }
       }
@@ -4699,7 +4793,7 @@ public class Logic {
           { Stella_Object operator = tree000.value;
 
             if (Stella_Object.isaP(operator, Logic.SGT_STELLA_CONS)) {
-              return (Logic.kifPredicationToStellaPredication(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_HOLDS, tree000.concatenate(Stella.NIL, Stella.NIL))));
+              return (Logic.kifPredicationToStellaPredication(Cons.cons(Logic.SYM_PL_KERNEL_KB_HOLDS, tree000.concatenate(Stella.NIL, Stella.NIL))));
             }
             if (!Stella_Object.symbolP(operator)) {
               { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -4825,7 +4919,7 @@ public class Logic {
           { Stella_Object operator = tree000.value;
 
             if (Stella_Object.isaP(operator, Logic.SGT_STELLA_CONS)) {
-              return (Logic.kifTermToUntypedStellaTerm(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_VALUE, tree000.concatenate(Stella.NIL, Stella.NIL))));
+              return (Logic.kifTermToUntypedStellaTerm(Cons.cons(Logic.SYM_PL_KERNEL_KB_VALUE, tree000.concatenate(Stella.NIL, Stella.NIL))));
             }
             if (!Stella_Object.symbolP(operator)) {
               { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -4921,7 +5015,7 @@ public class Logic {
                 { Cons item000 = ((Cons)(item));
 
                   if (Logic.kifVariableP(item000.value)) {
-                    result = Stella_Object.cons(item000.value, result);
+                    result = Cons.cons(item000.value, result);
                   }
                   else {
                     { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -4944,7 +5038,7 @@ public class Logic {
               }
               else {
                 if (Logic.kifVariableP(item)) {
-                  result = Stella_Object.cons(item, result);
+                  result = Cons.cons(item, result);
                 }
               }
             }
@@ -4953,7 +5047,7 @@ public class Logic {
       }
       else {
         if (Logic.kifVariableP(declarations)) {
-          result = Stella_Object.cons(declarations, result);
+          result = Cons.cons(declarations, result);
         }
         else {
           { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
@@ -5011,7 +5105,7 @@ public class Logic {
 
                       for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                         v = iter001.value;
-                        declaredvariables = Stella_Object.cons(v, declaredvariables);
+                        declaredvariables = Cons.cons(v, declaredvariables);
                       }
                     }
                     { Stella_Object arg = null;
@@ -5080,7 +5174,7 @@ public class Logic {
                     conjunct = iter000.value;
                     if (collect000 == null) {
                       {
-                        collect000 = Stella_Object.cons(Logic.wrapKifWithForall(conjunct, declaredvariables), Stella.NIL);
+                        collect000 = Cons.cons(Logic.wrapKifWithForall(conjunct, declaredvariables), Stella.NIL);
                         if (sentences == Stella.NIL) {
                           sentences = collect000;
                         }
@@ -5091,13 +5185,13 @@ public class Logic {
                     }
                     else {
                       {
-                        collect000.rest = Stella_Object.cons(Logic.wrapKifWithForall(conjunct, declaredvariables), Stella.NIL);
+                        collect000.rest = Cons.cons(Logic.wrapKifWithForall(conjunct, declaredvariables), Stella.NIL);
                         collect000 = collect000.rest;
                       }
                     }
                   }
                 }
-                return (Stella_Object.cons(Logic.SYM_STELLA_AND, sentences.concatenate(Stella.NIL, Stella.NIL)));
+                return (Cons.cons(Logic.SYM_STELLA_AND, sentences.concatenate(Stella.NIL, Stella.NIL)));
               }
             }
             else if (testValue000 == Logic.SYM_LOGIC_leg) {
@@ -5119,9 +5213,9 @@ public class Logic {
           undeclaredvariables.free();
           return (tree);
         case 1: 
-          return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FORALL, Stella_Object.cons(undeclaredvariables.first(), Stella_Object.cons(Stella_Object.cons(tree, Stella.NIL), Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Logic.SYM_STELLA_FORALL, Cons.cons(undeclaredvariables.first(), Cons.cons(Cons.cons(tree, Stella.NIL), Stella.NIL)))));
         default:
-          return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FORALL, Stella_Object.cons(Stella_Object.copyConsTree(undeclaredvariables.theConsList), Stella_Object.cons(Stella_Object.cons(tree, Stella.NIL), Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Logic.SYM_STELLA_FORALL, Cons.cons(Stella_Object.copyConsTree(undeclaredvariables.theConsList), Cons.cons(Cons.cons(tree, Stella.NIL), Stella.NIL)))));
       }
     }
   }
@@ -5204,7 +5298,7 @@ public class Logic {
         alwaysclause = Symbol.extractOptionAndResidue(Logic.SYM_STELLA_ALWAYS, residue, caller_MV_returnarray);
         residue = ((Cons)(caller_MV_returnarray[0]));
       }
-      otree = Stella_Object.cons(quantifier, Stella_Object.cons(Logic.convertToPrefixPropositionTree(generatorsclause), (((whereclause != null) ? Stella_Object.cons(Logic.convertToPrefixPropositionTree(whereclause), Stella.NIL) : Stella.getQuotedTree("((TRUE) \"/LOGIC\")", "/LOGIC"))).concatenate((((alwaysclause != null) ? Stella_Object.cons(Logic.convertToPrefixPropositionTree(alwaysclause), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)));
+      otree = Cons.cons(quantifier, Cons.cons(Logic.convertToPrefixPropositionTree(generatorsclause), (((whereclause != null) ? Cons.cons(Logic.convertToPrefixPropositionTree(whereclause), Stella.NIL) : Stella.getQuotedTree("((TRUE) \"/LOGIC\")", "/LOGIC"))).concatenate((((alwaysclause != null) ? Cons.cons(Logic.convertToPrefixPropositionTree(alwaysclause), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)));
       if (!(residue == Stella.NIL)) {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
 
@@ -5438,7 +5532,7 @@ public class Logic {
         proposition.operator = ((Surrogate)(Logic.$OPERATOR_NAME_TO_SURROGATE_TABLE$.lookup(proposition.kind)));
       }
       if (Logic.descriptionModeP()) {
-        KeyValueList.setDynamicSlotValue(proposition.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTIVEp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(proposition.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTIVEp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       }
       KeyValueList.setDynamicSlotValue(proposition.dynamicSlots, Logic.SYM_LOGIC_UNFASTENEDp, Stella.TRUE_WRAPPER, null);
       return (proposition);
@@ -5530,7 +5624,7 @@ public class Logic {
     { SequenceIndex propositions = ((SequenceIndex)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_LOCALLY_CONCEIVED_PROPOSITIONS_INTERNAL, null)));
 
       if (propositions == null) {
-        propositions = Logic.createSequenceIndex(Logic.KWD_PAGING, Stella_Object.cons(Logic.KWD_CONTEXT_PROPOSITIONS, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(self, Stella.NIL))));
+        propositions = Logic.createSequenceIndex(Logic.KWD_PAGING, Cons.cons(Logic.KWD_CONTEXT_PROPOSITIONS, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(self, Stella.NIL))));
         KeyValueList.setDynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_LOCALLY_CONCEIVED_PROPOSITIONS_INTERNAL, propositions, null);
       }
       return (propositions);
@@ -5545,7 +5639,7 @@ public class Logic {
     { SequenceIndex instances = ((SequenceIndex)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_LOCALLY_CONCEIVED_INSTANCES_INTERNAL, null)));
 
       if (instances == null) {
-        instances = Logic.createSequenceIndex(Logic.KWD_PAGING, Stella_Object.cons(Logic.KWD_CONTEXT_INSTANCES, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(self, Stella.NIL))));
+        instances = Logic.createSequenceIndex(Logic.KWD_PAGING, Cons.cons(Logic.KWD_CONTEXT_INSTANCES, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(self, Stella.NIL))));
         KeyValueList.setDynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_LOCALLY_CONCEIVED_INSTANCES_INTERNAL, instances, null);
       }
       return (instances);
@@ -5792,7 +5886,7 @@ public class Logic {
     { Surrogate surrogate = Logic.objectSurrogate(self);
 
       if (surrogate != null) {
-        return (Stella.internSymbolInModule(surrogate.symbolName, ((Module)(surrogate.homeContext)), true));
+        return (Symbol.internSymbolInModule(surrogate.symbolName, ((Module)(surrogate.homeContext)), true));
       }
       else {
         return (null);
@@ -6327,9 +6421,9 @@ public class Logic {
   }
 
   public static Symbol yieldAnonymousSkolemName(boolean variableP) {
-    { String suffix = (variableP ? Native.integerToString(Native.setIntSpecial(Logic.$VARIABLEIDCOUNTER$, ((Integer)(Logic.$VARIABLEIDCOUNTER$.get())).intValue() + 1)) : Native.integerToString(Logic.$SKOLEM_ID_COUNTER$ = Logic.$SKOLEM_ID_COUNTER$ + 1));
+    { String suffix = (variableP ? Native.integerToString(((long)(Native.setIntSpecial(Logic.$VARIABLEIDCOUNTER$, ((Integer)(Logic.$VARIABLEIDCOUNTER$.get())).intValue() + 1)))) : Native.integerToString(((long)(Logic.$SKOLEM_ID_COUNTER$ = Logic.$SKOLEM_ID_COUNTER$ + 1))));
 
-      return (Stella.internSymbol(((variableP ? "?V" : "SK")) + (((suffix.length() == 1) ? "0" : "")) + suffix));
+      return (Symbol.internSymbol(((variableP ? "?V" : "SK")) + (((suffix.length() == 1) ? "0" : "")) + suffix));
     }
   }
 
@@ -6337,7 +6431,7 @@ public class Logic {
     { Skolem skolem = Skolem.newSkolem();
 
       if (((Cons)(Logic.$FREESKOLEMS$.get())) != null) {
-        Native.setSpecial(Logic.$FREESKOLEMS$, Stella_Object.cons(skolem, ((Cons)(Logic.$FREESKOLEMS$.get()))));
+        Native.setSpecial(Logic.$FREESKOLEMS$, Cons.cons(skolem, ((Cons)(Logic.$FREESKOLEMS$.get()))));
       }
       Skolem.helpCreateSkolem(skolem, type, name, true);
       return (skolem);
@@ -6415,7 +6509,7 @@ public class Logic {
             return (((PatternVariable)((self000.ioVariables.theArray)[0])).skolemType);
           }
           else if (Logic.monadicP(self000) &&
-              ((self000.ioVariables.arraySize > 0) &&
+              (self000.ioVariables.nonEmptyP() &&
                ((((PatternVariable)((self000.ioVariables.theArray)[0])).skolemType != null) &&
                 NamedDescription.classDescriptionP(Logic.surrogateToDescription(((PatternVariable)((self000.ioVariables.theArray)[0])).skolemType))))) {
             return (Logic.SGT_PL_KERNEL_KB_CONCEPT);
@@ -6542,7 +6636,7 @@ public class Logic {
 
         while (iter000.nextP()) {
           i2 = iter000.value;
-          copy2 = Stella_Object.cons(i2, copy2);
+          copy2 = Cons.cons(i2, copy2);
         }
       }
       { Stella_Object i1 = null;
@@ -6554,7 +6648,7 @@ public class Logic {
             copy2 = copy2.remove(i1);
           }
           else {
-            copy1 = Stella_Object.cons(i1, copy1);
+            copy1 = Cons.cons(i1, copy1);
           }
         }
       }
@@ -7003,7 +7097,7 @@ public class Logic {
    * @return Stella_Object
    */
   public static Stella_Object create(GeneralizedSymbol name, Cons type) {
-    { Cons createtree = Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CREATE, Stella_Object.cons(name, Stella_Object.cons(type.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))));
+    { Cons createtree = Cons.list$(Cons.cons(Logic.SYM_LOGIC_CREATE, Cons.cons(name, Cons.cons(type.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))));
       Stella_Object result = Logic.evaluateCreateTerm(createtree);
 
       return (result);
@@ -7040,7 +7134,7 @@ public class Logic {
               (d.extension.estimatedLength() >= sizecutoff)) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(d, Stella.NIL);
+                collect000 = Cons.cons(d, Stella.NIL);
                 if (descriptions.theConsList == Stella.NIL) {
                   descriptions.theConsList = collect000;
                 }
@@ -7051,7 +7145,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(d, Stella.NIL);
+                collect000.rest = Cons.cons(d, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -7064,7 +7158,7 @@ public class Logic {
 
         for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
           desc = ((NamedDescription)(iter001.value));
-          size = Native.integerToString(desc.extension.estimatedLength());
+          size = Native.integerToString(((long)(desc.extension.estimatedLength())));
           size = Native.makeString(8 - size.length(), ' ') + size;
           System.out.println(size + " : " + desc.descriptionName());
         }
@@ -7167,7 +7261,7 @@ public class Logic {
           isaproposition = Logic.createProposition(Logic.SYM_STELLA_ISA, 1);
           isaproposition.operator = type;
           (isaproposition.arguments.theArray)[0] = self;
-          Proposition.fastenDownOneProposition(isaproposition, true);
+          Proposition.fastenDownOneProposition(isaproposition, false);
         }
         Proposition.updatePropositionTruthValue(isaproposition, updatemode);
         return (isaproposition);
@@ -7193,10 +7287,21 @@ public class Logic {
     }
   }
 
+  /** Assert or retract a proposition that applies 'relation' to 'arguments'.
+   * @param relation
+   * @param arguments
+   * @param updatemode
+   * @return Proposition
+   */
   public static Proposition updateTuple(Surrogate relation, Cons arguments, Keyword updatemode) {
-    { NamedDescription description = Logic.getDescription(relation);
+    { boolean holdsP = relation == Logic.SGT_PL_KERNEL_KB_HOLDS;
+      NamedDescription description = (holdsP ? Logic.getDescription(arguments.value) : Logic.getDescription(relation));
       Proposition proposition = null;
 
+      if (holdsP) {
+        relation = description.surrogateValueInverse;
+        arguments = arguments.rest;
+      }
       if (NamedDescription.functionDescriptionP(description)) {
         { Proposition definingproposition = Logic.findOrCreateFunctionProposition(relation, arguments.butLast().consify());
 
@@ -7257,7 +7362,7 @@ public class Logic {
 
               if ((proposition == null) ||
                   Logic.skolemP(value)) {
-                return (Logic.updateTuple(relation, Stella.consList(Stella_Object.cons(self, Stella_Object.cons(value, Stella.NIL))), updatemode));
+                return (Logic.updateTuple(relation, Cons.consList(Cons.cons(self, Cons.cons(value, Stella.NIL))), updatemode));
               }
               { Stella_Object skolemoutput = (proposition.arguments.theArray)[(proposition.arguments.length() - 1)];
 
@@ -7284,7 +7389,7 @@ public class Logic {
           }
         }
         else {
-          return (Logic.updateTuple(relation, Stella.consList(Stella_Object.cons(self, Stella_Object.cons(value, Stella.NIL))), updatemode));
+          return (Logic.updateTuple(relation, Cons.consList(Cons.cons(self, Cons.cons(value, Stella.NIL))), updatemode));
         }
 
       } finally {
@@ -7315,7 +7420,7 @@ public class Logic {
       }
     }
     else {
-      return (Logic.assertTuple(Logic.SGT_PL_KERNEL_KB_MEMBER_OF, Stella.consList(Stella_Object.cons(self, Stella_Object.cons(collection, Stella.NIL)))));
+      return (Logic.assertTuple(Logic.SGT_PL_KERNEL_KB_MEMBER_OF, Cons.consList(Cons.cons(self, Cons.cons(collection, Stella.NIL)))));
     }
   }
 
@@ -7491,7 +7596,7 @@ public class Logic {
           Native.setSpecial(Logic.$TERMUNDERCONSTRUCTION$, tree);
           proposition = ((Proposition)(Logic.buildProposition(tree)));
           if (proposition != null) {
-            Proposition.normalizeTopLevelProposition(proposition, null);
+            Proposition.normalizeTopLevelProposition(proposition);
             Proposition.verifyForallPropositions(proposition);
             if (!(Proposition.collectUnresolvedSlotReferences(proposition) == Stella.NIL)) {
               if (trueassertionP) {
@@ -7802,7 +7907,7 @@ public class Logic {
 
             if (Description.namedDescriptionP(collectionref000) &&
                 NamedDescription.classDescriptionP(((NamedDescription)(collectionref000)))) {
-              return (Logic.buildIsaProposition(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_ISA, Stella_Object.cons(tree.rest.value, Stella_Object.cons(Stella_Object.cons(collectionref000.descriptionSurrogate(), Stella.NIL), Stella.NIL))))));
+              return (Logic.buildIsaProposition(Cons.list$(Cons.cons(Logic.SYM_STELLA_ISA, Cons.cons(tree.rest.value, Cons.cons(Cons.cons(collectionref000.descriptionSurrogate(), Stella.NIL), Stella.NIL))))));
             }
           }
         }
@@ -7921,7 +8026,7 @@ public class Logic {
                 if (term != null) {
                   if (collect000 == null) {
                     {
-                      collect000 = Stella_Object.cons(term, Stella.NIL);
+                      collect000 = Cons.cons(term, Stella.NIL);
                       if (arguments == Stella.NIL) {
                         arguments = collect000;
                       }
@@ -7932,7 +8037,7 @@ public class Logic {
                   }
                   else {
                     {
-                      collect000.rest = Stella_Object.cons(term, Stella.NIL);
+                      collect000.rest = Cons.cons(term, Stella.NIL);
                       collect000 = collect000.rest;
                     }
                   }
@@ -8077,7 +8182,7 @@ public class Logic {
     if (remainingterms.rest == Stella.NIL) {
       return (Logic.conjoinPropositions(equivalences));
     }
-    equivalences = Stella_Object.cons(Logic.buildEquivalenceProposition(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_e, Stella_Object.cons(remainingterms.value, Stella_Object.cons(Stella_Object.cons(remainingterms.rest.value, Stella.NIL), Stella.NIL))))), equivalences);
+    equivalences = Cons.cons(Logic.buildEquivalenceProposition(Cons.list$(Cons.cons(Logic.SYM_STELLA_e, Cons.cons(remainingterms.value, Cons.cons(Cons.cons(remainingterms.rest.value, Stella.NIL), Stella.NIL))))), equivalences);
     return (Logic.buildConjunctionOfEqualityPropositions(remainingterms.rest, equivalences));
   }
 
@@ -8375,7 +8480,7 @@ public class Logic {
     if ((type == Logic.SGT_LOGIC_PROPOSITION) ||
         (Logic.$AUTO_COERCE_PROPOSITIONAL_ARGUMENTSp$ &&
          Logic.propositionalArgumentP(argument))) {
-      return (Logic.buildProposition(argument));
+      return (Logic.evaluatePropositionTerm(argument));
     }
     else if (type != null) {
       { Object old$Defaultcreationtype$000 = Logic.$DEFAULTCREATIONTYPE$.get();
@@ -8391,6 +8496,84 @@ public class Logic {
     }
     else {
       return (Logic.evaluateTerm(argument));
+    }
+  }
+
+  public static Stella_Object evaluatePropositionTerm(Stella_Object tree) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(tree);
+
+      if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
+        { Proposition tree000 = ((Proposition)(tree));
+
+          return (tree000);
+        }
+      }
+      else if (testValue000 == Logic.SGT_STELLA_CONS) {
+        { Cons tree000 = ((Cons)(tree));
+
+          { LogicObject predicate = null;
+            Stella_Object firstargument = null;
+
+            { Object [] caller_MV_returnarray = new Object[1];
+
+              predicate = Logic.evaluatePredicateAndFirstArgument(tree000, caller_MV_returnarray);
+              firstargument = ((Stella_Object)(caller_MV_returnarray[0]));
+            }
+            if (firstargument != null) {
+              tree000.secondSetter(firstargument);
+            }
+            if (Logic.functionP(predicate) &&
+                (((NamedDescription)(predicate)).arity() == tree000.length())) {
+              return (Logic.evaluateFunctionTerm(tree000));
+            }
+            else {
+              return (Logic.buildProposition(tree000));
+            }
+          }
+        }
+      }
+      else {
+        return (Logic.buildProposition(tree));
+      }
+    }
+  }
+
+  public static LogicObject evaluatePredicateAndFirstArgument(Cons tree, Object [] MV_returnarray) {
+    { Stella_Object predicate = tree.value;
+      Stella_Object firstargument = tree.rest.value;
+
+      if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(predicate), Logic.SGT_STELLA_GENERALIZED_SYMBOL)) {
+        { GeneralizedSymbol predicate000 = ((GeneralizedSymbol)(predicate));
+
+          if ((predicate000 == Logic.SYM_STELLA_EXISTS) ||
+              (predicate000 == Logic.SYM_STELLA_FORALL)) {
+            firstargument = null;
+            predicate000 = null;
+          }
+          else if ((predicate000 == Logic.SYM_STELLA_AND) ||
+              ((predicate000 == Logic.SYM_STELLA_OR) ||
+               (predicate000 == Logic.SYM_STELLA_NOT))) {
+            firstargument = null;
+            predicate000 = null;
+          }
+          else {
+          }
+        }
+      }
+      else {
+        predicate = null;
+      }
+      if (predicate != null) {
+        if (firstargument != null) {
+          firstargument = Logic.evaluateFirstArgument(tree.rest.value, ((Symbol)(predicate)));
+        }
+        predicate = Logic.evaluatePredicate(((GeneralizedSymbol)(predicate)), firstargument);
+      }
+      { LogicObject _return_temp = ((LogicObject)(predicate));
+
+        MV_returnarray[0] = firstargument;
+        return (_return_temp);
+      }
     }
   }
 
@@ -8480,7 +8663,7 @@ public class Logic {
   public static Proposition buildPredicateProposition(Cons tree) {
     if ((tree.length() == 2) &&
         Logic.classOperatorP(((GeneralizedSymbol)(tree.value)))) {
-      return (Logic.buildIsaProposition(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_ISA, Stella_Object.cons(tree.rest.value, Stella_Object.cons(Stella_Object.cons(tree.value, Stella.NIL), Stella.NIL))))));
+      return (Logic.buildIsaProposition(Cons.list$(Cons.cons(Logic.SYM_STELLA_ISA, Cons.cons(tree.rest.value, Cons.cons(Cons.cons(tree.value, Stella.NIL), Stella.NIL))))));
     }
     if (Logic.holdsOperatorP(tree.value)) {
       return (Logic.buildHoldsProposition(tree));
@@ -8490,18 +8673,15 @@ public class Logic {
       Stella_Object firstargument = null;
       LogicObject predicatevalue = null;
 
-      if (tree.rest == Stella.NIL) {
-        if (predicatename == Logic.SYM_PL_KERNEL_KB_CUT) {
-        }
-        else {
-          System.out.println("Predicate `" + predicatename + "' applied to zero arguments.");
-        }
+      { Object [] caller_MV_returnarray = new Object[1];
+
+        predicatevalue = Logic.evaluatePredicateAndFirstArgument(tree, caller_MV_returnarray);
+        firstargument = ((Stella_Object)(caller_MV_returnarray[0]));
       }
-      else {
-        firstargument = Logic.evaluateFirstArgument(tree.rest.value, ((Symbol)(predicatename)));
+      if (firstargument != null) {
+        tree.secondSetter(firstargument);
         (proposition.arguments.theArray)[0] = firstargument;
       }
-      predicatevalue = Logic.evaluatePredicate(((GeneralizedSymbol)(predicatename)), firstargument);
       if ((predicatevalue != null) &&
           Logic.functionP(predicatevalue)) {
         if (Logic.descriptionModeP()) {
@@ -8509,11 +8689,11 @@ public class Logic {
         }
         else {
           { int lastargindex = tree.length() - 1;
-            Stella_Object resultargument = tree.nth(lastargindex);
+            Stella_Object resultargument = Logic.evaluateTypedArgument(tree.nth(lastargindex), ((Surrogate)(((NamedDescription)(predicatevalue)).ioVariableTypes.last())));
 
             tree.nthSetter(null, lastargindex);
             tree = tree.remove(null);
-            return (((Proposition)(Logic.buildProposition(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_e, Stella_Object.cons(tree, Stella_Object.cons(Stella_Object.cons(resultargument, Stella.NIL), Stella.NIL))))))));
+            return (((Proposition)(Logic.buildProposition(Cons.list$(Cons.cons(Logic.SYM_STELLA_e, Cons.cons(tree, Cons.cons(Cons.cons(resultargument, Stella.NIL), Stella.NIL))))))));
           }
         }
       }
@@ -8544,6 +8724,11 @@ public class Logic {
          (type == Logic.SGT_STELLA_THING))) {
       return (true);
     }
+    if ((type == Logic.SGT_STELLA_BOOLEAN) &&
+        ((self == Logic.TRUE_PROPOSITION) ||
+         (self == Logic.FALSE_PROPOSITION))) {
+      return (true);
+    }
     { Surrogate testValue000 = Stella_Object.safePrimaryType(self);
 
       if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PATTERN_VARIABLE)) {
@@ -8568,6 +8753,12 @@ public class Logic {
               Surrogate.subtypeOfP(Logic.logicalType(self000), type)) {
             return (true);
           }
+        }
+      }
+      else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_QUANTITY_LOGIC_WRAPPER)) {
+        { QuantityLogicWrapper self000 = ((QuantityLogicWrapper)(self));
+
+          return (true);
         }
       }
       else {
@@ -8720,36 +8911,39 @@ public class Logic {
   }
 
   public static void processCheckTypesAgenda() {
-    if (Logic.$CHECK_TYPES_AGENDA$.emptyP() ||
+    if ((Logic.$CHECK_TYPES_AGENDA$.sequenceLength == 0) ||
         ((Boolean)(Logic.$INHIBITOBJECTFINALIZATIONp$.get())).booleanValue()) {
       return;
     }
-    Logic.plLog(Logic.KWD_MEDIUM, Stella_Object.cons(StringWrapper.wrapString("Processing check-types agenda..."), Stella.NIL));
-    { KeyValueList agenda = Logic.$CHECK_TYPES_AGENDA$.reverse();
+    Logic.plLog(Logic.KWD_MEDIUM, Cons.cons(StringWrapper.wrapString("Processing check-types agenda..."), Stella.NIL));
+    { VectorSequence agenda = Logic.$CHECK_TYPES_AGENDA$;
+      Proposition proposition = null;
 
-      Logic.$CHECK_TYPES_AGENDA$ = KeyValueList.newKeyValueList();
-      { Proposition proposition = null;
-        CheckTypesRecord record = null;
-        KvCons iter000 = agenda.theKvList;
+      Logic.$CHECK_TYPES_AGENDA$ = VectorSequence.newVectorSequence(4);
+      { CheckTypesRecord record = null;
+        VectorSequence vector000 = agenda;
+        int index000 = 0;
+        int length000 = vector000.sequenceLength;
 
-        loop000 : for (;iter000 != null; iter000 = iter000.rest) {
-          proposition = ((Proposition)(iter000.key));
-          record = ((CheckTypesRecord)(iter000.value));
+        loop000 : for (;index000 < length000; index000 = index000 + 1) {
+          record = ((CheckTypesRecord)((vector000.theArray)[index000]));
+          proposition = record.proposition;
           if (!proposition.deletedP()) {
             { Object old$Typecheckmode$000 = Logic.$TYPECHECKMODE$.get();
               Object old$Termunderconstruction$000 = Logic.$TERMUNDERCONSTRUCTION$.get();
               Object old$Descriptionunderconstruction$000 = Logic.$DESCRIPTIONUNDERCONSTRUCTION$.get();
+              Object old$Evaluationmode$000 = Logic.$EVALUATIONMODE$.get();
 
               try {
                 Native.setSpecial(Logic.$TYPECHECKMODE$, ((((BooleanWrapper)(KeyValueList.dynamicSlotValue(proposition.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTIVEp, Stella.FALSE_WRAPPER))).wrapperValue &&
                     (!(Logic.$TYPE_CHECK_POLICY$ == Logic.KWD_IGNORE_TYPE_VIOLATIONS))) ? Logic.KWD_REPORT_TYPE_VIOLATIONS : Logic.$TYPE_CHECK_POLICY$));
                 Native.setSpecial(Logic.$TERMUNDERCONSTRUCTION$, record.parentProposition);
                 Native.setSpecial(Logic.$DESCRIPTIONUNDERCONSTRUCTION$, record.parentDescription);
-                if (proposition.deletedP() ||
-                    (((((Stella_Object)(Logic.$TERMUNDERCONSTRUCTION$.get())) != null) &&
+                Native.setSpecial(Logic.$EVALUATIONMODE$, Logic.KWD_EXTENSIONAL_ASSERTION);
+                if (((((Stella_Object)(Logic.$TERMUNDERCONSTRUCTION$.get())) != null) &&
                     ((Stella_Object)(Logic.$TERMUNDERCONSTRUCTION$.get())).deletedP()) ||
-                     ((((Stella_Object)(Logic.$DESCRIPTIONUNDERCONSTRUCTION$.get())) != null) &&
-                      ((Stella_Object)(Logic.$DESCRIPTIONUNDERCONSTRUCTION$.get())).deletedP()))) {
+                    ((((Stella_Object)(Logic.$DESCRIPTIONUNDERCONSTRUCTION$.get())) != null) &&
+                     ((Stella_Object)(Logic.$DESCRIPTIONUNDERCONSTRUCTION$.get())).deletedP())) {
                   continue loop000;
                 }
                 try {
@@ -8771,6 +8965,7 @@ public class Logic {
                 }
 
               } finally {
+                Logic.$EVALUATIONMODE$.set(old$Evaluationmode$000);
                 Logic.$DESCRIPTIONUNDERCONSTRUCTION$.set(old$Descriptionunderconstruction$000);
                 Logic.$TERMUNDERCONSTRUCTION$.set(old$Termunderconstruction$000);
                 Logic.$TYPECHECKMODE$.set(old$Typecheckmode$000);
@@ -8948,7 +9143,11 @@ public class Logic {
 
   public static Proposition createFunctionProposition(GeneralizedSymbol predicate, Cons inputarguments) {
     { Proposition proposition = Logic.beginCreatingFunctionProposition(predicate, inputarguments);
+      Proposition duplicate = ((!Logic.descriptionModeP()) ? Proposition.findDuplicateFunctionProposition(proposition) : ((Proposition)(null)));
 
+      if (!(duplicate == null)) {
+        System.err.print("Safety violation: INTERNAL ERROR: encountered unexpected duplicate function proposition: `" + duplicate + "'");
+      }
       return (Proposition.finishCreatingFunctionProposition(proposition));
     }
   }
@@ -8995,7 +9194,7 @@ public class Logic {
           throw ((PropositionError)(PropositionError.newPropositionError(stream001.theStringReader()).fillInStackTrace()));
         }
       }
-      inputarguments = Stella_Object.cons(firstargument, inputarguments);
+      inputarguments = Cons.cons(firstargument, inputarguments);
       if ((predicatevalue != null) &&
           (Logic.objectSurrogate(predicatevalue) == Logic.SGT_PL_KERNEL_KB_SETOF)) {
         inputarguments = inputarguments.sort(Native.find_java_method("edu.isi.powerloom.logic.Logic", "logicFormLessP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}));
@@ -9074,9 +9273,14 @@ public class Logic {
   }
 
   public static Skolem createEnumeratedSet(List set) {
-    { Proposition setprop = Logic.beginCreatingFunctionProposition(Logic.SGT_PL_KERNEL_KB_SETOF, set.theConsList);
-      Skolem skolem = Logic.createSkolem(Logic.SGT_PL_KERNEL_KB_SET, null);
+    { Proposition setprop = Logic.beginCreatingFunctionProposition(Logic.SGT_PL_KERNEL_KB_SETOF, Cons.copyConsList(set.theConsList).sort(Native.find_java_method("edu.isi.powerloom.logic.Logic", "logicFormLessP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")})));
+      Proposition duplicate = ((!Logic.descriptionModeP()) ? Proposition.findDuplicateFunctionProposition(setprop) : ((Proposition)(null)));
+      Skolem skolem = null;
 
+      if (duplicate != null) {
+        return (((Skolem)((duplicate.arguments.theArray)[(duplicate.arguments.length() - 1)])));
+      }
+      skolem = Logic.createSkolem(Logic.SGT_PL_KERNEL_KB_SET, null);
       (setprop.arguments.theArray)[(set.length())] = skolem;
       skolem.definingProposition = setprop;
       Logic.addDependentPropositionLink(skolem, setprop);
@@ -9087,8 +9291,13 @@ public class Logic {
 
   public static Skolem createLogicalList(List list) {
     { Proposition listprop = Logic.beginCreatingFunctionProposition(Logic.SGT_PL_KERNEL_KB_LISTOF, list.theConsList);
-      Skolem skolem = Logic.createSkolem(Logic.SGT_PL_KERNEL_KB_LIST, null);
+      Proposition duplicate = ((!Logic.descriptionModeP()) ? Proposition.findDuplicateFunctionProposition(listprop) : ((Proposition)(null)));
+      Skolem skolem = null;
 
+      if (duplicate != null) {
+        return (((Skolem)((duplicate.arguments.theArray)[(duplicate.arguments.length() - 1)])));
+      }
+      skolem = Logic.createSkolem(Logic.SGT_PL_KERNEL_KB_LIST, null);
       (listprop.arguments.theArray)[(list.length())] = skolem;
       skolem.definingProposition = listprop;
       Logic.addDependentPropositionLink(skolem, listprop);
@@ -9106,6 +9315,18 @@ public class Logic {
           return ((definingproposition != null) &&
               Proposition.collectionofPropositionP(definingproposition));
         }
+      }
+    }
+    else {
+      return (false);
+    }
+  }
+
+  public static boolean functionOutputSkolemP(Stella_Object self) {
+    if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(self), Logic.SGT_LOGIC_SKOLEM)) {
+      { Skolem self000 = ((Skolem)(self));
+
+        return (self000.definingProposition != null);
       }
     }
     else {
@@ -9185,7 +9406,7 @@ public class Logic {
     if ((updatemode == Logic.KWD_ASSERT_FALSE) ||
         ((updatemode == Logic.KWD_PRESUME_FALSE) ||
          (updatemode == Logic.KWD_RETRACT_FALSE))) {
-      tree = Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(tree, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+      tree = Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(tree, Cons.cons(Stella.NIL, Stella.NIL))));
       updatemode = Logic.invertUpdateMode(updatemode);
     }
     else {
@@ -9360,7 +9581,7 @@ public class Logic {
       else if (Surrogate.subtypeOfSurrogateP(testValue000)) {
         { Surrogate tree000 = ((Surrogate)(tree));
 
-          return (Logic.conceiveTerm(Surrogate.surrogateToSymbol(tree000)));
+          return (Logic.conceiveTerm(Symbol.internSymbolInModule(tree000.symbolName, ((Module)(tree000.homeContext)), true)));
         }
       }
       else {
@@ -9473,7 +9694,7 @@ public class Logic {
             Proposition.unassertProposition(prop);
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(prop, Stella.NIL);
+                collect000 = Cons.cons(prop, Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect000;
                 }
@@ -9484,7 +9705,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(prop, Stella.NIL);
+                collect000.rest = Cons.cons(prop, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -9751,7 +9972,7 @@ public class Logic {
         Native.setSpecial(Stella.$MODULE$, module);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         Logic.destroyInferenceCaches(module);
-        Logic.flushInlineQueryCaches();
+        Logic.clearInlineQueryCaches();
         { Stella_Object term = null;
           Cons iter000 = Logic.allTerms(module, true).listify().theConsList;
 
@@ -9845,7 +10066,7 @@ public class Logic {
   }
 
   public static void destroyLogicContextHook(Context self) {
-    KeyValueList.setDynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_MONOTONICp, (false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+    KeyValueList.setDynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_MONOTONICp, Stella.FALSE_WRAPPER, Stella.FALSE_WRAPPER);
     { Object old$Context$000 = Stella.$CONTEXT$.get();
       Object old$Module$000 = Stella.$MODULE$.get();
 
@@ -9872,13 +10093,16 @@ public class Logic {
     }
     if (Stella_Object.isaP(self, Logic.SGT_STELLA_WORLD)) {
       Logic.unlinkInferenceCache(((World)(self)));
+      Logic.unlinkPropagationEnvironment(self);
     }
+    self.dynamicSlots.clear();
   }
 
   /** Clear all query and memoization caches.
    */
   public static void clearCaches() {
     Logic.clearQueryResultsCache();
+    Logic.clearInlineQueryCaches();
     Stella.clearAllMemoizationTables();
   }
 
@@ -9893,15 +10117,15 @@ public class Logic {
       try {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
-        { List modules = Stella.list(Stella_Object.cons(Stella.getStellaModule("PLI", true), Stella_Object.cons(Logic.$PL_ANONYMOUS_MODULE$, Stella_Object.cons(Logic.$PL_KERNEL_MODULE$, Stella_Object.cons(Logic.$LOGIC_MODULE$, Stella.NIL)))));
+        { List modules = List.list(Cons.cons(Stella.getStellaModule("PLI", true), Cons.cons(Logic.$PL_ANONYMOUS_MODULE$, Cons.cons(Logic.$PL_KERNEL_MODULE$, Cons.cons(Logic.$LOGIC_MODULE$, Stella.NIL)))));
 
           { Module mod = null;
             Cons iter000 = modules.theConsList;
 
             for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
               mod = ((Module)(iter000.value));
-              KeyValueList.setDynamicSlotValue(mod.dynamicSlots, Logic.SYM_STELLA_CLEARABLEp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
-              KeyValueList.setDynamicSlotValue(mod.dynamicSlots, Logic.SYM_STELLA_PROTECT_SURROGATESp, (false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+              KeyValueList.setDynamicSlotValue(mod.dynamicSlots, Logic.SYM_STELLA_CLEARABLEp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
+              KeyValueList.setDynamicSlotValue(mod.dynamicSlots, Logic.SYM_STELLA_PROTECT_SURROGATESp, Stella.FALSE_WRAPPER, Stella.FALSE_WRAPPER);
               { Context sub = null;
                 AllPurposeIterator iter001 = Context.allSubcontexts(mod, Logic.KWD_PREORDER);
 
@@ -9910,8 +10134,8 @@ public class Logic {
                   if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(sub), Logic.SGT_STELLA_MODULE)) {
                     { Module sub000 = ((Module)(sub));
 
-                      KeyValueList.setDynamicSlotValue(sub000.dynamicSlots, Logic.SYM_STELLA_CLEARABLEp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
-                      KeyValueList.setDynamicSlotValue(sub000.dynamicSlots, Logic.SYM_STELLA_PROTECT_SURROGATESp, (false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+                      KeyValueList.setDynamicSlotValue(sub000.dynamicSlots, Logic.SYM_STELLA_CLEARABLEp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
+                      KeyValueList.setDynamicSlotValue(sub000.dynamicSlots, Logic.SYM_STELLA_PROTECT_SURROGATESp, Stella.FALSE_WRAPPER, Stella.FALSE_WRAPPER);
                     }
                   }
                   else {
@@ -10133,24 +10357,28 @@ public class Logic {
     if (Stella_Object.isaP(o1, Logic.SGT_LOGIC_SKOLEM)) {
       { Stella_Object value = ((Stella_Object)(Stella_Object.accessInContext(((Skolem)(o1)).variableValue, ((Skolem)(o1)).homeContext, false)));
 
-        if ((value == null) &&
-            Logic.functionOutputSkolemP(o1)) {
+        if (value != null) {
+          o1 = value;
+        }
+        else if (Logic.functionOutputSkolemP(o1)) {
           o1 = ((Skolem)(o1)).definingProposition;
         }
         else {
-          o1 = value;
+          o1 = ((Skolem)(o1)).skolemName;
         }
       }
     }
     if (Stella_Object.isaP(o2, Logic.SGT_LOGIC_SKOLEM)) {
       { Stella_Object value = ((Stella_Object)(Stella_Object.accessInContext(((Skolem)(o2)).variableValue, ((Skolem)(o2)).homeContext, false)));
 
-        if ((value == null) &&
-            Logic.functionOutputSkolemP(o2)) {
+        if (value != null) {
+          o2 = value;
+        }
+        else if (Logic.functionOutputSkolemP(o2)) {
           o2 = ((Skolem)(o2)).definingProposition;
         }
         else {
-          o2 = value;
+          o2 = ((Skolem)(o2)).skolemName;
         }
       }
     }
@@ -10234,7 +10462,7 @@ public class Logic {
             else if (Surrogate.subtypeOfP(testValue003, Logic.SGT_STELLA_NUMBER_WRAPPER)) {
               { NumberWrapper o2000 = ((NumberWrapper)(o2));
 
-                return (o1000.wrapperValue.lessP(o2000));
+                return (Logic.safeQuantityLessP(o1000.wrapperValue, o2000));
               }
             }
             else {
@@ -10348,7 +10576,7 @@ public class Logic {
   public static BacklinksIndex createBacklinksIndex(Stella_Object self) {
     { BacklinksIndex index = BacklinksIndex.newBacklinksIndex();
 
-      index.dependentPropositionsList = (Stella_Object.isaP(self, Logic.SGT_LOGIC_PATTERN_VARIABLE) ? Logic.createSequenceIndex(Logic.KWD_NON_PAGING, Stella.NIL) : Logic.createSequenceIndex(((Module)(Stella.$MODULE$.get())), Stella_Object.cons(Logic.KWD_DEPENDENTS, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(self, Stella.NIL)))));
+      index.dependentPropositionsList = (Stella_Object.isaP(self, Logic.SGT_LOGIC_PATTERN_VARIABLE) ? Logic.createSequenceIndex(Logic.KWD_NON_PAGING, Stella.NIL) : Logic.createSequenceIndex(((Module)(Stella.$MODULE$.get())), Cons.cons(Logic.KWD_DEPENDENTS, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(self, Stella.NIL)))));
       return (index);
     }
   }
@@ -10665,9 +10893,10 @@ public class Logic {
         }
       }
       else {
-        return (Logic.$BACKLINK_ALL_PROPOSITION_ARGUMENTSp$ ||
-            (Stella.getQuotedTree("((:PREDICATE :FUNCTION) \"/LOGIC\")", "/LOGIC").memberP(proposition.kind) &&
-             NamedDescription.indexIthDomainP(Logic.getDescription(((Surrogate)(proposition.operator))), i)));
+        return ((!Stella_Object.isaP(argument, Logic.SGT_LOGIC_BACKLINKS_MIXIN)) &&
+            (Logic.$BACKLINK_ALL_PROPOSITION_ARGUMENTSp$ ||
+             (Stella.getQuotedTree("((:PREDICATE :FUNCTION) \"/LOGIC\")", "/LOGIC").memberP(proposition.kind) &&
+              NamedDescription.indexIthDomainP(Logic.getDescription(((Surrogate)(proposition.operator))), i))));
       }
     }
   }
@@ -10720,7 +10949,7 @@ public class Logic {
           if ((list == allpropositionsindex) &&
               Stella_Object.isaP(list, Logic.SGT_LOGIC_PAGING_INDEX)) {
             { ObjectStore store = ((PagingIndex)(list)).store;
-              SequenceIndex paginglist = ((store != null) ? Logic.createSequenceIndex(store, Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(relation, Stella_Object.cons(self, Stella.NIL))))) : ((SequenceIndex)(null)));
+              SequenceIndex paginglist = ((store != null) ? Logic.createSequenceIndex(store, Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(relation, Cons.cons(self, Stella.NIL))))) : ((SequenceIndex)(null)));
 
               if (paginglist != null) {
                 { Cons value000 = Stella.NIL;
@@ -10734,7 +10963,7 @@ public class Logic {
                       if (prop.operator == relation) {
                         if (collect000 == null) {
                           {
-                            collect000 = Stella_Object.cons(prop, Stella.NIL);
+                            collect000 = Cons.cons(prop, Stella.NIL);
                             if (value000 == Stella.NIL) {
                               value000 = collect000;
                             }
@@ -10745,7 +10974,7 @@ public class Logic {
                         }
                         else {
                           {
-                            collect000.rest = Stella_Object.cons(prop, Stella.NIL);
+                            collect000.rest = Cons.cons(prop, Stella.NIL);
                             collect000 = collect000.rest;
                           }
                         }
@@ -10796,7 +11025,7 @@ public class Logic {
       { AllPurposeIterator self000 = AllPurposeIterator.newAllPurposeIterator();
 
         self000.iteratorObject = self;
-        self000.iteratorConsList = Stella_Object.cons(relation, NamedDescription.allSubrelations(relation, false));
+        self000.iteratorConsList = Cons.cons(relation, NamedDescription.allSubrelations(relation, false));
         self000.iteratorNestedIterator = Logic.unfilteredDependentPropositions(self, relationref).allocateIterator();
         self000.iteratorNextCode = Native.find_java_method("edu.isi.powerloom.logic.Logic", "allSpecializingDependentPropositionsNextP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.AllPurposeIterator")});
         { AllPurposeIterator value000 = self000;
@@ -10820,7 +11049,7 @@ public class Logic {
               list = index.dependentPropositionsList;
               if (Stella_Object.isaP(list, Logic.SGT_LOGIC_PAGING_INDEX)) {
                 { ObjectStore store = ((PagingIndex)(list)).store;
-                  SequenceIndex paginglist = ((store != null) ? Logic.createSequenceIndex(store, Stella_Object.cons(Logic.KWD_ISA, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(self000, Stella.NIL)))) : ((SequenceIndex)(null)));
+                  SequenceIndex paginglist = ((store != null) ? Logic.createSequenceIndex(store, Cons.cons(Logic.KWD_ISA, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(self000, Stella.NIL)))) : ((SequenceIndex)(null)));
 
                   if (paginglist != null) {
                     { Cons value000 = Stella.NIL;
@@ -10834,7 +11063,7 @@ public class Logic {
                           if (prop.kind == Logic.KWD_ISA) {
                             if (collect000 == null) {
                               {
-                                collect000 = Stella_Object.cons(prop, Stella.NIL);
+                                collect000 = Cons.cons(prop, Stella.NIL);
                                 if (value000 == Stella.NIL) {
                                   value000 = collect000;
                                 }
@@ -10845,7 +11074,7 @@ public class Logic {
                             }
                             else {
                               {
-                                collect000.rest = Stella_Object.cons(prop, Stella.NIL);
+                                collect000.rest = Cons.cons(prop, Stella.NIL);
                                 collect000 = collect000.rest;
                               }
                             }
@@ -10873,7 +11102,7 @@ public class Logic {
               list = index.dependentPropositionsList;
               if (Stella_Object.isaP(list, Logic.SGT_LOGIC_PAGING_INDEX)) {
                 { ObjectStore store = ((PagingIndex)(list)).store;
-                  SequenceIndex paginglist = ((store != null) ? Logic.createSequenceIndex(store, Stella_Object.cons(Logic.KWD_ISA, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(self000, Stella.NIL)))) : ((SequenceIndex)(null)));
+                  SequenceIndex paginglist = ((store != null) ? Logic.createSequenceIndex(store, Cons.cons(Logic.KWD_ISA, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(self000, Stella.NIL)))) : ((SequenceIndex)(null)));
 
                   if (paginglist != null) {
                     { Cons value001 = Stella.NIL;
@@ -10887,7 +11116,7 @@ public class Logic {
                           if (prop.kind == Logic.KWD_ISA) {
                             if (collect001 == null) {
                               {
-                                collect001 = Stella_Object.cons(prop, Stella.NIL);
+                                collect001 = Cons.cons(prop, Stella.NIL);
                                 if (value001 == Stella.NIL) {
                                   value001 = collect001;
                                 }
@@ -10898,7 +11127,7 @@ public class Logic {
                             }
                             else {
                               {
-                                collect001.rest = Stella_Object.cons(prop, Stella.NIL);
+                                collect001.rest = Cons.cons(prop, Stella.NIL);
                                 collect001 = collect001.rest;
                               }
                             }
@@ -10956,7 +11185,7 @@ public class Logic {
                   list = index.dependentPropositionsList;
                   if (Stella_Object.isaP(list, Logic.SGT_LOGIC_PAGING_INDEX)) {
                     { ObjectStore store = ((PagingIndex)(list)).store;
-                      SequenceIndex paginglist = ((store != null) ? Logic.createSequenceIndex(store, Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(Logic.SGT_PL_KERNEL_KB_SUBSET_OF, Stella_Object.cons(self000, Stella.NIL))))) : ((SequenceIndex)(null)));
+                      SequenceIndex paginglist = ((store != null) ? Logic.createSequenceIndex(store, Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(Logic.SGT_PL_KERNEL_KB_SUBSET_OF, Cons.cons(self000, Stella.NIL))))) : ((SequenceIndex)(null)));
 
                       if (paginglist != null) {
                         { Cons value000 = Stella.NIL;
@@ -10970,7 +11199,7 @@ public class Logic {
                               if (prop.operator == Logic.SGT_PL_KERNEL_KB_SUBSET_OF) {
                                 if (collect000 == null) {
                                   {
-                                    collect000 = Stella_Object.cons(prop, Stella.NIL);
+                                    collect000 = Cons.cons(prop, Stella.NIL);
                                     if (value000 == Stella.NIL) {
                                       value000 = collect000;
                                     }
@@ -10981,7 +11210,7 @@ public class Logic {
                                 }
                                 else {
                                   {
-                                    collect000.rest = Stella_Object.cons(prop, Stella.NIL);
+                                    collect000.rest = Cons.cons(prop, Stella.NIL);
                                     collect000 = collect000.rest;
                                   }
                                 }
@@ -11023,7 +11252,7 @@ public class Logic {
                   list = index.dependentPropositionsList;
                   if (Stella_Object.isaP(list, Logic.SGT_LOGIC_PAGING_INDEX)) {
                     { ObjectStore store = ((PagingIndex)(list)).store;
-                      SequenceIndex paginglist = ((store != null) ? Logic.createSequenceIndex(store, Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(Logic.SGT_PL_KERNEL_KB_SUBSET_OF, Stella_Object.cons(self000, Stella.NIL))))) : ((SequenceIndex)(null)));
+                      SequenceIndex paginglist = ((store != null) ? Logic.createSequenceIndex(store, Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(Logic.SGT_PL_KERNEL_KB_SUBSET_OF, Cons.cons(self000, Stella.NIL))))) : ((SequenceIndex)(null)));
 
                       if (paginglist != null) {
                         { Cons value001 = Stella.NIL;
@@ -11037,7 +11266,7 @@ public class Logic {
                               if (prop.operator == Logic.SGT_PL_KERNEL_KB_SUBSET_OF) {
                                 if (collect001 == null) {
                                   {
-                                    collect001 = Stella_Object.cons(prop, Stella.NIL);
+                                    collect001 = Cons.cons(prop, Stella.NIL);
                                     if (value001 == Stella.NIL) {
                                       value001 = collect001;
                                     }
@@ -11048,7 +11277,7 @@ public class Logic {
                                 }
                                 else {
                                   {
-                                    collect001.rest = Stella_Object.cons(prop, Stella.NIL);
+                                    collect001.rest = Cons.cons(prop, Stella.NIL);
                                     collect001 = collect001.rest;
                                   }
                                 }
@@ -11097,7 +11326,7 @@ public class Logic {
   }
 
   public static Cons makeSelectionPattern(Keyword kind, Cons options, Cons arguments) {
-    return (Stella_Object.cons(kind, Stella_Object.cons(((options == null) ? Stella.NIL : options), arguments)));
+    return (Cons.cons(kind, Cons.cons(((options == null) ? Stella.NIL : options), arguments)));
   }
 
   public static Keyword patternKind(Cons pattern) {
@@ -11113,19 +11342,19 @@ public class Logic {
   }
 
   public static Cons makeDependentPropositionsPattern(Stella_Object argument) {
-    return (Stella_Object.cons(Logic.KWD_DEPENDENTS, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(argument, Stella.NIL))));
+    return (Cons.cons(Logic.KWD_DEPENDENTS, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(argument, Stella.NIL))));
   }
 
   public static Cons makeIsaPattern(Stella_Object argument) {
-    return (Stella_Object.cons(Logic.KWD_ISA, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(argument, Stella.NIL))));
+    return (Cons.cons(Logic.KWD_ISA, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(argument, Stella.NIL))));
   }
 
   public static Cons makeRelationExtensionPattern(Surrogate relation) {
-    return (Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(relation, Stella.NIL))));
+    return (Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(relation, Stella.NIL))));
   }
 
   public static Cons makeRelationPattern(Surrogate relation, Stella_Object argument) {
-    return (Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(relation, Stella_Object.cons(argument, Stella.NIL)))));
+    return (Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(relation, Cons.cons(argument, Stella.NIL)))));
   }
 
   public static Cons makeRelationPattern1(Surrogate relation, Stella_Object argument) {
@@ -11133,23 +11362,23 @@ public class Logic {
   }
 
   public static Cons makeRelationPattern2(Surrogate relation, Stella_Object argument1, Stella_Object argument2) {
-    return (Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(relation, Stella_Object.cons(argument1, Stella_Object.cons(argument2, Stella.NIL))))));
+    return (Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(relation, Cons.cons(argument1, Cons.cons(argument2, Stella.NIL))))));
   }
 
   public static Cons makeRelationPattern3(Surrogate relation, Stella_Object argument1, Stella_Object argument2, Stella_Object argument3) {
-    return (Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(relation, Stella_Object.cons(argument1, Stella_Object.cons(argument2, Stella_Object.cons(argument3, Stella.NIL)))))));
+    return (Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(relation, Cons.cons(argument1, Cons.cons(argument2, Cons.cons(argument3, Stella.NIL)))))));
   }
 
   public static Cons makeRelationPattern4(Surrogate relation, Stella_Object argument1, Stella_Object argument2, Stella_Object argument3, Stella_Object argument4) {
-    return (Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(relation, Stella_Object.cons(argument1, Stella_Object.cons(argument2, Stella_Object.cons(argument3, Stella_Object.cons(argument4, Stella.NIL))))))));
+    return (Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(relation, Cons.cons(argument1, Cons.cons(argument2, Cons.cons(argument3, Cons.cons(argument4, Stella.NIL))))))));
   }
 
   public static Cons makeRelationPatternN(Surrogate relation, Cons arguments) {
-    return (Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(relation, arguments))));
+    return (Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(relation, arguments))));
   }
 
   public static Cons makeRulesPattern(Stella_Object posrelation, Stella_Object negrelation) {
-    return (Stella_Object.cons(Logic.KWD_RULES, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(posrelation, Stella_Object.cons(negrelation, Stella.NIL)))));
+    return (Cons.cons(Logic.KWD_RULES, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(posrelation, Cons.cons(negrelation, Stella.NIL)))));
   }
 
   public static LogicObject findSelectionKeyWithEquivalents(Cons pattern) {
@@ -11249,7 +11478,7 @@ public class Logic {
             prop = ((Proposition)(iter000.value));
             if ((prop.kind == Logic.KWD_ISA) &&
                 (!prop.deletedP())) {
-              filteredsequence = Stella_Object.cons(prop, filteredsequence);
+              filteredsequence = Cons.cons(prop, filteredsequence);
             }
           }
         }
@@ -11290,6 +11519,7 @@ public class Logic {
           }
         }
         { Stella_Object anchor = value000;
+          Skolem functionSkolem = null;
 
           if (anchor == null) {
             { NamedDescription description = Logic.getDescription(relation);
@@ -11327,79 +11557,91 @@ public class Logic {
 
               loop001 : for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                 prop = ((Proposition)(iter001.value));
-                if (Stella_Object.equalP(relation, prop.operator)) {
-                  if (allkeyvalues == null) {
-                    allkeyvalues = Stella.NIL;
-                    if (!(keys.rest == Stella.NIL)) {
-                      { Stella_Object key = null;
-                        Cons iter002 = keys;
-                        Cons collect000 = null;
+                if (!(Stella_Object.equalP(relation, prop.operator))) {
+                  if (prop.kind == Logic.KWD_EQUIVALENT) {
+                    functionSkolem = Proposition.getSkolemAndValueTerms(prop, new Object[1]);
+                    if (functionSkolem != null) {
+                      prop = functionSkolem.definingProposition;
+                    }
+                    if (!(Stella_Object.equalP(relation, prop.operator))) {
+                      continue loop001;
+                    }
+                  }
+                  else {
+                    continue loop001;
+                  }
+                }
+                if (allkeyvalues == null) {
+                  allkeyvalues = Stella.NIL;
+                  if (!(keys.rest == Stella.NIL)) {
+                    { Stella_Object key = null;
+                      Cons iter002 = keys;
+                      Cons collect000 = null;
 
-                        for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
-                          key = iter002.value;
-                          if (collect000 == null) {
-                            {
-                              collect000 = Stella_Object.cons(Logic.valueOf(key), Stella.NIL);
-                              if (allkeyvalues == Stella.NIL) {
-                                allkeyvalues = collect000;
-                              }
-                              else {
-                                Cons.addConsToEndOfConsList(allkeyvalues, collect000);
-                              }
+                      for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
+                        key = iter002.value;
+                        if (collect000 == null) {
+                          {
+                            collect000 = Cons.cons(Logic.valueOf(key), Stella.NIL);
+                            if (allkeyvalues == Stella.NIL) {
+                              allkeyvalues = collect000;
+                            }
+                            else {
+                              Cons.addConsToEndOfConsList(allkeyvalues, collect000);
                             }
                           }
-                          else {
-                            {
-                              collect000.rest = Stella_Object.cons(Logic.valueOf(key), Stella.NIL);
-                              collect000 = collect000.rest;
-                            }
+                        }
+                        else {
+                          {
+                            collect000.rest = Cons.cons(Logic.valueOf(key), Stella.NIL);
+                            collect000 = collect000.rest;
                           }
                         }
                       }
                     }
                   }
-                  if (!(allkeyvalues == Stella.NIL)) {
-                    { Vector arguments000 = prop.arguments;
+                }
+                if (!(allkeyvalues == Stella.NIL)) {
+                  { Vector arguments000 = prop.arguments;
 
-                      { boolean testValue000 = false;
+                    { boolean testValue000 = false;
 
-                        testValue000 = arguments000 != null;
-                        if (testValue000) {
-                          { boolean alwaysP000 = true;
+                      testValue000 = arguments000 != null;
+                      if (testValue000) {
+                        { boolean alwaysP000 = true;
 
-                            { Stella_Object key = null;
-                              Cons iter003 = allkeyvalues;
-                              Stella_Object arg = null;
-                              Vector vector000 = arguments000;
-                              int index001 = 0;
-                              int length000 = vector000.length();
+                          { Stella_Object key = null;
+                            Cons iter003 = allkeyvalues;
+                            Stella_Object arg = null;
+                            Vector vector000 = arguments000;
+                            int index001 = 0;
+                            int length000 = vector000.length();
 
-                              loop003 : for (;(!(iter003 == Stella.NIL)) &&
-                                        (index001 < length000); iter003 = iter003.rest, index001 = index001 + 1) {
-                                key = iter003.value;
-                                arg = (vector000.theArray)[index001];
-                                if (!((key == null) ||
-                                    (Stella_Object.equalP(key, Logic.valueOf(arg)) ||
-                                     (Stella_Object.isaP(key, Logic.SGT_LOGIC_PROPOSITION) &&
-                                      (Stella_Object.isaP(Logic.valueOf(arg), Logic.SGT_LOGIC_PROPOSITION) &&
-                                       Proposition.unifyPropositionsP(((Proposition)(key)), ((Proposition)(Logic.valueOf(arg))), KeyValueList.newKeyValueList())))))) {
-                                  alwaysP000 = false;
-                                  break loop003;
-                                }
+                            loop003 : for (;(!(iter003 == Stella.NIL)) &&
+                                      (index001 < length000); iter003 = iter003.rest, index001 = index001 + 1) {
+                              key = iter003.value;
+                              arg = (vector000.theArray)[index001];
+                              if (!((key == null) ||
+                                  (Stella_Object.equalP(key, Logic.valueOf(arg)) ||
+                                   (Stella_Object.isaP(key, Logic.SGT_LOGIC_PROPOSITION) &&
+                                    (Stella_Object.isaP(Logic.valueOf(arg), Logic.SGT_LOGIC_PROPOSITION) &&
+                                     Proposition.unifyPropositionsP(((Proposition)(key)), ((Proposition)(Logic.valueOf(arg))), KeyValueMap.newKeyValueMap())))))) {
+                                alwaysP000 = false;
+                                break loop003;
                               }
                             }
-                            testValue000 = alwaysP000;
                           }
+                          testValue000 = alwaysP000;
                         }
-                        if (!(testValue000)) {
-                          continue loop001;
-                        }
+                      }
+                      if (!(testValue000)) {
+                        continue loop001;
                       }
                     }
                   }
-                  if (!(Proposition.deletedPropositionP(prop))) {
-                    filteredsequence = Stella_Object.cons(prop, filteredsequence);
-                  }
+                }
+                if (!(Proposition.deletedPropositionP(prop))) {
+                  filteredsequence = Cons.cons(prop, filteredsequence);
                 }
               }
             }
@@ -11579,13 +11821,13 @@ public class Logic {
   }
 
   public static TruthValue evaluateSelectionPattern(Cons pattern) {
-    pattern = Logic.makeSelectionPattern(((Keyword)(pattern.value)), Stella.list$(Stella_Object.cons(Logic.KWD_EVALUATEp, Stella_Object.cons(Logic.SYM_STELLA_TRUE, Stella_Object.cons(((Cons)(pattern.rest.value)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), pattern.rest.rest);
+    pattern = Logic.makeSelectionPattern(((Keyword)(pattern.value)), Cons.list$(Cons.cons(Logic.KWD_EVALUATEp, Cons.cons(Logic.SYM_STELLA_TRUE, Cons.cons(((Cons)(pattern.rest.value)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), pattern.rest.rest);
     { Proposition proposition = null;
       Iterator iter000 = Logic.selectPropositions(pattern).allocateIterator();
 
       while (iter000.nextP()) {
         proposition = ((Proposition)(iter000.value));
-        if (!TruthValue.unknownTruthValueP(((TruthValue)(Stella_Object.accessInContext(proposition.truthValue, proposition.homeContext, false))))) {
+        if (TruthValue.knownTruthValueP(((TruthValue)(Stella_Object.accessInContext(proposition.truthValue, proposition.homeContext, false))))) {
           return (((TruthValue)(Stella_Object.accessInContext(proposition.truthValue, proposition.homeContext, false))));
         }
       }
@@ -11619,7 +11861,7 @@ public class Logic {
       if (index == null) {
         return (Stella.NULL_INTEGER);
       }
-      count = Logic.selectPropositions(Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(relation, Stella_Object.cons(self, Stella.NIL))))).estimatedLength();
+      count = Logic.selectPropositions(Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(relation, Cons.cons(self, Stella.NIL))))).estimatedLength();
       if ((count == 0) &&
           (!(NamedDescription.allDirectSubrelations(Logic.surrogateToDescription(relation), false) == Stella.NIL))) {
         count = 1;
@@ -11696,7 +11938,7 @@ public class Logic {
           p = ((Proposition)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(p, Stella.NIL);
+              collect000 = Cons.cons(p, Stella.NIL);
               if (value000 == Stella.NIL) {
                 value000 = collect000;
               }
@@ -11707,7 +11949,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(p, Stella.NIL);
+              collect000.rest = Cons.cons(p, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -11813,20 +12055,19 @@ public class Logic {
     }
   }
 
-  public static Cons deferredDefaultPropositions(Context self) {
-    { Cons value = ((Cons)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS_INTERNAL, null)));
+  public static PropagationEnvironment getPropagationEnvironment(Context self) {
+    { PropagationEnvironment environment = ((PropagationEnvironment)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_PROPAGATION_ENVIRONMENT, null)));
 
-      if (value == null) {
-        return (Stella.NIL);
+      if (environment == null) {
+        environment = PropagationEnvironment.newPropagationEnvironment();
+        KeyValueList.setDynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_PROPAGATION_ENVIRONMENT, environment, null);
       }
-      else {
-        return (value);
-      }
+      return (environment);
     }
   }
 
-  public static void deferredDefaultPropositionsSetter(Context self, Cons newvalue) {
-    KeyValueList.setDynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS_INTERNAL, newvalue, null);
+  public static void unlinkPropagationEnvironment(Context self) {
+    KeyValueList.setDynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_PROPAGATION_ENVIRONMENT, null, null);
   }
 
   public static void reactToKbUpdate(Context context, Stella_Object renamed_Object) {
@@ -11903,7 +12144,6 @@ public class Logic {
             try {
               Native.setSpecial(Stella.$CONTEXT$, world);
               Native.setSpecial(Stella.$MODULE$, ((Context)(Stella.$CONTEXT$.get())).baseModule);
-              Logic.initializeConstraintPropagationQueues(world);
               { Object old$FillingconstraintpropagationqueuesP$001 = Logic.$FILLINGCONSTRAINTPROPAGATIONQUEUESp$.get();
 
                 try {
@@ -11943,61 +12183,8 @@ public class Logic {
     }
   }
 
-  public static void initializeConstraintPropagationQueues(World world) {
-    KeyValueList.setDynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_EVALUATION_QUEUE, List.newList(), null);
-    KeyValueList.setDynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_FORWARD_CHAINING_QUEUE, List.newList(), null);
-  }
-
   public static void executeConstraintPropagationQueues() {
-    { Object old$InhibitobjectfinalizationP$000 = Logic.$INHIBITOBJECTFINALIZATIONp$.get();
-
-      try {
-        Native.setBooleanSpecial(Logic.$INHIBITOBJECTFINALIZATIONp$, true);
-        for (;;) {
-          { List queue = ((List)(KeyValueList.dynamicSlotValue(((Context)(Stella.$CONTEXT$.get())).dynamicSlots, Logic.SYM_LOGIC_EVALUATION_QUEUE, null)));
-
-            KeyValueList.setDynamicSlotValue(((Context)(Stella.$CONTEXT$.get())).dynamicSlots, Logic.SYM_LOGIC_EVALUATION_QUEUE, List.newList(), null);
-            { Proposition p = null;
-              Cons iter000 = queue.theConsList;
-
-              for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-                p = ((Proposition)(iter000.value));
-                Proposition.evaluateProposition(p);
-              }
-            }
-          }
-          { List queue = ((List)(KeyValueList.dynamicSlotValue(((Context)(Stella.$CONTEXT$.get())).dynamicSlots, Logic.SYM_LOGIC_FORWARD_CHAINING_QUEUE, null)));
-
-            KeyValueList.setDynamicSlotValue(((Context)(Stella.$CONTEXT$.get())).dynamicSlots, Logic.SYM_LOGIC_FORWARD_CHAINING_QUEUE, List.newList(), null);
-            { Proposition proposition = null;
-              Cons iter001 = queue.theConsList;
-
-              for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
-                proposition = ((Proposition)(iter001.value));
-                {
-                }
-                { Description description = Logic.getDescription(((Surrogate)(proposition.operator)));
-
-                  if (Proposition.falseP(proposition)) {
-                    description = Description.getInferableComplementDescription(description);
-                  }
-                  if (description != null) {
-                    Description.applyForwardRulesToVector(description, proposition.arguments, proposition);
-                  }
-                }
-              }
-            }
-          }
-          if (((List)(KeyValueList.dynamicSlotValue(((Context)(Stella.$CONTEXT$.get())).dynamicSlots, Logic.SYM_LOGIC_EVALUATION_QUEUE, null))).emptyP() &&
-              ((List)(KeyValueList.dynamicSlotValue(((Context)(Stella.$CONTEXT$.get())).dynamicSlots, Logic.SYM_LOGIC_FORWARD_CHAINING_QUEUE, null))).emptyP()) {
-            return;
-          }
-        }
-
-      } finally {
-        Logic.$INHIBITOBJECTFINALIZATIONp$.set(old$InhibitobjectfinalizationP$000);
-      }
-    }
+    Logic.getPropagationEnvironment(((Context)(Stella.$CONTEXT$.get()))).executePropagationQueues();
   }
 
   public static void elaborateMetaInstance(Stella_Object self) {
@@ -12025,76 +12212,64 @@ public class Logic {
       if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(self), Logic.SGT_LOGIC_LOGIC_OBJECT)) {
         { LogicObject self000 = ((LogicObject)(self));
 
-          if (self000.elaboratedInWorlds().memberP(((Context)(Stella.$CONTEXT$.get())))) {
-            return;
-          }
-          if ((Stella.$TRACED_KEYWORDS$ != null) &&
-              Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_ELABORATE)) {
-            System.out.println(" ELABORATING:  " + self000 + " in world " + ((Context)(Stella.$CONTEXT$.get())));
-          }
-          if (self000.elaboratedInWorlds() == Stella.NIL_LIST) {
-            KeyValueList.setDynamicSlotValue(self000.dynamicSlots, Logic.SYM_LOGIC_ELABORATED_IN_WORLDS, Stella.list(Stella.NIL), null);
-          }
-          else {
-            self000.elaboratedInWorlds().removeDeletedMembers();
-          }
-          self000.elaboratedInWorlds().push(((World)(((Context)(Stella.$CONTEXT$.get())))));
-          { Object old$Evaluationmode$000 = Logic.$EVALUATIONMODE$.get();
-            Object old$InhibitobjectfinalizationP$000 = Logic.$INHIBITOBJECTFINALIZATIONp$.get();
-            Object old$Queryiterator$000 = Logic.$QUERYITERATOR$.get();
+          { PropagationEnvironment environment = Logic.getPropagationEnvironment(((Context)(Stella.$CONTEXT$.get())));
 
-            try {
-              Native.setSpecial(Logic.$EVALUATIONMODE$, Logic.KWD_EXTENSIONAL_ASSERTION);
-              Native.setBooleanSpecial(Logic.$INHIBITOBJECTFINALIZATIONp$, true);
-              Native.setSpecial(Logic.$QUERYITERATOR$, null);
+            if (environment.elaboratedObjects.memberP(self000)) {
+              return;
+            }
+            if ((Stella.$TRACED_KEYWORDS$ != null) &&
+                Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_ELABORATE)) {
+              System.out.println(" ELABORATING:  " + self000 + " in world " + ((Context)(Stella.$CONTEXT$.get())));
+            }
+            { Object old$Evaluationmode$000 = Logic.$EVALUATIONMODE$.get();
+              Object old$InhibitobjectfinalizationP$000 = Logic.$INHIBITOBJECTFINALIZATIONp$.get();
+              Object old$Queryiterator$000 = Logic.$QUERYITERATOR$.get();
+
               try {
-                Logic.initializeConstraintPropagationQueues(((World)(((Context)(Stella.$CONTEXT$.get())))));
-                { Object old$FillingconstraintpropagationqueuesP$000 = Logic.$FILLINGCONSTRAINTPROPAGATIONQUEUESp$.get();
+                Native.setSpecial(Logic.$EVALUATIONMODE$, Logic.KWD_EXTENSIONAL_ASSERTION);
+                Native.setBooleanSpecial(Logic.$INHIBITOBJECTFINALIZATIONp$, true);
+                Native.setSpecial(Logic.$QUERYITERATOR$, null);
+                try {
+                  { Object old$FillingconstraintpropagationqueuesP$000 = Logic.$FILLINGCONSTRAINTPROPAGATIONQUEUESp$.get();
 
-                  try {
-                    Native.setBooleanSpecial(Logic.$FILLINGCONSTRAINTPROPAGATIONQUEUESp$, true);
-                    LogicObject.evaluateReachableInequalities(self000, Stella.list(Stella.NIL));
-                    { Proposition prop = null;
-                      Cons iter000 = Logic.allFactsOfInstance(self000, true, false).theConsList;
+                    try {
+                      Native.setBooleanSpecial(Logic.$FILLINGCONSTRAINTPROPAGATIONQUEUESp$, true);
+                      Logic.postRelatedFacts(self000, environment);
+                      LogicObject.evaluateReachableInequalities(self000, List.list(Stella.NIL));
+                      { Object old$DeferingdefaultforwardinferencesP$000 = Logic.$DEFERINGDEFAULTFORWARDINFERENCESp$.get();
 
-                      for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-                        prop = ((Proposition)(iter000.value));
-                        Proposition.recursivelyReactToInferenceUpdate(prop);
+                        try {
+                          Native.setBooleanSpecial(Logic.$DEFERINGDEFAULTFORWARDINFERENCESp$, true);
+                          Logic.executeConstraintPropagationQueues();
+
+                        } finally {
+                          Logic.$DEFERINGDEFAULTFORWARDINFERENCESp$.set(old$DeferingdefaultforwardinferencesP$000);
+                        }
                       }
-                    }
-                    { Object old$DeferingdefaultforwardinferencesP$000 = Logic.$DEFERINGDEFAULTFORWARDINFERENCESp$.get();
+                      { Proposition p = null;
+                        Cons iter000 = environment.deferredDefaultPropositions.theConsList;
 
-                      try {
-                        Native.setBooleanSpecial(Logic.$DEFERINGDEFAULTFORWARDINFERENCESp$, true);
-                        Logic.executeConstraintPropagationQueues();
-
-                      } finally {
-                        Logic.$DEFERINGDEFAULTFORWARDINFERENCESp$.set(old$DeferingdefaultforwardinferencesP$000);
+                        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+                          p = ((Proposition)(iter000.value));
+                          Proposition.assignTruthValue(p, Logic.DEFAULT_TRUE_TRUTH_VALUE);
+                        }
                       }
-                    }
-                    { Proposition p = null;
-                      Cons iter001 = Logic.deferredDefaultPropositions(((Context)(Stella.$CONTEXT$.get())));
+                      environment.deferredDefaultPropositions.clear();
+                      Logic.executeConstraintPropagationQueues();
 
-                      for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
-                        p = ((Proposition)(iter001.value));
-                        Proposition.assignTruthValue(p, Logic.DEFAULT_TRUE_TRUTH_VALUE);
-                      }
+                    } finally {
+                      Logic.$FILLINGCONSTRAINTPROPAGATIONQUEUESp$.set(old$FillingconstraintpropagationqueuesP$000);
                     }
-                    Logic.deferredDefaultPropositionsSetter(((Context)(Stella.$CONTEXT$.get())), Stella.NIL);
-
-                  } finally {
-                    Logic.$FILLINGCONSTRAINTPROPAGATIONQUEUESp$.set(old$FillingconstraintpropagationqueuesP$000);
                   }
+                } catch (Clash e) {
+                  Stella.STANDARD_ERROR.nativeStream.println(Stella.exceptionMessage(e));
                 }
-                Logic.executeConstraintPropagationQueues();
-              } catch (Clash e) {
-                Stella.STANDARD_ERROR.nativeStream.println(Stella.exceptionMessage(e));
-              }
 
-            } finally {
-              Logic.$QUERYITERATOR$.set(old$Queryiterator$000);
-              Logic.$INHIBITOBJECTFINALIZATIONp$.set(old$InhibitobjectfinalizationP$000);
-              Logic.$EVALUATIONMODE$.set(old$Evaluationmode$000);
+              } finally {
+                Logic.$QUERYITERATOR$.set(old$Queryiterator$000);
+                Logic.$INHIBITOBJECTFINALIZATIONp$.set(old$InhibitobjectfinalizationP$000);
+                Logic.$EVALUATIONMODE$.set(old$Evaluationmode$000);
+              }
             }
           }
         }
@@ -12104,25 +12279,123 @@ public class Logic {
     }
   }
 
-  public static void helpCollectFacts(Stella_Object self, List facts, List beenthere, boolean includeunknownP) {
+  public static void postRelatedFacts(Stella_Object self, PropagationEnvironment environment) {
     { Surrogate testValue000 = Stella_Object.safePrimaryType(self);
 
       if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_LOGIC_OBJECT)) {
         { LogicObject self000 = ((LogicObject)(self));
 
+          if (environment.elaboratedObjects.memberP(self000)) {
+            return;
+          }
+          else {
+            environment.elaboratedObjects.insert(self000);
+          }
           { Proposition p = null;
             Iterator iter000 = Logic.unfilteredDependentPropositions(self000, null).allocateIterator();
 
             while (iter000.nextP()) {
               p = ((Proposition)(iter000.value));
-              if (!beenthere.memberP(p)) {
-                if (p.kind == Logic.KWD_FUNCTION) {
-                  Proposition.collectFunctionPropositionFacts(p, facts, beenthere, includeunknownP);
-                }
-                else {
-                  Logic.helpCollectFacts(p, facts, beenthere, includeunknownP);
+              Logic.postRelatedFacts(p, environment);
+              { Stella_Object arg = null;
+                Vector vector000 = p.arguments;
+                int index000 = 0;
+                int length000 = vector000.length();
+
+                for (;index000 < length000; index000 = index000 + 1) {
+                  arg = (vector000.theArray)[index000];
+                  if ((!(arg == self000)) &&
+                      Proposition.followDependentPropositionArgumentP(p, arg)) {
+                    Logic.postRelatedFacts(arg, environment);
+                  }
                 }
               }
+            }
+          }
+          { LogicObject equivalent = null;
+            Cons iter001 = self000.variableValueInverse();
+
+            for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+              equivalent = ((LogicObject)(iter001.value));
+              Logic.postRelatedFacts(equivalent, environment);
+            }
+          }
+        }
+      }
+      else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
+        { Proposition self000 = ((Proposition)(self));
+
+          if (((Keyword)(environment.evaluationStates.lookup(self000))) != null) {
+            return;
+          }
+          { boolean assertedP = !Proposition.unknownP(self000);
+            Skolem outputskolem = null;
+
+            if ((!assertedP) &&
+                (self000.kind == Logic.KWD_FUNCTION)) {
+              assertedP = Proposition.functionWithDefinedValueP(self000);
+            }
+            if (assertedP) {
+              Proposition.recursivelyReactToInferenceUpdate(self000);
+            }
+            { Proposition p = null;
+              Iterator iter002 = self000.dependentPropositions.allocateIterator();
+
+              while (iter002.nextP()) {
+                p = ((Proposition)(iter002.value));
+                Logic.postRelatedFacts(p, environment);
+              }
+            }
+          }
+        }
+      }
+      else if (Surrogate.subtypeOfSurrogateP(testValue000)) {
+        { Surrogate self000 = ((Surrogate)(self));
+
+          if (self000.surrogateValue != null) {
+            Logic.postRelatedFacts(self000.surrogateValue, environment);
+          }
+        }
+      }
+      else if (Surrogate.subtypeOfClassP(testValue000)) {
+        { Stella_Class self000 = ((Stella_Class)(self));
+
+          if (((NamedDescription)(KeyValueList.dynamicSlotValue(self000.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTION, null))) != null) {
+            Logic.postRelatedFacts(((NamedDescription)(KeyValueList.dynamicSlotValue(self000.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTION, null))), environment);
+          }
+        }
+      }
+      else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_STELLA_SLOT)) {
+        { Slot self000 = ((Slot)(self));
+
+          if (((NamedDescription)(KeyValueList.dynamicSlotValue(self000.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTION, null))) != null) {
+            Logic.postRelatedFacts(((NamedDescription)(KeyValueList.dynamicSlotValue(self000.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTION, null))), environment);
+          }
+        }
+      }
+      else {
+      }
+    }
+  }
+
+  public static void helpCollectFacts(Stella_Object self, List facts, HashSet beenthere, boolean includeunknownP) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(self);
+
+      if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_LOGIC_OBJECT)) {
+        { LogicObject self000 = ((LogicObject)(self));
+
+          if (beenthere.memberP(self000)) {
+            return;
+          }
+          else {
+            beenthere.insert(self000);
+          }
+          { Proposition p = null;
+            Iterator iter000 = Logic.unfilteredDependentPropositions(self000, null).allocateIterator();
+
+            while (iter000.nextP()) {
+              p = ((Proposition)(iter000.value));
+              Logic.helpCollectFacts(p, facts, beenthere, includeunknownP);
             }
           }
           { LogicObject equivalent = null;
@@ -12138,17 +12411,29 @@ public class Logic {
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
         { Proposition self000 = ((Proposition)(self));
 
-          beenthere.insert(self000);
-          if ((!Proposition.unknownP(self000)) ||
-              includeunknownP) {
-            facts.insert(self000);
+          if (beenthere.memberP(self000)) {
+            return;
           }
-          { Proposition p = null;
-            Iterator iter002 = self000.dependentPropositions.allocateIterator();
+          else {
+            beenthere.insert(self000);
+          }
+          { boolean assertedP = includeunknownP ||
+                (!Proposition.unknownP(self000));
+            Skolem outputskolem = null;
 
-            while (iter002.nextP()) {
-              p = ((Proposition)(iter002.value));
-              if (!beenthere.memberP(p)) {
+            if ((!assertedP) &&
+                (self000.kind == Logic.KWD_FUNCTION)) {
+              outputskolem = ((Skolem)((self000.arguments.theArray)[(self000.arguments.length() - 1)]));
+              assertedP = !(outputskolem == Logic.valueOf(outputskolem));
+            }
+            if (assertedP) {
+              facts.insert(self000);
+            }
+            { Proposition p = null;
+              Iterator iter002 = self000.dependentPropositions.allocateIterator();
+
+              while (iter002.nextP()) {
+                p = ((Proposition)(iter002.value));
                 Logic.helpCollectFacts(p, facts, beenthere, includeunknownP);
               }
             }
@@ -12193,7 +12478,6 @@ public class Logic {
    */
   public static List allFactsOfInstance(Stella_Object self, boolean includeunknownfactsP, boolean elaborateP) {
     { List facts = List.newList();
-      List beenthere = List.newList();
 
       { Object old$Context$000 = Stella.$CONTEXT$.get();
         Object old$Module$000 = Stella.$MODULE$.get();
@@ -12204,7 +12488,7 @@ public class Logic {
           if (elaborateP) {
             Logic.elaborateInstance(self);
           }
-          Logic.helpCollectFacts(self, facts, beenthere, includeunknownfactsP);
+          Logic.helpCollectFacts(self, facts, HashSet.newHashSet(), includeunknownfactsP);
 
         } finally {
           Stella.$MODULE$.set(old$Module$000);
@@ -12222,7 +12506,8 @@ public class Logic {
    * inferred to be TRUE by the forward chainer will be included.
    * Hence, the returned list of facts may be longer in a context where the
    * forward chainer has been run then in one where it has not (see
-   * <code>runForwardRules</code>).
+   * <code>runForwardRules</code>).  <code>instanceref</code> can be a regular name such as
+   * <code>fred</code> as well as a function term such as <code>_fatherFred_</code>.
    * @param instanceref
    * @return Cons
    */
@@ -12234,6 +12519,24 @@ public class Logic {
       }
       else {
         return (null);
+      }
+    }
+  }
+
+  /** Like ALL-FACTS-OF, but prints each fact on a separate 
+   * line on the standard output stream.
+   * @param instanceref
+   */
+  public static void printFacts(Stella_Object instanceref) {
+    { LogicObject instance = Logic.coerceToInstance(instanceref, null);
+
+      { Proposition fact = null;
+        Cons iter000 = Logic.allFactsOfInstance(instance, false, false).theConsList;
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          fact = ((Proposition)(iter000.value));
+          System.out.println(fact);
+        }
       }
     }
   }
@@ -12296,7 +12599,7 @@ public class Logic {
           end = endofstring;
         }
         substring = Native.string_subsequence(string, begin, end);
-        symbol = Stella.internSymbol(Native.stringUpcase(substring));
+        symbol = Symbol.internSymbol(Native.stringUpcase(substring));
         list.insertLast(symbol);
         begin = end;
       }
@@ -12328,7 +12631,7 @@ public class Logic {
               }
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(StringWrapper.wrapString(sentence), Stella.NIL);
+                  collect000 = Cons.cons(StringWrapper.wrapString(sentence), Stella.NIL);
                   if (list == Stella.NIL) {
                     list = collect000;
                   }
@@ -12339,7 +12642,7 @@ public class Logic {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(StringWrapper.wrapString(sentence), Stella.NIL);
+                  collect000.rest = Cons.cons(StringWrapper.wrapString(sentence), Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -12585,8 +12888,6 @@ public class Logic {
   }
 
   public static void initializeInferenceWorld(World world) {
-    KeyValueList.setDynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_EVALUATION_STATE_TABLE, HashTable.newHashTable(), null);
-    KeyValueList.setDynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_EVALUATION_QUEUE, List.newList(), null);
   }
 
   public static World createInferenceCache(Context context, Keyword kind) {
@@ -12596,7 +12897,7 @@ public class Logic {
         KeyValueList.setDynamicSlotValue(context.dynamicSlots, Logic.SYM_LOGIC_JUST_IN_TIME_INFERENCE_CACHE, world, null);
       }
       else if (kind == Logic.KWD_META) {
-        KeyValueList.setDynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_MONOTONICp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_MONOTONICp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
         KeyValueList.setDynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_UP_TO_DATE_INFERENCESp, ((!Logic.allPropositions(context.baseModule, true).nextP()) ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
         KeyValueList.setDynamicSlotValue(context.dynamicSlots, Logic.SYM_LOGIC_META_INFERENCE_CACHE, world, null);
       }
@@ -12774,7 +13075,7 @@ public class Logic {
         }
       }
       if (!((BooleanWrapper)(KeyValueList.dynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_TRUTH_MAINTAINEDp, Stella.FALSE_WRAPPER))).wrapperValue) {
-        KeyValueList.setDynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_UP_TO_DATE_INFERENCESp, (false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_UP_TO_DATE_INFERENCESp, Stella.FALSE_WRAPPER, Stella.FALSE_WRAPPER);
       }
     }
   }
@@ -12889,7 +13190,7 @@ public class Logic {
         }
 ;
       }
-      KeyValueList.setDynamicSlotValue(propagationworld.dynamicSlots, Logic.SYM_LOGIC_UP_TO_DATE_INFERENCESp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+      KeyValueList.setDynamicSlotValue(propagationworld.dynamicSlots, Logic.SYM_LOGIC_UP_TO_DATE_INFERENCESp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
     }
   }
 
@@ -12973,7 +13274,7 @@ public class Logic {
           Logic.reactToKbUpdate(propagationworld, p);
         }
       }
-      KeyValueList.setDynamicSlotValue(propagationworld.dynamicSlots, Logic.SYM_LOGIC_UP_TO_DATE_INFERENCESp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+      KeyValueList.setDynamicSlotValue(propagationworld.dynamicSlots, Logic.SYM_LOGIC_UP_TO_DATE_INFERENCESp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
     }
   }
 
@@ -13048,7 +13349,7 @@ public class Logic {
 
         { Surrogate domain = self000.slotOwner;
           Surrogate range = self000.slotBaseType;
-          Cons typeslist = (Logic.booleanTypeP(range) ? Stella.consList(Stella_Object.cons(domain, Stella.NIL)) : Stella.consList(Stella_Object.cons(domain, Stella_Object.cons(range, Stella.NIL))));
+          Cons typeslist = (Logic.booleanTypeP(range) ? Cons.consList(Cons.cons(domain, Stella.NIL)) : Cons.consList(Cons.cons(domain, Cons.cons(range, Stella.NIL))));
 
           return (typeslist);
         }
@@ -13063,7 +13364,7 @@ public class Logic {
 
         if ((returntype != null) &&
             (!Logic.booleanTypeP(returntype))) {
-          returntypes = Stella_Object.cons(returntype, returntypes);
+          returntypes = Cons.cons(returntype, returntypes);
         }
         if (self.arity() == Stella.NULL_INTEGER) {
           { StandardObject variableargumentstype = StandardObject.extractParameterType(((ParametricTypeSpecifier)(typespecifiers.last())), Logic.SYM_STELLA_ANY_VALUE, new Object[1]);
@@ -13076,7 +13377,7 @@ public class Logic {
                 tspec = iter000.value;
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(Logic.unwrapWrappedType(StandardObject.typeSpecToBaseType(((StandardObject)(tspec)))), Stella.NIL);
+                    collect000 = Cons.cons(Logic.unwrapWrappedType(StandardObject.typeSpecToBaseType(((StandardObject)(tspec)))), Stella.NIL);
                     if (typeslist == Stella.NIL) {
                       typeslist = collect000;
                     }
@@ -13087,7 +13388,7 @@ public class Logic {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(Logic.unwrapWrappedType(StandardObject.typeSpecToBaseType(((StandardObject)(tspec)))), Stella.NIL);
+                    collect000.rest = Cons.cons(Logic.unwrapWrappedType(StandardObject.typeSpecToBaseType(((StandardObject)(tspec)))), Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -13108,7 +13409,7 @@ public class Logic {
                         (iter001 <= upperBound000); iter001 = iter001 + 1) {
                 i = iter001;
                 i = i;
-                variabletypes = Stella_Object.cons(variableargumentstype, variabletypes);
+                variabletypes = Cons.cons(variableargumentstype, variabletypes);
               }
             }
             typeslist = typeslist.concatenate(variabletypes, Stella.NIL);
@@ -13123,7 +13424,7 @@ public class Logic {
               tspec = iter002.value;
               if (collect001 == null) {
                 {
-                  collect001 = Stella_Object.cons(Logic.unwrapWrappedType(StandardObject.typeSpecToBaseType(((StandardObject)(tspec)))), Stella.NIL);
+                  collect001 = Cons.cons(Logic.unwrapWrappedType(StandardObject.typeSpecToBaseType(((StandardObject)(tspec)))), Stella.NIL);
                   if (typeslist == Stella.NIL) {
                     typeslist = collect001;
                   }
@@ -13134,7 +13435,7 @@ public class Logic {
               }
               else {
                 {
-                  collect001.rest = Stella_Object.cons(Logic.unwrapWrappedType(StandardObject.typeSpecToBaseType(((StandardObject)(tspec)))), Stella.NIL);
+                  collect001.rest = Cons.cons(Logic.unwrapWrappedType(StandardObject.typeSpecToBaseType(((StandardObject)(tspec)))), Stella.NIL);
                   collect001 = collect001.rest;
                 }
               }
@@ -13158,10 +13459,10 @@ public class Logic {
 
   public static Symbol yieldSystemDefinedParameterName(int index, Stella_Object referenceobject) {
     if (index < 100) {
-      return (Stella.internSymbolInModule(((Symbol)(Logic.SYSTEM_DEFINED_ARGUMENT_NAMES.nth(index))).symbolName, referenceobject.homeModule(), true));
+      return (Symbol.internSymbolInModule(((Symbol)(Logic.SYSTEM_DEFINED_ARGUMENT_NAMES.nth(index))).symbolName, referenceobject.homeModule(), true));
     }
     else {
-      return (Stella.internSymbolInModule("?X" + Native.integerToString(index + 1), referenceobject.homeModule(), true));
+      return (Symbol.internSymbolInModule("?X" + Native.integerToString(((long)(index + 1))), referenceobject.homeModule(), true));
     }
   }
 
@@ -13315,7 +13616,7 @@ public class Logic {
                 throw ((PropositionError)(PropositionError.newPropositionError(stream001.theStringReader()).fillInStackTrace()));
               }
             }
-            description = Logic.createPrimitiveDescription(Stella.NIL_LIST, Stella.list(Stella_Object.cons(Logic.classLogicalType(self000), Stella.NIL)), false, true, false, homemodule);
+            description = Logic.createPrimitiveDescription(Stella.NIL_LIST, List.list(Cons.cons(Logic.classLogicalType(self000), Stella.NIL)), false, true, false, homemodule);
           }
         }
         else if (Surrogate.subtypeOfP(testValue001, Logic.SGT_STELLA_SLOT)) {
@@ -13452,7 +13753,7 @@ public class Logic {
   }
 
   public static NamedDescription stringDgetDescription(String self) {
-    { Surrogate surrogate = Stella.lookupSurrogate(self);
+    { Surrogate surrogate = Surrogate.lookupSurrogate(self);
       ObjectStore store = null;
 
       if (surrogate != null) {
@@ -13549,7 +13850,7 @@ public class Logic {
       }
     }
     if (!self.classFinalizedP) {
-      { List badsupers = Surrogate.collectBadSuperClasses(self.classType, Stella.list(Stella.NIL));
+      { List badsupers = Surrogate.collectBadSuperClasses(self.classType, List.list(Stella.NIL));
 
         if (badsupers.emptyP()) {
           { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
@@ -13715,7 +14016,7 @@ public class Logic {
           if (proposition.kind == Logic.KWD_ISA) {
             KeyValueList.setDynamicSlotValue(proposition.dynamicSlots, Logic.SYM_LOGIC_VARIABLE_TYPEp, Stella.TRUE_WRAPPER, null);
             Skolem.updateSkolemType(((Skolem)((proposition.arguments.theArray)[0])), ((Surrogate)(proposition.operator)));
-            Native.setSpecial(Logic.$VARIABLETYPEPROPOSITIONS$, Stella_Object.cons(proposition, ((Cons)(Logic.$VARIABLETYPEPROPOSITIONS$.get()))));
+            Native.setSpecial(Logic.$VARIABLETYPEPROPOSITIONS$, Cons.cons(proposition, ((Cons)(Logic.$VARIABLETYPEPROPOSITIONS$.get()))));
           }
         }
       }
@@ -13723,7 +14024,7 @@ public class Logic {
   }
 
   public static Cons parseLogicVariableDeclarations(Stella_Object tree) {
-    { Cons constree = (Stella_Object.isaP(tree, Logic.SGT_STELLA_CONS) ? ((Cons)(tree)) : Stella.consList(Stella_Object.cons(tree, Stella.NIL)));
+    { Cons constree = (Stella_Object.isaP(tree, Logic.SGT_STELLA_CONS) ? ((Cons)(tree)) : Cons.consList(Cons.cons(tree, Stella.NIL)));
       List declarations = List.newList();
 
       { Stella_Object term = null;
@@ -13761,7 +14062,7 @@ public class Logic {
           if (converttypestoconstraintsP) {
             if (!(((Cons)(Logic.$VARIABLETYPEPROPOSITIONS$.get())) == Stella.NIL)) {
               if (antecedentproposition != null) {
-                Native.setSpecial(Logic.$VARIABLETYPEPROPOSITIONS$, Stella_Object.cons(antecedentproposition, ((Cons)(Logic.$VARIABLETYPEPROPOSITIONS$.get()))));
+                Native.setSpecial(Logic.$VARIABLETYPEPROPOSITIONS$, Cons.cons(antecedentproposition, ((Cons)(Logic.$VARIABLETYPEPROPOSITIONS$.get()))));
               }
               Native.setSpecial(Logic.$VARIABLETYPEPROPOSITIONS$, ((Cons)(Logic.$VARIABLETYPEPROPOSITIONS$.get())).reverse().removeDuplicates());
               antecedentproposition = Logic.conjoinPropositions(((Cons)(Logic.$VARIABLETYPEPROPOSITIONS$.get())));
@@ -13898,7 +14199,7 @@ public class Logic {
     }
   }
 
-  public static boolean equivalentFormulaeP(Stella_Object self, Stella_Object other, KeyValueList mapping) {
+  public static boolean equivalentFormulaeP(Stella_Object self, Stella_Object other, KeyValueMap mapping) {
     { Stella_Object surrogatevalue = null;
 
       if (Stella_Object.isaP(self, Logic.SGT_STELLA_SURROGATE)) {
@@ -14061,7 +14362,7 @@ public class Logic {
           if (vbl != null) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(vbl, Stella.NIL);
+                collect000 = Cons.cons(vbl, Stella.NIL);
                 if (newvbllist == Stella.NIL) {
                   newvbllist = collect000;
                 }
@@ -14072,7 +14373,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(vbl, Stella.NIL);
+                collect000.rest = Cons.cons(vbl, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -14088,7 +14389,7 @@ public class Logic {
     { Description description = Logic.createDescription(Stella.NULL_INTEGER, false);
 
       if (((GeneralizedSymbol)(term.value)) == Logic.SYM_LOGIC_THE_ONLY) {
-        KeyValueList.setDynamicSlotValue(description.dynamicSlots, Logic.SYM_LOGIC_IOTAp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(description.dynamicSlots, Logic.SYM_LOGIC_IOTAp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       }
       else {
       }
@@ -14129,7 +14430,7 @@ public class Logic {
             }
             description.proposition = ((proposition != null) ? proposition : Logic.TRUE_PROPOSITION);
           }
-          return (Description.finishBuildingDescription(description, checkforduplicateP));
+          return (Description.finishBuildingDescription(description, checkforduplicateP, Logic.KWD_TOP_LEVEL));
 
         } finally {
           Logic.$VARIABLEIDCOUNTER$.set(old$Variableidcounter$000);
@@ -14374,7 +14675,7 @@ public class Logic {
               (!Proposition.resolveOneSlotReferenceP(prop, variabletypestable))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(prop, Stella.NIL);
+                collect000 = Cons.cons(prop, Stella.NIL);
                 if (unresolvablepropositions == Stella.NIL) {
                   unresolvablepropositions = collect000;
                 }
@@ -14385,7 +14686,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(prop, Stella.NIL);
+                collect000.rest = Cons.cons(prop, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -14454,7 +14755,7 @@ public class Logic {
               { NamedDescription term000 = ((NamedDescription)(term));
 
                 if (!NamedDescription.definedRelationP(term000)) {
-                  undefined = Stella_Object.cons(term000, undefined);
+                  undefined = Cons.cons(term000, undefined);
                 }
               }
             }
@@ -14467,8 +14768,8 @@ public class Logic {
                   try {
                     Native.setSpecial(Stella.$MODULE$, ((module == null) ? term000.homeModule() : module));
                     Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
-                    if (Logic.applyCachedAsk(Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella.NIL), Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_RELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.consList(Stella_Object.cons(term000, Stella.NIL)), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_F_CALL_LIST_UNDEFINED_RELATIONS_QUERY_000, new Object[1])) {
-                      undefined = Stella_Object.cons(term000, undefined);
+                    if (Logic.applyCachedAsk(Cons.cons(Logic.SYM_LOGIC_pX, Stella.NIL), Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_RELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.consList(Cons.cons(term000, Stella.NIL)), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_F_CALL_LIST_UNDEFINED_RELATIONS_QUERY_000, new Object[1])) {
+                      undefined = Cons.cons(term000, undefined);
                     }
 
                   } finally {
@@ -14581,7 +14882,7 @@ public class Logic {
       result = Logic.createProposition(Logic.SYM_STELLA_AND, flatconjuncts.length());
       result.arguments = Logic.copyListToArgumentsVector(flatconjuncts);
       if (((BooleanWrapper)(KeyValueList.dynamicSlotValue(((Proposition)(flatconjuncts.first())).dynamicSlots, Logic.SYM_LOGIC_DESCRIPTIVEp, Stella.FALSE_WRAPPER))).wrapperValue) {
-        KeyValueList.setDynamicSlotValue(result.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTIVEp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(result.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTIVEp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       }
       return (result);
     }
@@ -14618,7 +14919,7 @@ public class Logic {
       result = Logic.createProposition(Logic.SYM_STELLA_OR, flatdisjuncts.length());
       result.arguments = Logic.copyListToArgumentsVector(flatdisjuncts);
       if (((BooleanWrapper)(KeyValueList.dynamicSlotValue(((Proposition)(flatdisjuncts.first())).dynamicSlots, Logic.SYM_LOGIC_DESCRIPTIVEp, Stella.FALSE_WRAPPER))).wrapperValue) {
-        KeyValueList.setDynamicSlotValue(result.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTIVEp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(result.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTIVEp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       }
       return (result);
     }
@@ -14720,11 +15021,11 @@ public class Logic {
       if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(description), Logic.SGT_LOGIC_NAMED_DESCRIPTION)) {
         { NamedDescription description000 = ((NamedDescription)(description));
 
-          rules = LogicObject.applicableRulesOfDescription(description000, Logic.KWD_FORWARD, false).concatenate(LogicObject.applicableRulesOfDescription(description000, Logic.KWD_BACKWARD, false), Stella_Object.cons(Description.helpGetForwardChainingRules(description000), Stella.NIL));
+          rules = LogicObject.applicableRulesOfDescription(description000, Logic.KWD_FORWARD, false).concatenate(LogicObject.applicableRulesOfDescription(description000, Logic.KWD_BACKWARD, false), Cons.cons(Description.helpGetForwardChainingRules(description000), Stella.NIL));
           { Description complement = ((Description)(KeyValueList.dynamicSlotValue(description000.dynamicSlots, Logic.SYM_LOGIC_COMPLEMENT_DESCRIPTION, null)));
 
             if (complement != null) {
-              rules = rules.concatenate(LogicObject.applicableRulesOfDescription(complement, Logic.KWD_FORWARD, false), Stella_Object.cons(LogicObject.applicableRulesOfDescription(complement, Logic.KWD_BACKWARD, false), Stella_Object.cons(Description.helpGetForwardChainingRules(complement), Stella.NIL)));
+              rules = rules.concatenate(LogicObject.applicableRulesOfDescription(complement, Logic.KWD_FORWARD, false), Cons.cons(LogicObject.applicableRulesOfDescription(complement, Logic.KWD_BACKWARD, false), Cons.cons(Description.helpGetForwardChainingRules(complement), Stella.NIL)));
             }
           }
         }
@@ -14970,7 +15271,7 @@ public class Logic {
    */
   public static Keyword setInferenceLevel(Stella_Object level, Stella_Object module) {
     { Module themodule = Stella_Object.coerceToModule(module, true);
-      Keyword thelevel = Stella.string_keywordify(Logic.coerceToString(level));
+      Keyword thelevel = Stella.string_keywordify(Stella_Object.coerceToString(level));
 
       if (module == null) {
         themodule = null;
@@ -15007,33 +15308,33 @@ public class Logic {
   }
 
   public static void traceSubgoals() {
-    Logic.setFeature(Stella_Object.cons(Logic.KWD_TRACE_SUBGOALS, Stella.NIL));
+    Logic.setFeature(Cons.cons(Logic.KWD_TRACE_SUBGOALS, Stella.NIL));
   }
 
   public static void untraceSubgoals() {
-    Logic.unsetFeature(Stella_Object.cons(Logic.KWD_TRACE_SUBGOALS, Stella.NIL));
+    Logic.unsetFeature(Cons.cons(Logic.KWD_TRACE_SUBGOALS, Stella.NIL));
   }
 
   public static void traceRules() {
-    Stella.addTrace(Stella_Object.cons(Logic.KWD_PROPAGATE, Stella.NIL));
+    Stella.addTrace(Cons.cons(Logic.KWD_PROPAGATE, Stella.NIL));
   }
 
   public static void untraceRules() {
-    Stella.dropTrace(Stella_Object.cons(Logic.KWD_PROPAGATE, Stella.NIL));
+    Stella.dropTrace(Cons.cons(Logic.KWD_PROPAGATE, Stella.NIL));
   }
 
   public static String toggleTraceSubgoals() {
     if (Logic.$CURRENT_POWERLOOM_FEATURES$.memberP(Logic.KWD_TRACE_SUBGOALS)) {
       {
-        Logic.unsetFeature(Stella_Object.cons(Logic.KWD_TRACE_SUBGOALS, Stella.NIL));
-        Stella.dropTrace(Stella_Object.cons(Logic.KWD_STRATEGIES, Stella.NIL));
+        Logic.unsetFeature(Cons.cons(Logic.KWD_TRACE_SUBGOALS, Stella.NIL));
+        Stella.dropTrace(Cons.cons(Logic.KWD_STRATEGIES, Stella.NIL));
         return ("Subgoal tracing disabled.");
       }
     }
     else {
       {
-        Logic.setFeature(Stella_Object.cons(Logic.KWD_TRACE_SUBGOALS, Stella.NIL));
-        Stella.addTrace(Stella_Object.cons(Logic.KWD_STRATEGIES, Stella.NIL));
+        Logic.setFeature(Cons.cons(Logic.KWD_TRACE_SUBGOALS, Stella.NIL));
+        Stella.addTrace(Cons.cons(Logic.KWD_STRATEGIES, Stella.NIL));
         return ("Subgoal tracing enabled.");
       }
     }
@@ -15043,13 +15344,13 @@ public class Logic {
     if ((Stella.$TRACED_KEYWORDS$ != null) &&
         Stella.$TRACED_KEYWORDS$.memberP(Logic.KWD_PROPAGATE)) {
       {
-        Stella.dropTrace(Stella_Object.cons(Logic.KWD_PROPAGATE, Stella.NIL));
+        Stella.dropTrace(Cons.cons(Logic.KWD_PROPAGATE, Stella.NIL));
         return ("Rule tracing disabled.");
       }
     }
     else {
       {
-        Stella.addTrace(Stella_Object.cons(Logic.KWD_PROPAGATE, Stella.NIL));
+        Stella.addTrace(Cons.cons(Logic.KWD_PROPAGATE, Stella.NIL));
         return ("Rule tracing enabled.");
       }
     }
@@ -15223,6 +15524,32 @@ public class Logic {
     }
   }
 
+  public static Stella_Object safeArgumentBoundTo(Stella_Object self) {
+    if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(self), Logic.SGT_LOGIC_PATTERN_VARIABLE)) {
+      { PatternVariable self000 = ((PatternVariable)(self));
+
+        { Stella_Object value = null;
+
+          if ((((QueryIterator)(Logic.$QUERYITERATOR$.get())) != null) &&
+              (self000.boundToOffset != Stella.NULL_INTEGER)) {
+            value = (((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(self000.boundToOffset)];
+          }
+          if ((value == null) &&
+              (((Stella_Object)(Stella_Object.accessInContext(self000.variableValue, self000.homeContext, false))) != null)) {
+            value = Logic.valueOf(self000);
+            if (Logic.skolemP(value)) {
+              value = null;
+            }
+          }
+          return (value);
+        }
+      }
+    }
+    else {
+      return (Logic.argumentBoundTo(self));
+    }
+  }
+
   public static boolean helpUnifyAttributesP(Stella_Object value1, Stella_Object value2) {
     return (Stella_Object.eqlP(value1, value2) ||
         (Logic.skolemP(value1) &&
@@ -15249,6 +15576,7 @@ public class Logic {
       }
       return (false);
     }
+    value = Logic.instantiateExternalBindings(value);
     { Surrogate testValue000 = Stella_Object.safePrimaryType(argument);
 
       if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PATTERN_VARIABLE)) {
@@ -15267,7 +15595,7 @@ public class Logic {
         { Proposition argument000 = ((Proposition)(argument));
 
           if (Stella_Object.isaP(value, Logic.SGT_LOGIC_PROPOSITION)) {
-            { KeyValueList mapping = KeyValueList.newKeyValueList();
+            { KeyValueMap mapping = KeyValueMap.newKeyValueMap();
 
               { boolean testValue001 = false;
 
@@ -15277,9 +15605,9 @@ public class Logic {
 
                     { Stella_Object var = null;
                       Stella_Object val = null;
-                      KvCons iter000 = mapping.theKvList;
+                      DictionaryIterator iter000 = ((DictionaryIterator)(mapping.allocateIterator()));
 
-                      loop000 : for (;iter000 != null; iter000 = iter000.rest) {
+                      loop000 : while (iter000.nextP()) {
                         var = iter000.key;
                         val = iter000.value;
                         if (!PatternVariable.bindVariableToValueP(((PatternVariable)(var)), val, autocleanupP)) {
@@ -15362,8 +15690,12 @@ public class Logic {
       return (null);
     }
     { int argumentcount = description.arity();
-      Vector copiedarguments = Vector.newVector(argumentcount);
+      Vector copiedarguments = null;
 
+      if (argumentcount == -1) {
+        argumentcount = arguments.length();
+      }
+      copiedarguments = Vector.newVector(argumentcount);
       { int i = Stella.NULL_INTEGER;
         int iter000 = 0;
         int upperBound000 = argumentcount - 1;
@@ -15393,7 +15725,7 @@ public class Logic {
           arg = (vector000.theArray)[index000];
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Logic.instantiateExternalBindings(Logic.argumentBoundTo(arg)), Stella.NIL);
+              collect000 = Cons.cons(Logic.instantiateExternalBindings(Logic.safeArgumentBoundTo(arg)), Stella.NIL);
               if (externalbindings == Stella.NIL) {
                 externalbindings = collect000;
               }
@@ -15404,7 +15736,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Logic.instantiateExternalBindings(Logic.argumentBoundTo(arg)), Stella.NIL);
+              collect000.rest = Cons.cons(Logic.instantiateExternalBindings(Logic.safeArgumentBoundTo(arg)), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -15426,7 +15758,7 @@ public class Logic {
         { Description self000 = ((Description)(self));
 
           if (((Vector)(KeyValueList.dynamicSlotValue(self000.dynamicSlots, Logic.SYM_LOGIC_EXTERNAL_VARIABLES, null))) != null) {
-            { KeyValueList mapping = KeyValueList.newKeyValueList();
+            { KeyValueMap mapping = KeyValueMap.newKeyValueMap();
 
               { PatternVariable var = null;
                 Vector vector000 = ((Vector)(KeyValueList.dynamicSlotValue(self000.dynamicSlots, Logic.SYM_LOGIC_EXTERNAL_VARIABLES, null)));
@@ -15436,7 +15768,7 @@ public class Logic {
                 for (;index000 < length000; index000 = index000 + 1) {
                   var = ((PatternVariable)((vector000.theArray)[index000]));
                   if (Logic.argumentBoundP(var)) {
-                    mapping.insertAt(var, Logic.argumentBoundTo(var));
+                    mapping.insertAt(var, Logic.safeArgumentBoundTo(var));
                   }
                 }
               }
@@ -15593,7 +15925,7 @@ public class Logic {
                 m = iter000.value;
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(m, Stella.NIL);
+                    collect000 = Cons.cons(m, Stella.NIL);
                     if (members.theConsList == Stella.NIL) {
                       members.theConsList = collect000;
                     }
@@ -15604,7 +15936,7 @@ public class Logic {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(m, Stella.NIL);
+                    collect000.rest = Cons.cons(m, Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -15617,7 +15949,7 @@ public class Logic {
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_NAMED_DESCRIPTION)) {
         { NamedDescription self000 = ((NamedDescription)(self));
 
-          { List members = Stella.list(Stella.NIL);
+          { List members = List.list(Stella.NIL);
 
             { Proposition prop = null;
               DescriptionExtensionIterator iter001 = NamedDescription.allTrueExtensionMembers(self000, !directP);
@@ -15627,7 +15959,7 @@ public class Logic {
                 prop = ((Proposition)(iter001.value));
                 if (collect001 == null) {
                   {
-                    collect001 = Stella_Object.cons((prop.arguments.theArray)[0], Stella.NIL);
+                    collect001 = Cons.cons((prop.arguments.theArray)[0], Stella.NIL);
                     if (members.theConsList == Stella.NIL) {
                       members.theConsList = collect001;
                     }
@@ -15638,7 +15970,7 @@ public class Logic {
                 }
                 else {
                   {
-                    collect001.rest = Stella_Object.cons((prop.arguments.theArray)[0], Stella.NIL);
+                    collect001.rest = Cons.cons((prop.arguments.theArray)[0], Stella.NIL);
                     collect001 = collect001.rest;
                   }
                 }
@@ -15681,7 +16013,7 @@ public class Logic {
                       i = iter003;
                       if (collect002 == null) {
                         {
-                          collect002 = Stella_Object.cons(Logic.valueOf(arg), Stella.NIL);
+                          collect002 = Cons.cons(Logic.valueOf(arg), Stella.NIL);
                           if (members.theConsList == Stella.NIL) {
                             members.theConsList = collect002;
                           }
@@ -15692,7 +16024,7 @@ public class Logic {
                       }
                       else {
                         {
-                          collect002.rest = Stella_Object.cons(Logic.valueOf(arg), Stella.NIL);
+                          collect002.rest = Cons.cons(Logic.valueOf(arg), Stella.NIL);
                           collect002 = collect002.rest;
                         }
                       }
@@ -15714,7 +16046,7 @@ public class Logic {
                        LogicObject.collectionImpliesCollectionP(((LogicObject)(Logic.valueOf((p.arguments.theArray)[1]))), ((LogicObject)(Logic.valueOf(self000)))))) {
                     if (collect003 == null) {
                       {
-                        collect003 = Stella_Object.cons((p.arguments.theArray)[0], Stella.NIL);
+                        collect003 = Cons.cons((p.arguments.theArray)[0], Stella.NIL);
                         if (members.theConsList == Stella.NIL) {
                           members.theConsList = collect003;
                         }
@@ -15725,7 +16057,7 @@ public class Logic {
                     }
                     else {
                       {
-                        collect003.rest = Stella_Object.cons((p.arguments.theArray)[0], Stella.NIL);
+                        collect003.rest = Cons.cons((p.arguments.theArray)[0], Stella.NIL);
                         collect003 = collect003.rest;
                       }
                     }
@@ -15783,7 +16115,7 @@ public class Logic {
       iovariables = Stella.NIL;
     }
     else if (!Stella_Object.consP(iovariables)) {
-      iovariables = Stella.consList(Stella_Object.cons(iovariables, Stella.NIL));
+      iovariables = Cons.consList(Cons.cons(iovariables, Stella.NIL));
     }
     { Cons standardizedtree = null;
       Cons allvariables = ((Cons)(iovariables));
@@ -15793,17 +16125,17 @@ public class Logic {
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           v = iter000.value;
-          allvariables = Stella_Object.cons(v, allvariables);
+          allvariables = Cons.cons(v, allvariables);
         }
       }
       if (querybody == null) {
         querybody = Logic.SYM_STELLA_TRUE;
       }
       if (allvariables == Stella.NIL) {
-        standardizedtree = Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_KAPPA, Stella_Object.cons(Stella.NIL, Stella_Object.cons(querybody, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        standardizedtree = Cons.list$(Cons.cons(Logic.SYM_LOGIC_KAPPA, Cons.cons(Stella.NIL, Cons.cons(querybody, Cons.cons(Stella.NIL, Stella.NIL)))));
       }
       else {
-        standardizedtree = Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EXISTS, Stella_Object.cons(allvariables, Stella_Object.cons(Stella_Object.cons(querybody, Stella.NIL), Stella.NIL))));
+        standardizedtree = Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(allvariables, Cons.cons(Cons.cons(querybody, Stella.NIL), Stella.NIL))));
       }
       standardizedtree = ((Cons)(Logic.standardizeLogicalParseTree(standardizedtree)));
       standardizedtree.firstSetter(Logic.SYM_LOGIC_KAPPA);
@@ -15821,16 +16153,18 @@ public class Logic {
 
       if ((!Stella_Object.consP(iovariables)) ||
           Stella_Object.surrogateP(((Cons)(iovariables)).rest.value)) {
-        KeyValueList.setDynamicSlotValue(query.dynamicSlots, Logic.SYM_LOGIC_ATOMIC_SINGLETONSp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(query.dynamicSlots, Logic.SYM_LOGIC_ATOMIC_SINGLETONSp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       }
       { Object old$Evaluationmode$000 = Logic.$EVALUATIONMODE$.get();
         Object old$Logicvariabletable$000 = Logic.$LOGICVARIABLETABLE$.get();
         Object old$Termunderconstruction$000 = Logic.$TERMUNDERCONSTRUCTION$.get();
+        Object old$Queryiterator$000 = Logic.$QUERYITERATOR$.get();
 
         try {
           Native.setSpecial(Logic.$EVALUATIONMODE$, Logic.KWD_DESCRIPTION);
           Native.setSpecial(Logic.$LOGICVARIABLETABLE$, Stella.NIL);
           Native.setSpecial(Logic.$TERMUNDERCONSTRUCTION$, prefixquerytree);
+          Native.setSpecial(Logic.$QUERYITERATOR$, null);
           { Object old$Module$000 = Stella.$MODULE$.get();
             Object old$Context$000 = Stella.$CONTEXT$.get();
 
@@ -15846,6 +16180,7 @@ public class Logic {
           }
 
         } finally {
+          Logic.$QUERYITERATOR$.set(old$Queryiterator$000);
           Logic.$TERMUNDERCONSTRUCTION$.set(old$Termunderconstruction$000);
           Logic.$LOGICVARIABLETABLE$.set(old$Logicvariabletable$000);
           Logic.$EVALUATIONMODE$.set(old$Evaluationmode$000);
@@ -15873,6 +16208,9 @@ public class Logic {
       Stella_Object variables = null;
       Stella_Object proposition = null;
       PropertyList options = PropertyList.newPropertyList();
+      boolean handlenonmatchingvariablesP = false;
+      List freevariables = null;
+      Cons declaredvariables = null;
 
       { Surrogate testValue000 = Stella_Object.safePrimaryType(firstarg);
 
@@ -15929,65 +16267,60 @@ public class Logic {
         variables = null;
       }
       if (Stella_Object.consP(proposition)) {
-        { List freevariables = List.newList();
-          Cons declaredvariables = null;
-
-          if (variables == null) {
-            declaredvariables = Stella.NIL;
-          }
-          else if (!Stella_Object.consP(variables)) {
-            declaredvariables = Stella_Object.cons(variables, Stella.NIL);
+        freevariables = List.newList();
+        if (variables == null) {
+          declaredvariables = Stella.NIL;
+        }
+        else if (!Stella_Object.consP(variables)) {
+          declaredvariables = Cons.cons(variables, Stella.NIL);
+        }
+        else {
+          declaredvariables = ((Cons)(variables));
+        }
+        declaredvariables = Logic.extractVariablesFromDeclarations(declaredvariables);
+        Logic.collectUndeclaredVariables(proposition, Stella.NIL, freevariables);
+        if ((declaredvariables == Stella.NIL) &&
+            freevariables.nonEmptyP()) {
+          if (freevariables.length() == 1) {
+            variables = ((Symbol)(freevariables.first()));
           }
           else {
-            declaredvariables = ((Cons)(variables));
+            variables = freevariables.theConsList;
           }
-          declaredvariables = Logic.extractVariablesFromDeclarations(declaredvariables);
-          Logic.collectUndeclaredVariables(proposition, Stella.NIL, freevariables);
-          if ((declaredvariables == Stella.NIL) &&
-              freevariables.nonEmptyP()) {
-            if (freevariables.length() == 1) {
-              variables = ((Symbol)(freevariables.first()));
-            }
-            else {
-              variables = freevariables.theConsList;
-            }
-          }
-          else if ((declaredvariables == Stella.NIL) &&
-              freevariables.emptyP()) {
-          }
-          else if (!freevariables.theConsList.equivalentSetsP(declaredvariables)) {
-            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-              { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
-
-                try {
-                  Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-                  {
-                    stream000.nativeStream.println("PARSING ERROR: Declared query variables `" + declaredvariables + "' do not match");
-                    stream000.nativeStream.println("   the free variables `" + freevariables.theConsList + "' referenced in the query body.");
-                    stream000.nativeStream.println("   To simply use the free variables, omit the declaration.");
-                  }
-;
-                  Logic.helpSignalPropositionError(stream000, Logic.KWD_ERROR);
-
-                } finally {
-                  Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
-                }
-              }
-              throw ((ParsingError)(ParsingError.newParsingError(stream000.theStringReader()).fillInStackTrace()));
-            }
-          }
+        }
+        else if ((declaredvariables == Stella.NIL) &&
+            freevariables.emptyP()) {
+        }
+        else if (!freevariables.theConsList.equivalentSetsP(declaredvariables)) {
+          handlenonmatchingvariablesP = true;
         }
       }
       while (!(queryAoptions == Stella.NIL)) {
         if (!Stella_Object.keywordP(queryAoptions.value)) {
+          { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+            { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+
+              try {
+                Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+                stream000.nativeStream.println("PARSING ERROR: Illegal query option: `" + queryAoptions.value + "'.");
+                Logic.helpSignalPropositionError(stream000, Logic.KWD_ERROR);
+
+              } finally {
+                Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+              }
+            }
+            throw ((ParsingError)(ParsingError.newParsingError(stream000.theStringReader()).fillInStackTrace()));
+          }
+        }
+        if (queryAoptions.rest.value == null) {
           { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
 
             { Object old$PrintreadablyP$001 = Stella.$PRINTREADABLYp$.get();
 
               try {
                 Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-                stream001.nativeStream.println("PARSING ERROR: Illegal query option: `" + queryAoptions.value + "'.");
+                stream001.nativeStream.println("PARSING ERROR: Missing value for option `" + queryAoptions.value + "'.");
                 Logic.helpSignalPropositionError(stream001, Logic.KWD_ERROR);
 
               } finally {
@@ -15997,25 +16330,38 @@ public class Logic {
             throw ((ParsingError)(ParsingError.newParsingError(stream001.theStringReader()).fillInStackTrace()));
           }
         }
-        if (queryAoptions.rest.value == null) {
-          { OutputStringStream stream002 = OutputStringStream.newOutputStringStream();
-
-            { Object old$PrintreadablyP$002 = Stella.$PRINTREADABLYp$.get();
-
-              try {
-                Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-                stream002.nativeStream.println("PARSING ERROR: Missing value for option `" + queryAoptions.value + "'.");
-                Logic.helpSignalPropositionError(stream002, Logic.KWD_ERROR);
-
-              } finally {
-                Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$002);
-              }
-            }
-            throw ((ParsingError)(ParsingError.newParsingError(stream002.theStringReader()).fillInStackTrace()));
-          }
-        }
         options.insertAt(queryAoptions.value, queryAoptions.rest.value);
         queryAoptions = queryAoptions.rest.rest;
+      }
+      if (handlenonmatchingvariablesP) {
+        { Stella_Object temp000 = options.lookup(Logic.KWD_CHECK_VARIABLESp);
+
+          if (BooleanWrapper.coerceWrappedBooleanToBoolean(Stella_Object.coerceToBoolean(((temp000 != null) ? temp000 : Stella.FALSE_WRAPPER)))) {
+            { OutputStringStream stream002 = OutputStringStream.newOutputStringStream();
+
+              { Object old$PrintreadablyP$002 = Stella.$PRINTREADABLYp$.get();
+
+                try {
+                  Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+                  {
+                    stream002.nativeStream.println("PARSING ERROR: Declared query variables `" + declaredvariables + "' do not match");
+                    stream002.nativeStream.println("   the free variables `" + freevariables.theConsList + "' referenced in the query body.");
+                    stream002.nativeStream.println("   To simply use the free variables, omit the declaration.");
+                  }
+;
+                  Logic.helpSignalPropositionError(stream002, Logic.KWD_ERROR);
+
+                } finally {
+                  Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$002);
+                }
+              }
+              throw ((ParsingError)(ParsingError.newParsingError(stream002.theStringReader()).fillInStackTrace()));
+            }
+          }
+          else {
+            proposition = Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(freevariables.theConsList.difference(declaredvariables), Cons.cons(Cons.cons(proposition, Stella.NIL), Stella.NIL))));
+          }
+        }
       }
       { Stella_Object _return_temp = variables;
 
@@ -16099,7 +16445,7 @@ public class Logic {
         }
         if (value != null) {
           if (coercetotype != null) {
-            coercedvalue = Logic.coerceOptionValue(value, coercetotype);
+            coercedvalue = Stella_Object.coerceOptionValue(value, coercetotype);
             if (coercedvalue == null) {
               { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
 
@@ -16152,53 +16498,6 @@ public class Logic {
     }
     else {
       return (self);
-    }
-  }
-
-  public static String coerceToString(Stella_Object self) {
-    { Surrogate testValue000 = Stella_Object.safePrimaryType(self);
-
-      if (Surrogate.subtypeOfStringP(testValue000)) {
-        { StringWrapper self000 = ((StringWrapper)(self));
-
-          return (self000.wrapperValue);
-        }
-      }
-      else if (Surrogate.subtypeOfSymbolP(testValue000)) {
-        { Symbol self000 = ((Symbol)(self));
-
-          return (self000.symbolName);
-        }
-      }
-      else if (Surrogate.subtypeOfKeywordP(testValue000)) {
-        { Keyword self000 = ((Keyword)(self));
-
-          return (self000.symbolName);
-        }
-      }
-      else if (Surrogate.subtypeOfSurrogateP(testValue000)) {
-        { Surrogate self000 = ((Surrogate)(self));
-
-          return (self000.symbolName);
-        }
-      }
-      else {
-        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-          { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
-
-            try {
-              Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-              stream000.nativeStream.println("PARSING ERROR: Can't convert `" + self + "' into a string.");
-              Logic.helpSignalPropositionError(stream000, Logic.KWD_ERROR);
-
-            } finally {
-              Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
-            }
-          }
-          throw ((ParsingError)(ParsingError.newParsingError(stream000.theStringReader()).fillInStackTrace()));
-        }
-      }
     }
   }
 
@@ -16384,7 +16683,7 @@ public class Logic {
         else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
           { Proposition query000 = ((Proposition)(query));
 
-            thequery = Logic.makeQuery(((Vector)(KeyValueList.dynamicSlotValue(query000.dynamicSlots, Logic.SYM_LOGIC_IO_VARIABLES, null))).consify(), Proposition.propositionToCons(query000), Stella.NIL, Stella.list$(Stella_Object.cons(Logic.KWD_HOW_MANY, Stella_Object.cons(IntegerWrapper.wrapInteger(nofbindings), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+            thequery = Logic.makeQuery(((Vector)(KeyValueList.dynamicSlotValue(query000.dynamicSlots, Logic.SYM_LOGIC_IO_VARIABLES, null))).consify(), Proposition.propositionToCons(query000), Stella.NIL, Cons.list$(Cons.cons(Logic.KWD_HOW_MANY, Cons.cons(IntegerWrapper.wrapInteger(nofbindings), Cons.cons(Stella.NIL, Stella.NIL)))));
           }
         }
         else if (testValue000 == Logic.SGT_STELLA_CONS) {
@@ -16511,7 +16810,7 @@ public class Logic {
       Stella_Object matchmode = Logic.lookupQueryOption(thequery, Logic.KWD_MATCH_MODE);
 
       if ((matchmode != null) &&
-          (!Stella.stringEqualP(Logic.coerceToString(matchmode), "STRICT"))) {
+          (!Stella.stringEqualP(Stella_Object.coerceToString(matchmode), "STRICT"))) {
         return (Logic.callRetrievePartial(thequery));
       }
       { Object old$Queryiterator$000 = Logic.$QUERYITERATOR$.get();
@@ -16523,7 +16822,7 @@ public class Logic {
           Native.setSpecial(Logic.$QUERYITERATOR$, thequery);
           Native.setBooleanSpecial(Logic.$REVERSEPOLARITYp$, false);
           Native.setSpecial(Logic.$INFERENCELEVEL$, Logic.currentInferenceLevel());
-          Native.setBooleanSpecial(Logic.$GENERATE_ALL_PROOFSp$, false);
+          Native.setBooleanSpecial(Logic.$GENERATE_ALL_PROOFSp$, Logic.testQueryOptionP(thequery, Logic.KWD_ALL_PROOFSp));
           { int i = Stella.NULL_INTEGER;
             int iter000 = 1;
             int upperBound000 = Logic.lookupHowManySolutions(((QueryIterator)(Logic.$QUERYITERATOR$.get())));
@@ -16539,6 +16838,18 @@ public class Logic {
               if (Stella_Object.traceKeywordP(Logic.KWD_TRACE_SOLUTIONS)) {
                 QueryIterator.traceSolution(((QueryIterator)(Logic.$QUERYITERATOR$.get())), solution, i);
               }
+            }
+          }
+          { Keyword sortoption = ((Keyword)(Logic.lookupQueryOption(thequery, Logic.KWD_SORT_BY)));
+
+            if ((sortoption == Logic.KWD_VALUES) ||
+                (sortoption == Logic.KWD_VALUES_ASCENDING)) {
+              thequery.solutions.sort(Native.find_java_method("edu.isi.powerloom.logic.QuerySolution", "querySolutionLessThanP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QuerySolution"), Native.find_java_class("edu.isi.powerloom.logic.QuerySolution")}));
+            }
+            else if (sortoption == Logic.KWD_VALUES_DESCENDING) {
+              thequery.solutions.sort(Native.find_java_method("edu.isi.powerloom.logic.QuerySolution", "querySolutionGreaterThanP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QuerySolution"), Native.find_java_class("edu.isi.powerloom.logic.QuerySolution")}));
+            }
+            else {
             }
           }
           return (((QueryIterator)(Logic.$QUERYITERATOR$.get())));
@@ -16653,12 +16964,24 @@ public class Logic {
     return (Logic.retrieve(arguments));
   }
 
-  public static void flushInlineQueryCaches() {
-    Logic.$QUERY_CACHE$ = HashTable.newHashTable();
+  public static void clearInlineQueryCaches() {
+    Logic.$INLINE_QUERY_CACHE$.clear();
+  }
+
+  public static QueryIterator findCachedQuery(Symbol queryid) {
+    { List queries = ((List)(Logic.$INLINE_QUERY_CACHE$.lookup(queryid)));
+
+      if (queries != null) {
+        return (((QueryIterator)(queries.pop())));
+      }
+      else {
+        return (null);
+      }
+    }
   }
 
   public static QueryIterator makeCachedQuery(Cons variables, Cons querybody, Cons inputbindings, Stella_Object options, Symbol cacheid) {
-    { QueryIterator queryiterator = ((QueryIterator)(Logic.$QUERY_CACHE$.lookup(cacheid)));
+    { QueryIterator queryiterator = Logic.findCachedQuery(cacheid);
       Cons cursor = inputbindings;
 
       if (!(variables.length() == inputbindings.length())) {
@@ -16701,9 +17024,6 @@ public class Logic {
             Stella.STANDARD_ERROR.nativeStream.print(Stella.exceptionMessage(e));
             return (null);
           }
-          if (cacheid != null) {
-            Logic.$QUERY_CACHE$.insertAt(cacheid, queryiterator);
-          }
         }
       }
       else {
@@ -16734,7 +17054,8 @@ public class Logic {
       int bindingscount = 0;
       Cons outputbindings = Stella.NIL;
       Cons truthvalues = Stella.NIL;
-      boolean forcesingletonsP = false;
+      Cons justifications = Stella.NIL;
+      boolean forcesingletontuplesP = false;
 
       { ConsIterator it = inputbindings.allocateIterator();
 
@@ -16749,11 +17070,13 @@ public class Logic {
         { Cons _return_temp = Stella.NIL;
 
           MV_returnarray[0] = Stella.NIL;
+          MV_returnarray[1] = Stella.NIL;
           return (_return_temp);
         }
       }
-      if (Stella_Object.eqlP(queryiterator.options.lookup(Logic.KWD_SINGLETONSp), Stella.TRUE_WRAPPER)) {
-        forcesingletonsP = true;
+      if (Stella_Object.eqlP(queryiterator.options.lookup(Logic.KWD_SINGLETONSp), Stella.FALSE_WRAPPER) ||
+          Stella_Object.eqlP(queryiterator.options.lookup(Logic.KWD_ATOMIC_SINGLETONSp), Stella.FALSE_WRAPPER)) {
+        forcesingletontuplesP = true;
       }
       { Object old$Queryiterator$000 = Logic.$QUERYITERATOR$.get();
         Object old$ReversepolarityP$000 = Logic.$REVERSEPOLARITYp$.get();
@@ -16771,7 +17094,7 @@ public class Logic {
       }
       { Stella_Object tuple = null;
         boolean atomicsingletonsP = (inputbindings.length() == (bindingscount + 1)) &&
-            (!forcesingletonsP);
+            (!forcesingletontuplesP);
 
         { QuerySolution s = null;
           DictionaryIterator iter000 = ((DictionaryIterator)(queryiterator.solutions.allocateIterator()));
@@ -16814,7 +17137,7 @@ public class Logic {
                     if (b == null) {
                       if (collect000 == null) {
                         {
-                          collect000 = Stella_Object.cons(v, Stella.NIL);
+                          collect000 = Cons.cons(v, Stella.NIL);
                           if (values == Stella.NIL) {
                             values = collect000;
                           }
@@ -16825,7 +17148,7 @@ public class Logic {
                       }
                       else {
                         {
-                          collect000.rest = Stella_Object.cons(v, Stella.NIL);
+                          collect000.rest = Cons.cons(v, Stella.NIL);
                           collect000 = collect000.rest;
                         }
                       }
@@ -16835,14 +17158,19 @@ public class Logic {
                 tuple = values;
               }
             }
-            outputbindings = Stella_Object.cons(tuple, outputbindings);
-            truthvalues = Stella_Object.cons(s.truthValue, truthvalues);
+            outputbindings = Cons.cons(tuple, outputbindings);
+            truthvalues = Cons.cons(s.truthValue, truthvalues);
+            if (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue()) {
+              justifications = Cons.cons(s.justification, justifications);
+            }
           }
         }
       }
+      QueryIterator.freeCachedQuery(queryiterator, cacheid);
       { Cons _return_temp = outputbindings.reverse();
 
         MV_returnarray[0] = truthvalues.reverse();
+        MV_returnarray[1] = justifications.reverse();
         return (_return_temp);
       }
     }
@@ -16851,17 +17179,24 @@ public class Logic {
   public static boolean applyCachedAsk(Cons inputvariables, Cons querybody, Cons inputbindings, Stella_Object options, Symbol cacheid, Object [] MV_returnarray) {
     { QueryIterator queryiterator = Logic.makeCachedQuery(inputvariables, querybody, inputbindings, options, cacheid);
 
-      if (queryiterator == null) {
+      if (queryiterator != null) {
+        { TruthValue truthvalue = Logic.callAsk(queryiterator);
+
+          QueryIterator.freeCachedQuery(queryiterator, cacheid);
+          { boolean _return_temp = (truthvalue == Logic.TRUE_TRUTH_VALUE) ||
+                (truthvalue == Logic.DEFAULT_TRUE_TRUTH_VALUE);
+
+            MV_returnarray[0] = truthvalue;
+            return (_return_temp);
+          }
+        }
+      }
+      else {
         { boolean _return_temp = false;
 
           MV_returnarray[0] = null;
           return (_return_temp);
         }
-      }
-      { boolean _return_temp = TruthValue.trueTruthValueP(Logic.callAsk(queryiterator));
-
-        MV_returnarray[0] = ((QuerySolution)(queryiterator.value)).truthValue;
-        return (_return_temp);
       }
     }
   }
@@ -16905,7 +17240,7 @@ public class Logic {
   }
 
   public static TruthValue instanceSatisfiesDescriptionP(Stella_Object instance, Description description) {
-    return (Logic.vectorSatisfiesDescriptionP(Stella.vector(Stella_Object.cons(instance, Stella.NIL)), description));
+    return (Logic.vectorSatisfiesDescriptionP(Stella.vector(Cons.cons(instance, Stella.NIL)), description));
   }
 
   public static Description coerceToDescription(Stella_Object self, Stella_Object original) {
@@ -16939,19 +17274,19 @@ public class Logic {
       else if (Surrogate.subtypeOfSymbolP(testValue000)) {
         { Symbol self000 = ((Symbol)(self));
 
-          return (Logic.coerceToDescription(Stella.lookupSurrogateInModule(self000.symbolName, ((Module)(self000.homeContext)), false), original));
+          return (Logic.coerceToDescription(Surrogate.lookupSurrogateInModule(self000.symbolName, ((Module)(self000.homeContext)), false), original));
         }
       }
       else if (Surrogate.subtypeOfKeywordP(testValue000)) {
         { Keyword self000 = ((Keyword)(self));
 
-          return (Logic.coerceToDescription(Stella.lookupSurrogate(self000.symbolName), original));
+          return (Logic.coerceToDescription(Surrogate.lookupSurrogate(self000.symbolName), original));
         }
       }
       else if (Surrogate.subtypeOfStringP(testValue000)) {
         { StringWrapper self000 = ((StringWrapper)(self));
 
-          return (Logic.coerceToDescription(Stella.lookupSurrogate(self000.wrapperValue), original));
+          return (Logic.coerceToDescription(Surrogate.lookupSurrogate(self000.wrapperValue), original));
         }
       }
       else {
@@ -17041,13 +17376,19 @@ public class Logic {
       else if (Surrogate.subtypeOfKeywordP(testValue000)) {
         { Keyword self000 = ((Keyword)(self));
 
-          return (Logic.coerceToInstance(Stella.lookupSurrogate(self000.symbolName), original));
+          return (Logic.coerceToInstance(Surrogate.lookupSurrogate(self000.symbolName), original));
         }
       }
       else if (Surrogate.subtypeOfStringP(testValue000)) {
         { StringWrapper self000 = ((StringWrapper)(self));
 
-          return (Logic.coerceToInstance(Stella.lookupSurrogate(self000.wrapperValue), original));
+          return (Logic.coerceToInstance(Surrogate.lookupSurrogate(self000.wrapperValue), original));
+        }
+      }
+      else if (testValue000 == Logic.SGT_STELLA_CONS) {
+        { Cons self000 = ((Cons)(self));
+
+          return (Logic.coerceToInstance(Logic.evaluateTerm(self000), original));
         }
       }
       else {
@@ -17109,13 +17450,13 @@ public class Logic {
       else if (Surrogate.subtypeOfKeywordP(testValue000)) {
         { Keyword self000 = ((Keyword)(self));
 
-          return (Logic.coerceToInstanceOrLiteral(Stella.lookupSurrogate(self000.symbolName), original));
+          return (Logic.coerceToInstanceOrLiteral(Surrogate.lookupSurrogate(self000.symbolName), original));
         }
       }
       else if (Surrogate.subtypeOfStringP(testValue000)) {
         { StringWrapper self000 = ((StringWrapper)(self));
 
-          return (Logic.coerceToInstanceOrLiteral(Stella.lookupSurrogate(self000.wrapperValue), original));
+          return (Logic.coerceToInstanceOrLiteral(Surrogate.lookupSurrogate(self000.wrapperValue), original));
         }
       }
       else {
@@ -17283,7 +17624,8 @@ public class Logic {
    *  (assert-from-query &lt;query-command&gt;
    *                     [:relation &lt;relation-name&gt;]
    *                     [:pattern &lt;description-term&gt;]
-   *                     [:module &lt;module-name&gt;])
+   *                     [:module &lt;module-name&gt;]
+   *                     [:record-justifications? TRUE|FALSE])
    * 	
    * &lt;query-command&gt; has to be a strict or partial retrieval command. If a
    * :relation option is supplied, &lt;relation-name&gt; is used as the relation
@@ -17300,8 +17642,10 @@ public class Logic {
    * referenced in the query proposition or pattern have to be visible in
    * the module.  Also, instances will not be copied to the target module,
    * therefore, the resulting propositions might reference external
-   * out-of-module objects in case they are not visible there.
-   * Here are some examples:
+   * out-of-module objects in case they are not visible there.  If
+   * :record-justifications? is TRUE, justifications will be recorded
+   * for the query and the resulting justifications will be linked to
+   * the asserted propositions.  Here are some examples:
    * 	 
    *  (assert-from-query (retrieve all (foo ?x ?y)))
    *  (assert-from-query (retrieve all (?y ?x)
@@ -17323,14 +17667,24 @@ public class Logic {
    */
   public static Cons assertFromQuery(Cons query, Cons options) {
     try {
-      { PropertyList theoptions = Logic.parseLogicCommandOptions(options, Stella.list$(Stella_Object.cons(Logic.KWD_MODULE, Stella_Object.cons(Logic.SGT_STELLA_MODULE, Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(Logic.SGT_LOGIC_NAMED_DESCRIPTION, Stella_Object.cons(Logic.KWD_PATTERN, Stella_Object.cons(Logic.SGT_STELLA_CONS, Stella_Object.cons(Stella.NIL, Stella.NIL)))))))), true, false);
-        QueryIterator queryiterator = Logic.getQueryIteratorFromCommand(query);
+      { PropertyList theoptions = Logic.parseLogicCommandOptions(options, Cons.list$(Cons.cons(Logic.KWD_MODULE, Cons.cons(Logic.SGT_STELLA_MODULE, Cons.cons(Logic.KWD_RELATION, Cons.cons(Logic.SGT_STELLA_SYMBOL, Cons.cons(Logic.KWD_PATTERN, Cons.cons(Logic.SGT_STELLA_CONS, Cons.cons(Logic.KWD_RECORD_JUSTIFICATIONSp, Cons.cons(Logic.SGT_STELLA_BOOLEAN, Cons.cons(Stella.NIL, Stella.NIL)))))))))), true, false);
         Description pattern = null;
+        Stella_Object recordjustificationsP = theoptions.lookupWithDefault(Logic.KWD_RECORD_JUSTIFICATIONSp, Stella.FALSE_WRAPPER);
 
         if (theoptions.lookup(Logic.KWD_PATTERN) != null) {
           pattern = ((Description)(Logic.conceiveTerm(theoptions.lookup(Logic.KWD_PATTERN))));
         }
-        return (QueryIterator.updatePropositionsFromQuery(queryiterator, ((pattern != null) ? pattern : ((Description)(theoptions.lookup(Logic.KWD_RELATION)))), ((Module)(theoptions.lookup(Logic.KWD_MODULE))), Logic.KWD_ASSERT_TRUE));
+        { Object old$RecordJustificationsP$000 = Logic.$RECORD_JUSTIFICATIONSp$.get();
+
+          try {
+            Native.setBooleanSpecial(Logic.$RECORD_JUSTIFICATIONSp$, ((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue() ||
+                BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(recordjustificationsP))));
+            return (QueryIterator.updatePropositionsFromQuery(Logic.getQueryIteratorFromCommand(query), Logic.coerceToDescription(((pattern != null) ? pattern : theoptions.lookup(Logic.KWD_RELATION)), null), ((Module)(theoptions.lookup(Logic.KWD_MODULE))), Logic.KWD_ASSERT_TRUE, BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(recordjustificationsP)))));
+
+          } finally {
+            Logic.$RECORD_JUSTIFICATIONSp$.set(old$RecordJustificationsP$000);
+          }
+        }
       }
     } catch (LogicException e) {
       Stella.STANDARD_ERROR.nativeStream.print(Stella.exceptionMessage(e));
@@ -17352,14 +17706,14 @@ public class Logic {
    */
   public static Cons retractFromQuery(Cons query, Cons options) {
     try {
-      { PropertyList theoptions = Logic.parseLogicCommandOptions(options, Stella.list$(Stella_Object.cons(Logic.KWD_MODULE, Stella_Object.cons(Logic.SGT_STELLA_MODULE, Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(Logic.SGT_LOGIC_NAMED_DESCRIPTION, Stella_Object.cons(Logic.KWD_PATTERN, Stella_Object.cons(Logic.SGT_STELLA_CONS, Stella_Object.cons(Stella.NIL, Stella.NIL)))))))), true, false);
+      { PropertyList theoptions = Logic.parseLogicCommandOptions(options, Cons.list$(Cons.cons(Logic.KWD_MODULE, Cons.cons(Logic.SGT_STELLA_MODULE, Cons.cons(Logic.KWD_RELATION, Cons.cons(Logic.SGT_STELLA_SYMBOL, Cons.cons(Logic.KWD_PATTERN, Cons.cons(Logic.SGT_STELLA_CONS, Cons.cons(Stella.NIL, Stella.NIL)))))))), true, false);
         QueryIterator queryiterator = Logic.getQueryIteratorFromCommand(query);
         Description pattern = null;
 
         if (theoptions.lookup(Logic.KWD_PATTERN) != null) {
           pattern = ((Description)(Logic.conceiveTerm(theoptions.lookup(Logic.KWD_PATTERN))));
         }
-        return (QueryIterator.updatePropositionsFromQuery(queryiterator, ((pattern != null) ? pattern : ((Description)(theoptions.lookup(Logic.KWD_RELATION)))), ((Module)(theoptions.lookup(Logic.KWD_MODULE))), Logic.KWD_RETRACT_TRUE));
+        return (QueryIterator.updatePropositionsFromQuery(queryiterator, Logic.coerceToDescription(((pattern != null) ? pattern : theoptions.lookup(Logic.KWD_RELATION)), null), ((Module)(theoptions.lookup(Logic.KWD_MODULE))), Logic.KWD_RETRACT_TRUE, false));
       }
     } catch (LogicException e) {
       Stella.STANDARD_ERROR.nativeStream.print(Stella.exceptionMessage(e));
@@ -17802,7 +18156,7 @@ public class Logic {
           prop = ((Proposition)((vector000.theArray)[index000]));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(prop, Stella.NIL);
+              collect000 = Cons.cons(prop, Stella.NIL);
               if (result.theConsList == Stella.NIL) {
                 result.theConsList = collect000;
               }
@@ -17813,7 +18167,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(prop, Stella.NIL);
+              collect000.rest = Cons.cons(prop, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -17871,7 +18225,7 @@ public class Logic {
         for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
           i = iter000;
           name = Logic.objectName(((LogicObject)((instances.theArray)[i])));
-          prop = ((Proposition)(Logic.conceiveFormula(Stella.consList(Stella_Object.cons(conceptName, Stella_Object.cons(name, Stella.NIL))))));
+          prop = ((Proposition)(Logic.conceiveFormula(Cons.consList(Cons.cons(conceptName, Cons.cons(name, Stella.NIL))))));
           if (Proposition.trueP(prop)) {
             Proposition.helpUpdateTopLevelProposition(prop, Logic.KWD_RETRACT_TRUE);
             LogicObject.buildCaseFromInstance(((LogicObject)((instances.theArray)[i])), kind);
@@ -17892,14 +18246,14 @@ public class Logic {
   }
 
   public static void buildClassificationRule(Symbol kind, Symbol className) {
-    { Symbol ruleName = Stella.internSymbol(kind.symbolName + "-Classification-Rule");
-      Symbol relationName = Stella.internSymbol(kind.symbolName + "-Classification");
+    { Symbol ruleName = Symbol.internSymbol(kind.symbolName + "-Classification-Rule");
+      Symbol relationName = Symbol.internSymbol(kind.symbolName + "-Classification");
       String index = className.symbolName + "-match";
       List ruleAntecedent = ((List)(Logic.$CASE_ANTECEDENT_TABLE$.lookup(index)));
       Cons convertedAntecedent = Stella.NIL;
       List ruleTypes = ((List)(Logic.$CASE_TYPES_TABLE$.lookup(index)));
       Cons convertedTypes = Stella.NIL;
-      Cons relation = Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_DEFRELATION, Stella_Object.cons(relationName, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pP, Stella_Object.cons(Logic.SYM_STELLA_THING, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL))));
+      Cons relation = Cons.list$(Cons.cons(Logic.SYM_LOGIC_DEFRELATION, Cons.cons(relationName, Cons.cons(Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pP, Cons.cons(Logic.SYM_STELLA_THING, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL))));
       Cons rule = Stella.NIL;
 
       { Cons clause = null;
@@ -17910,7 +18264,7 @@ public class Logic {
           clause = ((Cons)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(clause, Stella.NIL);
+              collect000 = Cons.cons(clause, Stella.NIL);
               if (convertedAntecedent == Stella.NIL) {
                 convertedAntecedent = collect000;
               }
@@ -17921,7 +18275,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(clause, Stella.NIL);
+              collect000.rest = Cons.cons(clause, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -17935,7 +18289,7 @@ public class Logic {
           type = ((Symbol)(iter001.value));
           if (collect001 == null) {
             {
-              collect001 = Stella_Object.cons(type, Stella.NIL);
+              collect001 = Cons.cons(type, Stella.NIL);
               if (convertedTypes == Stella.NIL) {
                 convertedTypes = collect001;
               }
@@ -17946,13 +18300,13 @@ public class Logic {
           }
           else {
             {
-              collect001.rest = Stella_Object.cons(type, Stella.NIL);
+              collect001.rest = Cons.cons(type, Stella.NIL);
               collect001 = collect001.rest;
             }
           }
         }
       }
-      rule = Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_DEFRULE, Stella_Object.cons(ruleName, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FORALL, Stella_Object.cons(convertedTypes, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_eg, Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_AND, convertedAntecedent.concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(relationName, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Logic.KWD_DONT_OPTIMIZEp, Stella_Object.cons(Logic.SYM_STELLA_TRUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL))));
+      rule = Cons.list$(Cons.cons(Logic.SYM_LOGIC_DEFRULE, Cons.cons(ruleName, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_FORALL, Cons.cons(convertedTypes, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_eg, Cons.cons(Cons.cons(Logic.SYM_STELLA_AND, convertedAntecedent.concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Cons.cons(relationName, Cons.cons(Logic.SYM_LOGIC_pY, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))), Cons.cons(Logic.KWD_DONT_OPTIMIZEp, Cons.cons(Logic.SYM_STELLA_TRUE, Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL))));
       if (Logic.$LOG_MATCH_RULES$) {
         System.out.println(rule);
       }
@@ -17968,7 +18322,7 @@ public class Logic {
     { int numInstances = instances.length();
       Cons consQuery = Stella.NIL;
       boolean target = false;
-      Symbol conceptName = Stella.internSymbol(concept.symbolName);
+      Symbol conceptName = Symbol.internSymbol(concept.symbolName);
 
       { int i = Stella.NULL_INTEGER;
         int iter000 = 0;
@@ -17978,8 +18332,8 @@ public class Logic {
           i = iter000;
           { TrainingExample example = TrainingExample.newTrainingExample();
 
-            target = TruthValue.trueTruthValueP(Logic.callAsk(Logic.makeQuery(Stella.NIL, Stella.consList(Stella_Object.cons(conceptName, Stella_Object.cons(Logic.objectName(((LogicObject)((instances.theArray)[i]))), Stella.NIL))), Stella.NIL, Stella.NIL)));
-            consQuery = Stella.consList(Stella_Object.cons(Stella.internSymbol(conceptName.symbolName + "-Classification"), Stella_Object.cons(Logic.objectName(((LogicObject)((instances.theArray)[i]))), Stella.NIL)));
+            target = TruthValue.trueTruthValueP(Logic.callAsk(Logic.makeQuery(Stella.NIL, Cons.consList(Cons.cons(conceptName, Cons.cons(Logic.objectName(((LogicObject)((instances.theArray)[i]))), Stella.NIL))), Stella.NIL, Stella.NIL)));
+            consQuery = Cons.consList(Cons.cons(Symbol.internSymbol(conceptName.symbolName + "-Classification"), Cons.cons(Logic.objectName(((LogicObject)((instances.theArray)[i]))), Stella.NIL)));
             example.query = consQuery;
             example.output = (target ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER);
             example.concept = conceptName;
@@ -18009,13 +18363,13 @@ public class Logic {
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           instance = iter000.value;
-          consQuery = Stella.consList(Stella_Object.cons(relationName, Stella_Object.cons(Logic.objectName(instance), Stella.NIL)));
+          consQuery = Cons.consList(Cons.cons(relationName, Cons.cons(Logic.objectName(instance), Stella.NIL)));
           prop = ((Proposition)(Logic.conceiveFormula(((Cons)(Stella_Object.copyConsTree(consQuery))))));
           correctP = true;
           if (Proposition.trueP(prop)) {
             System.out.println(consQuery + " is true");
             Proposition.helpUpdateTopLevelProposition(prop, Logic.KWD_RETRACT_TRUE);
-            query = Logic.makeQuery(Stella.NIL, ((Cons)(Stella_Object.copyConsTree(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(consQuery, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella.NIL, Stella.NIL);
+            query = Logic.makeQuery(Stella.NIL, ((Cons)(Stella_Object.copyConsTree(Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(consQuery, Cons.cons(Stella.NIL, Stella.NIL))))))), Stella.NIL, Stella.NIL);
             if (TruthValue.trueTruthValueP(Logic.callAsk(query))) {
               correctP = false;
               System.out.println("  **Theory disproves " + consQuery + " true");
@@ -18035,7 +18389,7 @@ public class Logic {
               correctP = false;
               System.out.println("  **Theory proves " + consQuery + "true");
             }
-            query = Logic.makeQuery(Stella.NIL, ((Cons)(Stella_Object.copyConsTree(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(consQuery, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella.NIL, Stella.NIL);
+            query = Logic.makeQuery(Stella.NIL, ((Cons)(Stella_Object.copyConsTree(Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(consQuery, Cons.cons(Stella.NIL, Stella.NIL))))))), Stella.NIL, Stella.NIL);
             if (TruthValue.unknownTruthValueP(Logic.callAsk(query))) {
               correctP = false;
               System.out.println("  **Theory cannot disprove " + consQuery);
@@ -18104,7 +18458,7 @@ public class Logic {
       TrainingExample example = null;
       Proposition prop = null;
       QueryIterator query = null;
-      Symbol conceptName = Stella.internSymbol(concept.symbolName);
+      Symbol conceptName = Symbol.internSymbol(concept.symbolName);
 
       { int i = Stella.NULL_INTEGER;
         int iter000 = 0;
@@ -18112,7 +18466,7 @@ public class Logic {
 
         for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
           i = iter000;
-          consQuery = Stella.consList(Stella_Object.cons(conceptName, Stella_Object.cons(Logic.objectName(((LogicObject)((instances.theArray)[i]))), Stella.NIL)));
+          consQuery = Cons.consList(Cons.cons(conceptName, Cons.cons(Logic.objectName(((LogicObject)((instances.theArray)[i]))), Stella.NIL)));
           prop = ((Proposition)(Logic.conceiveFormula(((Cons)(Stella_Object.copyConsTree(consQuery))))));
           example = null;
           if (Proposition.trueP(prop)) {
@@ -18163,7 +18517,7 @@ public class Logic {
       Proposition prop = null;
       Cons classificationQuery = Stella.NIL;
       QueryIterator query = null;
-      Symbol conceptName = Stella.internSymbol(concept.symbolName);
+      Symbol conceptName = Symbol.internSymbol(concept.symbolName);
 
       { int i = Stella.NULL_INTEGER;
         int iter000 = 0;
@@ -18171,8 +18525,8 @@ public class Logic {
 
         for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
           i = iter000;
-          consQuery = Stella.consList(Stella_Object.cons(conceptName, Stella_Object.cons(Logic.objectName(((LogicObject)((instances.theArray)[i]))), Stella.NIL)));
-          classificationQuery = Stella.consList(Stella_Object.cons(Stella.internSymbol(conceptName.symbolName + "-Classification"), Stella_Object.cons(Logic.objectName(((LogicObject)((instances.theArray)[i]))), Stella.NIL)));
+          consQuery = Cons.consList(Cons.cons(conceptName, Cons.cons(Logic.objectName(((LogicObject)((instances.theArray)[i]))), Stella.NIL)));
+          classificationQuery = Cons.consList(Cons.cons(Symbol.internSymbol(conceptName.symbolName + "-Classification"), Cons.cons(Logic.objectName(((LogicObject)((instances.theArray)[i]))), Stella.NIL)));
           prop = ((Proposition)(Logic.conceiveFormula(((Cons)(Stella_Object.copyConsTree(consQuery))))));
           example = null;
           if (Proposition.trueP(prop)) {
@@ -18237,7 +18591,7 @@ public class Logic {
           renamed_Case = ((LogicObject)((vector000.theArray)[index000]));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Logic.objectName(renamed_Case), Stella.NIL);
+              collect000 = Cons.cons(Logic.objectName(renamed_Case), Stella.NIL);
               if (caseNames.theConsList == Stella.NIL) {
                 caseNames.theConsList = collect000;
               }
@@ -18248,7 +18602,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Logic.objectName(renamed_Case), Stella.NIL);
+              collect000.rest = Cons.cons(Logic.objectName(renamed_Case), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -18275,7 +18629,7 @@ public class Logic {
 
             (slotValues.theArray)[i] = val;
             if (!(val == null)) {
-              Logic.smartUpdateProposition(Stella_Object.cons(slotName, Stella_Object.cons(caseName, Stella_Object.cons(val, Stella.NIL))), Logic.KWD_RETRACT_TRUE);
+              Logic.smartUpdateProposition(Cons.cons(slotName, Cons.cons(caseName, Cons.cons(val, Stella.NIL))), Logic.KWD_RETRACT_TRUE);
             }
           }
         }
@@ -18307,7 +18661,7 @@ public class Logic {
           val = (vector002.theArray)[index002];
           caseName = ((Symbol)(iter003.value));
           if (!(val == null)) {
-            Logic.smartUpdateProposition(Stella_Object.cons(slotName, Stella_Object.cons(caseName, Stella_Object.cons(val, Stella.NIL))), Logic.KWD_ASSERT_TRUE);
+            Logic.smartUpdateProposition(Cons.cons(slotName, Cons.cons(caseName, Cons.cons(val, Stella.NIL))), Logic.KWD_ASSERT_TRUE);
           }
         }
       }
@@ -18316,7 +18670,7 @@ public class Logic {
 
   public static int generateRegressionTrainingExamples(Vector instances, Surrogate slot) {
     { int numInstances = instances.length();
-      Symbol predName = Stella.internSymbol(slot.symbolName + "-Classification");
+      Symbol predName = Symbol.internSymbol(slot.symbolName + "-Classification");
       Vector slotValues = Vector.newVector(numInstances);
 
       { int i = Stella.NULL_INTEGER;
@@ -18344,8 +18698,8 @@ public class Logic {
           if (!(((FloatWrapper)((slotValues.theArray)[i])) == null)) {
             { TrainingExample example = TrainingExample.newTrainingExample();
 
-              example.query = Stella_Object.cons(predName, Stella_Object.cons(Logic.logicSymbol(((LogicObject)((instances.theArray)[i]))), Stella.NIL));
-              example.concept = Stella.internSymbol(slot.symbolName);
+              example.query = Cons.cons(predName, Cons.cons(Logic.logicSymbol(((LogicObject)((instances.theArray)[i]))), Stella.NIL));
+              example.concept = Symbol.internSymbol(slot.symbolName);
               example.name = Logic.objectName(((LogicObject)((instances.theArray)[i])));
               example.score = ((FloatWrapper)((slotValues.theArray)[i])).wrapperValue;
               example.timestamp = -1;
@@ -18390,13 +18744,13 @@ public class Logic {
   public static double generateSlotApproximation(Symbol instName, Surrogate slot) {
     { Stella_Object probe = Logic.getInstance(instName);
       Surrogate renamed_Class = ((LogicObject)(LogicObject.getMostSpecificClasses(((LogicObject)(probe))).last())).surrogateValueInverse;
-      Symbol ruleName = Stella.internSymbol(slot.symbolName + "-Classification");
+      Symbol ruleName = Symbol.internSymbol(slot.symbolName + "-Classification");
       List instances = Logic.allClassInstances(renamed_Class).listify();
       double max = 0.0;
       double score = 0.0;
       double min = 999999.0;
       double range = 0.0;
-      Cons prop = Stella_Object.cons(ruleName, Stella_Object.cons(instName, Stella.NIL));
+      Cons prop = Cons.cons(ruleName, Cons.cons(instName, Stella.NIL));
 
       { Stella_Object instance = null;
         Cons iter000 = instances.theConsList;
@@ -18489,24 +18843,24 @@ public class Logic {
               Cons consProps = Stella.NIL;
 
               if (fact.kind == Logic.KWD_ISA) {
-                consProps = Stella_Object.cons(consProp, consProps);
+                consProps = Cons.cons(consProp, consProps);
               }
               else if (depth < Logic.$MAX_STRUCTURE_DEPTH$) {
                 if (fact.kind == Logic.KWD_FUNCTION) {
-                  consProps = Stella_Object.cons(consProp, consProps);
+                  consProps = Cons.cons(consProp, consProps);
                   if (Stella_Object.isaP(consProp.last(), Logic.SGT_STELLA_NUMBER_WRAPPER)) {
                     { Cons skolemName = ((Cons)(Stella_Object.copyConsTree(consProp))).reverse().rest.reverse();
                       Stella_Object skolemValue = consProp.last();
 
-                      consProps = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_ge, Stella_Object.cons(((Cons)(Stella_Object.copyConsTree(skolemName))), Stella_Object.cons(Stella_Object.cons(skolemValue, Stella.NIL), Stella.NIL)))), consProps);
-                      consProps = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_el, Stella_Object.cons(((Cons)(Stella_Object.copyConsTree(skolemName))), Stella_Object.cons(Stella_Object.cons(skolemValue, Stella.NIL), Stella.NIL)))), consProps);
+                      consProps = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_ge, Cons.cons(((Cons)(Stella_Object.copyConsTree(skolemName))), Cons.cons(Cons.cons(skolemValue, Stella.NIL), Stella.NIL)))), consProps);
+                      consProps = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_el, Cons.cons(((Cons)(Stella_Object.copyConsTree(skolemName))), Cons.cons(Cons.cons(skolemValue, Stella.NIL), Stella.NIL)))), consProps);
                     }
                   }
                 }
                 else {
                   if (!((consProp.value == Logic.SYM_STELLA_e) &&
                       Stella_Object.eqlP(consProp.rest.value, consProp.rest.rest.value))) {
-                    consProps = Stella_Object.cons(consProp, consProps);
+                    consProps = Cons.cons(consProp, consProps);
                   }
                 }
               }
@@ -18613,18 +18967,18 @@ public class Logic {
 
                 if (testValue000 == Logic.KWD_FUNCTION) {
                   if (Logic.$DROP_FUNCTION_VALUESp$) {
-                    consProp = Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_e, Stella_Object.cons(consProp.reverse().rest.reverse(), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+                    consProp = Cons.list$(Cons.cons(Logic.SYM_STELLA_e, Cons.cons(consProp.reverse().rest.reverse(), Cons.cons(Stella.NIL, Stella.NIL))));
                   }
                   else {
-                    consProp = Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(consProp, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+                    consProp = Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(consProp, Cons.cons(Stella.NIL, Stella.NIL))));
                   }
                 }
                 else if (testValue000 == Logic.KWD_ISA) {
-                  consProp = Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(consProp, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+                  consProp = Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(consProp, Cons.cons(Stella.NIL, Stella.NIL))));
                 }
                 else {
                   if (depth < Logic.$MAX_STRUCTURE_DEPTH$) {
-                    consProp = Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(consProp, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+                    consProp = Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(consProp, Cons.cons(Stella.NIL, Stella.NIL))));
                   }
                   else {
                     consProp = Stella.NIL;
@@ -18632,7 +18986,7 @@ public class Logic {
                 }
               }
               if (!(consProp == Stella.NIL)) {
-                antecedent = Stella_Object.cons(consProp, antecedent);
+                antecedent = Cons.cons(consProp, antecedent);
                 { Stella_Object ele = null;
                   Cons iter001 = ((Cons)(consProp.rest.value)).rest;
 
@@ -18663,7 +19017,7 @@ public class Logic {
     { Stella_Object bind = Logic.argumentBoundTo(arg);
 
       if (bind == null) {
-        return (Stella.internSymbol(Skolem.getSkolemPrintName(((Skolem)(arg)))));
+        return (Symbol.internSymbol(Skolem.getSkolemPrintName(((Skolem)(arg)))));
       }
       else {
         { Surrogate testValue000 = Stella_Object.safePrimaryType(bind);
@@ -18681,7 +19035,7 @@ public class Logic {
                 return (Proposition.propositionToCons(bind000.definingProposition));
               }
               else if (Stella.stringEqlP(Skolem.getSkolemPrintName(bind000), "ANONYMOUS")) {
-                return (Stella.internSymbol(Skolem.getSkolemPrintName(((Skolem)(arg)))));
+                return (Symbol.internSymbol(Skolem.getSkolemPrintName(((Skolem)(arg)))));
               }
               else {
                 return (bind000);
@@ -18691,7 +19045,7 @@ public class Logic {
           else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_LOGIC_OBJECT)) {
             { LogicObject bind000 = ((LogicObject)(bind));
 
-              return (Stella.internSymbol(bind000.surrogateValueInverse.symbolName));
+              return (Symbol.internSymbol(bind000.surrogateValueInverse.symbolName));
             }
           }
           else {
@@ -18715,7 +19069,7 @@ public class Logic {
         { PatternVariable arg000 = ((PatternVariable)(arg));
 
           if (((QueryIterator)(Logic.$QUERYITERATOR$.get())) == null) {
-            return (Stella.internSymbol(Skolem.getSkolemPrintName(arg000)));
+            return (Symbol.internSymbol(Skolem.getSkolemPrintName(arg000)));
           }
           else {
             return (Logic.getArgumentBinding(arg000));
@@ -18725,7 +19079,7 @@ public class Logic {
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_NAMED_DESCRIPTION)) {
         { NamedDescription arg000 = ((NamedDescription)(arg));
 
-          return (Stella.internSymbol(arg000.surrogateValueInverse.symbolName));
+          return (Symbol.internSymbol(arg000.surrogateValueInverse.symbolName));
         }
       }
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_DESCRIPTION)) {
@@ -18737,7 +19091,7 @@ public class Logic {
       else if (Surrogate.subtypeOfSurrogateP(testValue000)) {
         { Surrogate arg000 = ((Surrogate)(arg));
 
-          return (Stella.internSymbol(((Surrogate)(arg000)).symbolName));
+          return (Symbol.internSymbol(((Surrogate)(arg000)).symbolName));
         }
       }
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_SKOLEM)) {
@@ -18761,7 +19115,7 @@ public class Logic {
                     i = iter000;
                     if (collect000 == null) {
                       {
-                        collect000 = Stella_Object.cons(Logic.consifyArgument((skArgs.theArray)[i]), Stella.NIL);
+                        collect000 = Cons.cons(Logic.consifyArgument((skArgs.theArray)[i]), Stella.NIL);
                         if (consArgs == Stella.NIL) {
                           consArgs = collect000;
                         }
@@ -18772,13 +19126,13 @@ public class Logic {
                     }
                     else {
                       {
-                        collect000.rest = Stella_Object.cons(Logic.consifyArgument((skArgs.theArray)[i]), Stella.NIL);
+                        collect000.rest = Cons.cons(Logic.consifyArgument((skArgs.theArray)[i]), Stella.NIL);
                         collect000 = collect000.rest;
                       }
                     }
                   }
                 }
-                return (Stella_Object.cons(Stella.internSymbol(Proposition.stringifiedKifOperator(prop)), consArgs));
+                return (Cons.cons(Symbol.internSymbol(Proposition.stringifiedKifOperator(prop)), consArgs));
               }
             }
             else {
@@ -18790,7 +19144,7 @@ public class Logic {
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_LOGIC_OBJECT)) {
         { LogicObject arg000 = ((LogicObject)(arg));
 
-          return (Stella.internSymbol(arg000.surrogateValueInverse.symbolName));
+          return (Symbol.internSymbol(arg000.surrogateValueInverse.symbolName));
         }
       }
       else {
@@ -18807,20 +19161,6 @@ public class Logic {
         item = ((LogicObject)(iter000.value));
         if (Logic.allAssertedTypes(item) == Stella.NIL) {
           Logic.assertIsaProposition(item, Logic.SGT_STELLA_THING);
-        }
-      }
-    }
-  }
-
-  public static void printFacts(Stella_Object instanceref) {
-    { LogicObject instance = Logic.coerceToInstance(instanceref, null);
-
-      { Proposition fact = null;
-        Cons iter000 = Logic.allFactsOfInstance(instance, false, false).theConsList;
-
-        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-          fact = ((Proposition)(iter000.value));
-          System.out.println(fact);
         }
       }
     }
@@ -19076,7 +19416,7 @@ public class Logic {
         }
         else {
         }
-        rules.push(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_eg, Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_AND, ((Cons)(Stella_Object.copyConsTree(rule))).concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(concept, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+        rules.push(Cons.list$(Cons.cons(Logic.SYM_STELLA_eg, Cons.cons(Cons.cons(Logic.SYM_STELLA_AND, ((Cons)(Stella_Object.copyConsTree(rule))).concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Cons.cons(concept, Cons.cons(Logic.SYM_LOGIC_pY, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))));
       }
       {
         System.out.println();
@@ -19226,13 +19566,13 @@ public class Logic {
           candidate = head000;
         }
         if (Logic.ruleCoversAnyExampleP(Cons.append(newAntecedent, antecedent), negative)) {
-          newAntecedent = Stella_Object.cons(candidate, newAntecedent);
+          newAntecedent = Cons.cons(candidate, newAntecedent);
         }
         else {
           {
             System.out.println("Removing clause " + candidate);
             if (Logic.containsOutputVariableP(candidate, outputVariables)) {
-              discardedPotentialGenerators = Stella_Object.cons(candidate, discardedPotentialGenerators);
+              discardedPotentialGenerators = Cons.cons(candidate, discardedPotentialGenerators);
             }
           }
         }
@@ -19246,10 +19586,10 @@ public class Logic {
           candidate = ((Cons)(head001));
         }
         previousCoveredExamples = coveredExamples;
-        coveredExamples = Logic.numExamplesCovered(Stella_Object.cons(candidate, newAntecedent), positive);
+        coveredExamples = Logic.numExamplesCovered(Cons.cons(candidate, newAntecedent), positive);
         if (coveredExamples > previousCoveredExamples) {
           System.out.println("Reinserting clause " + candidate);
-          newAntecedent = Stella_Object.cons(candidate, newAntecedent);
+          newAntecedent = Cons.cons(candidate, newAntecedent);
         }
       }
       return (newAntecedent);
@@ -19262,8 +19602,8 @@ public class Logic {
       Symbol operator = null;
       List bindings = List.newList();
       Cons newClause = Stella.NIL;
-      List vars1 = Logic.getVariablesFromConsPropositions(Stella.consList(Stella_Object.cons(clause1, Stella.NIL)));
-      List vars2 = Logic.getVariablesFromConsPropositions(Stella.consList(Stella_Object.cons(clause2, Stella.NIL)));
+      List vars1 = Logic.getVariablesFromConsPropositions(Cons.consList(Cons.cons(clause1, Stella.NIL)));
+      List vars2 = Logic.getVariablesFromConsPropositions(Cons.consList(Cons.cons(clause2, Stella.NIL)));
       boolean notP = false;
       Symbol var = null;
       Cons result = Stella.NIL;
@@ -19277,7 +19617,7 @@ public class Logic {
           var000 = ((Symbol)(iter000.value));
           i = iter001;
           if (!(var000 == Logic.SYM_LOGIC_pY)) {
-            clause1 = ((Cons)(Stella_Object.substituteConsTree(clause1, var000, Stella.internSymbol("?A" + Native.stringify(IntegerWrapper.wrapInteger(i))))));
+            clause1 = ((Cons)(Stella_Object.substituteConsTree(clause1, var000, Symbol.internSymbol("?A" + Native.stringify(IntegerWrapper.wrapInteger(i))))));
           }
         }
       }
@@ -19290,7 +19630,7 @@ public class Logic {
           var000 = ((Symbol)(iter002.value));
           i = iter003;
           if (!(var000 == Logic.SYM_LOGIC_pY)) {
-            clause2 = ((Cons)(Stella_Object.substituteConsTree(clause1, var000, Stella.internSymbol("?B" + Native.stringify(IntegerWrapper.wrapInteger(i))))));
+            clause2 = ((Cons)(Stella_Object.substituteConsTree(clause1, var000, Symbol.internSymbol("?B" + Native.stringify(IntegerWrapper.wrapInteger(i))))));
           }
         }
       }
@@ -19343,7 +19683,7 @@ public class Logic {
                   newClause = Logic.generalizeInequality(probe, match, bindings);
                 }
                 else {
-                  newClause = Stella_Object.cons(operator, Stella.NIL);
+                  newClause = Cons.cons(operator, Stella.NIL);
                   { Stella_Object arg1 = null;
                     Cons iter007 = probe.rest;
                     Stella_Object arg2 = null;
@@ -19357,26 +19697,26 @@ public class Logic {
                         {
                           var = ((Symbol)(Logic.lookupVariableInBindings(arg1, arg2, bindings)));
                           if (var == null) {
-                            var = Stella.internSymbol("?X" + Native.stringify(IntegerWrapper.wrapInteger(((Integer)(Logic.$BOTTOM_UP_VARIABLE_COUNTER$.get())).intValue())));
+                            var = Symbol.internSymbol("?X" + Native.stringify(IntegerWrapper.wrapInteger(((Integer)(Logic.$BOTTOM_UP_VARIABLE_COUNTER$.get())).intValue())));
                             if (!Logic.eitherNumbersP(arg1, arg2)) {
-                              bindings.push(Stella.consList(Stella_Object.cons(arg1, Stella_Object.cons(arg2, Stella_Object.cons(var, Stella.NIL)))));
+                              bindings.push(Cons.consList(Cons.cons(arg1, Cons.cons(arg2, Cons.cons(var, Stella.NIL)))));
                             }
                             Native.setIntSpecial(Logic.$BOTTOM_UP_VARIABLE_COUNTER$, ((Integer)(Logic.$BOTTOM_UP_VARIABLE_COUNTER$.get())).intValue() + 1);
                           }
-                          newClause = Stella_Object.cons(var, newClause);
+                          newClause = Cons.cons(var, newClause);
                         }
                       }
                       else {
-                        newClause = Stella_Object.cons(arg1, newClause);
+                        newClause = Cons.cons(arg1, newClause);
                       }
                     }
                   }
                   newClause = newClause.reverse();
                 }
                 if (notP) {
-                  newClause = Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(newClause, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+                  newClause = Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(newClause, Cons.cons(Stella.NIL, Stella.NIL))));
                 }
-                result = Stella_Object.cons(newClause, result);
+                result = Cons.cons(newClause, result);
               }
             }
           }
@@ -19388,7 +19728,7 @@ public class Logic {
 
   public static Cons generalizeInequality(Cons probe, Cons match, List bindings) {
     { Stella_Object operator = probe.value;
-      Cons newClause = Stella.consList(Stella_Object.cons(operator, Stella.NIL));
+      Cons newClause = Cons.consList(Cons.cons(operator, Stella.NIL));
       Symbol var = null;
 
       { Stella_Object arg1 = null;
@@ -19406,11 +19746,11 @@ public class Logic {
 
                 if ((testValue000 == Logic.SYM_STELLA_g) ||
                     (testValue000 == Logic.SYM_STELLA_ge)) {
-                  newClause = Stella_Object.cons(IntegerWrapper.wrapInteger(Stella.min(((IntegerWrapper)(arg1)).wrapperValue, ((IntegerWrapper)(arg2)).wrapperValue)), newClause);
+                  newClause = Cons.cons(((NumberWrapper)(arg1)).min(((NumberWrapper)(arg2))), newClause);
                 }
                 else if ((testValue000 == Logic.SYM_STELLA_l) ||
                     (testValue000 == Logic.SYM_STELLA_el)) {
-                  newClause = Stella_Object.cons(IntegerWrapper.wrapInteger(Stella.max(((IntegerWrapper)(arg1)).wrapperValue, ((IntegerWrapper)(arg2)).wrapperValue)), newClause);
+                  newClause = Cons.cons(((NumberWrapper)(arg1)).max(((NumberWrapper)(arg2))), newClause);
                 }
                 else {
                   System.out.println("Bug in generalize-inequality.");
@@ -19421,18 +19761,18 @@ public class Logic {
               {
                 var = ((Symbol)(Logic.lookupVariableInBindings(arg1, arg2, bindings)));
                 if (var == null) {
-                  var = Stella.internSymbol("?X" + Native.stringify(IntegerWrapper.wrapInteger(((Integer)(Logic.$BOTTOM_UP_VARIABLE_COUNTER$.get())).intValue())));
+                  var = Symbol.internSymbol("?X" + Native.stringify(IntegerWrapper.wrapInteger(((Integer)(Logic.$BOTTOM_UP_VARIABLE_COUNTER$.get())).intValue())));
                   if (!Logic.eitherNumbersP(arg1, arg2)) {
-                    bindings.push(Stella.consList(Stella_Object.cons(arg1, Stella_Object.cons(arg2, Stella_Object.cons(var, Stella.NIL)))));
+                    bindings.push(Cons.consList(Cons.cons(arg1, Cons.cons(arg2, Cons.cons(var, Stella.NIL)))));
                   }
                   Native.setIntSpecial(Logic.$BOTTOM_UP_VARIABLE_COUNTER$, ((Integer)(Logic.$BOTTOM_UP_VARIABLE_COUNTER$.get())).intValue() + 1);
                 }
-                newClause = Stella_Object.cons(var, newClause);
+                newClause = Cons.cons(var, newClause);
               }
             }
           }
           else {
-            newClause = Stella_Object.cons(arg1, newClause);
+            newClause = Cons.cons(arg1, newClause);
           }
         }
       }
@@ -19501,7 +19841,7 @@ public class Logic {
             }
           }
           { Symbol v = null;
-            Cons iter001 = Logic.getVariablesFromConsPropositions(Stella.consList(Stella_Object.cons(clause, Stella.NIL))).theConsList;
+            Cons iter001 = Logic.getVariablesFromConsPropositions(Cons.consList(Cons.cons(clause, Stella.NIL))).theConsList;
 
             for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
               v = ((Symbol)(iter001.value));
@@ -19560,7 +19900,7 @@ public class Logic {
                   }
                 }
                 if (!subsumedP) {
-                  result = Stella_Object.cons(clause1, result);
+                  result = Cons.cons(clause1, result);
                 }
               }
             }
@@ -19605,7 +19945,7 @@ public class Logic {
                   }
                 }
                 if (!subsumedP) {
-                  result = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(clause1, Stella_Object.cons(Stella.NIL, Stella.NIL)))), result);
+                  result = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(clause1, Cons.cons(Stella.NIL, Stella.NIL)))), result);
                 }
               }
             }
@@ -19643,7 +19983,7 @@ public class Logic {
             arg1 = iter001.value;
             arg2 = iter002.value;
             if (Stella_Object.eqlP(arg1, arg2)) {
-              answer = Stella_Object.cons(arg1, answer);
+              answer = Cons.cons(arg1, answer);
             }
             else {
               {
@@ -19651,7 +19991,7 @@ public class Logic {
                 if (bind == null) {
                   return (null);
                 }
-                answer = Stella_Object.cons(bind, answer);
+                answer = Cons.cons(bind, answer);
               }
             }
           }
@@ -19775,10 +20115,10 @@ public class Logic {
         for (;!(iter005 == Stella.NIL); iter005 = iter005.rest) {
           index = ((IntegerWrapper)(iter005.value));
           if (index.wrapperValue > 0) {
-            result = Stella_Object.cons(((Cons)((consProps.theArray)[(index.wrapperValue - 1)])), result);
+            result = Cons.cons(((Cons)((consProps.theArray)[(index.wrapperValue - 1)])), result);
           }
           else {
-            result = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FAIL, Stella_Object.cons(((Cons)((consProps.theArray)[((0 - index.wrapperValue) - 1)])), Stella_Object.cons(Stella.NIL, Stella.NIL)))), result);
+            result = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_FAIL, Cons.cons(((Cons)((consProps.theArray)[((0 - index.wrapperValue) - 1)])), Cons.cons(Stella.NIL, Stella.NIL)))), result);
           }
         }
       }
@@ -19944,7 +20284,7 @@ public class Logic {
         }
 ;
         covered = List.newList();
-        linkedAntecedents = Stella.list(Stella_Object.cons(Stella.NIL, Stella.NIL));
+        linkedAntecedents = List.list(Cons.cons(Stella.NIL, Stella.NIL));
         if (Logic.$INDUCE_RULES_FROM_SIGNATURES$) {
           if (Logic.$SIGNATURE_STRATEGY$ == Logic.KWD_BOTTOM_UP) {
             antecedent = Logic.learnOneRuleBottomUpFromSignatures(positive, negative, covered, consProps);
@@ -19977,7 +20317,7 @@ public class Logic {
                 if (BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(treeRule.value)))) {
                   if (collect000 == null) {
                     {
-                      collect000 = Stella_Object.cons(treeRule.rest, Stella.NIL);
+                      collect000 = Cons.cons(treeRule.rest, Stella.NIL);
                       if (linkedAntecedents.theConsList == Stella.NIL) {
                         linkedAntecedents.theConsList = collect000;
                       }
@@ -19988,7 +20328,7 @@ public class Logic {
                   }
                   else {
                     {
-                      collect000.rest = Stella_Object.cons(treeRule.rest, Stella.NIL);
+                      collect000.rest = Cons.cons(treeRule.rest, Stella.NIL);
                       collect000 = collect000.rest;
                     }
                   }
@@ -20050,7 +20390,7 @@ public class Logic {
                   System.out.println("No Positives Covered by" + ant);
                 }
                 if (covered.length() > 0) {
-                  Logic.$INDUCED_DECISION_RULES$.push(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_eg, Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_AND, ((Cons)(Stella_Object.copyConsTree(ant))).reverse().concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(concept, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+                  Logic.$INDUCED_DECISION_RULES$.push(Cons.list$(Cons.cons(Logic.SYM_STELLA_eg, Cons.cons(Cons.cons(Logic.SYM_STELLA_AND, ((Cons)(Stella_Object.copyConsTree(ant))).reverse().concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Cons.cons(concept, Cons.cons(Logic.SYM_LOGIC_pY, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))));
                   System.out.println("Adding rule to cover " + covered.length() + " examples");
                 }
               }
@@ -20100,12 +20440,12 @@ public class Logic {
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           index = ((IntegerWrapper)(iter000.value));
           if (index.wrapperValue < 0) {
-            consProp = Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FAIL, Stella_Object.cons(((Cons)((props.theArray)[(Stella.integer_abs(index.wrapperValue) - 1)])), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+            consProp = Cons.list$(Cons.cons(Logic.SYM_LOGIC_FAIL, Cons.cons(((Cons)((props.theArray)[(Stella.integer_abs(index.wrapperValue) - 1)])), Cons.cons(Stella.NIL, Stella.NIL))));
           }
           else {
             consProp = ((Cons)((props.theArray)[(Stella.integer_abs(index.wrapperValue) - 1)]));
           }
-          antecedent = Stella_Object.cons(consProp, antecedent);
+          antecedent = Cons.cons(consProp, antecedent);
         }
       }
       return (antecedent);
@@ -20138,7 +20478,7 @@ public class Logic {
         for (;unboundedP000 ||
                   (iter000 <= upperBound000); iter000 = iter000 + 1) {
           i = iter000;
-          (variableTable.theArray)[i] = (Logic.getVariablesFromConsPropositions(Stella.consList(Stella_Object.cons(((Cons)((consProps.theArray)[(i - 1)])), Stella.NIL))));
+          (variableTable.theArray)[i] = (Logic.getVariablesFromConsPropositions(Cons.consList(Cons.cons(((Cons)((consProps.theArray)[(i - 1)])), Stella.NIL))));
         }
       }
       vars.push(Logic.SYM_LOGIC_pY);
@@ -20150,7 +20490,7 @@ public class Logic {
           example = ((TrainingExample)(iter001.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(example, Stella.NIL);
+              collect000 = Cons.cons(example, Stella.NIL);
               if (covered_neg.theConsList == Stella.NIL) {
                 covered_neg.theConsList = collect000;
               }
@@ -20161,7 +20501,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(example, Stella.NIL);
+              collect000.rest = Cons.cons(example, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -20175,7 +20515,7 @@ public class Logic {
           example = ((TrainingExample)(iter002.value));
           if (collect001 == null) {
             {
-              collect001 = Stella_Object.cons(example, Stella.NIL);
+              collect001 = Cons.cons(example, Stella.NIL);
               if (covered_pos.theConsList == Stella.NIL) {
                 covered_pos.theConsList = collect001;
               }
@@ -20186,7 +20526,7 @@ public class Logic {
           }
           else {
             {
-              collect001.rest = Stella_Object.cons(example, Stella.NIL);
+              collect001.rest = Cons.cons(example, Stella.NIL);
               collect001 = collect001.rest;
             }
           }
@@ -20322,7 +20662,7 @@ public class Logic {
 ;
           }
           else if (Stella_Object.eqlP((example.input.theArray)[index], matchValue)) {
-            temp = Stella_Object.cons(example, temp);
+            temp = Cons.cons(example, temp);
           }
         }
       }
@@ -20431,7 +20771,7 @@ public class Logic {
 
         for (;iter002 <= upperBound000; iter002 = iter002 + 1) {
           i = iter002;
-          (variableTable.theArray)[i] = (Logic.getVariablesFromConsPropositions(Stella.consList(Stella_Object.cons(((Cons)((propositions.theArray)[(i - 1)])), Stella.NIL))));
+          (variableTable.theArray)[i] = (Logic.getVariablesFromConsPropositions(Cons.consList(Cons.cons(((Cons)((propositions.theArray)[(i - 1)])), Stella.NIL))));
         }
       }
       { int i = Stella.NULL_INTEGER;
@@ -20463,7 +20803,7 @@ public class Logic {
                 candidates = ((List)(candidates.remove(IntegerWrapper.wrapInteger(i))));
                 break loop005;
               }
-              if (Stella_Object.equalConsTreesP(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FAIL, Stella_Object.cons(prop, Stella_Object.cons(Stella.NIL, Stella.NIL)))), clause)) {
+              if (Stella_Object.equalConsTreesP(Cons.list$(Cons.cons(Logic.SYM_LOGIC_FAIL, Cons.cons(prop, Cons.cons(Stella.NIL, Stella.NIL)))), clause)) {
                 candidates = ((List)(candidates.remove(IntegerWrapper.wrapInteger(0 - i))));
                 break loop005;
               }
@@ -20495,10 +20835,10 @@ public class Logic {
               }
               if (foundP000) {
                 if (i.wrapperValue > 0) {
-                  gain = Logic.queryFoilGain(Stella_Object.cons(((Cons)((propositions.theArray)[(i.wrapperValue - 1)])), rule), current_utility, coveredPos, coveredNegs);
+                  gain = Logic.queryFoilGain(Cons.cons(((Cons)((propositions.theArray)[(i.wrapperValue - 1)])), rule), current_utility, coveredPos, coveredNegs);
                 }
                 else {
-                  gain = Logic.queryFoilGain(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FAIL, Stella_Object.cons(((Cons)((propositions.theArray)[((0 - i.wrapperValue) - 1)])), Stella_Object.cons(Stella.NIL, Stella.NIL)))), rule), current_utility, coveredPos, coveredNegs);
+                  gain = Logic.queryFoilGain(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_FAIL, Cons.cons(((Cons)((propositions.theArray)[((0 - i.wrapperValue) - 1)])), Cons.cons(Stella.NIL, Stella.NIL)))), rule), current_utility, coveredPos, coveredNegs);
                 }
                 if (gain > max) {
                   System.out.print("    Current: " + ((Cons)((propositions.theArray)[(Stella.integer_abs(i.wrapperValue) - 1)])) + ": " + gain);
@@ -20550,10 +20890,10 @@ public class Logic {
         candidates = ((List)(candidates.remove(IntegerWrapper.wrapInteger(featureIndex))));
         newClause = ((Cons)(Stella_Object.copyConsTree(((Cons)((propositions.theArray)[((((featureIndex < 0) ? (0 - featureIndex) : featureIndex)) - 1)])))));
         if (featureIndex < 0) {
-          newClause = Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FAIL, Stella_Object.cons(newClause, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+          newClause = Cons.list$(Cons.cons(Logic.SYM_LOGIC_FAIL, Cons.cons(newClause, Cons.cons(Stella.NIL, Stella.NIL))));
         }
         System.out.println("   Adding clause " + newClause);
-        rule = Stella_Object.cons(newClause, rule);
+        rule = Cons.cons(newClause, rule);
         Logic.removeExcludedExamples(rule, coveredPos, coveredNegs);
       }
       return (rule);
@@ -20630,7 +20970,7 @@ public class Logic {
         if (Logic.ruleCoversExampleP(rule, example)) {
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(example, Stella.NIL);
+              collect000 = Cons.cons(example, Stella.NIL);
               if (covered.theConsList == Stella.NIL) {
                 covered.theConsList = collect000;
               }
@@ -20641,7 +20981,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(example, Stella.NIL);
+              collect000.rest = Cons.cons(example, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -20692,7 +21032,7 @@ public class Logic {
           if (Logic.ruleCoversExampleP(rule, example)) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(example, Stella.NIL);
+                collect000 = Cons.cons(example, Stella.NIL);
                 if (covered.theConsList == Stella.NIL) {
                   covered.theConsList = collect000;
                 }
@@ -20703,7 +21043,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(example, Stella.NIL);
+                collect000.rest = Cons.cons(example, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -20741,7 +21081,7 @@ public class Logic {
       if (example.module != null) {
         example.module.changeModule();
       }
-      consQuery = Stella_Object.cons(Logic.SYM_STELLA_AND, ((Cons)(Stella_Object.substituteConsTree(rule, example.name, Logic.SYM_LOGIC_pY))));
+      consQuery = Cons.cons(Logic.SYM_STELLA_AND, ((Cons)(Stella_Object.substituteConsTree(rule, example.name, Logic.SYM_LOGIC_pY))));
       if (!vars.emptyP()) {
         { Symbol var = null;
           Cons iter000 = vars.theConsList;
@@ -20750,20 +21090,20 @@ public class Logic {
             var = ((Symbol)(iter000.value));
             if (Logic.$ENABLE_USER_THING$ &&
                 ((var.symbolName).charAt(1) == 'X')) {
-              types = Stella_Object.cons(Stella_Object.cons(var, Stella_Object.cons(Logic.SYM_LOGIC_USER_THING, Stella.NIL)), types);
+              types = Cons.cons(Cons.cons(var, Cons.cons(Logic.SYM_LOGIC_USER_THING, Stella.NIL)), types);
             }
             else {
-              types = Stella_Object.cons(var, types);
+              types = Cons.cons(var, types);
             }
           }
         }
-        consQuery = Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EXISTS, Stella_Object.cons(types, Stella_Object.cons(Stella_Object.cons(consQuery, Stella.NIL), Stella.NIL))));
+        consQuery = Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(types, Cons.cons(Cons.cons(consQuery, Stella.NIL), Stella.NIL))));
       }
       if (Logic.$OPTIMIZE_INDUCED_QUERIES$) {
-        query = Logic.makeQuery(Stella.NIL, consQuery, Stella.NIL, Stella.list$(Stella_Object.cons(Logic.KWD_TIMEOUT, Stella_Object.cons(IntegerWrapper.wrapInteger(300), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        query = Logic.makeQuery(Stella.NIL, consQuery, Stella.NIL, Cons.list$(Cons.cons(Logic.KWD_TIMEOUT, Cons.cons(IntegerWrapper.wrapInteger(300), Cons.cons(Stella.NIL, Stella.NIL)))));
       }
       else {
-        query = Logic.makeQuery(Stella.NIL, consQuery, Stella.NIL, Stella.list$(Stella_Object.cons(Logic.KWD_TIMEOUT, Stella_Object.cons(IntegerWrapper.wrapInteger(300), Stella_Object.cons(Logic.KWD_DONT_OPTIMIZEp, Stella_Object.cons(Logic.SYM_STELLA_TRUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+        query = Logic.makeQuery(Stella.NIL, consQuery, Stella.NIL, Cons.list$(Cons.cons(Logic.KWD_TIMEOUT, Cons.cons(IntegerWrapper.wrapInteger(300), Cons.cons(Logic.KWD_DONT_OPTIMIZEp, Cons.cons(Logic.SYM_STELLA_TRUE, Cons.cons(Stella.NIL, Stella.NIL)))))));
       }
       return (TruthValue.trueTruthValueP(Logic.callAsk(query)));
     }
@@ -20797,7 +21137,7 @@ public class Logic {
               var000 = ((Symbol)(iter001.value));
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(var000, Stella.NIL);
+                  collect000 = Cons.cons(var000, Stella.NIL);
                   if (unlinked.theConsList == Stella.NIL) {
                     unlinked.theConsList = collect000;
                   }
@@ -20808,7 +21148,7 @@ public class Logic {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(var000, Stella.NIL);
+                  collect000.rest = Cons.cons(var000, Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -20848,7 +21188,7 @@ public class Logic {
                     }
                   }
                   if (Stella_Object.eqlP((example.input.theArray)[i], Stella.ONE_WRAPPER)) {
-                    tempRule = tempRule.concatenate(Stella.consList(Stella_Object.cons(((Cons)(Stella_Object.copyConsTree(prop))), Stella.NIL)), Stella.NIL);
+                    tempRule = tempRule.concatenate(Cons.consList(Cons.cons(((Cons)(Stella_Object.copyConsTree(prop))), Stella.NIL)), Stella.NIL);
                     { Stella_Object newVar = null;
                       Cons iter004 = prop.rest;
 
@@ -21186,11 +21526,11 @@ public class Logic {
 
         for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
           i = iter000;
-          feature = Stella.internSymbol("A" + Native.stringify(IntegerWrapper.wrapInteger(i)));
+          feature = Symbol.internSymbol("A" + Native.stringify(IntegerWrapper.wrapInteger(i)));
           propositionTable.insertAt(feature, ((Proposition)(props.nth(i))));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(feature, Stella.NIL);
+              collect000 = Cons.cons(feature, Stella.NIL);
               if (features.theConsList == Stella.NIL) {
                 features.theConsList = collect000;
               }
@@ -21201,7 +21541,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(feature, Stella.NIL);
+              collect000.rest = Cons.cons(feature, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -21292,8 +21632,8 @@ public class Logic {
         }
         tree.feature = splitFeature;
         tree.featureIndex = featureIndex;
-        tree.trueBranch = ((DecisionTree)(Logic.buildDecisionTree(leftExamples, features, Stella_Object.cons(splitFeature, featureStack))));
-        tree.falseBranch = ((DecisionTree)(Logic.buildDecisionTree(rightExamples, features, Stella_Object.cons(splitFeature, featureStack))));
+        tree.trueBranch = ((DecisionTree)(Logic.buildDecisionTree(leftExamples, features, Cons.cons(splitFeature, featureStack))));
+        tree.falseBranch = ((DecisionTree)(Logic.buildDecisionTree(rightExamples, features, Cons.cons(splitFeature, featureStack))));
       }
       return (tree);
     }
@@ -21386,7 +21726,7 @@ public class Logic {
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           rule = ((Cons)(iter000.value));
-          name = Stella.internSymbol("Induced-Rule-" + Native.stringify(IntegerWrapper.wrapInteger(Logic.$INDUCED_RULE_COUNTER$)));
+          name = Symbol.internSymbol("Induced-Rule-" + Native.stringify(IntegerWrapper.wrapInteger(Logic.$INDUCED_RULE_COUNTER$)));
           vars = Logic.getVariablesFromConsPropositions(rule);
           types = Stella.NIL;
           if (Logic.$ENABLE_USER_THING$) {
@@ -21398,7 +21738,7 @@ public class Logic {
                 var = ((Symbol)(iter001.value));
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(Stella_Object.cons(var, Stella_Object.cons(Logic.SYM_LOGIC_USER_THING, Stella.NIL)), Stella.NIL);
+                    collect000 = Cons.cons(Cons.cons(var, Cons.cons(Logic.SYM_LOGIC_USER_THING, Stella.NIL)), Stella.NIL);
                     if (types == Stella.NIL) {
                       types = collect000;
                     }
@@ -21409,7 +21749,7 @@ public class Logic {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(Stella_Object.cons(var, Stella_Object.cons(Logic.SYM_LOGIC_USER_THING, Stella.NIL)), Stella.NIL);
+                    collect000.rest = Cons.cons(Cons.cons(var, Cons.cons(Logic.SYM_LOGIC_USER_THING, Stella.NIL)), Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -21425,7 +21765,7 @@ public class Logic {
                 var = ((Symbol)(iter002.value));
                 if (collect001 == null) {
                   {
-                    collect001 = Stella_Object.cons(var, Stella.NIL);
+                    collect001 = Cons.cons(var, Stella.NIL);
                     if (types == Stella.NIL) {
                       types = collect001;
                     }
@@ -21436,7 +21776,7 @@ public class Logic {
                 }
                 else {
                   {
-                    collect001.rest = Stella_Object.cons(var, Stella.NIL);
+                    collect001.rest = Cons.cons(var, Stella.NIL);
                     collect001 = collect001.rest;
                   }
                 }
@@ -21444,7 +21784,7 @@ public class Logic {
             }
           }
           Logic.$INDUCED_RULE_COUNTER$ = Logic.$INDUCED_RULE_COUNTER$ + 1;
-          command = Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_DEFRULE, Stella_Object.cons(name, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FORALL, Stella_Object.cons(types, Stella_Object.cons(Stella_Object.cons(((Cons)(Stella_Object.copyConsTree(rule))), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))));
+          command = Cons.list$(Cons.cons(Logic.SYM_LOGIC_DEFRULE, Cons.cons(name, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_FORALL, Cons.cons(types, Cons.cons(Cons.cons(((Cons)(Stella_Object.copyConsTree(rule))), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))));
           if (Logic.$LOG_INDUCED_RULES$) {
             {
               System.out.println(command);
@@ -21527,7 +21867,7 @@ public class Logic {
                     else if (Surrogate.subtypeOfSurrogateP(testValue001)) {
                       { Surrogate arg000 = ((Surrogate)(arg));
 
-                        variable = Stella.internSymbol(arg000.symbolName);
+                        variable = Symbol.internSymbol(arg000.symbolName);
                       }
                     }
                     else if (Surrogate.subtypeOfFloatP(testValue001)) {
@@ -21740,7 +22080,7 @@ public class Logic {
   }
 
   public static Proposition gnp(Symbol name) {
-    return (((Proposition)(Stella.lookupSurrogate(name.symbolName).surrogateValue)));
+    return (((Proposition)(Surrogate.lookupSurrogate(name.symbolName).surrogateValue)));
   }
 
   public static PropositionNeuralNetwork defnetwork(Cons args) {
@@ -21798,15 +22138,15 @@ public class Logic {
 
       net.input = Vector.newVector(numIn);
       net.hidden = Vector.newVector(numHidden);
-      net.ih = twoDArray.new2DArray(numIn, numHidden);
-      net.ihDelta = twoDArray.new2DArray(numIn, numHidden);
+      net.ih = two_D_array.new2_D_array(numIn, numHidden);
+      net.ihDelta = two_D_array.new2_D_array(numIn, numHidden);
       net.inputError = Vector.newVector(numIn);
       net.hiddenError = Vector.newVector(numHidden);
       net.ho = Vector.newVector(numHidden);
       net.hoDelta = Vector.newVector(numHidden);
       if (Logic.$NEURAL_NETWORK_TRAINING_METHOD$ == Logic.KWD_QUICKPROP) {
-        net.ihSlope = twoDArray.new2DArray(numIn, numHidden);
-        net.ihPrevSlope = twoDArray.new2DArray(numIn, numHidden);
+        net.ihSlope = two_D_array.new2_D_array(numIn, numHidden);
+        net.ihPrevSlope = two_D_array.new2_D_array(numIn, numHidden);
         net.hoSlope = Vector.newVector(numHidden);
         net.hoPrevSlope = Vector.newVector(numHidden);
       }
@@ -22462,7 +22802,7 @@ public class Logic {
                           netDef = iter005.value;
                           if (collect000 == null) {
                             {
-                              collect000 = Stella_Object.cons(FloatWrapper.wrapFloat(((PropositionNeuralNetwork)(((Cons)(netDef)).value)).output), Stella.NIL);
+                              collect000 = Cons.cons(FloatWrapper.wrapFloat(((PropositionNeuralNetwork)(((Cons)(netDef)).value)).output), Stella.NIL);
                               if (scores == Stella.NIL) {
                                 scores = collect000;
                               }
@@ -22473,7 +22813,7 @@ public class Logic {
                           }
                           else {
                             {
-                              collect000.rest = Stella_Object.cons(FloatWrapper.wrapFloat(((PropositionNeuralNetwork)(((Cons)(netDef)).value)).output), Stella.NIL);
+                              collect000.rest = Cons.cons(FloatWrapper.wrapFloat(((PropositionNeuralNetwork)(((Cons)(netDef)).value)).output), Stella.NIL);
                               collect000 = collect000.rest;
                             }
                           }
@@ -22516,7 +22856,7 @@ public class Logic {
         }
       }
       if (recursiveConflictP) {
-        Logic.activateCachedNetwork(Stella.consList(Stella_Object.cons(tree, Stella.NIL)));
+        Logic.activateCachedNetwork(Cons.consList(Cons.cons(tree, Stella.NIL)));
         hidden = Vector.newVector(net.hidden.length());
         hiddenError = Vector.newVector(net.hidden.length());
         input = Vector.newVector(net.input.length());
@@ -22700,7 +23040,7 @@ public class Logic {
                           netDef = iter005.value;
                           if (collect000 == null) {
                             {
-                              collect000 = Stella_Object.cons(FloatWrapper.wrapFloat(((PropositionNeuralNetwork)(((Cons)(netDef)).value)).output), Stella.NIL);
+                              collect000 = Cons.cons(FloatWrapper.wrapFloat(((PropositionNeuralNetwork)(((Cons)(netDef)).value)).output), Stella.NIL);
                               if (scores == Stella.NIL) {
                                 scores = collect000;
                               }
@@ -22711,7 +23051,7 @@ public class Logic {
                           }
                           else {
                             {
-                              collect000.rest = Stella_Object.cons(FloatWrapper.wrapFloat(((PropositionNeuralNetwork)(((Cons)(netDef)).value)).output), Stella.NIL);
+                              collect000.rest = Cons.cons(FloatWrapper.wrapFloat(((PropositionNeuralNetwork)(((Cons)(netDef)).value)).output), Stella.NIL);
                               collect000 = collect000.rest;
                             }
                           }
@@ -22754,7 +23094,7 @@ public class Logic {
         }
       }
       if (recursiveConflictP) {
-        Logic.activateCachedNetwork(Stella.consList(Stella_Object.cons(tree, Stella.NIL)));
+        Logic.activateCachedNetwork(Cons.consList(Cons.cons(tree, Stella.NIL)));
       }
       Logic.zeroVector(inputError);
       { int h = Stella.NULL_INTEGER;
@@ -22904,7 +23244,7 @@ public class Logic {
                   ele = ((FloatWrapper)((vector000.theArray)[index000]));
                   if (collect000 == null) {
                     {
-                      collect000 = Stella_Object.cons(ele, Stella.NIL);
+                      collect000 = Cons.cons(ele, Stella.NIL);
                       if (consScores == Stella.NIL) {
                         consScores = collect000;
                       }
@@ -22915,7 +23255,7 @@ public class Logic {
                   }
                   else {
                     {
-                      collect000.rest = Stella_Object.cons(ele, Stella.NIL);
+                      collect000.rest = Cons.cons(ele, Stella.NIL);
                       collect000 = collect000.rest;
                     }
                   }
@@ -23209,10 +23549,10 @@ public class Logic {
    * @param nofRows
    * @param nofColumns
    * @param values
-   * @return twoDArray
+   * @return two_D_array
    */
-  public static twoDArray create2DArray(int nofRows, int nofColumns, Cons values) {
-    { twoDArray array = twoDArray.new2DArray(nofRows, nofColumns);
+  public static two_D_array create2_D_array(int nofRows, int nofColumns, Cons values) {
+    { two_D_array array = two_D_array.new2_D_array(nofRows, nofColumns);
       edu.isi.stella.Stella_Object[] nativearray = array.theArray;
 
       { int i = Stella.NULL_INTEGER;
@@ -23260,10 +23600,10 @@ public class Logic {
    * @param nofRows
    * @param nofColumns
    * @param values
-   * @return twoDFloatArray
+   * @return two_D_floatArray
    */
-  public static twoDFloatArray create2DFloatArray(int nofRows, int nofColumns, Cons values) {
-    { twoDFloatArray array = twoDFloatArray.new2DFloatArray(nofRows, nofColumns);
+  public static two_D_floatArray create2_D_floatArray(int nofRows, int nofColumns, Cons values) {
+    { two_D_floatArray array = two_D_floatArray.new2_D_floatArray(nofRows, nofColumns);
       edu.isi.stella.Stella_Object[] nativearray = array.theArray;
 
       { int i = Stella.NULL_INTEGER;
@@ -23350,12 +23690,12 @@ public class Logic {
 
   public static void buildCaseRule(Surrogate kind) {
     { String ruleName = kind.symbolName + "-match";
-      Symbol ruleNameSymbol = Stella.internSymbol(ruleName);
+      Symbol ruleNameSymbol = Symbol.internSymbol(ruleName);
       List ruleAntecedent = ((List)(Logic.$CASE_ANTECEDENT_TABLE$.lookup(ruleName)));
       List ruleTypes = ((List)(Logic.$CASE_TYPES_TABLE$.lookup(ruleName)));
       Cons rule = Stella.NIL;
 
-      rule = Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_DEFRULE, Stella_Object.cons(StringWrapper.wrapString(ruleName), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_FORALL, Stella_Object.cons(ruleTypes, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_eg, Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_AND, ruleAntecedent.consify().concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CASE_MATCH, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))));
+      rule = Cons.list$(Cons.cons(Logic.SYM_LOGIC_DEFRULE, Cons.cons(StringWrapper.wrapString(ruleName), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_FORALL, Cons.cons(ruleTypes, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_eg, Cons.cons(Cons.cons(Logic.SYM_STELLA_AND, ruleAntecedent.consify().concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CASE_MATCH, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))));
       if (!Logic.$CASE_RULE_NAMES$.memberP(ruleNameSymbol)) {
         Logic.$CASE_RULE_NAMES$.push(ruleNameSymbol);
       }
@@ -23422,7 +23762,7 @@ public class Logic {
     { Stella_Object probe = Logic.getInstance(instName);
       Surrogate renamed_Class = ((LogicObject)(LogicObject.getMostSpecificClasses(((LogicObject)(probe))).last())).surrogateValueInverse;
       String ruleName = renamed_Class.symbolName + "-match";
-      Symbol ruleNameSymbol = Stella.internSymbol(ruleName);
+      Symbol ruleNameSymbol = Symbol.internSymbol(ruleName);
       List instances = Logic.allClassInstances(renamed_Class).listify();
       Surrogate slot = Logic.getDescription(slotName).surrogateValueInverse;
 
@@ -23589,7 +23929,7 @@ public class Logic {
           renamed_Case = ((LogicObject)((vector000.theArray)[index000]));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Logic.objectName(renamed_Case), Stella.NIL);
+              collect000 = Cons.cons(Logic.objectName(renamed_Case), Stella.NIL);
               if (caseNames.theConsList == Stella.NIL) {
                 caseNames.theConsList = collect000;
               }
@@ -23600,7 +23940,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Logic.objectName(renamed_Case), Stella.NIL);
+              collect000.rest = Cons.cons(Logic.objectName(renamed_Case), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -23626,7 +23966,7 @@ public class Logic {
           { Stella_Object val = LogicObject.getSlotValue(renamed_Case, slot);
 
             (slotValues.theArray)[i] = val;
-            Logic.smartUpdateProposition(Stella_Object.cons(slotName, Stella_Object.cons(caseName, Stella_Object.cons(val, Stella.NIL))), Logic.KWD_RETRACT_TRUE);
+            Logic.smartUpdateProposition(Cons.cons(slotName, Cons.cons(caseName, Cons.cons(val, Stella.NIL))), Logic.KWD_RETRACT_TRUE);
           }
         }
       }
@@ -23660,7 +24000,7 @@ public class Logic {
                   (!(iter004 == Stella.NIL)); index002 = index002 + 1, iter004 = iter004.rest) {
           val = (vector002.theArray)[index002];
           caseName = ((Symbol)(iter004.value));
-          Logic.smartUpdateProposition(Stella_Object.cons(slotName, Stella_Object.cons(caseName, Stella_Object.cons(val, Stella.NIL))), Logic.KWD_ASSERT_TRUE);
+          Logic.smartUpdateProposition(Cons.cons(slotName, Cons.cons(caseName, Cons.cons(val, Stella.NIL))), Logic.KWD_ASSERT_TRUE);
         }
       }
     }
@@ -23691,7 +24031,7 @@ public class Logic {
         }
       }
       Logic.generateCaseRuleWoSlot(instances, className, slotName);
-      QueryIterator.returnPartialTruth(Logic.makeQuery(Stella.NIL, Logic.coerceToTree(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CASE_MATCH, Stella_Object.cons(Logic.objectName(cases.first()), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_OBJECT_NAME, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_SECOND, Stella_Object.cons(Logic.SYM_LOGIC_CASES, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL))))), Stella.NIL, Stella.NIL), true);
+      QueryIterator.returnPartialTruth(Logic.makeQuery(Stella.NIL, Logic.coerceToTree(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CASE_MATCH, Cons.cons(Logic.objectName(cases.first()), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_OBJECT_NAME, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_SECOND, Cons.cons(Logic.SYM_LOGIC_CASES, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL))))), Stella.NIL, Stella.NIL), true);
       Logic.saveAllNeuralNetworks(Logic.$SAVE_NETWORK_FILE$);
       System.out.println("Training case matcher");
       { int numInstances = Logic.generateCaseTrainingExamples(instances, slot);
@@ -23709,7 +24049,7 @@ public class Logic {
             i = iter002;
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(((LogicObject)((instances.theArray)[i])), Stella.NIL);
+                collect000 = Cons.cons(((LogicObject)((instances.theArray)[i])), Stella.NIL);
                 if (trainingCases.theConsList == Stella.NIL) {
                   trainingCases.theConsList = collect000;
                 }
@@ -23720,7 +24060,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(((LogicObject)((instances.theArray)[i])), Stella.NIL);
+                collect000.rest = Cons.cons(((LogicObject)((instances.theArray)[i])), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -23805,7 +24145,7 @@ public class Logic {
           renamed_Case = iter003.value;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(renamed_Case, Stella.NIL);
+              collect000 = Cons.cons(renamed_Case, Stella.NIL);
               if (trainingCases.theConsList == Stella.NIL) {
                 trainingCases.theConsList = collect000;
               }
@@ -23816,7 +24156,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(renamed_Case, Stella.NIL);
+              collect000.rest = Cons.cons(renamed_Case, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -23880,7 +24220,7 @@ public class Logic {
           renamed_Case = iter000.value;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Logic.objectName(renamed_Case), Stella.NIL);
+              collect000 = Cons.cons(Logic.objectName(renamed_Case), Stella.NIL);
               if (caseNames.theConsList == Stella.NIL) {
                 caseNames.theConsList = collect000;
               }
@@ -23891,7 +24231,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Logic.objectName(renamed_Case), Stella.NIL);
+              collect000.rest = Cons.cons(Logic.objectName(renamed_Case), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -23910,7 +24250,7 @@ public class Logic {
           if (trainingCaseNames.memberP(caseName)) {
             if (collect001 == null) {
               {
-                collect001 = Stella_Object.cons(renamed_Case, Stella.NIL);
+                collect001 = Cons.cons(renamed_Case, Stella.NIL);
                 if (trainingCases.theConsList == Stella.NIL) {
                   trainingCases.theConsList = collect001;
                 }
@@ -23921,7 +24261,7 @@ public class Logic {
             }
             else {
               {
-                collect001.rest = Stella_Object.cons(renamed_Case, Stella.NIL);
+                collect001.rest = Cons.cons(renamed_Case, Stella.NIL);
                 collect001 = collect001.rest;
               }
             }
@@ -24053,7 +24393,7 @@ public class Logic {
               j = j;
               { TrainingExample example = TrainingExample.newTrainingExample();
 
-                example.query = Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_CASE_MATCH, Stella_Object.cons(Logic.logicSymbol(((LogicObject)((instances.theArray)[i]))), Stella_Object.cons(Stella_Object.cons(Logic.logicSymbol(((LogicObject)((instances.theArray)[(((IntegerWrapper)((index.theArray)[k])).wrapperValue)]))), Stella.NIL), Stella.NIL))));
+                example.query = Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_CASE_MATCH, Cons.cons(Logic.logicSymbol(((LogicObject)((instances.theArray)[i]))), Cons.cons(Cons.cons(Logic.logicSymbol(((LogicObject)((instances.theArray)[(((IntegerWrapper)((index.theArray)[k])).wrapperValue)]))), Stella.NIL), Stella.NIL))));
                 example.score = ((FloatWrapper)((matchScores.theArray)[k])).wrapperValue;
                 Logic.$TRAINING_EXAMPLES$.push(example);
               }
@@ -24112,7 +24452,7 @@ public class Logic {
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           renamed_Case = iter000.value;
-          Logic.smartUpdateProposition(Stella_Object.cons(slotName, Stella_Object.cons(renamed_Case, Stella_Object.cons(LogicObject.getSlotValue(((LogicObject)(renamed_Case)), slot), Stella.NIL))), Logic.KWD_RETRACT_TRUE);
+          Logic.smartUpdateProposition(Cons.cons(slotName, Cons.cons(renamed_Case, Cons.cons(LogicObject.getSlotValue(((LogicObject)(renamed_Case)), slot), Stella.NIL))), Logic.KWD_RETRACT_TRUE);
         }
       }
     }
@@ -24130,19 +24470,19 @@ public class Logic {
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PATTERN_VARIABLE)) {
         { PatternVariable obj000 = ((PatternVariable)(obj));
 
-          return (Stella.internSymbol(Skolem.getSkolemPrintName(obj000)));
+          return (Symbol.internSymbol(Skolem.getSkolemPrintName(obj000)));
         }
       }
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_SKOLEM)) {
         { Skolem obj000 = ((Skolem)(obj));
 
-          return (Stella.internSymbol(Skolem.getSkolemPrintName(obj000)));
+          return (Symbol.internSymbol(Skolem.getSkolemPrintName(obj000)));
         }
       }
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_LOGIC_OBJECT)) {
         { LogicObject obj000 = ((LogicObject)(obj));
 
-          return (Stella.internSymbol(obj000.surrogateValueInverse.symbolName));
+          return (Symbol.internSymbol(obj000.surrogateValueInverse.symbolName));
         }
       }
       else {
@@ -24294,7 +24634,7 @@ public class Logic {
     }
     antecedent.remove(null);
     { List ruleAnt = ((List)(Logic.$CASE_ANTECEDENT_TABLE$.lookup(ruleName)));
-      List generatedVariables = Stella.list(Stella_Object.cons(Logic.internLogicSymbol("?Y"), Stella.NIL));
+      List generatedVariables = List.list(Cons.cons(Logic.internLogicSymbol("?Y"), Stella.NIL));
       int index = 0;
 
       if (Logic.$LOG_ANTECEDENT_CONSTRUCTION$) {
@@ -24383,7 +24723,7 @@ public class Logic {
                     generatedVariables.push(var2);
                     if (collect000 == null) {
                       {
-                        collect000 = Stella_Object.cons(Stella.consList(Stella_Object.cons(var2, Stella_Object.cons(var1, Stella.NIL))), Stella.NIL);
+                        collect000 = Cons.cons(Cons.consList(Cons.cons(var2, Cons.cons(var1, Stella.NIL))), Stella.NIL);
                         if (subs == Stella.NIL) {
                           subs = collect000;
                         }
@@ -24394,7 +24734,7 @@ public class Logic {
                     }
                     else {
                       {
-                        collect000.rest = Stella_Object.cons(Stella.consList(Stella_Object.cons(var2, Stella_Object.cons(var1, Stella.NIL))), Stella.NIL);
+                        collect000.rest = Cons.cons(Cons.consList(Cons.cons(var2, Cons.cons(var1, Stella.NIL))), Stella.NIL);
                         collect000 = collect000.rest;
                       }
                     }
@@ -24479,7 +24819,7 @@ public class Logic {
           { Symbol name = ((Symbol)(Logic.$SYMBOL_VARIABLE_HASH_TABLE$.lookup(var)));
 
             if (!Logic.$DELETED_CASE_VARIABLES$.memberP(name)) {
-              constraints = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_SOFT_EQ, Stella_Object.cons(name, Stella_Object.cons(Stella_Object.cons(Logic.internLogicSymbol("X" + Native.string_subsequence(Native.stringify(name), 1, Stella.NULL_INTEGER)), Stella.NIL), Stella.NIL)))), constraints);
+              constraints = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_SOFT_EQ, Cons.cons(name, Cons.cons(Cons.cons(Logic.internLogicSymbol("X" + Native.string_subsequence(Native.stringify(name), 1, Stella.NULL_INTEGER)), Stella.NIL), Stella.NIL)))), constraints);
             }
           }
         }
@@ -24552,7 +24892,7 @@ public class Logic {
   }
 
   public static Symbol internLogicSymbol(String name) {
-    return (Stella.internSymbolInModule(name, Logic.getModule(StringWrapper.wrapString("LOGIC")), true));
+    return (Symbol.internSymbolInModule(name, Logic.getModule(StringWrapper.wrapString("LOGIC")), true));
   }
 
   public static void traceGoalCache(String string, ControlFrame frame) {
@@ -24630,6 +24970,19 @@ public class Logic {
         Logic.$CACHE_SUCCEEDED_GOALSp$ = true;
         Logic.$CACHE_FAILED_GOALSp$ = true;
         return ("Enabled goal caching.");
+      }
+    }
+  }
+
+  public static StringWrapper toggleGoalCachingEvaluatorWrapper(Cons arguments) {
+    arguments = arguments;
+    { String result = Logic.toggleGoalCaching();
+
+      if (result != null) {
+        return (StringWrapper.wrapString(result));
+      }
+      else {
+        return (null);
       }
     }
   }
@@ -24859,7 +25212,7 @@ public class Logic {
           while (!(cursor == Stella.NIL)) {
             antecedent = ((Description)((((Proposition)(cursor.value)).arguments.theArray)[antecedentindex]));
             if (antecedent.internalVariables.length() == i) {
-              result = Stella_Object.cons(((Proposition)(cursor.value)), result);
+              result = Cons.cons(((Proposition)(cursor.value)), result);
               cursor.value = null;
             }
             cursor = cursor.rest;
@@ -25015,16 +25368,16 @@ public class Logic {
   public static World pushMonotonicWorld() {
     { World world = Stella.pushWorld();
 
-      KeyValueList.setDynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_MONOTONICp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+      KeyValueList.setDynamicSlotValue(world.dynamicSlots, Logic.SYM_LOGIC_MONOTONICp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       return (world);
     }
   }
 
   public static LogicObject createAnonymousInstance(String prefix, boolean skolemP) {
-    { Symbol instancename = Stella.internSymbolInModule(Stella.yieldUniqueGensymName(prefix, Logic.$PL_ANONYMOUS_MODULE$), Logic.$PL_ANONYMOUS_MODULE$, true);
-      LogicObject instance = (skolemP ? Logic.createSkolem(null, instancename) : ((LogicObject)(Logic.createLogicInstance(Stella.internSurrogateInModule(instancename.symbolName, ((Module)(instancename.homeContext)), true), null))));
+    { Symbol instancename = Symbol.internSymbolInModule(Stella.yieldUniqueGensymName(prefix, Logic.$PL_ANONYMOUS_MODULE$), Logic.$PL_ANONYMOUS_MODULE$, true);
+      LogicObject instance = (skolemP ? Logic.createSkolem(null, instancename) : ((LogicObject)(Logic.createLogicInstance(Surrogate.internSurrogateInModule(instancename.symbolName, ((Module)(instancename.homeContext)), true), null))));
 
-      KeyValueList.setDynamicSlotValue(instance.dynamicSlots, Logic.SYM_LOGIC_HYPOTHESIZED_INSTANCEp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+      KeyValueList.setDynamicSlotValue(instance.dynamicSlots, Logic.SYM_LOGIC_HYPOTHESIZED_INSTANCEp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       return (instance);
     }
   }
@@ -25032,7 +25385,7 @@ public class Logic {
   public static LogicObject createHypothesizedInstance(String prefix) {
     { LogicObject instance = Logic.createAnonymousInstance(prefix, true);
 
-      KeyValueList.setDynamicSlotValue(instance.dynamicSlots, Logic.SYM_LOGIC_HYPOTHESIZED_INSTANCEp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+      KeyValueList.setDynamicSlotValue(instance.dynamicSlots, Logic.SYM_LOGIC_HYPOTHESIZED_INSTANCEp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       return (instance);
     }
   }
@@ -25046,7 +25399,7 @@ public class Logic {
         }
         if (justification != null) {
           { Justification pattern = ((justification.inferenceRule == Logic.KWD_PATTERN) ? justification : justification.patternJustification);
-            KeyValueList substitution = ((pattern != null) ? pattern.substitution : ((KeyValueList)(null)));
+            KeyValueMap substitution = ((pattern != null) ? pattern.substitution : ((KeyValueMap)(null)));
             Stella_Object value = null;
 
             if (substitution != null) {
@@ -25078,6 +25431,83 @@ public class Logic {
     return (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue());
   }
 
+  public static ForwardJustification createForwardJustification(Cons antecedents, Proposition forwardrule, Vector arguments, Proposition consequentproposition, Justification bcJustification) {
+    { ForwardJustification self000 = ForwardJustification.newForwardJustification();
+
+      self000.inferenceRule = Logic.KWD_MODUS_PONENS;
+      { ForwardJustification fj = self000;
+        Vector ruleVariables = Proposition.getRuleIoVariables(forwardrule);
+        KeyValueMap substitution = null;
+        Cons antecedentJustifications = Stella.NIL;
+
+        if (bcJustification != null) {
+          {
+            substitution = bcJustification.substitution;
+            antecedentJustifications = Cons.cons(bcJustification, antecedentJustifications);
+          }
+        }
+        else {
+          {
+            substitution = KeyValueMap.newKeyValueMap();
+            { Stella_Object arg = null;
+              Vector vector000 = arguments;
+              int index000 = 0;
+              int length000 = vector000.length();
+              PatternVariable var = null;
+              Vector vector001 = ruleVariables;
+              int index001 = 0;
+              int length001 = vector001.length();
+
+              for (;(index000 < length000) &&
+                        (index001 < length001); index000 = index000 + 1, index001 = index001 + 1) {
+                arg = (vector000.theArray)[index000];
+                var = ((PatternVariable)((vector001.theArray)[index001]));
+                substitution.insertAt(var, arg);
+              }
+            }
+          }
+        }
+        { Proposition aprop = null;
+          Cons iter000 = antecedents;
+
+          for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+            aprop = ((Proposition)(iter000.value));
+            antecedentJustifications = Cons.cons(Proposition.getForwardAntecedentJustification(aprop), antecedentJustifications);
+          }
+        }
+        antecedentJustifications = Cons.cons(Proposition.getForwardAntecedentJustification(forwardrule), antecedentJustifications);
+        fj.substitution = ((KeyValueMap)(substitution));
+        fj.proposition = consequentproposition;
+        fj.truthValue = ((TruthValue)(Stella_Object.accessInContext(consequentproposition.truthValue, consequentproposition.homeContext, false)));
+        fj.antecedents = antecedentJustifications;
+        return (fj);
+      }
+    }
+  }
+
+  public static void recordForwardJustification(Cons antecedents, Proposition forwardrule, Vector arguments, Proposition consequentproposition, Justification bcJustification) {
+    if (!((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue()) {
+      return;
+    }
+    { List justifications = consequentproposition.forwardJustifications();
+      ForwardJustification newFj = Logic.createForwardJustification(antecedents, forwardrule, arguments, consequentproposition, bcJustification);
+
+      { Justification fj = null;
+        Cons iter000 = justifications.theConsList;
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          fj = ((Justification)(iter000.value));
+          if (((Justification)(fj.antecedents.value)).proposition == forwardrule) {
+            fj.substitution = newFj.substitution;
+            fj.antecedents = newFj.antecedents;
+            return;
+          }
+        }
+      }
+      Proposition.addForwardJustifications(consequentproposition, newFj);
+    }
+  }
+
   public static void defineExplanationPhrase(Keyword phrasekey, Keyword audience, String phrase, Cons modifiers) {
     { HashTable vocabulary = ((HashTable)(Logic.$EXPLANATION_VOCABULARIES$.lookup(audience)));
       Cons mods = modifiers;
@@ -25091,7 +25521,7 @@ public class Logic {
       if (entry == null) {
         entry = Stella.NIL;
       }
-      vocabulary.insertAt(phrasekey, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString(phrase), mods), entry));
+      vocabulary.insertAt(phrasekey, Cons.cons(Cons.cons(StringWrapper.wrapString(phrase), mods), entry));
     }
   }
 
@@ -25103,6 +25533,9 @@ public class Logic {
 
       if (vocabulary == null) {
         vocabulary = ((HashTable)(Logic.$EXPLANATION_VOCABULARIES$.lookup(Logic.KWD_TECHNICAL)));
+      }
+      if (phrasekey == null) {
+        phrasekey = Logic.KWD_UNKNOWN_RULE;
       }
       entry = ((Cons)(vocabulary.lookup(phrasekey)));
       if (entry == null) {
@@ -25620,7 +26053,7 @@ public class Logic {
       for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
         renamed_Class = ((WhynotProofClass)(iter000.value));
         if (renamed_Class.length() > 1) {
-          { KeyValueList substitution = renamed_Class.deviatingPattern.substitution;
+          { KeyValueMap substitution = renamed_Class.deviatingPattern.substitution;
             PatternVariable variable = renamed_Class.deviatingVariable;
 
             { AlternativeBindingsSet self000 = AlternativeBindingsSet.newAlternativeBindingsSet();
@@ -25691,7 +26124,7 @@ public class Logic {
             if (label == null) {
               { ExplanationInfo info = Justification.registerJustification(Justification.visibleJustification(justification), ((KeyValueList)(Logic.$MOST_RECENT_EXPLANATION_MAPPING$.get())));
 
-                info.label = Native.integerToString(i);
+                info.label = Native.integerToString(((long)(i)));
                 info.depth = 1;
               }
             }
@@ -25703,7 +26136,7 @@ public class Logic {
 ;
             Justification.printWhynotJustification(justification, stream, maxdepth, style, summaryP);
             if (label == null) {
-              mappings = Stella_Object.cons(((KeyValueList)(Logic.$MOST_RECENT_EXPLANATION_MAPPING$.get())), mappings);
+              mappings = Cons.cons(((KeyValueList)(Logic.$MOST_RECENT_EXPLANATION_MAPPING$.get())), mappings);
               Native.setSpecial(Logic.$MOST_RECENT_EXPLANATION_MAPPING$, KeyValueList.newKeyValueList());
             }
           }
@@ -26116,7 +26549,7 @@ public class Logic {
   public static String stringifiedSurrogate(Surrogate operator) {
     { NamedDescription description = Logic.getDescription(operator);
       String string = null;
-      boolean visibleP = operator == Stella.lookupSurrogateInModule(operator.symbolName, ((Module)(Stella.$MODULE$.get())), false);
+      boolean visibleP = operator == Surrogate.lookupSurrogateInModule(operator.symbolName, ((Module)(Stella.$MODULE$.get())), false);
 
       if (description != null) {
         string = Logic.internalStellaOperatorToKif(Surrogate.surrogateToSymbol(operator)).symbolName;
@@ -26131,7 +26564,9 @@ public class Logic {
         { Keyword testValue000 = Stella.computeSymbolEscapeCode(string, ((Module)(Stella.$MODULE$.get())).caseSensitiveP);
 
           if (testValue000 == Logic.KWD_UNESCAPED) {
-            string = Logic.maybeDowncase(string);
+            if (visibleP) {
+              string = Logic.maybeDowncase(string);
+            }
           }
           else if (testValue000 == Logic.KWD_ESCAPED) {
             string = "|" + string + "|";
@@ -26150,7 +26585,7 @@ public class Logic {
           }
         }
       }
-      if (operator == Stella.lookupSurrogateInModule(operator.symbolName, ((Module)(Stella.$MODULE$.get())), false)) {
+      if (visibleP) {
         return (string);
       }
       else {
@@ -26228,6 +26663,12 @@ public class Logic {
             stream.nativeStream.print(self000.wrapperValue);
           }
         }
+        else if (Surrogate.subtypeOfLongIntegerP(testValue000)) {
+          { LongIntegerWrapper self000 = ((LongIntegerWrapper)(self));
+
+            stream.nativeStream.print(self000.wrapperValue);
+          }
+        }
         else if (Surrogate.subtypeOfFloatP(testValue000)) {
           { FloatWrapper self000 = ((FloatWrapper)(self));
 
@@ -26298,8 +26739,8 @@ public class Logic {
     }
   }
 
-  public static KeyValueList createSkolemMappingTable(Vector oldvars, Vector newvars) {
-    { KeyValueList mapping = null;
+  public static KeyValueMap createSkolemMappingTable(Vector oldvars, Vector newvars) {
+    { KeyValueMap mapping = null;
 
       { PatternVariable oldvar = null;
         Vector vector000 = oldvars;
@@ -26316,7 +26757,7 @@ public class Logic {
           newvar = ((PatternVariable)((vector001.theArray)[index001]));
           if (!(oldvar.skolemName == newvar.skolemName)) {
             if (mapping == null) {
-              mapping = KeyValueList.newKeyValueList();
+              mapping = KeyValueMap.newKeyValueMap();
             }
             mapping.insertAt(oldvar, newvar);
           }
@@ -26358,18 +26799,6 @@ public class Logic {
           }
         }
       }
-    }
-  }
-
-  public static boolean functionOutputSkolemP(Stella_Object self) {
-    if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(self), Logic.SGT_LOGIC_SKOLEM)) {
-      { Skolem self000 = ((Skolem)(self));
-
-        return (((self000.definingProposition != null) ? true : false));
-      }
-    }
-    else {
-      return (false);
     }
   }
 
@@ -26565,7 +26994,7 @@ public class Logic {
           Native.setSpecial(Logic.$PRINTMODE$, Logic.KWD_ORIGINAL);
           Native.setSpecial(Logic.$PRINTLOGICALFORMSTREAM$, stream);
           Native.setIntSpecial(Logic.$INDENTCOUNTER$, 2);
-          stream.nativeStream.println("(" + operator + " " + Stella.internSymbolInModule(rulename.symbolName, ((Module)(rulename.homeContext)), true));
+          stream.nativeStream.println("(" + operator + " " + Symbol.internSymbolInModule(rulename.symbolName, ((Module)(rulename.homeContext)), true));
           Logic.printIndent(stream, Stella.NULL_INTEGER);
           Logic.prettyPrintLogicalForm(proposition, stream);
           { Proposition prop = null;
@@ -26817,7 +27246,7 @@ public class Logic {
                     while (iter003.nextP()) {
                       p = ((Proposition)(iter003.value));
                       if (!Proposition.excludedPropositionP(p)) {
-                        reversedpropositions = Stella_Object.cons(p, reversedpropositions);
+                        reversedpropositions = Cons.cons(p, reversedpropositions);
                       }
                     }
                   }
@@ -27000,7 +27429,7 @@ public class Logic {
           v = (vector000.theArray)[index000];
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(PatternVariable.generateOneVariable(((PatternVariable)(v)), typedP), Stella.NIL);
+              collect000 = Cons.cons(PatternVariable.generateOneVariable(((PatternVariable)(v)), typedP), Stella.NIL);
               if (result == Stella.NIL) {
                 result = collect000;
               }
@@ -27011,7 +27440,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(PatternVariable.generateOneVariable(((PatternVariable)(v)), typedP), Stella.NIL);
+              collect000.rest = Cons.cons(PatternVariable.generateOneVariable(((PatternVariable)(v)), typedP), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -27032,7 +27461,7 @@ public class Logic {
           m = iter000.value;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Logic.generateTerm(m), Stella.NIL);
+              collect000 = Cons.cons(Logic.generateTerm(m), Stella.NIL);
               if (collection == Stella.NIL) {
                 collection = collect000;
               }
@@ -27043,13 +27472,13 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Logic.generateTerm(m), Stella.NIL);
+              collect000.rest = Cons.cons(Logic.generateTerm(m), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
         }
       }
-      return (Stella_Object.cons((self.noDuplicatesP() ? Logic.SYM_STELLA_SETOF : Logic.SYM_LOGIC_LISTOF), collection.concatenate(Stella.NIL, Stella.NIL)));
+      return (Cons.cons((self.noDuplicatesP() ? Logic.SYM_STELLA_SETOF : Logic.SYM_LOGIC_LISTOF), collection.concatenate(Stella.NIL, Stella.NIL)));
     }
   }
 
@@ -27066,7 +27495,7 @@ public class Logic {
           arg = (vector000.theArray)[index000];
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Logic.generateTerm(arg), Stella.NIL);
+              collect000 = Cons.cons(Logic.generateTerm(arg), Stella.NIL);
               if (result == Stella.NIL) {
                 result = collect000;
               }
@@ -27077,7 +27506,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Logic.generateTerm(arg), Stella.NIL);
+              collect000.rest = Cons.cons(Logic.generateTerm(arg), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -27127,7 +27556,7 @@ public class Logic {
         { LogicObject self000 = ((LogicObject)(self));
 
           if (self000.surrogateValueInverse != null) {
-            return (Stella.internSymbolInModule(self000.surrogateValueInverse.symbolName, ((Module)(self000.surrogateValueInverse.homeContext)), false));
+            return (Symbol.internSymbolInModule(self000.surrogateValueInverse.symbolName, ((Module)(self000.surrogateValueInverse.homeContext)), false));
           }
           else {
             return (Logic.SYM_LOGIC_UNNAMED_OBJECT);
@@ -27137,7 +27566,7 @@ public class Logic {
       else if (Surrogate.subtypeOfSurrogateP(testValue000)) {
         { Surrogate self000 = ((Surrogate)(self));
 
-          return (Stella.internSymbolInModule(self000.symbolName, ((Module)(self000.homeContext)), false));
+          return (Symbol.internSymbolInModule(self000.symbolName, ((Module)(self000.homeContext)), false));
         }
       }
       else if (Surrogate.subtypeOfKeywordP(testValue000)) {
@@ -27202,7 +27631,7 @@ public class Logic {
                 elt = iter000.value;
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(Logic.deobjectifyTree(elt), Stella.NIL);
+                    collect000 = Cons.cons(Logic.deobjectifyTree(elt), Stella.NIL);
                     if (result == Stella.NIL) {
                       result = collect000;
                     }
@@ -27213,7 +27642,7 @@ public class Logic {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(Logic.deobjectifyTree(elt), Stella.NIL);
+                    collect000.rest = Cons.cons(Logic.deobjectifyTree(elt), Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -27263,12 +27692,12 @@ public class Logic {
         MethodSlot stellafunction = null;
 
         if (procedurename == null) {
-          procedurename = Stella.internSymbolInModule(procedure.surrogateValueInverse.symbolName, ((Module)(procedure.surrogateValueInverse.homeContext)), true);
+          procedurename = Symbol.internSymbolInModule(procedure.surrogateValueInverse.symbolName, ((Module)(procedure.surrogateValueInverse.homeContext)), true);
           procedure.procedureName = procedurename;
         }
         stellafunction = Symbol.lookupFunction(procedurename);
         if (stellafunction == null) {
-          { Symbol kernelname = Stella.lookupSymbolInModule(procedurename.symbolName, Stella.getStellaModule("PL-KERNEL", true), false);
+          { Symbol kernelname = Symbol.lookupSymbolInModule(procedurename.symbolName, Stella.getStellaModule("PL-KERNEL", true), false);
 
             if (kernelname != null) {
               stellafunction = Symbol.lookupFunction(kernelname);
@@ -27381,6 +27810,28 @@ public class Logic {
     return (false);
   }
 
+  public static boolean computationInputBoundP(Stella_Object value) {
+    if (value == null) {
+      return (false);
+    }
+    if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(value), Logic.SGT_LOGIC_SKOLEM)) {
+      { Skolem value000 = ((Skolem)(value));
+
+        if (Logic.logicalCollectionP(value000)) {
+          return (true);
+        }
+        { Proposition prop = value000.definingProposition;
+
+          return ((prop != null) &&
+              Logic.testPropertyP(Logic.getDescription(((Surrogate)(prop.operator))), Logic.SGT_PL_KERNEL_KB_TOTAL));
+        }
+      }
+    }
+    else {
+      return (true);
+    }
+  }
+
   public static List enumerationsContainingMember(Stella_Object self) {
     { List list = List.newList();
 
@@ -27423,6 +27874,30 @@ public class Logic {
     }
     else {
       return (false);
+    }
+  }
+
+  public static InferenceLevel leveledQueryRelationToInferenceLevel(Surrogate relation) {
+    if (relation == Logic.SGT_PL_KERNEL_KB_ASSERTION_QUERY) {
+      return (Logic.ASSERTION_INFERENCE);
+    }
+    else if (relation == Logic.SGT_PL_KERNEL_KB_SHALLOW_QUERY) {
+      return (Logic.SHALLOW_INFERENCE);
+    }
+    else if (relation == Logic.SGT_PL_KERNEL_KB_SUBSUMPTION_QUERY) {
+      return (Logic.SUBSUMPTION_INFERENCE);
+    }
+    else if (relation == Logic.SGT_PL_KERNEL_KB_BACKTRACKING_QUERY) {
+      return (Logic.BACKTRACKING_INFERENCE);
+    }
+    else if (relation == Logic.SGT_PL_KERNEL_KB_NORMAL_QUERY) {
+      return (Logic.NORMAL_INFERENCE);
+    }
+    else if (relation == Logic.SGT_PL_KERNEL_KB_REFUTATION_QUERY) {
+      return (Logic.REFUTATION_INFERENCE);
+    }
+    else {
+      return (Logic.getInferenceLevel(((StringWrapper)(Stella.splitString(relation.symbolName, '-').value)).keywordify()));
     }
   }
 
@@ -27471,7 +27946,7 @@ public class Logic {
       return (false);
     }
     else {
-      activeterms = Stella_Object.cons(self, activeterms);
+      activeterms = Cons.cons(self, activeterms);
     }
     { Surrogate testValue000 = Stella_Object.safePrimaryType(self);
 
@@ -27487,7 +27962,9 @@ public class Logic {
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_DESCRIPTION)) {
         { Description self000 = ((Description)(self));
 
-          return (Proposition.helpClosedPropositionP(self000.proposition, activeterms));
+          return ((Logic.testPropertyP(self000, Logic.SGT_PL_KERNEL_KB_CLOSED) &&
+              (!((BooleanWrapper)(KeyValueList.dynamicSlotValue(((Context)(Stella.$CONTEXT$.get())).dynamicSlots, Logic.SYM_LOGIC_MONOTONICp, Stella.FALSE_WRAPPER))).wrapperValue)) ||
+              Proposition.helpClosedPropositionP(self000.proposition, activeterms));
         }
       }
       else if (Surrogate.subtypeOfSurrogateP(testValue000)) {
@@ -27499,7 +27976,7 @@ public class Logic {
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PATTERN_VARIABLE)) {
         { PatternVariable self000 = ((PatternVariable)(self));
 
-          return (true);
+          return (false);
         }
       }
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_SKOLEM)) {
@@ -27636,7 +28113,7 @@ public class Logic {
 
               for (;index000 < length000; index000 = index000 + 1) {
                 arg = ((PatternVariable)((vector000.theArray)[index000]));
-                iovariables = Stella_Object.cons(arg, iovariables);
+                iovariables = Cons.cons(arg, iovariables);
               }
             }
             return (Proposition.helpSingleValuedGoalP(proposition, iovariables, Cons.copyConsList(iovariables.rest), false));
@@ -27737,7 +28214,7 @@ public class Logic {
           }
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(item, Stella.NIL);
+              collect000 = Cons.cons(item, Stella.NIL);
               if (projectedlist.theConsList == Stella.NIL) {
                 projectedlist.theConsList = collect000;
               }
@@ -27748,7 +28225,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(item, Stella.NIL);
+              collect000.rest = Cons.cons(item, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -27779,7 +28256,7 @@ public class Logic {
           if (Stella_Object.eqlP(firstarg, termvalue) &&
               ((!Stella_Object.eqlP(firstarg, secondarg)) &&
                (!synonyms.membP(secondarg)))) {
-            synonyms = Stella_Object.cons(secondarg, synonyms);
+            synonyms = Cons.cons(secondarg, synonyms);
           }
         }
       }
@@ -27870,7 +28347,8 @@ public class Logic {
   }
 
   /** Returns the native funtion code for <code>nativeName</code> if it exists
-   * and the underlying programming languages supports such lookups.
+   * and the underlying programming languages supports such lookups.  Uses the signature
+   * of a specialist function.
    * @param nativeName
    * @return java.lang.reflect.Method
    */
@@ -27921,6 +28399,83 @@ public class Logic {
     Logic.registerSpecialistFunctionName(((StringWrapper)(arguments.value)).wrapperValue, ((StringWrapper)(arguments.rest.value)).wrapperValue);
   }
 
+  /** Returns the native funtion code for <code>nativeName</code> if it exists
+   * and the underlying programming languages supports such lookups.  It is looked up
+   * using the signature of a computation function supported by the computation specialist.
+   * @param nativeName
+   * @param arity
+   * @return java.lang.reflect.Method
+   */
+  public static java.lang.reflect.Method lookupNativeComputation(String nativeName, int arity) {
+    { java.lang.reflect.Method code = null;
+
+      int lastPeriod = nativeName.lastIndexOf('.');
+    java.lang.Class [] classes = new java.lang.Class[arity];
+    java.lang.Class sclass = Native.find_java_class("edu.isi.stella.Stella_Object");
+    for (int i = 0; i < arity; i++) {
+      classes[i] = sclass;
+    }
+    code = Native.find_java_method(nativeName.substring(0,lastPeriod),
+                                   nativeName.substring(lastPeriod+1),
+                                   classes)
+;
+      if (code == null) {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("Couldn't locate native function for `" + nativeName + "'");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+      return (code);
+    }
+  }
+
+  /** Creates a registration entry for <code>name</code> as a computation which
+   * executes <code>code</code>.  Essentially just builds the Stella meta-information
+   * tructure needed to funcall <code>name</code> as a computation function by the
+   * computation specialist.  The function definition in <code>code</code> needs to
+   * accept ARITY Stella OBJECTs as arguments and return a Stella OBJECT 
+   * suitable for PowerLoom use.  (These are generally LOGIC-OBJECTs and the
+   * literal wrappers FLOAT-WRAPPER, INTEGER-WRAPPER and STRING-WRAPPER.)
+   * @param name
+   * @param code
+   * @param arity
+   */
+  public static void registerComputationFunction(String name, java.lang.reflect.Method code, int arity) {
+    { String definitionString = "(DEFUN (";
+
+      definitionString = definitionString + name + " OBJECT) (";
+      { int i = Stella.NULL_INTEGER;
+        int iter000 = 1;
+        int upperBound000 = arity;
+        boolean unboundedP000 = upperBound000 == Stella.NULL_INTEGER;
+
+        for (;unboundedP000 ||
+                  (iter000 <= upperBound000); iter000 = iter000 + 1) {
+          i = iter000;
+          definitionString = definitionString + "(X" + Native.integerToString(((long)(i))) + " OBJECT) ";
+        }
+      }
+      definitionString = definitionString + "))";
+      Stella.defineFunctionObject(" " + name, definitionString, code, null);
+    }
+  }
+
+  /** registers a computation function <code>stellaName</code> based on the <code>nativeName</code>
+   * for the particular programming language in question.  Use of this command makes
+   * the resulting code or knowledge bases non-portable to other target languages.
+   * @param stellaName
+   * @param nativeName
+   * @param arity
+   */
+  public static void registerComputationFunctionName(String stellaName, String nativeName, int arity) {
+    Logic.registerComputationFunction(stellaName, Logic.lookupNativeComputation(nativeName, arity), arity);
+  }
+
+  public static void registerComputationFunctionNameEvaluatorWrapper(Cons arguments) {
+    Logic.registerComputationFunctionName(((StringWrapper)(arguments.value)).wrapperValue, ((StringWrapper)(arguments.rest.value)).wrapperValue, ((IntegerWrapper)(arguments.rest.rest.value)).wrapperValue);
+  }
+
   public static TruthValue propositionsIteratorTruthValue(Iterator self) {
     { Surrogate testValue000 = Stella_Object.safePrimaryType(self);
 
@@ -27947,7 +28502,7 @@ public class Logic {
         (!specializeP))) {
       System.err.print("Safety violation: INTERNAL-ERROR: Expected defined relation argument");
     }
-    { Cons pattern = ((relation != null) ? Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(relation, Stella_Object.cons(Logic.valueOf(self), Stella.NIL)))) : Stella_Object.cons(Logic.KWD_DEPENDENTS, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(Logic.valueOf(self), Stella.NIL))));
+    { Cons pattern = ((relation != null) ? Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(relation, Cons.cons(Logic.valueOf(self), Stella.NIL)))) : Cons.cons(Logic.KWD_DEPENDENTS, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(Logic.valueOf(self), Stella.NIL))));
       SequenceIndex index = Logic.selectPropositions(pattern);
       TruePropositionsIterator iterator = null;
 
@@ -27962,7 +28517,7 @@ public class Logic {
   }
 
   public static Iterator allTrueDependentIsaPropositions(Stella_Object self) {
-    { Cons pattern = Stella_Object.cons(Logic.KWD_ISA, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(Logic.valueOf(self), Stella.NIL)));
+    { Cons pattern = Cons.cons(Logic.KWD_ISA, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(Logic.valueOf(self), Stella.NIL)));
       SequenceIndex index = Logic.selectPropositions(pattern);
 
       if (SequenceIndex.emptyPropositionsIndexP(index, self, false)) {
@@ -28015,7 +28570,7 @@ public class Logic {
               if (alwaysP000) {
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(prop, Stella.NIL);
+                    collect000 = Cons.cons(prop, Stella.NIL);
                     if (value000 == Stella.NIL) {
                       value000 = collect000;
                     }
@@ -28026,7 +28581,7 @@ public class Logic {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(prop, Stella.NIL);
+                    collect000.rest = Cons.cons(prop, Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -28060,7 +28615,7 @@ public class Logic {
                   Stella_Object.eqlP(Logic.valueOf((prop.arguments.theArray)[(prop.arguments.length() - 1)]), outputargumentvalue)) {
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(prop, Stella.NIL);
+                    collect000 = Cons.cons(prop, Stella.NIL);
                     if (result == Stella.NIL) {
                       result = collect000;
                     }
@@ -28071,7 +28626,7 @@ public class Logic {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(prop, Stella.NIL);
+                    collect000.rest = Cons.cons(prop, Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -28428,7 +28983,7 @@ public class Logic {
         while (iter000.nextP()) {
           p = ((Proposition)(iter000.value));
           if (p.kind == Logic.KWD_ISA) {
-            collections = Stella_Object.cons(Logic.getDescription(((Surrogate)(p.operator))), collections);
+            collections = Cons.cons(Logic.getDescription(((Surrogate)(p.operator))), collections);
           }
         }
       }
@@ -28437,7 +28992,7 @@ public class Logic {
 
         while (iter001.nextP()) {
           p = ((Proposition)(iter001.value));
-          collections = Stella_Object.cons((p.arguments.theArray)[1], collections);
+          collections = Cons.cons((p.arguments.theArray)[1], collections);
         }
       }
       return (collections);
@@ -28503,7 +29058,7 @@ public class Logic {
           if (((NamedDescription)(KeyValueList.dynamicSlotValue(renamed_Class.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTION, null))) != null) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(renamed_Class, Stella.NIL);
+                collect000 = Cons.cons(renamed_Class, Stella.NIL);
                 if (result.theConsList == Stella.NIL) {
                   result.theConsList = collect000;
                 }
@@ -28514,7 +29069,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(renamed_Class, Stella.NIL);
+                collect000.rest = Cons.cons(renamed_Class, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -28530,7 +29085,7 @@ public class Logic {
           if (((NamedDescription)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTION, null))) != null) {
             if (collect001 == null) {
               {
-                collect001 = Stella_Object.cons(slot, Stella.NIL);
+                collect001 = Cons.cons(slot, Stella.NIL);
                 if (result.theConsList == Stella.NIL) {
                   result.theConsList = collect001;
                 }
@@ -28541,7 +29096,7 @@ public class Logic {
             }
             else {
               {
-                collect001.rest = Stella_Object.cons(slot, Stella.NIL);
+                collect001.rest = Cons.cons(slot, Stella.NIL);
                 collect001 = collect001.rest;
               }
             }
@@ -29208,7 +29763,7 @@ public class Logic {
             cluster = ((List)(iter002.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(cluster, Stella.NIL);
+                collect000 = Cons.cons(cluster, Stella.NIL);
                 if (opengoalclusters.theConsList == Stella.NIL) {
                   opengoalclusters.theConsList = collect000;
                 }
@@ -29219,7 +29774,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(cluster, Stella.NIL);
+                collect000.rest = Cons.cons(cluster, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -29265,8 +29820,8 @@ public class Logic {
       stacksize = ((ExtensibleVector)(KeyValueList.dynamicSlotValue(((QueryIterator)(Logic.$QUERYITERATOR$.get())).dynamicSlots, Logic.SYM_LOGIC_OPTIMIZER_GOAL_RECORDS, null))).length();
     }
     Logic.initializeOptimizerGoalRecords(stacksize);
-    KeyValueList.setDynamicSlotValue(((QueryIterator)(Logic.$QUERYITERATOR$.get())).dynamicSlots, Logic.SYM_LOGIC_RESIDUE_GOALS, Stella.list(Stella.NIL), null);
-    KeyValueList.setDynamicSlotValue(((QueryIterator)(Logic.$QUERYITERATOR$.get())).dynamicSlots, Logic.SYM_LOGIC_BEST_GOAL_SEQUENCE, Stella.list(Stella.NIL), null);
+    KeyValueList.setDynamicSlotValue(((QueryIterator)(Logic.$QUERYITERATOR$.get())).dynamicSlots, Logic.SYM_LOGIC_RESIDUE_GOALS, List.list(Stella.NIL), null);
+    KeyValueList.setDynamicSlotValue(((QueryIterator)(Logic.$QUERYITERATOR$.get())).dynamicSlots, Logic.SYM_LOGIC_BEST_GOAL_SEQUENCE, List.list(Stella.NIL), null);
     KeyValueList.setDynamicSlotValue(((QueryIterator)(Logic.$QUERYITERATOR$.get())).dynamicSlots, Logic.SYM_LOGIC_BEST_COST, FloatWrapper.wrapFloat(Stella.NULL_FLOAT), Stella.NULL_FLOAT_WRAPPER);
   }
 
@@ -29291,7 +29846,9 @@ public class Logic {
       double cost = Stella.NULL_FLOAT;
       double fanout = Stella.NULL_FLOAT;
       double unbound = Stella.NULL_FLOAT;
+      int nofboundargs = 0;
       double bestcost = Stella.NULL_FLOAT;
+      int bestnofboundargs = 0;
       Proposition argument = null;
 
       if (cursor >= lastargindex) {
@@ -29313,9 +29870,11 @@ public class Logic {
           unbound = Proposition.dynamicallyEstimateUnboundVariablePenalty(argument);
           if (unbound == 1.0) {
             fanout = 1.0;
+            nofboundargs = argument.arguments.length();
           }
           else {
             fanout = Proposition.dynamicallyEstimateGoalFanout(argument);
+            nofboundargs = Proposition.countBoundArguments(argument);
           }
           if (fanout == Stella.NULL_FLOAT) {
             continue loop000;
@@ -29326,8 +29885,14 @@ public class Logic {
           cost = Proposition.dynamicallyEstimateGoalCost(argument);
           cost = cost * fanout * unbound;
           if ((bestcost == Stella.NULL_FLOAT) ||
-              (cost < bestcost)) {
+              (((cost < bestcost) &&
+              ((bestnofboundargs == 0) ||
+               (!(nofboundargs == 0)))) ||
+               ((cost >= bestcost) &&
+                ((bestnofboundargs == 0) &&
+                 (!(nofboundargs == 0)))))) {
             bestcost = cost;
+            bestnofboundargs = nofboundargs;
             cheapestargindex = i;
             if (bestcost == 1.0) {
               break loop000;
@@ -29361,8 +29926,8 @@ public class Logic {
     }
   }
 
-  public static Vector copyVariablesVector(Vector self, KeyValueList mapping) {
-    if (self.arraySize == 0) {
+  public static Vector copyVariablesVector(Vector self, KeyValueMap mapping) {
+    if (self.emptyP()) {
       return (Logic.ZERO_VARIABLES_VECTOR);
     }
     { Vector copy = Vector.newVector(self.length());
@@ -29391,7 +29956,7 @@ public class Logic {
     }
   }
 
-  public static Stella_Object copyPropositionArgument(Stella_Object self, KeyValueList mapping) {
+  public static Stella_Object copyPropositionArgument(Stella_Object self, KeyValueMap mapping) {
     { Stella_Object copy = mapping.lookup(self);
 
       if (copy != null) {
@@ -29453,7 +30018,7 @@ public class Logic {
     }
   }
 
-  public static Stella_Object mappedValueOf(Stella_Object self, KeyValueList mapping, boolean createskolemP) {
+  public static Stella_Object mappedValueOf(Stella_Object self, KeyValueMap mapping, boolean createskolemP) {
     { Stella_Object value = ((mapping != null) ? mapping.lookup(self) : ((Stella_Object)(null)));
 
       if (value != null) {
@@ -29488,7 +30053,7 @@ public class Logic {
     }
   }
 
-  public static boolean equalUpToSkolemIdentityP(Stella_Object inheritedarg, Stella_Object basearg, KeyValueList mapping) {
+  public static boolean equalUpToSkolemIdentityP(Stella_Object inheritedarg, Stella_Object basearg, KeyValueMap mapping) {
     { Stella_Object inheritedvalue = ((mapping != null) ? Logic.mappedValueOf(inheritedarg, mapping, false) : inheritedarg);
       Stella_Object basevalue = Logic.valueOf(basearg);
 
@@ -29499,7 +30064,7 @@ public class Logic {
     }
   }
 
-  public static Stella_Object inheritPropositionArgument(Stella_Object argument, Proposition parent, KeyValueList mapping) {
+  public static Stella_Object inheritPropositionArgument(Stella_Object argument, Proposition parent, KeyValueMap mapping) {
     { Surrogate testValue000 = Stella_Object.safePrimaryType(argument);
 
       if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
@@ -29552,7 +30117,203 @@ public class Logic {
     }
   }
 
-  public static boolean mapAndEnqueueVariableP(Stella_Object variable, Stella_Object localvalue, KeyValueList mapping, List queue) {
+  public static Cons createSkolemPropositionsQuery(Cons inheritedprops, Description description, KeyValueMap mapping) {
+    { HashSet createdskolems = null;
+      Cons skolemprops = Stella.NIL;
+      Cons filteredpropsindices = Stella.NIL;
+
+      { Object old$Module$000 = Stella.$MODULE$.get();
+        Object old$Context$000 = Stella.$CONTEXT$.get();
+
+        try {
+          Native.setSpecial(Stella.$MODULE$, ((Module)(Stella.$MODULE$.get())));
+          Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
+          { Keyword testValue000 = description.proposition.kind;
+
+            if (testValue000 == Logic.KWD_AND) {
+              createdskolems = HashSet.newHashSet();
+              { Stella_Object skolem = null;
+                Cons iter000 = ((List)(mapping.lookup(Logic.KWD_CREATED_SKOLEMS))).theConsList;
+
+                for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+                  skolem = iter000.value;
+                  createdskolems.insert(((Skolem)(skolem)));
+                }
+              }
+              { Proposition iprop = null;
+                Cons iter001 = inheritedprops;
+                int ipropindex = Stella.NULL_INTEGER;
+                int iter002 = 0;
+                Proposition dprop = null;
+                Vector vector000 = ((Vector)(description.proposition.arguments));
+                int index000 = 0;
+                int length000 = vector000.length();
+                Cons collect000 = null;
+
+                loop001 : for (;(!(iter001 == Stella.NIL)) &&
+                          (index000 < length000); 
+                      iter001 = iter001.rest,
+                      iter002 = iter002 + 1,
+                      index000 = index000 + 1) {
+                  iprop = ((Proposition)(iter001.value));
+                  ipropindex = iter002;
+                  dprop = ((Proposition)((vector000.theArray)[index000]));
+                  if (!Proposition.propositionReferencesTermsP(iprop, createdskolems)) {
+                    filteredpropsindices = Cons.cons(IntegerWrapper.wrapInteger(ipropindex), filteredpropsindices);
+                    continue loop001;
+                  }
+                  if (collect000 == null) {
+                    {
+                      collect000 = Cons.cons(dprop, Stella.NIL);
+                      if (skolemprops == Stella.NIL) {
+                        skolemprops = collect000;
+                      }
+                      else {
+                        Cons.addConsToEndOfConsList(skolemprops, collect000);
+                      }
+                    }
+                  }
+                  else {
+                    {
+                      collect000.rest = Cons.cons(dprop, Stella.NIL);
+                      collect000 = collect000.rest;
+                    }
+                  }
+                }
+              }
+              filteredpropsindices = filteredpropsindices.reverse();
+              if (!(filteredpropsindices == Stella.NIL)) {
+                { Description self001 = Description.newDescription();
+
+                  self001.ioVariables = description.ioVariables;
+                  self001.proposition = Logic.conjoinPropositions(skolemprops);
+                  description = self001;
+                }
+                Description.computeInternalVariables(description);
+              }
+            }
+            else if ((testValue000 == Logic.KWD_ISA) ||
+                ((testValue000 == Logic.KWD_FUNCTION) ||
+                 (testValue000 == Logic.KWD_PREDICATE))) {
+            }
+            else {
+            }
+          }
+          return (Cons.consList(Cons.cons(QueryIterator.initializeQueryIterator(Logic.allocateQueryIterator(), description, Vector.newVector(description.arity())), Cons.cons(filteredpropsindices, Stella.NIL))));
+
+        } finally {
+          Stella.$CONTEXT$.set(old$Context$000);
+          Stella.$MODULE$.set(old$Module$000);
+        }
+      }
+    }
+  }
+
+  public static Cons filterImpliedSkolemPropositions(Cons inheritedprops, Description description, Vector arguments, KeyValueMap mapping) {
+    { List createdskolems = ((mapping != null) ? ((List)(mapping.lookup(Logic.KWD_CREATED_SKOLEMS))) : null);
+      Cons filteredprops = inheritedprops;
+      Cons filteredpropsindices = Stella.NIL;
+      QueryIterator query = null;
+      Cons cachedqueryrecord = Stella.NIL;
+
+      if (createdskolems != null) {
+        { MemoizationTable memoTable000 = null;
+          Cons memoizedEntry000 = null;
+          Stella_Object memoizedValue000 = null;
+
+          if (Stella.$MEMOIZATION_ENABLEDp$) {
+            memoTable000 = ((MemoizationTable)(Logic.SGT_LOGIC_F_FILTER_IMPLIED_SKOLEM_PROPOSITIONS_MEMO_TABLE_000.surrogateValue));
+            if (memoTable000 == null) {
+              Surrogate.initializeMemoizationTable(Logic.SGT_LOGIC_F_FILTER_IMPLIED_SKOLEM_PROPOSITIONS_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:MODULE-UPDATE))");
+              memoTable000 = ((MemoizationTable)(Logic.SGT_LOGIC_F_FILTER_IMPLIED_SKOLEM_PROPOSITIONS_MEMO_TABLE_000.surrogateValue));
+            }
+            memoizedEntry000 = MruMemoizationTable.lookupMruMemoizedValue(((MruMemoizationTable)(memoTable000)), description, Stella.MEMOIZED_NULL_VALUE, null, null, -1);
+            memoizedValue000 = memoizedEntry000.value;
+          }
+          if (memoizedValue000 != null) {
+            if (memoizedValue000 == Stella.MEMOIZED_NULL_VALUE) {
+              memoizedValue000 = null;
+            }
+          }
+          else {
+            memoizedValue000 = Logic.createSkolemPropositionsQuery(inheritedprops, description, mapping);
+            if (Stella.$MEMOIZATION_ENABLEDp$) {
+              memoizedEntry000.value = ((memoizedValue000 == null) ? Stella.MEMOIZED_NULL_VALUE : memoizedValue000);
+            }
+          }
+          cachedqueryrecord = ((Cons)(memoizedValue000));
+        }
+        query = ((QueryIterator)(cachedqueryrecord.value));
+        filteredpropsindices = ((Cons)(cachedqueryrecord.rest.value));
+        { Stella_Object arg = null;
+          Vector vector000 = arguments;
+          int index000 = 0;
+          int length000 = vector000.length();
+          int i = Stella.NULL_INTEGER;
+          int iter000 = 0;
+
+          for (;index000 < length000; index000 = index000 + 1, iter000 = iter000 + 1) {
+            arg = (vector000.theArray)[index000];
+            i = iter000;
+            (((Vector)(KeyValueList.dynamicSlotValue(query.dynamicSlots, Logic.SYM_LOGIC_INITIAL_BINDINGS, null))).theArray)[i] = arg;
+          }
+        }
+        { Object old$TypeCheckStrategy$000 = Logic.$TYPE_CHECK_STRATEGY$.get();
+          Object old$Queryiterator$000 = Logic.$QUERYITERATOR$.get();
+          Object old$ReversepolarityP$000 = Logic.$REVERSEPOLARITYp$.get();
+          Object old$Inferencelevel$000 = Logic.$INFERENCELEVEL$.get();
+          Object old$GenerateAllProofsP$000 = Logic.$GENERATE_ALL_PROOFSp$.get();
+
+          try {
+            Native.setSpecial(Logic.$TYPE_CHECK_STRATEGY$, Logic.KWD_NONE);
+            Native.setSpecial(Logic.$QUERYITERATOR$, query);
+            Native.setBooleanSpecial(Logic.$REVERSEPOLARITYp$, false);
+            Native.setSpecial(Logic.$INFERENCELEVEL$, Logic.SUBSUMPTION_INFERENCE);
+            Native.setBooleanSpecial(Logic.$GENERATE_ALL_PROOFSp$, false);
+            query.reset();
+            if (query.nextP()) {
+              filteredprops = Stella.NIL;
+              { IntegerWrapper i = null;
+                Cons iter001 = filteredpropsindices;
+                Cons collect000 = null;
+
+                for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+                  i = ((IntegerWrapper)(iter001.value));
+                  if (collect000 == null) {
+                    {
+                      collect000 = Cons.cons(((Proposition)(inheritedprops.nth(i.wrapperValue))), Stella.NIL);
+                      if (filteredprops == Stella.NIL) {
+                        filteredprops = collect000;
+                      }
+                      else {
+                        Cons.addConsToEndOfConsList(filteredprops, collect000);
+                      }
+                    }
+                  }
+                  else {
+                    {
+                      collect000.rest = Cons.cons(((Proposition)(inheritedprops.nth(i.wrapperValue))), Stella.NIL);
+                      collect000 = collect000.rest;
+                    }
+                  }
+                }
+              }
+            }
+
+          } finally {
+            Logic.$GENERATE_ALL_PROOFSp$.set(old$GenerateAllProofsP$000);
+            Logic.$INFERENCELEVEL$.set(old$Inferencelevel$000);
+            Logic.$REVERSEPOLARITYp$.set(old$ReversepolarityP$000);
+            Logic.$QUERYITERATOR$.set(old$Queryiterator$000);
+            Logic.$TYPE_CHECK_STRATEGY$.set(old$TypeCheckStrategy$000);
+          }
+        }
+      }
+      return (filteredprops);
+    }
+  }
+
+  public static boolean mapAndEnqueueVariableP(Stella_Object variable, Stella_Object localvalue, KeyValueMap mapping) {
     if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(variable), Logic.SGT_LOGIC_PATTERN_VARIABLE)) {
       { PatternVariable variable000 = ((PatternVariable)(variable));
 
@@ -29572,15 +30333,11 @@ public class Logic {
           }
           else if (localvalue != null) {
             mapping.insertAt(variable000, localvalue);
-            if (Stella_Object.isaP(localvalue, Logic.SGT_LOGIC_LOGIC_OBJECT)) {
-              queue.push(variable000);
-            }
           }
           else {
             { Skolem skolem = Logic.createVariableOrSkolem(variable000.skolemType, null);
 
               mapping.insertAt(variable000, skolem);
-              queue.push(variable000);
             }
           }
         }
@@ -29591,10 +30348,8 @@ public class Logic {
     return (true);
   }
 
-  public static Cons inheritDescriptionPropositions(Vector arguments, Description description) {
-    { KeyValueList mapping = KeyValueList.newKeyValueList();
-      List variablequeue = List.newList();
-      List structuralfunctions = List.newList();
+  public static Cons inheritDescriptionPropositions(Vector arguments, Description description, Object [] MV_returnarray) {
+    { KeyValueMap mapping = KeyValueMap.newKeyValueMap();
 
       { PatternVariable v = null;
         Vector vector000 = description.ioVariables;
@@ -29609,55 +30364,25 @@ public class Logic {
                   (index001 < length001); index000 = index000 + 1, index001 = index001 + 1) {
           v = ((PatternVariable)((vector000.theArray)[index000]));
           arg = (vector001.theArray)[index001];
-          if (!(Logic.mapAndEnqueueVariableP(v, arg, mapping, variablequeue))) {
-            return (Stella.NIL);
-          }
-        }
-      }
-      { PatternVariable v = null;
-        Vector vector002 = description.internalVariables;
-        int index002 = 0;
-        int length002 = vector002.length();
-        Cons collect000 = null;
+          if (!(Logic.mapAndEnqueueVariableP(v, arg, mapping))) {
+            { Cons _return_temp = Stella.NIL;
 
-        for (;index002 < length002; index002 = index002 + 1) {
-          v = ((PatternVariable)((vector002.theArray)[index002]));
-          if (collect000 == null) {
-            {
-              collect000 = Stella_Object.cons(v, Stella.NIL);
-              if (variablequeue.theConsList == Stella.NIL) {
-                variablequeue.theConsList = collect000;
-              }
-              else {
-                Cons.addConsToEndOfConsList(variablequeue.theConsList, collect000);
-              }
-            }
-          }
-          else {
-            {
-              collect000.rest = Stella_Object.cons(v, Stella.NIL);
-              collect000 = collect000.rest;
+              MV_returnarray[0] = null;
+              return (_return_temp);
             }
           }
         }
       }
-      Proposition.collectStructuralFunctions(description.proposition, structuralfunctions);
-      loop002 : for (;;) {
-        if (variablequeue.emptyP()) {
-          break loop002;
-        }
-        { PatternVariable variable = ((PatternVariable)(variablequeue.pop()));
+      { Proposition p = null;
+        Cons iter000 = Description.getStructuralFunctionEvaluationOrder(description).theConsList;
 
-          { Proposition p = null;
-            Iterator iter000 = Logic.unfilteredDependentPropositions(variable, null).allocateIterator();
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          p = ((Proposition)(iter000.value));
+          if (!(Proposition.mapFunctionalValueP(p, mapping))) {
+            { Cons _return_temp = Stella.NIL;
 
-            while (iter000.nextP()) {
-              p = ((Proposition)(iter000.value));
-              if (structuralfunctions.memberP(p)) {
-                if (!(Proposition.mapFunctionalValueP(p, mapping, variablequeue))) {
-                  return (Stella.NIL);
-                }
-              }
+              MV_returnarray[0] = null;
+              return (_return_temp);
             }
           }
         }
@@ -29670,7 +30395,11 @@ public class Logic {
             it.valueSetter(Proposition.recursivelyFastenDownPropositions(((Proposition)(it.value)), false));
           }
         }
-        return (propositions);
+        { Cons _return_temp = propositions;
+
+          MV_returnarray[0] = mapping;
+          return (_return_temp);
+        }
       }
     }
   }
@@ -29701,32 +30430,41 @@ public class Logic {
   }
 
   public static void vectorDinheritUnnamedDescription(Vector arguments, Description description, boolean defaulttrueP) {
-    { Proposition prop = null;
-      Cons iter000 = Logic.inheritDescriptionPropositions(arguments, description);
-      Cons collect000 = null;
+    { Cons propositions = null;
+      KeyValueMap mapping = null;
 
-      loop000 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-        prop = ((Proposition)(iter000.value));
-        if (!Proposition.trueP(prop)) {
-          Proposition.assignTruthValue(prop, (defaulttrueP ? Logic.DEFAULT_TRUE_TRUTH_VALUE : Logic.TRUE_TRUTH_VALUE));
-          if (!(((Cons)(Logic.$COLLECTFORWARDPROPOSITIONS$.get())) != null)) {
-            continue loop000;
-          }
-          if (collect000 == null) {
-            {
-              collect000 = Stella_Object.cons(prop, Stella.NIL);
-              if (((Cons)(Logic.$COLLECTFORWARDPROPOSITIONS$.get())) == Stella.NIL) {
-                Native.setSpecial(Logic.$COLLECTFORWARDPROPOSITIONS$, collect000);
-              }
-              else {
-                Cons.addConsToEndOfConsList(((Cons)(Logic.$COLLECTFORWARDPROPOSITIONS$.get())), collect000);
+      { Object [] caller_MV_returnarray = new Object[1];
+
+        propositions = Logic.inheritDescriptionPropositions(arguments, description, caller_MV_returnarray);
+        mapping = ((KeyValueMap)(caller_MV_returnarray[0]));
+      }
+      { Proposition prop = null;
+        Cons iter000 = Logic.filterImpliedSkolemPropositions(propositions, description, arguments, mapping);
+        Cons collect000 = null;
+
+        loop000 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          prop = ((Proposition)(iter000.value));
+          if (!Proposition.trueP(prop)) {
+            Proposition.assignTruthValue(prop, (defaulttrueP ? Logic.DEFAULT_TRUE_TRUTH_VALUE : Logic.TRUE_TRUTH_VALUE));
+            if (!(((Cons)(Logic.$COLLECTFORWARDPROPOSITIONS$.get())) != null)) {
+              continue loop000;
+            }
+            if (collect000 == null) {
+              {
+                collect000 = Cons.cons(prop, Stella.NIL);
+                if (((Cons)(Logic.$COLLECTFORWARDPROPOSITIONS$.get())) == Stella.NIL) {
+                  Native.setSpecial(Logic.$COLLECTFORWARDPROPOSITIONS$, collect000);
+                }
+                else {
+                  Cons.addConsToEndOfConsList(((Cons)(Logic.$COLLECTFORWARDPROPOSITIONS$.get())), collect000);
+                }
               }
             }
-          }
-          else {
-            {
-              collect000.rest = Stella_Object.cons(prop, Stella.NIL);
-              collect000 = collect000.rest;
+            else {
+              {
+                collect000.rest = Cons.cons(prop, Stella.NIL);
+                collect000 = collect000.rest;
+              }
             }
           }
         }
@@ -29742,7 +30480,7 @@ public class Logic {
 
           if (!(Proposition.trueP(prop))) {
             if (((Cons)(Logic.$COLLECTFORWARDPROPOSITIONS$.get())) != null) {
-              Native.setSpecial(Logic.$COLLECTFORWARDPROPOSITIONS$, Stella_Object.cons(prop, ((Cons)(Logic.$COLLECTFORWARDPROPOSITIONS$.get()))));
+              Native.setSpecial(Logic.$COLLECTFORWARDPROPOSITIONS$, Cons.cons(prop, ((Cons)(Logic.$COLLECTFORWARDPROPOSITIONS$.get()))));
             }
             Proposition.assignTruthValue(prop, (defaulttrueP ? Logic.DEFAULT_TRUE_TRUTH_VALUE : Logic.TRUE_TRUTH_VALUE));
           }
@@ -29875,7 +30613,7 @@ public class Logic {
 
               while (iter001.nextP()) {
                 renamed_Super = ((LogicObject)(iter001.value));
-                descriptions = Stella_Object.cons(renamed_Super, descriptions);
+                descriptions = Cons.cons(renamed_Super, descriptions);
               }
             }
             recomputeP = true;
@@ -29905,7 +30643,7 @@ public class Logic {
 
               while (iter001.nextP()) {
                 renamed_Super = ((LogicObject)(iter001.value));
-                descriptions = Stella_Object.cons(renamed_Super, descriptions);
+                descriptions = Cons.cons(renamed_Super, descriptions);
               }
             }
             recomputeP = true;
@@ -30044,7 +30782,7 @@ public class Logic {
             while (iter001.nextP()) {
               a = ((LogicObject)(iter001.value));
               if (!supers.memberP(a)) {
-                collection = Stella_Object.cons(a, collection);
+                collection = Cons.cons(a, collection);
               }
             }
           }
@@ -30119,7 +30857,7 @@ public class Logic {
             }
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(p, Stella.NIL);
+                collect000 = Cons.cons(p, Stella.NIL);
                 if (downclassifiedparents == Stella.NIL) {
                   downclassifiedparents = collect000;
                 }
@@ -30130,7 +30868,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(p, Stella.NIL);
+                collect000.rest = Cons.cons(p, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -30150,7 +30888,7 @@ public class Logic {
                 if (Description.namedDescriptionP(((Description)(p)))) {
                   if (collect001 == null) {
                     {
-                      collect001 = Stella_Object.cons(p, Stella.NIL);
+                      collect001 = Cons.cons(p, Stella.NIL);
                       if (namedparents == Stella.NIL) {
                         namedparents = collect001;
                       }
@@ -30161,7 +30899,7 @@ public class Logic {
                   }
                   else {
                     {
-                      collect001.rest = Stella_Object.cons(p, Stella.NIL);
+                      collect001.rest = Cons.cons(p, Stella.NIL);
                       collect001 = collect001.rest;
                     }
                   }
@@ -30383,7 +31121,7 @@ public class Logic {
                       if (testValue000) {
                         if (collect000 == null) {
                           {
-                            collect000 = Stella_Object.cons(d, Stella.NIL);
+                            collect000 = Cons.cons(d, Stella.NIL);
                             if (unclassified == Stella.NIL) {
                               unclassified = collect000;
                             }
@@ -30394,7 +31132,7 @@ public class Logic {
                         }
                         else {
                           {
-                            collect000.rest = Stella_Object.cons(d, Stella.NIL);
+                            collect000.rest = Cons.cons(d, Stella.NIL);
                             collect000 = collect000.rest;
                           }
                         }
@@ -30582,7 +31320,7 @@ public class Logic {
                       if (testValue000) {
                         if (collect000 == null) {
                           {
-                            collect000 = Stella_Object.cons(i, Stella.NIL);
+                            collect000 = Cons.cons(i, Stella.NIL);
                             if (unclassified == Stella.NIL) {
                               unclassified = collect000;
                             }
@@ -30593,7 +31331,7 @@ public class Logic {
                         }
                         else {
                           {
-                            collect000.rest = Stella_Object.cons(i, Stella.NIL);
+                            collect000.rest = Cons.cons(i, Stella.NIL);
                             collect000 = collect000.rest;
                           }
                         }
@@ -30702,7 +31440,7 @@ public class Logic {
    * @return List
    */
   public static List listFeatures() {
-    return (Stella.list(Stella_Object.cons(Logic.$CURRENT_POWERLOOM_FEATURES$, Stella_Object.cons(Logic.$AVAILABLE_POWERLOOM_FEATURES$, Stella.NIL))));
+    return (List.list(Cons.cons(Logic.$CURRENT_POWERLOOM_FEATURES$, Cons.cons(Logic.$AVAILABLE_POWERLOOM_FEATURES$, Stella.NIL))));
   }
 
   /** Enable the PowerLoom environment feature <code>feature</code>.
@@ -30711,13 +31449,16 @@ public class Logic {
   public static void setPowerloomFeature(Keyword feature) {
     if (!(Logic.$CURRENT_POWERLOOM_FEATURES$.memberP(feature))) {
       if (feature == Logic.KWD_TRACE_SUBGOALS) {
-        Stella.addTrace(Stella_Object.cons(Logic.KWD_GOAL_TREE, Stella.NIL));
+        Logic.clearCaches();
+        Stella.addTrace(Cons.cons(Logic.KWD_GOAL_TREE, Stella.NIL));
       }
       else if (feature == Logic.KWD_TRACE_SOLUTIONS) {
-        Stella.addTrace(Stella_Object.cons(Logic.KWD_TRACE_SOLUTIONS, Stella.NIL));
+        Logic.clearCaches();
+        Stella.addTrace(Cons.cons(Logic.KWD_TRACE_SOLUTIONS, Stella.NIL));
       }
       else if (feature == Logic.KWD_TRACE_CLASSIFIER) {
-        Stella.addTrace(Stella_Object.cons(Logic.KWD_CLASSIFIER_INFERENCES, Stella.NIL));
+        Logic.clearCaches();
+        Stella.addTrace(Cons.cons(Logic.KWD_CLASSIFIER_INFERENCES, Stella.NIL));
       }
       else if (feature == Logic.KWD_CLOSED_WORLD) {
       }
@@ -30781,7 +31522,7 @@ public class Logic {
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           featurename = iter000.value;
-          Logic.setPowerloomFeature(Stella.string_keywordify(Logic.coerceToString(featurename)));
+          Logic.setPowerloomFeature(Stella.string_keywordify(Stella_Object.coerceToString(featurename)));
         }
       }
     } catch (LogicException e) {
@@ -30800,13 +31541,13 @@ public class Logic {
   public static void unsetPowerloomFeature(Keyword feature) {
     if (Logic.$CURRENT_POWERLOOM_FEATURES$.memberP(feature)) {
       if (feature == Logic.KWD_TRACE_SUBGOALS) {
-        Stella.dropTrace(Stella_Object.cons(Logic.KWD_GOAL_TREE, Stella.NIL));
+        Stella.dropTrace(Cons.cons(Logic.KWD_GOAL_TREE, Stella.NIL));
       }
       else if (feature == Logic.KWD_TRACE_SOLUTIONS) {
-        Stella.dropTrace(Stella_Object.cons(Logic.KWD_TRACE_SOLUTIONS, Stella.NIL));
+        Stella.dropTrace(Cons.cons(Logic.KWD_TRACE_SOLUTIONS, Stella.NIL));
       }
       else if (feature == Logic.KWD_TRACE_CLASSIFIER) {
-        Stella.dropTrace(Stella_Object.cons(Logic.KWD_CLASSIFIER_INFERENCES, Stella.NIL));
+        Stella.dropTrace(Cons.cons(Logic.KWD_CLASSIFIER_INFERENCES, Stella.NIL));
       }
       else if (feature == Logic.KWD_CLOSED_WORLD) {
       }
@@ -30853,7 +31594,7 @@ public class Logic {
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           featurename = iter000.value;
-          Logic.unsetPowerloomFeature(Stella.string_keywordify(Logic.coerceToString(featurename)));
+          Logic.unsetPowerloomFeature(Stella.string_keywordify(Stella_Object.coerceToString(featurename)));
         }
       }
     } catch (LogicException e) {
@@ -30909,256 +31650,8 @@ public class Logic {
     return (!Logic.$CURRENT_POWERLOOM_FEATURES$.membP(feature));
   }
 
-  public static Stella_Object coerceOptionValue(Stella_Object value, Surrogate type) {
-    if (type == Logic.SGT_STELLA_INTEGER) {
-      { Surrogate testValue000 = Stella_Object.safePrimaryType(value);
-
-        if (Surrogate.subtypeOfIntegerP(testValue000)) {
-          { IntegerWrapper value000 = ((IntegerWrapper)(value));
-
-            return (value000);
-          }
-        }
-        else if (Surrogate.subtypeOfFloatP(testValue000)) {
-          { FloatWrapper value000 = ((FloatWrapper)(value));
-
-            return (IntegerWrapper.wrapInteger(Native.floor(value000.wrapperValue)));
-          }
-        }
-        else {
-        }
-      }
-    }
-    else if (type == Logic.SGT_STELLA_FLOAT) {
-      { Surrogate testValue001 = Stella_Object.safePrimaryType(value);
-
-        if (Surrogate.subtypeOfIntegerP(testValue001)) {
-          { IntegerWrapper value000 = ((IntegerWrapper)(value));
-
-            return (FloatWrapper.wrapFloat(value000.wrapperValue * 1.0));
-          }
-        }
-        else if (Surrogate.subtypeOfFloatP(testValue001)) {
-          { FloatWrapper value000 = ((FloatWrapper)(value));
-
-            return (FloatWrapper.wrapFloat(value000.wrapperValue * 1.0));
-          }
-        }
-        else {
-        }
-      }
-    }
-    else if (type == Logic.SGT_STELLA_NUMBER) {
-      { Surrogate testValue002 = Stella_Object.safePrimaryType(value);
-
-        if (Surrogate.subtypeOfIntegerP(testValue002)) {
-          { IntegerWrapper value000 = ((IntegerWrapper)(value));
-
-            return (value000);
-          }
-        }
-        else if (Surrogate.subtypeOfFloatP(testValue002)) {
-          { FloatWrapper value000 = ((FloatWrapper)(value));
-
-            return (value000);
-          }
-        }
-        else {
-        }
-      }
-    }
-    else if (type == Logic.SGT_STELLA_KEYWORD) {
-      { Surrogate testValue003 = Stella_Object.safePrimaryType(value);
-
-        if (Surrogate.subtypeOfP(testValue003, Logic.SGT_STELLA_GENERALIZED_SYMBOL)) {
-          { GeneralizedSymbol value000 = ((GeneralizedSymbol)(value));
-
-            return (value000.keywordify());
-          }
-        }
-        else if (Surrogate.subtypeOfStringP(testValue003)) {
-          { StringWrapper value000 = ((StringWrapper)(value));
-
-            return (value000.keywordify());
-          }
-        }
-        else {
-        }
-      }
-    }
-    else if (type == Logic.SGT_STELLA_SYMBOL) {
-      { Surrogate testValue004 = Stella_Object.safePrimaryType(value);
-
-        if (Surrogate.subtypeOfKeywordP(testValue004)) {
-          { Keyword value000 = ((Keyword)(value));
-
-            return (Stella.internSymbol(value000.symbolName));
-          }
-        }
-        else if (Surrogate.subtypeOfSurrogateP(testValue004)) {
-          { Surrogate value000 = ((Surrogate)(value));
-
-            return (GeneralizedSymbol.internDerivedSymbol(value000, value000.symbolName));
-          }
-        }
-        else if (Surrogate.subtypeOfSymbolP(testValue004)) {
-          { Symbol value000 = ((Symbol)(value));
-
-            return (value000);
-          }
-        }
-        else if (Surrogate.subtypeOfStringP(testValue004)) {
-          { StringWrapper value000 = ((StringWrapper)(value));
-
-            return (Stella.internSymbol(value000.wrapperValue));
-          }
-        }
-        else {
-        }
-      }
-    }
-    else if (type == Logic.SGT_STELLA_BOOLEAN) {
-      return (Stella_Object.coerceToBoolean(value));
-    }
-    else if (type == Logic.SGT_STELLA_MODULE) {
-      return (Stella_Object.coerceToModule(value, false));
-    }
-    else if ((type == Logic.SGT_LOGIC_DESCRIPTION) ||
-        (type == Logic.SGT_LOGIC_NAMED_DESCRIPTION)) {
-      return (Logic.coerceToDescription(value, null));
-    }
-    else {
-      if (type == null) {
-        return (value);
-      }
-      else if (Stella_Object.isaP(value, type)) {
-        return (value);
-      }
-      else if (Stella_Object.isaP(value, type.typeToWrappedType())) {
-        return (value);
-      }
-    }
-    return (null);
-  }
-
   public static PropertyList parseLogicCommandOptions(Stella_Object options, Cons legaloptionsAtypes, boolean coercionerrorP, boolean allowotherkeysP) {
-    { PropertyList self000 = PropertyList.newPropertyList();
-
-      self000.thePlist = legaloptionsAtypes;
-      { PropertyList legaloptions = self000;
-        PropertyList parsedoptions = null;
-        Surrogate type = null;
-        Stella_Object corecedvalue = null;
-
-        { Surrogate testValue000 = Stella_Object.safePrimaryType(options);
-
-          if (testValue000 == Logic.SGT_STELLA_CONS) {
-            { Cons options000 = ((Cons)(options));
-
-              if ((((options000.length()) % 2) == 1)) {
-                { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-                  { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
-
-                    try {
-                      Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-                      stream000.nativeStream.println("PARSING ERROR: Odd-length command options list: `" + options000 + "'.");
-                      Logic.helpSignalPropositionError(stream000, Logic.KWD_ERROR);
-
-                    } finally {
-                      Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
-                    }
-                  }
-                  throw ((ParsingError)(ParsingError.newParsingError(stream000.theStringReader()).fillInStackTrace()));
-                }
-              }
-              { PropertyList self003 = PropertyList.newPropertyList();
-
-                self003.thePlist = options000;
-                parsedoptions = self003;
-              }
-            }
-          }
-          else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_STELLA_PROPERTY_LIST)) {
-            { PropertyList options000 = ((PropertyList)(options));
-
-              parsedoptions = options000;
-            }
-          }
-          else {
-            { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
-
-              { Object old$PrintreadablyP$001 = Stella.$PRINTREADABLYp$.get();
-
-                try {
-                  Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-                  stream001.nativeStream.println("PARSING ERROR: Illegal command options specification: `" + options + "'.");
-                  Logic.helpSignalPropositionError(stream001, Logic.KWD_ERROR);
-
-                } finally {
-                  Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$001);
-                }
-              }
-              throw ((ParsingError)(ParsingError.newParsingError(stream001.theStringReader()).fillInStackTrace()));
-            }
-          }
-        }
-        if (legaloptions != null) {
-          { Stella_Object key = null;
-            Stella_Object value = null;
-            Cons iter000 = parsedoptions.thePlist;
-
-            for (;!(iter000 == Stella.NIL); iter000 = iter000.rest.rest) {
-              key = iter000.value;
-              value = iter000.rest.value;
-              type = ((Surrogate)(legaloptions.lookup(key)));
-              if ((type == null) &&
-                  (!allowotherkeysP)) {
-                { OutputStringStream stream002 = OutputStringStream.newOutputStringStream();
-
-                  { Object old$PrintreadablyP$002 = Stella.$PRINTREADABLYp$.get();
-
-                    try {
-                      Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-                      stream002.nativeStream.println("PARSING ERROR: Illegal option: `" + key + "'.");
-                      Logic.helpSignalPropositionError(stream002, Logic.KWD_ERROR);
-
-                    } finally {
-                      Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$002);
-                    }
-                  }
-                  throw ((ParsingError)(ParsingError.newParsingError(stream002.theStringReader()).fillInStackTrace()));
-                }
-              }
-              if (!((type == Logic.SGT_LOGIC_IDENTITY) ||
-                  (value == null))) {
-                corecedvalue = Logic.coerceOptionValue(value, type);
-                if (coercionerrorP &&
-                    (corecedvalue == null)) {
-                  { OutputStringStream stream003 = OutputStringStream.newOutputStringStream();
-
-                    { Object old$PrintreadablyP$003 = Stella.$PRINTREADABLYp$.get();
-
-                      try {
-                        Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-                        stream003.nativeStream.println("PARSING ERROR: Can't corerce `" + value + "' to type `" + type + "'.");
-                        Logic.helpSignalPropositionError(stream003, Logic.KWD_ERROR);
-
-                      } finally {
-                        Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$003);
-                      }
-                    }
-                    throw ((ParsingError)(ParsingError.newParsingError(stream003.theStringReader()).fillInStackTrace()));
-                  }
-                }
-                parsedoptions.insertAt(key, corecedvalue);
-              }
-            }
-          }
-        }
-        return (parsedoptions);
-      }
-    }
+    return (Stella_Object.parseOptions(options, legaloptionsAtypes, coercionerrorP, allowotherkeysP));
   }
 
   public static void printLogicPrompt() {
@@ -31262,6 +31755,7 @@ public class Logic {
   public static void logicCommandLoop(Module module) {
     { Stella_Object command = null;
       Stella_Object result = null;
+      boolean eofP = false;
       boolean exitP = false;
       boolean exitcommandP = false;
 
@@ -31275,7 +31769,15 @@ public class Logic {
             try {
               System.out.println();
               Logic.printLogicPrompt();
-              command = InputStream.readSExpression(Stella.STANDARD_INPUT, new Object[1]);
+              { Object [] caller_MV_returnarray = new Object[1];
+
+                command = InputStream.readSExpression(Stella.STANDARD_INPUT, caller_MV_returnarray);
+                eofP = ((boolean)(((BooleanWrapper)(caller_MV_returnarray[0])).wrapperValue));
+              }
+              if (eofP) {
+                System.out.println("End of File encountered.  Exiting.");
+                break loop000;
+              }
               System.out.println();
               { Object [] caller_MV_returnarray = new Object[1];
 
@@ -31290,8 +31792,11 @@ public class Logic {
               }
               result = Logic.evaluateLogicCommand(command, false);
               Logic.printLogicCommandResult(result);
+            } catch (LogicException le) {
+              Stella.STANDARD_ERROR.nativeStream.print(">> Error: " + Stella.exceptionMessage(le));
             } catch (StellaException e) {
-              Stella.STANDARD_ERROR.nativeStream.print(">> Error: " + Stella.exceptionMessage(e));
+              Stella.STANDARD_ERROR.nativeStream.print(">> Internal Error: " + Stella.exceptionMessage(e));
+              Stella.printExceptionContext(e, Stella.STANDARD_ERROR);
             }
           }
 
@@ -31337,12 +31842,12 @@ public class Logic {
                       command000.value = operator000;
                     }
                     if (Stella.stringEqualP(operatorname, "IN-MODULE")) {
-                      Cons.handleInModuleTree(command000, false, new Object[1]);
+                      Cons.handleInModuleTree(command000, false, false, new Object[1]);
                     }
                     else if (Stella.stringEqualP(operatorname, "IN-PACKAGE")) {
                     }
                     else if (Cons.declarationTreeP(command000)) {
-                      Native.setSpecial(Stella.$TRANSLATIONUNITS$, Stella.list(Stella.NIL));
+                      Native.setSpecial(Stella.$TRANSLATIONUNITS$, List.list(Stella.NIL));
                       Cons.walkTopLevelTree(command000, false);
                       switch (((List)(Stella.$TRANSLATIONUNITS$.get())).reverse().length()) {
                         case 0: 
@@ -31365,7 +31870,7 @@ public class Logic {
                                 unit = ((TranslationUnit)(iter000.value));
                                 if (collect000 == null) {
                                   {
-                                    collect000 = Stella_Object.cons(unit.theObject, Stella.NIL);
+                                    collect000 = Cons.cons(unit.theObject, Stella.NIL);
                                     if (results == Stella.NIL) {
                                       results = collect000;
                                     }
@@ -31376,7 +31881,7 @@ public class Logic {
                                 }
                                 else {
                                   {
-                                    collect000.rest = Stella_Object.cons(unit.theObject, Stella.NIL);
+                                    collect000.rest = Cons.cons(unit.theObject, Stella.NIL);
                                     collect000 = collect000.rest;
                                   }
                                 }
@@ -31438,172 +31943,6 @@ public class Logic {
     }
   }
 
-  public static Cons parseDirectoryPath(String path) {
-    { char separator = '|';
-      int length = path.length();
-      int start = 0;
-      int end = 0;
-      Cons parsedpath = Stella.NIL;
-
-      loop000 : for (;;) {
-        end = Native.string_position(path, separator, start);
-        parsedpath = Stella_Object.cons(StringWrapper.wrapString(Stella.fileNameAsDirectory(Native.string_subsequence(path, start, end))), parsedpath);
-        if ((end != Stella.NULL_INTEGER) &&
-            (end < (length - 1))) {
-          start = end + 1;
-        }
-        else {
-          break loop000;
-        }
-      }
-      return (parsedpath.reverse());
-    }
-  }
-
-  /** Set the PowerLoom load path to the |-separated
-   * directories listed in <code>path</code>.  Return the resulting load path.
-   * @param path
-   * @return Cons
-   */
-  public static Cons setLoadPath(String path) {
-    Logic.$FILE_LOAD_PATH$ = Logic.parseDirectoryPath(path);
-    return (Logic.$FILE_LOAD_PATH$);
-  }
-
-  public static Cons setLoadPathEvaluatorWrapper(Cons arguments) {
-    return (Logic.setLoadPath(((StringWrapper)(arguments.value)).wrapperValue));
-  }
-
-  /** Return the current PowerLoom load path.
-   * @return Cons
-   */
-  public static Cons getLoadPath() {
-    return (Logic.$FILE_LOAD_PATH$);
-  }
-
-  /** Add the directories listed in the |-separated
-   * <code>path</code> to the front of the PowerLoom load path.  Return the
-   * resulting load path.
-   * @param path
-   * @return Cons
-   */
-  public static Cons pushLoadPath(String path) {
-    Logic.$FILE_LOAD_PATH$ = Logic.parseDirectoryPath(path).concatenate(Logic.$FILE_LOAD_PATH$, Stella.NIL);
-    return (Logic.$FILE_LOAD_PATH$);
-  }
-
-  public static Cons pushLoadPathEvaluatorWrapper(Cons arguments) {
-    return (Logic.pushLoadPath(((StringWrapper)(arguments.value)).wrapperValue));
-  }
-
-  /** Remove the first element from the PowerLoom load path
-   * and return the removed element.
-   * @return String
-   */
-  public static String popLoadPath() {
-    { StringWrapper head000 = ((StringWrapper)(Logic.$FILE_LOAD_PATH$.value));
-
-      Logic.$FILE_LOAD_PATH$ = Logic.$FILE_LOAD_PATH$.rest;
-      { StringWrapper value000 = head000;
-
-        return (value000.wrapperValue);
-      }
-    }
-  }
-
-  public static StringWrapper popLoadPathEvaluatorWrapper(Cons arguments) {
-    arguments = arguments;
-    { String result = Logic.popLoadPath();
-
-      if (result != null) {
-        return (StringWrapper.wrapString(result));
-      }
-      else {
-        return (null);
-      }
-    }
-  }
-
-  /** Append the directories listed in the |-separated
-   * <code>path</code> to the end of the PowerLoom load path.  Return the
-   * resulting load path.
-   * @param path
-   * @return Cons
-   */
-  public static Cons addLoadPath(String path) {
-    Logic.$FILE_LOAD_PATH$ = Logic.$FILE_LOAD_PATH$.concatenate(Logic.parseDirectoryPath(path), Stella.NIL);
-    return (Logic.$FILE_LOAD_PATH$);
-  }
-
-  public static Cons addLoadPathEvaluatorWrapper(Cons arguments) {
-    return (Logic.addLoadPath(((StringWrapper)(arguments.value)).wrapperValue));
-  }
-
-  /** Remove the directories listed in the |-separated
-   * <code>path</code> from the PowerLoom load path.
-   * @param path
-   * @return Cons
-   */
-  public static Cons dropLoadPath(String path) {
-    { StringWrapper dir = null;
-      Cons iter000 = Logic.parseDirectoryPath(path);
-
-      for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-        dir = ((StringWrapper)(iter000.value));
-        Logic.$FILE_LOAD_PATH$ = Logic.$FILE_LOAD_PATH$.remove(dir);
-      }
-    }
-    return (Logic.$FILE_LOAD_PATH$);
-  }
-
-  public static Cons dropLoadPathEvaluatorWrapper(Cons arguments) {
-    return (Logic.dropLoadPath(((StringWrapper)(arguments.value)).wrapperValue));
-  }
-
-  /** Try to find <code>file</code> in the current load path and, if found,
-   * return its full name.  If <code>file</code> doesn't have its own extension try to find
-   * it with any of the listed <code>extensions</code>.  If <code>extensions</code> is NULL it defaults
-   * to <code>$POWERLOOM_KB_FILE_EXTENSIONS$</code>, therefore, to not default to any extensions
-   * the value has to be supplied as NIL.
-   * @param file
-   * @param extensions
-   * @return String
-   */
-  public static String findFileInLoadPath(String file, Cons extensions) {
-    { String type = Stella.fileExtension(file);
-      String expandedfile = file;
-
-      if (extensions == null) {
-        extensions = Logic.$POWERLOOM_KB_FILE_EXTENSIONS$;
-      }
-      { Stella_Object dir = null;
-        Cons iter000 = Stella_Object.cons(StringWrapper.wrapString(""), Logic.$FILE_LOAD_PATH$);
-
-        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-          dir = iter000.value;
-          expandedfile = StringWrapper.unwrapString(((StringWrapper)(dir))) + file;
-          if (Native.probeFileP(expandedfile)) {
-            return (expandedfile);
-          }
-          if (type == null) {
-            { StringWrapper ext = null;
-              Cons iter001 = extensions;
-
-              for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
-                ext = ((StringWrapper)(iter001.value));
-                expandedfile = StringWrapper.unwrapString(((StringWrapper)(dir))) + file + ext.wrapperValue;
-                if (Native.probeFileP(expandedfile)) {
-                  return (expandedfile);
-                }
-              }
-            }
-          }
-        }
-      }
-      return (null);
-    }
-  }
-
   /** Read logic commands from <code>file</code> and evaluate them.
    * By default, this will check for each asserted proposition whether an
    * equivalent proposition already exists and, if so, not assert the
@@ -31611,16 +31950,22 @@ public class Logic {
    * can be skipped by setting the option :check-duplicates? to false.
    * This can save time when loading large KBs where it is known that no
    * duplicate assertions exist in a file.
+   * <p>
+   * Also, by setting the option :module, the module in which the file
+   * contents will be loaded will be set.  This will only affect files
+   * that do NOT have an <code>inModule</code> declaration as part of the file.
+   * If this is not set, and no <code>inModule</code> declaration is in the file,
+   * then an error will be signaled.
    * @param file
    * @param options
    */
   public static void load(String file, Cons options) {
-    { String temp000 = Logic.findFileInLoadPath(file, Logic.$POWERLOOM_KB_FILE_EXTENSIONS$);
+    { String temp000 = Stella.findFileInLoadPath(file, Logic.$POWERLOOM_KB_FILE_EXTENSIONS$);
 
       file = ((temp000 != null) ? temp000 : file);
     }
     Stella.ensureFileExists(file, "load");
-    { PropertyList theoptions = Logic.parseLogicCommandOptions(options, Stella.list$(Stella_Object.cons(Logic.KWD_CHECK_DUPLICATESp, Stella_Object.cons(Logic.SGT_STELLA_BOOLEAN, Stella_Object.cons(Stella.NIL, Stella.NIL)))), true, false);
+    { PropertyList theoptions = Logic.parseLogicCommandOptions(options, Cons.list$(Cons.cons(Logic.KWD_CHECK_DUPLICATESp, Cons.cons(Logic.SGT_STELLA_BOOLEAN, Cons.cons(Logic.KWD_MODULE, Cons.cons(Logic.SGT_STELLA_MODULE, Cons.cons(Stella.NIL, Stella.NIL)))))), true, false);
       boolean toplevelinvocationP = ((String)(Stella.$CURRENTFILE$.get())) == null;
       InputFileStream inputstream = null;
 
@@ -31632,7 +31977,7 @@ public class Logic {
             Native.setSpecial(Stella.$CURRENTFILE$, Stella.fileBaseName(file));
             Native.setBooleanSpecial(Logic.$DONT_CHECK_FOR_DUPLICATE_PROPOSITIONSp$, !BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(theoptions.lookupWithDefault(Logic.KWD_CHECK_DUPLICATESp, Stella.TRUE_WRAPPER)))));
             inputstream = InputFileStream.newInputFileStream(file);
-            Logic.loadStream(inputstream);
+            Logic.loadStreamInModule(inputstream, ((Module)(theoptions.lookup(Logic.KWD_MODULE))));
 
           } finally {
             Logic.$DONT_CHECK_FOR_DUPLICATE_PROPOSITIONSp$.set(old$DontCheckForDuplicatePropositionsP$000);
@@ -31669,20 +32014,39 @@ public class Logic {
    * @param stream
    */
   public static void loadStream(InputStream stream) {
+    Logic.loadStreamInModule(stream, null);
+  }
+
+  /** Read logic commands from <code>stream</code> and evaluate them.  If <code>defaultModule</code>
+   * is not <code>null</code>, then any commands will be read into that module unless
+   * an <code>inModule</code> declaration is encountered which will over-ride the default
+   * value.  If noe <code>defaultModule</code> is specified, and the input stream does
+   * not have an <code>inModule</code> form, an error is signaled.
+   * @param stream
+   * @param defaultModule
+   */
+  public static void loadStreamInModule(InputStream stream, Module defaultModule) {
     { Keyword currentdialect = ((Keyword)(Logic.$LOGIC_DIALECT$.get()));
       boolean skipcommandP = false;
-      boolean seeninmoduleP = false;
+      boolean seeninmoduleP = defaultModule != null;
       Cons commands = Stella.NIL;
+      Module loadModule = (seeninmoduleP ? defaultModule : ((Module)(Stella.$MODULE$.get())));
 
       { Object old$LogicDialect$000 = Logic.$LOGIC_DIALECT$.get();
+        Object old$Translationerrors$000 = Stella.$TRANSLATIONERRORS$.get();
+        Object old$Translationwarnings$000 = Stella.$TRANSLATIONWARNINGS$.get();
+        Object old$Translationnotes$000 = Stella.$TRANSLATIONNOTES$.get();
 
         try {
           Native.setSpecial(Logic.$LOGIC_DIALECT$, currentdialect);
+          Native.setIntSpecial(Stella.$TRANSLATIONERRORS$, 0);
+          Native.setIntSpecial(Stella.$TRANSLATIONWARNINGS$, 0);
+          Native.setIntSpecial(Stella.$TRANSLATIONNOTES$, 0);
           { Object old$Module$000 = Stella.$MODULE$.get();
             Object old$Context$000 = Stella.$CONTEXT$.get();
 
             try {
-              Native.setSpecial(Stella.$MODULE$, ((Module)(Stella.$MODULE$.get())));
+              Native.setSpecial(Stella.$MODULE$, loadModule);
               Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
               { Stella_Object tree = null;
                 SExpressionIterator iter000 = InputStream.sExpressions(stream);
@@ -31694,7 +32058,7 @@ public class Logic {
 
                       { Object [] caller_MV_returnarray = new Object[1];
 
-                        skipcommandP = Cons.handleInModuleTree(tree000, seeninmoduleP, caller_MV_returnarray);
+                        skipcommandP = Cons.handleInModuleTree(tree000, seeninmoduleP, false, caller_MV_returnarray);
                         seeninmoduleP = ((boolean)(((BooleanWrapper)(caller_MV_returnarray[0])).wrapperValue));
                       }
                       if (skipcommandP) {
@@ -31720,12 +32084,12 @@ public class Logic {
                             }
                             else if (operator000 == Logic.SYM_LOGIC_IN_DIALECT) {
                               Logic.evaluateLogicCommand(tree000, false);
-                              commands = Stella_Object.cons(tree000, commands);
+                              commands = Cons.cons(tree000, commands);
                             }
                             else {
                               if ((!Logic.definitionNameP(operator000)) &&
                                   (Symbol.lookupCommand(operator000) != null)) {
-                                commands = Stella_Object.cons(tree000, commands);
+                                commands = Cons.cons(tree000, commands);
                               }
                               else {
                                 Logic.evaluateLogicCommand(tree000, false);
@@ -31768,10 +32132,130 @@ public class Logic {
               Stella.$MODULE$.set(old$Module$000);
             }
           }
+          if (!(Stella.ignoreTranslationErrorsP())) {
+            Stella.summarizeTranslationErrors();
+          }
 
         } finally {
+          Stella.$TRANSLATIONNOTES$.set(old$Translationnotes$000);
+          Stella.$TRANSLATIONWARNINGS$.set(old$Translationwarnings$000);
+          Stella.$TRANSLATIONERRORS$.set(old$Translationerrors$000);
           Logic.$LOGIC_DIALECT$.set(old$LogicDialect$000);
         }
+      }
+    }
+  }
+
+  /** Load all PowerLoom files (*.plm) in <code>directory</code> in alphabetic sort order.
+   * @param directory
+   */
+  public static void loadDirectory(String directory) {
+    Logic.plLog(Logic.KWD_LOW, Cons.cons(StringWrapper.wrapString("Loading PowerLoom files from directory "), Cons.cons(StringWrapper.wrapString(directory), Cons.cons(StringWrapper.wrapString("..."), Stella.NIL))));
+    Stella.bumpLogIndent();
+    directory = Stella.fileNameAsDirectory(directory);
+    { StringWrapper file = null;
+      Cons iter000 = Stella.listDirectoryFiles(directory);
+
+      for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+        file = ((StringWrapper)(iter000.value));
+        { boolean foundP000 = false;
+
+          { Stella_Object ext = null;
+            Cons iter001 = Logic.$POWERLOOM_KB_FILE_EXTENSIONS$;
+
+            loop001 : for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+              ext = iter001.value;
+              if (Stella.endsWithP(file.wrapperValue, ((StringWrapper)(ext)).wrapperValue, Stella.NULL_INTEGER)) {
+                foundP000 = true;
+                break loop001;
+              }
+            }
+          }
+          if (foundP000) {
+            Logic.plLog(Logic.KWD_MEDIUM, Cons.cons(StringWrapper.wrapString("Loading file "), Cons.cons(file, Stella.NIL)));
+            Logic.load(directory + file.wrapperValue, Stella.NIL);
+          }
+        }
+      }
+    }
+    Stella.unbumpLogIndent();
+    Logic.processDefinitions();
+  }
+
+  public static void loadDirectoryEvaluatorWrapper(Cons arguments) {
+    Logic.loadDirectory(((StringWrapper)(arguments.value)).wrapperValue);
+  }
+
+  /** Loads all PowerLoom files specified on the command line.
+   * If directories are listed, all PowerLoom files in those directories are loaded.
+   * Since when this is called we might still have unprocessed command line args,
+   * this only looks at files which are to the right of the last argument that
+   * starts with a <code>_</code> character.
+   */
+  public static void loadCmdLineFiles() {
+    { Cons unprocessedargs = Stella.unprocessedCommandLineArguments();
+      String file = null;
+
+      if (unprocessedargs != null) {
+        unprocessedargs = Cons.copyConsList(Stella.unprocessedCommandLineArguments()).reverse();
+        { StringWrapper arg = null;
+          Cons iter000 = unprocessedargs;
+          int i = Stella.NULL_INTEGER;
+          int iter001 = 0;
+
+          loop000 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest, iter001 = iter001 + 1) {
+            arg = ((StringWrapper)(iter000.value));
+            i = iter001;
+            if (Stella.startsWithP(arg.wrapperValue, "-", Stella.NULL_INTEGER)) {
+              if (i == 0) {
+                unprocessedargs = Stella.NIL;
+              }
+              else {
+                unprocessedargs.nthRestSetter(Stella.NIL, i);
+              }
+              break loop000;
+            }
+          }
+        }
+        Logic.plLog(Logic.KWD_LOW, Cons.cons(StringWrapper.wrapString("Loading command line PowerLoom files..."), Stella.NIL));
+        Stella.bumpLogIndent();
+        { StringWrapper arg = null;
+          Cons iter002 = unprocessedargs.reverse();
+
+          for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
+            arg = ((StringWrapper)(iter002.value));
+            { boolean foundP000 = false;
+
+              { Stella_Object ext = null;
+                Cons iter003 = Logic.$POWERLOOM_KB_FILE_EXTENSIONS$;
+
+                loop002 : for (;!(iter003 == Stella.NIL); iter003 = iter003.rest) {
+                  ext = iter003.value;
+                  if (Stella.endsWithP(arg.wrapperValue, ((StringWrapper)(ext)).wrapperValue, Stella.NULL_INTEGER)) {
+                    foundP000 = true;
+                    break loop002;
+                  }
+                }
+              }
+              if (foundP000) {
+                {
+                  { String temp000 = Stella.findFileInLoadPath(arg.wrapperValue, null);
+
+                    file = ((temp000 != null) ? temp000 : arg.wrapperValue);
+                  }
+                  Logic.plLog(Logic.KWD_MEDIUM, Cons.cons(StringWrapper.wrapString("Loading file "), Cons.cons(StringWrapper.wrapString(file), Stella.NIL)));
+                  Logic.load(file, Stella.NIL);
+                }
+              }
+              else {
+                if (Stella.probeFileP(Stella.fileNameAsDirectory(arg.wrapperValue))) {
+                  Logic.loadDirectory(arg.wrapperValue);
+                }
+              }
+            }
+          }
+        }
+        Stella.unbumpLogIndent();
       }
     }
   }
@@ -31869,7 +32353,7 @@ public class Logic {
   }
 
   public static void demoFile(String file, boolean pauseP) {
-    { String temp000 = Logic.findFileInLoadPath(file, Logic.$POWERLOOM_KB_FILE_EXTENSIONS$);
+    { String temp000 = Stella.findFileInLoadPath(file, Logic.$POWERLOOM_KB_FILE_EXTENSIONS$);
 
       file = ((temp000 != null) ? temp000 : file);
     }
@@ -31964,7 +32448,7 @@ public class Logic {
   public static String demoEntryFile(Cons demoentry) {
     { String demobasefile = ((StringWrapper)(demoentry.value)).wrapperValue;
 
-      { String temp000 = Logic.findFileInLoadPath(demobasefile, null);
+      { String temp000 = Stella.findFileInLoadPath(demobasefile, Logic.$POWERLOOM_KB_FILE_EXTENSIONS$);
 
         { String value000 = ((temp000 != null) ? temp000 : demobasefile);
 
@@ -32068,7 +32552,7 @@ public class Logic {
   public static void demo(Cons fileandpause) {
     { Cons thefileandpause = fileandpause;
       Stella_Object filespec = thefileandpause.value;
-      boolean pauseP = !(thefileandpause.rest.value == Logic.SYM_STELLA_FALSE);
+      boolean pauseP = !Stella_Object.eqlP(thefileandpause.rest.value, Stella.FALSE_WRAPPER);
       String file = null;
 
       if (Stella_Object.integerP(filespec)) {
@@ -32195,7 +32679,7 @@ public class Logic {
       CalendarDate finishTime = null;
       Stella_Object loglevel = Stella.lookupLoggingParameter("PowerLoom", Logic.KWD_LEVEL, Logic.KWD_LOW);
 
-      Stella.setLoggingParameters("PowerLoom", Stella_Object.cons(Logic.KWD_LEVEL, Stella_Object.cons(Logic.KWD_NONE, Stella.NIL)));
+      Stella.setLoggingParameters("PowerLoom", Cons.cons(Logic.KWD_LEVEL, Cons.cons(Logic.KWD_NONE, Stella.NIL)));
       {
         System.out.println("RUNNING POWERLOOM TEST SUITE");
         System.out.println("============================");
@@ -32239,7 +32723,7 @@ public class Logic {
         System.out.println();
       }
 ;
-      Stella.setLoggingParameters("PowerLoom", Stella_Object.cons(Logic.KWD_LEVEL, Stella_Object.cons(loglevel, Stella.NIL)));
+      Stella.setLoggingParameters("PowerLoom", Cons.cons(Logic.KWD_LEVEL, Cons.cons(loglevel, Stella.NIL)));
     }
   }
 
@@ -32260,8 +32744,133 @@ public class Logic {
       if (elapsedtime.days > 0) {
         System.out.print(elapsedtime.days + " days, ");
       }
-      System.out.println((elapsedtime.millis / 1000.0) + " secs");
+      System.out.println(Native.round(elapsedtime.millis / 1000.0) + " secs");
       return (result);
+    }
+  }
+
+  public static String getHttpServerSystem() {
+    return ("webtools");
+  }
+
+  /** Start the PowerLoom HTTP server at :port (defaults to 9090).  Loads
+   * the required support systems in Lisp and Java if necessary (C++ is not yet supported).
+   * @param options
+   */
+  public static void startOntosaurus(Cons options) {
+    { PropertyList theoptions = Logic.parseLogicCommandOptions(options, Cons.list$(Cons.cons(Logic.KWD_PORT, Cons.cons(Logic.SGT_STELLA_INTEGER, Cons.cons(Stella.NIL, Stella.NIL)))), true, false);
+      int port = ((IntegerWrapper)(theoptions.lookupWithDefault(Logic.KWD_PORT, IntegerWrapper.wrapInteger(0)))).wrapperValue;
+      String address = null;
+
+      Stella.autoload("ONTOSAURUS/CONTROL-PANEL-HANDLER", "ontosaurus", null, true);
+      address = ((String)(edu.isi.stella.javalib.Native.funcall(Stella.autoload("HTTP/START-HTTP-SERVER", Logic.getHttpServerSystem(), null, true), null, new java.lang.Object [] {new Integer(port)})));
+      Logic.plLog(Logic.KWD_LOW, Cons.cons(StringWrapper.wrapString("Started Ontosaurus, point your browser to `"), Cons.cons(StringWrapper.wrapString(address), Cons.cons(StringWrapper.wrapString("ploom/ontosaurus/'"), Stella.NIL))));
+    }
+  }
+
+  public static void startOntosaurusEvaluatorWrapper(Cons arguments) {
+    Logic.startOntosaurus(arguments);
+  }
+
+  /** Stop the PowerLoom HTTP server and free up any bound ports.
+   * This is a no-op if no server is running or the server is not supported.
+   */
+  public static void stopOntosaurus() {
+    edu.isi.stella.javalib.Native.funcall(Stella.autoload("HTTP/STOP-HTTP-SERVER", Logic.getHttpServerSystem(), null, true), null, new java.lang.Object [] {});
+  }
+
+  /** Start the PowerLoom HTTP server at :port (defaults to 9090).  Loads
+   * the required support systems in Lisp and Java if necessary (C++ is not yet supported).
+   * @param options
+   */
+  public static void startPowerloomServer(Cons options) {
+    { PropertyList theoptions = Logic.parseLogicCommandOptions(options, Cons.list$(Cons.cons(Logic.KWD_PORT, Cons.cons(Logic.SGT_STELLA_INTEGER, Cons.cons(Stella.NIL, Stella.NIL)))), true, false);
+      int port = ((IntegerWrapper)(theoptions.lookupWithDefault(Logic.KWD_PORT, IntegerWrapper.wrapInteger(0)))).wrapperValue;
+      String address = null;
+
+      Stella.autoload("GUI-SERVER/GUI-REQUEST-HANDLER", "powerloom-server", null, true);
+      address = ((String)(edu.isi.stella.javalib.Native.funcall(Stella.autoload("HTTP/START-HTTP-SERVER", Logic.getHttpServerSystem(), null, true), null, new java.lang.Object [] {new Integer(port)})));
+      Logic.plLog(Logic.KWD_LOW, Cons.cons(StringWrapper.wrapString("Started PowerLoom server at `"), Cons.cons(StringWrapper.wrapString(address), Cons.cons(StringWrapper.wrapString("ploom/soap-rpc/...'"), Stella.NIL))));
+    }
+  }
+
+  public static void startPowerloomServerEvaluatorWrapper(Cons arguments) {
+    Logic.startPowerloomServer(arguments);
+  }
+
+  /** Stop the PowerLoom HTTP server and free up any bound ports.
+   * This is a no-op if no server is running or the server is not supported.
+   */
+  public static void stopPowerloomServer() {
+    edu.isi.stella.javalib.Native.funcall(Stella.autoload("HTTP/STOP-HTTP-SERVER", Logic.getHttpServerSystem(), null, true), null, new java.lang.Object [] {});
+  }
+
+  /** Start the PowerLoom server at :port (defaults to 9090) and launches
+   * the GUI which will communicate with the server at that port.  If :host is specified,
+   * the GUI will try to communicate with a server at <code>hostCport</code> instead of the local
+   * embedded server (note, you can always point the GUI manually to a different server
+   * from its <code>Connect_to_Server</code> menu item).  Loads the required support systems if necessary.
+   * Embedded calls to the GUI are currently only supported in Java; however, when the GUI is
+   * run in standalone mode, it can communicate with any PowerLoom installation that supports
+   * an HTTP server (currently Lisp and Java).
+   * @param options
+   */
+  public static void startPowerloomGui(Cons options) {
+    { PropertyList theoptions = Logic.parseLogicCommandOptions(options, Cons.list$(Cons.cons(Logic.KWD_HOST, Cons.cons(Logic.SGT_STELLA_STRING, Cons.cons(Logic.KWD_PORT, Cons.cons(Logic.SGT_STELLA_INTEGER, Cons.cons(Logic.KWD_DEBUG_LEVEL, Cons.cons(Logic.SGT_STELLA_INTEGER, Cons.cons(Stella.NIL, Stella.NIL)))))))), true, false);
+      String host = ((StringWrapper)(theoptions.lookupWithDefault(Logic.KWD_HOST, StringWrapper.wrapString("localhost")))).wrapperValue;
+      int port = ((IntegerWrapper)(theoptions.lookupWithDefault(Logic.KWD_PORT, IntegerWrapper.wrapInteger(9090)))).wrapperValue;
+      int debuglevel = ((IntegerWrapper)(theoptions.lookupWithDefault(Logic.KWD_DEBUG_LEVEL, IntegerWrapper.wrapInteger(1)))).wrapperValue;
+      String guiclass = "edu.isi.powerloom.gui.components.PowerloomApp";
+      java.lang.reflect.Method guifn = null;
+      String[] guifnargs = new String[6];
+
+      try {
+        guifn = Native.find_java_method(guiclass, "main", new java.lang.Class[]{java.lang.Class.forName("[Ljava.lang.String;")});
+        Logic.startPowerloomServer(Cons.cons(Logic.KWD_PORT, Cons.cons(IntegerWrapper.wrapInteger(port), Stella.NIL)));
+        HookList.addHook(Stella.$STELLA_EXIT_HOOKS$, Logic.SYM_LOGIC_POWERLOOM_GUI_EXIT_HOOK);
+        guifnargs[0] = "--debug";
+        guifnargs[1] = Native.integerToString(((long)(debuglevel)));
+        guifnargs[2] = "--host";
+        guifnargs[3] = host;
+        guifnargs[4] = "--port";
+        guifnargs[5] = Native.integerToString(((long)(port)));
+        edu.isi.stella.javalib.Native.funcall(guifn, null, new java.lang.Object [] {guifnargs});
+      } catch (java.lang.Exception e) {
+        throw ((LogicException)(LogicException.newLogicException("PowerLoom GUI error: " + Stella.exceptionMessage(e)).fillInStackTrace()));
+      }
+    }
+  }
+
+  public static void startPowerloomGuiEvaluatorWrapper(Cons arguments) {
+    Logic.startPowerloomGui(arguments);
+  }
+
+  /** Closes the PowerLoom GUI application if it is currently visible.
+   * This is a no-op if the GUI is not running or if it is not supported.
+   */
+  public static void stopPowerloomGui() {
+    { String guiclass = "edu.isi.powerloom.gui.components.PowerloomApp";
+      java.lang.reflect.Method exitfn = null;
+
+      try {
+        exitfn = Native.find_java_method(guiclass, "exit", new java.lang.Class[]{});
+      } catch (java.lang.Exception e) {
+        throw ((LogicException)(LogicException.newLogicException("PowerLoom GUI error: " + Stella.exceptionMessage(e)).fillInStackTrace()));
+      }
+      if (exitfn != null) {
+        edu.isi.stella.javalib.Native.funcall(exitfn, null, new java.lang.Object [] {});
+      }
+    }
+  }
+
+  /** Exit hook to stop the PowerLoom GUI if it is running.
+   * @param ignore
+   */
+  public static void powerloomGuiExitHook(Stella_Object ignore) {
+    ignore = ignore;
+    try {
+      Logic.stopPowerloomGui();
+    } catch (java.lang.Exception e000) {
     }
   }
 
@@ -32401,10 +33010,10 @@ public class Logic {
   public static Surrogate lookupLogicObjectSurrogate(Symbol name, Module definitionmodule) {
     definitionmodule = ((definitionmodule != null) ? definitionmodule : ((Module)(Stella.$MODULE$.get())));
     if (Logic.explicitlyQualifiedLogicObjectNameP(name, definitionmodule)) {
-      return (Stella.lookupSurrogateInModule(name.symbolName, ((Module)(name.homeContext)), true));
+      return (Surrogate.lookupSurrogateInModule(name.symbolName, ((Module)(name.homeContext)), true));
     }
     else {
-      return (Stella.lookupSurrogate(name.symbolName));
+      return (Surrogate.lookupSurrogate(name.symbolName));
     }
   }
 
@@ -32658,7 +33267,7 @@ public class Logic {
           ((objectsurrogate != null) &&
            (!(objectsurrogate == namesurrogate)))) {
         {
-          System.out.println("The `" + Logic.nameObjectMetaclass(renamed_Object) + "' now named `" + name + "' used to be named `" + Stella.internSymbolInModule(objectsurrogate.symbolName, ((Module)(objectsurrogate.homeContext)), false) + "'.");
+          System.out.println("The `" + Logic.nameObjectMetaclass(renamed_Object) + "' now named `" + name + "' used to be named `" + Symbol.internSymbolInModule(objectsurrogate.symbolName, ((Module)(objectsurrogate.homeContext)), false) + "'.");
           System.out.println("    Unlinking it from its old name.");
         }
 ;
@@ -32732,7 +33341,7 @@ public class Logic {
       }
       if (((Boolean)(Stella.$WARNIFREDEFINEp$.get())).booleanValue() &&
           (!Stella.stringEqlP(Logic.stringifiedSource(oldobject), Logic.stringifiedSource(newobject)))) {
-        Logic.plLog(Logic.KWD_LOW, Stella_Object.cons(StringWrapper.wrapString("Redefining the "), Stella_Object.cons(StringWrapper.wrapString(Logic.nameObjectMetaclass(oldobject)), Stella_Object.cons(StringWrapper.wrapString(" named "), Stella_Object.cons(name, Stella.NIL)))));
+        Logic.plLog(Logic.KWD_LOW, Cons.cons(StringWrapper.wrapString("Redefining the "), Cons.cons(StringWrapper.wrapString(Logic.nameObjectMetaclass(oldobject)), Cons.cons(StringWrapper.wrapString(" named "), Cons.cons(name, Stella.NIL)))));
       }
       Logic.transferSynonyms(oldobject, newobject);
       Logic.transferPropositionsExceptFor(oldobject, newobject, exceptprops);
@@ -32790,10 +33399,10 @@ public class Logic {
         else if (Surrogate.subtypeOfSymbolP(testValue000)) {
           { Symbol self000 = ((Symbol)(self));
 
-            surrogate = Stella.lookupSurrogateInModule(self000.symbolName, ((Module)(self000.homeContext)), false);
+            surrogate = Surrogate.lookupSurrogateInModule(self000.symbolName, ((Module)(self000.homeContext)), false);
             if ((surrogate == null) &&
                 (!(((Module)(self000.homeContext)) == ((Module)(Stella.$MODULE$.get()))))) {
-              surrogate = Stella.lookupSurrogateInModule(self000.symbolName, ((Module)(Stella.$MODULE$.get())), false);
+              surrogate = Surrogate.lookupSurrogateInModule(self000.symbolName, ((Module)(Stella.$MODULE$.get())), false);
             }
           }
         }
@@ -32910,7 +33519,7 @@ public class Logic {
               }
               else {
                 {
-                  normalizednewaxioms = Stella_Object.cons(newaxioms000, Stella.NIL);
+                  normalizednewaxioms = Cons.cons(newaxioms000, Stella.NIL);
                 }
               }
             }
@@ -32918,7 +33527,7 @@ public class Logic {
         }
       }
       else {
-        normalizednewaxioms = Stella_Object.cons(newaxioms, Stella.NIL);
+        normalizednewaxioms = Cons.cons(newaxioms, Stella.NIL);
       }
       return (oldaxioms.concatenate(normalizednewaxioms, Stella.NIL));
     }
@@ -32930,17 +33539,18 @@ public class Logic {
 
   public static Cons helpDefineKeywordAxioms(Symbol selfname, Keyword key, Stella_Object value) {
     { Cons axioms = Stella.NIL;
-      Symbol relationname = Stella.internSymbol(key.symbolName);
+      Symbol relationname = Symbol.internSymbol(key.symbolName);
 
       if (Stella_Object.symbolP(value) &&
           Stella.stringEqualP(((Symbol)(value)).symbolName, "TRUE")) {
-        axioms = Stella_Object.cons(relationname, Stella_Object.cons(selfname, Stella.NIL));
+        axioms = Cons.cons(relationname, Cons.cons(selfname, Stella.NIL));
       }
       else if (Stella_Object.symbolP(value) &&
           Stella.stringEqualP(((Symbol)(value)).symbolName, "FALSE")) {
-        axioms = Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(Stella_Object.cons(relationname, Stella_Object.cons(selfname, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        axioms = Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(Cons.cons(relationname, Cons.cons(selfname, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))));
       }
-      else if (Stella_Object.consP(value)) {
+      else if (Stella_Object.consP(value) &&
+          (!Stella.getQuotedTree("((SETOFALL KAPPA) \"/LOGIC\")", "/LOGIC").membP(((Cons)(value)).value))) {
         { Stella_Object val = null;
           Cons iter000 = ((Cons)(value));
           Cons collect000 = null;
@@ -32949,7 +33559,7 @@ public class Logic {
             val = iter000.value;
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Stella_Object.cons(relationname, Stella_Object.cons(selfname, Stella_Object.cons(val, Stella.NIL))), Stella.NIL);
+                collect000 = Cons.cons(Cons.cons(relationname, Cons.cons(selfname, Cons.cons(val, Stella.NIL))), Stella.NIL);
                 if (axioms == Stella.NIL) {
                   axioms = collect000;
                 }
@@ -32960,7 +33570,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Stella_Object.cons(relationname, Stella_Object.cons(selfname, Stella_Object.cons(val, Stella.NIL))), Stella.NIL);
+                collect000.rest = Cons.cons(Cons.cons(relationname, Cons.cons(selfname, Cons.cons(val, Stella.NIL))), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -32968,7 +33578,7 @@ public class Logic {
         }
       }
       else {
-        axioms = Stella_Object.cons(relationname, Stella_Object.cons(selfname, Stella_Object.cons(value, Stella.NIL)));
+        axioms = Cons.cons(relationname, Cons.cons(selfname, Cons.cons(value, Stella.NIL)));
       }
       return (axioms);
     }
@@ -33080,7 +33690,7 @@ public class Logic {
 
                     for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                       r = iter001.value;
-                      propositions = Stella_Object.cons(r, propositions);
+                      propositions = Cons.cons(r, propositions);
                     }
                   }
                 }
@@ -33088,7 +33698,7 @@ public class Logic {
               else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
                 { Proposition result000 = ((Proposition)(result));
 
-                  propositions = Stella_Object.cons(result000, propositions);
+                  propositions = Cons.cons(result000, propositions);
                 }
               }
               else {
@@ -33589,7 +34199,7 @@ public class Logic {
    * @return NamedDescription
    */
   public static NamedDescription callDeffunction(Cons arguments) {
-    { Cons definition = Stella_Object.cons(Logic.SYM_LOGIC_DEFFUNCTION, arguments.concatenate(Stella.NIL, Stella.NIL));
+    { Cons definition = Cons.cons(Logic.SYM_LOGIC_DEFFUNCTION, arguments.concatenate(Stella.NIL, Stella.NIL));
 
       { Object old$Termsourcebeingparsed$000 = Logic.$TERMSOURCEBEINGPARSED$.get();
         Object old$Descriptionunderconstruction$000 = Logic.$DESCRIPTIONUNDERCONSTRUCTION$.get();
@@ -33637,7 +34247,7 @@ public class Logic {
           loop000 : while (!(options == Stella.NIL)) {
             if ((options.value == Logic.KWD__g) &&
                 (options.rest.value != null)) {
-              parameters000 = parameters000.concatenate(Stella_Object.cons(options.rest.value, Stella.NIL), Stella.NIL);
+              parameters000 = parameters000.concatenate(Cons.cons(options.rest.value, Stella.NIL), Stella.NIL);
               arguments.secondSetter(parameters000);
               options.firstSetter(null);
               options.secondSetter(null);
@@ -33728,7 +34338,7 @@ public class Logic {
    * @return NamedDescription
    */
   public static NamedDescription callDefrelation(Cons arguments) {
-    { Cons definition = Stella_Object.cons(Logic.SYM_LOGIC_DEFRELATION, arguments.concatenate(Stella.NIL, Stella.NIL));
+    { Cons definition = Cons.cons(Logic.SYM_LOGIC_DEFRELATION, arguments.concatenate(Stella.NIL, Stella.NIL));
 
       { Object old$Termsourcebeingparsed$000 = Logic.$TERMSOURCEBEINGPARSED$.get();
         Object old$Descriptionunderconstruction$000 = Logic.$DESCRIPTIONUNDERCONSTRUCTION$.get();
@@ -33867,7 +34477,7 @@ public class Logic {
    * @return NamedDescription
    */
   public static NamedDescription callDefconcept(Cons arguments) {
-    { Cons definition = Stella_Object.cons(Logic.SYM_LOGIC_DEFCONCEPT, arguments.concatenate(Stella.NIL, Stella.NIL));
+    { Cons definition = Cons.cons(Logic.SYM_LOGIC_DEFCONCEPT, arguments.concatenate(Stella.NIL, Stella.NIL));
 
       { Object old$Termsourcebeingparsed$000 = Logic.$TERMSOURCEBEINGPARSED$.get();
         Object old$Descriptionunderconstruction$000 = Logic.$DESCRIPTIONUNDERCONSTRUCTION$.get();
@@ -33950,19 +34560,19 @@ public class Logic {
 
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             renamed_Super = iter000.value;
-            impliesrules = Stella_Object.cons(Logic.KWD_eg, impliesrules);
-            impliesrules = Stella_Object.cons(Stella_Object.cons(renamed_Super, Stella_Object.cons(selfvariable, Stella.NIL)), impliesrules);
+            impliesrules = Cons.cons(Logic.KWD_eg, impliesrules);
+            impliesrules = Cons.cons(Cons.cons(renamed_Super, Cons.cons(selfvariable, Stella.NIL)), impliesrules);
           }
         }
         impliesrules = impliesrules.reverse();
-        arguments.rest = Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(selfvariable, Stella_Object.cons(name, Stella.NIL)), Stella.NIL), impliesrules.concatenate(arguments.rest.rest.concatenate(Stella.NIL, Stella.NIL), Stella.NIL));
+        arguments.rest = Cons.cons(Cons.cons(Cons.cons(selfvariable, Cons.cons(name, Stella.NIL)), Stella.NIL), impliesrules.concatenate(arguments.rest.rest.concatenate(Stella.NIL, Stella.NIL), Stella.NIL));
       }
       else if (arguments.rest == Stella.NIL) {
-        arguments.rest = Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(selfvariable, Stella_Object.cons(name, Stella.NIL)), Stella.NIL), Stella.NIL);
+        arguments.rest = Cons.cons(Cons.cons(Cons.cons(selfvariable, Cons.cons(name, Stella.NIL)), Stella.NIL), Stella.NIL);
       }
       else if (Stella_Object.keywordP(arguments.rest.value)) {
-        arguments.rest.rest = Stella_Object.cons(arguments.rest.value, arguments.rest.rest.concatenate(Stella.NIL, Stella.NIL));
-        arguments.secondSetter(Stella_Object.cons(Stella_Object.cons(selfvariable, Stella_Object.cons(name, Stella.NIL)), Stella.NIL));
+        arguments.rest.rest = Cons.cons(arguments.rest.value, arguments.rest.rest.concatenate(Stella.NIL, Stella.NIL));
+        arguments.secondSetter(Cons.cons(Cons.cons(selfvariable, Cons.cons(name, Stella.NIL)), Stella.NIL));
       }
       return (arguments);
     }
@@ -34043,7 +34653,7 @@ public class Logic {
    * @return LogicObject
    */
   public static LogicObject callDefobject(Cons arguments) {
-    { Cons definition = Stella_Object.cons(Logic.SYM_LOGIC_DEFOBJECT, arguments.concatenate(Stella.NIL, Stella.NIL));
+    { Cons definition = Cons.cons(Logic.SYM_LOGIC_DEFOBJECT, arguments.concatenate(Stella.NIL, Stella.NIL));
       Symbol name = null;
       Cons options = Stella.NIL;
       Stella_Object term = null;
@@ -34053,10 +34663,33 @@ public class Logic {
         try {
           Native.setSpecial(Logic.$TERMSOURCEBEINGPARSED$, Native.stringify(definition));
           arguments = Logic.normalizeDefobjectArguments(arguments);
-          name = ((Symbol)(arguments.value));
           options = arguments.rest;
-          Logic.internLogicObjectSurrogate(name);
-          term = Logic.createLogicInstance(null, null);
+          if (Stella_Object.consP(arguments.value)) {
+            name = Symbol.internSymbol(Native.stringify(arguments.value));
+            term = Logic.conceiveTerm(arguments.value);
+            if (term == null) {
+              { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+                { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+
+                  try {
+                    Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+                    stream000.nativeStream.println("ERROR: Illegal object name or term: `" + name + "'.");
+                    Logic.helpSignalPropositionError(stream000, Logic.KWD_ERROR);
+
+                  } finally {
+                    Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+                  }
+                }
+                throw ((PropositionError)(PropositionError.newPropositionError(stream000.theStringReader()).fillInStackTrace()));
+              }
+            }
+          }
+          else {
+            name = ((Symbol)(arguments.value));
+            Logic.internLogicObjectSurrogate(name);
+            term = Logic.createLogicInstance(null, null);
+          }
           if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(term), Logic.SGT_LOGIC_LOGIC_OBJECT)) {
             { LogicObject term000 = ((LogicObject)(term));
 
@@ -34092,14 +34725,15 @@ public class Logic {
     { Stella_Object name = arguments.value;
       Cons options = arguments.rest;
 
-      if (!(Stella_Object.symbolP(name))) {
+      if (!(Stella_Object.symbolP(name) ||
+          Stella_Object.consP(name))) {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
 
           { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
 
             try {
               Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-              stream000.nativeStream.println("ERROR: Illegal object name where symbol expected: `" + name + "'.");
+              stream000.nativeStream.println("ERROR: Illegal object name where symbol or function term expected: `" + name + "'.");
               Logic.helpSignalPropositionError(stream000, Logic.KWD_ERROR);
 
             } finally {
@@ -34181,7 +34815,7 @@ public class Logic {
    * @return Proposition
    */
   public static Proposition callDefproposition(Cons arguments) {
-    { Cons definition = Stella_Object.cons(Logic.SYM_LOGIC_DEFPROPOSITION, arguments.concatenate(Stella.NIL, Stella.NIL));
+    { Cons definition = Cons.cons(Logic.SYM_LOGIC_DEFPROPOSITION, arguments.concatenate(Stella.NIL, Stella.NIL));
       Symbol name = null;
       Cons options = Stella.NIL;
       Stella_Object conception = null;
@@ -34255,7 +34889,7 @@ public class Logic {
         if (Surrogate.subtypeOfSymbolP(testValue000)) {
         }
         else if (Surrogate.subtypeOfStringP(testValue000)) {
-          name = Stella.internSymbol(((StringWrapper)(arguments.value)).wrapperValue);
+          name = Symbol.internSymbol(((StringWrapper)(arguments.value)).wrapperValue);
           arguments.firstSetter(name);
         }
         else {
@@ -34289,16 +34923,16 @@ public class Logic {
       }
       value = options.lookup(Logic.KWD_CONFIDENCE_LEVEL);
       if (value != null) {
-        annotations = annotations.concatenate(Stella.list$(Stella_Object.cons(Logic.KWD_CONFIDENCE_LEVEL, Stella_Object.cons(value, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
+        annotations = annotations.concatenate(Cons.list$(Cons.cons(Logic.KWD_CONFIDENCE_LEVEL, Cons.cons(value, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
         options.removeAt(Logic.KWD_CONFIDENCE_LEVEL);
       }
       value = options.lookup(Logic.KWD_WEIGHT);
       if (value != null) {
-        annotations = annotations.concatenate(Stella.list$(Stella_Object.cons(Logic.KWD_WEIGHT, Stella_Object.cons(value, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
+        annotations = annotations.concatenate(Cons.list$(Cons.cons(Logic.KWD_WEIGHT, Cons.cons(value, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
         options.removeAt(Logic.KWD_WEIGHT);
       }
       if (!(annotations == Stella.NIL)) {
-        arguments.secondSetter(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ABOUT, Stella_Object.cons(proposition, Stella_Object.cons(annotations.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
+        arguments.secondSetter(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ABOUT, Cons.cons(proposition, Cons.cons(annotations.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
       }
       arguments.rest.rest = options.thePlist;
       return (arguments);
@@ -34306,7 +34940,7 @@ public class Logic {
   }
 
   public static boolean commandL(MethodSlot command1, MethodSlot command2) {
-    return (Stella.stringL(command1.slotName.visibleName(), command2.slotName.visibleName()));
+    return (Stella.stringLessP(command1.slotName.visibleName(false), command2.slotName.visibleName(false)));
   }
 
   public static List listLogicCommands() {
@@ -34322,7 +34956,7 @@ public class Logic {
               function.publicP()) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(function, Stella.NIL);
+                collect000 = Cons.cons(function, Stella.NIL);
                 if (commands.theConsList == Stella.NIL) {
                   commands.theConsList = collect000;
                 }
@@ -34333,7 +34967,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(function, Stella.NIL);
+                collect000.rest = Cons.cons(function, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -34348,7 +34982,7 @@ public class Logic {
           stellacommand = ((Symbol)(iter001.value));
           if (collect001 == null) {
             {
-              collect001 = Stella_Object.cons(Symbol.lookupCommand(stellacommand), Stella.NIL);
+              collect001 = Cons.cons(Symbol.lookupCommand(stellacommand), Stella.NIL);
               if (commands.theConsList == Stella.NIL) {
                 commands.theConsList = collect001;
               }
@@ -34359,7 +34993,7 @@ public class Logic {
           }
           else {
             {
-              collect001.rest = Stella_Object.cons(Symbol.lookupCommand(stellacommand), Stella.NIL);
+              collect001.rest = Cons.cons(Symbol.lookupCommand(stellacommand), Stella.NIL);
               collect001 = collect001.rest;
             }
           }
@@ -34473,7 +35107,7 @@ public class Logic {
                 module = ((Module)(Stella.$MODULE$.get()));
               }
             }
-            { Surrogate surrogate = Stella.lookupSurrogateInModule(name, module, localP);
+            { Surrogate surrogate = Surrogate.lookupSurrogateInModule(name, module, localP);
 
               if ((surrogate == null) ||
                   (surrogate.surrogateValue == null)) {
@@ -34483,7 +35117,7 @@ public class Logic {
                 }
                 else if ((surrogate == null) &&
                     (((ObjectStore)(KeyValueList.dynamicSlotValue(module.dynamicSlots, Logic.SYM_LOGIC_OBJECT_STORE, null))) != null)) {
-                  ((ObjectStore)(KeyValueList.dynamicSlotValue(module.dynamicSlots, Logic.SYM_LOGIC_OBJECT_STORE, null))).fetchInstance(Stella.internSurrogateInModule(name, module, localP));
+                  ((ObjectStore)(KeyValueList.dynamicSlotValue(module.dynamicSlots, Logic.SYM_LOGIC_OBJECT_STORE, null))).fetchInstance(Surrogate.internSurrogateInModule(name, module, localP));
                 }
               }
               if ((surrogate != null) &&
@@ -34501,13 +35135,13 @@ public class Logic {
         { Symbol self000 = ((Symbol)(self));
 
           { Module startingmodule = ((module != null) ? module : ((Module)(self000.homeContext)));
-            Stella_Object value = Logic.coerceToInstanceInModule(Stella.lookupSurrogateInModule(self000.symbolName, startingmodule, localP), null, localP, null);
+            Stella_Object value = Logic.coerceToInstanceInModule(Surrogate.lookupSurrogateInModule(self000.symbolName, startingmodule, localP), null, localP, null);
 
             if (value != null) {
               return (value);
             }
             else if (!(module == ((Module)(Stella.$MODULE$.get())))) {
-              return (Logic.coerceToInstanceInModule(Stella.lookupSurrogateInModule(self000.symbolName, ((Module)(Stella.$MODULE$.get())), localP), ((Module)(Stella.$MODULE$.get())), localP, original));
+              return (Logic.coerceToInstanceInModule(Surrogate.lookupSurrogateInModule(self000.symbolName, ((Module)(Stella.$MODULE$.get())), localP), ((Module)(Stella.$MODULE$.get())), localP, original));
             }
             else if (original != null) {
               return (Logic.coerceToInstanceInModule(null, null, false, original));
@@ -34861,7 +35495,7 @@ public class Logic {
           if (Stella_Object.isaP(d, Logic.SGT_LOGIC_NAMED_DESCRIPTION)) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(d, Stella.NIL);
+                collect000 = Cons.cons(d, Stella.NIL);
                 if (namedones == Stella.NIL) {
                   namedones = collect000;
                 }
@@ -34872,7 +35506,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(d, Stella.NIL);
+                collect000.rest = Cons.cons(d, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -34899,12 +35533,50 @@ public class Logic {
           { NamedDescription description = Logic.getDescription(((Surrogate)(p.operator)));
 
             if (!types.memberP(description)) {
-              types = Stella_Object.cons(description, types);
+              types = Cons.cons(description, types);
             }
           }
         }
       }
       return (types);
+    }
+  }
+
+  /** Return a set of all of the types that are
+   * satisfied by 'self', using only assertions and upward
+   * taxonomic reasoning.
+   * @param self
+   * @return Cons
+   */
+  public static Cons allTaxonomicTypes(Stella_Object self) {
+    { MemoizationTable memoTable000 = null;
+      Cons memoizedEntry000 = null;
+      Stella_Object memoizedValue000 = null;
+
+      if (Stella.$MEMOIZATION_ENABLEDp$) {
+        memoTable000 = ((MemoizationTable)(Logic.SGT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000.surrogateValue));
+        if (memoTable000 == null) {
+          Surrogate.initializeMemoizationTable(Logic.SGT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:KB-UPDATE))");
+          memoTable000 = ((MemoizationTable)(Logic.SGT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000.surrogateValue));
+        }
+        memoizedEntry000 = MruMemoizationTable.lookupMruMemoizedValue(((MruMemoizationTable)(memoTable000)), self, ((Context)(Stella.$CONTEXT$.get())), Stella.MEMOIZED_NULL_VALUE, null, 2);
+        memoizedValue000 = memoizedEntry000.value;
+      }
+      if (memoizedValue000 != null) {
+        if (memoizedValue000 == Stella.MEMOIZED_NULL_VALUE) {
+          memoizedValue000 = null;
+        }
+      }
+      else {
+        memoizedValue000 = Logic.helpAllTypes(self, false);
+        if (Stella.$MEMOIZATION_ENABLEDp$) {
+          memoizedEntry000.value = ((memoizedValue000 == null) ? Stella.MEMOIZED_NULL_VALUE : memoizedValue000);
+        }
+      }
+      { Cons value000 = ((Cons)(memoizedValue000));
+
+        return (value000);
+      }
     }
   }
 
@@ -34933,7 +35605,7 @@ public class Logic {
         }
       }
       else {
-        memoizedValue000 = Logic.helpAllTypes(self);
+        memoizedValue000 = Logic.helpAllTypes(self, true);
         if (Stella.$MEMOIZATION_ENABLEDp$) {
           memoizedEntry000.value = ((memoizedValue000 == null) ? Stella.MEMOIZED_NULL_VALUE : memoizedValue000);
         }
@@ -34945,30 +35617,39 @@ public class Logic {
     }
   }
 
-  public static Cons helpAllTypes(Stella_Object self) {
+  public static Cons helpAllTypes(Stella_Object self, boolean doSubtypesP) {
     { Cons assertedtypes = Logic.allAssertedTypes(self);
-      Cons types = Cons.copyConsList(assertedtypes);
 
-      { NamedDescription d = null;
-        Cons iter000 = assertedtypes;
+      { List self000 = List.newList();
 
-        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-          d = ((NamedDescription)(iter000.value));
-          { LogicObject c = null;
-            Iterator iter001 = LogicObject.allSupercollections(d);
+        self000.theConsList = Cons.copyConsList(assertedtypes);
+        { List types = self000;
 
-            while (iter001.nextP()) {
-              c = ((LogicObject)(iter001.value));
-              if (Stella_Object.isaP(c, Logic.SGT_LOGIC_NAMED_DESCRIPTION)) {
-                if (!types.memberP(c)) {
-                  types = Stella_Object.cons(c, types);
+          { NamedDescription d = null;
+            Cons iter000 = assertedtypes;
+
+            for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+              d = ((NamedDescription)(iter000.value));
+              { LogicObject c = null;
+                Iterator iter001 = LogicObject.allSupercollections(d);
+
+                while (iter001.nextP()) {
+                  c = ((LogicObject)(iter001.value));
+                  if (Stella_Object.isaP(c, Logic.SGT_LOGIC_NAMED_DESCRIPTION)) {
+                    if (!types.memberP(c)) {
+                      types.push(c);
+                    }
+                  }
                 }
+              }
+              if (doSubtypesP) {
+                Description.helpAllSubtypes(d, self, types);
               }
             }
           }
+          return (((Cons)(types.theConsList)));
         }
       }
-      return (types);
     }
   }
 
@@ -34978,7 +35659,7 @@ public class Logic {
    * @return Cons
    */
   public static Cons allDirectTypes(Stella_Object self) {
-    return (Logic.mostSpecificNamedDescriptions(Logic.allAssertedTypes(self)));
+    return (Logic.mostSpecificNamedDescriptions(Logic.allTypes(self)));
   }
 
   /** Return TRUE if 'self' satisfies 'type'.
@@ -35093,14 +35774,14 @@ public class Logic {
 
         if ((tree000.value == Logic.SYM_STELLA_INVERSE) ||
             (tree000.value == Logic.SYM_PL_KERNEL_KB_INVERSE)) {
-          return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_INVERSE, Stella_Object.cons(Logic.loomArgumentDescriptionToKif(tree000.rest.value, Logic.KWD_BINARY), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_INVERSE, Cons.cons(Logic.loomArgumentDescriptionToKif(tree000.rest.value, Logic.KWD_BINARY), Cons.cons(Stella.NIL, Stella.NIL)))));
         }
         { Symbol x = ((Symbol)(Logic.SYSTEM_DEFINED_ARGUMENT_NAMES.nth(0)));
           Symbol y = ((Symbol)(Logic.SYSTEM_DEFINED_ARGUMENT_NAMES.nth(1)));
-          Cons kappaargs = ((arity == Logic.KWD_UNARY) ? Stella.consList(Stella_Object.cons(x, Stella.NIL)) : Stella.consList(Stella_Object.cons(x, Stella_Object.cons(y, Stella.NIL))));
+          Cons kappaargs = ((arity == Logic.KWD_UNARY) ? Cons.consList(Cons.cons(x, Stella.NIL)) : Cons.consList(Cons.cons(x, Cons.cons(y, Stella.NIL))));
           Cons implicitargs = Cons.copyConsList(kappaargs);
 
-          return (Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_KAPPA, Stella_Object.cons(kappaargs, Stella_Object.cons(Stella_Object.cons(Logic.loomDescriptionToKif(tree000, implicitargs), Stella.NIL), Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Logic.SYM_LOGIC_KAPPA, Cons.cons(kappaargs, Cons.cons(Cons.cons(Logic.loomDescriptionToKif(tree000, implicitargs), Stella.NIL), Stella.NIL)))));
         }
       }
     }
@@ -35133,13 +35814,13 @@ public class Logic {
            (operator == Logic.SYM_LOGIC_EXACTLY))) {
         if (qualification != null) {
           if (operator == Logic.SYM_LOGIC_AT_LEAST) {
-            operator = Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND;
+            operator = Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_LOWER_BOUND;
           }
           else if (operator == Logic.SYM_LOGIC_AT_MOST) {
-            operator = Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND;
+            operator = Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_UPPER_BOUND;
           }
           else if (operator == Logic.SYM_LOGIC_EXACTLY) {
-            operator = Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY;
+            operator = Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY;
           }
           else {
             { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -35151,13 +35832,13 @@ public class Logic {
         }
         else {
           if (operator == Logic.SYM_LOGIC_AT_LEAST) {
-            operator = Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_LOWER_BOUND;
+            operator = Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND;
           }
           else if (operator == Logic.SYM_LOGIC_AT_MOST) {
-            operator = Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_UPPER_BOUND;
+            operator = Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND;
           }
           else if (operator == Logic.SYM_LOGIC_EXACTLY) {
-            operator = Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY;
+            operator = Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY;
           }
           else {
             { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
@@ -35167,7 +35848,7 @@ public class Logic {
             }
           }
         }
-        return (Stella_Object.cons(operator, Stella_Object.cons(Logic.loomArgumentDescriptionToKif(role, Logic.KWD_BINARY), Stella_Object.cons(implicitvariable, Stella_Object.cons(argument, (((qualification != null) ? Stella.consList(Stella_Object.cons(Logic.loomArgumentDescriptionToKif(qualification, Logic.KWD_UNARY), Stella.NIL)) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL))))));
+        return (Cons.cons(operator, Cons.cons(Logic.loomArgumentDescriptionToKif(role, Logic.KWD_BINARY), Cons.cons(implicitvariable, Cons.cons(argument, (((qualification != null) ? Cons.consList(Cons.cons(Logic.loomArgumentDescriptionToKif(qualification, Logic.KWD_UNARY), Stella.NIL)) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL))))));
       }
       else if (operator == Logic.SYM_LOGIC_ALL) {
         if (qualification != null) {
@@ -35183,18 +35864,18 @@ public class Logic {
                 }
               }
             }
-            return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EXISTS, Stella_Object.cons(Stella_Object.cons(existsvariable, Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_eg, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella_Object.cons(Logic.loomArgumentDescriptionToKif(role, Logic.KWD_BINARY), Stella_Object.cons(implicitvariable, Stella_Object.cons(existsvariable, Stella.NIL))), Stella_Object.cons(Stella_Object.cons(Logic.loomArgumentDescriptionToKif(qualification, Logic.KWD_UNARY), Stella_Object.cons(existsvariable, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella_Object.cons(Logic.loomArgumentDescriptionToKif(argument, Logic.KWD_UNARY), Stella_Object.cons(((Symbol)(Logic.SYSTEM_DEFINED_ARGUMENT_NAMES.nth(0))), Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+            return (Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(Cons.cons(existsvariable, Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_eg, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.cons(Logic.loomArgumentDescriptionToKif(role, Logic.KWD_BINARY), Cons.cons(implicitvariable, Cons.cons(existsvariable, Stella.NIL))), Cons.cons(Cons.cons(Logic.loomArgumentDescriptionToKif(qualification, Logic.KWD_UNARY), Cons.cons(existsvariable, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.cons(Logic.loomArgumentDescriptionToKif(argument, Logic.KWD_UNARY), Cons.cons(((Symbol)(Logic.SYSTEM_DEFINED_ARGUMENT_NAMES.nth(0))), Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))));
           }
         }
         else {
-          return (Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_RANGE_TYPE, Stella_Object.cons(Logic.loomArgumentDescriptionToKif(role, Logic.KWD_BINARY), Stella_Object.cons(Stella_Object.cons(implicitvariable, Stella_Object.cons(Logic.loomArgumentDescriptionToKif(argument, Logic.KWD_UNARY), Stella.NIL)), Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_RANGE_TYPE, Cons.cons(Logic.loomArgumentDescriptionToKif(role, Logic.KWD_BINARY), Cons.cons(Cons.cons(implicitvariable, Cons.cons(Logic.loomArgumentDescriptionToKif(argument, Logic.KWD_UNARY), Stella.NIL)), Stella.NIL)))));
         }
       }
       else if (operator == Logic.SYM_STELLA_SOME) {
-        return (Logic.loomRestrictionToKif(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_AT_LEAST, Stella_Object.cons(IntegerWrapper.wrapInteger(1), Stella_Object.cons(role, Stella_Object.cons(Stella_Object.cons(argument, Stella.NIL), Stella.NIL))))), implicitvariable));
+        return (Logic.loomRestrictionToKif(Cons.list$(Cons.cons(Logic.SYM_LOGIC_AT_LEAST, Cons.cons(IntegerWrapper.wrapInteger(1), Cons.cons(role, Cons.cons(Cons.cons(argument, Stella.NIL), Stella.NIL))))), implicitvariable));
       }
       else if (operator == Logic.SYM_LOGIC_THE) {
-        return (Logic.loomDescriptionToKif(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_EXACTLY, Stella_Object.cons(IntegerWrapper.wrapInteger(1), Stella_Object.cons(role, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALL, Stella_Object.cons(role, Stella_Object.cons(Stella_Object.cons(argument, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(implicitvariable, Stella.NIL))));
+        return (Logic.loomDescriptionToKif(Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_EXACTLY, Cons.cons(IntegerWrapper.wrapInteger(1), Cons.cons(role, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALL, Cons.cons(role, Cons.cons(Cons.cons(argument, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(implicitvariable, Stella.NIL))));
       }
       else if ((operator == Logic.SYM_LOGIC_FILLED_BY) ||
           (operator == Logic.SYM_LOGIC_FILLERS)) {
@@ -35209,7 +35890,7 @@ public class Logic {
               filler = iter001.value;
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(Stella_Object.cons(translatedrole, Stella_Object.cons(implicitvariable, Stella_Object.cons(filler, Stella.NIL))), Stella.NIL);
+                  collect000 = Cons.cons(Cons.cons(translatedrole, Cons.cons(implicitvariable, Cons.cons(filler, Stella.NIL))), Stella.NIL);
                   if (clauses == Stella.NIL) {
                     clauses = collect000;
                   }
@@ -35220,7 +35901,7 @@ public class Logic {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(Stella_Object.cons(translatedrole, Stella_Object.cons(implicitvariable, Stella_Object.cons(filler, Stella.NIL))), Stella.NIL);
+                  collect000.rest = Cons.cons(Cons.cons(translatedrole, Cons.cons(implicitvariable, Cons.cons(filler, Stella.NIL))), Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -35241,7 +35922,7 @@ public class Logic {
               filler = iter002.value;
               if (collect001 == null) {
                 {
-                  collect001 = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(Stella_Object.cons(translatedrole, Stella_Object.cons(implicitvariable, Stella_Object.cons(filler, Stella.NIL))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
+                  collect001 = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(Cons.cons(translatedrole, Cons.cons(implicitvariable, Cons.cons(filler, Stella.NIL))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
                   if (clauses == Stella.NIL) {
                     clauses = collect001;
                   }
@@ -35252,7 +35933,7 @@ public class Logic {
               }
               else {
                 {
-                  collect001.rest = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(Stella_Object.cons(translatedrole, Stella_Object.cons(implicitvariable, Stella_Object.cons(filler, Stella.NIL))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
+                  collect001.rest = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(Cons.cons(translatedrole, Cons.cons(implicitvariable, Cons.cons(filler, Stella.NIL))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
                   collect001 = collect001.rest;
                 }
               }
@@ -35287,7 +35968,7 @@ public class Logic {
           v = ((Symbol)(iter000.value));
           if ((!implicitvariables.memberP(v)) &&
               (skolemvariables.length() < (tree.length() - 1))) {
-            skolemvariables = Stella_Object.cons(v, skolemvariables);
+            skolemvariables = Cons.cons(v, skolemvariables);
           }
         }
       }
@@ -35303,15 +35984,15 @@ public class Logic {
           v = iter002.value;
           {
             if (Stella_Object.isaP(arg, Logic.SGT_STELLA_NUMBER_WRAPPER)) {
-              arguments = Stella_Object.cons(arg, arguments);
+              arguments = Cons.cons(arg, arguments);
               continue loop001;
             }
-            arguments = Stella_Object.cons(v, arguments);
-            existsvariables = Stella_Object.cons(v, existsvariables);
+            arguments = Cons.cons(v, arguments);
+            existsvariables = Cons.cons(v, existsvariables);
           }
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Logic.loomDescriptionToKif(arg, Stella.consList(Stella_Object.cons(((Symbol)(implicitvariables.value)), Stella_Object.cons(v, Stella.NIL)))), Stella.NIL);
+              collect000 = Cons.cons(Logic.loomDescriptionToKif(arg, Cons.consList(Cons.cons(((Symbol)(implicitvariables.value)), Cons.cons(v, Stella.NIL)))), Stella.NIL);
               if (clauses == Stella.NIL) {
                 clauses = collect000;
               }
@@ -35322,13 +36003,13 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Logic.loomDescriptionToKif(arg, Stella.consList(Stella_Object.cons(((Symbol)(implicitvariables.value)), Stella_Object.cons(v, Stella.NIL)))), Stella.NIL);
+              collect000.rest = Cons.cons(Logic.loomDescriptionToKif(arg, Cons.consList(Cons.cons(((Symbol)(implicitvariables.value)), Cons.cons(v, Stella.NIL)))), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
         }
       }
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EXISTS, Stella_Object.cons(existsvariables.reverse(), Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_AND, clauses.concatenate(Stella_Object.cons(Logic.loomDescriptionToKif(tree.value, arguments.reverse()), Stella.NIL), Stella.NIL)), Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(existsvariables.reverse(), Cons.cons(Cons.cons(Cons.cons(Logic.SYM_STELLA_AND, clauses.concatenate(Cons.cons(Logic.loomDescriptionToKif(tree.value, arguments.reverse()), Stella.NIL), Stella.NIL)), Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -35338,11 +36019,15 @@ public class Logic {
       { GeneralizedSymbol testValue000 = ((GeneralizedSymbol)(operator));
 
         if ((testValue000 == Logic.SYM_STELLA_EXISTS) ||
-            (testValue000 == Logic.SYM_STELLA_FORALL)) {
+            ((testValue000 == Logic.SYM_LOGIC_FOR_SOME) ||
+             (testValue000 == Logic.SYM_STELLA_FORALL))) {
+          if (operator == Logic.SYM_LOGIC_FOR_SOME) {
+            tree.firstSetter(Logic.SYM_STELLA_EXISTS);
+          }
           { Stella_Object variables = tree.rest.value;
 
             if (!Stella_Object.consP(variables)) {
-              variables = Stella.consList(Stella_Object.cons(variables, Stella.NIL));
+              variables = Cons.consList(Cons.cons(variables, Stella.NIL));
             }
             { Stella_Object v1 = null;
               Cons iter000 = ((Cons)(variables));
@@ -35356,8 +36041,8 @@ public class Logic {
                     loop001 : for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                       v2 = ((Symbol)(iter001.value));
                       if (!substitution.memberP(v2)) {
-                        substitution = Stella_Object.cons(v2, substitution);
-                        substitution = Stella_Object.cons(v1, substitution);
+                        substitution = Cons.cons(v2, substitution);
+                        substitution = Cons.cons(v1, substitution);
                         break loop001;
                       }
                     }
@@ -35421,11 +36106,11 @@ public class Logic {
           if ((testValue000 == Logic.SYM_LOGIC_THROUGH) ||
               ((testValue000 == Logic.SYM_LOGIC_INTERVALii) ||
                (testValue000 == Logic.SYM_LOGIC_INTERVALi_))) {
-            clauses = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_el, Stella_Object.cons(((Symbol)(implicitvariables.value)), Stella_Object.cons(Stella_Object.cons(upperbound, Stella.NIL), Stella.NIL)))), clauses);
+            clauses = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_el, Cons.cons(((Symbol)(implicitvariables.value)), Cons.cons(Cons.cons(upperbound, Stella.NIL), Stella.NIL)))), clauses);
           }
           else if ((testValue000 == Logic.SYM_LOGIC_INTERVAL_i) ||
               (testValue000 == Logic.SYM_LOGIC_INTERVAL__)) {
-            clauses = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_l, Stella_Object.cons(((Symbol)(implicitvariables.value)), Stella_Object.cons(Stella_Object.cons(upperbound, Stella.NIL), Stella.NIL)))), clauses);
+            clauses = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_l, Cons.cons(((Symbol)(implicitvariables.value)), Cons.cons(Cons.cons(upperbound, Stella.NIL), Stella.NIL)))), clauses);
           }
           else {
             { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -35442,11 +36127,11 @@ public class Logic {
           if ((testValue001 == Logic.SYM_LOGIC_THROUGH) ||
               ((testValue001 == Logic.SYM_LOGIC_INTERVALii) ||
                (testValue001 == Logic.SYM_LOGIC_INTERVAL_i))) {
-            clauses = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_ge, Stella_Object.cons(((Symbol)(implicitvariables.value)), Stella_Object.cons(Stella_Object.cons(lowerbound, Stella.NIL), Stella.NIL)))), clauses);
+            clauses = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_ge, Cons.cons(((Symbol)(implicitvariables.value)), Cons.cons(Cons.cons(lowerbound, Stella.NIL), Stella.NIL)))), clauses);
           }
           else if ((testValue001 == Logic.SYM_LOGIC_INTERVALi_) ||
               (testValue001 == Logic.SYM_LOGIC_INTERVAL__)) {
-            clauses = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_g, Stella_Object.cons(((Symbol)(implicitvariables.value)), Stella_Object.cons(Stella_Object.cons(lowerbound, Stella.NIL), Stella.NIL)))), clauses);
+            clauses = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_g, Cons.cons(((Symbol)(implicitvariables.value)), Cons.cons(Cons.cons(lowerbound, Stella.NIL), Stella.NIL)))), clauses);
           }
           else {
             { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
@@ -35467,7 +36152,7 @@ public class Logic {
       Cons substitution = Stella.NIL;
 
       if (!Stella_Object.consP(iovariables)) {
-        iovariables = Stella.consList(Stella_Object.cons(iovariables, Stella.NIL));
+        iovariables = Cons.consList(Cons.cons(iovariables, Stella.NIL));
       }
       { Stella_Object v1 = null;
         Cons iter000 = ((Cons)(iovariables));
@@ -35478,8 +36163,8 @@ public class Logic {
                   (!(iter001 == Stella.NIL)); iter000 = iter000.rest, iter001 = iter001.rest) {
           v1 = iter000.value;
           v2 = ((Symbol)(iter001.value));
-          substitution = Stella_Object.cons(v2, substitution);
-          substitution = Stella_Object.cons(v1, substitution);
+          substitution = Cons.cons(v2, substitution);
+          substitution = Cons.cons(v1, substitution);
         }
       }
       Logic.substituteVariablesInTree(((Cons)(body)), substitution);
@@ -35508,7 +36193,7 @@ public class Logic {
                     arg = iter000.value;
                     if (collect000 == null) {
                       {
-                        collect000 = Stella_Object.cons(Logic.loomDescriptionToKif(arg, implicitvariables), Stella.NIL);
+                        collect000 = Cons.cons(Logic.loomDescriptionToKif(arg, implicitvariables), Stella.NIL);
                         if (clauses == Stella.NIL) {
                           clauses = collect000;
                         }
@@ -35519,13 +36204,13 @@ public class Logic {
                     }
                     else {
                       {
-                        collect000.rest = Stella_Object.cons(Logic.loomDescriptionToKif(arg, implicitvariables), Stella.NIL);
+                        collect000.rest = Cons.cons(Logic.loomDescriptionToKif(arg, implicitvariables), Stella.NIL);
                         collect000 = collect000.rest;
                       }
                     }
                   }
                 }
-                return (Stella_Object.cons(operator, clauses.concatenate(Stella.NIL, Stella.NIL)));
+                return (Cons.cons(operator, clauses.concatenate(Stella.NIL, Stella.NIL)));
               }
             }
             else if ((testValue000 == Logic.SYM_LOGIC_AT_LEAST) ||
@@ -35553,7 +36238,7 @@ public class Logic {
                     }
                   }
                 }
-                { Cons localimplicitvariables = Stella.consList(Stella_Object.cons(selfvariable, Stella_Object.cons(y, Stella.NIL)));
+                { Cons localimplicitvariables = Cons.consList(Cons.cons(selfvariable, Cons.cons(y, Stella.NIL)));
                   Cons clauses = Stella.NIL;
 
                   { Stella_Object arg = null;
@@ -35564,7 +36249,7 @@ public class Logic {
                       arg = iter002.value;
                       if (collect001 == null) {
                         {
-                          collect001 = Stella_Object.cons(Logic.loomDescriptionToKif(arg, localimplicitvariables), Stella.NIL);
+                          collect001 = Cons.cons(Logic.loomDescriptionToKif(arg, localimplicitvariables), Stella.NIL);
                           if (clauses == Stella.NIL) {
                             clauses = collect001;
                           }
@@ -35575,13 +36260,13 @@ public class Logic {
                       }
                       else {
                         {
-                          collect001.rest = Stella_Object.cons(Logic.loomDescriptionToKif(arg, localimplicitvariables), Stella.NIL);
+                          collect001.rest = Cons.cons(Logic.loomDescriptionToKif(arg, localimplicitvariables), Stella.NIL);
                           collect001 = collect001.rest;
                         }
                       }
                     }
                   }
-                  return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EXISTS, Stella_Object.cons(y, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_AND, clauses.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)))));
+                  return (Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(y, Cons.cons(Cons.cons(Cons.cons(Logic.SYM_STELLA_AND, clauses.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)))));
                 }
               }
             }
@@ -35595,10 +36280,10 @@ public class Logic {
               return (Logic.loomRelatesToKif(tree000, implicitvariables));
             }
             else if (testValue000 == Logic.SYM_LOGIC_ONE_OF) {
-              return (Stella_Object.cons(Logic.SYM_LOGIC_MEMBER_OF, Cons.copyConsList(implicitvariables).concatenate(Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_SETOF, tree000.rest.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)));
+              return (Cons.cons(Logic.SYM_PL_KERNEL_KB_MEMBER_OF, Cons.copyConsList(implicitvariables).concatenate(Cons.cons(Cons.cons(Logic.SYM_STELLA_SETOF, tree000.rest.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)));
             }
             else if (testValue000 == Logic.SYM_LOGIC_THE_ORDERED_SET) {
-              return (Stella_Object.cons(Logic.SYM_LOGIC_MEMBER_OF, Cons.copyConsList(implicitvariables).concatenate(Stella_Object.cons(Stella_Object.cons(Logic.SYM_LOGIC_LISTOF, tree000.rest.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)));
+              return (Cons.cons(Logic.SYM_PL_KERNEL_KB_MEMBER_OF, Cons.copyConsList(implicitvariables).concatenate(Cons.cons(Cons.cons(Logic.SYM_LOGIC_LISTOF, tree000.rest.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)));
             }
             else if ((testValue000 == Logic.SYM_LOGIC_THROUGH) ||
                 ((testValue000 == Logic.SYM_LOGIC_INTERVALii) ||
@@ -35611,7 +36296,7 @@ public class Logic {
               return (Logic.loomSatisfiesToKif(tree000, implicitvariables));
             }
             else if (testValue000 == Logic.SYM_LOGIC_DOMAIN) {
-              return (Logic.loomDescriptionToKif(tree000.rest.value, Stella.consList(Stella_Object.cons(((Symbol)(implicitvariables.value)), Stella.NIL))));
+              return (Logic.loomDescriptionToKif(tree000.rest.value, Cons.consList(Cons.cons(((Symbol)(implicitvariables.value)), Stella.NIL))));
             }
             else if (testValue000 == Logic.SYM_LOGIC_DOMAINS) {
               { Cons clauses = Stella.NIL;
@@ -35628,7 +36313,7 @@ public class Logic {
                     var = ((Symbol)(iter004.value));
                     if (collect002 == null) {
                       {
-                        collect002 = Stella_Object.cons(Logic.loomDescriptionToKif(domain, Stella.consList(Stella_Object.cons(var, Stella.NIL))), Stella.NIL);
+                        collect002 = Cons.cons(Logic.loomDescriptionToKif(domain, Cons.consList(Cons.cons(var, Stella.NIL))), Stella.NIL);
                         if (clauses == Stella.NIL) {
                           clauses = collect002;
                         }
@@ -35639,7 +36324,7 @@ public class Logic {
                     }
                     else {
                       {
-                        collect002.rest = Stella_Object.cons(Logic.loomDescriptionToKif(domain, Stella.consList(Stella_Object.cons(var, Stella.NIL))), Stella.NIL);
+                        collect002.rest = Cons.cons(Logic.loomDescriptionToKif(domain, Cons.consList(Cons.cons(var, Stella.NIL))), Stella.NIL);
                         collect002 = collect002.rest;
                       }
                     }
@@ -35649,27 +36334,27 @@ public class Logic {
               }
             }
             else if (testValue000 == Logic.SYM_LOGIC_RANGE) {
-              return (Logic.loomDescriptionToKif(tree000.rest.value, Stella.consList(Stella_Object.cons(((Symbol)(implicitvariables.last())), Stella.NIL))));
+              return (Logic.loomDescriptionToKif(tree000.rest.value, Cons.consList(Cons.cons(((Symbol)(implicitvariables.last())), Stella.NIL))));
             }
             else if ((testValue000 == Logic.SYM_STELLA_INVERSE) ||
                 (testValue000 == Logic.SYM_PL_KERNEL_KB_INVERSE)) {
-              { Cons inverseimplicitvariables = Stella.consList(Stella_Object.cons(((Symbol)(implicitvariables.rest.value)), Stella_Object.cons(((Symbol)(implicitvariables.value)), Stella.NIL)));
+              { Cons inverseimplicitvariables = Cons.consList(Cons.cons(((Symbol)(implicitvariables.rest.value)), Cons.cons(((Symbol)(implicitvariables.value)), Stella.NIL)));
 
                 return (Logic.loomDescriptionToKif(tree000.rest.value, inverseimplicitvariables));
               }
             }
             else if (testValue000 == Logic.SYM_LOGIC_COMPOSE) {
-              { Cons chain = Stella_Object.cons(tree000.rest.value, Stella_Object.cons(((Symbol)(implicitvariables.value)), Stella.NIL));
+              { Cons chain = Cons.cons(tree000.rest.value, Cons.cons(((Symbol)(implicitvariables.value)), Stella.NIL));
 
                 { Stella_Object function = null;
                   Cons iter005 = tree000.rest.rest;
 
                   for (;!(iter005 == Stella.NIL); iter005 = iter005.rest) {
                     function = iter005.value;
-                    chain = Stella_Object.cons(function, Stella_Object.cons(chain, Stella.NIL));
+                    chain = Cons.cons(function, Cons.cons(chain, Stella.NIL));
                   }
                 }
-                return (chain.concatenate(Stella_Object.cons(((Symbol)(implicitvariables.rest.value)), Stella.NIL), Stella.NIL));
+                return (chain.concatenate(Cons.cons(((Symbol)(implicitvariables.rest.value)), Stella.NIL), Stella.NIL));
               }
             }
             else {
@@ -35687,10 +36372,10 @@ public class Logic {
     }
     else {
       if (((GeneralizedSymbol)(tree)) == Logic.SYM_LOGIC_lg) {
-        return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_e, Cons.copyConsList(implicitvariables).concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(Cons.cons(Logic.SYM_STELLA_e, Cons.copyConsList(implicitvariables).concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))));
       }
       else {
-        return (Stella_Object.cons(tree, Cons.copyConsList(implicitvariables).concatenate(Stella.NIL, Stella.NIL)));
+        return (Cons.cons(tree, Cons.copyConsList(implicitvariables).concatenate(Stella.NIL, Stella.NIL)));
       }
     }
   }
@@ -35735,7 +36420,7 @@ public class Logic {
                   arg = iter000.value;
                   if (collect000 == null) {
                     {
-                      collect000 = Stella_Object.cons(Logic.loomSentenceToKif(arg), Stella.NIL);
+                      collect000 = Cons.cons(Logic.loomSentenceToKif(arg), Stella.NIL);
                       if (clauses == Stella.NIL) {
                         clauses = collect000;
                       }
@@ -35746,14 +36431,14 @@ public class Logic {
                   }
                   else {
                     {
-                      collect000.rest = Stella_Object.cons(Logic.loomSentenceToKif(arg), Stella.NIL);
+                      collect000.rest = Cons.cons(Logic.loomSentenceToKif(arg), Stella.NIL);
                       collect000 = collect000.rest;
                     }
                   }
                 }
               }
               clauses = clauses.reverse();
-              clauses = Stella_Object.cons(tree000.value, clauses);
+              clauses = Cons.cons(tree000.value, clauses);
               return (clauses);
             }
           }
@@ -35766,17 +36451,17 @@ public class Logic {
 
                 for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                   clause = iter001.value;
-                  implicitvariables = Stella.consList(Stella_Object.cons(tree000.rest.value, Stella.NIL));
+                  implicitvariables = Cons.consList(Cons.cons(tree000.rest.value, Stella.NIL));
                   if (!Stella_Object.consP(clause)) {
-                    aboutclauses = Stella_Object.cons(Stella_Object.cons(clause, implicitvariables.concatenate(Stella.NIL, Stella.NIL)), aboutclauses);
+                    aboutclauses = Cons.cons(Cons.cons(clause, implicitvariables.concatenate(Stella.NIL, Stella.NIL)), aboutclauses);
                   }
                   else if (Logic.loomDescriptionOperatorP(((Cons)(clause)).value)) {
-                    aboutclauses = Stella_Object.cons(Logic.loomDescriptionToKif(clause, implicitvariables), aboutclauses);
+                    aboutclauses = Cons.cons(Logic.loomDescriptionToKif(clause, implicitvariables), aboutclauses);
                   }
                   else {
                     { Cons expression = ((Cons)(clause));
 
-                      aboutclauses = Stella_Object.cons(Stella_Object.cons(expression.value, implicitvariables.concatenate(Cons.copyConsList(expression.rest).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), aboutclauses);
+                      aboutclauses = Cons.cons(Cons.cons(expression.value, implicitvariables.concatenate(Cons.copyConsList(expression.rest).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)), aboutclauses);
                     }
                   }
                 }
@@ -35885,7 +36570,7 @@ public class Logic {
       if (Surrogate.subtypeOfKeywordP(testValue000)) {
         { Keyword tree000 = ((Keyword)(tree));
 
-          return (Stella.internSymbolInModule(tree000.symbolName, Logic.$LOGIC_MODULE$, false));
+          return (Symbol.internSymbolInModule(tree000.symbolName, Logic.$LOGIC_MODULE$, false));
         }
       }
       else if (Surrogate.subtypeOfSymbolP(testValue000)) {
@@ -35944,7 +36629,7 @@ public class Logic {
           v = ((Symbol)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(v, Stella.NIL);
+              collect000 = Cons.cons(v, Stella.NIL);
               if (variables == Stella.NIL) {
                 variables = collect000;
               }
@@ -35955,7 +36640,7 @@ public class Logic {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(v, Stella.NIL);
+              collect000.rest = Cons.cons(v, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -35974,7 +36659,7 @@ public class Logic {
       { int arity = Logic.computeLoomDescriptionArity(tree);
         Cons implicitvariables = Logic.yieldImplicitVariables(((arity > 0) ? arity : 1));
 
-        return (Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_KAPPA, Stella_Object.cons(implicitvariables, Stella_Object.cons(Stella_Object.cons(Logic.helpTranslateLoomDescriptionToKif(tree, implicitvariables), Stella.NIL), Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Logic.SYM_LOGIC_KAPPA, Cons.cons(implicitvariables, Cons.cons(Cons.cons(Logic.helpTranslateLoomDescriptionToKif(tree, implicitvariables), Stella.NIL), Stella.NIL)))));
       }
     } catch (LogicException e) {
       Stella.STANDARD_ERROR.nativeStream.print(Stella.exceptionMessage(e));
@@ -35996,13 +36681,13 @@ public class Logic {
       tree = ((Cons)(tree.value));
     }
     else {
-      tree = Stella_Object.cons(Logic.SYM_STELLA_AND, tree);
+      tree = Cons.cons(Logic.SYM_STELLA_AND, tree);
     }
     { Symbol verb = (retractP ? Logic.SYM_STELLA_RETRACT : Logic.SYM_STELLA_ASSERT);
       Stella_Object proposition = Logic.translateLoomSentenceToKif(tree);
 
       if (tree != null) {
-        return (Stella_Object.cons(verb, Stella_Object.cons(proposition, Stella.NIL)));
+        return (Cons.cons(verb, Cons.cons(proposition, Stella.NIL)));
       }
       else {
         return (null);
@@ -36040,7 +36725,7 @@ public class Logic {
             }
           }
           if (sentence != null) {
-            return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_ASK, Stella_Object.cons(sentence, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+            return (Cons.list$(Cons.cons(Logic.SYM_STELLA_ASK, Cons.cons(sentence, Cons.cons(Stella.NIL, Stella.NIL)))));
           }
           else {
             return (null);
@@ -36066,10 +36751,10 @@ public class Logic {
           { ConsIterator i = ((Cons)(variables)).allocateIterator();
 
             while (i.nextP()) {
-              nulls = Stella_Object.cons(Logic.SYM_STELLA_NULL, nulls);
+              nulls = Cons.cons(Logic.SYM_STELLA_NULL, nulls);
             }
           }
-          return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_CONSIFY, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_RETRIEVE, Stella_Object.cons(Logic.SYM_LOGIC_ALL, Stella_Object.cons(variables, Stella_Object.cons(Stella_Object.cons(querybody, Stella.NIL), Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Logic.SYM_STELLA_CONSIFY, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_RETRIEVE, Cons.cons(Logic.SYM_LOGIC_ALL, Cons.cons(variables, Cons.cons(Cons.cons(querybody, Stella.NIL), Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))));
         }
       }
     }
@@ -36099,12 +36784,12 @@ public class Logic {
 
                         for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                           subform = iter001.value;
-                          forms = Stella_Object.cons(subform, forms);
+                          forms = Cons.cons(subform, forms);
                         }
                       }
                     }
                     else {
-                      forms = Stella_Object.cons(translation, forms);
+                      forms = Cons.cons(translation, forms);
                     }
                   }
                 }
@@ -36241,7 +36926,7 @@ public class Logic {
                     else if (Stella_Object.isaP(translation.value, Logic.SGT_STELLA_CONS)) {
                       dialectEmittedP = true;
                       {
-                        out.nativeStream.println(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_IN_DIALECT, Stella_Object.cons(Logic.KWD_KIF, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+                        out.nativeStream.println(Cons.list$(Cons.cons(Logic.SYM_LOGIC_IN_DIALECT, Cons.cons(Logic.KWD_KIF, Cons.cons(Stella.NIL, Stella.NIL)))));
                         out.nativeStream.println();
                       }
 ;
@@ -36263,7 +36948,7 @@ public class Logic {
                           (!(translation.value == Logic.SYM_STELLA_IN_MODULE))) {
                         dialectEmittedP = true;
                         {
-                          out.nativeStream.println(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_IN_DIALECT, Stella_Object.cons(Logic.KWD_KIF, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+                          out.nativeStream.println(Cons.list$(Cons.cons(Logic.SYM_LOGIC_IN_DIALECT, Cons.cons(Logic.KWD_KIF, Cons.cons(Stella.NIL, Stella.NIL)))));
                           out.nativeStream.println();
                         }
 ;
@@ -36322,7 +37007,7 @@ public class Logic {
       }
       else if ((testValue000 == Logic.SYM_LOGIC_CREATE) ||
           (testValue000 == Logic.SYM_LOGIC_CREATEM)) {
-        return (Logic.translateLoomAssertions(Stella.consList(Stella_Object.cons(Logic.translateLoomCreateClause(tree.rest), Stella.NIL)), true));
+        return (Logic.translateLoomAssertions(Cons.consList(Cons.cons(Logic.translateLoomCreateClause(tree.rest), Stella.NIL)), true));
       }
       else {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -36336,10 +37021,10 @@ public class Logic {
 
   public static Cons translateLoomCreateClause(Cons tree) {
     if (tree.rest.value == Stella.NIL) {
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_THING, Stella_Object.cons(tree.value, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Logic.SYM_STELLA_THING, Cons.cons(tree.value, Cons.cons(Stella.NIL, Stella.NIL)))));
     }
     else {
-      return (Stella_Object.cons(tree.rest.value, Stella_Object.cons(tree.value, Stella.NIL)));
+      return (Cons.cons(tree.rest.value, Cons.cons(tree.value, Stella.NIL)));
     }
   }
 
@@ -36376,7 +37061,7 @@ public class Logic {
       return (sentences.value);
     }
     else {
-      sentences = Stella_Object.cons(Logic.SYM_STELLA_AND, sentences);
+      sentences = Cons.cons(Logic.SYM_STELLA_AND, sentences);
       return (sentences);
     }
   }
@@ -36386,7 +37071,7 @@ public class Logic {
       Cons partitionList = Stella.NIL;
 
       if (!Stella_Object.consP(partitions)) {
-        partitions = Stella.consList(Stella_Object.cons(partitions, Stella.NIL));
+        partitions = Cons.consList(Cons.cons(partitions, Stella.NIL));
       }
       if (Stella_Object.consP(((Cons)(partitions)).value)) {
         partitionList = ((Cons)(partitions));
@@ -36397,7 +37082,7 @@ public class Logic {
 
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             clause = iter000.value;
-            partitionList = Stella_Object.cons(Stella.consList(Stella_Object.cons(clause, Stella.NIL)), partitionList);
+            partitionList = Cons.cons(Cons.consList(Cons.cons(clause, Stella.NIL)), partitionList);
           }
         }
       }
@@ -36410,14 +37095,14 @@ public class Logic {
             Cons concepts = ((Cons)(clause.rest.value));
             Cons localaxioms = Stella.NIL;
 
-            localaxioms = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_MUTUALLY_DISJOINT_COLLECTION, Stella_Object.cons(name, Stella_Object.cons(Stella.NIL, Stella.NIL)))), localaxioms);
+            localaxioms = Cons.cons(Cons.list$(Cons.cons(edu.isi.powerloom.pl_kernel_kb.loom_api.LoomApi.SYM_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION, Cons.cons(name, Cons.cons(Stella.NIL, Stella.NIL)))), localaxioms);
             if (concepts != null) {
-              localaxioms = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_e, Stella_Object.cons(name, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_SETOF, concepts.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)))), localaxioms);
+              localaxioms = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_e, Cons.cons(name, Cons.cons(Cons.cons(Cons.cons(Logic.SYM_PL_KERNEL_KB_SETOF, concepts.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL), Stella.NIL)))), localaxioms);
             }
             if (exhaustiveP) {
-              localaxioms = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_COVERING, Stella_Object.cons(name, Stella_Object.cons(Stella_Object.cons(parentconcept, Stella.NIL), Stella.NIL)))), localaxioms);
+              localaxioms = Cons.cons(Cons.list$(Cons.cons(edu.isi.powerloom.pl_kernel_kb.loom_api.LoomApi.SYM_PL_KERNEL_KB_COVERING, Cons.cons(name, Cons.cons(Cons.cons(parentconcept, Stella.NIL), Stella.NIL)))), localaxioms);
             }
-            axioms = Stella_Object.cons(Logic.conjoinSentences(localaxioms.reverse()), axioms);
+            axioms = Cons.cons(Logic.conjoinSentences(localaxioms.reverse()), axioms);
           }
         }
       }
@@ -36429,7 +37114,7 @@ public class Logic {
     { Cons axioms = Stella.NIL;
 
       if (!Stella_Object.consP(characteristics)) {
-        characteristics = Stella.consList(Stella_Object.cons(characteristics, Stella.NIL));
+        characteristics = Cons.consList(Cons.cons(characteristics, Stella.NIL));
       }
       { Stella_Object ch = null;
         Cons iter000 = ((Cons)(characteristics));
@@ -36441,13 +37126,13 @@ public class Logic {
             if (testValue000 == Logic.KWD_SINGLE_VALUED) {
             }
             else if (testValue000 == Logic.KWD_CLOSED_WORLD) {
-              axioms = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CLOSED, Stella_Object.cons(name, Stella_Object.cons(Stella.NIL, Stella.NIL)))), axioms);
+              axioms = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_CLOSED, Cons.cons(name, Cons.cons(Stella.NIL, Stella.NIL)))), axioms);
             }
             else if (testValue000 == Logic.KWD_COMMUTATIVE) {
-              axioms = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_COMMUTATIVE, Stella_Object.cons(name, Stella_Object.cons(Stella.NIL, Stella.NIL)))), axioms);
+              axioms = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_COMMUTATIVE, Cons.cons(name, Cons.cons(Stella.NIL, Stella.NIL)))), axioms);
             }
             else if (testValue000 == Logic.KWD_SYMMETRIC) {
-              axioms = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_SYMMETRIC, Stella_Object.cons(name, Stella_Object.cons(Stella.NIL, Stella.NIL)))), axioms);
+              axioms = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_SYMMETRIC, Cons.cons(name, Cons.cons(Stella.NIL, Stella.NIL)))), axioms);
             }
             else if ((testValue000 == Logic.KWD_CLOS_CLASS) ||
                 ((testValue000 == Logic.KWD_MULTIPLE_VALUED) ||
@@ -36476,7 +37161,7 @@ public class Logic {
 
   public static Cons translateLoomAnnotations(Stella_Object annotations, Symbol name) {
     if (!Stella_Object.consP(annotations)) {
-      annotations = Stella.consList(Stella_Object.cons(annotations, Stella.NIL));
+      annotations = Cons.consList(Cons.cons(annotations, Stella.NIL));
     }
     { Cons axioms = Stella.NIL;
 
@@ -36486,11 +37171,11 @@ public class Logic {
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           term = iter000.value;
           if (!Stella_Object.consP(term)) {
-            term = Stella.consList(Stella_Object.cons(term, Stella.NIL));
+            term = Cons.consList(Cons.cons(term, Stella.NIL));
           }
           { Cons clause = ((Cons)(term));
 
-            axioms = Stella_Object.cons(Stella_Object.cons(clause.value, Stella_Object.cons(name, clause.rest.concatenate(Stella.NIL, Stella.NIL))), axioms);
+            axioms = Cons.cons(Cons.cons(clause.value, Cons.cons(name, clause.rest.concatenate(Stella.NIL, Stella.NIL))), axioms);
           }
         }
       }
@@ -36499,7 +37184,7 @@ public class Logic {
   }
 
   public static Cons translateLoomDefaults(Stella_Object defaultTree, Cons variables) {
-    return (Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_tg, Stella_Object.cons(Logic.helpTranslateLoomDescriptionToKif(defaultTree, variables), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Logic.SYM_LOGIC_tg, Cons.cons(Logic.helpTranslateLoomDescriptionToKif(defaultTree, variables), Cons.cons(Stella.NIL, Stella.NIL)))));
   }
 
   public static Keyword simplifyTopLevelLoomKeywords(Keyword keyword) {
@@ -36571,31 +37256,31 @@ public class Logic {
           { GeneralizedSymbol testValue000 = ((GeneralizedSymbol)(keyword));
 
             if (testValue000 == Logic.KWD_IS_PRIMITIVE) {
-              constraints = Stella_Object.cons(value, constraints);
+              constraints = Cons.cons(value, constraints);
             }
             else if (testValue000 == Logic.KWD_IS) {
               definition = value;
             }
             else if (testValue000 == Logic.KWD_CONSTRAINTS) {
-              constraints = Stella_Object.cons(value, constraints);
+              constraints = Cons.cons(value, constraints);
             }
             else if (testValue000 == Logic.KWD_DEFAULTS) {
-              defaults = Stella_Object.cons(value, defaults);
+              defaults = Cons.cons(value, defaults);
             }
             else if (testValue000 == Logic.KWD_DOMAIN) {
-              constraints = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_DOMAIN, Stella_Object.cons(value, Stella_Object.cons(Stella.NIL, Stella.NIL)))), constraints);
+              constraints = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_DOMAIN, Cons.cons(value, Cons.cons(Stella.NIL, Stella.NIL)))), constraints);
               if (arity < 0) {
                 arity = 2;
               }
             }
             else if (testValue000 == Logic.KWD_DOMAINS) {
-              constraints = Stella_Object.cons(Stella_Object.cons(Logic.SYM_LOGIC_DOMAINS, ((Cons)(value)).concatenate(Stella.NIL, Stella.NIL)), constraints);
+              constraints = Cons.cons(Cons.cons(Logic.SYM_LOGIC_DOMAINS, ((Cons)(value)).concatenate(Stella.NIL, Stella.NIL)), constraints);
               if (arity < 0) {
                 arity = ((Cons)(value)).length() + 1;
               }
             }
             else if (testValue000 == Logic.KWD_RANGE) {
-              constraints = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_RANGE, Stella_Object.cons(value, Stella_Object.cons(Stella.NIL, Stella.NIL)))), constraints);
+              constraints = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_RANGE, Cons.cons(value, Cons.cons(Stella.NIL, Stella.NIL)))), constraints);
               if (arity < 0) {
                 arity = 2;
               }
@@ -36610,19 +37295,19 @@ public class Logic {
 
                 for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                   p = iter001.value;
-                  axioms = Stella_Object.cons(p, axioms);
+                  axioms = Cons.cons(p, axioms);
                 }
               }
             }
             else if (testValue000 == Logic.KWD_IN_PARTITION) {
-              axioms = Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_MEMBER_OF, Stella_Object.cons(name, Stella_Object.cons(Stella_Object.cons(value, Stella.NIL), Stella.NIL)))), axioms);
+              axioms = Cons.cons(Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_MEMBER_OF, Cons.cons(name, Cons.cons(Cons.cons(value, Stella.NIL), Stella.NIL)))), axioms);
             }
             else if ((testValue000 == Logic.KWD_CHARACTERISTICS) ||
                 (testValue000 == Logic.KWD_ATTRIBUTES)) {
-              axioms = Stella_Object.cons(Logic.translateLoomCharacteristics(value, name), axioms);
+              axioms = Cons.cons(Logic.translateLoomCharacteristics(value, name), axioms);
             }
             else if (testValue000 == Logic.KWD_ANNOTATIONS) {
-              axioms = Stella_Object.cons(Logic.translateLoomAnnotations(value, name), axioms);
+              axioms = Cons.cons(Logic.translateLoomAnnotations(value, name), axioms);
             }
             else if (testValue000 == Logic.KWD_ROLES) {
               System.out.println(":roles OPTION NOT YET IMPLEMENTED");
@@ -36664,7 +37349,7 @@ public class Logic {
 
           for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
             renamed_Default = iter002.value;
-            axioms = Stella_Object.cons(Logic.translateLoomDefaults(renamed_Default, variables), axioms);
+            axioms = Cons.cons(Logic.translateLoomDefaults(renamed_Default, variables), axioms);
           }
         }
         if (!(axioms == Stella.NIL)) {
@@ -36678,10 +37363,10 @@ public class Logic {
         }
         if (converttofunctionP) {
           operator = Logic.SYM_LOGIC_DEFFUNCTION;
-          resultclause = Stella.list$(Stella_Object.cons(Logic.KWD__g, Stella_Object.cons(((Symbol)(variables.last())), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+          resultclause = Cons.list$(Cons.cons(Logic.KWD__g, Cons.cons(((Symbol)(variables.last())), Cons.cons(Stella.NIL, Stella.NIL))));
           variables = variables.butLast().consify();
         }
-        return (Stella_Object.cons(operator, Stella_Object.cons(name, Stella_Object.cons(variables, resultclause.concatenate((((docstring != null) ? Stella.list$(Stella_Object.cons(edu.isi.powerloom.pl_kernel_kb.loom_api.LoomApi.KWD_DOCUMENTATION, Stella_Object.cons(docstring, Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate((((kifdefinition != null) ? Stella.list$(Stella_Object.cons(Logic.KWD_llegg, Stella_Object.cons(kifdefinition, Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate((((kifconstraint != null) ? Stella.list$(Stella_Object.cons(Logic.KWD_egg, Stella_Object.cons(kifconstraint, Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate((((kifaxiom != null) ? Stella.list$(Stella_Object.cons(edu.isi.powerloom.pl_kernel_kb.loom_api.LoomApi.KWD_AXIOMS, Stella_Object.cons(kifaxiom, Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL)))));
+        return (Cons.cons(operator, Cons.cons(name, Cons.cons(variables, resultclause.concatenate((((docstring != null) ? Cons.list$(Cons.cons(edu.isi.powerloom.pl_kernel_kb.loom_api.LoomApi.KWD_DOCUMENTATION, Cons.cons(docstring, Cons.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate((((kifdefinition != null) ? Cons.list$(Cons.cons(Logic.KWD_llegg, Cons.cons(kifdefinition, Cons.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate((((kifconstraint != null) ? Cons.list$(Cons.cons(Logic.KWD_egg, Cons.cons(kifconstraint, Cons.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate((((kifaxiom != null) ? Cons.list$(Cons.cons(edu.isi.powerloom.pl_kernel_kb.loom_api.LoomApi.KWD_AXIOMS, Cons.cons(kifaxiom, Cons.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL), Stella.NIL)))));
       }
     }
   }
@@ -36694,7 +37379,7 @@ public class Logic {
         if (Surrogate.subtypeOfStringP(testValue000)) {
           { StringWrapper contextform000 = ((StringWrapper)(contextform));
 
-            return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_IN_MODULE, Stella_Object.cons(contextform000, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+            return (Cons.list$(Cons.cons(Logic.SYM_STELLA_IN_MODULE, Cons.cons(contextform000, Cons.cons(Stella.NIL, Stella.NIL)))));
           }
         }
         else if (Surrogate.subtypeOfSymbolP(testValue000)) {
@@ -36709,7 +37394,7 @@ public class Logic {
               }
             }
             else {
-              return (Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_IN_MODULE, Stella_Object.cons(StringWrapper.wrapString(contextform000.symbolName), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+              return (Cons.list$(Cons.cons(Logic.SYM_STELLA_IN_MODULE, Cons.cons(StringWrapper.wrapString(contextform000.symbolName), Cons.cons(Stella.NIL, Stella.NIL)))));
             }
           }
         }
@@ -36774,13 +37459,37 @@ public class Logic {
   public static Iterator allPropositions(Module module, boolean localP) {
     { AllPurposeIterator self000 = AllPurposeIterator.newAllPurposeIterator();
 
-      self000.iteratorObject = (localP ? Stella.list(Stella_Object.cons(module, Stella.NIL)) : Module.visibleModules(module).listify().reverse());
+      self000.iteratorObject = (localP ? List.list(Stella.NIL) : Module.visibleModules(module).rest.listify().reverse());
       self000.iteratorNestedIterator = Logic.locallyConceivedPropositions(module).allocateIterator();
       self000.iteratorNextCode = Native.find_java_method("edu.isi.powerloom.logic.Logic", "allPropositionsNextP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.AllPurposeIterator")});
       { AllPurposeIterator value000 = self000;
 
         return (value000);
       }
+    }
+  }
+
+  public static boolean filterInconsistentPropositionP(Stella_Object self, AllPurposeIterator iterator) {
+    iterator = iterator;
+    return (Proposition.inconsistentP(((Proposition)(self))));
+  }
+
+  /** Iterate over all conceived propositions visible from <code>module</code>
+   * that have an inconsistent truth value.  If <code>localP</code>, only return
+   * inconsistent propositions conceived locally in <code>module</code>.
+   * @param module
+   * @param localP
+   * @return Iterator
+   */
+  public static Iterator allInconsistentPropositions(Module module, boolean localP) {
+    { Iterator propositionsIterator = Logic.allPropositions(module, localP);
+      AllPurposeIterator iterator = AllPurposeIterator.newAllPurposeIterator();
+
+      iterator.firstIterationP = true;
+      iterator.iteratorNestedIterator = propositionsIterator;
+      iterator.iteratorNextCode = Native.find_java_method("edu.isi.stella.AllPurposeIterator", "filteredNestedIteratorNextP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.AllPurposeIterator")});
+      iterator.iteratorFilterCode = Native.find_java_method("edu.isi.powerloom.logic.Logic", "filterInconsistentPropositionP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.AllPurposeIterator")});
+      return (iterator);
     }
   }
 
@@ -36829,16 +37538,16 @@ public class Logic {
 
                       if (term000.definingProposition != null) {
                         if (term000.definingProposition == proposition) {
-                          terms = Stella_Object.cons(term000, terms);
+                          terms = Cons.cons(term000, terms);
                         }
                       }
                       else {
-                        termswithduplicates = Stella_Object.cons(term000, termswithduplicates);
+                        termswithduplicates = Cons.cons(term000, termswithduplicates);
                       }
                     }
                   }
                   else {
-                    termswithduplicates = Stella_Object.cons(term, termswithduplicates);
+                    termswithduplicates = Cons.cons(term, termswithduplicates);
                   }
                 }
               }
@@ -36930,7 +37639,7 @@ public class Logic {
             renamed_Super = ((Context)(iter000.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Logic.allNamedTerms(((Module)(renamed_Super)), true), Stella.NIL);
+                collect000 = Cons.cons(Logic.allNamedTerms(((Module)(renamed_Super)), true), Stella.NIL);
                 if (iteratorlist == Stella.NIL) {
                   iteratorlist = collect000;
                 }
@@ -36941,7 +37650,7 @@ public class Logic {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Logic.allNamedTerms(((Module)(renamed_Super)), true), Stella.NIL);
+                collect000.rest = Cons.cons(Logic.allNamedTerms(((Module)(renamed_Super)), true), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -37084,7 +37793,7 @@ public class Logic {
 
   public static String powerloomCopyrightHeader() {
     { String logicsystemfile = Stella.makeSystemDefinitionFileName("logic");
-      SystemDefinition logicsystem = (Native.probeFileP(logicsystemfile) ? Stella.getSystemDefinition("logic") : ((SystemDefinition)(null)));
+      SystemDefinition logicsystem = (Stella.probeFileP(logicsystemfile) ? Stella.getSystemDefinition("logic") : ((SystemDefinition)(null)));
       KeyValueList substitutionList = KeyValueList.newKeyValueList();
 
       KeyValueList.fillInDateSubstitution(substitutionList);
@@ -37092,7 +37801,7 @@ public class Logic {
         return (Stella.substituteTemplateVariablesInString(logicsystem.banner, substitutionList));
       }
       else {
-        return ("---------------------------- BEGIN LICENSE BLOCK ---------------------------+\n |                                                                            |\n | Version: MPL 1.1/GPL 2.0/LGPL 2.1                                          |\n |                                                                            |\n | The contents of this file are subject to the Mozilla Public License        |\n | Version 1.1 (the \"License\"); you may not use this file except in           |\n | compliance with the License. You may obtain a copy of the License at       |\n | http://www.mozilla.org/MPL/                                                |\n |                                                                            |\n | Software distributed under the License is distributed on an \"AS IS\" basis, |\n | WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License   |\n | for the specific language governing rights and limitations under the       |\n | License.                                                                   |\n |                                                                            |\n | The Original Code is the PowerLoom KR&R System.                            |\n |                                                                            |\n | The Initial Developer of the Original Code is                              |\n | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |\n | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |\n |                                                                            |\n | Portions created by the Initial Developer are Copyright (C) 1997-2006      |\n | the Initial Developer. All Rights Reserved.                                |\n |                                                                            |\n | Contributor(s):                                                            |\n |                                                                            |\n | Alternatively, the contents of this file may be used under the terms of    |\n | either the GNU General Public License Version 2 or later (the \"GPL\"), or   |\n | the GNU Lesser General Public License Version 2.1 or later (the \"LGPL\"),   |\n | in which case the provisions of the GPL or the LGPL are applicable instead |\n | of those above. If you wish to allow use of your version of this file only |\n | under the terms of either the GPL or the LGPL, and not to allow others to  |\n | use your version of this file under the terms of the MPL, indicate your    |\n | decision by deleting the provisions above and replace them with the notice |\n | and other provisions required by the GPL or the LGPL. If you do not delete |\n | the provisions above, a recipient may use your version of this file under  |\n | the terms of any one of the MPL, the GPL or the LGPL.                      |\n |                                                                            |\n +----------------------------- END LICENSE BLOCK ----------------------------");
+        return ("---------------------------- BEGIN LICENSE BLOCK ---------------------------+\n |                                                                            |\n | Version: MPL 1.1/GPL 2.0/LGPL 2.1                                          |\n |                                                                            |\n | The contents of this file are subject to the Mozilla Public License        |\n | Version 1.1 (the \"License\"); you may not use this file except in           |\n | compliance with the License. You may obtain a copy of the License at       |\n | http://www.mozilla.org/MPL/                                                |\n |                                                                            |\n | Software distributed under the License is distributed on an \"AS IS\" basis, |\n | WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License   |\n | for the specific language governing rights and limitations under the       |\n | License.                                                                   |\n |                                                                            |\n | The Original Code is the PowerLoom KR&R System.                            |\n |                                                                            |\n | The Initial Developer of the Original Code is                              |\n | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |\n | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |\n |                                                                            |\n | Portions created by the Initial Developer are Copyright (C) 1997-2010      |\n | the Initial Developer. All Rights Reserved.                                |\n |                                                                            |\n | Contributor(s):                                                            |\n |                                                                            |\n | Alternatively, the contents of this file may be used under the terms of    |\n | either the GNU General Public License Version 2 or later (the \"GPL\"), or   |\n | the GNU Lesser General Public License Version 2.1 or later (the \"LGPL\"),   |\n | in which case the provisions of the GPL or the LGPL are applicable instead |\n | of those above. If you wish to allow use of your version of this file only |\n | under the terms of either the GPL or the LGPL, and not to allow others to  |\n | use your version of this file under the terms of the MPL, indicate your    |\n | decision by deleting the provisions above and replace them with the notice |\n | and other provisions required by the GPL or the LGPL. If you do not delete |\n | the provisions above, a recipient may use your version of this file under  |\n | the terms of any one of the MPL, the GPL or the LGPL.                      |\n |                                                                            |\n +----------------------------- END LICENSE BLOCK ----------------------------");
       }
     }
   }

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -487,7 +487,7 @@ Vector* createInputSignature(Cons* consQuery) {
     callAskPartial(query);
     pmf = ((IncrementalPartialMatch*)(query->baseControlFrame->partialMatchFrame->child->child));
     argScores = pmf->argumentScores;
-    signature = newVector(argScores->length());
+    signature = stella::newVector(argScores->length());
     { Object* score = NULL;
       Cons* iter000 = argScores->reverse();
       int i = NULL_INTEGER;
@@ -886,7 +886,7 @@ void generateRegressionRuleWoSlot(Vector* cases, Symbol* slotName, Symbol* class
     Surrogate* kind = getDescription(className)->surrogateValueInverse;
     List* caseNames = newList();
     Surrogate* slot = getDescription(slotName)->surrogateValueInverse;
-    Vector* slotValues = newVector(numCases);
+    Vector* slotValues = stella::newVector(numCases);
     boolean functionValuesP = oDROP_FUNCTION_VALUESpo;
 
     oDROP_FUNCTION_VALUESpo = false;
@@ -988,7 +988,7 @@ void generateRegressionRuleWoSlot(Vector* cases, Symbol* slotName, Symbol* class
 int generateRegressionTrainingExamples(Vector* instances, Surrogate* slot) {
   { int numInstances = instances->length();
     Symbol* predName = internSymbol(stringConcatenate(slot->symbolName, "-Classification", 0));
-    Vector* slotValues = newVector(numInstances);
+    Vector* slotValues = stella::newVector(numInstances);
 
     { int i = NULL_INTEGER;
       int iter000 = 0;
@@ -1499,7 +1499,7 @@ Cons* propositionToCons(Proposition* prop) {
       }
       else if ((testValue000 == KWD_MACHINE_LEARNING_PREDICATE) ||
           (testValue000 == KWD_MACHINE_LEARNING_FUNCTION)) {
-        result = cons(surrogateToSymbol(((Surrogate*)(prop->operatoR))), result->reverse());
+        result = cons(internSymbolInModule(((Surrogate*)(prop->operatoR))->symbolName, ((Module*)(((Surrogate*)(prop->operatoR))->homeContext)), true), result->reverse());
       }
       else if (testValue000 == KWD_MACHINE_LEARNING_EQUIVALENT) {
         result = cons(SYM_MACHINE_LEARNING_STELLA_e, result->reverse());
@@ -1554,20 +1554,6 @@ void thingifyUntypedInstances() {
       item = ((LogicObject*)(iter000->value));
       if (allAssertedTypes(item) == NIL) {
         assertIsaProposition(item, SGT_MACHINE_LEARNING_STELLA_THING);
-      }
-    }
-  }
-}
-
-void printFacts(Object* instanceref) {
-  { LogicObject* instance = coerceToInstance(instanceref, NULL);
-
-    { Proposition* fact = NULL;
-      Cons* iter000 = allFactsOfInstance(instance, false, false)->theConsList;
-
-      for (fact, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-        fact = ((Proposition*)(iter000->value));
-        std::cout << fact << std::endl;
       }
     }
   }
@@ -1693,7 +1679,6 @@ void startupMachineLearning() {
       defineFunctionObject("CONSIFY-ARGUMENT", "(DEFUN (CONSIFY-ARGUMENT OBJECT) ((ARG OBJECT)))", ((cpp_function_code)(&consifyArgument)), NULL);
       defineFunctionObject("PROPOSITION-TO-CONS", "(DEFUN (PROPOSITION-TO-CONS CONS) ((PROP PROPOSITION)))", ((cpp_function_code)(&propositionToCons)), NULL);
       defineFunctionObject("THINGIFY-UNTYPED-INSTANCES", "(DEFUN THINGIFY-UNTYPED-INSTANCES () :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&thingifyUntypedInstances)), NULL);
-      defineFunctionObject("PRINT-FACTS", "(DEFUN PRINT-FACTS ((INSTANCEREF OBJECT)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&printFacts)), NULL);
       defineFunctionObject("STARTUP-MACHINE-LEARNING", "(DEFUN STARTUP-MACHINE-LEARNING () :PUBLIC? TRUE)", ((cpp_function_code)(&startupMachineLearning)), NULL);
       { MethodSlot* function = lookupFunction(SYM_MACHINE_LEARNING_LOGIC_STARTUP_MACHINE_LEARNING);
 
@@ -1705,6 +1690,7 @@ void startupMachineLearning() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TRAINING-EXAMPLES* (LIST OF TRAINING-EXAMPLE) (NEW LIST))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TESTING-EXAMPLES* (LIST OF TRAINING-EXAMPLE) (NEW LIST))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CLOSED-WORLD-TRAINING-EXAMPLES* BOOLEAN TRUE)");

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -94,6 +94,7 @@ Cons* clTranslateSignalTree(Cons* tree);
 Cons* clTranslateHandlerCaseTree(Cons* tree);
 Cons* clTranslateHandleExceptionTree(Cons* tree);
 Object* cast(Object* value, Surrogate* type);
+NumberWrapper* coerceNumericConstant(NumberWrapper* constant, Surrogate* type);
 Object* clTranslateCastTree(Cons* tree);
 Object* clTranslateReturnTree(Cons* tree);
 Object* clTranslateBooleanTest(Object* tree, boolean invertP);
@@ -128,8 +129,10 @@ Cons* clYieldMethodArglistTypeDeclarations(MethodSlot* method);
 Object* clYieldMethodReturnTypeDeclaration(MethodSlot* method);
 Cons* clYieldMethodTypeDeclarationTree(MethodSlot* method);
 Cons* clYieldDeclareTree(Cons* declarations, boolean includeTypeChecksP);
+Object* clConditionalizeTypeDeclarationTree(Object* declaration);
 Object* clTranslateUnit(TranslationUnit* unit);
 Cons* clTranslateMethodParameters(MethodSlot* method);
+Symbol* clMethodDefinitionOperator(MethodSlot* method);
 Cons* clTranslateDefineMethodUnit(TranslationUnit* unit);
 Cons* yieldClosSlotTypeTree(StorageSlot* slot);
 Cons* yieldClosSlotTree(StorageSlot* slot);
@@ -261,12 +264,12 @@ extern Symbol* SYM_CL_TRANSLATE_STELLA_NEXTp;
 extern Symbol* SYM_CL_TRANSLATE_STELLA_ARGUMENT;
 extern Symbol* SYM_CL_TRANSLATE_STELLA_DO;
 extern Surrogate* SGT_CL_TRANSLATE_STELLA_FLOAT;
-extern Surrogate* SGT_CL_TRANSLATE_STELLA_INTEGER_WRAPPER;
-extern Surrogate* SGT_CL_TRANSLATE_STELLA_FLOAT_WRAPPER;
+extern Surrogate* SGT_CL_TRANSLATE_STELLA_LONG_INTEGER;
+extern Surrogate* SGT_CL_TRANSLATE_STELLA_NUMBER;
+extern Surrogate* SGT_CL_TRANSLATE_STELLA_NUMBER_WRAPPER;
 extern Symbol* SYM_CL_TRANSLATE_STELLA_PRIMARY_TYPE;
 extern Surrogate* SGT_CL_TRANSLATE_STELLA_LITERAL;
 extern Surrogate* SGT_CL_TRANSLATE_STELLA_BOOLEAN;
-extern Surrogate* SGT_CL_TRANSLATE_STELLA_NUMBER;
 extern Surrogate* SGT_CL_TRANSLATE_STELLA_SECOND_CLASS_OBJECT;
 extern Surrogate* SGT_CL_TRANSLATE_STELLA_CODE;
 extern Symbol* SYM_CL_TRANSLATE_STELLA_NULL_ARRAYp;
@@ -291,14 +294,15 @@ extern Symbol* SYM_CL_TRANSLATE_STELLA_TYPE;
 extern Symbol* SYM_CL_TRANSLATE_STELLA_CLSYS_SELF;
 extern Symbol* SYM_CL_TRANSLATE_STELLA_CLSYS_DUMMY;
 extern Symbol* SYM_CL_TRANSLATE_STELLA_METHOD_VARIABLE_ARGUMENTSp;
+extern Symbol* SYM_CL_TRANSLATE_STELLA_rrDEFCONSMETHOD;
+extern Symbol* SYM_CL_TRANSLATE_STELLA_rrDEFINTEGERMETHOD;
 extern Symbol* SYM_CL_TRANSLATE_STELLA_DOCUMENTATION;
 extern Symbol* SYM_CL_TRANSLATE_STELLA_SELF;
 extern Symbol* SYM_CL_TRANSLATE_STELLA_oCLSYS_SELFo;
-extern Symbol* SYM_CL_TRANSLATE_STELLA_rrDEFCONSMETHOD;
 extern Keyword* KWD_CL_TRANSLATE_VOID;
 extern Symbol* SYM_CL_TRANSLATE_STELLA_SLOT_AUXILIARYp;
-extern Keyword* KWD_CL_TRANSLATE_TYPE;
 extern Keyword* KWD_CL_TRANSLATE_INITFORM;
+extern Keyword* KWD_CL_TRANSLATE_TYPE;
 extern Keyword* KWD_CL_TRANSLATE_EMBEDDED;
 extern Keyword* KWD_CL_TRANSLATE_INSTANCE;
 extern Keyword* KWD_CL_TRANSLATE_ALLOCATION;

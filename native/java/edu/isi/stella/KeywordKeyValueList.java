@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -111,7 +111,7 @@ public class KeywordKeyValueList extends KeyValueList {
                       symbol = iter001.value;
                       if (collect000 == null) {
                         {
-                          collect000 = Stella_Object.cons(symbol.permanentify(), Stella.NIL);
+                          collect000 = Cons.cons(symbol.permanentify(), Stella.NIL);
                           if (symbolslist == Stella.NIL) {
                             symbolslist = collect000;
                           }
@@ -122,7 +122,7 @@ public class KeywordKeyValueList extends KeyValueList {
                       }
                       else {
                         {
-                          collect000.rest = Stella_Object.cons(symbol.permanentify(), Stella.NIL);
+                          collect000.rest = Cons.cons(symbol.permanentify(), Stella.NIL);
                           collect000 = collect000.rest;
                         }
                       }

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -410,7 +410,7 @@ char* coerceToModuleName(Object* namespec, boolean warnP) {
             return (namespec->symbolName);
           }
           else {
-            return (namespec->visibleName());
+            return (namespec->visibleName(false));
           }
         }
       }
@@ -425,7 +425,7 @@ char* coerceToModuleName(Object* namespec, boolean warnP) {
             return (namespec->symbolName);
           }
           else {
-            return (namespec->visibleName());
+            return (namespec->visibleName(false));
           }
         }
       }
@@ -562,6 +562,7 @@ void normalizeParentModules(Module* self) {
     return;
   }
   { List* parents = self->parentModules;
+    boolean recomputefullnameP = false;
 
     { Module* supermodule = NULL;
       Cons* iter000 = parents->theConsList;
@@ -576,11 +577,16 @@ void normalizeParentModules(Module* self) {
             if (!(othersupermodule == supermodule)) {
               if (supermodule->allSuperContexts->memberP(othersupermodule)) {
                 parents->remove(othersupermodule);
+                othersupermodule->childContexts->remove(self);
+                recomputefullnameP = true;
               }
             }
           }
         }
       }
+    }
+    if (recomputefullnameP) {
+      self->moduleFullName = computeFullName("", self);
     }
   }
 }
@@ -1563,13 +1569,19 @@ void defmodule(Object* name, Cons* options) {
   // `name' become the new module's parents. If no `:uses' option was
   // supplied, the new module will use the `STELLA' module by default,
   // otherwise, it will use the set of specified modules.
-  // If `:case-sensitive?' is supplied as TRUE, symbols in the module will be
-  // interned case-sensitively, otherwise (the default), they will be
-  // converted to uppercase before they get interned. Modules can shadow
-  // definitions of functions and classes inherited from parents or used
-  // modules. Shadowing is done automatically, but generates a warning unless
-  // the shadowed type or function name is listed in the `:shadow' option of
-  // the module definition .
+  // 
+  // If `:case-sensitive?' is supplied as TRUE, symbols in the module
+  // will be interned case-sensitively, otherwise (the default), they
+  // will be converted to uppercase before they get interned.  That
+  // means that any reference from inside a case-sensitive module to a
+  // non-case-sensitive module will have to use uppercase names for
+  // symbols in the non-case-sensitive module.  The standard system
+  // modules are all NOT case sensitive.
+  // 
+  // Modules can shadow definitions of functions and classes inherited
+  // from parents or used modules. Shadowing is done automatically,
+  // but generates a warning unless the shadowed type or function name
+  // is listed in the `:shadow' option of the module definition .
   // 
   // Examples:
   // 	 
@@ -2405,12 +2417,12 @@ void helpStartupModules2() {
     defineFunctionObject("IDENTICAL-MODULE-STRUCTURE?", "(DEFUN (IDENTICAL-MODULE-STRUCTURE? BOOLEAN) ((OLDMODULE MODULE) (NEWMODULE MODULE) (NEWOPTIONS STRING)))", ((cpp_function_code)(&identicalModuleStructureP)), NULL);
     defineFunctionObject("DEFINE-MODULE-FROM-STRINGIFIED-SOURCE", "(DEFUN (DEFINE-MODULE-FROM-STRINGIFIED-SOURCE MODULE) ((NAME STRING) (STRINGIFIEDOPTIONS STRING)) :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&defineModuleFromStringifiedSource)), NULL);
     defineFunctionObject("YIELD-DEFINE-MODULE", "(DEFUN (YIELD-DEFINE-MODULE CONS) ((MODULE MODULE)))", ((cpp_function_code)(&yieldDefineModule)), NULL);
-    defineFunctionObject("DEFMODULE", stringConcatenate("(DEFUN DEFMODULE ((NAME NAME) |&REST| (OPTIONS OBJECT)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Define (or redefine) a module named `name'.\nThe accepted syntax is:\n	 \n  (defmodule <module-name>\n     [:documentation <docstring>]\n     [:includes {<module-name> | (<module-name>*)}]\n     [:uses {<module-name> | (<module-name>*)}]\n     [:lisp-package <package-name-string>]\n     [:java-package <package-specification-string>]\n     [:cpp-namespace <namespace-name-string>]\n     [:java-catchall-class\n     [:api? {TRUE | FALSE}]\n     [:case-sensitive? {TRUE | FALSE}]\n     [:shadow (<symbol>*)]\n     [:java-catchall-class <class-name-string>]\n     [<other-options>*])\n	\n`name' can be a string or a symbol.\n\nModules include objects from other modules via two separate mechanisms:\n(1) they inherit from their parents specified via the `:includes' option\nand/or a fully qualified module name, and (2) they inherit from used\nmodules specified via the `:uses' option.  The main " "difference between\nthe two mechanisms is that inheritance from parents is transitive, while\nuses-links are only followed one level deep.  I.e., a module A that uses\nB will see all objects of B (and any of B's parents) but not see anything\nfrom modules used by B.  Another difference is that only objects declared\nas public can be inherited via uses-links (this is not yet enforced).\nNote that - contrary to Lisp - there are separate name spaces for classes,\nfunctions, and variables.  For example, a module could inherit the class\n`CONS' from the `STELLA' module, but shadow the function of the same name.\n\nThe above discussion of `:includes' and `:uses' semantics keyed on the\ninheritance/visibility of symbols. The PowerLoom system makes another\nvery important distinction: If a module 'A' is inherited directly or\nindirectly via `:includes' specification(s) by a submodule 'B', then all\ndefinitions and facts asserted in 'A' are visible in 'B'. This is not the\ncases for `:uses'; the `:uses' options does " "not impact inheritance of\npropositions at all.\n\nThe list of modules specified in the\n`:includes' option plus (if supplied) the parent in the path used for\n`name' become the new module's parents. If no `:uses' option was\nsupplied, the new module will use the `STELLA' module by default,\notherwise, it will use the set of specified modules.\nIf `:case-sensitive?' is supplied as TRUE, symbols in the module will be\ninterned case-sensitively, otherwise (the default), they will be\nconverted to uppercase before they get interned. Modules can shadow\ndefinitions of functions and classes inherited from parents or used\nmodules. Shadowing is done automatically, but generates a warning unless\nthe shadowed type or function name is listed in the `:shadow' option of\nthe module definition .\n\nExamples:\n	 \n  (defmodule \\\"PL-KERNEL/PL-USER\\\"\n    :uses (\\\"LOGIC\\\" \\\"STELLA\\\")\n    :package \\\"PL-USER\\\")\n\n  (defmodule PL-USER/GENEALOGY)\n	\nThe remaining options are relevant only for modules that c" "ontain STELLA\ncode.  Modules used only to contain knowledge base definitions and assertions\nhave no use for them:\n\nThe keywords `:lisp-package', `:java-package', and `:cpp-package' specify\nthe name of a native package or name space in which symbols of the module\nshould be allocated when they get translated into one of Lisp, Java, or\nC++. By default, Lisp symbols are allocated in the `STELLA' package, and\nC++ names are translated without any prefixes. The rules that the STELLA\ntranslator uses to attach translated Java objects to classes and packages\nare somewhat complex. Use :java-package option to specify a list of\npackage names (separated by periods) that prefix the Java object in this\nmodule.  Use :java-catchall-class to specify the name of the Java class to\ncontain all global & special variables, parameter-less functions and functions \ndefined on arguments that are not classes in the current module.\nThe default value will be the name of the module.\n\nWhen set to TRUE, the :api? option tell" "s t", "he PowerLoom User Manual\ngenerator that all functions defined in this module should be included in\nthe API section. Additionally, the Java translator makes all API\nfunctions `synchronized'.\n\")", 0), ((cpp_function_code)(&defmodule)), ((cpp_function_code)(&defmoduleEvaluatorWrapper)));
+    defineFunctionObject("DEFMODULE", stringConcatenate("(DEFUN DEFMODULE ((NAME NAME) |&REST| (OPTIONS OBJECT)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Define (or redefine) a module named `name'.\nThe accepted syntax is:\n	 \n  (defmodule <module-name>\n     [:documentation <docstring>]\n     [:includes {<module-name> | (<module-name>*)}]\n     [:uses {<module-name> | (<module-name>*)}]\n     [:lisp-package <package-name-string>]\n     [:java-package <package-specification-string>]\n     [:cpp-namespace <namespace-name-string>]\n     [:java-catchall-class\n     [:api? {TRUE | FALSE}]\n     [:case-sensitive? {TRUE | FALSE}]\n     [:shadow (<symbol>*)]\n     [:java-catchall-class <class-name-string>]\n     [<other-options>*])\n	\n`name' can be a string or a symbol.\n\nModules include objects from other modules via two separate mechanisms:\n(1) they inherit from their parents specified via the `:includes' option\nand/or a fully qualified module name, and (2) they inherit from used\nmodules specified via the `:uses' option.  The main " "difference between\nthe two mechanisms is that inheritance from parents is transitive, while\nuses-links are only followed one level deep.  I.e., a module A that uses\nB will see all objects of B (and any of B's parents) but not see anything\nfrom modules used by B.  Another difference is that only objects declared\nas public can be inherited via uses-links (this is not yet enforced).\nNote that - contrary to Lisp - there are separate name spaces for classes,\nfunctions, and variables.  For example, a module could inherit the class\n`CONS' from the `STELLA' module, but shadow the function of the same name.\n\nThe above discussion of `:includes' and `:uses' semantics keyed on the\ninheritance/visibility of symbols. The PowerLoom system makes another\nvery important distinction: If a module 'A' is inherited directly or\nindirectly via `:includes' specification(s) by a submodule 'B', then all\ndefinitions and facts asserted in 'A' are visible in 'B'. This is not the\ncases for `:uses'; the `:uses' options does " "not impact inheritance of\npropositions at all.\n\nThe list of modules specified in the\n`:includes' option plus (if supplied) the parent in the path used for\n`name' become the new module's parents. If no `:uses' option was\nsupplied, the new module will use the `STELLA' module by default,\notherwise, it will use the set of specified modules.\n\nIf `:case-sensitive?' is supplied as TRUE, symbols in the module\nwill be interned case-sensitively, otherwise (the default), they\nwill be converted to uppercase before they get interned.  That\nmeans that any reference from inside a case-sensitive module to a\nnon-case-sensitive module will have to use uppercase names for\nsymbols in the non-case-sensitive module.  The standard system\nmodules are all NOT case sensitive.\n\nModules can shadow definitions of functions and classes inherited\nfrom parents or used modules. Shadowing is done automatically,\nbut generates a warning unless the shadowed type or function name\nis listed in the `:shadow' option of the modul" "e definition .\n\nExamples:\n	 \n  (defmodule \\\"PL-KERNEL/PL-USER\\\"\n    :uses (\\\"LOGIC\\\" \\\"STELLA\\\")\n    :package \\\"PL-USER\\\")\n\n  (defmodule PL-USER/GENEALOGY)\n	\nThe remaining options are relevant only for modules that contain STELLA\ncode.  Modules used only to contain knowledge base definitions and assertions\nhave no use for them:\n\nThe keywords `:lisp-package', `:java-package', and `:cpp-package' specify\nthe name of a native package or name space in which symbols of the module\nshould be allocated when they get translated into one of Lisp, Java, or\nC++. By default, Lisp symbols are allocated in the `STELLA' package, and\nC++ names are translated without any prefixes. The rules that the STELLA\ntranslator uses to attach translated Java objects to classes and packages\nare somewhat complex. Use :java-package option to specify a list of\npackage names (separated by periods) that prefix the Java object in this\nmodule.  Use :java-catchall-class to specify the name of the Java class t" "o\nco", "ntain all global & special variables, parameter-less functions and functions \ndefined on arguments that are not classes in the current module.\nThe default value will be the name of the module.\n\nWhen set to TRUE, the :api? option tells the PowerLoom User Manual\ngenerator that all functions defined in this module should be included in\nthe API section. Additionally, the Java translator makes all API\nfunctions `synchronized'.\n\")", 0), ((cpp_function_code)(&defmodule)), ((cpp_function_code)(&defmoduleEvaluatorWrapper)));
     defineFunctionObject("IN-MODULE", "(DEFUN (IN-MODULE MODULE) ((NAME NAME)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :LISP-MACRO? TRUE :DOCUMENTATION \"Change the current module to the module named `name'.\")", ((cpp_function_code)(&inModule)), NULL);
     defineFunctionObject("CREATE-WORLD", "(DEFUN (CREATE-WORLD WORLD) ((PARENTCONTEXT CONTEXT) (NAME STRING)) :DOCUMENTATION \"Create a new world below the world or module 'parentContext'.\nOptionally, specify a name.\" :PUBLIC? TRUE :INLINE FINALIZE-WORLD)", ((cpp_function_code)(&createWorld)), NULL);
     defineMethodObject("(DEFMETHOD (MULTIPLE-PARENTS? BOOLEAN) ((WORLD WORLD)) :DOCUMENTATION \"Return FALSE always, since worlds never have more than one parent.\")", ((cpp_method_code)(&World::multipleParentsP)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("PUSH-WORLD", "(DEFUN (PUSH-WORLD WORLD) () :DOCUMENTATION \"Spawn a new world that is a child of the current context,\nand change the current context to the new world.\" :PUBLIC? TRUE)", ((cpp_function_code)(&pushWorld)), NULL);
-    defineFunctionObject("POP-WORLD", "(DEFUN (POP-WORLD CONTEXT) () :DOCUMENTATION \"Destroy the current world and change the current\ncontext to be its parent.  Return the current context. Nothing happens\nif there is no current world.\" :PUBLIC? TRUE)", ((cpp_function_code)(&popWorld)), NULL);
+    defineFunctionObject("PUSH-WORLD", "(DEFUN (PUSH-WORLD WORLD) () :DOCUMENTATION \"Spawn a new world that is a child of the current context,\nand change the current context to the new world.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&pushWorld)), NULL);
+    defineFunctionObject("POP-WORLD", "(DEFUN (POP-WORLD CONTEXT) () :DOCUMENTATION \"Destroy the current world and change the current\ncontext to be its parent.  Return the current context. Nothing happens\nif there is no current world.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&popWorld)), NULL);
     defineFunctionObject("ALL-SUBCONTEXTS", "(DEFUN (ALL-SUBCONTEXTS (ALL-PURPOSE-ITERATOR OF CONTEXT)) ((CONTEXT CONTEXT) (TRAVERSAL KEYWORD)) :DOCUMENTATION \"Return an iterator that generates all subcontexts of\n'self' (not including 'self') in the order specified by 'traversal' (one\nof :preorder, :inorder, :postorder or :topdown).\")", ((cpp_function_code)(&allSubcontexts)), NULL);
     defineFunctionObject("ALL-SUBCONTEXTS-NEXT?", "(DEFUN (ALL-SUBCONTEXTS-NEXT? BOOLEAN) ((SELF ALL-PURPOSE-ITERATOR)))", ((cpp_function_code)(&allSubcontextsNextP)), NULL);
     defineFunctionObject("ALL-TOPDOWN-SUBCONTEXTS-NEXT?", "(DEFUN (ALL-TOPDOWN-SUBCONTEXTS-NEXT? BOOLEAN) ((SELF ALL-PURPOSE-ITERATOR)))", ((cpp_function_code)(&allTopdownSubcontextsNextP)), NULL);
@@ -2462,13 +2474,14 @@ void startupModules() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SUBCONTEXT-REVISION-POLICY* KEYWORD :CLEAR :DOCUMENTATION \"Controls actions reflexive transitive closure of\n   subcontexts when a context is revised.\n   Values are ':destroy' -- destroy subcontexts;\n   ':clear' -- clear contents of subcontexts;\n   ':preserve' -- don't disturb subcontexts.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SHADOWEDSURROGATES* (CONS OF SYMBOL) NULL :DOCUMENTATION \"Holds list of symbols representing surrogates\nto be shadowed during module finalization.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEFINE-MODULE-HOOKS* HOOK-LIST (NEW HOOK-LIST) :DOCUMENTATION \"HOOK-LIST called by 'define-module', applied to a\n'module' argument.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MODULE-NON-STRUCTURAL-OPTIONS* (CONS OF KEYWORD) (BQUOTE (:DOCUMENTATION)) :PUBLIC? FALSE :DOCUMENTATION \"List of non-structural options for Module definitions.\nUsed in testing for module changes and in updating non-structurally changed\nmodules.\")");
-      setDynamicSlotValue(oROOT_MODULEo->dynamicSlots, SYM_MODULES_STELLA_CLEARABLEp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
-      setDynamicSlotValue(oSTELLA_MODULEo->dynamicSlots, SYM_MODULES_STELLA_CLEARABLEp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
-      setDynamicSlotValue(oCOMMON_LISP_MODULEo->dynamicSlots, SYM_MODULES_STELLA_CLEARABLEp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(oROOT_MODULEo->dynamicSlots, SYM_MODULES_STELLA_CLEARABLEp, FALSE_WRAPPER, FALSE_WRAPPER);
+      setDynamicSlotValue(oSTELLA_MODULEo->dynamicSlots, SYM_MODULES_STELLA_CLEARABLEp, FALSE_WRAPPER, FALSE_WRAPPER);
+      setDynamicSlotValue(oCOMMON_LISP_MODULEo->dynamicSlots, SYM_MODULES_STELLA_CLEARABLEp, FALSE_WRAPPER, FALSE_WRAPPER);
     }
   }
 }

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -64,183 +64,236 @@ public class DateTimeLogicWrapper extends QuantityLogicWrapper {
     }
   }
 
-  public static Stella_Object helpExtractDateTimeComponent(DateTimeLogicWrapper timepoint, double timeZone, GeneralizedSymbol predicate) {
-    { CalendarDate date = ((CalendarDate)(((DateTimeObject)(timepoint.wrapperValue))));
+  public static StringWrapper timepointTimeComputation(DateTimeLogicWrapper timepoint, Stella_Object timezone) {
+    timezone = FloatWrapper.wrapFloat(Timepoint.helpGetTimeZone(timezone));
+    if (timezone != null) {
+      return (StringWrapper.wrapString(((CalendarDate)(((DateTimeObject)(timepoint.wrapperValue)))).calendarDateToTimeString(((FloatWrapper)(timezone)).wrapperValue, true, true, true)));
+    }
+    else {
+      return (null);
+    }
+  }
 
-      if (predicate == Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_YEAR) {
-        { int year = Stella.NULL_INTEGER;
-          int month = Stella.NULL_INTEGER;
-          int day = Stella.NULL_INTEGER;
-          Keyword dow = null;
+  public static StringWrapper timepointDateComputation(DateTimeLogicWrapper timepoint, Stella_Object timezone) {
+    timezone = FloatWrapper.wrapFloat(Timepoint.helpGetTimeZone(timezone));
+    if (timezone != null) {
+      return (StringWrapper.wrapString(((CalendarDate)(((DateTimeObject)(timepoint.wrapperValue)))).calendarDateToDateString(((FloatWrapper)(timezone)).wrapperValue, false)));
+    }
+    else {
+      return (null);
+    }
+  }
 
-          { Object [] caller_MV_returnarray = new Object[3];
+  public static NumberWrapper timepointSecondComputation(DateTimeLogicWrapper timepoint, Stella_Object timezone) {
+    timezone = FloatWrapper.wrapFloat(Timepoint.helpGetTimeZone(timezone));
+    if (timezone != null) {
+      { int hour = Stella.NULL_INTEGER;
+        int minute = Stella.NULL_INTEGER;
+        int second = Stella.NULL_INTEGER;
+        int millisecond = Stella.NULL_INTEGER;
 
-            year = date.getCalendarDate(timeZone, caller_MV_returnarray);
-            month = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
-            day = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
-            dow = ((Keyword)(caller_MV_returnarray[2]));
-          }
-          {
-            month = month;
-            day = day;
-            dow = dow;
-          }
-          return (IntegerWrapper.wrapInteger(year));
+        { Object [] caller_MV_returnarray = new Object[3];
+
+          hour = ((CalendarDate)(((DateTimeObject)(timepoint.wrapperValue)))).getTime(((FloatWrapper)(timezone)).wrapperValue, caller_MV_returnarray);
+          minute = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+          second = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+          millisecond = ((int)(((IntegerWrapper)(caller_MV_returnarray[2])).wrapperValue));
+        }
+        {
+          hour = hour;
+          minute = minute;
+        }
+        if (millisecond == 0) {
+          return (IntegerWrapper.wrapInteger(second));
+        }
+        else {
+          return (FloatWrapper.wrapFloat(second + (millisecond * 0.001)));
         }
       }
-      else if (predicate == Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_MONTH) {
-        { int year = Stella.NULL_INTEGER;
-          int month = Stella.NULL_INTEGER;
-          int day = Stella.NULL_INTEGER;
-          Keyword dow = null;
+    }
+    else {
+      return (null);
+    }
+  }
 
-          { Object [] caller_MV_returnarray = new Object[3];
+  public static IntegerWrapper timepointMinuteComputation(DateTimeLogicWrapper timepoint, Stella_Object timezone) {
+    timezone = FloatWrapper.wrapFloat(Timepoint.helpGetTimeZone(timezone));
+    if (timezone != null) {
+      { int hour = Stella.NULL_INTEGER;
+        int minute = Stella.NULL_INTEGER;
+        int second = Stella.NULL_INTEGER;
+        int millisecond = Stella.NULL_INTEGER;
 
-            year = date.getCalendarDate(timeZone, caller_MV_returnarray);
-            month = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
-            day = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
-            dow = ((Keyword)(caller_MV_returnarray[2]));
-          }
-          {
-            year = year;
-            day = day;
-            dow = dow;
-          }
-          return (IntegerWrapper.wrapInteger(month));
+        { Object [] caller_MV_returnarray = new Object[3];
+
+          hour = ((CalendarDate)(((DateTimeObject)(timepoint.wrapperValue)))).getTime(((FloatWrapper)(timezone)).wrapperValue, caller_MV_returnarray);
+          minute = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+          second = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+          millisecond = ((int)(((IntegerWrapper)(caller_MV_returnarray[2])).wrapperValue));
         }
-      }
-      else if (predicate == Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_DAY) {
-        { int year = Stella.NULL_INTEGER;
-          int month = Stella.NULL_INTEGER;
-          int day = Stella.NULL_INTEGER;
-          Keyword dow = null;
-
-          { Object [] caller_MV_returnarray = new Object[3];
-
-            year = date.getCalendarDate(timeZone, caller_MV_returnarray);
-            month = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
-            day = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
-            dow = ((Keyword)(caller_MV_returnarray[2]));
-          }
-          {
-            year = year;
-            month = month;
-            dow = dow;
-          }
-          return (IntegerWrapper.wrapInteger(day));
+        {
+          hour = hour;
+          second = second;
+          millisecond = millisecond;
         }
+        return (IntegerWrapper.wrapInteger(minute));
       }
-      else if (predicate == Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_DAY_OF_WEEK) {
-        { int year = Stella.NULL_INTEGER;
-          int month = Stella.NULL_INTEGER;
-          int day = Stella.NULL_INTEGER;
-          Keyword dow = null;
+    }
+    else {
+      return (null);
+    }
+  }
 
-          { Object [] caller_MV_returnarray = new Object[3];
+  public static IntegerWrapper timepointHourComputation(DateTimeLogicWrapper timepoint, Stella_Object timezone) {
+    timezone = FloatWrapper.wrapFloat(Timepoint.helpGetTimeZone(timezone));
+    if (timezone != null) {
+      { int hour = Stella.NULL_INTEGER;
+        int minute = Stella.NULL_INTEGER;
+        int second = Stella.NULL_INTEGER;
+        int millisecond = Stella.NULL_INTEGER;
 
-            year = date.getCalendarDate(timeZone, caller_MV_returnarray);
-            month = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
-            day = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
-            dow = ((Keyword)(caller_MV_returnarray[2]));
-          }
-          {
-            year = year;
-            month = month;
-            day = day;
-          }
-          return (Timepoint.dowKeywordToInstance(dow));
+        { Object [] caller_MV_returnarray = new Object[3];
+
+          hour = ((CalendarDate)(((DateTimeObject)(timepoint.wrapperValue)))).getTime(((FloatWrapper)(timezone)).wrapperValue, caller_MV_returnarray);
+          minute = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+          second = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+          millisecond = ((int)(((IntegerWrapper)(caller_MV_returnarray[2])).wrapperValue));
         }
-      }
-      else if (predicate == Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_HOUR) {
-        { int hour = Stella.NULL_INTEGER;
-          int minute = Stella.NULL_INTEGER;
-          int second = Stella.NULL_INTEGER;
-          int millisecond = Stella.NULL_INTEGER;
-
-          { Object [] caller_MV_returnarray = new Object[3];
-
-            hour = date.getTime(timeZone, caller_MV_returnarray);
-            minute = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
-            second = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
-            millisecond = ((int)(((IntegerWrapper)(caller_MV_returnarray[2])).wrapperValue));
-          }
-          {
-            minute = minute;
-            second = second;
-            millisecond = millisecond;
-          }
-          return (IntegerWrapper.wrapInteger(hour));
+        {
+          minute = minute;
+          second = second;
+          millisecond = millisecond;
         }
+        return (IntegerWrapper.wrapInteger(hour));
       }
-      else if (predicate == Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_MINUTE) {
-        { int hour = Stella.NULL_INTEGER;
-          int minute = Stella.NULL_INTEGER;
-          int second = Stella.NULL_INTEGER;
-          int millisecond = Stella.NULL_INTEGER;
+    }
+    else {
+      return (null);
+    }
+  }
 
-          { Object [] caller_MV_returnarray = new Object[3];
+  public static LogicObject timepointDayOfWeekComputation(DateTimeLogicWrapper timepoint, Stella_Object timezone) {
+    timezone = FloatWrapper.wrapFloat(Timepoint.helpGetTimeZone(timezone));
+    if (timezone != null) {
+      { int year = Stella.NULL_INTEGER;
+        int month = Stella.NULL_INTEGER;
+        int day = Stella.NULL_INTEGER;
+        Keyword dow = null;
 
-            hour = date.getTime(timeZone, caller_MV_returnarray);
-            minute = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
-            second = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
-            millisecond = ((int)(((IntegerWrapper)(caller_MV_returnarray[2])).wrapperValue));
-          }
-          {
-            hour = hour;
-            second = second;
-            millisecond = millisecond;
-          }
-          return (IntegerWrapper.wrapInteger(minute));
+        { Object [] caller_MV_returnarray = new Object[3];
+
+          year = ((CalendarDate)(((DateTimeObject)(timepoint.wrapperValue)))).getCalendarDate(((FloatWrapper)(timezone)).wrapperValue, caller_MV_returnarray);
+          month = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+          day = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+          dow = ((Keyword)(caller_MV_returnarray[2]));
         }
-      }
-      else if (predicate == Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_SECOND) {
-        { int hour = Stella.NULL_INTEGER;
-          int minute = Stella.NULL_INTEGER;
-          int second = Stella.NULL_INTEGER;
-          int millisecond = Stella.NULL_INTEGER;
-
-          { Object [] caller_MV_returnarray = new Object[3];
-
-            hour = date.getTime(timeZone, caller_MV_returnarray);
-            minute = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
-            second = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
-            millisecond = ((int)(((IntegerWrapper)(caller_MV_returnarray[2])).wrapperValue));
-          }
-          {
-            hour = hour;
-            minute = minute;
-          }
-          if (millisecond == 0) {
-            return (IntegerWrapper.wrapInteger(second));
-          }
-          else {
-            return (FloatWrapper.wrapFloat(((double)(second)) + (millisecond * 0.001)));
-          }
+        {
+          year = year;
+          month = month;
+          day = day;
         }
+        return (Timepoint.dowKeywordToInstance(dow));
       }
-      else if (predicate == Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_DATE) {
-        return (StringWrapper.wrapString(date.calendarDateToDateString(timeZone, false)));
-      }
-      else if (predicate == Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_TIME) {
-        return (StringWrapper.wrapString(date.calendarDateToTimeString(timeZone, true, true, true)));
-      }
-      else {
-        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+    }
+    else {
+      return (null);
+    }
+  }
 
-          stream000.nativeStream.print("`" + predicate + "' is not a valid case option");
-          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+  public static IntegerWrapper timepointDayComputation(DateTimeLogicWrapper timepoint, Stella_Object timezone) {
+    timezone = FloatWrapper.wrapFloat(Timepoint.helpGetTimeZone(timezone));
+    if (timezone != null) {
+      { int year = Stella.NULL_INTEGER;
+        int month = Stella.NULL_INTEGER;
+        int day = Stella.NULL_INTEGER;
+        Keyword dow = null;
+
+        { Object [] caller_MV_returnarray = new Object[3];
+
+          year = ((CalendarDate)(((DateTimeObject)(timepoint.wrapperValue)))).getCalendarDate(((FloatWrapper)(timezone)).wrapperValue, caller_MV_returnarray);
+          month = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+          day = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+          dow = ((Keyword)(caller_MV_returnarray[2]));
         }
+        {
+          year = year;
+          month = month;
+          dow = dow;
+        }
+        return (IntegerWrapper.wrapInteger(day));
       }
+    }
+    else {
+      return (null);
+    }
+  }
+
+  public static IntegerWrapper timepointMonthComputation(DateTimeLogicWrapper timepoint, Stella_Object timezone) {
+    timezone = FloatWrapper.wrapFloat(Timepoint.helpGetTimeZone(timezone));
+    if (timezone != null) {
+      { int year = Stella.NULL_INTEGER;
+        int month = Stella.NULL_INTEGER;
+        int day = Stella.NULL_INTEGER;
+        Keyword dow = null;
+
+        { Object [] caller_MV_returnarray = new Object[3];
+
+          year = ((CalendarDate)(((DateTimeObject)(timepoint.wrapperValue)))).getCalendarDate(((FloatWrapper)(timezone)).wrapperValue, caller_MV_returnarray);
+          month = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+          day = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+          dow = ((Keyword)(caller_MV_returnarray[2]));
+        }
+        {
+          year = year;
+          day = day;
+          dow = dow;
+        }
+        return (IntegerWrapper.wrapInteger(month));
+      }
+    }
+    else {
+      return (null);
+    }
+  }
+
+  public static IntegerWrapper timepointYearComputation(DateTimeLogicWrapper timepoint, Stella_Object timezone) {
+    timezone = FloatWrapper.wrapFloat(Timepoint.helpGetTimeZone(timezone));
+    if (timezone != null) {
+      { int year = Stella.NULL_INTEGER;
+        int month = Stella.NULL_INTEGER;
+        int day = Stella.NULL_INTEGER;
+        Keyword dow = null;
+
+        { Object [] caller_MV_returnarray = new Object[3];
+
+          year = ((CalendarDate)(((DateTimeObject)(timepoint.wrapperValue)))).getCalendarDate(((FloatWrapper)(timezone)).wrapperValue, caller_MV_returnarray);
+          month = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+          day = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+          dow = ((Keyword)(caller_MV_returnarray[2]));
+        }
+        {
+          month = month;
+          day = day;
+          dow = dow;
+        }
+        return (IntegerWrapper.wrapInteger(year));
+      }
+    }
+    else {
+      return (null);
     }
   }
 
   public boolean objectEqlP(Stella_Object x) {
     { DateTimeLogicWrapper self = this;
 
-      try {
-        return (Stella_Object.isaP(x, edu.isi.powerloom.extensions.units.Units.SGT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER) &&
-            ((DateTimeObject)(self.wrapperValue)).objectEqlP(((DateTimeObject)(((DateTimeLogicWrapper)(x)).wrapperValue))));
-      } catch (StellaException e000) {
+      if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(x), edu.isi.powerloom.extensions.units.Units.SGT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER)) {
+        { DateTimeLogicWrapper x000 = ((DateTimeLogicWrapper)(x));
+
+          return (((DateTimeObject)(self.wrapperValue)).objectEqlP(((DateTimeObject)(x000.wrapperValue))));
+        }
+      }
+      else {
         return (false);
       }
     }
@@ -273,13 +326,13 @@ public class DateTimeLogicWrapper extends QuantityLogicWrapper {
             if (Surrogate.subtypeOfP(testValue000, edu.isi.powerloom.extensions.units.Units.SGT_STELLA_CALENDAR_DATE)) {
               { CalendarDate datetime000 = ((CalendarDate)(datetime));
 
-                term = Stella_Object.cons(Logic.generateTerm(Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_OF), Stella_Object.cons(StringWrapper.wrapString(datetime000.calendarDateToString(0.0, false, true)), Stella.NIL));
+                term = Cons.cons(Logic.generateTerm(Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_OF), Cons.cons(StringWrapper.wrapString(datetime000.calendarDateToString(0.0, false, true)), Stella.NIL));
               }
             }
             else if (Surrogate.subtypeOfP(testValue000, edu.isi.powerloom.extensions.units.Units.SGT_STELLA_TIME_DURATION)) {
               { TimeDuration datetime000 = ((TimeDuration)(datetime));
 
-                term = Stella_Object.cons(Logic.generateTerm(Timepoint.SGT_TIMEPOINT_KB_DURATION_OF), Stella_Object.cons(StringWrapper.wrapString(datetime000.timeDurationToString()), Stella.NIL));
+                term = Cons.cons(Logic.generateTerm(Timepoint.SGT_TIMEPOINT_KB_DURATION_OF), Cons.cons(StringWrapper.wrapString(datetime000.timeDurationToString()), Stella.NIL));
               }
             }
             else {

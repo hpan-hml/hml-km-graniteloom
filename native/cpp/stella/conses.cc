@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -309,7 +309,7 @@ Cons* Cons::removeDuplicates() {
   { Cons* self = this;
 
     if (self->length() > oREMOVE_DUPLICATES_CROSSOVER_POINTo) {
-      return (removeDuplicatesFromLongList(self));
+      return (removeDuplicatesFromLongList(self, false));
     }
     else {
       { Cons* cursor = self;
@@ -329,7 +329,15 @@ Cons* Cons::removeDuplicates() {
   }
 }
 
-Cons* removeDuplicatesFromLongList(Cons* self) {
+Cons* Cons::removeDuplicatesEqual() {
+  // `remove-duplicates' (which see) using an `equal?' test.
+  { Cons* self = this;
+
+    return (removeDuplicatesFromLongList(self, true));
+  }
+}
+
+Cons* removeDuplicatesFromLongList(Cons* self, boolean equaltestP) {
   { int tablesize = ceiling(self->length() * 0.3);
     Cons** table = new (GC)(Cons*[tablesize]);
     Cons* cursor = self;
@@ -350,7 +358,7 @@ Cons* removeDuplicatesFromLongList(Cons* self) {
     }
     while (!(cursor == NIL)) {
       item = cursor->value;
-      bucketindex = ((item->hashCode()) % tablesize);
+      bucketindex = (((unsigned int) (item->hashCode())) % tablesize);
       bucket = table[bucketindex];
       { boolean foundP000 = false;
 
@@ -359,7 +367,7 @@ Cons* removeDuplicatesFromLongList(Cons* self) {
 
           for (it, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
             it = iter001->value;
-            if (eqlP(it, item)) {
+            if ((equaltestP ? equalP(it, item) : eqlP(it, item))) {
               foundP000 = true;
               break;
             }
@@ -1250,22 +1258,42 @@ Cons* Cons::difference(Cons* otherlist) {
   // set if both `self' and `otherList' are sets.
   { Cons* self = this;
 
-    { Cons* list = copyConsList(self);
+    if ((!((boolean)(otherlist))) ||
+        (otherlist == NIL)) {
+      return (copyConsList(self));
+    }
+    { Cons* diff = NIL;
 
-      if (!((boolean)(otherlist))) {
-        return (list);
-      }
       { Object* i = NULL;
-        Cons* iter000 = otherlist;
+        Cons* iter000 = self;
+        Cons* collect000 = NULL;
 
-        for (i, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+        for  (i, iter000, collect000; 
+              !(iter000 == NIL); 
+              iter000 = iter000->rest) {
           i = iter000->value;
-          if (list->memberP(i)) {
-            list = list->remove(i);
+          if (!otherlist->memberP(i)) {
+            if (!((boolean)(collect000))) {
+              {
+                collect000 = cons(i, NIL);
+                if (diff == NIL) {
+                  diff = collect000;
+                }
+                else {
+                  addConsToEndOfConsList(diff, collect000);
+                }
+              }
+            }
+            else {
+              {
+                collect000->rest = cons(i, NIL);
+                collect000 = collect000->rest;
+              }
+            }
           }
         }
       }
-      return (list);
+      return (diff);
     }
   }
 }
@@ -1305,7 +1333,7 @@ Cons* Cons::sort(cpp_function_code predicate) {
   { Cons* self = this;
 
     if (predicate == NULL) {
-      predicate = chooseSortPredicate(self);
+      predicate = chooseSortPredicate(self->value);
     }
     return (helpSortConsList(self, self->length(), predicate));
   }
@@ -1390,6 +1418,10 @@ boolean wrappedIntegerLessThanP(IntegerWrapper* x, IntegerWrapper* y) {
   return (x->wrapperValue < y->wrapperValue);
 }
 
+boolean wrappedLongIntegerLessThanP(LongIntegerWrapper* x, LongIntegerWrapper* y) {
+  return (x->wrapperValue < y->wrapperValue);
+}
+
 boolean wrappedFloatLessThanP(FloatWrapper* x, FloatWrapper* y) {
   return (x->wrapperValue < y->wrapperValue);
 }
@@ -1402,55 +1434,184 @@ boolean wrappedMutableStringLessThanP(MutableStringWrapper* x, MutableStringWrap
   return (stringL((x->wrapperValue), (y->wrapperValue)));
 }
 
-cpp_function_code chooseSortPredicate(Cons* self) {
-  { Object* firstelement = self->value;
+boolean numberLessThanP(NumberWrapper* x, NumberWrapper* y) {
+  // Generic number comparison that works with integers, longs and floats.
+  { Surrogate* testValue000 = safePrimaryType(x);
 
-    if (!((boolean)(firstelement))) {
-      return (NULL);
+    if (subtypeOfIntegerP(testValue000)) {
+      { NumberWrapper* x000 = x;
+        IntegerWrapper* x = ((IntegerWrapper*)(x000));
+
+        { Surrogate* testValue001 = safePrimaryType(y);
+
+          if (subtypeOfFloatP(testValue001)) {
+            { NumberWrapper* y000 = y;
+              FloatWrapper* y = ((FloatWrapper*)(y000));
+
+              return (x->wrapperValue < y->wrapperValue);
+            }
+          }
+          else if (subtypeOfLongIntegerP(testValue001)) {
+            { NumberWrapper* y001 = y;
+              LongIntegerWrapper* y = ((LongIntegerWrapper*)(y001));
+
+              return (x->wrapperValue < y->wrapperValue);
+            }
+          }
+          else if (subtypeOfIntegerP(testValue001)) {
+            { NumberWrapper* y002 = y;
+              IntegerWrapper* y = ((IntegerWrapper*)(y002));
+
+              return (x->wrapperValue < y->wrapperValue);
+            }
+          }
+          else {
+            { OutputStringStream* stream000 = newOutputStringStream();
+
+              *(stream000->nativeStream) << "`" << testValue001 << "'" << " is not a valid case option";
+              throw *newStellaException(stream000->theStringReader());
+            }
+          }
+        }
+      }
     }
-    { Surrogate* testValue000 = safePrimaryType(firstelement);
+    else if (subtypeOfLongIntegerP(testValue000)) {
+      { NumberWrapper* x001 = x;
+        LongIntegerWrapper* x = ((LongIntegerWrapper*)(x001));
 
-      if (subtypeOfP(testValue000, SGT_CONSES_STELLA_GENERALIZED_SYMBOL)) {
-        { Object* firstelement000 = firstelement;
-          GeneralizedSymbol* firstelement = ((GeneralizedSymbol*)(firstelement000));
+        { Surrogate* testValue002 = safePrimaryType(y);
 
-          return (((cpp_function_code)(&generalizedSymbolLessThanP)));
+          if (subtypeOfFloatP(testValue002)) {
+            { NumberWrapper* y003 = y;
+              FloatWrapper* y = ((FloatWrapper*)(y003));
+
+              return (x->wrapperValue < y->wrapperValue);
+            }
+          }
+          else if (subtypeOfLongIntegerP(testValue002)) {
+            { NumberWrapper* y004 = y;
+              LongIntegerWrapper* y = ((LongIntegerWrapper*)(y004));
+
+              return (x->wrapperValue < y->wrapperValue);
+            }
+          }
+          else if (subtypeOfIntegerP(testValue002)) {
+            { NumberWrapper* y005 = y;
+              IntegerWrapper* y = ((IntegerWrapper*)(y005));
+
+              return (x->wrapperValue < y->wrapperValue);
+            }
+          }
+          else {
+            { OutputStringStream* stream001 = newOutputStringStream();
+
+              *(stream001->nativeStream) << "`" << testValue002 << "'" << " is not a valid case option";
+              throw *newStellaException(stream001->theStringReader());
+            }
+          }
         }
       }
-      else if (subtypeOfIntegerP(testValue000)) {
-        { Object* firstelement001 = firstelement;
-          IntegerWrapper* firstelement = ((IntegerWrapper*)(firstelement001));
+    }
+    else if (subtypeOfFloatP(testValue000)) {
+      { NumberWrapper* x002 = x;
+        FloatWrapper* x = ((FloatWrapper*)(x002));
 
-          return (((cpp_function_code)(&wrappedIntegerLessThanP)));
+        { Surrogate* testValue003 = safePrimaryType(y);
+
+          if (subtypeOfFloatP(testValue003)) {
+            { NumberWrapper* y006 = y;
+              FloatWrapper* y = ((FloatWrapper*)(y006));
+
+              return (x->wrapperValue < y->wrapperValue);
+            }
+          }
+          else if (subtypeOfLongIntegerP(testValue003)) {
+            { NumberWrapper* y007 = y;
+              LongIntegerWrapper* y = ((LongIntegerWrapper*)(y007));
+
+              return (x->wrapperValue < y->wrapperValue);
+            }
+          }
+          else if (subtypeOfIntegerP(testValue003)) {
+            { NumberWrapper* y008 = y;
+              IntegerWrapper* y = ((IntegerWrapper*)(y008));
+
+              return (x->wrapperValue < y->wrapperValue);
+            }
+          }
+          else {
+            { OutputStringStream* stream002 = newOutputStringStream();
+
+              *(stream002->nativeStream) << "`" << testValue003 << "'" << " is not a valid case option";
+              throw *newStellaException(stream002->theStringReader());
+            }
+          }
         }
       }
-      else if (subtypeOfFloatP(testValue000)) {
-        { Object* firstelement002 = firstelement;
-          FloatWrapper* firstelement = ((FloatWrapper*)(firstelement002));
+    }
+    else {
+      { OutputStringStream* stream003 = newOutputStringStream();
 
-          return (((cpp_function_code)(&wrappedFloatLessThanP)));
-        }
+        *(stream003->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+        throw *newStellaException(stream003->theStringReader());
       }
-      else if (subtypeOfStringP(testValue000)) {
-        { Object* firstelement003 = firstelement;
-          StringWrapper* firstelement = ((StringWrapper*)(firstelement003));
+    }
+  }
+}
 
-          return (((cpp_function_code)(&wrappedStringLessThanP)));
-        }
+cpp_function_code chooseSortPredicate(Object* firstelement) {
+  if (!((boolean)(firstelement))) {
+    return (NULL);
+  }
+  { Surrogate* testValue000 = safePrimaryType(firstelement);
+
+    if (subtypeOfP(testValue000, SGT_CONSES_STELLA_GENERALIZED_SYMBOL)) {
+      { Object* firstelement000 = firstelement;
+        GeneralizedSymbol* firstelement = ((GeneralizedSymbol*)(firstelement000));
+
+        return (((cpp_function_code)(&generalizedSymbolLessThanP)));
       }
-      else if (subtypeOfP(testValue000, SGT_CONSES_STELLA_MUTABLE_STRING_WRAPPER)) {
-        { Object* firstelement004 = firstelement;
-          MutableStringWrapper* firstelement = ((MutableStringWrapper*)(firstelement004));
+    }
+    else if (subtypeOfIntegerP(testValue000)) {
+      { Object* firstelement001 = firstelement;
+        IntegerWrapper* firstelement = ((IntegerWrapper*)(firstelement001));
 
-          return (((cpp_function_code)(&wrappedMutableStringLessThanP)));
-        }
+        return (((cpp_function_code)(&wrappedIntegerLessThanP)));
       }
-      else {
-        { OutputStringStream* stream000 = newOutputStringStream();
+    }
+    else if (subtypeOfLongIntegerP(testValue000)) {
+      { Object* firstelement002 = firstelement;
+        LongIntegerWrapper* firstelement = ((LongIntegerWrapper*)(firstelement002));
 
-          *(stream000->nativeStream) << "choose-sort-predicate: Don't know how to sort " << "`" << firstelement->primaryType() << "'" << "s";
-          throw *newStellaException(stream000->theStringReader());
-        }
+        return (((cpp_function_code)(&wrappedLongIntegerLessThanP)));
+      }
+    }
+    else if (subtypeOfFloatP(testValue000)) {
+      { Object* firstelement003 = firstelement;
+        FloatWrapper* firstelement = ((FloatWrapper*)(firstelement003));
+
+        return (((cpp_function_code)(&wrappedFloatLessThanP)));
+      }
+    }
+    else if (subtypeOfStringP(testValue000)) {
+      { Object* firstelement004 = firstelement;
+        StringWrapper* firstelement = ((StringWrapper*)(firstelement004));
+
+        return (((cpp_function_code)(&wrappedStringLessThanP)));
+      }
+    }
+    else if (subtypeOfP(testValue000, SGT_CONSES_STELLA_MUTABLE_STRING_WRAPPER)) {
+      { Object* firstelement005 = firstelement;
+        MutableStringWrapper* firstelement = ((MutableStringWrapper*)(firstelement005));
+
+        return (((cpp_function_code)(&wrappedMutableStringLessThanP)));
+      }
+    }
+    else {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "choose-sort-predicate: Don't know how to sort " << "`" << firstelement->primaryType() << "'" << "s";
+        throw *newStellaException(stream000->theStringReader());
       }
     }
   }
@@ -1475,7 +1636,7 @@ Cons* Cons::sortTuples(int n, cpp_function_code predicate) {
 
     if ((predicate == NULL) &&
         (!(self == NIL))) {
-      predicate = chooseSortPredicate(((Cons*)(self->value))->nthRest(n));
+      predicate = chooseSortPredicate(((Cons*)(self->value))->nth(n));
     }
     { 
       BIND_STELLA_SPECIAL(oSORT_TUPLE_COMPARE_PREDICATEo, cpp_function_code, predicate);
@@ -1880,28 +2041,36 @@ void printCons(Cons* tree, std::ostream* stream, char* lparen, char* rparen) {
   if (!(tree == NIL)) {
     *(stream) << tree->value;
     tree = tree->rest;
-    { Object* element = NULL;
-      Cons* iter000 = tree;
-      int i = NULL_INTEGER;
-      int iter001 = 2;
-      int upperBound000 = oPRINTLENGTHo.get();
-      boolean unboundedP000 = upperBound000 == NULL_INTEGER;
+    if (oPRINTLENGTHo.get() != NULL_INTEGER) {
+      { int i = 1;
 
-      for  (element, iter000, i, iter001, upperBound000, unboundedP000; 
-            (!(iter000 == NIL)) &&
-                (unboundedP000 ||
-                 (iter001 <= upperBound000)); 
-            iter000 = iter000->rest,
-            iter001 = iter001 + 1) {
-        element = iter000->value;
-        i = iter001;
-        *(stream) << " ";
-        *(stream) << element;
-        tree = tree->rest;
+        { Object* element = NULL;
+          Cons* iter000 = tree;
+
+          for (element, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+            element = iter000->value;
+            *(stream) << " " << element;
+            tree = tree->rest;
+            i = i + 1;
+            if (i >= oPRINTLENGTHo.get()) {
+              break;
+            }
+          }
+        }
+        if (!(tree == NIL)) {
+          *(stream) << " ...";
+        }
       }
     }
-    if (!(tree == NIL)) {
-      *(stream) << " ...";
+    else {
+      { Object* element = NULL;
+        Cons* iter001 = tree;
+
+        for (element, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+          element = iter001->value;
+          *(stream) << " " << element;
+        }
+      }
     }
   }
   *(stream) << rparen;
@@ -2044,11 +2213,12 @@ void helpStartupConses2() {
     defineMethodObject("(DEFMETHOD (LAST-POSITION INTEGER) ((SELF CONS) (OBJECT OBJECT) (END INTEGER)) :DOCUMENTATION \"Return the position of `object' within the cons-list\n`self' (counting from zero); or return `null' if `object' does not occur within \n`self' (uses an `eql?' test).  If `start' was supplied as non-`null', only \nconsider the sublist ending at `end', however, the returned position \nwill always be relative to the entire list.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::lastPosition)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (MEMBER? BOOLEAN) ((SELF CONS) (OBJECT OBJECT)) :DOCUMENTATION \"Return `true' iff `object' is a member of the cons list\n`self' (uses an `eql?' test).\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::memberP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (MEMB? BOOLEAN) ((SELF CONS) (OBJECT OBJECT)) :DOCUMENTATION \"Return `true' iff `object' is a member of the cons list\n`self' (uses an `eq?' test).\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::membP)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("CONS", "(DEFUN (CONS CONS) ((VALUE OBJECT) (REST CONS)) :DOCUMENTATION \"Return a cons record that points to `value' and `rest'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&cons)), NULL);
+    defineFunctionObject("CONS", "(DEFUN (CONS CONS) ((VALUE OBJECT) (REST CONS)) :DOCUMENTATION \"Return a cons record that points to `value' and `rest'.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&cons)), NULL);
     defineMethodObject("(DEFMETHOD (REMOVE (LIKE SELF)) ((SELF CONS) (VALUE OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Destructively remove all entries in the cons list `self' that\nmatch `value'.  Unless the remaining list is `nil', insure that the cons that\nheads the list is unchanged.\")", ((cpp_method_code)(&Cons::remove)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (REMOVE-IF (LIKE SELF)) ((SELF CONS) (TEST? FUNCTION-CODE)) :PUBLIC? TRUE :DOCUMENTATION \"Destructively removes all members of the cons list\n`self' for which `test?' evaluates to `true'.  `test' takes a single \nargument of type OBJECT and returns `true' or `false'.  Returns a cons list.\nIn case the first element is removed, the return result should be\nassigned to a variable.\")", ((cpp_method_code)(&Cons::removeIf)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (REMOVE-DUPLICATES (LIKE SELF)) ((SELF CONS)) :PUBLIC? TRUE :DOCUMENTATION \"Destructively remove duplicates from `self' and return the\nresult.  Removes all but the first occurrence of items in the list.\nPreserves the original order of the remaining members.  Runs in linear time.\")", ((cpp_method_code)(&Cons::removeDuplicates)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("REMOVE-DUPLICATES-FROM-LONG-LIST", "(DEFUN (REMOVE-DUPLICATES-FROM-LONG-LIST (LIKE SELF)) ((SELF CONS)))", ((cpp_function_code)(&removeDuplicatesFromLongList)), NULL);
+    defineMethodObject("(DEFMETHOD (REMOVE-DUPLICATES-EQUAL (LIKE SELF)) ((SELF CONS)) :DOCUMENTATION \"`remove-duplicates' (which see) using an `equal?' test.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::removeDuplicatesEqual)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("REMOVE-DUPLICATES-FROM-LONG-LIST", "(DEFUN (REMOVE-DUPLICATES-FROM-LONG-LIST (LIKE SELF)) ((SELF CONS) (EQUALTEST? BOOLEAN)))", ((cpp_function_code)(&removeDuplicatesFromLongList)), NULL);
     defineMethodObject("(DEFMETHOD (CONCATENATE CONS) ((LIST1 CONS) (LIST2 CONS) |&REST| (OTHERLISTS CONS)) :PUBLIC? TRUE :DOCUMENTATION \"Return a cons list consisting of the concatenation of \n`list1', `list2', and `otherLists'.  The operation is destructive wrt all\nbut the last list argument which is left intact.  The two mandatory\nparameters allow us to optimize the common binary case by not relying on\nthe somewhat less efficient variable arguments mechanism.\")", ((cpp_method_code)(&Cons::concatenate)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (PREPEND CONS) ((SELF CONS) (LIST1 CONS)) :DOCUMENTATION \"Return a cons list consisting of the concatenation of\n`list1' and `self'.  A copy of `list1' is prepended to `self'.  This\noperation results in structure sharing of `self'; to avoid this, `self'\nshould not be pointed to by anything other than the tail of the prepended\ncopy.\")", ((cpp_method_code)(&Cons::prepend)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (REVERSE (LIKE SELF)) ((SELF CONS)) :DOCUMENTATION \"Destructively reverse the members of the cons list `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::reverse)), ((cpp_method_code)(NULL)));
@@ -2088,14 +2258,13 @@ void helpStartupConses2() {
     defineMethodObject("(DEFMETHOD (CONSIFY CONS) ((SELF OBJECT)) :DOCUMENTATION \"If `object' is a CONS, return it.  Otherwise, return\na singleton cons list containing it.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Object::consify)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (REMOVE-DELETED-MEMBERS (LIKE SELF)) ((SELF CONS)) :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::removeDeletedMembers)), ((cpp_method_code)(NULL)));
     defineFunctionObject("COPY-CONS-LIST", "(DEFUN (COPY-CONS-LIST (LIKE SELF)) ((SELF CONS)) :DOCUMENTATION \"Return a copy of the cons list `self'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&copyConsList)), NULL);
-    defineFunctionObject("CONS-LIST", "(DEFUN (CONS-LIST CONS) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return a cons list containing `values', in order.\" :PUBLIC? TRUE)", ((cpp_function_code)(&consList)), NULL);
-    defineFunctionObject("LIST*", "(DEFUN (LIST* CONS) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return a list of conses that make up the list `values',\nterminated by the last value rather than by `nil'.  Assumes that\nat least one value is passed in.\" :PUBLIC? TRUE)", ((cpp_function_code)(&listO)), NULL);
+    defineFunctionObject("CONS-LIST", "(DEFUN (CONS-LIST CONS) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return a cons list containing `values', in order.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&consList)), NULL);
+    defineFunctionObject("LIST*", "(DEFUN (LIST* CONS) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return a list of conses that make up the list `values',\nterminated by the last value rather than by `nil'.  Assumes that\nat least one value is passed in.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&listO)), NULL);
     defineFunctionObject("APPEND", "(DEFUN (APPEND CONS) ((CONSLIST1 CONS) (CONSLIST2 CONS)) :DOCUMENTATION \"Return a cons list representing the concatenation\nof `consList1' and `consList2'.  The concatenation is NOT destructive.\" :PUBLIC? TRUE)", ((cpp_function_code)(&append)), NULL);
     defineMethodObject("(DEFMETHOD (SUBSET? BOOLEAN) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return true if every element of `self' also occurs in `otherList'.\nUses an `eql?' test and a simple quadratic-time algorithm.  Note that\nthis does not check whether `self' and `otherList' actually are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::subsetP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (EQUIVALENT-SETS? BOOLEAN) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return true if every element of `self' occurs in `otherList' and vice versa.\nUses an `eql?' test and a simple quadratic-time algorithm.  Note that\nthis does not check whether `self' and `otherList' actually are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::equivalentSetsP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (INTERSECTION CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set intersection of `self' and `otherList'.  Uses an `eql?'\ntest and a simple quadratic-time algorithm.  Note that the result is only\nguaranteed to be a set if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::intersection)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (UNION CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set union of `self' and `otherList'.  Uses an `eql?' test\nand a simple quadratic-time algorithm.  Note that the result is only\nguaranteed to be a set if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::unioN)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (DIFFERENCE CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set difference of `self' and `otherList' (i.e., all elements\nthat are in `self' but not in `otherSet').  Uses an `eql?' test and a simple\nquadratic-time algorithm.  Note that the result is only guaranteed to be a\nset if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::difference)), ((cpp_method_code)(NULL)));
   }
 }
 
@@ -2114,6 +2283,7 @@ void startupConses() {
       helpStartupConses1();
     }
     if (currentStartupTimePhaseP(4)) {
+      oPRINTLENGTHo.set(NULL_INTEGER);
       ELIPSIS = SYM_CONSES_STELLA_ddd;
     }
     if (currentStartupTimePhaseP(6)) {
@@ -2121,16 +2291,19 @@ void startupConses() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupConses2();
+      defineMethodObject("(DEFMETHOD (DIFFERENCE CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set difference of `self' and `otherList' (i.e., all elements\nthat are in `self' but not in `otherSet').  Uses an `eql?' test and a simple\nquadratic-time algorithm.  Note that the result is only guaranteed to be a\nset if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::difference)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (SUBTRACT CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set difference of `self' and `otherList' by destructively\nremoving elements from `self' that also occur in `otherList'.  Uses an `eql?'\ntest and a simple quadratic-time algorithm.  Note that the result is only\nguaranteed to be a set if `self' is a set.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::subtract)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (SORT (CONS OF (LIKE (ANY-VALUE SELF)))) ((SELF CONS) (PREDICATE FUNCTION-CODE)) :PUBLIC? TRUE :DOCUMENTATION \"Perform a stable, destructive sort of `self' according to\n`predicate', and return the result.  If `predicate' has a '<' semantics, the\nresult will be in ascending order.  It is not guaranteed that `self' will\npoint to the beginning of the sorted result.  If `predicate' is `null', a\nsuitable '<' predicate is chosen depending on the first element of `self',\nand it is assumed that all elements of `self' have the same type (supported\nelement types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT).\")", ((cpp_method_code)(&Cons::sort)), ((cpp_method_code)(NULL)));
       defineFunctionObject("HELP-SORT-CONS-LIST", "(DEFUN (HELP-SORT-CONS-LIST CONS) ((LIST CONS) (LENGTH INTEGER) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&helpSortConsList)), NULL);
       defineFunctionObject("MERGE-CONS-LISTS", "(DEFUN (MERGE-CONS-LISTS CONS) ((LIST1 CONS) (LIST2 CONS) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&mergeConsLists)), NULL);
       defineFunctionObject("GENERALIZED-SYMBOL-LESS-THAN?", "(DEFUN (GENERALIZED-SYMBOL-LESS-THAN? BOOLEAN) ((X GENERALIZED-SYMBOL) (Y GENERALIZED-SYMBOL)) :PUBLIC? TRUE)", ((cpp_function_code)(&generalizedSymbolLessThanP)), NULL);
       defineFunctionObject("WRAPPED-INTEGER-LESS-THAN?", "(DEFUN (WRAPPED-INTEGER-LESS-THAN? BOOLEAN) ((X INTEGER-WRAPPER) (Y INTEGER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&wrappedIntegerLessThanP)), NULL);
+      defineFunctionObject("WRAPPED-LONG-INTEGER-LESS-THAN?", "(DEFUN (WRAPPED-LONG-INTEGER-LESS-THAN? BOOLEAN) ((X LONG-INTEGER-WRAPPER) (Y LONG-INTEGER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&wrappedLongIntegerLessThanP)), NULL);
       defineFunctionObject("WRAPPED-FLOAT-LESS-THAN?", "(DEFUN (WRAPPED-FLOAT-LESS-THAN? BOOLEAN) ((X FLOAT-WRAPPER) (Y FLOAT-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&wrappedFloatLessThanP)), NULL);
       defineFunctionObject("WRAPPED-STRING-LESS-THAN?", "(DEFUN (WRAPPED-STRING-LESS-THAN? BOOLEAN) ((X STRING-WRAPPER) (Y STRING-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&wrappedStringLessThanP)), NULL);
       defineFunctionObject("WRAPPED-MUTABLE-STRING-LESS-THAN?", "(DEFUN (WRAPPED-MUTABLE-STRING-LESS-THAN? BOOLEAN) ((X MUTABLE-STRING-WRAPPER) (Y MUTABLE-STRING-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&wrappedMutableStringLessThanP)), NULL);
-      defineFunctionObject("CHOOSE-SORT-PREDICATE", "(DEFUN (CHOOSE-SORT-PREDICATE FUNCTION-CODE) ((SELF CONS)))", ((cpp_function_code)(&chooseSortPredicate)), NULL);
+      defineFunctionObject("NUMBER-LESS-THAN?", "(DEFUN (NUMBER-LESS-THAN? BOOLEAN) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :DOCUMENTATION \"Generic number comparison that works with integers, longs and floats.\" :PUBLIC? TRUE)", ((cpp_function_code)(&numberLessThanP)), NULL);
+      defineFunctionObject("CHOOSE-SORT-PREDICATE", "(DEFUN (CHOOSE-SORT-PREDICATE FUNCTION-CODE) ((FIRSTELEMENT OBJECT)))", ((cpp_function_code)(&chooseSortPredicate)), NULL);
       defineFunctionObject("SORT-TUPLE-COMPARE?", "(DEFUN (SORT-TUPLE-COMPARE? BOOLEAN) ((X CONS) (Y CONS)))", ((cpp_function_code)(&sortTupleCompareP)), NULL);
       defineMethodObject("(DEFMETHOD (SORT-TUPLES (CONS OF (LIKE (ANY-VALUE SELF)))) ((SELF CONS) (N INTEGER) (PREDICATE FUNCTION-CODE)) :PUBLIC? TRUE :DOCUMENTATION \"Just like `sort' but assumes each element of `self' is a tuple (a cons)\nwhose `n'-th element (0-based) will be used for comparison.\")", ((cpp_method_code)(&Cons::sortTuples)), ((cpp_method_code)(NULL)));
       defineFunctionObject("SEARCH-CONS-TREE?", "(DEFUN (SEARCH-CONS-TREE? BOOLEAN) ((TREE OBJECT) (VALUE OBJECT)) :DOCUMENTATION \"Return `true' iff the value `value' is embedded within\nthe cons tree `tree'.  Uses an `eql?' test.\" :PUBLIC? TRUE)", ((cpp_function_code)(&searchConsTreeP)), NULL);
@@ -2162,6 +2335,7 @@ void startupConses() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NIL CONS NULL :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *REMOVE-DUPLICATES-CROSSOVER-POINT* INTEGER 20 :DOCUMENTATION \"Point where we switch from using a quadratic remove\nduplicates algorithm to a linear one using a hash table.  For\nan unoptimized Common Lisp, 20 is a good crossover point.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SORT-TUPLE-COMPARE-PREDICATE* FUNCTION-CODE NULL)");

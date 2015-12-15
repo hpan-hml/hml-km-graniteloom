@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -85,7 +85,7 @@ public class TransitiveClosureIterator extends Iterator {
       Iterator adjacencyiterator = ((Iterator)(edu.isi.stella.javalib.Native.funcall(self.allocateAdjacencyIteratorFunction, null, new java.lang.Object [] {node})));
 
       if (adjacencyiterator != null) {
-        self.adjacencyIteratorStack = Stella_Object.cons(adjacencyiterator, self.adjacencyIteratorStack);
+        self.adjacencyIteratorStack = Cons.cons(adjacencyiterator, self.adjacencyIteratorStack);
       }
       else {
         {
@@ -107,7 +107,7 @@ public class TransitiveClosureIterator extends Iterator {
         if ((!self.beenThereList.memberP(node)) &&
             ((self.filterP == null) ||
              ((Boolean)(edu.isi.stella.javalib.Native.funcall(self.filterP, null, new java.lang.Object [] {node}))).booleanValue())) {
-          self.beenThereList = Stella_Object.cons(node, self.beenThereList);
+          self.beenThereList = Cons.cons(node, self.beenThereList);
           self.value = node;
           return (true);
         }

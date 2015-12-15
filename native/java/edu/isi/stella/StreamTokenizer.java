@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -99,9 +99,10 @@ public class StreamTokenizer extends Iterator {
                 tok_endoftokensP_ = InputStream.readIntoTokenizerBuffer(tok_inputstream_, tok_streamstate_, tok_tokenstart_);
                 tok_buffer_ = tok_streamstate_.buffer;
                 tok_size_ = tok_streamstate_.bufferSize;
-                tok_cursor_ = Stella.mod(tok_streamstate_.cursor, tok_size_);
+                tok_cursor_ = Stella.integer_mod(tok_streamstate_.cursor, tok_size_);
                 tok_end_ = tok_streamstate_.end;
                 if (tok_endoftokensP_) {
+                  tok_checkpoint_ = tok_cursor_;
                   if (tok_nextstate_ == -1) {
                   }
                   else if (BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)((tok_table_.legalEofStates.theArray)[tok_state_])))) {

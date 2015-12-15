@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -93,8 +93,6 @@ extern Keyword* KWD_INFERENCE_CACHES_META;
 extern Symbol* SYM_INFERENCE_CACHES_LOGIC_META_INFERENCE_CACHE;
 extern Keyword* KWD_INFERENCE_CACHES_TMS;
 extern Symbol* SYM_INFERENCE_CACHES_LOGIC_TRUTH_MAINTAINED_INFERENCE_CACHE;
-extern Symbol* SYM_INFERENCE_CACHES_LOGIC_EVALUATION_STATE_TABLE;
-extern Symbol* SYM_INFERENCE_CACHES_LOGIC_EVALUATION_QUEUE;
 extern Symbol* SYM_INFERENCE_CACHES_LOGIC_UP_TO_DATE_INFERENCESp;
 extern Keyword* KWD_INFERENCE_CACHES_PREORDER;
 extern Surrogate* SGT_INFERENCE_CACHES_LOGIC_DESCRIPTION;

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -156,7 +156,7 @@ public class ParametricTypeSpecifier extends CompoundTypeSpecifier {
           dim = iter000.value;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Stella_Object.walkExpressionTree(dim, Stella.SGT_STELLA_INTEGER, Stella.SYM_STELLA_NEW, false, new Object[1]), Stella.NIL);
+              collect000 = Cons.cons(Stella_Object.walkExpressionTree(dim, Stella.SGT_STELLA_INTEGER, Stella.SYM_STELLA_NEW, false, new Object[1]), Stella.NIL);
               if (requiredvalues.theConsList == Stella.NIL) {
                 requiredvalues.theConsList = collect000;
               }
@@ -167,7 +167,7 @@ public class ParametricTypeSpecifier extends CompoundTypeSpecifier {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Stella_Object.walkExpressionTree(dim, Stella.SGT_STELLA_INTEGER, Stella.SYM_STELLA_NEW, false, new Object[1]), Stella.NIL);
+              collect000.rest = Cons.cons(Stella_Object.walkExpressionTree(dim, Stella.SGT_STELLA_INTEGER, Stella.SYM_STELLA_NEW, false, new Object[1]), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -231,7 +231,7 @@ public class ParametricTypeSpecifier extends CompoundTypeSpecifier {
           nonlistsizeP = true;
         }
         if (nonlistsizeP) {
-          sizeref = Stella_Object.cons(sizeref, Stella.NIL);
+          sizeref = Cons.cons(sizeref, Stella.NIL);
         }
         if (!(((Cons)(sizeref)).length() == arrayrank)) {
           { Object old$PrintreadablyP$001 = Stella.$PRINTREADABLYp$.get();
@@ -380,7 +380,7 @@ public class ParametricTypeSpecifier extends CompoundTypeSpecifier {
           dim = iter000.value;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(((dim == null) ? Stella.NIL : Stella_Object.cons(dim, Stella.NIL)), Stella.NIL);
+              collect000 = Cons.cons(((dim == null) ? Stella.NIL : Cons.cons(dim, Stella.NIL)), Stella.NIL);
               if (result == Stella.NIL) {
                 result = collect000;
               }
@@ -391,7 +391,7 @@ public class ParametricTypeSpecifier extends CompoundTypeSpecifier {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(((dim == null) ? Stella.NIL : Stella_Object.cons(dim, Stella.NIL)), Stella.NIL);
+              collect000.rest = Cons.cons(((dim == null) ? Stella.NIL : Cons.cons(dim, Stella.NIL)), Stella.NIL);
               collect000 = collect000.rest;
             }
           }

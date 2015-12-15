@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,42 +50,43 @@ import edu.isi.stella.javalib.*;
 public class _StartupClTranslate {
   static void helpStartupClTranslate1() {
     {
-      Stella.SYM_STELLA_xe = ((Symbol)(Stella.internRigidSymbolWrtModule("!=", null, 0)));
-      Stella.KWD_CONTINUE = ((Keyword)(Stella.internRigidSymbolWrtModule("CONTINUE", null, 2)));
-      Stella.SYM_STELLA_rrVALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("%%VALUE", null, 0)));
-      Stella.SYM_STELLA_rrREST = ((Symbol)(Stella.internRigidSymbolWrtModule("%%REST", null, 0)));
-      Stella.SYM_STELLA_CLSYS_SVAL = ((Symbol)(Stella.internRigidSymbolWrtModule("CLSYS-SVAL", null, 0)));
-      Stella.SYM_STELLA_NTH_SETTER = ((Symbol)(Stella.internRigidSymbolWrtModule("NTH-SETTER", null, 0)));
-      Stella.SYM_STELLA_NORMAL_CALL = ((Symbol)(Stella.internRigidSymbolWrtModule("NORMAL-CALL", null, 0)));
-      Stella.SYM_STELLA_NON_OBJECT_METHOD = ((Symbol)(Stella.internRigidSymbolWrtModule("NON-OBJECT-METHOD", null, 0)));
-      Stella.SYM_STELLA_OBJECT_METHOD = ((Symbol)(Stella.internRigidSymbolWrtModule("OBJECT-METHOD", null, 0)));
-      Stella.SYM_STELLA_CLSYS_CALL = ((Symbol)(Stella.internRigidSymbolWrtModule("CLSYS-CALL", null, 0)));
-      Stella.SGT_STELLA_NATIVE_VECTOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("NATIVE-VECTOR", null, 1)));
-      Stella.SYM_STELLA_ARGUMENT = ((Symbol)(Stella.internRigidSymbolWrtModule("ARGUMENT", null, 0)));
-      Stella.SYM_STELLA_NULL_ARRAYp = ((Symbol)(Stella.internRigidSymbolWrtModule("NULL-ARRAY?", null, 0)));
-      Stella.SYM_STELLA_$CONDITION_MESSAGE_KEYWORD$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*CONDITION-MESSAGE-KEYWORD*", null, 0)));
-      Stella.SYM_STELLA_REPLACE_SUBSTRINGS = ((Symbol)(Stella.internRigidSymbolWrtModule("REPLACE-SUBSTRINGS", null, 0)));
-      Stella.SYM_STELLA_CLSYS_MAKE = ((Symbol)(Stella.internRigidSymbolWrtModule("CLSYS-MAKE", null, 0)));
-      Stella.KWD_INITIAL_ELEMENT = ((Keyword)(Stella.internRigidSymbolWrtModule("INITIAL-ELEMENT", null, 2)));
-      Stella.SYM_STELLA_rrPRINT_STREAM = ((Symbol)(Stella.internRigidSymbolWrtModule("%%PRINT-STREAM", null, 0)));
-      Stella.SYM_STELLA_CLSYS_METHOD_CODE_CALL = ((Symbol)(Stella.internRigidSymbolWrtModule("CLSYS-METHOD-CODE-CALL", null, 0)));
-      Stella.SYM_STELLA_MACRO = ((Symbol)(Stella.internRigidSymbolWrtModule("MACRO", null, 0)));
-      Stella.SYM_STELLA_CLSYS_SELF = ((Symbol)(Stella.internRigidSymbolWrtModule("CLSYS-SELF", null, 0)));
-      Stella.SYM_STELLA_CLSYS_DUMMY = ((Symbol)(Stella.internRigidSymbolWrtModule("CLSYS-DUMMY", null, 0)));
-      Stella.SYM_STELLA_$CLSYS_SELF$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*CLSYS-SELF*", null, 0)));
-      Stella.SYM_STELLA_rrDEFCONSMETHOD = ((Symbol)(Stella.internRigidSymbolWrtModule("%%DEFCONSMETHOD", null, 0)));
-      Stella.KWD_VOID = ((Keyword)(Stella.internRigidSymbolWrtModule("VOID", null, 2)));
-      Stella.KWD_INITFORM = ((Keyword)(Stella.internRigidSymbolWrtModule("INITFORM", null, 2)));
-      Stella.KWD_ACCESSOR = ((Keyword)(Stella.internRigidSymbolWrtModule("ACCESSOR", null, 2)));
-      Stella.SYM_STELLA_CLSYS_ROOT_OBJECT = ((Symbol)(Stella.internRigidSymbolWrtModule("CLSYS-ROOT-OBJECT", null, 0)));
-      Stella.SYM_STELLA_CLSYS_ROOT_STRUCT = ((Symbol)(Stella.internRigidSymbolWrtModule("CLSYS-ROOT-STRUCT", null, 0)));
-      Stella.KWD_CONC_NAME = ((Keyword)(Stella.internRigidSymbolWrtModule("CONC-NAME", null, 2)));
-      Stella.KWD_CONSTRUCTOR = ((Keyword)(Stella.internRigidSymbolWrtModule("CONSTRUCTOR", null, 2)));
-      Stella.KWD_COPIER = ((Keyword)(Stella.internRigidSymbolWrtModule("COPIER", null, 2)));
-      Stella.KWD_PREDICATE = ((Keyword)(Stella.internRigidSymbolWrtModule("PREDICATE", null, 2)));
-      Stella.SYM_STELLA_ = ((Symbol)(Stella.internRigidSymbolWrtModule("", null, 0)));
-      Stella.KWD_INCLUDE = ((Keyword)(Stella.internRigidSymbolWrtModule("INCLUDE", null, 2)));
-      Stella.SYM_STELLA_STARTUP_CL_TRANSLATE = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-CL-TRANSLATE", null, 0)));
+      Stella.SYM_STELLA_xe = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("!=", null, 0)));
+      Stella.KWD_CONTINUE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTINUE", null, 2)));
+      Stella.SYM_STELLA_rrVALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("%%VALUE", null, 0)));
+      Stella.SYM_STELLA_rrREST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("%%REST", null, 0)));
+      Stella.SYM_STELLA_CLSYS_SVAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLSYS-SVAL", null, 0)));
+      Stella.SYM_STELLA_NTH_SETTER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NTH-SETTER", null, 0)));
+      Stella.SYM_STELLA_NORMAL_CALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NORMAL-CALL", null, 0)));
+      Stella.SYM_STELLA_NON_OBJECT_METHOD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NON-OBJECT-METHOD", null, 0)));
+      Stella.SYM_STELLA_OBJECT_METHOD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OBJECT-METHOD", null, 0)));
+      Stella.SYM_STELLA_CLSYS_CALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLSYS-CALL", null, 0)));
+      Stella.SGT_STELLA_NATIVE_VECTOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NATIVE-VECTOR", null, 1)));
+      Stella.SYM_STELLA_ARGUMENT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ARGUMENT", null, 0)));
+      Stella.SYM_STELLA_NULL_ARRAYp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL-ARRAY?", null, 0)));
+      Stella.SYM_STELLA_$CONDITION_MESSAGE_KEYWORD$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*CONDITION-MESSAGE-KEYWORD*", null, 0)));
+      Stella.SYM_STELLA_REPLACE_SUBSTRINGS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("REPLACE-SUBSTRINGS", null, 0)));
+      Stella.SYM_STELLA_CLSYS_MAKE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLSYS-MAKE", null, 0)));
+      Stella.KWD_INITIAL_ELEMENT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INITIAL-ELEMENT", null, 2)));
+      Stella.SYM_STELLA_rrPRINT_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("%%PRINT-STREAM", null, 0)));
+      Stella.SYM_STELLA_CLSYS_METHOD_CODE_CALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLSYS-METHOD-CODE-CALL", null, 0)));
+      Stella.SYM_STELLA_MACRO = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MACRO", null, 0)));
+      Stella.SYM_STELLA_CLSYS_SELF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLSYS-SELF", null, 0)));
+      Stella.SYM_STELLA_CLSYS_DUMMY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLSYS-DUMMY", null, 0)));
+      Stella.SYM_STELLA_rrDEFCONSMETHOD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("%%DEFCONSMETHOD", null, 0)));
+      Stella.SYM_STELLA_rrDEFINTEGERMETHOD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("%%DEFINTEGERMETHOD", null, 0)));
+      Stella.SYM_STELLA_$CLSYS_SELF$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*CLSYS-SELF*", null, 0)));
+      Stella.KWD_VOID = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("VOID", null, 2)));
+      Stella.KWD_INITFORM = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INITFORM", null, 2)));
+      Stella.KWD_ACCESSOR = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ACCESSOR", null, 2)));
+      Stella.SYM_STELLA_CLSYS_ROOT_OBJECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLSYS-ROOT-OBJECT", null, 0)));
+      Stella.SYM_STELLA_CLSYS_ROOT_STRUCT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLSYS-ROOT-STRUCT", null, 0)));
+      Stella.KWD_CONC_NAME = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONC-NAME", null, 2)));
+      Stella.KWD_CONSTRUCTOR = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONSTRUCTOR", null, 2)));
+      Stella.KWD_COPIER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("COPIER", null, 2)));
+      Stella.KWD_PREDICATE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PREDICATE", null, 2)));
+      Stella.SYM_STELLA_ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("", null, 0)));
+      Stella.KWD_INCLUDE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INCLUDE", null, 2)));
+      Stella.SYM_STELLA_STARTUP_CL_TRANSLATE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-CL-TRANSLATE", null, 0)));
     }
   }
 
@@ -136,6 +137,7 @@ public class _StartupClTranslate {
       Stella.defineFunctionObject("CL-TRANSLATE-HANDLER-CASE-TREE", "(DEFUN (CL-TRANSLATE-HANDLER-CASE-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "clTranslateHandlerCaseTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("CL-TRANSLATE-HANDLE-EXCEPTION-TREE", "(DEFUN (CL-TRANSLATE-HANDLE-EXCEPTION-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "clTranslateHandleExceptionTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("CAST", "(DEFUN (CAST OBJECT) ((VALUE OBJECT) (TYPE TYPE)) :DOCUMENTATION \"Perform a run-time type check, and then return `value'.\")", Native.find_java_method("edu.isi.stella.Stella_Object", "cast", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Surrogate")}), null);
+      Stella.defineFunctionObject("COERCE-NUMERIC-CONSTANT", "(DEFUN (COERCE-NUMERIC-CONSTANT NUMBER-WRAPPER) ((CONSTANT NUMBER-WRAPPER) (TYPE TYPE)))", Native.find_java_method("edu.isi.stella.NumberWrapper", "coerceNumericConstant", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.NumberWrapper"), Native.find_java_class("edu.isi.stella.Surrogate")}), null);
       Stella.defineFunctionObject("CL-TRANSLATE-CAST-TREE", "(DEFUN (CL-TRANSLATE-CAST-TREE OBJECT) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "clTranslateCastTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("CL-TRANSLATE-RETURN-TREE", "(DEFUN (CL-TRANSLATE-RETURN-TREE OBJECT) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "clTranslateReturnTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("CL-TRANSLATE-BOOLEAN-TEST", "(DEFUN (CL-TRANSLATE-BOOLEAN-TEST OBJECT) ((TREE OBJECT) (INVERT? BOOLEAN)))", Native.find_java_method("edu.isi.stella.Stella_Object", "clTranslateBooleanTest", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE}), null);
@@ -150,7 +152,6 @@ public class _StartupClTranslate {
       Stella.defineFunctionObject("CL-TRANSLATE-MAKE-TREE", "(DEFUN (CL-TRANSLATE-MAKE-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "clTranslateMakeTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("CL-TRANSLATE-NEW-TREE", "(DEFUN (CL-TRANSLATE-NEW-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "clTranslateNewTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("CL-TRANSLATE-NEW-ARRAY-TREE", "(DEFUN (CL-TRANSLATE-NEW-ARRAY-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "clTranslateNewArrayTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
-      Stella.defineFunctionObject("CL-TRANSLATE-OPERATOR-TREE", "(DEFUN (CL-TRANSLATE-OPERATOR-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "clTranslateOperatorTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
     }
   }
 
@@ -174,6 +175,7 @@ public class _StartupClTranslate {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupClTranslate.helpStartupClTranslate2();
+          Stella.defineFunctionObject("CL-TRANSLATE-OPERATOR-TREE", "(DEFUN (CL-TRANSLATE-OPERATOR-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "clTranslateOperatorTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("YIELD-FORMAT-ARGUMENTS", "(DEFUN (YIELD-FORMAT-ARGUMENTS CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "yieldFormatArguments", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("YIELD-PRINT-TREE", "(DEFUN (YIELD-PRINT-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "yieldPrintTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("CL-TRANSLATE-PRINT-STREAM-TREE", "(DEFUN (CL-TRANSLATE-PRINT-STREAM-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "clTranslatePrintStreamTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
@@ -193,8 +195,10 @@ public class _StartupClTranslate {
           Stella.defineFunctionObject("CL-YIELD-METHOD-RETURN-TYPE-DECLARATION", "(DEFUN (CL-YIELD-METHOD-RETURN-TYPE-DECLARATION OBJECT) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "clYieldMethodReturnTypeDeclaration", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
           Stella.defineFunctionObject("CL-YIELD-METHOD-TYPE-DECLARATION-TREE", "(DEFUN (CL-YIELD-METHOD-TYPE-DECLARATION-TREE CONS) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "clYieldMethodTypeDeclarationTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
           Stella.defineFunctionObject("CL-YIELD-DECLARE-TREE", "(DEFUN (CL-YIELD-DECLARE-TREE CONS) ((DECLARATIONS (CONS OF CONS)) (INCLUDE-TYPE-CHECKS? BOOLEAN)))", Native.find_java_method("edu.isi.stella.Cons", "clYieldDeclareTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), java.lang.Boolean.TYPE}), null);
+          Stella.defineFunctionObject("CL-CONDITIONALIZE-TYPE-DECLARATION-TREE", "(DEFUN (CL-CONDITIONALIZE-TYPE-DECLARATION-TREE OBJECT) ((DECLARATION OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "clConditionalizeTypeDeclarationTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
           Stella.defineFunctionObject("CL-TRANSLATE-UNIT", "(DEFUN (CL-TRANSLATE-UNIT OBJECT) ((UNIT TRANSLATION-UNIT)))", Native.find_java_method("edu.isi.stella.TranslationUnit", "clTranslateUnit", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.TranslationUnit")}), null);
           Stella.defineFunctionObject("CL-TRANSLATE-METHOD-PARAMETERS", "(DEFUN (CL-TRANSLATE-METHOD-PARAMETERS CONS) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "clTranslateMethodParameters", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
+          Stella.defineFunctionObject("CL-METHOD-DEFINITION-OPERATOR", "(DEFUN (CL-METHOD-DEFINITION-OPERATOR SYMBOL) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "clMethodDefinitionOperator", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
           Stella.defineFunctionObject("CL-TRANSLATE-DEFINE-METHOD-UNIT", "(DEFUN (CL-TRANSLATE-DEFINE-METHOD-UNIT CONS) ((UNIT TRANSLATION-UNIT)))", Native.find_java_method("edu.isi.stella.TranslationUnit", "clTranslateDefineMethodUnit", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.TranslationUnit")}), null);
           Stella.defineFunctionObject("YIELD-CLOS-SLOT-TYPE-TREE", "(DEFUN (YIELD-CLOS-SLOT-TYPE-TREE CONS) ((SLOT STORAGE-SLOT)))", Native.find_java_method("edu.isi.stella.StorageSlot", "yieldClosSlotTypeTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StorageSlot")}), null);
           Stella.defineFunctionObject("YIELD-CLOS-SLOT-TREE", "(DEFUN (YIELD-CLOS-SLOT-TREE CONS) ((SLOT STORAGE-SLOT)))", Native.find_java_method("edu.isi.stella.StorageSlot", "yieldClosSlotTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StorageSlot")}), null);
@@ -223,22 +227,23 @@ public class _StartupClTranslate {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CL-TRUE-STRING-WRAPPER* VERBATIM-STRING-WRAPPER (NEW VERBATIM-STRING-WRAPPER :WRAPPER-VALUE \"CL:T\"))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CL-FALSE-STRING-WRAPPER* VERBATIM-STRING-WRAPPER (NEW VERBATIM-STRING-WRAPPER :WRAPPER-VALUE \"CL:NIL\"))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CL-OPERATOR-TABLE* KEY-VALUE-LIST NULL :DOCUMENTATION \"Mapping from STELLA operators to Common-Lisp operators.\")");
-          Stella.$CL_OPERATOR_TABLE$ = ((KeyValueList)(Surrogate.dictionary(Stella.SGT_STELLA_KEY_VALUE_LIST, Stella_Object.cons(Stella.SYM_STELLA_i, Stella_Object.cons(Stella.internCommonLispSymbol("+"), Stella_Object.cons(Stella.SYM_STELLA__, Stella_Object.cons(Stella.internCommonLispSymbol("-"), Stella_Object.cons(Stella.SYM_STELLA_$, Stella_Object.cons(Stella.internCommonLispSymbol("*"), Stella_Object.cons(Stella.SYM_STELLA_s, Stella_Object.cons(Stella.internCommonLispSymbol("/"), Stella_Object.cons(Stella.SYM_STELLA_EQp, Stella_Object.cons(Stella.internCommonLispSymbol("EQL"), Stella_Object.cons(Stella.SYM_STELLA_l, Stella_Object.cons(Stella.internCommonLispSymbol("<"), Stella_Object.cons(Stella.SYM_STELLA_le, Stella_Object.cons(Stella.internCommonLispSymbol("<="), Stella_Object.cons(Stella.SYM_STELLA_ge, Stella_Object.cons(Stella.internCommonLispSymbol(">="), Stella_Object.cons(Stella.SYM_STELLA_g, Stella_Object.cons(Stella.internCommonLispSymbol(">"), Stella_Object.cons(Stella.SYM_STELLA_e, Stella_Object.cons(Stella.internCommonLispSymbol("="), Stella_Object.cons(Stella.SYM_STELLA_xe, Stella_Object.cons(Stella.internCommonLispSymbol("/="), Stella.NIL)))))))))))))))))))))))));
+          Stella.$CL_OPERATOR_TABLE$ = ((KeyValueList)(AbstractDictionary.dictionary(Stella.SGT_STELLA_KEY_VALUE_LIST, Cons.cons(Stella.SYM_STELLA_i, Cons.cons(Stella.internCommonLispSymbol("+"), Cons.cons(Stella.SYM_STELLA__, Cons.cons(Stella.internCommonLispSymbol("-"), Cons.cons(Stella.SYM_STELLA_$, Cons.cons(Stella.internCommonLispSymbol("*"), Cons.cons(Stella.SYM_STELLA_s, Cons.cons(Stella.internCommonLispSymbol("/"), Cons.cons(Stella.SYM_STELLA_EQp, Cons.cons(Stella.internCommonLispSymbol("EQL"), Cons.cons(Stella.SYM_STELLA_l, Cons.cons(Stella.internCommonLispSymbol("<"), Cons.cons(Stella.SYM_STELLA_le, Cons.cons(Stella.internCommonLispSymbol("<="), Cons.cons(Stella.SYM_STELLA_ge, Cons.cons(Stella.internCommonLispSymbol(">="), Cons.cons(Stella.SYM_STELLA_g, Cons.cons(Stella.internCommonLispSymbol(">"), Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.internCommonLispSymbol("="), Cons.cons(Stella.SYM_STELLA_xe, Cons.cons(Stella.internCommonLispSymbol("/="), Stella.NIL)))))))))))))))))))))))));
           { boolean usestructsP = false;
             boolean usevectorstructsP = false;
             boolean useclconsesP = false;
 
             if (usestructsP) {
-              Stella.setStellaFeature(Stella_Object.cons(Stella.KWD_USE_COMMON_LISP_STRUCTS, Stella.NIL));
+              Stella.setStellaFeature(Cons.cons(Stella.KWD_USE_COMMON_LISP_STRUCTS, Stella.NIL));
             }
             if (usevectorstructsP) {
-              Stella.setStellaFeature(Stella_Object.cons(Stella.KWD_USE_COMMON_LISP_VECTOR_STRUCTS, Stella.NIL));
+              Stella.setStellaFeature(Cons.cons(Stella.KWD_USE_COMMON_LISP_VECTOR_STRUCTS, Stella.NIL));
             }
             if (useclconsesP) {
-              Stella.setStellaFeature(Stella_Object.cons(Stella.KWD_USE_COMMON_LISP_CONSES, Stella.NIL));
+              Stella.setStellaFeature(Cons.cons(Stella.KWD_USE_COMMON_LISP_CONSES, Stella.NIL));
             }
           }
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *NEEDEXPLICITRETURN?* BOOLEAN FALSE)");

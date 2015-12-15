@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,89 +50,94 @@ import edu.isi.stella.javalib.*;
 public class _StartupStreams {
   static void helpStartupStreams1() {
     {
-      Stella.SYM_STELLA_EOL = ((Symbol)(Stella.internRigidSymbolWrtModule("EOL", null, 0)));
-      Stella.SYM_STELLA_PRINT_STREAM = ((Symbol)(Stella.internRigidSymbolWrtModule("PRINT-STREAM", null, 0)));
-      Stella.SYM_STELLA_STANDARD_OUTPUT = ((Symbol)(Stella.internRigidSymbolWrtModule("STANDARD-OUTPUT", null, 0)));
-      Stella.SYM_STELLA_FOREACH = ((Symbol)(Stella.internRigidSymbolWrtModule("FOREACH", null, 0)));
-      Stella.SYM_STELLA_I = ((Symbol)(Stella.internRigidSymbolWrtModule("I", null, 0)));
-      Stella.SYM_STELLA_IN = ((Symbol)(Stella.internRigidSymbolWrtModule("IN", null, 0)));
-      Stella.SYM_STELLA_INTERVAL = ((Symbol)(Stella.internRigidSymbolWrtModule("INTERVAL", null, 0)));
-      Stella.SYM_STELLA_DO = ((Symbol)(Stella.internRigidSymbolWrtModule("DO", null, 0)));
-      Stella.SYM_STELLA_IGNORE = ((Symbol)(Stella.internRigidSymbolWrtModule("IGNORE", null, 0)));
-      Stella.KWD_COMMON_LISP = ((Keyword)(Stella.internRigidSymbolWrtModule("COMMON-LISP", null, 2)));
-      Stella.KWD_WARN = ((Keyword)(Stella.internRigidSymbolWrtModule("WARN", null, 2)));
-      Stella.SYM_STELLA_STANDARD_WARNING = ((Symbol)(Stella.internRigidSymbolWrtModule("STANDARD-WARNING", null, 0)));
-      Stella.SYM_STELLA_NULL = ((Symbol)(Stella.internRigidSymbolWrtModule("NULL", null, 0)));
-      Stella.SYM_STELLA_STELLA_EXCEPTION = ((Symbol)(Stella.internRigidSymbolWrtModule("STELLA-EXCEPTION", null, 0)));
-      Stella.SYM_STELLA_SIGNAL_EXCEPTION = ((Symbol)(Stella.internRigidSymbolWrtModule("SIGNAL-EXCEPTION", null, 0)));
-      Stella.SYM_STELLA_NEW = ((Symbol)(Stella.internRigidSymbolWrtModule("NEW", null, 0)));
-      Stella.KWD_MESSAGE = ((Keyword)(Stella.internRigidSymbolWrtModule("MESSAGE", null, 2)));
-      Stella.SYM_STELLA_LET = ((Symbol)(Stella.internRigidSymbolWrtModule("LET", null, 0)));
-      Stella.SYM_STELLA_OUTPUT_STRING_STREAM = ((Symbol)(Stella.internRigidSymbolWrtModule("OUTPUT-STRING-STREAM", null, 0)));
-      Stella.SYM_STELLA_SIGNAL = ((Symbol)(Stella.internRigidSymbolWrtModule("SIGNAL", null, 0)));
-      Stella.KWD_JAVA = ((Keyword)(Stella.internRigidSymbolWrtModule("JAVA", null, 2)));
-      Stella.SYM_STELLA_ERROR_MESSAGE_ = ((Symbol)(Stella.internRigidSymbolWrtModule("ERROR_MESSAGE_", null, 0)));
-      Stella.SYM_STELLA_VERBATIM = ((Symbol)(Stella.internRigidSymbolWrtModule("VERBATIM", null, 0)));
-      Stella.KWD_CONTINUABLE_ERROR = ((Keyword)(Stella.internRigidSymbolWrtModule("CONTINUABLE-ERROR", null, 2)));
-      Stella.SYM_STELLA_READ_EXCEPTION = ((Symbol)(Stella.internRigidSymbolWrtModule("READ-EXCEPTION", null, 0)));
-      Stella.SYM_STELLA_DE_UGLIFY_PARSE_TREE = ((Symbol)(Stella.internRigidSymbolWrtModule("DE-UGLIFY-PARSE-TREE", null, 0)));
-      Stella.SYM_STELLA_SPECIAL = ((Symbol)(Stella.internRigidSymbolWrtModule("SPECIAL", null, 0)));
-      Stella.SYM_STELLA_$PRINTREADABLYp$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*PRINTREADABLY?*", null, 0)));
-      Stella.SYM_STELLA_SIGNAL_TRANSLATION_ERROR = ((Symbol)(Stella.internRigidSymbolWrtModule("SIGNAL-TRANSLATION-ERROR", null, 0)));
-      Stella.SYM_STELLA_UNLESS = ((Symbol)(Stella.internRigidSymbolWrtModule("UNLESS", null, 0)));
-      Stella.SYM_STELLA_SUPPRESS_WARNINGSp = ((Symbol)(Stella.internRigidSymbolWrtModule("SUPPRESS-WARNINGS?", null, 0)));
-      Stella.SYM_STELLA_PRINT_ERROR_CONTEXT = ((Symbol)(Stella.internRigidSymbolWrtModule("PRINT-ERROR-CONTEXT", null, 0)));
-      Stella.SYM_STELLA_STANDARD_ERROR = ((Symbol)(Stella.internRigidSymbolWrtModule("STANDARD-ERROR", null, 0)));
-      Stella.SYM_STELLA_SIGNAL_TRANSLATION_WARNING = ((Symbol)(Stella.internRigidSymbolWrtModule("SIGNAL-TRANSLATION-WARNING", null, 0)));
-      Stella.SYM_STELLA_WHEN = ((Symbol)(Stella.internRigidSymbolWrtModule("WHEN", null, 0)));
-      Stella.SYM_STELLA_NOT = ((Symbol)(Stella.internRigidSymbolWrtModule("NOT", null, 0)));
-      Stella.SYM_STELLA_$EVALUATIONTREE$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*EVALUATIONTREE*", null, 0)));
-      Stella.SYM_STELLA_DEFINEDp = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFINED?", null, 0)));
-      Stella.SYM_STELLA_$EVALUATIONPARENTTREE$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*EVALUATIONPARENTTREE*", null, 0)));
-      Stella.SYM_STELLA_EVALUATION_EXCEPTION = ((Symbol)(Stella.internRigidSymbolWrtModule("EVALUATION-EXCEPTION", null, 0)));
-      Stella.SGT_STELLA_LITERAL_WRAPPER = ((Surrogate)(Stella.internRigidSymbolWrtModule("LITERAL-WRAPPER", null, 1)));
-      Stella.SYM_STELLA_STRINGIFY = ((Symbol)(Stella.internRigidSymbolWrtModule("STRINGIFY", null, 0)));
-      Stella.SYM_STELLA_VRLET = ((Symbol)(Stella.internRigidSymbolWrtModule("VRLET", null, 0)));
-      Stella.SYM_STELLA_STRING = ((Symbol)(Stella.internRigidSymbolWrtModule("STRING", null, 0)));
-      Stella.SYM_STELLA_SETQ = ((Symbol)(Stella.internRigidSymbolWrtModule("SETQ", null, 0)));
-      Stella.SYM_STELLA_CONCATENATE = ((Symbol)(Stella.internRigidSymbolWrtModule("CONCATENATE", null, 0)));
-      Stella.KWD_CLOSED = ((Keyword)(Stella.internRigidSymbolWrtModule("CLOSED", null, 2)));
-      Stella.KWD_IF_EXISTS = ((Keyword)(Stella.internRigidSymbolWrtModule("IF-EXISTS", null, 2)));
-      Stella.KWD_IF_EXISTS_ACTION = ((Keyword)(Stella.internRigidSymbolWrtModule("IF-EXISTS-ACTION", null, 2)));
-      Stella.KWD_IF_NOT_EXISTS = ((Keyword)(Stella.internRigidSymbolWrtModule("IF-NOT-EXISTS", null, 2)));
-      Stella.KWD_IF_NOT_EXISTS_ACTION = ((Keyword)(Stella.internRigidSymbolWrtModule("IF-NOT-EXISTS-ACTION", null, 2)));
-      Stella.KWD_ABORT = ((Keyword)(Stella.internRigidSymbolWrtModule("ABORT", null, 2)));
-      Stella.KWD_PROBE = ((Keyword)(Stella.internRigidSymbolWrtModule("PROBE", null, 2)));
-      Stella.KWD_APPEND = ((Keyword)(Stella.internRigidSymbolWrtModule("APPEND", null, 2)));
-      Stella.KWD_OPEN = ((Keyword)(Stella.internRigidSymbolWrtModule("OPEN", null, 2)));
-      Stella.SYM_STELLA_UNWIND_PROTECT = ((Symbol)(Stella.internRigidSymbolWrtModule("UNWIND-PROTECT", null, 0)));
-      Stella.SYM_STELLA_PROGN = ((Symbol)(Stella.internRigidSymbolWrtModule("PROGN", null, 0)));
-      Stella.SYM_STELLA_OPEN_INPUT_FILE = ((Symbol)(Stella.internRigidSymbolWrtModule("OPEN-INPUT-FILE", null, 0)));
-      Stella.SYM_STELLA_FREE = ((Symbol)(Stella.internRigidSymbolWrtModule("FREE", null, 0)));
-      Stella.SYM_STELLA_OPEN_OUTPUT_FILE = ((Symbol)(Stella.internRigidSymbolWrtModule("OPEN-OUTPUT-FILE", null, 0)));
+      Stella.SYM_STELLA_EOL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EOL", null, 0)));
+      Stella.SYM_STELLA_PRINT_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PRINT-STREAM", null, 0)));
+      Stella.SYM_STELLA_STANDARD_OUTPUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STANDARD-OUTPUT", null, 0)));
+      Stella.SYM_STELLA_FOREACH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FOREACH", null, 0)));
+      Stella.SYM_STELLA_I = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("I", null, 0)));
+      Stella.SYM_STELLA_IN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IN", null, 0)));
+      Stella.SYM_STELLA_INTERVAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTERVAL", null, 0)));
+      Stella.SYM_STELLA_DO = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DO", null, 0)));
+      Stella.SYM_STELLA_IGNORE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IGNORE", null, 0)));
+      Stella.KWD_COMMON_LISP = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("COMMON-LISP", null, 2)));
+      Stella.KWD_WARN = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("WARN", null, 2)));
+      Stella.SYM_STELLA_STANDARD_WARNING = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STANDARD-WARNING", null, 0)));
+      Stella.SYM_STELLA_NULL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL", null, 0)));
+      Stella.SYM_STELLA_STELLA_EXCEPTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STELLA-EXCEPTION", null, 0)));
+      Stella.SYM_STELLA_SIGNAL_EXCEPTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SIGNAL-EXCEPTION", null, 0)));
+      Stella.SYM_STELLA_NEW = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NEW", null, 0)));
+      Stella.KWD_MESSAGE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MESSAGE", null, 2)));
+      Stella.SYM_STELLA_LET = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LET", null, 0)));
+      Stella.SYM_STELLA_OUTPUT_STRING_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OUTPUT-STRING-STREAM", null, 0)));
+      Stella.SYM_STELLA_SIGNAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SIGNAL", null, 0)));
+      Stella.KWD_JAVA = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA", null, 2)));
+      Stella.SYM_STELLA_ERROR_MESSAGE_ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ERROR_MESSAGE_", null, 0)));
+      Stella.SYM_STELLA_VERBATIM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("VERBATIM", null, 0)));
+      Stella.KWD_CONTINUABLE_ERROR = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTINUABLE-ERROR", null, 2)));
+      Stella.SYM_STELLA_READ_EXCEPTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("READ-EXCEPTION", null, 0)));
+      Stella.SYM_STELLA_DE_UGLIFY_PARSE_TREE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DE-UGLIFY-PARSE-TREE", null, 0)));
+      Stella.SYM_STELLA_SPECIAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SPECIAL", null, 0)));
+      Stella.SYM_STELLA_$PRINTREADABLYp$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*PRINTREADABLY?*", null, 0)));
+      Stella.SYM_STELLA_SIGNAL_TRANSLATION_ERROR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SIGNAL-TRANSLATION-ERROR", null, 0)));
+      Stella.SYM_STELLA_UNLESS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNLESS", null, 0)));
+      Stella.SYM_STELLA_SUPPRESS_WARNINGSp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUPPRESS-WARNINGS?", null, 0)));
+      Stella.SYM_STELLA_PRINT_ERROR_CONTEXT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PRINT-ERROR-CONTEXT", null, 0)));
+      Stella.SYM_STELLA_STANDARD_ERROR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STANDARD-ERROR", null, 0)));
+      Stella.SYM_STELLA_SIGNAL_TRANSLATION_NOTE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SIGNAL-TRANSLATION-NOTE", null, 0)));
+      Stella.SYM_STELLA_SIGNAL_TRANSLATION_WARNING = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SIGNAL-TRANSLATION-WARNING", null, 0)));
+      Stella.SYM_STELLA_WHEN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WHEN", null, 0)));
+      Stella.SYM_STELLA_NOT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NOT", null, 0)));
+      Stella.SYM_STELLA_$EVALUATIONTREE$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*EVALUATIONTREE*", null, 0)));
+      Stella.SYM_STELLA_DEFINEDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFINED?", null, 0)));
+      Stella.SYM_STELLA_$EVALUATIONPARENTTREE$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*EVALUATIONPARENTTREE*", null, 0)));
+      Stella.SYM_STELLA_EVALUATION_EXCEPTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EVALUATION-EXCEPTION", null, 0)));
+      Stella.SGT_STELLA_LITERAL_WRAPPER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("LITERAL-WRAPPER", null, 1)));
+      Stella.SYM_STELLA_STRINGIFY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STRINGIFY", null, 0)));
+      Stella.SYM_STELLA_VRLET = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("VRLET", null, 0)));
+      Stella.SYM_STELLA_STRING = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STRING", null, 0)));
+      Stella.SYM_STELLA_SETQ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SETQ", null, 0)));
+      Stella.SYM_STELLA_CONCATENATE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CONCATENATE", null, 0)));
+      Stella.KWD_CLOSED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CLOSED", null, 2)));
+      Stella.KWD_IF_EXISTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IF-EXISTS", null, 2)));
+      Stella.KWD_IF_EXISTS_ACTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IF-EXISTS-ACTION", null, 2)));
+      Stella.KWD_IF_NOT_EXISTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IF-NOT-EXISTS", null, 2)));
+      Stella.KWD_IF_NOT_EXISTS_ACTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IF-NOT-EXISTS-ACTION", null, 2)));
+      Stella.KWD_ABORT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ABORT", null, 2)));
+      Stella.KWD_PROBE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PROBE", null, 2)));
+      Stella.KWD_APPEND = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("APPEND", null, 2)));
+      Stella.KWD_OPEN = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("OPEN", null, 2)));
+      Stella.SYM_STELLA_UNWIND_PROTECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNWIND-PROTECT", null, 0)));
+      Stella.SYM_STELLA_PROGN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PROGN", null, 0)));
+      Stella.SYM_STELLA_OPEN_INPUT_FILE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OPEN-INPUT-FILE", null, 0)));
+      Stella.SYM_STELLA_FREE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FREE", null, 0)));
     }
   }
 
   static void helpStartupStreams2() {
     {
-      Stella.SYM_STELLA_INPUT_STREAM = ((Symbol)(Stella.internRigidSymbolWrtModule("INPUT-STREAM", null, 0)));
-      Stella.SYM_STELLA_OUTPUT_STREAM = ((Symbol)(Stella.internRigidSymbolWrtModule("OUTPUT-STREAM", null, 0)));
-      Stella.SYM_STELLA_MV_SETQ = ((Symbol)(Stella.internRigidSymbolWrtModule("MV-SETQ", null, 0)));
-      Stella.SYM_STELLA_OPEN_NETWORK_STREAM = ((Symbol)(Stella.internRigidSymbolWrtModule("OPEN-NETWORK-STREAM", null, 0)));
-      Stella.SGT_STELLA_OBJECT = ((Surrogate)(Stella.internRigidSymbolWrtModule("OBJECT", null, 1)));
-      Stella.SYM_STELLA_SUBSEQUENCE = ((Symbol)(Stella.internRigidSymbolWrtModule("SUBSEQUENCE", null, 0)));
-      Stella.SYM_STELLA_POSITION = ((Symbol)(Stella.internRigidSymbolWrtModule("POSITION", null, 0)));
-      Stella.SYM_STELLA_THE_STREAM = ((Symbol)(Stella.internRigidSymbolWrtModule("THE-STREAM", null, 0)));
-      Stella.SGT_STELLA_S_EXPRESSION_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("S-EXPRESSION-ITERATOR", null, 1)));
-      Stella.SGT_STELLA_LINE_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("LINE-ITERATOR", null, 1)));
-      Stella.SGT_STELLA_NATIVE_LINE_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("NATIVE-LINE-ITERATOR", null, 1)));
-      Stella.SGT_STELLA_CHARACTER_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("CHARACTER-ITERATOR", null, 1)));
-      Stella.KWD_LOG_LEVELS = ((Keyword)(Stella.internRigidSymbolWrtModule("LOG-LEVELS", null, 2)));
-      Stella.KWD_LEVEL = ((Keyword)(Stella.internRigidSymbolWrtModule("LEVEL", null, 2)));
-      Stella.KWD_STREAM = ((Keyword)(Stella.internRigidSymbolWrtModule("STREAM", null, 2)));
-      Stella.KWD_PREFIX = ((Keyword)(Stella.internRigidSymbolWrtModule("PREFIX", null, 2)));
-      Stella.KWD_MAX_WIDTH = ((Keyword)(Stella.internRigidSymbolWrtModule("MAX-WIDTH", null, 2)));
-      Stella.SYM_STELLA_STARTUP_STREAMS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-STREAMS", null, 0)));
+      Stella.SYM_STELLA_OPEN_OUTPUT_FILE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OPEN-OUTPUT-FILE", null, 0)));
+      Stella.SYM_STELLA_INPUT_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INPUT-STREAM", null, 0)));
+      Stella.SYM_STELLA_OUTPUT_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OUTPUT-STREAM", null, 0)));
+      Stella.SYM_STELLA_MV_SETQ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MV-SETQ", null, 0)));
+      Stella.SYM_STELLA_OPEN_NETWORK_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OPEN-NETWORK-STREAM", null, 0)));
+      Stella.SGT_STELLA_OBJECT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("OBJECT", null, 1)));
+      Stella.SYM_STELLA_SUBSEQUENCE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUBSEQUENCE", null, 0)));
+      Stella.SYM_STELLA_POSITION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("POSITION", null, 0)));
+      Stella.KWD_LETTER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LETTER", null, 2)));
+      Stella.KWD_DIGIT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DIGIT", null, 2)));
+      Stella.SYM_STELLA_THE_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-STREAM", null, 0)));
+      Stella.SGT_STELLA_S_EXPRESSION_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("S-EXPRESSION-ITERATOR", null, 1)));
+      Stella.SGT_STELLA_LINE_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("LINE-ITERATOR", null, 1)));
+      Stella.SGT_STELLA_NATIVE_LINE_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NATIVE-LINE-ITERATOR", null, 1)));
+      Stella.SGT_STELLA_CHARACTER_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CHARACTER-ITERATOR", null, 1)));
+      Stella.KWD_LEVEL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LEVEL", null, 2)));
+      Stella.KWD_LOG_LEVELS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LOG-LEVELS", null, 2)));
+      Stella.KWD_STREAM = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("STREAM", null, 2)));
+      Stella.KWD_PREFIX = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PREFIX", null, 2)));
+      Stella.KWD_MAX_WIDTH = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MAX-WIDTH", null, 2)));
+      Stella.SGT_STELLA_GENERALIZED_SYMBOL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("GENERALIZED-SYMBOL", null, 1)));
+      Stella.SGT_STELLA_FILE_OUTPUT_STREAM = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FILE-OUTPUT-STREAM", null, 1)));
+      Stella.SYM_STELLA_STARTUP_STREAMS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-STREAMS", null, 0)));
     }
   }
 
@@ -195,6 +200,14 @@ public class _StartupStreams {
       Stella.defineFunctionObject("WITH-INPUT-FILE", "(DEFUN WITH-INPUT-FILE ((BINDING CONS) |&BODY| (BODY CONS)) :TYPE OBJECT :MACRO? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Sets up an unwind-protected form which opens a file for\ninput and closes it afterwards.  The stream for reading is bound to the\nvariable provided in the macro form.\nSyntax is `(WITH-INPUT-FILE (var filename options*) body+)' where `options'\ncan be any that are legal for `open-input-file' (which see).\")", Native.find_java_method("edu.isi.stella.Cons", "withInputFile", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("WITH-OUTPUT-FILE", "(DEFUN WITH-OUTPUT-FILE ((BINDING CONS) |&BODY| (BODY CONS)) :TYPE OBJECT :MACRO? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Sets up an unwind-protected form which opens a file for\noutput and closes it afterwards.  The stream for writing is bound to the\nvariable provided in the macro form.\nSyntax is `(WITH-OUTPUT-FILE (var filename options*) body+)' where `options'\ncan be any that are legal for `open-output-file' (which see).\")", Native.find_java_method("edu.isi.stella.Cons", "withOutputFile", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("WITH-NETWORK-STREAM", "(DEFUN WITH-NETWORK-STREAM ((BINDING CONS) |&BODY| (BODY CONS)) :TYPE OBJECT :MACRO? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Sets up an unwind-protected form which opens a network\nsocket stream to a host and port for input and output and closes it afterwards.\nSeparate variables as provided in the call are bound to the input and output\nstreams. Syntax is (WITH-NETWORK-STREAM (varIn varOut hostname port) body+)\")", Native.find_java_method("edu.isi.stella.Cons", "withNetworkStream", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons")}), null);
+      Stella.defineFunctionObject("NATIVE-FILE-INPUT-STREAM-POSITION", "(DEFUN (NATIVE-FILE-INPUT-STREAM-POSITION LONG-INTEGER) ((NSTREAM NATIVE-INPUT-STREAM)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (VERBATIM :CPP \"nstream->clear(std::ios::goodbit)\" :OTHERWISE NULL) (RETURN (VERBATIM :COMMON-LISP \"(CL:file-position nstream)\" :CPP \"nstream->tellg()\" :JAVA \"((NativeFileInputStream)nstream).position()\")))", Native.find_java_method("edu.isi.stella.Stella", "nativeFileInputStreamPosition", new java.lang.Class [] {Native.find_java_class("java.io.PushbackInputStream")}), null);
+      Stella.defineFunctionObject("NATIVE-FILE-INPUT-STREAM-POSITION-SETTER", "(DEFUN (NATIVE-FILE-INPUT-STREAM-POSITION-SETTER LONG-INTEGER) ((NSTREAM NATIVE-INPUT-STREAM) (NEWPOS LONG-INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (VERBATIM :COMMON-LISP \"(CL:file-position nstream newpos)\" :CPP \"nstream->clear(std::ios::goodbit);nstream->seekg(newpos)\" :JAVA \"((NativeFileInputStream)nstream).position(newpos)\") (RETURN NEWPOS))", Native.find_java_method("edu.isi.stella.Stella", "nativeFileInputStreamPositionSetter", new java.lang.Class [] {Native.find_java_class("java.io.PushbackInputStream"), java.lang.Long.TYPE}), null);
+      Stella.defineMethodObject("(DEFMETHOD (STREAM-POSITION LONG-INTEGER) ((SELF FILE-INPUT-STREAM)) :DOCUMENTATION \"Return the current position of the file input cursor in `self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.InputFileStream", "streamPosition", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+      Stella.defineMethodObject("(DEFMETHOD (STREAM-POSITION-SETTER LONG-INTEGER) ((SELF FILE-INPUT-STREAM) (NEWPOS LONG-INTEGER)) :DOCUMENTATION \"Set the current position of the file input cursor in `self' to `newpos'.\nIf `self' has any tokenizer state associated with it, this will also reset\nto the start state of the tokenizer table; otherwise, behavior would be\nunpredictable unless the character class of the new position is exactly the\nsame as the one following the most recent token.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.InputFileStream", "streamPositionSetter", new java.lang.Class [] {java.lang.Long.TYPE}), ((java.lang.reflect.Method)(null)));
+      Stella.defineFunctionObject("NATIVE-FILE-OUTPUT-STREAM-POSITION", "(DEFUN (NATIVE-FILE-OUTPUT-STREAM-POSITION LONG-INTEGER) ((NSTREAM NATIVE-OUTPUT-STREAM)) :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP \"(CL:file-position nstream)\" :CPP \"nstream->tellp()\" :JAVA \"((NativeFileOutputStream)nstream).position()\")))", Native.find_java_method("edu.isi.stella.Stella", "nativeFileOutputStreamPosition", new java.lang.Class [] {Native.find_java_class("java.io.PrintStream")}), null);
+      Stella.defineFunctionObject("NATIVE-FILE-OUTPUT-STREAM-POSITION-SETTER", "(DEFUN (NATIVE-FILE-OUTPUT-STREAM-POSITION-SETTER LONG-INTEGER) ((NSTREAM NATIVE-OUTPUT-STREAM) (NEWPOS LONG-INTEGER)) :GLOBALLY-INLINE? TRUE (VERBATIM :COMMON-LISP \"(CL:file-position nstream newpos)\" :CPP \"nstream->seekp(newpos)\" :JAVA \"((NativeFileOutputStream)nstream).position(newpos)\") (RETURN NEWPOS))", Native.find_java_method("edu.isi.stella.Stella", "nativeFileOutputStreamPositionSetter", new java.lang.Class [] {Native.find_java_class("java.io.PrintStream"), java.lang.Long.TYPE}), null);
+      Stella.defineMethodObject("(DEFMETHOD (STREAM-POSITION LONG-INTEGER) ((SELF FILE-OUTPUT-STREAM)) :DOCUMENTATION \"Return the current position of the file input cursor in `self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.OutputFileStream", "streamPosition", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+      Stella.defineMethodObject("(DEFMETHOD (STREAM-POSITION-SETTER LONG-INTEGER) ((SELF FILE-OUTPUT-STREAM) (NEWPOS LONG-INTEGER)) :DOCUMENTATION \"Set the current position of the file input cursor in `self' to `newpos'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.OutputFileStream", "streamPositionSetter", new java.lang.Class [] {java.lang.Long.TYPE}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("EXPAND-MARKUP-TAG-FUNCTION", "(DEFUN (EXPAND-MARKUP-TAG-FUNCTION CONS) ((TAG-AND-STREAM CONS) (BODY CONS) (XML? BOOLEAN)))", Native.find_java_method("edu.isi.stella.Cons", "expandMarkupTagFunction", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), java.lang.Boolean.TYPE}), null);
       Stella.defineFunctionObject("WITH-HTML-TAG", "(DEFUN WITH-HTML-TAG ((TAG-AND-STREAM CONS) |&BODY| (BODY CONS)) :TYPE OBJECT :MACRO? TRUE)", Native.find_java_method("edu.isi.stella.Cons", "withHtmlTag", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("WITH-XML-TAG", "(DEFUN WITH-XML-TAG ((TAG-AND-STREAM CONS) |&BODY| (BODY CONS)) :TYPE OBJECT :MACRO? TRUE)", Native.find_java_method("edu.isi.stella.Cons", "withXmlTag", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons")}), null);
@@ -208,14 +221,6 @@ public class _StartupStreams {
       Stella.defineFunctionObject("TERMINATE-STREAM-ITERATOR?", "(DEFUN (TERMINATE-STREAM-ITERATOR? BOOLEAN) ((SELF STREAM-ITERATOR)))", Native.find_java_method("edu.isi.stella.StreamIterator", "terminateStreamIteratorP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StreamIterator")}), null);
       Stella.defineFunctionObject("S-EXPRESSIONS", "(DEFUN (S-EXPRESSIONS S-EXPRESSION-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.InputStream", "sExpressions", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.InputStream")}), null);
       Stella.defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF S-EXPRESSION-ITERATOR)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.SExpressionIterator", "nextP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-      Stella.defineFunctionObject("NATIVE-LINES", "(DEFUN (NATIVE-LINES NATIVE-LINE-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.InputStream", "nativeLines", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.InputStream")}), null);
-      Stella.defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF NATIVE-LINE-ITERATOR)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.NativeLineIterator", "nextP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-      Stella.defineFunctionObject("LINES", "(DEFUN (LINES LINE-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.InputStream", "lines", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.InputStream")}), null);
-      Stella.defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF LINE-ITERATOR)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.LineIterator", "nextP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-      Stella.defineFunctionObject("CHARACTERS", "(DEFUN (CHARACTERS CHARACTER-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.InputStream", "characters", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.InputStream")}), null);
-      Stella.defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF CHARACTER-ITERATOR)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.CharacterIterator", "nextP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-      Stella.defineFunctionObject("LOOKUP-LOGGING-PARAMETER", "(DEFUN (LOOKUP-LOGGING-PARAMETER OBJECT) ((MODULE STRING) (PARAMETER KEYWORD) (DEFAULT OBJECT)) :DOCUMENTATION \"Lookup logging `parameter' for `module'.  Use `default' if no\nvalue is defined.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "lookupLoggingParameter", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.Keyword"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("SET-LOGGING-PARAMETERS", "(DEFUN SET-LOGGING-PARAMETERS ((MODULE STRING) |&REST| (|PARAMS&VALUES| OBJECT)) :DOCUMENTATION \"Set logging parameters for `module'.  The supported parameters are:\n  :LOG-LEVELS - a cons list of legal levels in ascending log level order;\n                for example, (:NONE :LOW :MEDIUM :HIGH) or (0 1 2 3).\n  :LEVEL      - the current log level for `module'\n  :STREAM     - the stream to log to (defaults to STANDARD-OUTPUT)\n  :PREFIX     - the prefix to use to identify the module (defaults to `module')\n  :MAX-WIDTH  - logging output lines will be kept to approximately this width\n                (defaults to 10000, minimum width of about 30 is used to\n                print line header information).\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "setLoggingParameters", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.Cons")}), null);
     }
   }
 
@@ -279,7 +284,19 @@ public class _StartupStreams {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupStreams.helpStartupStreams4();
+          Stella.defineFunctionObject("NATIVE-LINES", "(DEFUN (NATIVE-LINES NATIVE-LINE-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.InputStream", "nativeLines", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.InputStream")}), null);
+          Stella.defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF NATIVE-LINE-ITERATOR)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.NativeLineIterator", "nextP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+          Stella.defineFunctionObject("LINES", "(DEFUN (LINES LINE-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.InputStream", "lines", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.InputStream")}), null);
+          Stella.defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF LINE-ITERATOR)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.LineIterator", "nextP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+          Stella.defineFunctionObject("CHARACTERS", "(DEFUN (CHARACTERS CHARACTER-ITERATOR) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.InputStream", "characters", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.InputStream")}), null);
+          Stella.defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF CHARACTER-ITERATOR)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.CharacterIterator", "nextP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+          Stella.defineFunctionObject("LOOKUP-LOGGING-PARAMETER", "(DEFUN (LOOKUP-LOGGING-PARAMETER OBJECT) ((MODULE STRING) (PARAMETER KEYWORD) (DEFAULT OBJECT)) :DOCUMENTATION \"Lookup logging `parameter' for `module'.  Use `default' if no\nvalue is defined.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "lookupLoggingParameter", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.Keyword"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+          Stella.defineFunctionObject("SET-LOGGING-PARAMETERS", "(DEFUN SET-LOGGING-PARAMETERS ((MODULE STRING) |&REST| (|PARAMS&VALUES| OBJECT)) :DOCUMENTATION \"Set logging parameters for `module'.  The supported parameters are:\n  :LOG-LEVELS - a cons list of legal levels in ascending log level order;\n                for example, (:NONE :LOW :MEDIUM :HIGH) or (0 1 2 3).\n  :LEVEL      - the current log level for `module'\n  :STREAM     - the stream or file to log to (defaults to STANDARD-OUTPUT)\n  :PREFIX     - the prefix to use to identify the module (defaults to `module')\n  :MAX-WIDTH  - logging output lines will be kept to approximately this width\n                (defaults to 10000, minimum width of about 30 is used to\n                print line header information).\" :PUBLIC? TRUE :COMMAND? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "setLoggingParameters", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.stella.Cons", "setLoggingParametersEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
+          Stella.defineFunctionObject("SET-LOG-LEVEL", "(DEFUN SET-LOG-LEVEL ((MODULE STRING) (LEVEL OBJECT)) :DOCUMENTATION \"Set the log-level for `module' to `level'.  This is a\nconvenience function for this common operation.\" :PUBLIC? TRUE :COMMAND? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "setLogLevel", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.Stella_Object")}), Native.find_java_method("edu.isi.stella.Cons", "setLogLevelEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
           Stella.defineFunctionObject("LOG-LEVEL<=", "(DEFUN (LOG-LEVEL<= BOOLEAN) ((LEVEL OBJECT) (MODULE STRING)) :DOCUMENTATION \"Return TRUE if `level' is lower than or equal to the current\nlog level of `module'.  Return FALSE if any of them are undefined.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "logLevelLE", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("java.lang.String")}), null);
+          Stella.defineFunctionObject("BUMP-LOG-INDENT", "(DEFUN BUMP-LOG-INDENT () :DOCUMENTATION \"Increase the indentation level for subsequent log messages.\" :PUBLIC? TRUE :COMMAND? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "bumpLogIndent", new java.lang.Class [] {}), null);
+          Stella.defineFunctionObject("UNBUMP-LOG-INDENT", "(DEFUN UNBUMP-LOG-INDENT () :DOCUMENTATION \"Decrease the indentation level for subsequent log messages.\" :PUBLIC? TRUE :COMMAND? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "unbumpLogIndent", new java.lang.Class [] {}), null);
+          Stella.defineFunctionObject("GET-LOG-STREAM", "(DEFUN (GET-LOG-STREAM OUTPUT-STREAM) ((MODULE STRING)) :DOCUMENTATION \"Return a valid log stream for `module'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "getLogStream", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), null);
           Stella.defineFunctionObject("LOG-MESSAGE", "(DEFUN LOG-MESSAGE ((MODULE STRING) (LOGLEVEL OBJECT) (MESSAGE CONS)) :DOCUMENTATION \"Log all elements of `message' to `module's log stream if\n`logLevel' is the same or lower than the `module's log level.  Interprets `EOL'\nor :EOL to print a line terminator.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "logMessage", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("LOGMSG", "(DEFUN LOGMSG ((MODULE STRING) (LOGLEVEL OBJECT) |&REST| (MESSAGE OBJECT)) :DOCUMENTATION \"Log all elements of `message' to `module's log stream if\n`logLevel' is the same or lower than the `module's log level.  Interprets `EOL'\nor :EOL to print a line terminator.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "logmsg", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("STARTUP-STREAMS", "(DEFUN STARTUP-STREAMS () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella._StartupStreams", "startupStreams", new java.lang.Class [] {}), null);
@@ -293,6 +310,7 @@ public class _StartupStreams {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL EOL SYMBOL (QUOTE EOL) :DOCUMENTATION \"Generates a newline character when passed to a stream.\" :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL EOL-STRING STRING \"\n\" :DOCUMENTATION \"A string constant containing the character sequence\nnecessary to generate a newline.\" :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL STANDARD-INPUT INPUT-STREAM NULL :DOCUMENTATION \"Denotes the standard input stream for the host language.\" :PUBLIC? TRUE)");
@@ -314,6 +332,7 @@ public class _StartupStreams {
           Stella.$HTML_ESCAPE_TABLE$.insertAt(StringWrapper.wrapString("NBSP"), CharacterWrapper.wrapCharacter(' '));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOGGING-REGISTRY* (KEY-VALUE-LIST OF STRING-WRAPPER (PROPERTY-LIST OF KEYWORD OBJECT)) (NEW KEY-VALUE-LIST))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOGGING-LOCAL-TIME-ZONE* FLOAT (GET-LOCAL-TIME-ZONE))");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOG-INDENT-LEVEL* INTEGER 0 :DOCUMENTATION \"The number of spaces to print before the content of a log message.\" :PUBLIC? TRUE)");
         }
 
       } finally {

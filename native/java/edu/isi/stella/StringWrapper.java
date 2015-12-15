@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -126,7 +126,7 @@ public class StringWrapper extends LiteralWrapper {
             n = ((Cons)(iter000.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(((StringWrapper)(n.rest.value)), Stella.NIL);
+                collect000 = Cons.cons(((StringWrapper)(n.rest.value)), Stella.NIL);
                 if (parameterNames == Stella.NIL) {
                   parameterNames = collect000;
                 }
@@ -137,7 +137,7 @@ public class StringWrapper extends LiteralWrapper {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(((StringWrapper)(n.rest.value)), Stella.NIL);
+                collect000.rest = Cons.cons(((StringWrapper)(n.rest.value)), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -307,7 +307,7 @@ public class StringWrapper extends LiteralWrapper {
   public static Stella_Object defdemon(StringWrapper name, Cons parameterstree, Cons optionsandbody) {
     { Stella_Object firstparameter = parameterstree.value;
       Surrogate type = null;
-      Symbol demonfunctionname = Stella.internSymbol(name.wrapperValue);
+      Symbol demonfunctionname = Symbol.internSymbol(name.wrapperValue);
 
       if (!Stella_Object.consP(firstparameter)) {
         { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
@@ -361,7 +361,7 @@ public class StringWrapper extends LiteralWrapper {
           bodytree = ((Cons)(caller_MV_returnarray[0]));
         }
         Cons.inPlaceNormalizeDemonOptions(optionstree);
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(demonfunctionname, Stella_Object.cons(Stella_Object.cons(parameterstree, bodytree.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINE_DEMON, Stella_Object.cons(name, Stella_Object.cons(optionstree.concatenate(Stella.list$(Stella_Object.cons(Stella.KWD_CODE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAP_LITERAL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CODE, Stella_Object.cons(Stella.KWD_FUNCTION, Stella_Object.cons(demonfunctionname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(demonfunctionname, Cons.cons(Cons.cons(parameterstree, bodytree.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINE_DEMON, Cons.cons(name, Cons.cons(optionstree.concatenate(Cons.list$(Cons.cons(Stella.KWD_CODE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAP_LITERAL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CODE, Cons.cons(Stella.KWD_FUNCTION, Cons.cons(demonfunctionname, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))));
       }
     }
   }
@@ -374,10 +374,11 @@ public class StringWrapper extends LiteralWrapper {
 
           if ((ytype == Stella.SGT_STELLA_STRING_WRAPPER) ||
               ((ytype == Stella.SGT_STELLA_VERBATIM_STRING_WRAPPER) ||
-               ((!Stella.$CLASS_HIERARCHY_BOOTEDp$) &&
-                ((ytype == null) ||
-                 ((Stella.SGT_STELLA_STRING_WRAPPER == null) ||
-                  (Stella.SGT_STELLA_VERBATIM_STRING_WRAPPER == null)))))) {
+               (((!Stella.$CLASS_HIERARCHY_BOOTEDp$) &&
+              ((ytype == null) ||
+               ((Stella.SGT_STELLA_STRING_WRAPPER == null) ||
+                (Stella.SGT_STELLA_VERBATIM_STRING_WRAPPER == null)))) ||
+                Stella_Object.isaP(y, Stella.SGT_STELLA_STRING_WRAPPER)))) {
             return (Stella.stringEqlP(x.wrapperValue, ((StringWrapper)(y)).wrapperValue));
           }
         }

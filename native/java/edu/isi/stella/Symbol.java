@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -51,6 +51,115 @@ public class Symbol extends GeneralizedSymbol {
     public int symbolSlotOffset;
     public Cons symbolValueAndPlist;
 
+  /** Return a newly-created or existing symbol with name
+   * <code>newname</code> which is interned in the same module as <code>basesymbol</code>.
+   * @param basesymbol
+   * @param newname
+   * @return Symbol
+   */
+  public static Symbol internDerivedSymbol(GeneralizedSymbol basesymbol, String newname) {
+    { Module currentmodule = ((Module)(Stella.$MODULE$.get()));
+
+      { Object old$Module$000 = Stella.$MODULE$.get();
+
+        try {
+          Native.setSpecial(Stella.$MODULE$, ((Module)(basesymbol.homeContext)));
+          if (((Module)(Stella.$MODULE$.get())) != null) {
+            return (((Symbol)(GeneralizedSymbol.internRigidSymbolLocally(newname, ((Module)(Stella.$MODULE$.get())), Stella.SYMBOL_SYM))));
+          }
+          Native.setSpecial(Stella.$MODULE$, currentmodule);
+          return (((Symbol)(GeneralizedSymbol.internRigidSymbolCaseSensitively(newname, Stella.SYMBOL_SYM, false))));
+
+        } finally {
+          Stella.$MODULE$.set(old$Module$000);
+        }
+      }
+    }
+  }
+
+  /** Look for a symbol named <code>name</code> in <code>module</code> (if <code>localP</code> do
+   * not consider inherited modules).  If none exists, intern it locally in
+   * <code>module</code>.  Return the existing or newly-created symbol.
+   * @param name
+   * @param module
+   * @param localP
+   * @return Symbol
+   */
+  public static Symbol internSymbolInModule(String name, Module module, boolean localP) {
+    if (module == null) {
+      module = ((Module)(Stella.$MODULE$.get()));
+    }
+    if (localP) {
+      return (((Symbol)(GeneralizedSymbol.internRigidSymbolLocally(name, module, Stella.SYMBOL_SYM))));
+    }
+    else {
+      return (((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule(name, module, Stella.SYMBOL_SYM))));
+    }
+  }
+
+  /** Return a newly-created or existing symbol with name <code>name</code>.
+   * @param name
+   * @return Symbol
+   */
+  public static Symbol internSymbol(String name) {
+    if (((Module)(Stella.$MODULE$.get())).caseSensitiveP) {
+      return (((Symbol)(GeneralizedSymbol.internRigidSymbolCaseSensitively(name, Stella.SYMBOL_SYM, false))));
+    }
+    else {
+      if (((Boolean)(Stella.$TRANSIENTOBJECTSp$.get())).booleanValue()) {
+        return (Stella.internTransientSymbol(Native.stringUpcase(name)));
+      }
+      else {
+        return (Symbol.internPermanentSymbol(Native.stringUpcase(name)));
+      }
+    }
+  }
+
+  /** Return a newly-created or existing permanent symbol with
+   * name <code>name</code>.
+   * @param name
+   * @return Symbol
+   */
+  public static Symbol internPermanentSymbol(String name) {
+    return (((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), Stella.SYMBOL_SYM))));
+  }
+
+  /** Return the first symbol with <code>name</code> visible from <code>module</code>.
+   * If <code>localP</code> only consider symbols directly interned in <code>module</code>.
+   * If <code>module</code> is <code>null</code>, use <code>$MODULE$</code> instead.
+   * @param name
+   * @param module
+   * @param localP
+   * @return Symbol
+   */
+  public static Symbol lookupSymbolInModule(String name, Module module, boolean localP) {
+    if (module == null) {
+      module = ((Module)(Stella.$MODULE$.get()));
+    }
+    if (localP) {
+      return (((Symbol)(GeneralizedSymbol.lookupRigidSymbolLocally(name, module, Stella.SYMBOL_SYM))));
+    }
+    else {
+      return (((Symbol)(Stella.lookupRigidSymbolWrtModule(name, module, Stella.SYMBOL_SYM))));
+    }
+  }
+
+  /** Return the first symbol with <code>name</code> visible from the current module.
+   * @param name
+   * @return Symbol
+   */
+  public static Symbol lookupSymbol(String name) {
+    return (((Symbol)(Stella.lookupRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), Stella.SYMBOL_SYM))));
+  }
+
+  public static Symbol getSymFromOffset(int offset) {
+    return (((Symbol)(GeneralizedSymbol.getGeneralizedSymbolFromOffset(Stella.$SYMBOL_ARRAY$, offset))));
+  }
+
+  public static Symbol getSym(int offset) {
+    return (((Symbol)((Stella.$FIXED_SYMBOL_ARRAY$.theArray)[offset])));
+  }
+
   public static Symbol newSymbol(String symbolName) {
     { Symbol self = null;
 
@@ -72,11 +181,11 @@ public class Symbol extends GeneralizedSymbol {
   }
 
   public static Stella_Object idlTranslateMethodParameter(Symbol name, StandardObject type, Symbol direction) {
-    return (Stella_Object.cons(Symbol.idlTranslateName(direction), Stella_Object.cons(StandardObject.idlTranslateTypeSpec(type), Stella_Object.cons(Symbol.idlTranslateName(name), Stella.NIL))));
+    return (Cons.cons(Symbol.idlTranslateName(direction), Cons.cons(StandardObject.idlTranslateTypeSpec(type), Cons.cons(Symbol.idlTranslateName(name), Stella.NIL))));
   }
 
   public static Symbol idlCreateOverloadedFunctionName(Symbol functionname, Surrogate classtype) {
-    return (Stella.internSymbol(classtype.symbolName + "-" + functionname.symbolName));
+    return (Symbol.internSymbol(classtype.symbolName + "-" + functionname.symbolName));
   }
 
   public static StringWrapper idlTranslateClassParameterName(Symbol namesymbol) {
@@ -123,7 +232,7 @@ public class Symbol extends GeneralizedSymbol {
   public Cons idlTranslateAtomicTree() {
     { Symbol tree = this;
 
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IDL_IDENT, Stella_Object.cons(Symbol.idlTranslateName(tree), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_IDL_IDENT, Cons.cons(Symbol.idlTranslateName(tree), Cons.cons(Stella.NIL, Stella.NIL)))));
     }
   }
 
@@ -142,9 +251,9 @@ public class Symbol extends GeneralizedSymbol {
       Cons tree = null;
 
       if (owner == Stella.SGT_STELLA_NATIVE_VECTOR) {
-        tree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_AREF, Stella_Object.cons(Stella_Object.javaTranslateATree(collection), Stella_Object.cons(Stella_Object.cons(Stella_Object.javaTranslateATree(position), Stella.NIL), Stella.NIL))));
+        tree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_AREF, Cons.cons(Stella_Object.javaTranslateATree(collection), Cons.cons(Cons.cons(Stella_Object.javaTranslateATree(position), Stella.NIL), Stella.NIL))));
         if (setterP) {
-          tree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_ASSIGN, Stella_Object.cons(tree, Stella_Object.cons(Stella_Object.cons(Stella_Object.javaTranslateATree(value), Stella.NIL), Stella.NIL))));
+          tree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_ASSIGN, Cons.cons(tree, Cons.cons(Cons.cons(Stella_Object.javaTranslateATree(value), Stella.NIL), Stella.NIL))));
         }
         return (tree);
       }
@@ -157,10 +266,10 @@ public class Symbol extends GeneralizedSymbol {
   public static Cons javaTranslateArefMethodCall(Symbol operator, Surrogate owner, Cons arguments) {
     if (owner == Stella.SGT_STELLA_ARRAY) {
       { boolean setterP = operator == Stella.SYM_STELLA_AREF_SETTER;
-        Cons otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_AREF, Stella_Object.cons(Stella_Object.javaTranslateATree(arguments.value), Stella_Object.cons(Cons.javaTranslateListOfTrees((setterP ? arguments.rest.rest : arguments.rest)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))));
+        Cons otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_AREF, Cons.cons(Stella_Object.javaTranslateATree(arguments.value), Cons.cons(Cons.javaTranslateListOfTrees((setterP ? arguments.rest.rest : arguments.rest)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))));
 
         if (setterP) {
-          otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_ASSIGN, Stella_Object.cons(otree, Stella_Object.cons(Stella_Object.cons(Stella_Object.javaTranslateATree(arguments.rest.value), Stella.NIL), Stella.NIL))));
+          otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_ASSIGN, Cons.cons(otree, Cons.cons(Cons.cons(Stella_Object.javaTranslateATree(arguments.rest.value), Stella.NIL), Stella.NIL))));
         }
         return (otree);
       }
@@ -179,21 +288,21 @@ public class Symbol extends GeneralizedSymbol {
 
       if ((methodslot != null) &&
           MethodSlot.javaMethodObjectIsOverloadedFunctionP(methodslot)) {
-        return (Cons.javaTranslateFunctionCall(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_CALL_FUNCTION, Stella_Object.cons(Symbol.javaCreateOverloadedFunctionName(methodname, classtype), Stella_Object.cons(allargs.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), methodslot));
+        return (Cons.javaTranslateFunctionCall(Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_CALL_FUNCTION, Cons.cons(Symbol.javaCreateOverloadedFunctionName(methodname, classtype), Cons.cons(allargs.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), methodslot));
       }
       if (operator != null) {
         return (Cons.javaTranslateOperatorCall(operator, allargs, allargs.length()));
       }
       else {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_METHOD_CALL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_IDENT, Stella_Object.cons(GeneralizedSymbol.javaTranslateClassName(Stella.internSymbolInModule(classtype.symbolName, ((Module)(classtype.homeContext)), false)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_IDENT, Stella_Object.cons(((methodslot != null) ? methodslot.javaTranslateMethodName() : Symbol.javaTranslateName(methodname)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella_Object.javaTranslateATree(renamed_Object), Stella_Object.cons(Stella_Object.cons((((methodslot != null) &&
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_METHOD_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(GeneralizedSymbol.javaTranslateClassName(Symbol.internSymbolInModule(classtype.symbolName, ((Module)(classtype.homeContext)), false)), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(((methodslot != null) ? methodslot.javaTranslateMethodName() : Symbol.javaTranslateName(methodname)), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella_Object.javaTranslateATree(renamed_Object), Cons.cons(Cons.cons((((methodslot != null) &&
             ((!(methodslot.methodReturnTypeSpecifiers().rest() == Stella.NIL)) &&
-             (allargs.length() <= methodslot.methodParameterNames().length()))) ? Cons.javaTranslateActualParameters(allargs.rest).concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_MAKE_ARRAY, Stella_Object.cons(StandardObject.javaTranslateTypeSpec(Stella.SGT_STELLA_NATIVE_OBJECT_POINTER), Stella_Object.cons(Stella_Object.cons(IntegerWrapper.wrapInteger(methodslot.methodReturnTypeSpecifiers().length() - 1), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL) : Cons.javaTranslateActualParameters(allargs.rest)), Stella.NIL), Stella.NIL)))))));
+             (allargs.length() <= methodslot.methodParameterNames().length()))) ? Cons.javaTranslateActualParameters(allargs.rest).concatenate(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_MAKE_ARRAY, Cons.cons(StandardObject.javaTranslateTypeSpec(Stella.SGT_STELLA_NATIVE_OBJECT_POINTER), Cons.cons(Cons.cons(IntegerWrapper.wrapInteger(methodslot.methodReturnTypeSpecifiers().length() - 1), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL) : Cons.javaTranslateActualParameters(allargs.rest)), Stella.NIL), Stella.NIL)))))));
       }
     }
   }
 
   public static StringWrapper javaTranslateVariableLengthArgName(Symbol namesymbol, int parameternumber) {
-    { Symbol returnsymbol = Stella.internSymbol(namesymbol.symbolName + Native.integerToString(parameternumber));
+    { Symbol returnsymbol = Symbol.internSymbol(namesymbol.symbolName + Native.integerToString(((long)(parameternumber))));
       StringWrapper translatedname = Symbol.javaTranslateName(returnsymbol);
 
       return (translatedname);
@@ -201,7 +310,7 @@ public class Symbol extends GeneralizedSymbol {
   }
 
   public static Symbol javaCreateOverloadedFunctionName(Symbol functionname, Surrogate classtype) {
-    return (Stella.internSymbolInModule(classtype.symbolName + "_" + functionname.symbolName, Symbol.overloadedFunctionNameModule(functionname, classtype), true));
+    return (Symbol.internSymbolInModule(classtype.symbolName + "_" + functionname.symbolName, Symbol.overloadedFunctionNameModule(functionname, classtype), true));
   }
 
   public static Stella_Object javaTranslateMethodParameter(Symbol name, StandardObject type, MethodSlot method) {
@@ -212,7 +321,7 @@ public class Symbol extends GeneralizedSymbol {
           MethodSlot.stringConcatenateMethodP(method)))) {
       type = MethodSlot.yieldListifiedVariableArgumentsType(method);
     }
-    return (Stella_Object.cons(StandardObject.javaTranslateTypeSpec(type), Stella_Object.cons(Symbol.javaTranslateName(name), Stella.NIL)));
+    return (Cons.cons(StandardObject.javaTranslateTypeSpec(type), Cons.cons(Symbol.javaTranslateName(name), Stella.NIL)));
   }
 
   public Cons javaTranslateAtomicTree() {
@@ -234,13 +343,13 @@ public class Symbol extends GeneralizedSymbol {
     { GlobalVariable globalvar = tree.softPermanentify().lookupGlobalVariable();
 
       if (globalvar == null) {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_IDENT, Stella_Object.cons(Symbol.javaTranslateName(tree), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(Symbol.javaTranslateName(tree), Cons.cons(Stella.NIL, Stella.NIL)))));
       }
       else if (globalvar.variableSpecialP) {
-        return (Cons.javaTranslateObjectToReturnType(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_METHOD_CALL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_IDENT, Stella_Object.cons(StringWrapper.wrapString(""), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_IDENT, Stella_Object.cons(StringWrapper.wrapString("get"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_IDENT, Stella_Object.cons(Symbol.javaTranslateGlobalName(tree, false), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_JAVA_ACTUALS, Stella.NIL), Stella_Object.cons(Stella.NIL, Stella.NIL))))))), GlobalVariable.globalVariableTypeSpec(globalvar)));
+        return (Cons.javaTranslateObjectToReturnType(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_METHOD_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(StringWrapper.wrapString(""), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(StringWrapper.wrapString("get"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(Symbol.javaTranslateGlobalName(tree, false), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.cons(Stella.SYM_STELLA_JAVA_ACTUALS, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL))))))), GlobalVariable.globalVariableTypeSpec(globalvar)));
       }
       else {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_IDENT, Stella_Object.cons(Symbol.javaTranslateGlobalName(tree, false), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(Symbol.javaTranslateGlobalName(tree, false), Cons.cons(Stella.NIL, Stella.NIL)))));
       }
     }
   }
@@ -301,7 +410,7 @@ public class Symbol extends GeneralizedSymbol {
             wrapper = ((StringWrapper)(iter000.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(StringWrapper.wrapString(wrapper.wrapperValue), Stella.NIL);
+                collect000 = Cons.cons(StringWrapper.wrapString(wrapper.wrapperValue), Stella.NIL);
                 if (copiedentry == Stella.NIL) {
                   copiedentry = collect000;
                 }
@@ -312,7 +421,7 @@ public class Symbol extends GeneralizedSymbol {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(StringWrapper.wrapString(wrapper.wrapperValue), Stella.NIL);
+                collect000.rest = Cons.cons(StringWrapper.wrapString(wrapper.wrapperValue), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -335,13 +444,13 @@ public class Symbol extends GeneralizedSymbol {
     { GeneralizedSymbol symbol = null;
 
       if (operator == Stella.SYM_STELLA_GET_SYM) {
-        symbol = Stella.getSymFromOffset(offset);
+        symbol = Symbol.getSymFromOffset(offset);
       }
       else if (operator == Stella.SYM_STELLA_GET_KWD) {
-        symbol = Stella.getKwdFromOffset(offset);
+        symbol = Keyword.getKwdFromOffset(offset);
       }
       else if (operator == Stella.SYM_STELLA_GET_SGT) {
-        symbol = Stella.getSgtFromOffset(offset);
+        symbol = Surrogate.getSgtFromOffset(offset);
       }
       else {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -350,17 +459,17 @@ public class Symbol extends GeneralizedSymbol {
           throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
         }
       }
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_SYMBOL, Stella_Object.cons(symbol, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_SYMBOL, Cons.cons(symbol, Cons.cons(Stella.NIL, Stella.NIL)))));
     }
   }
 
   public static Cons cppTranslateArefMethodCall(Symbol operator, Surrogate owner, Cons arguments) {
     if (owner == Stella.SGT_STELLA_ARRAY) {
       { boolean setterP = operator == Stella.SYM_STELLA_AREF_SETTER;
-        Cons otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_ARRAY_REFERENCE, Stella_Object.cons(Stella_Object.cppTranslateATree(arguments.value), Stella_Object.cons(Cons.cppTranslateListOfTrees((setterP ? arguments.rest.rest : arguments.rest)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))));
+        Cons otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ARRAY_REFERENCE, Cons.cons(Stella_Object.cppTranslateATree(arguments.value), Cons.cons(Cons.cppTranslateListOfTrees((setterP ? arguments.rest.rest : arguments.rest)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))));
 
         if (setterP) {
-          otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_ASSIGN, Stella_Object.cons(otree, Stella_Object.cons(Stella_Object.cons(Stella_Object.cppTranslateATree(arguments.rest.value), Stella.NIL), Stella.NIL))));
+          otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ASSIGN, Cons.cons(otree, Cons.cons(Cons.cons(Stella_Object.cppTranslateATree(arguments.rest.value), Stella.NIL), Stella.NIL))));
         }
         return (otree);
       }
@@ -387,9 +496,9 @@ public class Symbol extends GeneralizedSymbol {
         if ((owner == Stella.SGT_STELLA_NATIVE_VECTOR) ||
             Stella.methodCallInliningEnabledP()) {
           collection = Stella_Object.cppTranslateATree(collection);
-          tree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_ARRAY_REFERENCE, Stella_Object.cons(collection, Stella_Object.cons(Stella_Object.cons(Stella_Object.cppTranslateATree(position), Stella.NIL), Stella.NIL))));
+          tree = Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ARRAY_REFERENCE, Cons.cons(collection, Cons.cons(Cons.cons(Stella_Object.cppTranslateATree(position), Stella.NIL), Stella.NIL))));
           if (setterP) {
-            tree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_ASSIGN, Stella_Object.cons(tree, Stella_Object.cons(Stella_Object.cons(Stella_Object.cppTranslateATree(value), Stella.NIL), Stella.NIL))));
+            tree = Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ASSIGN, Cons.cons(tree, Cons.cons(Cons.cons(Stella_Object.cppTranslateATree(value), Stella.NIL), Stella.NIL))));
           }
           return (tree);
         }
@@ -414,7 +523,7 @@ public class Symbol extends GeneralizedSymbol {
       }
       if ((method != null) &&
           MethodSlot.cppMethodObjectIsOverloadedFunctionP(method)) {
-        return (Cons.cppTranslateFunctionCall(Stella_Object.cons(Symbol.cppCreateOverloadedFunctionName(methodname, owner), arguments.concatenate(Stella.NIL, Stella.NIL)), method));
+        return (Cons.cppTranslateFunctionCall(Cons.cons(Symbol.cppCreateOverloadedFunctionName(methodname, owner), arguments.concatenate(Stella.NIL, Stella.NIL)), method));
       }
       { StringWrapper translatedname = Symbol.cppTranslateName(Symbol.yieldRenamedNameIfNative(methodname, Stella.KWD_CPP, Stella.KWD_FUNCTION));
 
@@ -422,7 +531,7 @@ public class Symbol extends GeneralizedSymbol {
             Symbol.slotReaderFromNameP(methodname, owner)) {
           translatedname.wrapperValue = translatedname.wrapperValue + "_reader";
         }
-        return (Stella_Object.cons((referencedP ? Stella.SYM_STELLA_CPP_REFERENCED_METHOD_CALL : Stella.SYM_STELLA_CPP_METHOD_CALL), Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(GeneralizedSymbol.cppTranslateClassName(Stella.internSymbolInModule(owner.symbolName, ((Module)(owner.homeContext)), false)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(translatedname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella_Object.cppTranslateATree(firstarg), Stella_Object.cons(Stella_Object.cons((((method != null) &&
+        return (Cons.cons((referencedP ? Stella.SYM_STELLA_CPP_REFERENCED_METHOD_CALL : Stella.SYM_STELLA_CPP_METHOD_CALL), Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(GeneralizedSymbol.cppTranslateClassName(Symbol.internSymbolInModule(owner.symbolName, ((Module)(owner.homeContext)), false)), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(translatedname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella_Object.cppTranslateATree(firstarg), Cons.cons(Cons.cons((((method != null) &&
             (((BooleanWrapper)(KeyValueList.dynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, Stella.FALSE_WRAPPER))).wrapperValue &&
              (!MethodSlot.passVariableArgumentsAsListP(method)))) ? Cons.cppTranslateVariableLengthActuals(otherargs, method) : Cons.cppTranslateActualParameters(otherargs)), Stella.NIL), Stella.NIL)))))));
       }
@@ -430,7 +539,7 @@ public class Symbol extends GeneralizedSymbol {
   }
 
   public static Symbol cppCreateOverloadedFunctionName(Symbol functionname, Surrogate classtype) {
-    return (Stella.internSymbolInModule(classtype.symbolName + "-" + functionname.symbolName, Symbol.overloadedFunctionNameModule(functionname, classtype), true));
+    return (Symbol.internSymbolInModule(classtype.symbolName + "-" + functionname.symbolName, Symbol.overloadedFunctionNameModule(functionname, classtype), true));
   }
 
   public static StringWrapper cppTranslateMethodNameFromName(Symbol methodname, StandardObject methodowner) {
@@ -447,7 +556,7 @@ public class Symbol extends GeneralizedSymbol {
     { MethodSlot function = Symbol.lookupFunction(functionname);
 
       if (function != null) {
-        return (MethodSlot.cppTranslateFunctionName(function));
+        return (MethodSlot.cppTranslateFunctionName(function, true));
       }
       else {
         return (Symbol.cppTranslateName(functionname));
@@ -471,7 +580,7 @@ public class Symbol extends GeneralizedSymbol {
          MethodSlot.passVariableArgumentsAsListP(method))) {
       type = MethodSlot.yieldListifiedVariableArgumentsType(method);
     }
-    return (Stella_Object.cons((StandardObject.cppReferenceTypeP(type) ? StandardObject.cppReferencizeType(type) : StandardObject.cppTranslateAndPointerizeTypeSpec(type)), Stella_Object.cons(Symbol.cppTranslateName(name), Stella.NIL)));
+    return (Cons.cons((StandardObject.cppReferenceTypeP(type) ? StandardObject.cppReferencizeType(type) : StandardObject.cppTranslateAndPointerizeTypeSpec(type)), Cons.cons(Symbol.cppTranslateName(name), Stella.NIL)));
   }
 
   public static StringWrapper cppTranslateSymbolId(Symbol symbol) {
@@ -483,7 +592,7 @@ public class Symbol extends GeneralizedSymbol {
   }
 
   public static StringWrapper cppTranslateReturnParameterName(Symbol namesymbol, int parameternumber) {
-    { Symbol returnsymbol = Stella.internSymbol(namesymbol.symbolName + Native.integerToString(parameternumber));
+    { Symbol returnsymbol = Symbol.internSymbol(namesymbol.symbolName + Native.integerToString(((long)(parameternumber))));
       StringWrapper translatedname = Symbol.cppTranslateName(returnsymbol);
 
       return (translatedname);
@@ -542,17 +651,17 @@ public class Symbol extends GeneralizedSymbol {
       { GlobalVariable globalvar = tree.softPermanentify().lookupGlobalVariable();
 
         if (globalvar != null) {
-          { Cons otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(Symbol.cppTranslateGlobalName(tree), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+          { Cons otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateGlobalName(tree), Cons.cons(Stella.NIL, Stella.NIL))));
 
             if (globalvar.variableSpecialP &&
                 (Stella.specialImplementationStyle() == Stella.KWD_UNBIND_WITH_DESTRUCTORS)) {
-              otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_REFERENCED_METHOD_CALL, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(Symbol.cppTranslateName(Stella.SYM_STELLA_GET), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(otree, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_CPP_ACTUALS, Stella.NIL), Stella.NIL), Stella.NIL))))));
+              otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_REFERENCED_METHOD_CALL, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateName(Stella.SYM_STELLA_GET), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(otree, Cons.cons(Cons.cons(Cons.cons(Stella.SYM_STELLA_CPP_ACTUALS, Stella.NIL), Stella.NIL), Stella.NIL))))));
             }
             return (otree);
           }
         }
         else {
-          return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(Symbol.cppTranslateName(tree), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateName(tree), Cons.cons(Stella.NIL, Stella.NIL)))));
         }
       }
     }
@@ -585,10 +694,10 @@ public class Symbol extends GeneralizedSymbol {
       return (((Cons)(Stella_Object.cppTranslateATree(MethodSlot.variableArgumentsName(((MethodSlot)(Stella.$METHODBEINGWALKED$.get())))))));
     }
     else if (operator == Stella.SYM_STELLA_NEXTp) {
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_BINARY_OP, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_UNARY_OP, Stella_Object.cons(Stella_Object.cppTranslateATree(Symbol.cppYieldVaIteratorHelperVariable(((Symbol)(argument)))), Stella_Object.cons(Symbol.cppLookupOperatorTable(Stella.SYM_STELLA___).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Symbol.cppLookupOperatorTable(Stella.SYM_STELLA_g).concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_LITERAL, Stella_Object.cons(IntegerWrapper.wrapInteger(0), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_BINARY_OP, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_UNARY_OP, Cons.cons(Stella_Object.cppTranslateATree(Symbol.cppYieldVaIteratorHelperVariable(((Symbol)(argument)))), Cons.cons(Symbol.cppLookupOperatorTable(Stella.SYM_STELLA___).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Cons.cons(Symbol.cppLookupOperatorTable(Stella.SYM_STELLA_g).concatenate(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_LITERAL, Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)))));
     }
     else if (operator == Stella.SYM_STELLA_ARGUMENT) {
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(Symbol.cppTranslateName(Stella.SYM_STELLA_VA_ARG), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_ACTUALS, Stella_Object.cons(Stella_Object.cppTranslateATree(argument), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(MethodSlot.variableArgumentsType(((MethodSlot)(Stella.$METHODBEINGWALKED$.get())))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateName(Stella.SYM_STELLA_VA_ARG), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ACTUALS, Cons.cons(Stella_Object.cppTranslateATree(argument), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(MethodSlot.variableArgumentsType(((MethodSlot)(Stella.$METHODBEINGWALKED$.get())))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))));
     }
     else {
       { Object old$PrintreadablyP$001 = Stella.$PRINTREADABLYp$.get();
@@ -609,24 +718,24 @@ public class Symbol extends GeneralizedSymbol {
           Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$001);
         }
       }
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(Symbol.cppTranslateName(operator), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_ACTUALS, Stella_Object.cons(Stella_Object.cppTranslateATree(argument), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateName(operator), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ACTUALS, Cons.cons(Stella_Object.cppTranslateATree(argument), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))));
     }
   }
 
   public static Cons cppYieldVaIteratorDeclarations(Symbol iteratorvar) {
-    return (Stella.list$(Stella_Object.cons(Stella_Object.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(Stella.SGT_STELLA_ARGUMENT_LIST_ITERATOR), Stella_Object.cons(Stella_Object.cppTranslateATree(iteratorvar), Stella.NIL)), Stella_Object.cons(Stella_Object.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(Stella.SGT_STELLA_INTEGER), Stella_Object.cons(Stella_Object.cppTranslateATree(Symbol.cppYieldVaIteratorHelperVariable(iteratorvar)), Stella_Object.cons(Stella_Object.cppTranslateATree(MethodSlot.variableArgumentsName(((MethodSlot)(Stella.$METHODBEINGWALKED$.get())))), Stella.NIL))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Cons.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(Stella.SGT_STELLA_ARGUMENT_LIST_ITERATOR), Cons.cons(Stella_Object.cppTranslateATree(iteratorvar), Stella.NIL)), Cons.cons(Cons.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(Stella.SGT_STELLA_INTEGER), Cons.cons(Stella_Object.cppTranslateATree(Symbol.cppYieldVaIteratorHelperVariable(iteratorvar)), Cons.cons(Stella_Object.cppTranslateATree(MethodSlot.variableArgumentsName(((MethodSlot)(Stella.$METHODBEINGWALKED$.get())))), Stella.NIL))), Cons.cons(Stella.NIL, Stella.NIL)))));
   }
 
   public static Symbol cppYieldVaIteratorHelperVariable(Symbol iteratorvar) {
-    return (Stella.internSymbol(iteratorvar.symbolName + "-COUNT"));
+    return (Symbol.internSymbol(iteratorvar.symbolName + "-COUNT"));
   }
 
   public static Cons cppYieldVaEndTree(Symbol iteratorvar) {
-    return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(Symbol.cppTranslateName(Stella.SYM_STELLA_VA_END), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_ACTUALS, Stella_Object.cons(Stella_Object.cppTranslateATree(iteratorvar), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+    return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateName(Stella.SYM_STELLA_VA_END), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ACTUALS, Cons.cons(Stella_Object.cppTranslateATree(iteratorvar), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
   }
 
   public static Cons cppYieldVaStartTree(Symbol iteratorvar) {
-    return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_IDENT, Stella_Object.cons(Symbol.cppTranslateName(Stella.SYM_STELLA_VA_START), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_ACTUALS, Stella_Object.cons(Stella_Object.cppTranslateATree(iteratorvar), Stella_Object.cons(Stella_Object.cons(Stella_Object.cppTranslateATree(MethodSlot.variableArgumentsName(((MethodSlot)(Stella.$METHODBEINGWALKED$.get())))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+    return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateName(Stella.SYM_STELLA_VA_START), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ACTUALS, Cons.cons(Stella_Object.cppTranslateATree(iteratorvar), Cons.cons(Cons.cons(Stella_Object.cppTranslateATree(MethodSlot.variableArgumentsName(((MethodSlot)(Stella.$METHODBEINGWALKED$.get())))), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
   }
 
   public static StringWrapper cppLookupReservedWordTable(Symbol word) {
@@ -662,7 +771,7 @@ public class Symbol extends GeneralizedSymbol {
             wrapper = ((StringWrapper)(iter000.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(StringWrapper.wrapString(wrapper.wrapperValue), Stella.NIL);
+                collect000 = Cons.cons(StringWrapper.wrapString(wrapper.wrapperValue), Stella.NIL);
                 if (copiedentry == Stella.NIL) {
                   copiedentry = collect000;
                 }
@@ -673,7 +782,7 @@ public class Symbol extends GeneralizedSymbol {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(StringWrapper.wrapString(wrapper.wrapperValue), Stella.NIL);
+                collect000.rest = Cons.cons(StringWrapper.wrapString(wrapper.wrapperValue), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -714,6 +823,9 @@ public class Symbol extends GeneralizedSymbol {
    *              of strings; the latter defines exploded paths to files
    *              in subdirectories.
    *    Optional options are:
+   *    :data-files       -- a list of files like the :files keyword, which contain
+   *                         data or other content that should not be processed, but
+   *                         instead copied verbatim to the native directory
    *    :required-systems -- a list of systems (strings) that should be loaded
    *                         prior to loading this system.
    *    :cardinal-module -- the name (a string) of the principal module for this
@@ -752,7 +864,7 @@ public class Symbol extends GeneralizedSymbol {
       { Symbol argvar = Stella.localGensym("ARG");
         Symbol listvar = Stella.localGensym("ARGLIST");
 
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VRLET, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(listvar, Stella_Object.cons(MethodSlot.yieldListifiedVariableArgumentsType(((MethodSlot)(Stella.$METHODBEINGWALKED$.get()))), Stella_Object.cons(Stella.SYM_STELLA_NIL, Stella.NIL))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_FOREACH, Stella_Object.cons(argvar, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IN, Stella_Object.cons(restvariable, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_COLLECT, Stella_Object.cons(argvar, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_INTO, Stella_Object.cons(listvar, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Stella_Object.cons(listvar, Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_VRLET, Cons.cons(Cons.cons(Cons.cons(listvar, Cons.cons(MethodSlot.yieldListifiedVariableArgumentsType(((MethodSlot)(Stella.$METHODBEINGWALKED$.get()))), Cons.cons(Stella.SYM_STELLA_NIL, Stella.NIL))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_FOREACH, Cons.cons(argvar, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IN, Cons.cons(restvariable, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COLLECT, Cons.cons(argvar, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_INTO, Cons.cons(listvar, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Cons.cons(listvar, Cons.cons(Stella.NIL, Stella.NIL)))))));
       }
     }
   }
@@ -764,7 +876,7 @@ public class Symbol extends GeneralizedSymbol {
    * @return Stella_Object
    */
   public static Stella_Object setqP(Symbol variable, Cons expression) {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VRLET, Stella_Object.cons(Stella.NIL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(variable, Stella_Object.cons(Stella_Object.cons(expression, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(variable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_VRLET, Cons.cons(Stella.NIL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(variable, Cons.cons(Cons.cons(expression, Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(variable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))));
   }
 
   /** Push <code>value</code> onto the cons list <code>variable</code>, unless <code>value</code>
@@ -777,11 +889,11 @@ public class Symbol extends GeneralizedSymbol {
     if (Stella_Object.consP(value)) {
       { Symbol valuevar = Stella.localGensym("VALUE");
 
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VRLET, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(valuevar, Stella_Object.cons(value, Stella.NIL)), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(variable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CHOOSE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_MEMBERp, Stella_Object.cons(variable, Stella_Object.cons(Stella_Object.cons(valuevar, Stella.NIL), Stella.NIL)))), Stella_Object.cons(variable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CONS, Stella_Object.cons(valuevar, Stella_Object.cons(Stella_Object.cons(variable, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_VRLET, Cons.cons(Cons.cons(Cons.cons(valuevar, Cons.cons(value, Stella.NIL)), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(variable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CHOOSE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MEMBERp, Cons.cons(variable, Cons.cons(Cons.cons(valuevar, Stella.NIL), Stella.NIL)))), Cons.cons(variable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CONS, Cons.cons(valuevar, Cons.cons(Cons.cons(variable, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))))), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))));
       }
     }
     else {
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(variable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CHOOSE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_MEMBERp, Stella_Object.cons(variable, Stella_Object.cons(Stella_Object.cons(value, Stella.NIL), Stella.NIL)))), Stella_Object.cons(variable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CONS, Stella_Object.cons(value, Stella_Object.cons(Stella_Object.cons(variable, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))))), Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(variable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CHOOSE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MEMBERp, Cons.cons(variable, Cons.cons(Cons.cons(value, Stella.NIL), Stella.NIL)))), Cons.cons(variable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CONS, Cons.cons(value, Cons.cons(Cons.cons(variable, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL))))), Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -792,7 +904,7 @@ public class Symbol extends GeneralizedSymbol {
   public static Stella_Object popq(Symbol variable) {
     { Symbol valuevar = Stella.localGensym("HEAD");
 
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VRLET, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(valuevar, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(variable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(variable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_REST, Stella_Object.cons(variable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(valuevar, Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_VRLET, Cons.cons(Cons.cons(Cons.cons(valuevar, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(variable, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(variable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_REST, Cons.cons(variable, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Cons.cons(valuevar, Cons.cons(Stella.NIL, Stella.NIL)))))));
     }
   }
 
@@ -802,7 +914,7 @@ public class Symbol extends GeneralizedSymbol {
    * @return Stella_Object
    */
   public static Stella_Object pushq(Symbol variable, Stella_Object value) {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(variable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CONS, Stella_Object.cons(value, Stella_Object.cons(Stella_Object.cons(variable, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(variable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CONS, Cons.cons(value, Cons.cons(Cons.cons(variable, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL)))));
   }
 
   public static Cons expandXmlTagCase(Symbol item, Cons clauses) {
@@ -821,13 +933,13 @@ public class Symbol extends GeneralizedSymbol {
               { Cons key000 = ((Cons)(key));
 
                 if (key000.rest == Stella.NIL) {
-                  outputClauses = Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_XML_ELEMENT_MATCHp, Stella_Object.cons(item, Stella_Object.cons(Stella_Object.cons(key000.value, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), Stella.NIL)))), clause.rest.concatenate(Stella.NIL, Stella.NIL)), outputClauses);
+                  outputClauses = Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_XML_ELEMENT_MATCHp, Cons.cons(item, Cons.cons(Cons.cons(key000.value, Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), Stella.NIL)))), clause.rest.concatenate(Stella.NIL, Stella.NIL)), outputClauses);
                 }
                 else if (key000.rest.value == Stella.KWD_ANY) {
-                  outputClauses = Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_STRING_EQLp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NAME, Stella_Object.cons(item, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(key000.value, Stella_Object.cons(Stella.NIL, Stella.NIL))))), clause.rest.concatenate(Stella.NIL, Stella.NIL)), outputClauses);
+                  outputClauses = Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_STRING_EQLp, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NAME, Cons.cons(item, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(key000.value, Cons.cons(Stella.NIL, Stella.NIL))))), clause.rest.concatenate(Stella.NIL, Stella.NIL)), outputClauses);
                 }
                 else {
-                  outputClauses = Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_XML_ELEMENT_MATCHp, Stella_Object.cons(item, Stella_Object.cons(Stella_Object.cons(key000.value, Stella_Object.cons(key000.rest.value, Stella.NIL)), Stella.NIL)))), clause.rest.concatenate(Stella.NIL, Stella.NIL)), outputClauses);
+                  outputClauses = Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_XML_ELEMENT_MATCHp, Cons.cons(item, Cons.cons(Cons.cons(key000.value, Cons.cons(key000.rest.value, Stella.NIL)), Stella.NIL)))), clause.rest.concatenate(Stella.NIL, Stella.NIL)), outputClauses);
                 }
               }
             }
@@ -835,17 +947,17 @@ public class Symbol extends GeneralizedSymbol {
               { Symbol key000 = ((Symbol)(key));
 
                 if (key000 == Stella.SYM_STELLA_OTHERWISE) {
-                  outputClauses = Stella_Object.cons(clause, outputClauses);
+                  outputClauses = Cons.cons(clause, outputClauses);
                 }
                 else {
-                  outputClauses = Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_XML_ELEMENT_MATCHp, Stella_Object.cons(item, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString(key000.symbolName), Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), Stella.NIL)))), clause.rest.concatenate(Stella.NIL, Stella.NIL)), outputClauses);
+                  outputClauses = Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_XML_ELEMENT_MATCHp, Cons.cons(item, Cons.cons(Cons.cons(StringWrapper.wrapString(key000.symbolName), Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), Stella.NIL)))), clause.rest.concatenate(Stella.NIL, Stella.NIL)), outputClauses);
                 }
               }
             }
             else if (Surrogate.subtypeOfStringP(testValue000)) {
               { StringWrapper key000 = ((StringWrapper)(key));
 
-                outputClauses = Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_XML_ELEMENT_MATCHp, Stella_Object.cons(item, Stella_Object.cons(Stella_Object.cons(key000, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), Stella.NIL)))), clause.rest.concatenate(Stella.NIL, Stella.NIL)), outputClauses);
+                outputClauses = Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_XML_ELEMENT_MATCHp, Cons.cons(item, Cons.cons(Cons.cons(key000, Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), Stella.NIL)))), clause.rest.concatenate(Stella.NIL, Stella.NIL)), outputClauses);
               }
             }
             else {
@@ -858,14 +970,14 @@ public class Symbol extends GeneralizedSymbol {
           }
         }
       }
-      return (Stella_Object.cons(Stella.SYM_STELLA_COND, outputClauses.reverse().concatenate(Stella.NIL, Stella.NIL)));
+      return (Cons.cons(Stella.SYM_STELLA_COND, outputClauses.reverse().concatenate(Stella.NIL, Stella.NIL)));
     }
   }
 
   public Context getStellaContextSlowly() {
     { Symbol self = this;
 
-      return (Stella.string_getStellaContextSlowly(self.relativeName()));
+      return (Stella.string_getStellaContextSlowly(self.relativeName(false)));
     }
   }
 
@@ -936,13 +1048,13 @@ public class Symbol extends GeneralizedSymbol {
 
         if ((testValue000 == Stella.SYM_STELLA_OBJECT_METHOD) ||
             (testValue000 == Stella.SYM_STELLA_PRINT_OBJECT)) {
-          return (Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_CLSYS_CALL), Stella_Object.cons(translatedoperator, Cons.clTranslateListOfTrees(arguments).concatenate(Stella.NIL, Stella.NIL))));
+          return (Cons.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_CLSYS_CALL), Cons.cons(translatedoperator, Cons.clTranslateListOfTrees(arguments).concatenate(Stella.NIL, Stella.NIL))));
         }
         else if (testValue000 == Stella.SYM_STELLA_NON_OBJECT_METHOD) {
-          return (Stella_Object.cons(translatedoperator, Stella_Object.cons(Stella_Object.clTranslateATree(arguments.value), Stella_Object.cons(Stella.SYM_STELLA_NULL, Cons.clTranslateListOfTrees(arguments.rest).concatenate(Stella.NIL, Stella.NIL)))));
+          return (Cons.cons(translatedoperator, Cons.cons(Stella_Object.clTranslateATree(arguments.value), Cons.cons(Stella.SYM_STELLA_NULL, Cons.clTranslateListOfTrees(arguments.rest).concatenate(Stella.NIL, Stella.NIL)))));
         }
         else {
-          return (Stella_Object.cons(translatedoperator, Cons.clTranslateListOfTrees(arguments).concatenate(Stella.NIL, Stella.NIL)));
+          return (Cons.cons(translatedoperator, Cons.clTranslateListOfTrees(arguments).concatenate(Stella.NIL, Stella.NIL)));
         }
       }
     }
@@ -979,17 +1091,17 @@ public class Symbol extends GeneralizedSymbol {
   }
 
   public static Cons yieldSlotValueWriterTree(Symbol slotname, Stella_Object objectref, Surrogate objecttype, Stella_Object valueref) {
-    return (Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("SETF"), Stella_Object.cons(Symbol.yieldSlotValueReaderTree(slotname, objectref, objecttype), Stella_Object.cons(Stella_Object.cons(valueref, Stella.NIL), Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.internCommonLispSymbol("SETF"), Cons.cons(Symbol.yieldSlotValueReaderTree(slotname, objectref, objecttype), Cons.cons(Cons.cons(valueref, Stella.NIL), Stella.NIL)))));
   }
 
   public static Cons yieldSlotValueReaderTree(Symbol slotname, Stella_Object objectref, Surrogate objecttype) {
     if ((objecttype == Stella.SGT_STELLA_CONS) &&
         ((List)(Stella.$CURRENT_STELLA_FEATURES$.get())).membP(Stella.KWD_USE_COMMON_LISP_CONSES)) {
       if (slotname == Stella.SYM_STELLA_VALUE) {
-        return (Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_rrVALUE), Stella_Object.cons(objectref, Stella.NIL)));
+        return (Cons.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_rrVALUE), Cons.cons(objectref, Stella.NIL)));
       }
       else if (slotname == Stella.SYM_STELLA_REST) {
-        return (Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_rrREST), Stella_Object.cons(objectref, Stella.NIL)));
+        return (Cons.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_rrREST), Cons.cons(objectref, Stella.NIL)));
       }
       else {
       }
@@ -999,13 +1111,13 @@ public class Symbol extends GeneralizedSymbol {
       if ((!((List)(Stella.$CURRENT_STELLA_FEATURES$.get())).membP(Stella.KWD_USE_COMMON_LISP_STRUCTS)) ||
           (Stella_Class.exceptionClassP(renamed_Class) ||
            Stella_Class.clAlwaysTranslateToClosClassP(renamed_Class))) {
-        return (Stella_Object.cons(Symbol.yieldClosSlotAccessorName(slotname), Stella_Object.cons(objectref, Stella.NIL)));
+        return (Cons.cons(Symbol.yieldClosSlotAccessorName(slotname), Cons.cons(objectref, Stella.NIL)));
       }
       else if (((List)(Stella.$CURRENT_STELLA_FEATURES$.get())).membP(Stella.KWD_USE_COMMON_LISP_VECTOR_STRUCTS)) {
-        return (Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_CLSYS_SVAL), Stella_Object.cons(IntegerWrapper.wrapInteger(Symbol.clStructSlotOffset(slotname, objecttype)), Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella.internSymbolInModule(objecttype.symbolName, ((Module)(objecttype.homeContext)), true)), Stella_Object.cons(Symbol.clTranslateGlobalSymbol(slotname), Stella_Object.cons(objectref, Stella.NIL))))));
+        return (Cons.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_CLSYS_SVAL), Cons.cons(IntegerWrapper.wrapInteger(Symbol.clStructSlotOffset(slotname, objecttype)), Cons.cons(Symbol.clTranslateGlobalSymbol(Symbol.internSymbolInModule(objecttype.symbolName, ((Module)(objecttype.homeContext)), true)), Cons.cons(Symbol.clTranslateGlobalSymbol(slotname), Cons.cons(objectref, Stella.NIL))))));
       }
       else {
-        return (Stella_Object.cons(Surrogate.yieldStructSlotAccessorName(objecttype, slotname), Stella_Object.cons(objectref, Stella.NIL)));
+        return (Cons.cons(Surrogate.yieldStructSlotAccessorName(objecttype, slotname), Cons.cons(objectref, Stella.NIL)));
       }
     }
   }
@@ -1063,16 +1175,16 @@ public class Symbol extends GeneralizedSymbol {
                     (iter000 <= upperBound000); iter000 = iter000 + 1) {
             i = iter000;
             i = i;
-            accesstree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_REST, Stella_Object.cons(accesstree, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+            accesstree = Cons.list$(Cons.cons(Stella.SYM_STELLA_REST, Cons.cons(accesstree, Cons.cons(Stella.NIL, Stella.NIL))));
           }
         }
       }
       else {
-        accesstree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NTH_REST, Stella_Object.cons(accesstree, Stella_Object.cons(Stella_Object.cons(IntegerWrapper.wrapInteger(index - 1), Stella.NIL), Stella.NIL))));
+        accesstree = Cons.list$(Cons.cons(Stella.SYM_STELLA_NTH_REST, Cons.cons(accesstree, Cons.cons(Cons.cons(IntegerWrapper.wrapInteger(index - 1), Stella.NIL), Stella.NIL))));
       }
       if (!restargumentP) {
         if (index <= limit) {
-          accesstree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(accesstree, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+          accesstree = Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(accesstree, Cons.cons(Stella.NIL, Stella.NIL))));
         }
         else {
           ((Cons)(accesstree)).value = Stella.SYM_STELLA_NTH;
@@ -1086,7 +1198,7 @@ public class Symbol extends GeneralizedSymbol {
     { String baseName = methodname.symbolName;
       String suffix = (Stella.allUpperCaseStringP(baseName) ? "-EVALUATOR-WRAPPER" : "-Evaluator-Wrapper");
 
-      return (GeneralizedSymbol.internDerivedSymbol(methodname, baseName + suffix));
+      return (Symbol.internDerivedSymbol(methodname, baseName + suffix));
     }
   }
 
@@ -1125,7 +1237,7 @@ public class Symbol extends GeneralizedSymbol {
       Cons.walkAuxiliaryTree(aliasdefinitiontree);
     }
     if (name == method.slotName) {
-      Cons.walkAuxiliaryTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_REGISTER_NATIVE_NAME, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_QUOTE, Stella_Object.cons(name, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.KWD_COMMON_LISP, Stella_Object.cons(Stella.KWD_FUNCTION, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      Cons.walkAuxiliaryTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_REGISTER_NATIVE_NAME, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_QUOTE, Cons.cons(name, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.KWD_COMMON_LISP, Cons.cons(Stella.KWD_FUNCTION, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))));
     }
   }
 
@@ -1135,9 +1247,9 @@ public class Symbol extends GeneralizedSymbol {
       Stella_Object translatedfullname = Module.yieldGlobalLispSymbol(module, Stella.computeFullName(name.symbolName, module));
       String documentation = ((StringWrapper)(KeyValueList.dynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_DOCUMENTATION, Stella.NULL_STRING_WRAPPER))).wrapperValue;
 
-      { Cons _return_temp = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VERBATIM, Stella_Object.cons(Stella.KWD_COMMON_LISP, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("DEFMACRO"), Stella_Object.cons(translatedname, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("&WHOLE"), Stella_Object.cons(Stella.SYM_STELLA_EXPRESSION, Stella_Object.cons(Stella.internCommonLispSymbol("&REST"), Stella_Object.cons(Stella.SYM_STELLA_IGNORE, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), (((documentation != null) ? Stella_Object.cons(StringWrapper.wrapString(documentation), Stella.NIL) : Stella.NIL)).concatenate(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("DECLARE"), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("IGNORE"), Stella_Object.cons(Stella.SYM_STELLA_IGNORE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("LET"), Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_$IGNORETRANSLATIONERRORSp$), Stella_Object.cons((MethodSlot.commandP(method) ? Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_FALSE) : Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_TRUE)), Stella.NIL)), Stella.NIL), Stella_Object.cons(Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_CL_INCREMENTALLY_TRANSLATE), Stella_Object.cons(Stella.SYM_STELLA_EXPRESSION, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL)))), Stella_Object.cons(Stella.KWD_OTHERWISE, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+      { Cons _return_temp = Cons.list$(Cons.cons(Stella.SYM_STELLA_VERBATIM, Cons.cons(Stella.KWD_COMMON_LISP, Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("DEFMACRO"), Cons.cons(translatedname, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("&WHOLE"), Cons.cons(Stella.SYM_STELLA_EXPRESSION, Cons.cons(Stella.internCommonLispSymbol("&REST"), Cons.cons(Stella.SYM_STELLA_IGNORE, Cons.cons(Stella.NIL, Stella.NIL)))))), (((documentation != null) ? Cons.cons(StringWrapper.wrapString(documentation), Stella.NIL) : Stella.NIL)).concatenate(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("DECLARE"), Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("IGNORE"), Cons.cons(Stella.SYM_STELLA_IGNORE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("LET"), Cons.cons(Cons.cons(Cons.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_$IGNORETRANSLATIONERRORSp$), Cons.cons((MethodSlot.commandP(method) ? Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_FALSE) : Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_TRUE)), Stella.NIL)), Stella.NIL), Cons.cons(Cons.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_CL_INCREMENTALLY_TRANSLATE), Cons.cons(Stella.SYM_STELLA_EXPRESSION, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL)))), Cons.cons(Stella.KWD_OTHERWISE, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))))));
 
-        MV_returnarray[0] = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VERBATIM, Stella_Object.cons(Stella.KWD_COMMON_LISP, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("SETF"), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("MACRO-FUNCTION"), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("QUOTE"), Stella_Object.cons(translatedfullname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("MACRO-FUNCTION"), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("QUOTE"), Stella_Object.cons(translatedname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.KWD_OTHERWISE, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+        MV_returnarray[0] = Cons.list$(Cons.cons(Stella.SYM_STELLA_VERBATIM, Cons.cons(Stella.KWD_COMMON_LISP, Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("SETF"), Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("MACRO-FUNCTION"), Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("QUOTE"), Cons.cons(translatedfullname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("MACRO-FUNCTION"), Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("QUOTE"), Cons.cons(translatedname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.KWD_OTHERWISE, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))))));
         return (_return_temp);
       }
     }
@@ -1148,13 +1260,13 @@ public class Symbol extends GeneralizedSymbol {
       { Symbol newname = null;
 
         if (language == Stella.KWD_COMMON_LISP) {
-          newname = GeneralizedSymbol.internDerivedSymbol(name, "%" + name.symbolName);
+          newname = Symbol.internDerivedSymbol(name, "%" + name.symbolName);
         }
         else if (language == Stella.KWD_CPP) {
           return (name);
         }
         else {
-          newname = GeneralizedSymbol.internDerivedSymbol(name, name.symbolName + "_");
+          newname = Symbol.internDerivedSymbol(name, name.symbolName + "_");
         }
         return (Symbol.yieldRenamedNameIfNative(newname, language, category));
       }
@@ -1243,19 +1355,19 @@ public class Symbol extends GeneralizedSymbol {
             TranslationUnit.clearTranslationUnit(((TranslationUnit)(startupunits.pop())));
           }
           if (!(startupphasetrees == Stella.NIL)) {
-            startupphasetrees = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VOID_SYS, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_CALL_FUNCTION, Stella_Object.cons(Stella.SYM_STELLA_CURRENT_STARTUP_TIME_PHASEp, Stella_Object.cons(IntegerWrapper.wrapInteger(Keyword.encodeStartupTimePhase(phase)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(startupphasetrees.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+            startupphasetrees = Cons.list$(Cons.cons(Stella.SYM_STELLA_VOID_SYS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_CALL_FUNCTION, Cons.cons(Stella.SYM_STELLA_CURRENT_STARTUP_TIME_PHASEp, Cons.cons(IntegerWrapper.wrapInteger(Keyword.encodeStartupTimePhase(phase)), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(startupphasetrees.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))));
             if (Keyword.encodeStartupTimePhase(phase) <= Keyword.encodeStartupTimePhase(Stella.KWD_MODULES)) {
-              earlystartuptrees = Stella_Object.cons(startupphasetrees, earlystartuptrees);
+              earlystartuptrees = Cons.cons(startupphasetrees, earlystartuptrees);
             }
             else {
-              startuptrees = Stella_Object.cons(startupphasetrees, startuptrees);
+              startuptrees = Cons.cons(startupphasetrees, startuptrees);
             }
             startupphasetrees = Stella.NIL;
           }
         }
       }
       if (!(startuptrees == Stella.NIL)) {
-        startuptrees = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WITHIN_MODULE, Stella_Object.cons(((((Module)(Stella.$MODULE$.get())) == Stella.$STELLA_MODULE$) ? ((StandardObject)(Stella.SYM_STELLA_$STELLA_MODULE$)) : ((StandardObject)(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_GET_STELLA_MODULE, Stella_Object.cons(StringWrapper.wrapString(((Module)(Stella.$MODULE$.get())).moduleFullName), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_g, Stella_Object.cons(Stella.SYM_STELLA_$STARTUP_TIME_PHASE$, Stella_Object.cons(IntegerWrapper.wrapInteger(Keyword.encodeStartupTimePhase(Stella.KWD_MODULES)), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL))))))), Stella_Object.cons(startuptrees.reverse().concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella.NIL);
+        startuptrees = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WITHIN_MODULE, Cons.cons(((((Module)(Stella.$MODULE$.get())) == Stella.$STELLA_MODULE$) ? ((StandardObject)(Stella.SYM_STELLA_$STELLA_MODULE$)) : ((StandardObject)(Cons.list$(Cons.cons(Stella.SYM_STELLA_GET_STELLA_MODULE, Cons.cons(StringWrapper.wrapString(((Module)(Stella.$MODULE$.get())).moduleFullName), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_g, Cons.cons(Stella.SYM_STELLA_$STARTUP_TIME_PHASE$, Cons.cons(IntegerWrapper.wrapInteger(Keyword.encodeStartupTimePhase(Stella.KWD_MODULES)), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL))))))), Cons.cons(startuptrees.reverse().concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella.NIL);
       }
       if ((!(earlystartuptrees == Stella.NIL)) ||
           (!(startuptrees == Stella.NIL))) {
@@ -1319,7 +1431,7 @@ public class Symbol extends GeneralizedSymbol {
 
   public static Cons yieldNestedArithmeticOperatorCallTree(Symbol operator, Cons operands) {
     { int nofoperands = operands.length();
-      Cons parenthesizedtree = Symbol.yieldArithmeticOperatorCallTree(operator, Stella.consList(Stella_Object.cons(operands.value, Stella_Object.cons(operands.rest.value, Stella.NIL))));
+      Cons parenthesizedtree = Symbol.yieldArithmeticOperatorCallTree(operator, Cons.consList(Cons.cons(operands.value, Cons.cons(operands.rest.value, Stella.NIL))));
 
       { int i = Stella.NULL_INTEGER;
         int iter000 = 2;
@@ -1327,7 +1439,7 @@ public class Symbol extends GeneralizedSymbol {
 
         for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
           i = iter000;
-          parenthesizedtree = Symbol.yieldArithmeticOperatorCallTree(operator, Stella.consList(Stella_Object.cons(parenthesizedtree, Stella_Object.cons(operands.nth(i), Stella.NIL))));
+          parenthesizedtree = Symbol.yieldArithmeticOperatorCallTree(operator, Cons.consList(Cons.cons(parenthesizedtree, Cons.cons(operands.nth(i), Stella.NIL))));
         }
       }
       return (parenthesizedtree);
@@ -1335,7 +1447,7 @@ public class Symbol extends GeneralizedSymbol {
   }
 
   public static Cons yieldArithmeticOperatorCallTree(Symbol operator, Cons operands) {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Stella_Object.cons(Stella.SGT_STELLA_NUMBER, Stella_Object.cons(operator, Stella_Object.cons(operands.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Cons.cons(Stella.SGT_STELLA_NUMBER, Cons.cons(operator, Cons.cons(operands.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))));
   }
 
   public static Cons yieldCastedTypecaseClauseTrees(Symbol testvariable, StandardObject clausetype, Cons clausetrees) {
@@ -1347,14 +1459,14 @@ public class Symbol extends GeneralizedSymbol {
 
       if (!needrealcastP) {
         Symbol.pushVariableBinding(testvariable, clausetype);
-        castedclausetrees = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VOID_SYS, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Cons.walkListOfStatements(clausetrees).concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
+        castedclausetrees = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VOID_SYS, Cons.cons(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.walkListOfStatements(clausetrees).concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
         Stella.popVariableBinding();
       }
       else {
         if (auxvariable != null) {
           Symbol.pushVariableBinding(auxvariable, testvariabletype);
         }
-        castedclausetrees = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(((auxvariable != null) ? Stella.list$(Stella_Object.cons(Stella_Object.cons(auxvariable, Stella_Object.cons(testvariable, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(testvariable, Stella_Object.cons(clausetype, Stella_Object.cons(auxvariable, Stella.NIL))), Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella_Object.cons(Stella_Object.cons(testvariable, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SAFE_CAST, Stella_Object.cons(Stella_Object.sysTree(Stella_Object.walkWithoutTypeTree(testvariable), clausetype, new Object[1]), Stella_Object.cons(Stella_Object.cons(clausetype, Stella.NIL), Stella.NIL)))), Stella.NIL)), Stella.NIL)), Stella_Object.cons(clausetrees.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella.NIL);
+        castedclausetrees = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(((auxvariable != null) ? Cons.list$(Cons.cons(Cons.cons(auxvariable, Cons.cons(testvariable, Stella.NIL)), Cons.cons(Cons.cons(testvariable, Cons.cons(clausetype, Cons.cons(auxvariable, Stella.NIL))), Cons.cons(Stella.NIL, Stella.NIL)))) : Cons.cons(Cons.cons(testvariable, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SAFE_CAST, Cons.cons(Stella_Object.sysTree(Stella_Object.walkWithoutTypeTree(testvariable), clausetype, new Object[1]), Cons.cons(Cons.cons(clausetype, Stella.NIL), Stella.NIL)))), Stella.NIL)), Stella.NIL)), Cons.cons(clausetrees.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella.NIL);
         if (auxvariable != null) {
           Stella.popVariableBinding();
         }
@@ -1368,7 +1480,7 @@ public class Symbol extends GeneralizedSymbol {
   }
 
   public static void pushSpecial(Symbol variable, Symbol oldvaluevariable) {
-    ((KeyValueList)(Stella.$SPECIALVARIABLESTACK$.get())).theKvList = Stella_Object.kvCons(variable, oldvaluevariable, ((KeyValueList)(Stella.$SPECIALVARIABLESTACK$.get())).theKvList);
+    ((KeyValueList)(Stella.$SPECIALVARIABLESTACK$.get())).theKvList = KvCons.kvCons(variable, oldvaluevariable, ((KeyValueList)(Stella.$SPECIALVARIABLESTACK$.get())).theKvList);
   }
 
   public static Cons walkADeclaration(Symbol variable, Stella_Object typetree, Stella_Object value, boolean inputparameterP) {
@@ -1396,10 +1508,10 @@ public class Symbol extends GeneralizedSymbol {
       }
       Symbol.pushVariableBinding(variable, targettype);
       if (inputparameterP) {
-        return (Stella_Object.cons(variable, Stella_Object.cons(targettype, Stella.NIL)));
+        return (Cons.cons(variable, Cons.cons(targettype, Stella.NIL)));
       }
       else {
-        return (Stella_Object.cons(Symbol.trueVariableName(variable), Stella_Object.cons(targettype, Stella_Object.cons(ovalue, Stella.NIL))));
+        return (Cons.cons(Symbol.trueVariableName(variable), Cons.cons(targettype, Cons.cons(ovalue, Stella.NIL))));
       }
     }
   }
@@ -1520,7 +1632,7 @@ public class Symbol extends GeneralizedSymbol {
       }
       if (aliases.length() < level) {
         alias = Stella.localGensym(variable.symbolName);
-        ((KeyValueList)(Stella.$LOCALGENSYMTABLE$.get())).insertAt(variable, aliases.concatenate(Stella_Object.cons(alias, Stella.NIL), Stella.NIL));
+        ((KeyValueList)(Stella.$LOCALGENSYMTABLE$.get())).insertAt(variable, aliases.concatenate(Cons.cons(alias, Stella.NIL), Stella.NIL));
         return (alias);
       }
       else {
@@ -1707,7 +1819,7 @@ public class Symbol extends GeneralizedSymbol {
           }
         }
       }
-      ((KeyValueList)(Stella.$LOCALVARIABLETYPETABLE$.get())).theKvList = Stella_Object.kvCons(variable, type, ((KeyValueList)(Stella.$LOCALVARIABLETYPETABLE$.get())).theKvList);
+      ((KeyValueList)(Stella.$LOCALVARIABLETYPETABLE$.get())).theKvList = KvCons.kvCons(variable, type, ((KeyValueList)(Stella.$LOCALVARIABLETYPETABLE$.get())).theKvList);
       Symbol.maybeRenameLocalVariable(variable);
     }
   }
@@ -1731,7 +1843,7 @@ public class Symbol extends GeneralizedSymbol {
         return (Symbol.yieldCollectIntoConsCode(collectvariable, intovariable, collecttree));
       }
       else if (intovariabletype == Stella.SGT_STELLA_UNKNOWN) {
-        return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NULLp, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CONS, Stella_Object.cons(collecttree, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_COND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NILp, Stella_Object.cons(intovariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(intovariable, Stella_Object.cons(Stella_Object.cons(collectvariable, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CONSp, Stella_Object.cons(intovariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ADD_CONS_TO_END_OF_CONS_LIST, Stella_Object.cons(intovariable, Stella_Object.cons(Stella_Object.cons(collectvariable, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_EMPTYp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CONS_LIST, Stella_Object.cons(intovariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CONS_LIST, Stella_Object.cons(intovariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ADD_CONS_TO_END_OF_CONS_LIST, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CONS_LIST, Stella_Object.cons(intovariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_REST, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CONS, Stella_Object.cons(Stella_Object.copyConsTree(collecttree), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_REST, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL));
+        return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NULLp, Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(collectvariable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CONS, Cons.cons(collecttree, Cons.cons(Cons.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NILp, Cons.cons(intovariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(intovariable, Cons.cons(Cons.cons(collectvariable, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CONSp, Cons.cons(intovariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ADD_CONS_TO_END_OF_CONS_LIST, Cons.cons(intovariable, Cons.cons(Cons.cons(collectvariable, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_EMPTYp, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CONS_LIST, Cons.cons(intovariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CONS_LIST, Cons.cons(intovariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ADD_CONS_TO_END_OF_CONS_LIST, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CONS_LIST, Cons.cons(intovariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_REST, Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CONS, Cons.cons(Stella_Object.copyConsTree(collecttree), Cons.cons(Cons.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(collectvariable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_REST, Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL));
       }
       else {
         { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
@@ -1758,11 +1870,11 @@ public class Symbol extends GeneralizedSymbol {
   }
 
   public static Cons yieldCollectIntoConsCode(Symbol collectvariable, Stella_Object intovariable, Stella_Object collecttree) {
-    return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NULLp, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CONS, Stella_Object.cons(collecttree, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NILp, Stella_Object.cons(intovariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(intovariable, Stella_Object.cons(Stella_Object.cons(collectvariable, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ADD_CONS_TO_END_OF_CONS_LIST, Stella_Object.cons(intovariable, Stella_Object.cons(Stella_Object.cons(collectvariable, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_REST, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CONS, Stella_Object.cons(Stella_Object.copyConsTree(collecttree), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_REST, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL));
+    return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NULLp, Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(collectvariable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CONS, Cons.cons(collecttree, Cons.cons(Cons.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NILp, Cons.cons(intovariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(intovariable, Cons.cons(Cons.cons(collectvariable, Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ADD_CONS_TO_END_OF_CONS_LIST, Cons.cons(intovariable, Cons.cons(Cons.cons(collectvariable, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_REST, Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CONS, Cons.cons(Stella_Object.copyConsTree(collecttree), Cons.cons(Cons.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(collectvariable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_REST, Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL));
   }
 
   public static Cons yieldCollectIntoListCode(Symbol collectvariable, Stella_Object intovariable, Stella_Object collecttree) {
-    return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NULLp, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CONS, Stella_Object.cons(collecttree, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_EMPTYp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CONS_LIST, Stella_Object.cons(intovariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CONS_LIST, Stella_Object.cons(intovariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ADD_CONS_TO_END_OF_CONS_LIST, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CONS_LIST, Stella_Object.cons(intovariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_REST, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CONS, Stella_Object.cons(Stella_Object.copyConsTree(collecttree), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_REST, Stella_Object.cons(collectvariable, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL));
+    return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NULLp, Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(collectvariable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CONS, Cons.cons(collecttree, Cons.cons(Cons.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_EMPTYp, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CONS_LIST, Cons.cons(intovariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CONS_LIST, Cons.cons(intovariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ADD_CONS_TO_END_OF_CONS_LIST, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CONS_LIST, Cons.cons(intovariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_REST, Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CONS, Cons.cons(Stella_Object.copyConsTree(collecttree), Cons.cons(Cons.cons(Stella.SYM_STELLA_NIL, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(collectvariable, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_REST, Cons.cons(collectvariable, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL));
   }
 
   public static Stella_Object extractOptionAndResidue(Symbol option, Cons tail, Object [] MV_returnarray) {
@@ -1792,7 +1904,7 @@ public class Symbol extends GeneralizedSymbol {
       if (Stella_Object.consP(parameterstree.value)) {
         parameterstree = ((Cons)(parameterstree.value));
         if (Stella_Object.symbolP(parameterstree.last())) {
-          existingslot = Stella_Class.lookupSlot(Surrogate.typeToClass(Stella_Object.typify(((Symbol)(parameterstree.last())))), name);
+          existingslot = Stella_Class.lookupSlot(StandardObject.typeSpecToClass(parameterstree.last().yieldTypeSpecifier()), name);
           if (existingslot != null) {
             if (Surrogate.subtypeOfMethodSlotP(Stella_Object.safePrimaryType(existingslot))) {
               { MethodSlot existingslot000 = ((MethodSlot)(existingslot));
@@ -1826,7 +1938,7 @@ public class Symbol extends GeneralizedSymbol {
     { String baseName = methodname.symbolName;
       String suffix = (Stella.allUpperCaseStringP(baseName) ? "-SETTER" : "-Setter");
 
-      return (GeneralizedSymbol.internDerivedSymbol(methodname, baseName + suffix));
+      return (Symbol.internDerivedSymbol(methodname, baseName + suffix));
     }
   }
 
@@ -1834,7 +1946,7 @@ public class Symbol extends GeneralizedSymbol {
     { Cons parsetree = null;
       MethodSlot method = null;
 
-      parsetree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(name, Stella_Object.cons(parametersandbody.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))));
+      parsetree = Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(name, Cons.cons(parametersandbody.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))));
       method = Cons.helpDefineMethodFromParseTree(parsetree, Native.stringify(parsetree), new Object[1]);
       return (method);
     }
@@ -1863,7 +1975,7 @@ public class Symbol extends GeneralizedSymbol {
           { BooleanWrapper match000 = ((BooleanWrapper)(match));
 
             if (BooleanWrapper.coerceWrappedBooleanToBoolean(match000)) {
-              return (Stella.consList(Stella_Object.cons(patternElement, Stella_Object.cons(datumElement, Stella.NIL))));
+              return (Cons.consList(Cons.cons(patternElement, Cons.cons(datumElement, Stella.NIL))));
             }
             else {
               return (Stella.NIL);
@@ -1872,7 +1984,7 @@ public class Symbol extends GeneralizedSymbol {
         }
         else {
           if (match != null) {
-            return (Stella.consList(Stella_Object.cons(patternElement, Stella_Object.cons(match, Stella.NIL))));
+            return (Cons.consList(Cons.cons(patternElement, Cons.cons(match, Stella.NIL))));
           }
           else {
             return (Stella.NIL);
@@ -1883,9 +1995,9 @@ public class Symbol extends GeneralizedSymbol {
   }
 
   static Stella_Object defineTimeComparison(Symbol name, Symbol operator, Symbol errorP) {
-    { Cons otherwiseClause = ((errorP == Stella.SYM_STELLA_TRUE) ? Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SIGNAL, Stella_Object.cons(Stella.SYM_STELLA_INCOMPATIBLE_QUANTITY_EXCEPTION, Stella_Object.cons(StringWrapper.wrapString("Can't compare calendar date "), Stella_Object.cons(Stella.SYM_STELLA_T1, Stella_Object.cons(StringWrapper.wrapString(" with object "), Stella_Object.cons(Stella.SYM_STELLA_T2, Stella_Object.cons(Stella.NIL, Stella.NIL)))))))) : Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_FALSE, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+    { Cons otherwiseClause = ((errorP == Stella.SYM_STELLA_TRUE) ? Cons.list$(Cons.cons(Stella.SYM_STELLA_SIGNAL, Cons.cons(Stella.SYM_STELLA_INCOMPATIBLE_QUANTITY_EXCEPTION, Cons.cons(StringWrapper.wrapString("Can't compare calendar date "), Cons.cons(Stella.SYM_STELLA_T1, Cons.cons(StringWrapper.wrapString(" with object "), Cons.cons(Stella.SYM_STELLA_T2, Cons.cons(Stella.NIL, Stella.NIL)))))))) : Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_FALSE, Cons.cons(Stella.NIL, Stella.NIL)))));
 
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella_Object.cons(name, Stella_Object.cons(Stella.SYM_STELLA_BOOLEAN, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_T1, Stella_Object.cons(Stella.SYM_STELLA_CALENDAR_DATE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_T2, Stella_Object.cons(Stella.SYM_STELLA_OBJECT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_TYPECASE, Stella_Object.cons(Stella.SYM_STELLA_T2, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CALENDAR_DATE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_e, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_MODIFIED_JULIAN_DAY, Stella_Object.cons(Stella.SYM_STELLA_T1, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_MODIFIED_JULIAN_DAY, Stella_Object.cons(Stella.SYM_STELLA_T2, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella_Object.cons(operator, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_TIME_MILLIS, Stella_Object.cons(Stella.SYM_STELLA_T1, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_TIME_MILLIS, Stella_Object.cons(Stella.SYM_STELLA_T2, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella_Object.cons(operator, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_MODIFIED_JULIAN_DAY, Stella_Object.cons(Stella.SYM_STELLA_T1, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_MODIFIED_JULIAN_DAY, Stella_Object.cons(Stella.SYM_STELLA_T2, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Object.cons(Cons.copyConsList(otherwiseClause), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella_Object.cons(name, Stella_Object.cons(Stella.SYM_STELLA_BOOLEAN, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_T1, Stella_Object.cons(Stella.SYM_STELLA_TIME_DURATION, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_T2, Stella_Object.cons(Stella.SYM_STELLA_OBJECT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_TYPECASE, Stella_Object.cons(Stella.SYM_STELLA_T2, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_TIME_DURATION, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_e, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DAYS, Stella_Object.cons(Stella.SYM_STELLA_T1, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DAYS, Stella_Object.cons(Stella.SYM_STELLA_T2, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella_Object.cons(operator, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_MILLIS, Stella_Object.cons(Stella.SYM_STELLA_T1, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_MILLIS, Stella_Object.cons(Stella.SYM_STELLA_T2, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella_Object.cons(operator, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DAYS, Stella_Object.cons(Stella.SYM_STELLA_T1, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DAYS, Stella_Object.cons(Stella.SYM_STELLA_T2, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Object.cons(Cons.copyConsList(otherwiseClause), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Cons.cons(name, Cons.cons(Stella.SYM_STELLA_BOOLEAN, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_T1, Cons.cons(Stella.SYM_STELLA_CALENDAR_DATE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_T2, Cons.cons(Stella.SYM_STELLA_OBJECT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_TYPECASE, Cons.cons(Stella.SYM_STELLA_T2, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CALENDAR_DATE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MODIFIED_JULIAN_DAY, Cons.cons(Stella.SYM_STELLA_T1, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MODIFIED_JULIAN_DAY, Cons.cons(Stella.SYM_STELLA_T2, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.cons(operator, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_TIME_MILLIS, Cons.cons(Stella.SYM_STELLA_T1, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_TIME_MILLIS, Cons.cons(Stella.SYM_STELLA_T2, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.cons(operator, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MODIFIED_JULIAN_DAY, Cons.cons(Stella.SYM_STELLA_T1, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MODIFIED_JULIAN_DAY, Cons.cons(Stella.SYM_STELLA_T2, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.copyConsList(otherwiseClause), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Cons.cons(name, Cons.cons(Stella.SYM_STELLA_BOOLEAN, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_T1, Cons.cons(Stella.SYM_STELLA_TIME_DURATION, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_T2, Cons.cons(Stella.SYM_STELLA_OBJECT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_TYPECASE, Cons.cons(Stella.SYM_STELLA_T2, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_TIME_DURATION, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DAYS, Cons.cons(Stella.SYM_STELLA_T1, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DAYS, Cons.cons(Stella.SYM_STELLA_T2, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.cons(operator, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MILLIS, Cons.cons(Stella.SYM_STELLA_T1, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MILLIS, Cons.cons(Stella.SYM_STELLA_T2, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.cons(operator, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DAYS, Cons.cons(Stella.SYM_STELLA_T1, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DAYS, Cons.cons(Stella.SYM_STELLA_T2, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.copyConsList(otherwiseClause), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))));
     }
   }
 
@@ -1999,7 +2111,7 @@ public class Symbol extends GeneralizedSymbol {
                   slot.slotExternalP) {
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(slot, Stella.NIL);
+                    collect000 = Cons.cons(slot, Stella.NIL);
                     if (slots == Stella.NIL) {
                       slots = collect000;
                     }
@@ -2010,7 +2122,7 @@ public class Symbol extends GeneralizedSymbol {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(slot, Stella.NIL);
+                    collect000.rest = Cons.cons(slot, Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -2049,10 +2161,10 @@ public class Symbol extends GeneralizedSymbol {
       MethodSlot.incorporateFirstInputParameter(newmethod);
       if (returntypes == Stella.NIL) {
         if (options.lookup(Stella.KWD_TYPE) != null) {
-          returntypes = Stella_Object.cons(options.lookup(Stella.KWD_TYPE), Stella.NIL);
+          returntypes = Cons.cons(options.lookup(Stella.KWD_TYPE), Stella.NIL);
         }
         else if (options.lookup(Stella.KWD_RETURN_TYPES) != null) {
-          returntypes = Stella_Object.cons(options.lookup(Stella.KWD_RETURN_TYPES), Stella.NIL);
+          returntypes = Cons.cons(options.lookup(Stella.KWD_RETURN_TYPES), Stella.NIL);
         }
       }
       { StandardObject typespec = ((returntypes == Stella.NIL) ? Stella.SGT_STELLA_VOID : ((StandardObject)(returntypes.value.yieldTypeSpecifier())));
@@ -2076,7 +2188,7 @@ public class Symbol extends GeneralizedSymbol {
           ts = iter000.value;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(ts.yieldTypeSpecifier(), Stella.NIL);
+              collect000 = Cons.cons(ts.yieldTypeSpecifier(), Stella.NIL);
               if (into000.theConsList == Stella.NIL) {
                 into000.theConsList = collect000;
               }
@@ -2087,7 +2199,7 @@ public class Symbol extends GeneralizedSymbol {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(ts.yieldTypeSpecifier(), Stella.NIL);
+              collect000.rest = Cons.cons(ts.yieldTypeSpecifier(), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -2320,7 +2432,7 @@ public class Symbol extends GeneralizedSymbol {
                     {
                       Stella.STANDARD_WARNING.nativeStream.println();
                       Stella.STANDARD_WARNING.nativeStream.println(" Skipping invalid slot option `" + Stella_Object.deUglifyParseTree(key) + "'");
-                      Stella.STANDARD_WARNING.nativeStream.println("in the definition of slot `" + Stella.internSymbolInModule(owner.symbolName, ((Module)(owner.homeContext)), true) + "'.`" + Stella_Object.deUglifyParseTree(name) + "'.");
+                      Stella.STANDARD_WARNING.nativeStream.println("in the definition of slot `" + Symbol.internSymbolInModule(owner.symbolName, ((Module)(owner.homeContext)), true) + "'.`" + Stella_Object.deUglifyParseTree(name) + "'.");
                     }
 ;
                   }
@@ -2388,7 +2500,7 @@ public class Symbol extends GeneralizedSymbol {
   }
 
   public static void printSymbol(Symbol self, java.io.PrintStream stream) {
-    { boolean visibleP = self == Stella.lookupSymbolInModule(self.symbolName, ((Module)(Stella.$MODULE$.get())), false);
+    { boolean visibleP = self == Symbol.lookupSymbolInModule(self.symbolName, ((Module)(Stella.$MODULE$.get())), false);
       Module module = ((Module)(self.homeContext));
 
       if (!visibleP) {
@@ -2447,10 +2559,10 @@ public class Symbol extends GeneralizedSymbol {
       }
       if (value != null) {
         if (vplist == Stella.NIL) {
-          vplist = Stella_Object.cons(null, Stella.NIL);
+          vplist = Cons.cons(null, Stella.NIL);
           symbol.symbolValueAndPlist = vplist;
         }
-        vplist.rest = Stella_Object.cons(key, Stella_Object.cons(value, vplist.rest));
+        vplist.rest = Cons.cons(key, Cons.cons(value, vplist.rest));
       }
       return (value);
     }
@@ -2479,7 +2591,7 @@ public class Symbol extends GeneralizedSymbol {
     { Cons vplist = symbol.symbolValueAndPlist;
 
       if (vplist == Stella.NIL) {
-        vplist = Stella_Object.cons(null, Stella.NIL);
+        vplist = Cons.cons(null, Stella.NIL);
         symbol.symbolValueAndPlist = vplist;
       }
       return (vplist.rest = plist);
@@ -2501,7 +2613,7 @@ public class Symbol extends GeneralizedSymbol {
     { Cons vplist = symbol.symbolValueAndPlist;
 
       if (vplist == Stella.NIL) {
-        vplist = Stella_Object.cons(null, Stella.NIL);
+        vplist = Cons.cons(null, Stella.NIL);
         symbol.symbolValueAndPlist = vplist;
       }
       return (vplist.value = value);
@@ -2524,7 +2636,7 @@ public class Symbol extends GeneralizedSymbol {
    * @return boolean
    */
   public static boolean visibleSymbolP(Symbol self) {
-    return (self == Stella.lookupSymbolInModule(self.symbolName, ((Module)(Stella.$MODULE$.get())), false));
+    return (self == Symbol.lookupSymbolInModule(self.symbolName, ((Module)(Stella.$MODULE$.get())), false));
   }
 
   /** Converts 'self' into a surrogate (same semantics
@@ -2548,7 +2660,7 @@ public class Symbol extends GeneralizedSymbol {
    * @return Surrogate
    */
   public static Surrogate symbolToSurrogate(Symbol self) {
-    { Surrogate surrogate = Stella.lookupSurrogateInModule(self.symbolName, ((Module)(self.homeContext)), false);
+    { Surrogate surrogate = Surrogate.lookupSurrogateInModule(self.symbolName, ((Module)(self.homeContext)), false);
 
       if ((surrogate != null) &&
           (surrogate.surrogateValue != null)) {
@@ -2563,7 +2675,7 @@ public class Symbol extends GeneralizedSymbol {
    * @return Surrogate
    */
   public static Surrogate symbolToType(Symbol self) {
-    return (Stella.internSurrogateInModule(self.symbolName, ((Module)(self.homeContext)), true));
+    return (Surrogate.internSurrogateInModule(self.symbolName, ((Module)(self.homeContext)), true));
   }
 
   public static boolean symbolCommonLispP(Symbol self) {
@@ -2577,7 +2689,7 @@ public class Symbol extends GeneralizedSymbol {
     { ExtensibleSymbolArray symbolarray = Stella.selectSymbolArray(Stella.SYMBOL_SYM);
       StringToIntegerHashTable offsettable = ((((Module)(self.homeContext)) != null) ? Module.selectSymbolOffsetTable(((Module)(self.homeContext)), Stella.SYMBOL_SYM) : ((StringToIntegerHashTable)(null)));
       int symbolid = self.symbolId;
-      Symbol realsymbol = Stella.getSymFromOffset(symbolid);
+      Symbol realsymbol = Symbol.getSymFromOffset(symbolid);
 
       if (self == realsymbol) {
         ExtensibleSymbolArray.freeSymbolOffset(symbolarray, symbolid);
@@ -2601,7 +2713,7 @@ public class Symbol extends GeneralizedSymbol {
    */
   public static Symbol safeImportSymbol(Symbol symbol, Module module) {
     { String name = symbol.symbolName;
-      Symbol modulesymbol = Stella.lookupSymbolInModule(name, module, false);
+      Symbol modulesymbol = Symbol.lookupSymbolInModule(name, module, false);
 
       if ((modulesymbol != null) ||
           (((Module)(symbol.homeContext)) == null)) {
@@ -2623,7 +2735,7 @@ public class Symbol extends GeneralizedSymbol {
    */
   public static Symbol importSymbol(Symbol symbol, Module module) {
     { String name = symbol.symbolName;
-      Symbol modulesymbol = Stella.lookupSymbolInModule(name, module, true);
+      Symbol modulesymbol = Symbol.lookupSymbolInModule(name, module, true);
 
       if (((Module)(symbol.homeContext)) == null) {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -2659,12 +2771,12 @@ public class Symbol extends GeneralizedSymbol {
     }
     if ((body.length() == 1) &&
         Stella_Object.isaP(body.value, Stella.SGT_STELLA_STRING_WRAPPER)) {
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SIGNAL_EXCEPTION, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NEW, Stella_Object.cons(type, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_MESSAGE, Stella_Object.cons(body.value, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_SIGNAL_EXCEPTION, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NEW, Cons.cons(type, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_MESSAGE, Cons.cons(body.value, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))));
     }
     else {
       { Symbol streamvar = Stella.localGensym("STREAM");
 
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(streamvar, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NEW, Stella_Object.cons(Stella.SYM_STELLA_OUTPUT_STRING_STREAM, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PRINT_STREAM, Stella_Object.cons(streamvar, Stella_Object.cons(Cons.formatMessageArguments(body, false).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SIGNAL_EXCEPTION, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NEW, Stella_Object.cons(type, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_MESSAGE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_STRING, Stella_Object.cons(streamvar, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.cons(streamvar, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NEW, Cons.cons(Stella.SYM_STELLA_OUTPUT_STRING_STREAM, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PRINT_STREAM, Cons.cons(streamvar, Cons.cons(Cons.formatMessageArguments(body, false).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SIGNAL_EXCEPTION, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NEW, Cons.cons(type, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_MESSAGE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_STRING, Cons.cons(streamvar, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))));
       }
     }
   }

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -74,12 +74,12 @@ public class SubsumptionInferenceLevel extends BacktrackingInferenceLevel {
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             superrelation = ((NamedDescription)(iter000.value));
             { Stella_Object supertype = null;
-              Cons iter001 = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_TYPE, Stella.consList(Stella_Object.cons(superrelation, Stella_Object.cons(self, Stella.NIL))));
+              Cons iter001 = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_TYPE, Cons.consList(Cons.cons(superrelation, Cons.cons(self, Stella.NIL))));
 
               for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                 supertype = iter001.value;
                 if (!valuetypes.memberP(supertype)) {
-                  valuetypes = Stella_Object.cons(supertype, valuetypes);
+                  valuetypes = Cons.cons(supertype, valuetypes);
                 }
               }
             }
@@ -100,11 +100,11 @@ public class SubsumptionInferenceLevel extends BacktrackingInferenceLevel {
 
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             superdescription = ((NamedDescription)(iter000.value));
-            { Stella_Object supermaxcardinality = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_MAX_CARDINALITY, Stella.consList(Stella_Object.cons(superdescription, Stella_Object.cons(self, Stella.NIL)))).value;
+            { Stella_Object supermaxcardinality = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_MAX_CARDINALITY, Cons.consList(Cons.cons(superdescription, Cons.cons(self, Stella.NIL)))).value;
 
               if (supermaxcardinality != null) {
                 if (maxcardinality != Stella.NULL_INTEGER) {
-                  maxcardinality = Stella.min(maxcardinality, ((IntegerWrapper)(supermaxcardinality)).wrapperValue);
+                  maxcardinality = Stella.integer_min(maxcardinality, ((IntegerWrapper)(supermaxcardinality)).wrapperValue);
                 }
                 else {
                   maxcardinality = ((IntegerWrapper)(supermaxcardinality)).wrapperValue;
@@ -128,10 +128,10 @@ public class SubsumptionInferenceLevel extends BacktrackingInferenceLevel {
 
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             subdescription = ((NamedDescription)(iter000.value));
-            { Stella_Object submincardinality = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_MIN_CARDINALITY, Stella.consList(Stella_Object.cons(subdescription, Stella_Object.cons(self, Stella.NIL)))).value;
+            { Stella_Object submincardinality = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_MIN_CARDINALITY, Cons.consList(Cons.cons(subdescription, Cons.cons(self, Stella.NIL)))).value;
 
               if (submincardinality != null) {
-                mincardinality = Stella.max(mincardinality, ((IntegerWrapper)(submincardinality)).wrapperValue);
+                mincardinality = Stella.integer_max(mincardinality, ((IntegerWrapper)(submincardinality)).wrapperValue);
               }
             }
           }
@@ -173,7 +173,7 @@ public class SubsumptionInferenceLevel extends BacktrackingInferenceLevel {
             p = ((Proposition)(iter000.value));
             { Stella_Object value000 = Logic.valueOf((p.arguments.theArray)[(p.arguments.length() - 1)]);
 
-              values = (values.memberP(value000) ? values : Stella_Object.cons(value000, values));
+              values = (values.memberP(value000) ? values : Cons.cons(value000, values));
             }
           }
         }
@@ -192,7 +192,7 @@ public class SubsumptionInferenceLevel extends BacktrackingInferenceLevel {
 
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             m = iter000.value;
-            members = Stella_Object.cons(m, members);
+            members = Cons.cons(m, members);
           }
         }
         return (members);

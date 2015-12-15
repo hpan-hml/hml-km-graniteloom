@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,123 +52,124 @@ import edu.isi.stella.*;
 public class _StartupDescriptions {
   static void helpStartupDescriptions1() {
     {
-      Logic.SGT_STELLA_METHOD_SLOT = ((Surrogate)(Stella.internRigidSymbolWrtModule("METHOD-SLOT", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.SYM_STELLA_ANY_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("ANY-VALUE", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_pX1 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X1", null, 0)));
-      Logic.SYM_LOGIC_pX2 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X2", null, 0)));
-      Logic.SYM_LOGIC_pX3 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X3", null, 0)));
-      Logic.SYM_LOGIC_pX4 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X4", null, 0)));
-      Logic.SYM_LOGIC_pX5 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X5", null, 0)));
-      Logic.SYM_LOGIC_pX6 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X6", null, 0)));
-      Logic.SYM_LOGIC_pX7 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X7", null, 0)));
-      Logic.SYM_LOGIC_pX8 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X8", null, 0)));
-      Logic.SYM_LOGIC_pX9 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X9", null, 0)));
-      Logic.SYM_LOGIC_pX10 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X10", null, 0)));
-      Logic.SYM_LOGIC_pX11 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X11", null, 0)));
-      Logic.SYM_LOGIC_pX12 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X12", null, 0)));
-      Logic.SYM_LOGIC_pX13 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X13", null, 0)));
-      Logic.SYM_LOGIC_pX14 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X14", null, 0)));
-      Logic.SYM_LOGIC_pX15 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X15", null, 0)));
-      Logic.SYM_LOGIC_pX16 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X16", null, 0)));
-      Logic.SYM_LOGIC_pX17 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X17", null, 0)));
-      Logic.SYM_LOGIC_pX18 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X18", null, 0)));
-      Logic.SYM_LOGIC_pX19 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X19", null, 0)));
-      Logic.SYM_LOGIC_pX20 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X20", null, 0)));
-      Logic.SYM_LOGIC_pX21 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X21", null, 0)));
-      Logic.SYM_LOGIC_pX22 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X22", null, 0)));
-      Logic.SYM_LOGIC_pX23 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X23", null, 0)));
-      Logic.SYM_LOGIC_pX24 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X24", null, 0)));
-      Logic.SYM_LOGIC_pX25 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X25", null, 0)));
-      Logic.SYM_LOGIC_pX26 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X26", null, 0)));
-      Logic.SYM_LOGIC_pX27 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X27", null, 0)));
-      Logic.SYM_LOGIC_pX28 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X28", null, 0)));
-      Logic.SYM_LOGIC_pX29 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X29", null, 0)));
-      Logic.SYM_LOGIC_pX30 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X30", null, 0)));
-      Logic.SYM_LOGIC_pX31 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X31", null, 0)));
-      Logic.SYM_LOGIC_pX32 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X32", null, 0)));
-      Logic.SYM_LOGIC_pX33 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X33", null, 0)));
-      Logic.SYM_LOGIC_pX34 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X34", null, 0)));
-      Logic.SYM_LOGIC_pX35 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X35", null, 0)));
-      Logic.SYM_LOGIC_pX36 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X36", null, 0)));
-      Logic.SYM_LOGIC_pX37 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X37", null, 0)));
-      Logic.SYM_LOGIC_pX38 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X38", null, 0)));
-      Logic.SYM_LOGIC_pX39 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X39", null, 0)));
-      Logic.SYM_LOGIC_pX40 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X40", null, 0)));
-      Logic.SYM_LOGIC_pX41 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X41", null, 0)));
-      Logic.SYM_LOGIC_pX42 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X42", null, 0)));
-      Logic.SYM_LOGIC_pX43 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X43", null, 0)));
-      Logic.SYM_LOGIC_pX44 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X44", null, 0)));
-      Logic.SYM_LOGIC_pX45 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X45", null, 0)));
-      Logic.SYM_LOGIC_pX46 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X46", null, 0)));
-      Logic.SYM_LOGIC_pX47 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X47", null, 0)));
-      Logic.SYM_LOGIC_pX48 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X48", null, 0)));
-      Logic.SYM_LOGIC_pX49 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X49", null, 0)));
-      Logic.SYM_LOGIC_pX50 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X50", null, 0)));
-      Logic.SYM_LOGIC_pX51 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X51", null, 0)));
-      Logic.SYM_LOGIC_pX52 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X52", null, 0)));
-      Logic.SYM_LOGIC_pX53 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X53", null, 0)));
-      Logic.SYM_LOGIC_pX54 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X54", null, 0)));
-      Logic.SYM_LOGIC_pX55 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X55", null, 0)));
-      Logic.SYM_LOGIC_pX56 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X56", null, 0)));
-      Logic.SYM_LOGIC_pX57 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X57", null, 0)));
-      Logic.SYM_LOGIC_pX58 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X58", null, 0)));
+      Logic.SGT_STELLA_METHOD_SLOT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-SLOT", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.SYM_STELLA_ANY_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ANY-VALUE", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_pX1 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X1", null, 0)));
+      Logic.SYM_LOGIC_pX2 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X2", null, 0)));
+      Logic.SYM_LOGIC_pX3 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X3", null, 0)));
+      Logic.SYM_LOGIC_pX4 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X4", null, 0)));
+      Logic.SYM_LOGIC_pX5 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X5", null, 0)));
+      Logic.SYM_LOGIC_pX6 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X6", null, 0)));
+      Logic.SYM_LOGIC_pX7 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X7", null, 0)));
+      Logic.SYM_LOGIC_pX8 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X8", null, 0)));
+      Logic.SYM_LOGIC_pX9 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X9", null, 0)));
+      Logic.SYM_LOGIC_pX10 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X10", null, 0)));
+      Logic.SYM_LOGIC_pX11 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X11", null, 0)));
+      Logic.SYM_LOGIC_pX12 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X12", null, 0)));
+      Logic.SYM_LOGIC_pX13 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X13", null, 0)));
+      Logic.SYM_LOGIC_pX14 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X14", null, 0)));
+      Logic.SYM_LOGIC_pX15 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X15", null, 0)));
+      Logic.SYM_LOGIC_pX16 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X16", null, 0)));
+      Logic.SYM_LOGIC_pX17 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X17", null, 0)));
+      Logic.SYM_LOGIC_pX18 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X18", null, 0)));
+      Logic.SYM_LOGIC_pX19 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X19", null, 0)));
+      Logic.SYM_LOGIC_pX20 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X20", null, 0)));
+      Logic.SYM_LOGIC_pX21 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X21", null, 0)));
+      Logic.SYM_LOGIC_pX22 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X22", null, 0)));
+      Logic.SYM_LOGIC_pX23 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X23", null, 0)));
+      Logic.SYM_LOGIC_pX24 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X24", null, 0)));
+      Logic.SYM_LOGIC_pX25 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X25", null, 0)));
+      Logic.SYM_LOGIC_pX26 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X26", null, 0)));
+      Logic.SYM_LOGIC_pX27 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X27", null, 0)));
+      Logic.SYM_LOGIC_pX28 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X28", null, 0)));
+      Logic.SYM_LOGIC_pX29 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X29", null, 0)));
+      Logic.SYM_LOGIC_pX30 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X30", null, 0)));
+      Logic.SYM_LOGIC_pX31 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X31", null, 0)));
+      Logic.SYM_LOGIC_pX32 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X32", null, 0)));
+      Logic.SYM_LOGIC_pX33 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X33", null, 0)));
+      Logic.SYM_LOGIC_pX34 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X34", null, 0)));
+      Logic.SYM_LOGIC_pX35 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X35", null, 0)));
+      Logic.SYM_LOGIC_pX36 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X36", null, 0)));
+      Logic.SYM_LOGIC_pX37 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X37", null, 0)));
+      Logic.SYM_LOGIC_pX38 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X38", null, 0)));
+      Logic.SYM_LOGIC_pX39 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X39", null, 0)));
+      Logic.SYM_LOGIC_pX40 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X40", null, 0)));
+      Logic.SYM_LOGIC_pX41 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X41", null, 0)));
+      Logic.SYM_LOGIC_pX42 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X42", null, 0)));
+      Logic.SYM_LOGIC_pX43 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X43", null, 0)));
+      Logic.SYM_LOGIC_pX44 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X44", null, 0)));
+      Logic.SYM_LOGIC_pX45 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X45", null, 0)));
+      Logic.SYM_LOGIC_pX46 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X46", null, 0)));
+      Logic.SYM_LOGIC_pX47 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X47", null, 0)));
+      Logic.SYM_LOGIC_pX48 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X48", null, 0)));
+      Logic.SYM_LOGIC_pX49 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X49", null, 0)));
+      Logic.SYM_LOGIC_pX50 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X50", null, 0)));
+      Logic.SYM_LOGIC_pX51 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X51", null, 0)));
+      Logic.SYM_LOGIC_pX52 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X52", null, 0)));
+      Logic.SYM_LOGIC_pX53 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X53", null, 0)));
+      Logic.SYM_LOGIC_pX54 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X54", null, 0)));
+      Logic.SYM_LOGIC_pX55 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X55", null, 0)));
+      Logic.SYM_LOGIC_pX56 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X56", null, 0)));
+      Logic.SYM_LOGIC_pX57 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X57", null, 0)));
+      Logic.SYM_LOGIC_pX58 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X58", null, 0)));
     }
   }
 
   static void helpStartupDescriptions2() {
     {
-      Logic.SYM_LOGIC_pX59 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X59", null, 0)));
-      Logic.SYM_LOGIC_pX60 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X60", null, 0)));
-      Logic.SYM_LOGIC_pX61 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X61", null, 0)));
-      Logic.SYM_LOGIC_pX62 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X62", null, 0)));
-      Logic.SYM_LOGIC_pX63 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X63", null, 0)));
-      Logic.SYM_LOGIC_pX64 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X64", null, 0)));
-      Logic.SYM_LOGIC_pX65 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X65", null, 0)));
-      Logic.SYM_LOGIC_pX66 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X66", null, 0)));
-      Logic.SYM_LOGIC_pX67 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X67", null, 0)));
-      Logic.SYM_LOGIC_pX68 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X68", null, 0)));
-      Logic.SYM_LOGIC_pX69 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X69", null, 0)));
-      Logic.SYM_LOGIC_pX70 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X70", null, 0)));
-      Logic.SYM_LOGIC_pX71 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X71", null, 0)));
-      Logic.SYM_LOGIC_pX72 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X72", null, 0)));
-      Logic.SYM_LOGIC_pX73 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X73", null, 0)));
-      Logic.SYM_LOGIC_pX74 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X74", null, 0)));
-      Logic.SYM_LOGIC_pX75 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X75", null, 0)));
-      Logic.SYM_LOGIC_pX76 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X76", null, 0)));
-      Logic.SYM_LOGIC_pX77 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X77", null, 0)));
-      Logic.SYM_LOGIC_pX78 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X78", null, 0)));
-      Logic.SYM_LOGIC_pX79 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X79", null, 0)));
-      Logic.SYM_LOGIC_pX80 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X80", null, 0)));
-      Logic.SYM_LOGIC_pX81 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X81", null, 0)));
-      Logic.SYM_LOGIC_pX82 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X82", null, 0)));
-      Logic.SYM_LOGIC_pX83 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X83", null, 0)));
-      Logic.SYM_LOGIC_pX84 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X84", null, 0)));
-      Logic.SYM_LOGIC_pX85 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X85", null, 0)));
-      Logic.SYM_LOGIC_pX86 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X86", null, 0)));
-      Logic.SYM_LOGIC_pX87 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X87", null, 0)));
-      Logic.SYM_LOGIC_pX88 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X88", null, 0)));
-      Logic.SYM_LOGIC_pX89 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X89", null, 0)));
-      Logic.SYM_LOGIC_pX90 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X90", null, 0)));
-      Logic.SYM_LOGIC_pX91 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X91", null, 0)));
-      Logic.SYM_LOGIC_pX92 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X92", null, 0)));
-      Logic.SYM_LOGIC_pX93 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X93", null, 0)));
-      Logic.SYM_LOGIC_pX94 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X94", null, 0)));
-      Logic.SYM_LOGIC_pX95 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X95", null, 0)));
-      Logic.SYM_LOGIC_pX96 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X96", null, 0)));
-      Logic.SYM_LOGIC_pX97 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X97", null, 0)));
-      Logic.SYM_LOGIC_pX98 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X98", null, 0)));
-      Logic.SYM_LOGIC_pX99 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X99", null, 0)));
-      Logic.SYM_LOGIC_pX100 = ((Symbol)(Stella.internRigidSymbolWrtModule("?X100", null, 0)));
-      Logic.SYM_LOGIC_ENTITY_MAPPING = ((Symbol)(Stella.internRigidSymbolWrtModule("ENTITY-MAPPING", null, 0)));
-      Logic.SGT_STELLA_LIST = ((Surrogate)(Stella.internRigidSymbolWrtModule("LIST", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.SYM_LOGIC_EXTERNAL_VARIABLES = ((Symbol)(Stella.internRigidSymbolWrtModule("EXTERNAL-VARIABLES", null, 0)));
-      Logic.SGT_STELLA_PROPOSITIONdIF = ((Surrogate)(Stella.internRigidSymbolWrtModule("PROPOSITION.IF", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.SYM_LOGIC_VARIABLE_TYPE_TABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("VARIABLE-TYPE-TABLE", null, 0)));
-      Logic.SYM_LOGIC_UNDECLAREDp = ((Symbol)(Stella.internRigidSymbolWrtModule("UNDECLARED?", null, 0)));
-      Logic.SYM_LOGIC_pX = ((Symbol)(Stella.internRigidSymbolWrtModule("?X", null, 0)));
-      Logic.SYM_PL_KERNEL_KB_RELATION = ((Symbol)(Stella.internRigidSymbolWrtModule("RELATION", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.SYM_LOGIC_F_CALL_LIST_UNDEFINED_RELATIONS_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-CALL-LIST-UNDEFINED-RELATIONS-QUERY-000", null, 0)));
-      Logic.SYM_LOGIC_STARTUP_DESCRIPTIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-DESCRIPTIONS", null, 0)));
+      Logic.SYM_LOGIC_pX59 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X59", null, 0)));
+      Logic.SYM_LOGIC_pX60 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X60", null, 0)));
+      Logic.SYM_LOGIC_pX61 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X61", null, 0)));
+      Logic.SYM_LOGIC_pX62 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X62", null, 0)));
+      Logic.SYM_LOGIC_pX63 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X63", null, 0)));
+      Logic.SYM_LOGIC_pX64 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X64", null, 0)));
+      Logic.SYM_LOGIC_pX65 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X65", null, 0)));
+      Logic.SYM_LOGIC_pX66 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X66", null, 0)));
+      Logic.SYM_LOGIC_pX67 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X67", null, 0)));
+      Logic.SYM_LOGIC_pX68 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X68", null, 0)));
+      Logic.SYM_LOGIC_pX69 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X69", null, 0)));
+      Logic.SYM_LOGIC_pX70 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X70", null, 0)));
+      Logic.SYM_LOGIC_pX71 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X71", null, 0)));
+      Logic.SYM_LOGIC_pX72 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X72", null, 0)));
+      Logic.SYM_LOGIC_pX73 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X73", null, 0)));
+      Logic.SYM_LOGIC_pX74 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X74", null, 0)));
+      Logic.SYM_LOGIC_pX75 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X75", null, 0)));
+      Logic.SYM_LOGIC_pX76 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X76", null, 0)));
+      Logic.SYM_LOGIC_pX77 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X77", null, 0)));
+      Logic.SYM_LOGIC_pX78 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X78", null, 0)));
+      Logic.SYM_LOGIC_pX79 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X79", null, 0)));
+      Logic.SYM_LOGIC_pX80 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X80", null, 0)));
+      Logic.SYM_LOGIC_pX81 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X81", null, 0)));
+      Logic.SYM_LOGIC_pX82 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X82", null, 0)));
+      Logic.SYM_LOGIC_pX83 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X83", null, 0)));
+      Logic.SYM_LOGIC_pX84 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X84", null, 0)));
+      Logic.SYM_LOGIC_pX85 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X85", null, 0)));
+      Logic.SYM_LOGIC_pX86 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X86", null, 0)));
+      Logic.SYM_LOGIC_pX87 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X87", null, 0)));
+      Logic.SYM_LOGIC_pX88 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X88", null, 0)));
+      Logic.SYM_LOGIC_pX89 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X89", null, 0)));
+      Logic.SYM_LOGIC_pX90 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X90", null, 0)));
+      Logic.SYM_LOGIC_pX91 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X91", null, 0)));
+      Logic.SYM_LOGIC_pX92 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X92", null, 0)));
+      Logic.SYM_LOGIC_pX93 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X93", null, 0)));
+      Logic.SYM_LOGIC_pX94 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X94", null, 0)));
+      Logic.SYM_LOGIC_pX95 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X95", null, 0)));
+      Logic.SYM_LOGIC_pX96 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X96", null, 0)));
+      Logic.SYM_LOGIC_pX97 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X97", null, 0)));
+      Logic.SYM_LOGIC_pX98 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X98", null, 0)));
+      Logic.SYM_LOGIC_pX99 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X99", null, 0)));
+      Logic.SYM_LOGIC_pX100 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X100", null, 0)));
+      Logic.SGT_STELLA_LIST = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("LIST", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.SYM_LOGIC_EXTERNAL_VARIABLES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EXTERNAL-VARIABLES", null, 0)));
+      Logic.SGT_STELLA_PROPOSITIONdIF = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PROPOSITION.IF", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.KWD_HEAD = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("HEAD", null, 2)));
+      Logic.KWD_TOP_LEVEL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TOP-LEVEL", null, 2)));
+      Logic.SYM_LOGIC_VARIABLE_TYPE_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("VARIABLE-TYPE-TABLE", null, 0)));
+      Logic.SYM_LOGIC_UNDECLAREDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNDECLARED?", null, 0)));
+      Logic.SYM_LOGIC_pX = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?X", null, 0)));
+      Logic.SYM_PL_KERNEL_KB_RELATION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RELATION", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.SYM_LOGIC_F_CALL_LIST_UNDEFINED_RELATIONS_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-CALL-LIST-UNDEFINED-RELATIONS-QUERY-000", null, 0)));
+      Logic.SYM_LOGIC_STARTUP_DESCRIPTIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-DESCRIPTIONS", null, 0)));
     }
   }
 
@@ -208,15 +209,15 @@ public class _StartupDescriptions {
       Stella.defineFunctionObject("HELP-BUILD-QUANTIFIED-PROPOSITION", "(DEFUN (HELP-BUILD-QUANTIFIED-PROPOSITION (CONS OF SKOLEM) PROPOSITION PROPOSITION) ((TREE CONS) (CONVERTTYPESTOCONSTRAINTS? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "helpBuildQuantifiedProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), java.lang.Boolean.TYPE, Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("BUILD-QUANTIFIED-PROPOSITION", "(DEFUN (BUILD-QUANTIFIED-PROPOSITION (CONS OF SKOLEM) PROPOSITION PROPOSITION) ((TREE CONS) (CONVERTTYPESTOCONSTRAINTS? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "buildQuantifiedProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), java.lang.Boolean.TYPE, Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("COPY-CONS-LIST-TO-VARIABLES-VECTOR", "(DEFUN (COPY-CONS-LIST-TO-VARIABLES-VECTOR VARIABLES-VECTOR) ((CONSLIST CONS)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "copyConsListToVariablesVector", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
-      Stella.defineFunctionObject("EQUIVALENT-HOLDS-PROPOSITION?", "(DEFUN (EQUIVALENT-HOLDS-PROPOSITION? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "equivalentHoldsPropositionP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
-      Stella.defineFunctionObject("EQUIVALENT-COMMUTATIVE-PROPOSITIONS?", "(DEFUN (EQUIVALENT-COMMUTATIVE-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "equivalentCommutativePropositionsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
-      Stella.defineFunctionObject("EQUIVALENT-PROPOSITIONS?", "(DEFUN (EQUIVALENT-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "equivalentPropositionsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
-      Stella.defineFunctionObject("EQUIVALENT-FUNCTION-PROPOSITIONS?", "(DEFUN (EQUIVALENT-FUNCTION-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "equivalentFunctionPropositionsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
-      Stella.defineFunctionObject("EQUIVALENT-DESCRIPTIONS?", "(DEFUN (EQUIVALENT-DESCRIPTIONS? BOOLEAN) ((SELF DESCRIPTION) (OTHER DESCRIPTION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "equivalentDescriptionsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
+      Stella.defineFunctionObject("EQUIVALENT-HOLDS-PROPOSITION?", "(DEFUN (EQUIVALENT-HOLDS-PROPOSITION? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "equivalentHoldsPropositionP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.KeyValueMap")}), null);
+      Stella.defineFunctionObject("EQUIVALENT-COMMUTATIVE-PROPOSITIONS?", "(DEFUN (EQUIVALENT-COMMUTATIVE-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "equivalentCommutativePropositionsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.KeyValueMap")}), null);
+      Stella.defineFunctionObject("EQUIVALENT-PROPOSITIONS?", "(DEFUN (EQUIVALENT-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "equivalentPropositionsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.KeyValueMap")}), null);
+      Stella.defineFunctionObject("EQUIVALENT-FUNCTION-PROPOSITIONS?", "(DEFUN (EQUIVALENT-FUNCTION-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "equivalentFunctionPropositionsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.KeyValueMap")}), null);
+      Stella.defineFunctionObject("EQUIVALENT-DESCRIPTIONS?", "(DEFUN (EQUIVALENT-DESCRIPTIONS? BOOLEAN) ((SELF DESCRIPTION) (OTHER DESCRIPTION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "equivalentDescriptionsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.KeyValueMap")}), null);
       Stella.defineFunctionObject("EQUIVALENT-ENUMERATIONS?", "(DEFUN (EQUIVALENT-ENUMERATIONS? BOOLEAN) ((SELF COLLECTION) (OTHER COLLECTION)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "equivalentEnumerationsP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Collection"), Native.find_java_class("edu.isi.stella.Collection")}), null);
-      Stella.defineFunctionObject("EQUIVALENT-FORMULAE?", "(DEFUN (EQUIVALENT-FORMULAE? BOOLEAN) ((SELF OBJECT) (OTHER OBJECT) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "equivalentFormulaeP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
+      Stella.defineFunctionObject("EQUIVALENT-FORMULAE?", "(DEFUN (EQUIVALENT-FORMULAE? BOOLEAN) ((SELF OBJECT) (OTHER OBJECT) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "equivalentFormulaeP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.KeyValueMap")}), null);
       Stella.defineFunctionObject("SAME-AND-UNIQUE-ARGUMENTS?", "(DEFUN (SAME-AND-UNIQUE-ARGUMENTS? BOOLEAN) ((VARIABLES VARIABLES-VECTOR) (ARGUMENTS VECTOR)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "sameAndUniqueArgumentsP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Vector"), Native.find_java_class("edu.isi.stella.Vector")}), null);
-      Stella.defineFunctionObject("UNIFY-PROPOSITIONS?", "(DEFUN (UNIFY-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "unifyPropositionsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
+      Stella.defineFunctionObject("UNIFY-PROPOSITIONS?", "(DEFUN (UNIFY-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "unifyPropositionsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.KeyValueMap")}), null);
       Stella.defineFunctionObject("NAMED-DESCRIPTION?", "(DEFUN (NAMED-DESCRIPTION? BOOLEAN) ((SELF DESCRIPTION)) :DOCUMENTATION \"Return TRUE if 'self' is the description of a named class or relation.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Description", "namedDescriptionP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
       Stella.defineMethodObject("(DEFMETHOD (FIND-DUPLICATE-NAMED-DESCRIPTION LOGIC-OBJECT) ((SELF DESCRIPTION)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "findDuplicateNamedDescription", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("FIND-DUPLICATE-COMPLEX-DESCRIPTION", "(DEFUN (FIND-DUPLICATE-COMPLEX-DESCRIPTION DESCRIPTION) ((SELF DESCRIPTION)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "findDuplicateComplexDescription", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
@@ -229,11 +230,11 @@ public class _StartupDescriptions {
       Stella.defineFunctionObject("COLLAPSE-VALUE-OF-CHAINS-FOR-IO-VARIABLES", "(DEFUN COLLAPSE-VALUE-OF-CHAINS-FOR-IO-VARIABLES ((IOVARIABLES VARIABLES-VECTOR)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "collapseValueOfChainsForIoVariables", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Vector")}), null);
       Stella.defineFunctionObject("REMOVE-NULLS-IN-VARIABLES-VECTOR", "(DEFUN (REMOVE-NULLS-IN-VARIABLES-VECTOR VARIABLES-VECTOR) ((IOVARIABLES VARIABLES-VECTOR)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "removeNullsInVariablesVector", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Vector")}), null);
       Stella.defineFunctionObject("TIGHTEN-ARGUMENT-BINDINGS", "(DEFUN TIGHTEN-ARGUMENT-BINDINGS ((PROPOSITION PROPOSITION) (IOVARIABLES VARIABLES-VECTOR)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "tightenArgumentBindings", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Vector")}), null);
-      Stella.defineFunctionObject("EQUATE-TOP-LEVEL-EQUIVALENCES", "(DEFUN EQUATE-TOP-LEVEL-EQUIVALENCES ((PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "equateTopLevelEquivalences", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
+      Stella.defineFunctionObject("EQUATE-TOP-LEVEL-EQUIVALENCES", "(DEFUN EQUATE-TOP-LEVEL-EQUIVALENCES ((PROPOSITION PROPOSITION) (IOVARIABLES VARIABLES-VECTOR) (KIND KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "equateTopLevelEquivalences", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Vector"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("COLLECT-ALL-VARIABLES", "(DEFUN COLLECT-ALL-VARIABLES ((SELF PROPOSITION) (COLLECTION (LIST OF PATTERN-VARIABLE)) (BEENTHERE LIST)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "collectAllVariables", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.List"), Native.find_java_class("edu.isi.stella.List")}), null);
       Stella.defineFunctionObject("COMPUTE-INTERNAL-VARIABLES", "(DEFUN COMPUTE-INTERNAL-VARIABLES ((SELF DESCRIPTION)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "computeInternalVariables", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
       Stella.defineFunctionObject("COLLECT-EXTERNAL-VARIABLES", "(DEFUN COLLECT-EXTERNAL-VARIABLES ((PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "collectExternalVariables", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
-      Stella.defineFunctionObject("FINISH-BUILDING-DESCRIPTION", "(DEFUN (FINISH-BUILDING-DESCRIPTION DESCRIPTION) ((DESCRIPTION DESCRIPTION) (CHECKFORDUPLICATE? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "finishBuildingDescription", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), java.lang.Boolean.TYPE}), null);
+      Stella.defineFunctionObject("FINISH-BUILDING-DESCRIPTION", "(DEFUN (FINISH-BUILDING-DESCRIPTION DESCRIPTION) ((DESCRIPTION DESCRIPTION) (CHECKFORDUPLICATE? BOOLEAN) (KIND KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "finishBuildingDescription", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), java.lang.Boolean.TYPE, Native.find_java_class("edu.isi.stella.Keyword")}), null);
     }
   }
 
@@ -250,14 +251,13 @@ public class _StartupDescriptions {
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Logic.FAKE_IO_VARIABLES = Vector.newVector(0);
-          Logic.SYSTEM_DEFINED_ARGUMENT_NAMES = Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pX1, Stella_Object.cons(Logic.SYM_LOGIC_pX2, Stella_Object.cons(Logic.SYM_LOGIC_pX3, Stella_Object.cons(Logic.SYM_LOGIC_pX4, Stella_Object.cons(Logic.SYM_LOGIC_pX5, Stella_Object.cons(Logic.SYM_LOGIC_pX6, Stella_Object.cons(Logic.SYM_LOGIC_pX7, Stella_Object.cons(Logic.SYM_LOGIC_pX8, Stella_Object.cons(Logic.SYM_LOGIC_pX9, Stella_Object.cons(Logic.SYM_LOGIC_pX10, Stella_Object.cons(Logic.SYM_LOGIC_pX11, Stella_Object.cons(Logic.SYM_LOGIC_pX12, Stella_Object.cons(Logic.SYM_LOGIC_pX13, Stella_Object.cons(Logic.SYM_LOGIC_pX14, Stella_Object.cons(Logic.SYM_LOGIC_pX15, Stella_Object.cons(Logic.SYM_LOGIC_pX16, Stella_Object.cons(Logic.SYM_LOGIC_pX17, Stella_Object.cons(Logic.SYM_LOGIC_pX18, Stella_Object.cons(Logic.SYM_LOGIC_pX19, Stella_Object.cons(Logic.SYM_LOGIC_pX20, Stella_Object.cons(Logic.SYM_LOGIC_pX21, Stella_Object.cons(Logic.SYM_LOGIC_pX22, Stella_Object.cons(Logic.SYM_LOGIC_pX23, Stella_Object.cons(Logic.SYM_LOGIC_pX24, Stella_Object.cons(Logic.SYM_LOGIC_pX25, Stella_Object.cons(Logic.SYM_LOGIC_pX26, Stella_Object.cons(Logic.SYM_LOGIC_pX27, Stella_Object.cons(Logic.SYM_LOGIC_pX28, Stella_Object.cons(Logic.SYM_LOGIC_pX29, Stella_Object.cons(Logic.SYM_LOGIC_pX30, Stella_Object.cons(Logic.SYM_LOGIC_pX31, Stella_Object.cons(Logic.SYM_LOGIC_pX32, Stella_Object.cons(Logic.SYM_LOGIC_pX33, Stella_Object.cons(Logic.SYM_LOGIC_pX34, Stella_Object.cons(Logic.SYM_LOGIC_pX35, Stella_Object.cons(Logic.SYM_LOGIC_pX36, Stella_Object.cons(Logic.SYM_LOGIC_pX37, Stella_Object.cons(Logic.SYM_LOGIC_pX38, Stella_Object.cons(Logic.SYM_LOGIC_pX39, Stella_Object.cons(Logic.SYM_LOGIC_pX40, Stella_Object.cons(Logic.SYM_LOGIC_pX41, Stella_Object.cons(Logic.SYM_LOGIC_pX42, Stella_Object.cons(Logic.SYM_LOGIC_pX43, Stella_Object.cons(Logic.SYM_LOGIC_pX44, Stella_Object.cons(Logic.SYM_LOGIC_pX45, Stella_Object.cons(Logic.SYM_LOGIC_pX46, Stella_Object.cons(Logic.SYM_LOGIC_pX47, Stella_Object.cons(Logic.SYM_LOGIC_pX48, Stella_Object.cons(Logic.SYM_LOGIC_pX49, Stella_Object.cons(Logic.SYM_LOGIC_pX50, Stella_Object.cons(Logic.SYM_LOGIC_pX51, Stella_Object.cons(Logic.SYM_LOGIC_pX52, Stella_Object.cons(Logic.SYM_LOGIC_pX53, Stella_Object.cons(Logic.SYM_LOGIC_pX54, Stella_Object.cons(Logic.SYM_LOGIC_pX55, Stella_Object.cons(Logic.SYM_LOGIC_pX56, Stella_Object.cons(Logic.SYM_LOGIC_pX57, Stella_Object.cons(Logic.SYM_LOGIC_pX58, Stella_Object.cons(Logic.SYM_LOGIC_pX59, Stella_Object.cons(Logic.SYM_LOGIC_pX60, Stella_Object.cons(Logic.SYM_LOGIC_pX61, Stella_Object.cons(Logic.SYM_LOGIC_pX62, Stella_Object.cons(Logic.SYM_LOGIC_pX63, Stella_Object.cons(Logic.SYM_LOGIC_pX64, Stella_Object.cons(Logic.SYM_LOGIC_pX65, Stella_Object.cons(Logic.SYM_LOGIC_pX66, Stella_Object.cons(Logic.SYM_LOGIC_pX67, Stella_Object.cons(Logic.SYM_LOGIC_pX68, Stella_Object.cons(Logic.SYM_LOGIC_pX69, Stella_Object.cons(Logic.SYM_LOGIC_pX70, Stella_Object.cons(Logic.SYM_LOGIC_pX71, Stella_Object.cons(Logic.SYM_LOGIC_pX72, Stella_Object.cons(Logic.SYM_LOGIC_pX73, Stella_Object.cons(Logic.SYM_LOGIC_pX74, Stella_Object.cons(Logic.SYM_LOGIC_pX75, Stella_Object.cons(Logic.SYM_LOGIC_pX76, Stella_Object.cons(Logic.SYM_LOGIC_pX77, Stella_Object.cons(Logic.SYM_LOGIC_pX78, Stella_Object.cons(Logic.SYM_LOGIC_pX79, Stella_Object.cons(Logic.SYM_LOGIC_pX80, Stella_Object.cons(Logic.SYM_LOGIC_pX81, Stella_Object.cons(Logic.SYM_LOGIC_pX82, Stella_Object.cons(Logic.SYM_LOGIC_pX83, Stella_Object.cons(Logic.SYM_LOGIC_pX84, Stella_Object.cons(Logic.SYM_LOGIC_pX85, Stella_Object.cons(Logic.SYM_LOGIC_pX86, Stella_Object.cons(Logic.SYM_LOGIC_pX87, Stella_Object.cons(Logic.SYM_LOGIC_pX88, Stella_Object.cons(Logic.SYM_LOGIC_pX89, Stella_Object.cons(Logic.SYM_LOGIC_pX90, Stella_Object.cons(Logic.SYM_LOGIC_pX91, Stella_Object.cons(Logic.SYM_LOGIC_pX92, Stella_Object.cons(Logic.SYM_LOGIC_pX93, Stella_Object.cons(Logic.SYM_LOGIC_pX94, Stella_Object.cons(Logic.SYM_LOGIC_pX95, Stella_Object.cons(Logic.SYM_LOGIC_pX96, Stella_Object.cons(Logic.SYM_LOGIC_pX97, Stella_Object.cons(Logic.SYM_LOGIC_pX98, Stella_Object.cons(Logic.SYM_LOGIC_pX99, Stella_Object.cons(Logic.SYM_LOGIC_pX100, Stella_Object.cons(Stella.NIL, Stella.NIL))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))));
+          Logic.SYSTEM_DEFINED_ARGUMENT_NAMES = Cons.list$(Cons.cons(Logic.SYM_LOGIC_pX1, Cons.cons(Logic.SYM_LOGIC_pX2, Cons.cons(Logic.SYM_LOGIC_pX3, Cons.cons(Logic.SYM_LOGIC_pX4, Cons.cons(Logic.SYM_LOGIC_pX5, Cons.cons(Logic.SYM_LOGIC_pX6, Cons.cons(Logic.SYM_LOGIC_pX7, Cons.cons(Logic.SYM_LOGIC_pX8, Cons.cons(Logic.SYM_LOGIC_pX9, Cons.cons(Logic.SYM_LOGIC_pX10, Cons.cons(Logic.SYM_LOGIC_pX11, Cons.cons(Logic.SYM_LOGIC_pX12, Cons.cons(Logic.SYM_LOGIC_pX13, Cons.cons(Logic.SYM_LOGIC_pX14, Cons.cons(Logic.SYM_LOGIC_pX15, Cons.cons(Logic.SYM_LOGIC_pX16, Cons.cons(Logic.SYM_LOGIC_pX17, Cons.cons(Logic.SYM_LOGIC_pX18, Cons.cons(Logic.SYM_LOGIC_pX19, Cons.cons(Logic.SYM_LOGIC_pX20, Cons.cons(Logic.SYM_LOGIC_pX21, Cons.cons(Logic.SYM_LOGIC_pX22, Cons.cons(Logic.SYM_LOGIC_pX23, Cons.cons(Logic.SYM_LOGIC_pX24, Cons.cons(Logic.SYM_LOGIC_pX25, Cons.cons(Logic.SYM_LOGIC_pX26, Cons.cons(Logic.SYM_LOGIC_pX27, Cons.cons(Logic.SYM_LOGIC_pX28, Cons.cons(Logic.SYM_LOGIC_pX29, Cons.cons(Logic.SYM_LOGIC_pX30, Cons.cons(Logic.SYM_LOGIC_pX31, Cons.cons(Logic.SYM_LOGIC_pX32, Cons.cons(Logic.SYM_LOGIC_pX33, Cons.cons(Logic.SYM_LOGIC_pX34, Cons.cons(Logic.SYM_LOGIC_pX35, Cons.cons(Logic.SYM_LOGIC_pX36, Cons.cons(Logic.SYM_LOGIC_pX37, Cons.cons(Logic.SYM_LOGIC_pX38, Cons.cons(Logic.SYM_LOGIC_pX39, Cons.cons(Logic.SYM_LOGIC_pX40, Cons.cons(Logic.SYM_LOGIC_pX41, Cons.cons(Logic.SYM_LOGIC_pX42, Cons.cons(Logic.SYM_LOGIC_pX43, Cons.cons(Logic.SYM_LOGIC_pX44, Cons.cons(Logic.SYM_LOGIC_pX45, Cons.cons(Logic.SYM_LOGIC_pX46, Cons.cons(Logic.SYM_LOGIC_pX47, Cons.cons(Logic.SYM_LOGIC_pX48, Cons.cons(Logic.SYM_LOGIC_pX49, Cons.cons(Logic.SYM_LOGIC_pX50, Cons.cons(Logic.SYM_LOGIC_pX51, Cons.cons(Logic.SYM_LOGIC_pX52, Cons.cons(Logic.SYM_LOGIC_pX53, Cons.cons(Logic.SYM_LOGIC_pX54, Cons.cons(Logic.SYM_LOGIC_pX55, Cons.cons(Logic.SYM_LOGIC_pX56, Cons.cons(Logic.SYM_LOGIC_pX57, Cons.cons(Logic.SYM_LOGIC_pX58, Cons.cons(Logic.SYM_LOGIC_pX59, Cons.cons(Logic.SYM_LOGIC_pX60, Cons.cons(Logic.SYM_LOGIC_pX61, Cons.cons(Logic.SYM_LOGIC_pX62, Cons.cons(Logic.SYM_LOGIC_pX63, Cons.cons(Logic.SYM_LOGIC_pX64, Cons.cons(Logic.SYM_LOGIC_pX65, Cons.cons(Logic.SYM_LOGIC_pX66, Cons.cons(Logic.SYM_LOGIC_pX67, Cons.cons(Logic.SYM_LOGIC_pX68, Cons.cons(Logic.SYM_LOGIC_pX69, Cons.cons(Logic.SYM_LOGIC_pX70, Cons.cons(Logic.SYM_LOGIC_pX71, Cons.cons(Logic.SYM_LOGIC_pX72, Cons.cons(Logic.SYM_LOGIC_pX73, Cons.cons(Logic.SYM_LOGIC_pX74, Cons.cons(Logic.SYM_LOGIC_pX75, Cons.cons(Logic.SYM_LOGIC_pX76, Cons.cons(Logic.SYM_LOGIC_pX77, Cons.cons(Logic.SYM_LOGIC_pX78, Cons.cons(Logic.SYM_LOGIC_pX79, Cons.cons(Logic.SYM_LOGIC_pX80, Cons.cons(Logic.SYM_LOGIC_pX81, Cons.cons(Logic.SYM_LOGIC_pX82, Cons.cons(Logic.SYM_LOGIC_pX83, Cons.cons(Logic.SYM_LOGIC_pX84, Cons.cons(Logic.SYM_LOGIC_pX85, Cons.cons(Logic.SYM_LOGIC_pX86, Cons.cons(Logic.SYM_LOGIC_pX87, Cons.cons(Logic.SYM_LOGIC_pX88, Cons.cons(Logic.SYM_LOGIC_pX89, Cons.cons(Logic.SYM_LOGIC_pX90, Cons.cons(Logic.SYM_LOGIC_pX91, Cons.cons(Logic.SYM_LOGIC_pX92, Cons.cons(Logic.SYM_LOGIC_pX93, Cons.cons(Logic.SYM_LOGIC_pX94, Cons.cons(Logic.SYM_LOGIC_pX95, Cons.cons(Logic.SYM_LOGIC_pX96, Cons.cons(Logic.SYM_LOGIC_pX97, Cons.cons(Logic.SYM_LOGIC_pX98, Cons.cons(Logic.SYM_LOGIC_pX99, Cons.cons(Logic.SYM_LOGIC_pX100, Cons.cons(Stella.NIL, Stella.NIL))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))));
           Logic.$LOGICVARIABLETABLE$.setDefaultValue(null);
           Logic.$UNIFY_PROPOSITIONSp$.setDefaultValue(new Boolean(false));
           Logic.$RECURSIVEGETCOMPLEMENTARGUMENT$.setDefaultValue(null);
           Logic.$ADDEDNEWTYPEp$.setDefaultValue(new Boolean(false));
         }
         if (Stella.currentStartupTimePhaseP(5)) {
-          Stella.defineStellaTypeFromStringifiedSource("(DEFTYPE ENTITY-MAPPING (KEY-VALUE-LIST OF OBJECT OBJECT) :DOCUMENTATION \"Used to keep track of copied or substituted variables\nand propositions within 'copy-description', etc.  This needs to be a\nsubtype of DICTIONARY.  KEY-VALUE-LIST is a good choice for most cases,\nhowever, for very high-arity relations and descriptions we do get bad performance\nduring copying and equivalence checking and KEY-VALUE-MAP (though more\nheavy-weight) would be the better option.\")");
           Stella.defineStellaTypeFromStringifiedSource("(DEFTYPE VARIABLE-TYPE-TABLE (KEY-VALUE-LIST OF PATTERN-VARIABLE (LIST OF TYPE)))");
         }
         if (Stella.currentStartupTimePhaseP(6)) {
@@ -300,6 +300,7 @@ public class _StartupDescriptions {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT FAKE-IO-VARIABLES VARIABLES-VECTOR (NEW VARIABLES-VECTOR :ARRAY-SIZE 0) :DOCUMENTATION \"Installed in a description with undetermined arity.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT SYSTEM-DEFINED-ARGUMENT-NAMES (CONS OF SYMBOL) (BQUOTE (?X1 ?X2 ?X3 ?X4 ?X5 ?X6 ?X7 ?X8 ?X9 ?X10 ?X11 ?X12 ?X13 ?X14 ?X15 ?X16 ?X17 ?X18 ?X19 ?X20 ?X21 ?X22 ?X23 ?X24 ?X25 ?X26 ?X27 ?X28 ?X29 ?X30 ?X31 ?X32 ?X33 ?X34 ?X35 ?X36 ?X37 ?X38 ?X39 ?X40 ?X41 ?X42 ?X43 ?X44 ?X45 ?X46 ?X47 ?X48 ?X49 ?X50 ?X51 ?X52 ?X53 ?X54 ?X55 ?X56 ?X57 ?X58 ?X59 ?X60 ?X61 ?X62 ?X63 ?X64 ?X65 ?X66 ?X67 ?X68 ?X69 ?X70 ?X71 ?X72 ?X73 ?X74 ?X75 ?X76 ?X77 ?X78 ?X79 ?X80 ?X81 ?X82 ?X83 ?X84 ?X85 ?X86 ?X87 ?X88 ?X89 ?X90 ?X91 ?X92 ?X93 ?X94 ?X95 ?X96 ?X97 ?X98 ?X99 ?X100)) :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *LOGICVARIABLETABLE* (CONS OF SKOLEM) NULL :DOCUMENTATION \"Table mapping logic variable names to variables or skolems.\nUsed during construction of a proposition or description.\")");

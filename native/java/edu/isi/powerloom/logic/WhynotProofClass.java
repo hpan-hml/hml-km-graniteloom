@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -78,7 +78,7 @@ public class WhynotProofClass extends Set {
 
   public static boolean insertWhynotProofToClassP(WhynotProofClass renamed_Class, Justification proof) {
     if (renamed_Class.emptyP()) {
-      renamed_Class.theConsList = Stella_Object.cons(proof, renamed_Class.theConsList);
+      renamed_Class.theConsList = Cons.cons(proof, renamed_Class.theConsList);
       renamed_Class.representative = proof;
       return (true);
     }
@@ -101,13 +101,13 @@ public class WhynotProofClass extends Set {
             }
             { PatternVariable newvar = null;
               Stella_Object newvalue = null;
-              KvCons iter001 = newdev.substitution.theKvList;
+              DictionaryIterator iter001 = ((DictionaryIterator)(newdev.substitution.allocateIterator()));
               PatternVariable repvar = null;
               Stella_Object repvalue = null;
-              KvCons iter002 = renamed_Class.deviatingPattern.substitution.theKvList;
+              DictionaryIterator iter002 = ((DictionaryIterator)(renamed_Class.deviatingPattern.substitution.allocateIterator()));
 
-              for (;(iter001 != null) &&
-                        (iter002 != null); iter001 = iter001.rest, iter002 = iter002.rest) {
+              while (iter001.nextP() &&
+                  iter002.nextP()) {
                 newvar = ((PatternVariable)(iter001.key));
                 newvalue = iter001.value;
                 repvar = ((PatternVariable)(iter002.key));
@@ -128,7 +128,7 @@ public class WhynotProofClass extends Set {
                 }
               }
             }
-            renamed_Class.theConsList = Stella_Object.cons(proof, renamed_Class.theConsList);
+            renamed_Class.theConsList = Cons.cons(proof, renamed_Class.theConsList);
             return (true);
           }
         }

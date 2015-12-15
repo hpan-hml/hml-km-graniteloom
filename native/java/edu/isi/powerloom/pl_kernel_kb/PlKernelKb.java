@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -89,177 +89,40 @@ public class PlKernelKb {
 
   public static Keyword computationSpecialist(ControlFrame frame, Keyword lastmove) {
     { Proposition proposition = frame.proposition;
-      Vector arguments = proposition.arguments;
-      NamedDescription description = Logic.getDescription(((Surrogate)(proposition.operator)));
-      java.lang.reflect.Method computationcode = NamedDescription.lookupComputation(description);
-      Stella_Object value = null;
-      Cons boundarguments = Stella.NIL;
-      boolean successP = false;
+      Stella_Object value = Proposition.computeRelationValue(proposition, null, false);
+      BooleanWrapper successP = null;
 
-      lastmove = lastmove;
-      if (NamedDescription.functionDescriptionP(description)) {
-        { Stella_Object arg = null;
-          Vector vector000 = arguments;
-          int index000 = 0;
-          int length000 = vector000.length();
-          Stella_Object domain = null;
-          Iterator iter000 = NamedDescription.allDomainTypes(description);
-          Cons collect000 = null;
-
-          for (;(index000 < length000) &&
-                    iter000.nextP(); index000 = index000 + 1) {
-            arg = (vector000.theArray)[index000];
-            domain = iter000.value;
-            value = Logic.argumentBoundTo(arg);
-            if ((value == null) ||
-                (Logic.skolemP(value) ||
-                 (!Logic.checkStrictTypeP(arg, ((Surrogate)(domain)), true)))) {
-              return (Logic.KWD_FAILURE);
-            }
-            if (collect000 == null) {
-              {
-                collect000 = Stella_Object.cons(value, Stella.NIL);
-                if (boundarguments == Stella.NIL) {
-                  boundarguments = collect000;
-                }
-                else {
-                  Cons.addConsToEndOfConsList(boundarguments, collect000);
-                }
-              }
-            }
-            else {
-              {
-                collect000.rest = Stella_Object.cons(value, Stella.NIL);
-                collect000 = collect000.rest;
-              }
-            }
-          }
-        }
-        value = Stella.apply(computationcode, boundarguments);
-        if (value == null) {
-          return (Logic.KWD_FAILURE);
-        }
-        { Stella_Object lastarg = (proposition.arguments.theArray)[(proposition.arguments.length() - 1)];
-
-          successP = (Stella_Object.isaP(lastarg, Logic.SGT_LOGIC_PATTERN_VARIABLE) ? PatternVariable.bindVariableToValueP(((PatternVariable)(lastarg)), value, true) : Stella_Object.eqlP(Logic.valueOf(lastarg), value));
-        }
+      if (value == null) {
+        return (Logic.KWD_FAILURE);
+      }
+      if (NamedDescription.functionDescriptionP(Logic.getDescription(((Surrogate)(proposition.operator))))) {
+        successP = (Logic.bindArgumentToValueP((proposition.arguments.theArray)[(proposition.arguments.length() - 1)], value, true) ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER);
       }
       else {
-        { Stella_Object arg = null;
-          Vector vector001 = arguments;
-          int index001 = 0;
-          int length001 = vector001.length();
-          Stella_Object domain = null;
-          Iterator iter001 = NamedDescription.allArgumentTypes(description);
-          Cons collect001 = null;
-
-          for (;(index001 < length001) &&
-                    iter001.nextP(); index001 = index001 + 1) {
-            arg = (vector001.theArray)[index001];
-            domain = iter001.value;
-            value = Logic.argumentBoundTo(arg);
-            if ((value == null) ||
-                (Logic.skolemP(value) ||
-                 (!Logic.checkStrictTypeP(arg, ((Surrogate)(domain)), true)))) {
-              return (Logic.KWD_FAILURE);
-            }
-            if (collect001 == null) {
-              {
-                collect001 = Stella_Object.cons(value, Stella.NIL);
-                if (boundarguments == Stella.NIL) {
-                  boundarguments = collect001;
-                }
-                else {
-                  Cons.addConsToEndOfConsList(boundarguments, collect001);
-                }
-              }
-            }
-            else {
-              {
-                collect001.rest = Stella_Object.cons(value, Stella.NIL);
-                collect001 = collect001.rest;
-              }
-            }
-          }
-        }
-        successP = BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(Stella.apply(computationcode, boundarguments))));
+        successP = ((BooleanWrapper)(value));
       }
-      return (Logic.selectTestResult(successP, true, frame));
+      return (Logic.selectTestResult(BooleanWrapper.coerceWrappedBooleanToBoolean(successP), true, frame));
     }
   }
 
   public static Keyword constraintSpecialist(ControlFrame frame, Keyword lastmove) {
-    { Proposition proposition = frame.proposition;
-      NamedDescription description = Logic.getDescription(((Surrogate)(proposition.operator)));
-      java.lang.reflect.Method computationcode = NamedDescription.lookupConstraint(description);
-      Stella_Object value = null;
-      int nullcount = 0;
-      int variableindex = -1;
-      Cons argumentvalues = Stella.NIL;
+    lastmove = lastmove;
+    { Stella_Object value = null;
+      int variableindex = Stella.NULL_INTEGER;
 
-      lastmove = lastmove;
-      { Stella_Object arg = null;
-        Vector vector000 = proposition.arguments;
-        int index000 = 0;
-        int length000 = vector000.length();
-        Stella_Object domain = null;
-        Iterator iter000 = NamedDescription.allArgumentTypes(description);
-        int i = Stella.NULL_INTEGER;
-        int iter001 = 0;
-        Cons collect000 = null;
+      { Object [] caller_MV_returnarray = new Object[1];
 
-        for (;(index000 < length000) &&
-                  iter000.nextP(); index000 = index000 + 1, iter001 = iter001 + 1) {
-          arg = (vector000.theArray)[index000];
-          domain = iter000.value;
-          i = iter001;
-          value = Logic.argumentBoundTo(arg);
-          if ((value == null) &&
-              Stella_Object.isaP(arg, Logic.SGT_LOGIC_PATTERN_VARIABLE)) {
-            nullcount = nullcount + 1;
-            variableindex = i;
-          }
-          else if ((value != null) &&
-              Stella_Object.isaP(value, Logic.SGT_LOGIC_SKOLEM)) {
-            return (Logic.KWD_FAILURE);
-          }
-          else if (!Logic.checkStrictTypeP(value, ((Surrogate)(domain)), true)) {
-            return (Logic.KWD_FAILURE);
-          }
-          if (collect000 == null) {
-            {
-              collect000 = Stella_Object.cons(value, Stella.NIL);
-              if (argumentvalues == Stella.NIL) {
-                argumentvalues = collect000;
-              }
-              else {
-                Cons.addConsToEndOfConsList(argumentvalues, collect000);
-              }
-            }
-          }
-          else {
-            {
-              collect000.rest = Stella_Object.cons(value, Stella.NIL);
-              collect000 = collect000.rest;
-            }
-          }
-        }
+        value = Proposition.computeSimpleRelationConstraint(frame.proposition, null, false, caller_MV_returnarray);
+        variableindex = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
       }
-      switch (nullcount) {
-        case 0: 
-          value = Stella.apply(computationcode, Stella_Object.cons(IntegerWrapper.wrapInteger(variableindex), argumentvalues));
+      if (value == null) {
+        return (Logic.KWD_FAILURE);
+      }
+      switch (variableindex) {
+        case -1: 
           return (Logic.selectTestResult(((BooleanWrapper)(value)) == Stella.TRUE_WRAPPER, true, frame));
-        case 1: 
-          if (((Boolean)(Logic.$REVERSEPOLARITYp$.get())).booleanValue()) {
-            return (Logic.KWD_FAILURE);
-          }
-          value = Stella.apply(computationcode, Stella_Object.cons(IntegerWrapper.wrapInteger(variableindex), argumentvalues));
-          if (value == null) {
-            return (Logic.KWD_FAILURE);
-          }
-          return (Logic.selectTestResult(PatternVariable.bindVariableToValueP(((PatternVariable)((proposition.arguments.theArray)[variableindex])), value, true), true, frame));
         default:
-          return (Logic.KWD_FAILURE);
+          return (Logic.selectTestResult(Logic.bindArgumentToValueP((frame.proposition.arguments.theArray)[variableindex], value, true), true, frame));
       }
     }
   }
@@ -306,7 +169,7 @@ public class PlKernelKb {
               else {
                 { NumberWrapper sqrt = PlKernelKb.sqrtComputation(((NumberWrapper)(mainargvalue)));
 
-                  collection = Stella.consList(Stella_Object.cons(sqrt, Stella_Object.cons(PlKernelKb.negateComputation(sqrt), Stella.NIL)));
+                  collection = Cons.consList(Cons.cons(sqrt, Cons.cons(PlKernelKb.negateComputation(sqrt), Stella.NIL)));
                 }
               }
             }
@@ -373,7 +236,7 @@ public class PlKernelKb {
                 return (Logic.KWD_FAILURE);
               }
               else {
-                collection = Stella.consList(Stella_Object.cons(absargvalue, Stella_Object.cons(PlKernelKb.negateComputation(((NumberWrapper)(absargvalue))), Stella.NIL)));
+                collection = Cons.consList(Cons.cons(absargvalue, Cons.cons(PlKernelKb.negateComputation(((NumberWrapper)(absargvalue))), Stella.NIL)));
               }
             }
           }
@@ -471,7 +334,7 @@ public class PlKernelKb {
                   }
                   if (testValue001) {
                     {
-                      if (ControlFrame.overlayWithPatternFrameP(ControlFrame.createDownFrame(frame, null), collection000, Stella.vector(Stella_Object.cons(memberarg, Stella.NIL)))) {
+                      if (ControlFrame.overlayWithPatternFrameP(ControlFrame.createDownFrame(frame, null), collection000, Stella.vector(Cons.cons(memberarg, Stella.NIL)))) {
                         return (Logic.KWD_MOVE_DOWN);
                       }
                       else {
@@ -650,7 +513,7 @@ public class PlKernelKb {
             if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_LOGIC_OBJECT)) {
               { LogicObject subcollection000 = ((LogicObject)(subcollection));
 
-                iterator = Stella_Object.cons(subcollection000, Stella.NIL).allocateIterator().concatenate(LogicObject.allSupercollections(subcollection000), Stella.NIL);
+                iterator = Cons.cons(subcollection000, Stella.NIL).allocateIterator().concatenate(LogicObject.allSupercollections(subcollection000), Stella.NIL);
               }
             }
             else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_STELLA_COLLECTION)) {
@@ -674,7 +537,7 @@ public class PlKernelKb {
             if (Surrogate.subtypeOfP(testValue001, Logic.SGT_LOGIC_LOGIC_OBJECT)) {
               { LogicObject supercollection000 = ((LogicObject)(supercollection));
 
-                iterator = Stella_Object.cons(supercollection000, Stella.NIL).allocateIterator().concatenate(LogicObject.allSubcollections(supercollection000), Stella.NIL);
+                iterator = Cons.cons(supercollection000, Stella.NIL).allocateIterator().concatenate(LogicObject.allSubcollections(supercollection000), Stella.NIL);
               }
             }
             else if (Surrogate.subtypeOfP(testValue001, Logic.SGT_STELLA_COLLECTION)) {
@@ -802,6 +665,7 @@ public class PlKernelKb {
           int backlinkedargposition = -1;
           boolean nomatchesP = false;
 
+          nomatchesP = nomatchesP;
           if (iterator == null) {
             { Object [] caller_MV_returnarray = new Object[1];
 
@@ -843,11 +707,13 @@ public class PlKernelKb {
                         ((prop.kind == Logic.KWD_PREDICATE) ||
                          (prop.kind == Logic.KWD_ISA))) &&
                         ((prop.arguments.length() == holdsarity) &&
-                         (Proposition.trueP(prop) &&
+                         (((!prop.deletedP()) &&
+                        ((((Boolean)(Logic.$REVERSEPOLARITYp$.get())).booleanValue() ? Proposition.falseP(prop) : (Proposition.trueP(prop) ||
+                        Proposition.functionWithDefinedValueP(prop))))) &&
                           (prop.arguments.position(backlinkedarg, 0) == backlinkedargposition)))) {
                       if (collect000 == null) {
                         {
-                          collect000 = Stella_Object.cons(prop, Stella.NIL);
+                          collect000 = Cons.cons(prop, Stella.NIL);
                           if (value001 == Stella.NIL) {
                             value001 = collect000;
                           }
@@ -858,7 +724,7 @@ public class PlKernelKb {
                       }
                       else {
                         {
-                          collect000.rest = Stella_Object.cons(prop, Stella.NIL);
+                          collect000.rest = Cons.cons(prop, Stella.NIL);
                           collect000 = collect000.rest;
                         }
                       }
@@ -915,6 +781,42 @@ public class PlKernelKb {
       }
       return (Logic.KWD_FAILURE);
     }
+  }
+
+  public static Stella_Object propositionRelationComputation(Proposition p) {
+    { GeneralizedSymbol operator = p.operator;
+
+      if (Surrogate.subtypeOfSurrogateP(Stella_Object.safePrimaryType(operator))) {
+        { Surrogate operator000 = ((Surrogate)(operator));
+
+          return (operator000.surrogateValue);
+        }
+      }
+      else {
+        return (null);
+      }
+    }
+  }
+
+  public static Stella_Object propositionArgumentComputation(Proposition p, IntegerWrapper i) {
+    { Vector arguments = p.arguments;
+
+      if ((i.wrapperValue >= 0) &&
+          (i.wrapperValue < arguments.length())) {
+        return ((arguments.theArray)[(i.wrapperValue)]);
+      }
+      else {
+        return (null);
+      }
+    }
+  }
+
+  public static Skolem propositionArgumentsComputation(Proposition p) {
+    return (Logic.createLogicalList(p.arguments.listify()));
+  }
+
+  public static IntegerWrapper propositionArityComputation(Proposition p) {
+    return (IntegerWrapper.wrapInteger(p.arguments.length()));
   }
 
   public static Keyword cutSpecialist(ControlFrame frame, Keyword lastmove) {
@@ -980,30 +882,66 @@ public class PlKernelKb {
   }
 
   public static Keyword forkSpecialist(ControlFrame frame, Keyword lastmove) {
-    if (lastmove == Logic.KWD_DOWN) {
-      return (Logic.KWD_MOVE_DOWN);
-    }
-    else if (lastmove == Logic.KWD_UP_TRUE) {
-      if (frame.argumentCursor > 0) {
-        return (Logic.KWD_CONTINUING_SUCCESS);
-      }
-      frame.down = null;
-      frame.argumentCursor = 1;
-      return (Logic.KWD_MOVE_DOWN);
-    }
-    else if (lastmove == Logic.KWD_UP_FAIL) {
-      if (frame.argumentCursor > 0) {
-        return (Logic.KWD_FAILURE);
-      }
-      frame.down = null;
-      frame.argumentCursor = 2;
-      return (Logic.KWD_MOVE_DOWN);
-    }
-    else {
-      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+    { boolean recordjustificationsP = ((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue();
+      ForkProofAdjunct adjunct = ((ForkProofAdjunct)(((ProofAdjunct)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_PROOF_ADJUNCT, null)))));
 
-        stream000.nativeStream.print("`" + lastmove + "' is not a valid case option");
-        throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+      if (lastmove == Logic.KWD_DOWN) {
+        if (recordjustificationsP) {
+          if (adjunct == null) {
+            adjunct = ForkProofAdjunct.newForkProofAdjunct();
+            KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_PROOF_ADJUNCT, adjunct, null);
+          }
+          frame.down = adjunct.downFrame;
+        }
+        return (Logic.KWD_MOVE_DOWN);
+      }
+      else if (lastmove == Logic.KWD_UP_TRUE) {
+        if (frame.argumentCursor > 0) {
+          if (recordjustificationsP) {
+            adjunct.downFrame = frame.down;
+            ControlFrame.propagateFrameTruthValue(frame.result, frame);
+            { Justification self001 = Justification.newJustification();
+
+              self001.inferenceRule = ((adjunct.conditionJustification.inferenceRule == Logic.KWD_FAIL_INTRODUCTION) ? Logic.KWD_FORK_ELSE : Logic.KWD_FORK_THEN);
+              self001.antecedents = Cons.cons(adjunct.conditionJustification, Cons.cons(((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL));
+              ControlFrame.recordGoalJustification(frame, self001);
+            }
+          }
+          if (frame.down != null) {
+            if (recordjustificationsP) {
+              frame.down = null;
+            }
+            return (Logic.KWD_CONTINUING_SUCCESS);
+          }
+          else {
+            return (Logic.KWD_FINAL_SUCCESS);
+          }
+        }
+        if (recordjustificationsP) {
+          adjunct.conditionJustification = ((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)));
+        }
+        frame.down = null;
+        frame.argumentCursor = 1;
+        return (Logic.KWD_MOVE_DOWN);
+      }
+      else if (lastmove == Logic.KWD_UP_FAIL) {
+        if (frame.argumentCursor > 0) {
+          return (Logic.KWD_FAILURE);
+        }
+        if (recordjustificationsP) {
+          ControlFrame.recordFailJustification(frame.result, Logic.KWD_UP_FAIL);
+          adjunct.conditionJustification = ((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)));
+        }
+        frame.down = null;
+        frame.argumentCursor = 2;
+        return (Logic.KWD_MOVE_DOWN);
+      }
+      else {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("`" + lastmove + "' is not a valid case option");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
       }
     }
   }
@@ -1012,6 +950,7 @@ public class PlKernelKb {
     { QueryIterator subqueryiterator = ((QueryIterator)(((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null)))));
       boolean truefalsequeryP = false;
       boolean partialqueryP = false;
+      boolean sortedqueryP = false;
       boolean successP = false;
       ControlFrame result = null;
 
@@ -1037,16 +976,23 @@ public class PlKernelKb {
             Logic.callRetrievePartial(subqueryiterator);
           }
         }
+        else if ((!truefalsequeryP) &&
+            (Logic.lookupQueryOption(subqueryiterator, Logic.KWD_SORT_BY) != null)) {
+          sortedqueryP = true;
+          Logic.callRetrieve(subqueryiterator);
+        }
       }
       else {
         partialqueryP = subqueryiterator.partialMatchStrategy != null;
+        sortedqueryP = Logic.lookupQueryOption(subqueryiterator, Logic.KWD_SORT_BY) != null;
       }
       if ((Stella.$TRACED_KEYWORDS$ != null) &&
           Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_GOAL_TREE)) {
         System.out.println();
       }
       loop000 : for (;;) {
-        if (partialqueryP) {
+        if (partialqueryP ||
+            sortedqueryP) {
           successP = subqueryiterator.querySucceededP();
           if (successP) {
             { QuerySolution solution = subqueryiterator.solutions.pop();
@@ -1059,7 +1005,9 @@ public class PlKernelKb {
               if (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue()) {
                 KeyValueList.setDynamicSlotValue(result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, solution.justification, null);
               }
-              result.partialMatchFrame.positiveScore = solution.matchScore;
+              if (partialqueryP) {
+                result.partialMatchFrame.positiveScore = solution.matchScore;
+              }
             }
           }
         }
@@ -1153,9 +1101,84 @@ public class PlKernelKb {
     }
   }
 
+  public static Keyword leveledQuerySpecialist(ControlFrame frame, Keyword lastmove) {
+    { Proposition proposition = frame.proposition;
+      SavedInferenceLevelProofAdjunct adjunct = ((SavedInferenceLevelProofAdjunct)(((ProofAdjunct)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_PROOF_ADJUNCT, null)))));
+
+      if (lastmove == Logic.KWD_DOWN) {
+        if (adjunct == null) {
+          { Stella_Object argpropvalue = Logic.argumentBoundTo((proposition.arguments.theArray)[0]);
+
+            if ((argpropvalue == null) ||
+                (!Stella_Object.isaP(argpropvalue, Logic.SGT_LOGIC_PROPOSITION))) {
+              return (Logic.KWD_TERMINAL_FAILURE);
+            }
+            { SavedInferenceLevelProofAdjunct self001 = SavedInferenceLevelProofAdjunct.newSavedInferenceLevelProofAdjunct();
+
+              self001.savedInferenceLevel = Logic.currentInferenceLevel();
+              self001.inferenceLevel = Logic.leveledQueryRelationToInferenceLevel(((Surrogate)(proposition.operator)));
+              self001.downFrame = ControlFrame.createDownFrame(frame, ((Proposition)(argpropvalue)));
+              adjunct = self001;
+            }
+            KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_PROOF_ADJUNCT, adjunct, null);
+          }
+        }
+        frame.down = adjunct.downFrame;
+        Logic.callSetInferenceLevel(adjunct.inferenceLevel.keyword, null);
+        Native.setSpecial(Logic.$INFERENCELEVEL$, ((NormalInferenceLevel)(adjunct.inferenceLevel)));
+        return (Logic.KWD_MOVE_DOWN);
+      }
+      else if (lastmove == Logic.KWD_UP_TRUE) {
+        ControlFrame.propagateFrameTruthValue(frame.result, frame);
+        if ((((QueryIterator)(Logic.$QUERYITERATOR$.get())) != null) &&
+            (((QueryIterator)(Logic.$QUERYITERATOR$.get())).partialMatchStrategy != null)) {
+          frame.result.partialMatchFrame.propagateFramePartialTruth(frame);
+        }
+        if (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue()) {
+          { Justification self002 = Justification.newJustification();
+
+            self002.inferenceRule = Logic.KWD_LEVELED_QUERY;
+            self002.antecedents = Cons.cons(((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL);
+            ControlFrame.recordGoalJustification(frame, self002);
+          }
+        }
+        Logic.callSetInferenceLevel(adjunct.savedInferenceLevel.keyword, null);
+        Native.setSpecial(Logic.$INFERENCELEVEL$, ((NormalInferenceLevel)(adjunct.savedInferenceLevel)));
+        if (frame.down != null) {
+          adjunct.downFrame = frame.down;
+          frame.down = null;
+          return (Logic.KWD_CONTINUING_SUCCESS);
+        }
+        else {
+          return (Logic.KWD_FINAL_SUCCESS);
+        }
+      }
+      else if (lastmove == Logic.KWD_UP_FAIL) {
+        ControlFrame.propagateFrameTruthValue(frame.result, frame);
+        if ((((QueryIterator)(Logic.$QUERYITERATOR$.get())) != null) &&
+            (((QueryIterator)(Logic.$QUERYITERATOR$.get())).partialMatchStrategy != null)) {
+          frame.result.partialMatchFrame.propagateFramePartialTruth(frame);
+        }
+        if (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue()) {
+          ControlFrame.recordPrimitiveJustification(frame, Logic.KWD_UP_FAIL);
+        }
+        Logic.callSetInferenceLevel(adjunct.savedInferenceLevel.keyword, null);
+        Native.setSpecial(Logic.$INFERENCELEVEL$, ((NormalInferenceLevel)(adjunct.savedInferenceLevel)));
+        return (Logic.KWD_FAILURE);
+      }
+      else {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("`" + lastmove + "' is not a valid case option");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+    }
+  }
+
   public static Keyword conceptPrototypeSpecialist(ControlFrame frame, Keyword lastmove) {
     { Proposition proposition = frame.proposition;
-      Description renamed_Class = ((Description)(Logic.argumentBoundTo((proposition.arguments.theArray)[0])));
+      Stella_Object renamed_Class = Logic.argumentBoundTo((proposition.arguments.theArray)[0]);
       Stella_Object prototypeargument = (proposition.arguments.theArray)[1];
       LogicObject prototype = null;
 
@@ -1166,29 +1189,33 @@ public class PlKernelKb {
       }
       prototype = ((LogicObject)(Logic.accessBinaryValue(renamed_Class, Logic.SGT_PL_KERNEL_KB_CONCEPT_PROTOTYPE)));
       if (prototype == null) {
-        { Object old$Context$000 = Stella.$CONTEXT$.get();
-          Object old$Module$000 = Stella.$MODULE$.get();
+        { Proposition equivalence = null;
 
-          try {
-            Native.setSpecial(Stella.$CONTEXT$, renamed_Class.homeContext);
-            Native.setSpecial(Stella.$MODULE$, ((Context)(Stella.$CONTEXT$.get())).baseModule);
-            prototype = Logic.createHypothesizedInstance((Stella_Object.isaP(renamed_Class, Logic.SGT_LOGIC_NAMED_DESCRIPTION) ? ("proto-" + renamed_Class.descriptionName().symbolName) : "prototype"));
-            { Object old$InvisibleassertionP$000 = Logic.$INVISIBLEASSERTIONp$.get();
+          { Object old$Context$000 = Stella.$CONTEXT$.get();
+            Object old$Module$000 = Stella.$MODULE$.get();
 
-              try {
-                Native.setBooleanSpecial(Logic.$INVISIBLEASSERTIONp$, true);
-                Logic.assertMemberOfProposition(prototype, renamed_Class);
-                Logic.assertBinaryValue(Logic.SGT_PL_KERNEL_KB_CONCEPT_PROTOTYPE, renamed_Class, prototype);
+            try {
+              Native.setSpecial(Stella.$CONTEXT$, ((Description)(renamed_Class)).homeContext);
+              Native.setSpecial(Stella.$MODULE$, ((Context)(Stella.$CONTEXT$.get())).baseModule);
+              prototype = Logic.createHypothesizedInstance((Stella_Object.isaP(renamed_Class, Logic.SGT_LOGIC_NAMED_DESCRIPTION) ? ("proto-" + Logic.objectNameString(renamed_Class)) : "prototype"));
+              { Object old$InvisibleassertionP$000 = Logic.$INVISIBLEASSERTIONp$.get();
 
-              } finally {
-                Logic.$INVISIBLEASSERTIONp$.set(old$InvisibleassertionP$000);
+                try {
+                  Native.setBooleanSpecial(Logic.$INVISIBLEASSERTIONp$, true);
+                  Logic.assertMemberOfProposition(prototype, renamed_Class);
+                  equivalence = Logic.assertBinaryValue(Logic.SGT_PL_KERNEL_KB_CONCEPT_PROTOTYPE, renamed_Class, prototype);
+
+                } finally {
+                  Logic.$INVISIBLEASSERTIONp$.set(old$InvisibleassertionP$000);
+                }
               }
-            }
 
-          } finally {
-            Stella.$MODULE$.set(old$Module$000);
-            Stella.$CONTEXT$.set(old$Context$000);
+            } finally {
+              Stella.$MODULE$.set(old$Module$000);
+              Stella.$CONTEXT$.set(old$Context$000);
+            }
           }
+          equivalence.reactToInferenceUpdate();
         }
       }
       return (Logic.selectProofResult(Logic.bindArgumentToValueP(prototypeargument, prototype, true), false, true));
@@ -1232,57 +1259,68 @@ public class PlKernelKb {
     }
   }
 
-  public static Keyword collectIntoSetSpecialist(ControlFrame frame, Keyword lastmove) {
+  public static Keyword collectMembersSpecialist(ControlFrame frame, Keyword lastmove) {
     { Proposition proposition = frame.proposition;
       Stella_Object collectionarg = (proposition.arguments.theArray)[0];
       Stella_Object collectionvalue = Logic.argumentBoundTo(collectionarg);
       Stella_Object listarg = (proposition.arguments.theArray)[1];
+      boolean listP = false;
+      boolean uniqueP = true;
+      List members = null;
+      Stella_Object result = null;
 
       lastmove = lastmove;
       if (collectionvalue == null) {
         return (Logic.KWD_TERMINAL_FAILURE);
       }
-      if (((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null))) == null) {
-        if (Logic.enumeratedSetP(collectionvalue) &&
-            (((LogicObject)(collectionvalue)).variableValueInverse() == Stella.NIL)) {
-          Logic.bindArgumentToValueP(listarg, collectionvalue, true);
-          return (Logic.KWD_FINAL_SUCCESS);
-        }
-        { Surrogate testValue000 = Stella_Object.safePrimaryType(collectionvalue);
+      { GeneralizedSymbol testValue000 = proposition.operator;
 
-          if (Surrogate.subtypeOfP(testValue000, Logic.SGT_STELLA_COLLECTION)) {
+        if (testValue000 == Logic.SGT_PL_KERNEL_KB_COLLECT_INTO_LIST) {
+          listP = true;
+          uniqueP = false;
+        }
+        else if (testValue000 == Logic.SGT_PL_KERNEL_KB_COLLECT_INTO_ORDERED_SET) {
+          listP = true;
+        }
+        else {
+        }
+      }
+      if ((((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null))) == null) &&
+          (((Logic.enumeratedSetP(collectionvalue) &&
+          (!listP)) ||
+          (Logic.enumeratedListP(collectionvalue) &&
+           (!uniqueP))) &&
+           (((LogicObject)(collectionvalue)).variableValueInverse() == Stella.NIL))) {
+        result = collectionvalue;
+      }
+      else if (((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null))) == null) {
+        { Surrogate testValue001 = Stella_Object.safePrimaryType(collectionvalue);
+
+          if (Surrogate.subtypeOfP(testValue001, Logic.SGT_STELLA_COLLECTION)) {
             { Collection collectionvalue000 = ((Collection)(collectionvalue));
 
-              { List members = Logic.assertedCollectionMembers(collectionvalue000, false);
-
-                if (members == null) {
-                  return (Logic.KWD_TERMINAL_FAILURE);
-                }
-                Logic.bindArgumentToValueP(listarg, Logic.createEnumeratedSet(members), true);
-                return (Logic.KWD_FINAL_SUCCESS);
+              members = Logic.assertedCollectionMembers(collectionvalue000, false);
+              if (members == null) {
+                return (Logic.KWD_TERMINAL_FAILURE);
               }
             }
           }
-          else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_SKOLEM)) {
+          else if (Surrogate.subtypeOfP(testValue001, Logic.SGT_LOGIC_SKOLEM)) {
             { Skolem collectionvalue000 = ((Skolem)(collectionvalue));
 
-              { List members = Logic.assertedCollectionMembers(collectionvalue000, false);
-
-                if (members == null) {
-                  return (Logic.KWD_TERMINAL_FAILURE);
-                }
-                Logic.bindArgumentToValueP(listarg, Logic.createEnumeratedSet(members), true);
-                return (Logic.KWD_FINAL_SUCCESS);
+              members = Logic.assertedCollectionMembers(collectionvalue000, false);
+              if (members == null) {
+                return (Logic.KWD_TERMINAL_FAILURE);
               }
             }
           }
-          else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_DESCRIPTION)) {
+          else if (Surrogate.subtypeOfP(testValue001, Logic.SGT_LOGIC_DESCRIPTION)) {
             { Description collectionvalue000 = ((Description)(collectionvalue));
 
-              { boolean testValue001 = false;
+              { boolean testValue002 = false;
 
-                testValue001 = ((Vector)(KeyValueList.dynamicSlotValue(collectionvalue000.dynamicSlots, Logic.SYM_LOGIC_EXTERNAL_VARIABLES, null))) != null;
-                if (testValue001) {
+                testValue002 = ((Vector)(KeyValueList.dynamicSlotValue(collectionvalue000.dynamicSlots, Logic.SYM_LOGIC_EXTERNAL_VARIABLES, null))) != null;
+                if (testValue002) {
                   { boolean foundP000 = false;
 
                     { PatternVariable v = null;
@@ -1298,29 +1336,24 @@ public class PlKernelKb {
                         }
                       }
                     }
-                    testValue001 = foundP000;
+                    testValue002 = foundP000;
                   }
                 }
-                if (testValue001) {
+                if (testValue002) {
                   return (Logic.KWD_TERMINAL_FAILURE);
                 }
               }
               if (Description.inferableP(collectionvalue000)) {
-                {
-                  ControlFrame.createCollectDescriptionExtensionFrame(frame, collectionvalue000);
-                  KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, Logic.EMPTY_PROPOSITIONS_ITERATOR, null);
-                  return (Logic.KWD_MOVE_DOWN);
-                }
+                ControlFrame.createCollectDescriptionExtensionFrame(frame, collectionvalue000);
+                KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, Logic.EMPTY_PROPOSITIONS_ITERATOR, null);
+                return (Logic.KWD_MOVE_DOWN);
               }
               else {
-                { List members = Logic.assertedCollectionMembers(collectionvalue000, false);
-
-                  if (members == null) {
-                    return (Logic.KWD_TERMINAL_FAILURE);
-                  }
-                  Logic.bindArgumentToValueP(listarg, Logic.createEnumeratedSet(members), true);
-                  return (Logic.KWD_FINAL_SUCCESS);
+                members = Logic.assertedCollectionMembers(collectionvalue000, false);
+                if (members == null) {
+                  return (Logic.KWD_TERMINAL_FAILURE);
                 }
+                uniqueP = false;
               }
             }
           }
@@ -1329,15 +1362,43 @@ public class PlKernelKb {
           }
         }
       }
-      if (frame.down == null) {
-        return (Logic.KWD_FAILURE);
-      }
-      { List list = frame.down.patternRecord.collectionList;
+      else {
+        if (frame.down == null) {
+          return (Logic.KWD_FAILURE);
+        }
+        { ControlFrame patternframe = frame.down;
 
-        ControlFrame.popFramesUpTo(frame.down);
-        list.removeDuplicates();
-        Logic.bindArgumentToValueP(listarg, Logic.createEnumeratedSet(list), true);
-        return (Logic.KWD_FINAL_SUCCESS);
+          members = patternframe.patternRecord.collectionList.reverse();
+          ControlFrame.popFramesUpTo(patternframe);
+          if (((Keyword)(KeyValueList.dynamicSlotValue(patternframe.dynamicSlots, Logic.SYM_LOGIC_INFERENCE_CUTOFF_REASON, null))) != null) {
+            return (Logic.KWD_FAILURE);
+          }
+        }
+      }
+      if (result == null) {
+        if (uniqueP) {
+          members = (Stella_Object.consP(members.first()) ? members.removeDuplicatesEqual() : ((List)(members.removeDuplicates())));
+        }
+        result = (listP ? Logic.createLogicalList(members) : Logic.createEnumeratedSet(members));
+      }
+      { Keyword success = Logic.selectTestResult(Logic.bindArgumentToValueP(listarg, result, true), true, frame);
+
+        if (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue() &&
+            (!(success == Logic.KWD_TERMINAL_FAILURE))) {
+          { Justification self001 = Justification.newJustification();
+
+            self001.inferenceRule = Logic.KWD_COLLECT_MEMBERS;
+            { Justification justification = self001;
+              Justification antecedents = ((frame.result != null) ? ((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))) : ((Justification)(null)));
+
+              if (antecedents != null) {
+                justification.antecedents = Cons.cons(antecedents, Stella.NIL);
+              }
+              ControlFrame.recordGoalJustification(frame, justification);
+            }
+          }
+        }
+        return (success);
       }
     }
   }
@@ -1368,6 +1429,209 @@ public class PlKernelKb {
         len = ((List)(listvalue)).length();
         return (Logic.selectTestResult(Logic.bindArgumentToValueP(lengtharg, IntegerWrapper.wrapInteger(len), true), true, frame));
       }
+    }
+  }
+
+  public static Keyword nthElementSpecialist(ControlFrame frame, Keyword lastmove) {
+    { Proposition proposition = frame.proposition;
+      Stella_Object collectionarg = (proposition.arguments.theArray)[0];
+      Stella_Object collection = Logic.argumentBoundTo(collectionarg);
+      Stella_Object narg = (proposition.arguments.theArray)[1];
+      Stella_Object n = Logic.argumentBoundTo(narg);
+      Stella_Object elementarg = (proposition.arguments.theArray)[2];
+      Stella_Object element = Logic.argumentBoundTo(elementarg);
+
+      lastmove = lastmove;
+      if (Logic.logicalCollectionP(collection)) {
+        { int then = Stella.NULL_INTEGER;
+          Vector arguments = ((Skolem)(collection)).definingProposition.arguments;
+          int nargs = arguments.length() - 1;
+
+          if (Stella_Object.integerP(n)) {
+            then = IntegerWrapper.unwrapInteger(((IntegerWrapper)(n)));
+            if (then < 0) {
+              then = nargs + then;
+            }
+            if ((then >= 0) &&
+                (then < nargs)) {
+              return (Logic.selectTestResult(Logic.bindArgumentToValueP(elementarg, (arguments.theArray)[then], true), true, frame));
+            }
+          }
+          else if ((n == null) &&
+              (element != null)) {
+            { Stella_Object arg = null;
+              Vector vector000 = arguments;
+              int index000 = 0;
+              int length000 = vector000.length();
+              int i = Stella.NULL_INTEGER;
+              int iter000 = 0;
+              int upperBound000 = nargs - 1;
+
+              for (;(index000 < length000) &&
+                        (iter000 <= upperBound000); index000 = index000 + 1, iter000 = iter000 + 1) {
+                arg = (vector000.theArray)[index000];
+                i = iter000;
+                if (Stella_Object.eqlP(Logic.argumentBoundTo(arg), element)) {
+                  return (Logic.selectTestResult(Logic.bindArgumentToValueP(narg, IntegerWrapper.wrapInteger(i), true), true, frame));
+                }
+              }
+            }
+          }
+          else if ((n == null) &&
+              (element == null)) {
+            { AllPurposeIterator iterator = ((AllPurposeIterator)(((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null)))));
+
+              if (iterator == null) {
+                iterator = ((AllPurposeIterator)(((Iterator)(arguments.allocateIterator()))));
+                KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, iterator, null);
+              }
+              then = iterator.iteratorInteger;
+              if ((then < nargs) &&
+                  iterator.nextP()) {
+                element = iterator.value;
+                if (Logic.bindArgumentToValueP(narg, IntegerWrapper.wrapInteger(then), true) &&
+                    Logic.bindArgumentToValueP(elementarg, element, true)) {
+                  return (Logic.KWD_CONTINUING_SUCCESS);
+                }
+              }
+            }
+          }
+        }
+      }
+      return (Logic.KWD_TERMINAL_FAILURE);
+    }
+  }
+
+  public static Skolem nthHeadComputation(Skolem list, IntegerWrapper narg) {
+    if (!(Logic.enumeratedListP(list))) {
+      return (null);
+    }
+    { int n = narg.wrapperValue;
+      Vector elements = list.definingProposition.arguments;
+      int nelements = elements.length() - 1;
+      List headelements = List.newList();
+
+      if (n < 0) {
+        n = nelements + n;
+      }
+      if ((n < 0) ||
+          (n > nelements)) {
+        return (null);
+      }
+      { int i = Stella.NULL_INTEGER;
+        int iter000 = 0;
+        int upperBound000 = n - 1;
+        Cons collect000 = null;
+
+        for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
+          i = iter000;
+          if (collect000 == null) {
+            {
+              collect000 = Cons.cons((elements.theArray)[i], Stella.NIL);
+              if (headelements.theConsList == Stella.NIL) {
+                headelements.theConsList = collect000;
+              }
+              else {
+                Cons.addConsToEndOfConsList(headelements.theConsList, collect000);
+              }
+            }
+          }
+          else {
+            {
+              collect000.rest = Cons.cons((elements.theArray)[i], Stella.NIL);
+              collect000 = collect000.rest;
+            }
+          }
+        }
+      }
+      return (Logic.createLogicalList(headelements));
+    }
+  }
+
+  public static Skolem nthRestComputation(Skolem list, IntegerWrapper narg) {
+    if (!(Logic.enumeratedListP(list))) {
+      return (null);
+    }
+    { int n = narg.wrapperValue;
+      Vector elements = list.definingProposition.arguments;
+      int nelements = elements.length() - 1;
+      List restelements = List.newList();
+
+      if (n < 0) {
+        n = nelements + n;
+      }
+      if ((n < 0) ||
+          (n > nelements)) {
+        return (null);
+      }
+      { int i = Stella.NULL_INTEGER;
+        int iter000 = n;
+        int upperBound000 = nelements - 1;
+        Cons collect000 = null;
+
+        for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
+          i = iter000;
+          if (collect000 == null) {
+            {
+              collect000 = Cons.cons((elements.theArray)[i], Stella.NIL);
+              if (restelements.theConsList == Stella.NIL) {
+                restelements.theConsList = collect000;
+              }
+              else {
+                Cons.addConsToEndOfConsList(restelements.theConsList, collect000);
+              }
+            }
+          }
+          else {
+            {
+              collect000.rest = Cons.cons((elements.theArray)[i], Stella.NIL);
+              collect000 = collect000.rest;
+            }
+          }
+        }
+      }
+      return (Logic.createLogicalList(restelements));
+    }
+  }
+
+  public static Skolem insertElementComputation(Skolem list, IntegerWrapper narg, Stella_Object element) {
+    if (!(Logic.enumeratedListP(list))) {
+      return (null);
+    }
+    { int n = narg.wrapperValue;
+      Vector elements = list.definingProposition.arguments;
+      int nelements = elements.length() - 1;
+      List newelements = List.newList();
+
+      if (n < 0) {
+        n = nelements + n + 1;
+      }
+      if ((n < 0) ||
+          (n > nelements)) {
+        return (null);
+      }
+      { Stella_Object elt = null;
+        Vector vector000 = elements;
+        int index000 = 0;
+        int length000 = vector000.length();
+        int i = Stella.NULL_INTEGER;
+        int iter000 = 0;
+        int upperBound000 = nelements - 1;
+
+        for (;(index000 < length000) &&
+                  (iter000 <= upperBound000); index000 = index000 + 1, iter000 = iter000 + 1) {
+          elt = (vector000.theArray)[index000];
+          i = iter000;
+          if (i == n) {
+            newelements.push(element);
+          }
+          newelements.push(elt);
+        }
+      }
+      if (n == nelements) {
+        newelements.push(element);
+      }
+      return (Logic.createLogicalList(newelements.reverse()));
     }
   }
 
@@ -1506,7 +1770,7 @@ public class PlKernelKb {
       Stella_Object listarg = (proposition.arguments.theArray)[0];
       Stella_Object listskolem = Logic.argumentBoundTo(listarg);
       Stella_Object sumarg = (proposition.arguments.theArray)[1];
-      NumberWrapper sum = null;
+      NumberWrapper sum = IntegerWrapper.wrapInteger(0);
 
       lastmove = lastmove;
       if ((listskolem != null) &&
@@ -1521,29 +1785,18 @@ public class PlKernelKb {
       }
       { List listvalue = Logic.assertedCollectionMembers(listskolem, true);
 
-        if (listvalue.emptyP()) {
-          return (Logic.KWD_TERMINAL_FAILURE);
-        }
         { Stella_Object v = null;
           Cons iter000 = listvalue.theConsList;
 
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             v = iter000.value;
             if (Stella_Object.isaP(v, Logic.SGT_STELLA_NUMBER_WRAPPER)) {
-              if (sum == null) {
-                sum = ((NumberWrapper)(v));
-              }
-              else {
-                sum = PlKernelKb.plusComputation(((NumberWrapper)(v)), sum);
-              }
+              sum = PlKernelKb.plusComputation(((NumberWrapper)(v)), sum);
             }
             else {
-              return (Logic.KWD_FAILURE);
+              return (Logic.KWD_TERMINAL_FAILURE);
             }
           }
-        }
-        if (sum == null) {
-          return (Logic.KWD_TERMINAL_FAILURE);
         }
         return (Logic.selectTestResult(Logic.bindArgumentToValueP(sumarg, sum, true), true, frame));
       }
@@ -1713,13 +1966,15 @@ public class PlKernelKb {
 
   public static Keyword refutationDisjointSpecialist(ControlFrame frame, Keyword lastmove) {
     { Proposition proposition = frame.proposition;
-      Description class1 = ((Description)(Logic.argumentBoundTo((proposition.arguments.theArray)[0])));
-      Description class2 = ((Description)(Logic.argumentBoundTo((proposition.arguments.theArray)[1])));
+      Stella_Object arg1 = Logic.argumentBoundTo((proposition.arguments.theArray)[0]);
+      Stella_Object arg2 = Logic.argumentBoundTo((proposition.arguments.theArray)[1]);
 
       lastmove = lastmove;
-      if ((class1 == null) ||
-          ((class2 == null) ||
-           (proposition.arguments.length() > 2))) {
+      if ((arg1 == null) ||
+          ((arg2 == null) ||
+           ((!Stella_Object.isaP(arg1, Logic.SGT_LOGIC_DESCRIPTION)) ||
+            ((!Stella_Object.isaP(arg2, Logic.SGT_LOGIC_DESCRIPTION)) ||
+             (proposition.arguments.length() > 2))))) {
         return (Logic.KWD_TERMINAL_FAILURE);
       }
       Logic.pushMonotonicWorld();
@@ -1728,7 +1983,7 @@ public class PlKernelKb {
         { LogicObject skolem = Logic.createHypothesizedInstance("refutation-disjoint");
 
           { Description c = null;
-            Cons iter000 = ((Cons)(Stella.consList(Stella_Object.cons(class1, Stella_Object.cons(class2, Stella.NIL)))));
+            Cons iter000 = ((Cons)(Cons.consList(Cons.cons(arg1, Cons.cons(arg2, Stella.NIL)))));
 
             for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
               c = ((Description)(iter000.value));
@@ -1763,22 +2018,28 @@ public class PlKernelKb {
   public static Keyword istSpecialist(ControlFrame frame, Keyword lastmove) {
     { Proposition proposition = frame.proposition;
       Stella_Object contextvalue = Logic.argumentBoundTo((proposition.arguments.theArray)[0]);
-      Stella_Object propositionvalue = Logic.argumentBoundTo((proposition.arguments.theArray)[1]);
       SavedContextProofAdjunct adjunct = ((SavedContextProofAdjunct)(((ProofAdjunct)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_PROOF_ADJUNCT, null)))));
 
       if (lastmove == Logic.KWD_DOWN) {
-        if ((contextvalue == null) ||
-            ((propositionvalue == null) ||
-             (!Stella_Object.isaP(contextvalue, Logic.SGT_STELLA_CONTEXT)))) {
-          return (Logic.KWD_TERMINAL_FAILURE);
-        }
-        { SavedContextProofAdjunct self001 = SavedContextProofAdjunct.newSavedContextProofAdjunct();
+        if (adjunct == null) {
+          { Stella_Object propositionvalue = Logic.argumentBoundTo((proposition.arguments.theArray)[1]);
 
-          self001.savedContext = ((Context)(Stella.$CONTEXT$.get()));
-          KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_PROOF_ADJUNCT, self001, null);
+            if ((contextvalue == null) ||
+                ((propositionvalue == null) ||
+                 (!Stella_Object.isaP(contextvalue, Logic.SGT_STELLA_CONTEXT)))) {
+              return (Logic.KWD_TERMINAL_FAILURE);
+            }
+            { SavedContextProofAdjunct self001 = SavedContextProofAdjunct.newSavedContextProofAdjunct();
+
+              self001.savedContext = ((Context)(Stella.$CONTEXT$.get()));
+              self001.downFrame = ControlFrame.createDownFrame(frame, ((Proposition)(propositionvalue)));
+              adjunct = self001;
+            }
+            KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_PROOF_ADJUNCT, adjunct, null);
+          }
         }
-        ((Context)(contextvalue)).changeContext();
-        frame.argumentCursor = 1;
+        frame.down = adjunct.downFrame;
+        Logic.bestInferenceCache(((Context)(contextvalue))).changeContext();
         return (Logic.KWD_MOVE_DOWN);
       }
       else if (lastmove == Logic.KWD_UP_TRUE) {
@@ -1791,12 +2052,14 @@ public class PlKernelKb {
           { Justification self002 = Justification.newJustification();
 
             self002.inferenceRule = Logic.KWD_IST_INTRODUCTION;
-            self002.antecedents = Stella_Object.cons(((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL);
+            self002.antecedents = Cons.cons(((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL);
             ControlFrame.recordGoalJustification(frame, self002);
           }
         }
         adjunct.savedContext.changeContext();
         if (frame.down != null) {
+          adjunct.downFrame = frame.down;
+          frame.down = null;
           return (Logic.KWD_CONTINUING_SUCCESS);
         }
         else {
@@ -2054,18 +2317,30 @@ public class PlKernelKb {
     }
   }
 
-  public static Stella_Object nameToObjectComputation(StringWrapper namearg) {
+  public static Stella_Object nameToObjectComputation(Stella_Object namearg) {
     { Object old$Module$000 = Stella.$MODULE$.get();
       Object old$Context$000 = Stella.$CONTEXT$.get();
 
       try {
         Native.setSpecial(Stella.$MODULE$, ((Context)(Stella.$CONTEXT$.get())).baseModule);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
-        { Stella_Object temp000 = Logic.getInstance(namearg);
+        if (!Stella_Object.stringP(namearg)) {
+          { Stella_Object instance = Logic.getInstance(namearg);
 
-          { Stella_Object value000 = ((temp000 != null) ? temp000 : Logic.createLogicInstance(Stella.internSurrogateInModule(namearg.wrapperValue, ((Module)(Stella.$MODULE$.get())), true), null));
+            if (instance != null) {
+              return (instance);
+            }
+          }
+        }
+        { String nameargstring = edu.isi.powerloom.PLI.objectToString(namearg);
+          Surrogate instancename = Surrogate.lookupSurrogate(nameargstring);
 
-            return (value000);
+          { Stella_Object temp000 = Logic.getInstance(instancename);
+
+            { Stella_Object value000 = ((temp000 != null) ? temp000 : Logic.createLogicInstance(Surrogate.internSurrogateInModule(nameargstring, ((Module)(Stella.$MODULE$.get())), true), null));
+
+              return (value000);
+            }
           }
         }
 
@@ -2225,7 +2500,7 @@ public class PlKernelKb {
         }
         if (reflexiveP &&
             (!collection.membP(boundargvalue))) {
-          collection = Stella_Object.cons(boundargvalue, collection);
+          collection = Cons.cons(boundargvalue, collection);
         }
       }
       if (otherargvalue != null) {
@@ -2371,7 +2646,7 @@ public class PlKernelKb {
           Stella_Object.isaP(synonym, Logic.SGT_LOGIC_LOGIC_OBJECT)) {
         synonymname = ((LogicObject)(synonym)).surrogateValueInverse;
         synonymname.surrogateValue = term;
-        Logic.assertTuple(Logic.SGT_PL_KERNEL_KB_SYNONYM, Stella.consList(Stella_Object.cons(term, Stella_Object.cons(term, Stella.NIL))));
+        Logic.assertTuple(Logic.SGT_PL_KERNEL_KB_SYNONYM, Cons.consList(Cons.cons(term, Cons.cons(term, Stella.NIL))));
       }
     }
   }
@@ -2423,7 +2698,7 @@ public class PlKernelKb {
           arg = (vector000.theArray)[index000];
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Logic.valueOf(Logic.argumentBoundTo(arg)), Stella.NIL);
+              collect000 = Cons.cons(Logic.valueOf(Logic.argumentBoundTo(arg)), Stella.NIL);
               if (argumentvalues == Stella.NIL) {
                 argumentvalues = collect000;
               }
@@ -2434,7 +2709,7 @@ public class PlKernelKb {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Logic.valueOf(Logic.argumentBoundTo(arg)), Stella.NIL);
+              collect000.rest = Cons.cons(Logic.valueOf(Logic.argumentBoundTo(arg)), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -2496,7 +2771,7 @@ public class PlKernelKb {
               { NamedDescription self000 = NamedDescription.newNamedDescription();
 
                 self000.surrogateValueInverse = Logic.SGT_PL_KERNEL_KB_CONCEPT;
-                self000.ioVariableTypes = Stella.list(Stella_Object.cons(Logic.SGT_PL_KERNEL_KB_CONCEPT, Stella.NIL));
+                self000.ioVariableTypes = List.list(Cons.cons(Logic.SGT_PL_KERNEL_KB_CONCEPT, Stella.NIL));
                 dummyconcept = self000;
               }
               Logic.SGT_PL_KERNEL_KB_CONCEPT.surrogateValue = dummyconcept;
@@ -3384,7 +3659,7 @@ public class PlKernelKb {
             }
           }
           if (alwaysP000) {
-            Proposition.postForEvaluation(dep);
+            Proposition.postForEvaluation(dep, ((Context)(Stella.$CONTEXT$.get())));
           }
         }
       }
@@ -3963,47 +4238,28 @@ public class PlKernelKb {
     }
   }
 
-  public static Stella_Object concatenateConstraint(IntegerWrapper missingArgument, StringWrapper x1, StringWrapper x2, StringWrapper x3) {
-    { Stella_Object value = null;
+  public static StringWrapper stringConcatenateComputation(Stella_Object x, Cons yargs) {
+    { Object old$Printmode$000 = Logic.$PRINTMODE$.get();
 
-      switch (missingArgument.wrapperValue) {
-        case -1: 
-          value = (Stella.stringEqlP(x1.wrapperValue + x2.wrapperValue, x3.wrapperValue) ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER);
-        break;
-        case 0: 
-          { String s2 = x2.wrapperValue;
-            String s3 = x3.wrapperValue;
-            int n = s3.length() - s2.length();
+      try {
+        Native.setSpecial(Logic.$PRINTMODE$, Logic.KWD_ORIGINAL);
+        { OutputStringStream out = OutputStringStream.newOutputStringStream();
 
-            if ((n >= 0) &&
-                Stella.stringEqlP(Native.string_subsequence(s3, n, Stella.NULL_INTEGER), s2)) {
-              value = StringWrapper.wrapString(Native.string_subsequence(s3, 0, n));
-            }
-            else {
-              value = null;
+          out.nativeStream.print(edu.isi.powerloom.PLI.objectToString(x));
+          { Stella_Object arg = null;
+            Cons iter000 = yargs;
+
+            for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+              arg = iter000.value;
+              out.nativeStream.print(edu.isi.powerloom.PLI.objectToString(arg));
             }
           }
-        break;
-        case 1: 
-          { String s1 = x1.wrapperValue;
-            String s3 = x3.wrapperValue;
-            int l1 = s1.length();
+          return (StringWrapper.wrapString(out.theStringReader()));
+        }
 
-            if (Stella.stringEqlP(Native.string_subsequence(s3, 0, l1), s1)) {
-              value = StringWrapper.wrapString(Native.string_subsequence(s3, l1, Stella.NULL_INTEGER));
-            }
-            else {
-              value = null;
-            }
-          }
-        break;
-        case 2: 
-          value = StringWrapper.wrapString(x1.wrapperValue + x2.wrapperValue);
-        break;
-        default:
-        break;
+      } finally {
+        Logic.$PRINTMODE$.set(old$Printmode$000);
       }
-      return (value);
     }
   }
 
@@ -4115,7 +4371,7 @@ public class PlKernelKb {
     }
   }
 
-  public static IntegerWrapper stringMatchComputation(Stella_Object pattern, Stella_Object x, Stella_Object start, Stella_Object end) {
+  static IntegerWrapper stringMatchComputationHelper(Stella_Object pattern, Stella_Object x, Stella_Object start, Stella_Object end, boolean ignoreCaseP) {
     if (!(Stella_Object.stringP(pattern) &&
         (Stella_Object.integerP(start) &&
          Stella_Object.integerP(end)))) {
@@ -4125,20 +4381,44 @@ public class PlKernelKb {
       int thestart = ((IntegerWrapper)(start)).wrapperValue;
       int theend = ((IntegerWrapper)(end)).wrapperValue;
       String name = (Stella_Object.stringP(x) ? ((StringWrapper)(x)).wrapperValue : Logic.objectNameString(x));
+      int namelength = name.length();
       int matchposition = Stella.NULL_INTEGER;
 
-      if ((theend >= 0) &&
-          (theend <= name.length())) {
-        name = Native.string_subsequence(name, thestart, theend);
+      if (thestart < 0) {
+        thestart = namelength + thestart + 1;
       }
-      matchposition = Native.stringSearch(name, thepattern, thestart);
-      if (matchposition != Stella.NULL_INTEGER) {
+      if (thestart < 0) {
+        return (null);
+      }
+      if (theend < 0) {
+        theend = namelength + theend + 1;
+      }
+      if ((theend < 0) ||
+          (theend > namelength)) {
+        return (null);
+      }
+      if (ignoreCaseP) {
+        matchposition = Stella.stringSearchIgnoreCase(name, thepattern, thestart);
+      }
+      else {
+        matchposition = Native.stringSearch(name, thepattern, thestart);
+      }
+      if ((matchposition != Stella.NULL_INTEGER) &&
+          (matchposition < theend)) {
         return (IntegerWrapper.wrapInteger(matchposition));
       }
       else {
         return (null);
       }
     }
+  }
+
+  public static IntegerWrapper stringMatchComputation(Stella_Object pattern, Stella_Object x, Stella_Object start, Stella_Object end) {
+    return (PlKernelKb.stringMatchComputationHelper(pattern, x, start, end, false));
+  }
+
+  public static IntegerWrapper stringMatchIgnoreCaseComputation(Stella_Object pattern, Stella_Object x, Stella_Object start, Stella_Object end) {
+    return (PlKernelKb.stringMatchComputationHelper(pattern, x, start, end, true));
   }
 
   public static IntegerWrapper lengthComputation(Stella_Object x) {

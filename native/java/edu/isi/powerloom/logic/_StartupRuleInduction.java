@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,17 +52,17 @@ import edu.isi.stella.*;
 public class _StartupRuleInduction {
   static void helpStartupRuleInduction1() {
     {
-      Logic.KWD_TOP_DOWN = ((Keyword)(Stella.internRigidSymbolWrtModule("TOP-DOWN", null, 2)));
-      Logic.SGT_LOGIC_DECISION_TREE = ((Surrogate)(Stella.internRigidSymbolWrtModule("DECISION-TREE", null, 1)));
-      Logic.SYM_LOGIC_FEATURE = ((Symbol)(Stella.internRigidSymbolWrtModule("FEATURE", null, 0)));
-      Logic.SYM_LOGIC_FEATURE_INDEX = ((Symbol)(Stella.internRigidSymbolWrtModule("FEATURE-INDEX", null, 0)));
-      Logic.SYM_LOGIC_TRUE_BRANCH = ((Symbol)(Stella.internRigidSymbolWrtModule("TRUE-BRANCH", null, 0)));
-      Logic.SYM_LOGIC_FALSE_BRANCH = ((Symbol)(Stella.internRigidSymbolWrtModule("FALSE-BRANCH", null, 0)));
-      Logic.KWD_BOTTOM_UP = ((Keyword)(Stella.internRigidSymbolWrtModule("BOTTOM-UP", null, 2)));
-      Logic.SYM_STELLA_l = ((Symbol)(Stella.internRigidSymbolWrtModule("<", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.KWD_DECISION_TREE = ((Keyword)(Stella.internRigidSymbolWrtModule("DECISION-TREE", null, 2)));
-      Logic.SYM_LOGIC_USER_THING = ((Symbol)(Stella.internRigidSymbolWrtModule("USER-THING", null, 0)));
-      Logic.SYM_LOGIC_STARTUP_RULE_INDUCTION = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-RULE-INDUCTION", null, 0)));
+      Logic.KWD_TOP_DOWN = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TOP-DOWN", null, 2)));
+      Logic.SGT_LOGIC_DECISION_TREE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DECISION-TREE", null, 1)));
+      Logic.SYM_LOGIC_FEATURE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FEATURE", null, 0)));
+      Logic.SYM_LOGIC_FEATURE_INDEX = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FEATURE-INDEX", null, 0)));
+      Logic.SYM_LOGIC_TRUE_BRANCH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TRUE-BRANCH", null, 0)));
+      Logic.SYM_LOGIC_FALSE_BRANCH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FALSE-BRANCH", null, 0)));
+      Logic.KWD_BOTTOM_UP = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("BOTTOM-UP", null, 2)));
+      Logic.SYM_STELLA_l = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("<", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.KWD_DECISION_TREE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DECISION-TREE", null, 2)));
+      Logic.SYM_LOGIC_USER_THING = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("USER-THING", null, 0)));
+      Logic.SYM_LOGIC_STARTUP_RULE_INDUCTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-RULE-INDUCTION", null, 0)));
     }
   }
 
@@ -173,6 +173,7 @@ public class _StartupRuleInduction {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *RULE-INDUCTION-STRATEGY* KEYWORD :TOP-DOWN)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SIGNATURE-STRATEGY* KEYWORD :TOP-DOWN)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *ENABLE-USER-THING* BOOLEAN TRUE)");

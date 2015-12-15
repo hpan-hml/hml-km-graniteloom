@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,24 +52,24 @@ import edu.isi.stella.*;
 public class _StartupGoalCaches {
   static void helpStartupGoalCaches1() {
     {
-      Logic.SGT_LOGIC_GOAL_CACHE = ((Surrogate)(Stella.internRigidSymbolWrtModule("GOAL-CACHE", null, 1)));
-      Logic.SYM_LOGIC_CACHED_BINDINGS = ((Symbol)(Stella.internRigidSymbolWrtModule("CACHED-BINDINGS", null, 0)));
-      Logic.SYM_LOGIC_CACHE_CONTEXT = ((Symbol)(Stella.internRigidSymbolWrtModule("CACHE-CONTEXT", null, 0)));
-      Logic.SYM_LOGIC_GOAL_CACHE_TABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("GOAL-CACHE-TABLE", null, 0)));
-      Logic.SYM_LOGIC_NEGATED_GOAL_CACHE_TABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("NEGATED-GOAL-CACHE-TABLE", null, 0)));
-      Logic.SGT_LOGIC_ATOMIC_GOAL_CACHE = ((Surrogate)(Stella.internRigidSymbolWrtModule("ATOMIC-GOAL-CACHE", null, 1)));
-      Logic.SYM_LOGIC_GOAL_CONTEXT = ((Symbol)(Stella.internRigidSymbolWrtModule("GOAL-CONTEXT", null, 0)));
-      Logic.SYM_LOGIC_PREVIOUS = ((Symbol)(Stella.internRigidSymbolWrtModule("PREVIOUS", null, 0)));
-      Logic.SYM_LOGIC_GOAL_CACHE_LIST = ((Symbol)(Stella.internRigidSymbolWrtModule("GOAL-CACHE-LIST", null, 0)));
-      Logic.KWD_GOAL_INSTANTIATES_CACHE = ((Keyword)(Stella.internRigidSymbolWrtModule("GOAL-INSTANTIATES-CACHE", null, 2)));
-      Logic.KWD_CACHE_INSTANTIATES_GOAL = ((Keyword)(Stella.internRigidSymbolWrtModule("CACHE-INSTANTIATES-GOAL", null, 2)));
-      Logic.SGT_PL_KERNEL_KB_FRAME_PREDICATE = ((Surrogate)(Stella.internRigidSymbolWrtModule("FRAME-PREDICATE", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SYM_LOGIC_CHECK_FOR_CACHED_GOALSp = ((Symbol)(Stella.internRigidSymbolWrtModule("CHECK-FOR-CACHED-GOALS?", null, 0)));
-      Logic.KWD_SUCCESS = ((Keyword)(Stella.internRigidSymbolWrtModule("SUCCESS", null, 2)));
-      Logic.SGT_LOGIC_ATOMIC_GOAL_CACHE_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("ATOMIC-GOAL-CACHE-ITERATOR", null, 1)));
-      Logic.SYM_LOGIC_GOAL = ((Symbol)(Stella.internRigidSymbolWrtModule("GOAL", null, 0)));
-      Logic.SYM_LOGIC_CACHE_LIST = ((Symbol)(Stella.internRigidSymbolWrtModule("CACHE-LIST", null, 0)));
-      Logic.SYM_LOGIC_STARTUP_GOAL_CACHES = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-GOAL-CACHES", null, 0)));
+      Logic.SGT_LOGIC_GOAL_CACHE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL-CACHE", null, 1)));
+      Logic.SYM_LOGIC_CACHED_BINDINGS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CACHED-BINDINGS", null, 0)));
+      Logic.SYM_LOGIC_CACHE_CONTEXT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CACHE-CONTEXT", null, 0)));
+      Logic.SYM_LOGIC_GOAL_CACHE_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL-CACHE-TABLE", null, 0)));
+      Logic.SYM_LOGIC_NEGATED_GOAL_CACHE_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NEGATED-GOAL-CACHE-TABLE", null, 0)));
+      Logic.SGT_LOGIC_ATOMIC_GOAL_CACHE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ATOMIC-GOAL-CACHE", null, 1)));
+      Logic.SYM_LOGIC_GOAL_CONTEXT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL-CONTEXT", null, 0)));
+      Logic.SYM_LOGIC_PREVIOUS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PREVIOUS", null, 0)));
+      Logic.SYM_LOGIC_GOAL_CACHE_LIST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL-CACHE-LIST", null, 0)));
+      Logic.KWD_GOAL_INSTANTIATES_CACHE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL-INSTANTIATES-CACHE", null, 2)));
+      Logic.KWD_CACHE_INSTANTIATES_GOAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CACHE-INSTANTIATES-GOAL", null, 2)));
+      Logic.SGT_PL_KERNEL_KB_FRAME_PREDICATE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FRAME-PREDICATE", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SYM_LOGIC_CHECK_FOR_CACHED_GOALSp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CHECK-FOR-CACHED-GOALS?", null, 0)));
+      Logic.KWD_SUCCESS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SUCCESS", null, 2)));
+      Logic.SGT_LOGIC_ATOMIC_GOAL_CACHE_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ATOMIC-GOAL-CACHE-ITERATOR", null, 1)));
+      Logic.SYM_LOGIC_GOAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL", null, 0)));
+      Logic.SYM_LOGIC_CACHE_LIST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CACHE-LIST", null, 0)));
+      Logic.SYM_LOGIC_STARTUP_GOAL_CACHES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-GOAL-CACHES", null, 0)));
     }
   }
 
@@ -125,7 +125,7 @@ public class _StartupGoalCaches {
           Stella.defineFunctionObject("CONTINUE-CACHED-BINDINGS-PROOF", "(DEFUN (CONTINUE-CACHED-BINDINGS-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continueCachedBindingsProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
           Stella.defineFunctionObject("TOP-LEVEL-QUERY-CONTEXT?", "(DEFUN (TOP-LEVEL-QUERY-CONTEXT? BOOLEAN) ((SELF CONTEXT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "topLevelQueryContextP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Context")}), null);
           Stella.defineFunctionObject("CACHE-QUERY-RESULTS?", "(DEFUN (CACHE-QUERY-RESULTS? BOOLEAN) () :GLOBALLY-INLINE? TRUE (RETURN (AND (OR *CACHE-SUCCEEDED-GOALS?* *CACHE-FAILED-GOALS?*) (EQL? *DUPLICATE-SUBGOAL-STRATEGY* :DUPLICATE-GOALS) (NOT (PARTIAL-MATCH-MODE?)))))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "cacheQueryResultsP", new java.lang.Class [] {}), null);
-          Stella.defineFunctionObject("TOGGLE-GOAL-CACHING", "(DEFUN (TOGGLE-GOAL-CACHING STRING) ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "toggleGoalCaching", new java.lang.Class [] {}), null);
+          Stella.defineFunctionObject("TOGGLE-GOAL-CACHING", "(DEFUN (TOGGLE-GOAL-CACHING STRING) () :COMMAND? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "toggleGoalCaching", new java.lang.Class [] {}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "toggleGoalCachingEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
           Stella.defineFunctionObject("PRINT-ATOMIC-GOAL-CACHE", "(DEFUN PRINT-ATOMIC-GOAL-CACHE ((SELF ATOMIC-GOAL-CACHE) (STREAM NATIVE-OUTPUT-STREAM)))", Native.find_java_method("edu.isi.powerloom.logic.AtomicGoalCache", "printAtomicGoalCache", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.AtomicGoalCache"), Native.find_java_class("java.io.PrintStream")}), null);
           Stella.defineFunctionObject("CLEAR-QUERY-RESULTS-CACHE", "(DEFUN CLEAR-QUERY-RESULTS-CACHE ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "clearQueryResultsCache", new java.lang.Class [] {}), null);
           Stella.defineFunctionObject("PRINT-QUERY-RESULTS-CACHE", "(DEFUN PRINT-QUERY-RESULTS-CACHE ((LIMIT INTEGER)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "printQueryResultsCache", new java.lang.Class [] {java.lang.Integer.TYPE}), null);
@@ -158,6 +158,7 @@ public class _StartupGoalCaches {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CACHE-SUCCEEDED-GOALS?* BOOLEAN TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CACHE-FAILED-GOALS?* BOOLEAN TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CACHE-GOAL-QUANTUM* INTEGER 5 :DOCUMENTATION \"Only goals whose success or failure took at least this\nnumber of query clock ticks will be cached.\")");

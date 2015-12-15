@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -48,6 +48,156 @@
 namespace logic {
   using namespace stella;
 
+PropagationEnvironment* newPropagationEnvironment() {
+  { PropagationEnvironment* self = NULL;
+
+    self = new PropagationEnvironment();
+    self->elaboratedObjects = newHashSet();
+    self->deferredDefaultPropositions = list(0);
+    self->forwardChainingSet = newHashSet();
+    self->forwardChainingQueue = list(0);
+    self->evaluationStates = newKeyValueMap();
+    self->evaluationQueue = list(0);
+    return (self);
+  }
+}
+
+Surrogate* PropagationEnvironment::primaryType() {
+  { PropagationEnvironment* self = this;
+
+    return (SGT_PROPAGATE_LOGIC_PROPAGATION_ENVIRONMENT);
+  }
+}
+
+Object* accessPropagationEnvironmentSlotValue(PropagationEnvironment* self, Symbol* slotname, Object* value, boolean setvalueP) {
+  if (slotname == SYM_PROPAGATE_LOGIC_EVALUATION_QUEUE) {
+    if (setvalueP) {
+      self->evaluationQueue = ((List*)(value));
+    }
+    else {
+      value = self->evaluationQueue;
+    }
+  }
+  else if (slotname == SYM_PROPAGATE_LOGIC_EVALUATION_STATES) {
+    if (setvalueP) {
+      self->evaluationStates = ((KeyValueMap*)(value));
+    }
+    else {
+      value = self->evaluationStates;
+    }
+  }
+  else if (slotname == SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE) {
+    if (setvalueP) {
+      self->forwardChainingQueue = ((List*)(value));
+    }
+    else {
+      value = self->forwardChainingQueue;
+    }
+  }
+  else if (slotname == SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_SET) {
+    if (setvalueP) {
+      self->forwardChainingSet = ((HashSet*)(value));
+    }
+    else {
+      value = self->forwardChainingSet;
+    }
+  }
+  else if (slotname == SYM_PROPAGATE_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS) {
+    if (setvalueP) {
+      self->deferredDefaultPropositions = ((List*)(value));
+    }
+    else {
+      value = self->deferredDefaultPropositions;
+    }
+  }
+  else if (slotname == SYM_PROPAGATE_LOGIC_ELABORATED_OBJECTS) {
+    if (setvalueP) {
+      self->elaboratedObjects = ((HashSet*)(value));
+    }
+    else {
+      value = self->elaboratedObjects;
+    }
+  }
+  else {
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "`" << slotname << "'" << " is not a valid case option";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
+  return (value);
+}
+
+PropagationEnvironment* getPropagationEnvironment(Context* self) {
+  { PropagationEnvironment* environment = ((PropagationEnvironment*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_PROPAGATION_ENVIRONMENT, NULL)));
+
+    if (!((boolean)(environment))) {
+      environment = newPropagationEnvironment();
+      setDynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_PROPAGATION_ENVIRONMENT, environment, NULL);
+    }
+    return (environment);
+  }
+}
+
+void unlinkPropagationEnvironment(Context* self) {
+  setDynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_PROPAGATION_ENVIRONMENT, NULL, NULL);
+}
+
+void PropagationEnvironment::deferDefaultProposition(Proposition* proposition) {
+  { PropagationEnvironment* self = this;
+
+    self->deferredDefaultPropositions->insert(proposition);
+  }
+}
+
+void PropagationEnvironment::clearPropagationQueues() {
+  { PropagationEnvironment* self = this;
+
+    self->evaluationQueue->clear();
+    self->forwardChainingQueue->clear();
+  }
+}
+
+PropagationEnvironment* PropagationEnvironment::copy() {
+  { PropagationEnvironment* self = this;
+
+    { PropagationEnvironment* copy = newPropagationEnvironment();
+
+      copy->evaluationQueue = self->evaluationQueue->copy();
+      { Proposition* prop = NULL;
+        Keyword* state = NULL;
+        DictionaryIterator* iter000 = ((DictionaryIterator*)(self->evaluationStates->allocateIterator()));
+
+        for  (prop, state, iter000; 
+              iter000->nextP(); ) {
+          prop = ((Proposition*)(iter000->key));
+          state = ((Keyword*)(iter000->value));
+          copy->evaluationStates->insertAt(prop, state);
+        }
+      }
+      copy->forwardChainingQueue = self->forwardChainingQueue->copy();
+      { Proposition* prop = NULL;
+        DictionaryIterator* iter001 = ((DictionaryIterator*)(self->forwardChainingSet->allocateIterator()));
+
+        for (prop, iter001; iter001->nextP(); ) {
+          prop = ((Proposition*)(iter001->value));
+          copy->forwardChainingSet->insert(prop);
+        }
+      }
+      copy->deferredDefaultPropositions = self->deferredDefaultPropositions->copy();
+      { Object* obj = NULL;
+        DictionaryIterator* iter002 = ((DictionaryIterator*)(self->elaboratedObjects->allocateIterator()));
+
+        for (obj, iter002; iter002->nextP(); ) {
+          obj = iter002->value;
+          copy->elaboratedObjects->insert(obj);
+        }
+      }
+      return (copy);
+    }
+  }
+}
+
 // True if we are inside of 'react-to-kb-update'.
 DEFINE_STELLA_SPECIAL(oFILLINGCONSTRAINTPROPAGATIONQUEUESpo, boolean , false);
 
@@ -55,58 +205,45 @@ DEFINE_STELLA_SPECIAL(oFILLINGCONSTRAINTPROPAGATIONQUEUESpo, boolean , false);
 // posting derived default propositions to temporary queues.
 DEFINE_STELLA_SPECIAL(oDEFERINGDEFAULTFORWARDINFERENCESpo, boolean , false);
 
-Cons* deferredDefaultPropositions(Context* self) {
-  { Cons* value = ((Cons*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS_INTERNAL, NULL)));
-
-    if (!((boolean)(value))) {
-      return (NIL);
-    }
-    else {
-      return (value);
-    }
-  }
-}
-
-void deferredDefaultPropositionsSetter(Context* self, Cons* newvalue) {
-  setDynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS_INTERNAL, newvalue, NULL);
-}
-
 Keyword* evaluationState(Proposition* proposition) {
-  { HashTable* table = ((HashTable*)(dynamicSlotValue(oCONTEXTo.get()->dynamicSlots, SYM_PROPAGATE_LOGIC_EVALUATION_STATE_TABLE, NULL)));
-
-    if (!((boolean)(table))) {
-      return (NULL);
-    }
-    return (((Keyword*)(table->lookup(proposition))));
+  // Return :POSTED if `proposition' is on the evaluation queue
+  // for *context*, :EVALUATED if has been evaluated, or NULL if it has never been evaluated.
+  if (descriptionModeP()) {
+    return (NULL);
+  }
+  else {
+    return (((Keyword*)(getPropagationEnvironment(oCONTEXTo.get())->evaluationStates->lookup(proposition))));
   }
 }
 
 void evaluationStateSetter(Proposition* proposition, Keyword* state) {
-  { HashTable* table = ((HashTable*)(dynamicSlotValue(oCONTEXTo.get()->dynamicSlots, SYM_PROPAGATE_LOGIC_EVALUATION_STATE_TABLE, NULL)));
+  // Record the evaluation `state' of 'proposition'.
+  if (!(descriptionModeP())) {
+    getPropagationEnvironment(oCONTEXTo.get())->evaluationStates->insertAt(proposition, state);
+  }
+}
 
-    if (!((boolean)(table))) {
+void postForEvaluation(Proposition* self, Context* world) {
+  // Push 'self' onto the evaluation queue (unless it's already there).
+  if (!((boolean)(world))) {
+    world = oCONTEXTo.get();
+  }
+  if (!oFILLINGCONSTRAINTPROPAGATIONQUEUESpo.get()) {
+    { 
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, world);
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+      evaluateProposition(self);
       return;
     }
-    table->insertAt(proposition, state);
+  }
+  { PropagationEnvironment* environment = getPropagationEnvironment(world);
+
+    if (!(((Keyword*)(environment->evaluationStates->lookup(self))) == KWD_PROPAGATE_POSTED)) {
+      environment->evaluationQueue->insert(self);
+      environment->evaluationStates->insertAt(self, KWD_PROPAGATE_POSTED);
+    }
   }
 }
-
-void postForEvaluation(Proposition* self) {
-  if (!oFILLINGCONSTRAINTPROPAGATIONQUEUESpo.get()) {
-    evaluateProposition(self);
-    return;
-  }
-  if (evaluationState(self) == KWD_PROPAGATE_POSTED) {
-    return;
-  }
-  ((List*)(dynamicSlotValue(oCONTEXTo.get()->dynamicSlots, SYM_PROPAGATE_LOGIC_EVALUATION_QUEUE, NULL)))->insert(self);
-  evaluationStateSetter(self, KWD_PROPAGATE_POSTED);
-}
-
-// Points to an active queue of propositions that will trigger
-// forward inference.  New queue entries are posted to a separate queue
-// attached to *context*.
-DEFINE_STELLA_SPECIAL(oCURRENTLYEXECUTINGFORWARDCHAININGQUEUEo, List* , NULL);
 
 Cons* helpCollectForwardRules(Description* description, KeyValueList* rules, KeyValueList* indices, boolean toucheddefaultP, List* beenthere) {
   if (!((boolean)(rules))) {
@@ -230,44 +367,25 @@ void postToForwardChainingQueue(Proposition* self, World* world) {
       (!(self->kind == KWD_PROPAGATE_FUNCTION))) {
     return;
   }
-  { List* forwardchainingqueue = ((List*)(dynamicSlotValue(world->dynamicSlots, SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE, NULL)));
+  if (!((boolean)(world))) {
+    world = ((World*)(oCONTEXTo.get()));
+  }
+  { PropagationEnvironment* environment = getPropagationEnvironment(world);
+    NamedDescription* description = NULL;
 
     { Keyword* testValue000 = self->kind;
 
       if ((testValue000 == KWD_PROPAGATE_ISA) ||
           ((testValue000 == KWD_PROPAGATE_PREDICATE) ||
            (testValue000 == KWD_PROPAGATE_FUNCTION))) {
-        { boolean foundP000 = false;
-
-          { Object* arg = NULL;
-            Vector* vector000 = self->arguments;
-            int index000 = 0;
-            int length000 = vector000->length();
-
-            for  (arg, vector000, index000, length000; 
-                  index000 < length000; 
-                  index000 = index000 + 1) {
-              arg = (vector000->theArray)[index000];
-              if (isaP(arg, SGT_PROPAGATE_LOGIC_SKOLEM) &&
-                  ((!((boolean)(((Skolem*)(arg))->definingProposition))) &&
-                   (!((BooleanWrapper*)(dynamicSlotValue(((Skolem*)(arg))->dynamicSlots, SYM_PROPAGATE_LOGIC_HYPOTHESIZED_INSTANCEp, FALSE_WRAPPER)))->wrapperValue))) {
-                foundP000 = true;
-                break;
-              }
-            }
-          }
-          if (foundP000) {
-            if (((boolean)(oCOLLECTFORWARDPROPOSITIONSo.get()))) {
-              return;
-            }
-          }
+        if (environment->forwardChainingSet->memberP(self)) {
+          return;
         }
-        { NamedDescription* description = getDescription(((Surrogate*)(self->operatoR)));
-
-          if (((boolean)(description)) &&
-              hasForwardChainingRulesP(description, self)) {
-            forwardchainingqueue->push(self);
-          }
+        description = getDescription(((Surrogate*)(self->operatoR)));
+        if (((boolean)(description)) &&
+            hasForwardChainingRulesP(description, self)) {
+          environment->forwardChainingSet->insert(self);
+          environment->forwardChainingQueue->insert(self);
         }
       }
       else {
@@ -280,29 +398,95 @@ void postToForwardChainingQueue(Proposition* self, World* world) {
 // chaining.
 DEFINE_STELLA_SPECIAL(oCOLLECTFORWARDPROPOSITIONSo, Cons* , NULL);
 
-void applyRuleConsequentToVector(Description* consequent, Vector* arguments, Proposition* rule, Description* triggerdescription, Proposition* triggerproposition, boolean toucheddefaultP) {
+int Skolem::skolemGenerationCount_reader() {
+  { Skolem* self = this;
+
+    { int answer = ((IntegerWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_SKOLEM_GENERATION_COUNT, NULL_INTEGER_WRAPPER)))->wrapperValue;
+
+      if (answer == NULL_INTEGER) {
+        return (0);
+      }
+      else {
+        return (answer);
+      }
+    }
+  }
+}
+
+int oMAX_SKOLEM_GENERATION_COUNTo = 3;
+
+void applyRuleConsequentToVector(Description* consequent, Vector* arguments, Proposition* rule, Description* triggerdescription, Proposition* triggerproposition, boolean toucheddefaultP, Justification* bcJustification) {
+  triggerdescription = triggerdescription;
   { 
     BIND_STELLA_SPECIAL(oCOLLECTFORWARDPROPOSITIONSo, Cons*, NIL);
     { boolean toucheddefaultknowledgeP = defaultTrueP(triggerproposition) ||
           (defaultTrueP(rule) ||
            toucheddefaultP);
+      Skolem* skolem = NULL;
+      int skolemgenerationcount = 0;
 
+      { Object* arg = NULL;
+        Vector* vector000 = arguments;
+        int index000 = 0;
+        int length000 = vector000->length();
+
+        for  (arg, vector000, index000, length000; 
+              index000 < length000; 
+              index000 = index000 + 1) {
+          arg = (vector000->theArray)[index000];
+          if (skolemP(arg) &&
+              (((Skolem*)(arg))->skolemGenerationCount_reader() > skolemgenerationcount)) {
+            skolemgenerationcount = ((Skolem*)(arg))->skolemGenerationCount_reader();
+            if (skolemgenerationcount >= oMAX_SKOLEM_GENERATION_COUNTo) {
+              if (((boolean)(oTRACED_KEYWORDSo)) &&
+                  oTRACED_KEYWORDSo->membP(KWD_PROPAGATE_PROPAGATE)) {
+                std::cout << "*** cutting off forward skolemization on: " << triggerproposition << std::endl;
+              }
+              return;
+            }
+          }
+        }
+      }
       { 
         BIND_STELLA_SPECIAL(oQUERYITERATORo, QueryIterator*, NULL);
         BIND_STELLA_SPECIAL(oDONT_CHECK_FOR_DUPLICATE_PROPOSITIONSpo, boolean, false);
         inheritDescription(arguments, consequent, toucheddefaultknowledgeP);
       }
-    }
-    if (traceKeywordP(KWD_PROPAGATE_PROPAGATE)) {
-      traceForwardRule(rule, triggerproposition, oCOLLECTFORWARDPROPOSITIONSo.get());
-    }
-    { Proposition* p = NULL;
-      Cons* iter000 = oCOLLECTFORWARDPROPOSITIONSo.get();
+      if (traceKeywordP(KWD_PROPAGATE_PROPAGATE)) {
+        traceForwardRule(rule, triggerproposition, oCOLLECTFORWARDPROPOSITIONSo.get());
+      }
+      { Proposition* p = NULL;
+        Cons* iter000 = oCOLLECTFORWARDPROPOSITIONSo.get();
 
-      for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-        p = ((Proposition*)(iter000->value));
-        recordForwardGoal(rule, arguments, p);
-        recordForwardJustification(p, rule, consList(1, triggerproposition));
+        for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+          p = ((Proposition*)(iter000->value));
+          { Object* value000 = NULL;
+
+            { Object* arg = NULL;
+              Vector* vector001 = p->arguments;
+              int index001 = 0;
+              int length001 = vector001->length();
+
+              for  (arg, vector001, index001, length001; 
+                    index001 < length001; 
+                    index001 = index001 + 1) {
+                arg = (vector001->theArray)[index001];
+                if (skolemP(arg)) {
+                  value000 = arg;
+                  break;
+                }
+              }
+            }
+            skolem = ((Skolem*)(value000));
+          }
+          if (((boolean)(skolem)) &&
+              ((!((boolean)(skolem->definingProposition))) &&
+               (!((BooleanWrapper*)(dynamicSlotValue(skolem->dynamicSlots, SYM_PROPAGATE_LOGIC_HYPOTHESIZED_INSTANCEp, FALSE_WRAPPER)))->wrapperValue))) {
+            setDynamicSlotValue(skolem->dynamicSlots, SYM_PROPAGATE_LOGIC_SKOLEM_GENERATION_COUNT, wrapInteger(stella::integerMax(skolemgenerationcount + 1, skolem->skolemGenerationCount_reader())), NULL_INTEGER_WRAPPER);
+          }
+          recordForwardGoal(rule, arguments, p);
+          recordForwardJustification(consList(1, triggerproposition), rule, arguments, p, bcJustification);
+        }
       }
     }
   }
@@ -408,7 +592,7 @@ void applyForwardRulesToVector(Description* triggerdescription, Vector* argument
         r = ((Proposition*)(iter001->key));
         toucheddefaultP = ((BooleanWrapper*)(iter001->value));
         if (applicableForwardRuleP(r, arguments)) {
-          applyRuleConsequentToVector(((Description*)((r->arguments->theArray)[1])), arguments, r, triggerdescription, triggerproposition, coerceWrappedBooleanToBoolean(toucheddefaultP));
+          applyRuleConsequentToVector(((Description*)((r->arguments->theArray)[1])), arguments, r, triggerdescription, triggerproposition, coerceWrappedBooleanToBoolean(toucheddefaultP), NULL);
         }
       }
     }
@@ -469,6 +653,7 @@ void applyForwardRulesToVector(Description* triggerdescription, Vector* argument
         }
         { Cons* outputbindings = NULL;
           Cons* truthvalues = NULL;
+          Cons* justifications = NULL;
           boolean traceforwardinferenceP = traceKeywordP(KWD_PROPAGATE_PROPAGATE);
           boolean tracegoaltreeP = traceforwardinferenceP &&
               traceKeywordP(KWD_PROPAGATE_GOAL_TREE);
@@ -482,7 +667,10 @@ void applyForwardRulesToVector(Description* triggerdescription, Vector* argument
           else if (traceKeywordP(KWD_PROPAGATE_GOAL_TREE)) {
             oTRACED_KEYWORDSo = ((List*)(oTRACED_KEYWORDSo->copy()->remove(KWD_PROPAGATE_GOAL_TREE)));
           }
-          outputbindings = applyCachedRetrieve(fwdindex->ioVariables, fwdindex->queryBody, fwdindex->inputBindings, consList(2, KWD_PROPAGATE_SINGLETONSp, TRUE_WRAPPER), fwdindex->cacheId, truthvalues);
+          { 
+            BIND_STELLA_SPECIAL(oFILLINGCONSTRAINTPROPAGATIONQUEUESpo, boolean, true);
+            outputbindings = applyCachedRetrieve(fwdindex->ioVariables, fwdindex->queryBody, fwdindex->inputBindings, consList(4, KWD_PROPAGATE_SINGLETONSp, FALSE_WRAPPER, KWD_PROPAGATE_INFERENCE_LEVEL, KWD_PROPAGATE_SHALLOW), fwdindex->cacheId, truthvalues, justifications);
+          }
           if (tracegoaltreeP) {
             std::cout << "Done proving forward goal: " << fwdindex->queryBody << std::endl << std::endl;
           }
@@ -499,8 +687,15 @@ void applyForwardRulesToVector(Description* triggerdescription, Vector* argument
                   iter005 = iter005->rest) {
               ob = iter004->value;
               tv = iter005->value;
-              applyRuleConsequentToVector(fwdindex->consequent, copyListToArgumentsVector(((Cons*)(ob))->listify()), fwdindex->masterRule, triggerdescription, triggerproposition, coerceWrappedBooleanToBoolean(toucheddefaultP) ||
-                  (tv == DEFAULT_TRUE_TRUTH_VALUE));
+              { Object* head000 = justifications->value;
+
+                justifications = justifications->rest;
+                { Object* justification = head000;
+
+                  applyRuleConsequentToVector(fwdindex->consequent, copyListToArgumentsVector(((Cons*)(ob))->listify()), fwdindex->masterRule, triggerdescription, triggerproposition, coerceWrappedBooleanToBoolean(toucheddefaultP) ||
+                      (tv == DEFAULT_TRUE_TRUTH_VALUE), ((Justification*)(justification)));
+                }
+              }
             }
           }
         }
@@ -537,7 +732,7 @@ void Skolem::reactToInferenceUpdate() {
 
         for (prop, iter000; iter000->nextP(); ) {
           prop = ((Proposition*)(iter000->value));
-          postForEvaluation(prop);
+          postForEvaluation(prop, oCONTEXTo.get());
         }
       }
       if (oFILLINGCONSTRAINTPROPAGATIONQUEUESpo.get()) {
@@ -555,24 +750,17 @@ void Skolem::reactToInferenceUpdate() {
 void Proposition::reactToInferenceUpdate() {
   { Proposition* self = this;
 
-    { TruthValue* parenttruthvalue = ((TruthValue*)(accessInContext(self->truthValue, self->homeContext, false)));
+    postForEvaluation(self, oCONTEXTo.get());
+    { Proposition* prop = NULL;
+      Iterator* iter000 = self->dependentPropositions->allocateIterator();
 
-      if ((!(parenttruthvalue == ((TruthValue*)(accessInContext(self->truthValue, self->homeContext, false))))) &&
-          ((boolean)(parenttruthvalue))) {
-        signalTruthValueClash(self);
+      for (prop, iter000; iter000->nextP(); ) {
+        prop = ((Proposition*)(iter000->value));
+        postForEvaluation(prop, oCONTEXTo.get());
       }
-      postForEvaluation(self);
-      { Proposition* prop = NULL;
-        Iterator* iter000 = self->dependentPropositions->allocateIterator();
-
-        for (prop, iter000; iter000->nextP(); ) {
-          prop = ((Proposition*)(iter000->value));
-          postForEvaluation(prop);
-        }
-      }
-      if (oFILLINGCONSTRAINTPROPAGATIONQUEUESpo.get()) {
-        postToForwardChainingQueue(self, ((World*)(oCONTEXTo.get())));
-      }
+    }
+    if (oFILLINGCONSTRAINTPROPAGATIONQUEUESpo.get()) {
+      postToForwardChainingQueue(self, ((World*)(oCONTEXTo.get())));
     }
   }
 }
@@ -644,7 +832,6 @@ void reactToKbUpdate(Context* context, Object* object) {
         { 
           BIND_STELLA_SPECIAL(oCONTEXTo, Context*, world);
           BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
-          initializeConstraintPropagationQueues(world);
           { 
             BIND_STELLA_SPECIAL(oFILLINGCONSTRAINTPROPAGATIONQUEUESpo, boolean, true);
             if (propositionP) {
@@ -673,57 +860,64 @@ void reactToKbUpdate(Context* context, Object* object) {
   }
 }
 
-void initializeConstraintPropagationQueues(World* world) {
-  setDynamicSlotValue(world->dynamicSlots, SYM_PROPAGATE_LOGIC_EVALUATION_QUEUE, newList(), NULL);
-  setDynamicSlotValue(world->dynamicSlots, SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE, newList(), NULL);
-}
+void PropagationEnvironment::executePropagationQueues() {
+  { PropagationEnvironment* self = this;
 
-void executeConstraintPropagationQueues() {
-  { 
-    BIND_STELLA_SPECIAL(oINHIBITOBJECTFINALIZATIONpo, boolean, true);
-    for (;;) {
-      { List* queue = ((List*)(dynamicSlotValue(oCONTEXTo.get()->dynamicSlots, SYM_PROPAGATE_LOGIC_EVALUATION_QUEUE, NULL)));
+    { 
+      BIND_STELLA_SPECIAL(oINHIBITOBJECTFINALIZATIONpo, boolean, true);
+      for (;;) {
+        { List* queue = self->evaluationQueue;
 
-        setDynamicSlotValue(oCONTEXTo.get()->dynamicSlots, SYM_PROPAGATE_LOGIC_EVALUATION_QUEUE, newList(), NULL);
-        { Proposition* p = NULL;
-          Cons* iter000 = queue->theConsList;
+          if (queue->nonEmptyP()) {
+            self->evaluationQueue = newList();
+            { Proposition* p = NULL;
+              Cons* iter000 = queue->theConsList;
 
-          for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-            p = ((Proposition*)(iter000->value));
-            evaluateProposition(p);
-          }
-        }
-      }
-      { List* queue = ((List*)(dynamicSlotValue(oCONTEXTo.get()->dynamicSlots, SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE, NULL)));
-
-        setDynamicSlotValue(oCONTEXTo.get()->dynamicSlots, SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE, newList(), NULL);
-        { Proposition* proposition = NULL;
-          Cons* iter001 = queue->theConsList;
-
-          for (proposition, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
-            proposition = ((Proposition*)(iter001->value));
-                        { Description* description = getDescription(((Surrogate*)(proposition->operatoR)));
-
-              if (falseP(proposition)) {
-                description = getInferableComplementDescription(description);
-              }
-              if (((boolean)(description))) {
-                applyForwardRulesToVector(description, proposition->arguments, proposition);
+              for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+                p = ((Proposition*)(iter000->value));
+                evaluateProposition(p);
               }
             }
           }
         }
-      }
-      if (((List*)(dynamicSlotValue(oCONTEXTo.get()->dynamicSlots, SYM_PROPAGATE_LOGIC_EVALUATION_QUEUE, NULL)))->emptyP() &&
-          ((List*)(dynamicSlotValue(oCONTEXTo.get()->dynamicSlots, SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE, NULL)))->emptyP()) {
-        return;
+        { List* queue = self->forwardChainingQueue;
+          Description* description = NULL;
+
+          if (queue->nonEmptyP()) {
+            self->forwardChainingQueue = newList();
+            { Proposition* proposition = NULL;
+              Cons* iter001 = queue->theConsList;
+
+              for (proposition, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+                proposition = ((Proposition*)(iter001->value));
+                                description = getDescription(((Surrogate*)(proposition->operatoR)));
+                if (((boolean)(description)) &&
+                    falseP(proposition)) {
+                  description = getInferableComplementDescription(description);
+                }
+                if (((boolean)(description))) {
+                  applyForwardRulesToVector(description, proposition->arguments, proposition);
+                }
+              }
+            }
+          }
+        }
+        if (self->evaluationQueue->emptyP() &&
+            self->forwardChainingQueue->emptyP()) {
+          return;
+        }
       }
     }
   }
 }
 
+void executeConstraintPropagationQueues() {
+  getPropagationEnvironment(oCONTEXTo.get())->executePropagationQueues();
+}
+
 void evaluateNewProposition(Proposition* self) {
-  if (descriptionModeP()) {
+  if (descriptionModeP() ||
+      ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue) {
     return;
   }
   { World* world = lookupConstraintPropagationWorld(oCONTEXTo.get());
@@ -960,6 +1154,34 @@ void evaluateEquivalentProposition(Proposition* self) {
       if (defaultTrueP(self)) {
         *(STANDARD_WARNING->nativeStream) << "Warning: " << "INTERNAL ERROR: DON'T KNOW YET HOW TO EQUATE THINGS BY DEFAULT." << std::endl;
       }
+      { Cons* firstargtypes = allAssertedTypes(firstarg);
+        Cons* secondargtypes = allAssertedTypes(secondarg);
+
+        { NamedDescription* type1 = NULL;
+          Cons* iter000 = firstargtypes;
+
+          for (type1, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+            type1 = ((NamedDescription*)(iter000->value));
+            { boolean foundP000 = false;
+
+              { NamedDescription* type2 = NULL;
+                Cons* iter001 = secondargtypes;
+
+                for (type2, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+                  type2 = ((NamedDescription*)(iter001->value));
+                  if (disjointTermsP(type1, type2)) {
+                    foundP000 = true;
+                    break;
+                  }
+                }
+              }
+              if (foundP000) {
+                signalUnificationClash(firstarg, secondarg);
+              }
+            }
+          }
+        }
+      }
       equateValues(firstarg, secondarg);
     }
     else if (eqlP(firstarg, secondarg)) {
@@ -1113,110 +1335,27 @@ void evaluateFunctionProposition(Proposition* self) {
   equateEquivalentFunctionPropositions(self);
   { NamedDescription* description = getDescription(((Surrogate*)(self->operatoR)));
     cpp_function_code code = lookupConstraint(description);
-    Object* argumentValue = NULL;
-    Cons* boundarguments = NIL;
-    Object* computedvalue = NULL;
     Object* storedvalue = NULL;
+    Object* computedvalue = NULL;
     int missingvalueindex = -1;
 
     if (code != NULL) {
-      { Object* arg = NULL;
-        Vector* vector000 = self->arguments;
-        int index000 = 0;
-        int length000 = vector000->length();
-        Object* domain = NULL;
-        Iterator* iter000 = allArgumentTypes(description);
-        int i = NULL_INTEGER;
-        int iter001 = 0;
-        Cons* collect000 = NULL;
-
-        for  (arg, vector000, index000, length000, domain, iter000, i, iter001, collect000; 
-              (index000 < length000) &&
-                  iter000->nextP(); 
-              index000 = index000 + 1,
-              iter001 = iter001 + 1) {
-          arg = (vector000->theArray)[index000];
-          domain = iter000->value;
-          i = iter001;
-          argumentValue = valueOf(arg);
-          if (isaP(argumentValue, SGT_PROPAGATE_LOGIC_SKOLEM)) {
-            if (missingvalueindex == -1) {
-              {
-                missingvalueindex = i;
-                argumentValue = NULL;
-              }
-            }
-            else {
-              return;
-            }
-          }
-          else if (!checkStrictTypeP(argumentValue, ((Surrogate*)(domain)), true)) {
-            return;
-          }
-          else {
-          }
-          if (!((boolean)(collect000))) {
-            {
-              collect000 = cons(argumentValue, NIL);
-              if (boundarguments == NIL) {
-                boundarguments = collect000;
-              }
-              else {
-                addConsToEndOfConsList(boundarguments, collect000);
-              }
-            }
-          }
-          else {
-            {
-              collect000->rest = cons(argumentValue, NIL);
-              collect000 = collect000->rest;
-            }
-          }
+      computedvalue = computeSimpleRelationConstraint(self, code, false, missingvalueindex);
+      if (((boolean)(computedvalue))) {
+        if (missingvalueindex == -1) {
+          assignTruthValue(self, computedvalue);
+          return;
         }
-      }
-      if (missingvalueindex == -1) {
-        return;
-      }
-      computedvalue = apply(code, cons(wrapInteger(missingvalueindex), boundarguments));
-      storedvalue = valueOf((self->arguments->theArray)[missingvalueindex]);
-      if ((!eqlP(computedvalue, storedvalue)) &&
-          ((boolean)(computedvalue))) {
-        equateValues(computedvalue, storedvalue);
+        storedvalue = valueOf((self->arguments->theArray)[missingvalueindex]);
+        if (!eqlP(computedvalue, storedvalue)) {
+          equateValues(computedvalue, storedvalue);
+        }
       }
       return;
     }
     code = lookupComputation(description);
     if (code != NULL) {
-      { Object* arg = NULL;
-        Iterator* iter002 = self->arguments->butLast();
-        Cons* collect001 = NULL;
-
-        for  (arg, iter002, collect001; 
-              iter002->nextP(); ) {
-          arg = iter002->value;
-          if (isaP(valueOf(arg), SGT_PROPAGATE_LOGIC_SKOLEM)) {
-            return;
-          }
-          if (!((boolean)(collect001))) {
-            {
-              collect001 = cons(valueOf(arg), NIL);
-              if (boundarguments == NIL) {
-                boundarguments = collect001;
-              }
-              else {
-                addConsToEndOfConsList(boundarguments, collect001);
-              }
-            }
-          }
-          else {
-            {
-              collect001->rest = cons(valueOf(arg), NIL);
-              collect001 = collect001->rest;
-            }
-          }
-        }
-      }
-      computedvalue = apply(code, boundarguments);
+      computedvalue = computeRelationValue(self, code, false);
       if (((boolean)(computedvalue))) {
         computedvalue = evaluateTerm(computedvalue);
       }
@@ -1313,6 +1452,8 @@ void evaluatePredicateProposition(Proposition* self) {
 }
 
 void evaluateProposition(Proposition* self) {
+  // Evaluate 'self' against its arguments, possibly resulting in
+  // the setting or changing of its truth value.
   evaluationStateSetter(self, KWD_PROPAGATE_EVALUATED);
   { Keyword* testValue000 = self->kind;
 
@@ -1382,21 +1523,6 @@ void Skolem::markAsIncoherent() {
 // been applied to each instance 'touched' during a query.
 boolean oJUST_IN_TIME_FORWARD_INFERENCEpo = true;
 
-List* LogicObject::elaboratedInWorlds_reader() {
-  { LogicObject* self = this;
-
-    { List* answer = ((List*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_ELABORATED_IN_WORLDS, NULL)));
-
-      if (!((boolean)(answer))) {
-        return (NIL_LIST);
-      }
-      else {
-        return (answer);
-      }
-    }
-  }
-}
-
 void recursivelyReactToInferenceUpdate(Proposition* self) {
   self->reactToInferenceUpdate();
   { Object* arg = NULL;
@@ -1435,57 +1561,45 @@ void elaborateInstance(Object* self) {
       { Object* self000 = self;
         LogicObject* self = ((LogicObject*)(self000));
 
-        if (self->elaboratedInWorlds_reader()->memberP(oCONTEXTo.get())) {
-          return;
-        }
-        if (((boolean)(oTRACED_KEYWORDSo)) &&
-            oTRACED_KEYWORDSo->membP(KWD_PROPAGATE_ELABORATE)) {
-          std::cout << " ELABORATING:  " << self << " in world " << oCONTEXTo.get() << std::endl;
-        }
-        if (self->elaboratedInWorlds_reader() == NIL_LIST) {
-          setDynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_ELABORATED_IN_WORLDS, list(0), NULL);
-        }
-        else {
-          self->elaboratedInWorlds_reader()->removeDeletedMembers();
-        }
-        self->elaboratedInWorlds_reader()->push(((World*)(oCONTEXTo.get())));
-        { 
-          BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_PROPAGATE_EXTENSIONAL_ASSERTION);
-          BIND_STELLA_SPECIAL(oINHIBITOBJECTFINALIZATIONpo, boolean, true);
-          BIND_STELLA_SPECIAL(oQUERYITERATORo, QueryIterator*, NULL);
-          try {
-            initializeConstraintPropagationQueues(((World*)(oCONTEXTo.get())));
-            { 
-              BIND_STELLA_SPECIAL(oFILLINGCONSTRAINTPROPAGATIONQUEUESpo, boolean, true);
-              evaluateReachableInequalities(self, list(0));
-              { Proposition* prop = NULL;
-                Cons* iter000 = allFactsOfInstance(self, true, false)->theConsList;
+        { PropagationEnvironment* environment = getPropagationEnvironment(oCONTEXTo.get());
 
-                for (prop, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-                  prop = ((Proposition*)(iter000->value));
-                  recursivelyReactToInferenceUpdate(prop);
-                }
-              }
+          if (environment->elaboratedObjects->memberP(self)) {
+            return;
+          }
+          if (((boolean)(oTRACED_KEYWORDSo)) &&
+              oTRACED_KEYWORDSo->membP(KWD_PROPAGATE_ELABORATE)) {
+            std::cout << " ELABORATING:  " << self << " in world " << oCONTEXTo.get() << std::endl;
+          }
+          { 
+            BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_PROPAGATE_EXTENSIONAL_ASSERTION);
+            BIND_STELLA_SPECIAL(oINHIBITOBJECTFINALIZATIONpo, boolean, true);
+            BIND_STELLA_SPECIAL(oQUERYITERATORo, QueryIterator*, NULL);
+            try {
               { 
-                BIND_STELLA_SPECIAL(oDEFERINGDEFAULTFORWARDINFERENCESpo, boolean, true);
+                BIND_STELLA_SPECIAL(oFILLINGCONSTRAINTPROPAGATIONQUEUESpo, boolean, true);
+                postRelatedFacts(self, environment);
+                evaluateReachableInequalities(self, list(0));
+                { 
+                  BIND_STELLA_SPECIAL(oDEFERINGDEFAULTFORWARDINFERENCESpo, boolean, true);
+                  executeConstraintPropagationQueues();
+                }
+                { Proposition* p = NULL;
+                  Cons* iter000 = environment->deferredDefaultPropositions->theConsList;
+
+                  for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+                    p = ((Proposition*)(iter000->value));
+                    assignTruthValue(p, DEFAULT_TRUE_TRUTH_VALUE);
+                  }
+                }
+                environment->deferredDefaultPropositions->clear();
                 executeConstraintPropagationQueues();
               }
-              { Proposition* p = NULL;
-                Cons* iter001 = deferredDefaultPropositions(oCONTEXTo.get());
-
-                for (p, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
-                  p = ((Proposition*)(iter001->value));
-                  assignTruthValue(p, DEFAULT_TRUE_TRUTH_VALUE);
-                }
-              }
-              deferredDefaultPropositionsSetter(oCONTEXTo.get(), NIL);
             }
-            executeConstraintPropagationQueues();
-          }
-          catch (Clash& _e) {
-            Clash* e = &_e;
+            catch (Clash& _e) {
+              Clash* e = &_e;
 
-            *(STANDARD_ERROR->nativeStream) << exceptionMessage(e) << std::endl;
+              *(STANDARD_ERROR->nativeStream) << exceptionMessage(e) << std::endl;
+            }
           }
         }
       }
@@ -1501,9 +1615,7 @@ void evaluateReachableInequalities(LogicObject* self, List* visitedlist) {
 
     for (p, iter000; iter000->nextP(); ) {
       p = ((Proposition*)(iter000->value));
-      if (!((boolean)(evaluationState(p)))) {
-        postForEvaluation(p);
-      }
+      postForEvaluation(p, oCONTEXTo.get());
       visitedlist->push(self);
       { Object* arg = NULL;
         Vector* vector000 = p->arguments;
@@ -1576,45 +1688,158 @@ void elaborateSurrogatesInProposition(Proposition* proposition) {
   }
 }
 
-void collectFunctionPropositionFacts(Proposition* self, List* facts, List* beenthere, boolean includeunknownP) {
-  beenthere->insert(self);
-  { Object* outputskolem = (self->arguments->theArray)[(self->arguments->length() - 1)];
-    Object* value = valueOf(outputskolem);
-    boolean hasassertedvalueP = !eqlP(value, outputskolem);
+boolean followDependentPropositionArgumentP(Proposition* proposition, Object* argument) {
+  if (proposition->kind == KWD_PROPAGATE_EQUIVALENT) {
+    return (true);
+  }
+  if (subtypeOfP(safePrimaryType(argument), SGT_PROPAGATE_LOGIC_SKOLEM)) {
+    { Object* argument000 = argument;
+      Skolem* argument = ((Skolem*)(argument000));
 
-    if (hasassertedvalueP) {
-      if (!facts->memberP(self)) {
-        facts->insert(self);
+      if (functionOutputSkolemP(argument)) {
+        return (true);
       }
-    }
-    if ((!hasassertedvalueP) ||
-        (nativeValueP(value) &&
-         (!isaP(value, SGT_PROPAGATE_STELLA_LITERAL_WRAPPER)))) {
-      helpCollectFacts(outputskolem, facts, beenthere, includeunknownP);
+      { NamedDescription* relation = getDescription(proposition->operatoR);
+
+        if (((boolean)(relation))) {
+          if (computedTermP(relation)) {
+            return (true);
+          }
+        }
+      }
+      return (!unfilteredDependentPropositions(argument, SGT_PROPAGATE_PL_KERNEL_KB_EQUIVALENT)->emptyP());
     }
   }
+  else {
+  }
+  return (false);
 }
 
-void helpCollectFacts(Object* self, List* facts, List* beenthere, boolean includeunknownP) {
+void postRelatedFacts(Object* self, PropagationEnvironment* environment) {
   { Surrogate* testValue000 = safePrimaryType(self);
 
     if (subtypeOfP(testValue000, SGT_PROPAGATE_LOGIC_LOGIC_OBJECT)) {
       { Object* self000 = self;
         LogicObject* self = ((LogicObject*)(self000));
 
+        if (environment->elaboratedObjects->memberP(self)) {
+          return;
+        }
+        else {
+          environment->elaboratedObjects->insert(self);
+        }
         { Proposition* p = NULL;
           Iterator* iter000 = unfilteredDependentPropositions(self, NULL)->allocateIterator();
 
           for (p, iter000; iter000->nextP(); ) {
             p = ((Proposition*)(iter000->value));
-            if (!beenthere->memberP(p)) {
-              if (p->kind == KWD_PROPAGATE_FUNCTION) {
-                collectFunctionPropositionFacts(p, facts, beenthere, includeunknownP);
-              }
-              else {
-                helpCollectFacts(p, facts, beenthere, includeunknownP);
+            postRelatedFacts(p, environment);
+            { Object* arg = NULL;
+              Vector* vector000 = p->arguments;
+              int index000 = 0;
+              int length000 = vector000->length();
+
+              for  (arg, vector000, index000, length000; 
+                    index000 < length000; 
+                    index000 = index000 + 1) {
+                arg = (vector000->theArray)[index000];
+                if ((!(arg == self)) &&
+                    followDependentPropositionArgumentP(p, arg)) {
+                  postRelatedFacts(arg, environment);
+                }
               }
             }
+          }
+        }
+        { LogicObject* equivalent = NULL;
+          Cons* iter001 = self->variableValueInverse_reader();
+
+          for (equivalent, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+            equivalent = ((LogicObject*)(iter001->value));
+            postRelatedFacts(equivalent, environment);
+          }
+        }
+      }
+    }
+    else if (subtypeOfP(testValue000, SGT_PROPAGATE_LOGIC_PROPOSITION)) {
+      { Object* self001 = self;
+        Proposition* self = ((Proposition*)(self001));
+
+        if (((boolean)(((Keyword*)(environment->evaluationStates->lookup(self)))))) {
+          return;
+        }
+        { boolean assertedP = !unknownP(self);
+          Skolem* outputskolem = NULL;
+
+          if ((!assertedP) &&
+              (self->kind == KWD_PROPAGATE_FUNCTION)) {
+            assertedP = functionWithDefinedValueP(self);
+          }
+          if (assertedP) {
+            recursivelyReactToInferenceUpdate(self);
+          }
+          { Proposition* p = NULL;
+            Iterator* iter002 = self->dependentPropositions->allocateIterator();
+
+            for (p, iter002; iter002->nextP(); ) {
+              p = ((Proposition*)(iter002->value));
+              postRelatedFacts(p, environment);
+            }
+          }
+        }
+      }
+    }
+    else if (subtypeOfSurrogateP(testValue000)) {
+      { Object* self002 = self;
+        Surrogate* self = ((Surrogate*)(self002));
+
+        if (((boolean)(self->surrogateValue))) {
+          postRelatedFacts(self->surrogateValue, environment);
+        }
+      }
+    }
+    else if (subtypeOfClassP(testValue000)) {
+      { Object* self003 = self;
+        Class* self = ((Class*)(self003));
+
+        if (((boolean)(((NamedDescription*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_DESCRIPTION, NULL)))))) {
+          postRelatedFacts(((NamedDescription*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_DESCRIPTION, NULL))), environment);
+        }
+      }
+    }
+    else if (subtypeOfP(testValue000, SGT_PROPAGATE_STELLA_SLOT)) {
+      { Object* self004 = self;
+        Slot* self = ((Slot*)(self004));
+
+        if (((boolean)(((NamedDescription*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_DESCRIPTION, NULL)))))) {
+          postRelatedFacts(((NamedDescription*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPAGATE_LOGIC_DESCRIPTION, NULL))), environment);
+        }
+      }
+    }
+    else {
+    }
+  }
+}
+
+void helpCollectFacts(Object* self, List* facts, HashSet* beenthere, boolean includeunknownP) {
+  { Surrogate* testValue000 = safePrimaryType(self);
+
+    if (subtypeOfP(testValue000, SGT_PROPAGATE_LOGIC_LOGIC_OBJECT)) {
+      { Object* self000 = self;
+        LogicObject* self = ((LogicObject*)(self000));
+
+        if (beenthere->memberP(self)) {
+          return;
+        }
+        else {
+          beenthere->insert(self);
+        }
+        { Proposition* p = NULL;
+          Iterator* iter000 = unfilteredDependentPropositions(self, NULL)->allocateIterator();
+
+          for (p, iter000; iter000->nextP(); ) {
+            p = ((Proposition*)(iter000->value));
+            helpCollectFacts(p, facts, beenthere, includeunknownP);
           }
         }
         { LogicObject* equivalent = NULL;
@@ -1631,17 +1856,29 @@ void helpCollectFacts(Object* self, List* facts, List* beenthere, boolean includ
       { Object* self001 = self;
         Proposition* self = ((Proposition*)(self001));
 
-        beenthere->insert(self);
-        if ((!unknownP(self)) ||
-            includeunknownP) {
-          facts->insert(self);
+        if (beenthere->memberP(self)) {
+          return;
         }
-        { Proposition* p = NULL;
-          Iterator* iter002 = self->dependentPropositions->allocateIterator();
+        else {
+          beenthere->insert(self);
+        }
+        { boolean assertedP = includeunknownP ||
+              (!unknownP(self));
+          Skolem* outputskolem = NULL;
 
-          for (p, iter002; iter002->nextP(); ) {
-            p = ((Proposition*)(iter002->value));
-            if (!beenthere->memberP(p)) {
+          if ((!assertedP) &&
+              (self->kind == KWD_PROPAGATE_FUNCTION)) {
+            outputskolem = ((Skolem*)((self->arguments->theArray)[(self->arguments->length() - 1)]));
+            assertedP = !(outputskolem == valueOf(outputskolem));
+          }
+          if (assertedP) {
+            facts->insert(self);
+          }
+          { Proposition* p = NULL;
+            Iterator* iter002 = self->dependentPropositions->allocateIterator();
+
+            for (p, iter002; iter002->nextP(); ) {
+              p = ((Proposition*)(iter002->value));
               helpCollectFacts(p, facts, beenthere, includeunknownP);
             }
           }
@@ -1684,7 +1921,6 @@ List* allFactsOfInstance(Object* self, boolean includeunknownfactsP, boolean ela
   // Return a list of all definite (TRUE or FALSE) propositions
   // attached to `self'.
   { List* facts = newList();
-    List* beenthere = newList();
 
     { 
       BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getQueryContext());
@@ -1692,7 +1928,7 @@ List* allFactsOfInstance(Object* self, boolean includeunknownfactsP, boolean ela
       if (elaborateP) {
         elaborateInstance(self);
       }
-      helpCollectFacts(self, facts, beenthere, includeunknownfactsP);
+      helpCollectFacts(self, facts, newHashSet(), includeunknownfactsP);
     }
     return (facts);
   }
@@ -1706,7 +1942,8 @@ Cons* allFactsOf(Object* instanceref) {
   // inferred to be TRUE by the forward chainer will be included.
   // Hence, the returned list of facts may be longer in a context where the
   // forward chainer has been run then in one where it has not (see
-  // `run-forward-rules').
+  // `run-forward-rules').  `instanceRef' can be a regular name such as
+  // `fred' as well as a function term such as `(father fred)'.
   { LogicObject* instance = coerceToInstance(instanceref, NULL);
 
     if (((boolean)(instance))) {
@@ -1714,6 +1951,22 @@ Cons* allFactsOf(Object* instanceref) {
     }
     else {
       return (NULL);
+    }
+  }
+}
+
+void printFacts(Object* instanceref) {
+  // Like ALL-FACTS-OF, but prints each fact on a separate 
+  // line on the standard output stream.
+  { LogicObject* instance = coerceToInstance(instanceref, NULL);
+
+    { Proposition* fact = NULL;
+      Cons* iter000 = allFactsOfInstance(instance, false, false)->theConsList;
+
+      for (fact, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+        fact = ((Proposition*)(iter000->value));
+        std::cout << fact << std::endl;
+      }
     }
   }
 }
@@ -1899,7 +2152,7 @@ char* factToSentence(Proposition* self, boolean periodP) {
                               { Object* value003 = value;
                                 IntegerWrapper* value = ((IntegerWrapper*)(value003));
 
-                                stringvalue = integerToString(value->wrapperValue);
+                                stringvalue = integerToString(((long long int)(value->wrapperValue)));
                               }
                             }
                             else if (subtypeOfFloatP(testValue002)) {
@@ -2199,10 +2452,15 @@ Cons* allFactsOfNEvaluatorWrapper(Cons* arguments) {
 
 void helpStartupPropagate1() {
   {
-    SYM_PROPAGATE_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS_INTERNAL = ((Symbol*)(internRigidSymbolWrtModule("DEFERRED-DEFAULT-PROPOSITIONS-INTERNAL", NULL, 0)));
-    SYM_PROPAGATE_LOGIC_EVALUATION_STATE_TABLE = ((Symbol*)(internRigidSymbolWrtModule("EVALUATION-STATE-TABLE", NULL, 0)));
-    KWD_PROPAGATE_POSTED = ((Keyword*)(internRigidSymbolWrtModule("POSTED", NULL, 2)));
+    SGT_PROPAGATE_LOGIC_PROPAGATION_ENVIRONMENT = ((Surrogate*)(internRigidSymbolWrtModule("PROPAGATION-ENVIRONMENT", NULL, 1)));
     SYM_PROPAGATE_LOGIC_EVALUATION_QUEUE = ((Symbol*)(internRigidSymbolWrtModule("EVALUATION-QUEUE", NULL, 0)));
+    SYM_PROPAGATE_LOGIC_EVALUATION_STATES = ((Symbol*)(internRigidSymbolWrtModule("EVALUATION-STATES", NULL, 0)));
+    SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE = ((Symbol*)(internRigidSymbolWrtModule("FORWARD-CHAINING-QUEUE", NULL, 0)));
+    SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_SET = ((Symbol*)(internRigidSymbolWrtModule("FORWARD-CHAINING-SET", NULL, 0)));
+    SYM_PROPAGATE_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS = ((Symbol*)(internRigidSymbolWrtModule("DEFERRED-DEFAULT-PROPOSITIONS", NULL, 0)));
+    SYM_PROPAGATE_LOGIC_ELABORATED_OBJECTS = ((Symbol*)(internRigidSymbolWrtModule("ELABORATED-OBJECTS", NULL, 0)));
+    SYM_PROPAGATE_LOGIC_PROPAGATION_ENVIRONMENT = ((Symbol*)(internRigidSymbolWrtModule("PROPAGATION-ENVIRONMENT", NULL, 0)));
+    KWD_PROPAGATE_POSTED = ((Keyword*)(internRigidSymbolWrtModule("POSTED", NULL, 2)));
     KWD_PROPAGATE_FORWARD = ((Keyword*)(internRigidSymbolWrtModule("FORWARD", NULL, 2)));
     SYM_PROPAGATE_LOGIC_BACKWARD_ONLYp = ((Symbol*)(internRigidSymbolWrtModule("BACKWARD-ONLY?", NULL, 0)));
     SGT_PROPAGATE_LOGIC_NAMED_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("NAMED-DESCRIPTION", NULL, 1)));
@@ -2210,20 +2468,23 @@ void helpStartupPropagate1() {
     SGT_PROPAGATE_LOGIC_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 1)));
     SGT_PROPAGATE_LOGIC_F_COLLECT_FORWARD_CHAINING_RULES_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-COLLECT-FORWARD-CHAINING-RULES-MEMO-TABLE-000", NULL, 1)));
     KWD_PROPAGATE_FUNCTION = ((Keyword*)(internRigidSymbolWrtModule("FUNCTION", NULL, 2)));
-    SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE = ((Symbol*)(internRigidSymbolWrtModule("FORWARD-CHAINING-QUEUE", NULL, 0)));
     KWD_PROPAGATE_ISA = ((Keyword*)(internRigidSymbolWrtModule("ISA", NULL, 2)));
     KWD_PROPAGATE_PREDICATE = ((Keyword*)(internRigidSymbolWrtModule("PREDICATE", NULL, 2)));
-    SGT_PROPAGATE_LOGIC_SKOLEM = ((Surrogate*)(internRigidSymbolWrtModule("SKOLEM", NULL, 1)));
-    SYM_PROPAGATE_LOGIC_HYPOTHESIZED_INSTANCEp = ((Symbol*)(internRigidSymbolWrtModule("HYPOTHESIZED-INSTANCE?", NULL, 0)));
+    SYM_PROPAGATE_LOGIC_SKOLEM_GENERATION_COUNT = ((Symbol*)(internRigidSymbolWrtModule("SKOLEM-GENERATION-COUNT", NULL, 0)));
     KWD_PROPAGATE_PROPAGATE = ((Keyword*)(internRigidSymbolWrtModule("PROPAGATE", NULL, 2)));
+    SYM_PROPAGATE_LOGIC_HYPOTHESIZED_INSTANCEp = ((Symbol*)(internRigidSymbolWrtModule("HYPOTHESIZED-INSTANCE?", NULL, 0)));
     SGT_PROPAGATE_PL_KERNEL_KB_AND = ((Surrogate*)(internRigidSymbolWrtModule("AND", getStellaModule("/PL-KERNEL-KB", true), 1)));
     KWD_PROPAGATE_GOAL_TREE = ((Keyword*)(internRigidSymbolWrtModule("GOAL-TREE", NULL, 2)));
     KWD_PROPAGATE_SINGLETONSp = ((Keyword*)(internRigidSymbolWrtModule("SINGLETONS?", NULL, 2)));
+    KWD_PROPAGATE_INFERENCE_LEVEL = ((Keyword*)(internRigidSymbolWrtModule("INFERENCE-LEVEL", NULL, 2)));
+    KWD_PROPAGATE_SHALLOW = ((Keyword*)(internRigidSymbolWrtModule("SHALLOW", NULL, 2)));
+    SGT_PROPAGATE_LOGIC_SKOLEM = ((Surrogate*)(internRigidSymbolWrtModule("SKOLEM", NULL, 1)));
     SGT_PROPAGATE_LOGIC_PROPOSITION = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 1)));
     KWD_PROPAGATE_KB_UPDATE = ((Keyword*)(internRigidSymbolWrtModule("KB-UPDATE", NULL, 2)));
     KWD_PROPAGATE_META_KB_UPDATE = ((Keyword*)(internRigidSymbolWrtModule("META-KB-UPDATE", NULL, 2)));
     KWD_PROPAGATE_META = ((Keyword*)(internRigidSymbolWrtModule("META", NULL, 2)));
     SGT_PROPAGATE_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 1)));
+    SYM_PROPAGATE_LOGIC_DESCRIPTIVEp = ((Symbol*)(internRigidSymbolWrtModule("DESCRIPTIVE?", NULL, 0)));
     SGT_PROPAGATE_LOGIC_LOGIC_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("LOGIC-OBJECT", NULL, 1)));
     SGT_PROPAGATE_STELLA_SYMBOL = ((Surrogate*)(internRigidSymbolWrtModule("SYMBOL", getStellaModule("/STELLA", true), 1)));
     KWD_PROPAGATE_EVALUATED = ((Keyword*)(internRigidSymbolWrtModule("EVALUATED", NULL, 2)));
@@ -2231,14 +2492,13 @@ void helpStartupPropagate1() {
     KWD_PROPAGATE_OR = ((Keyword*)(internRigidSymbolWrtModule("OR", NULL, 2)));
     KWD_PROPAGATE_NOT = ((Keyword*)(internRigidSymbolWrtModule("NOT", NULL, 2)));
     KWD_PROPAGATE_EQUIVALENT = ((Keyword*)(internRigidSymbolWrtModule("EQUIVALENT", NULL, 2)));
-    SYM_PROPAGATE_LOGIC_ELABORATED_IN_WORLDS = ((Symbol*)(internRigidSymbolWrtModule("ELABORATED-IN-WORLDS", NULL, 0)));
     KWD_PROPAGATE_ELABORATE = ((Keyword*)(internRigidSymbolWrtModule("ELABORATE", NULL, 2)));
     KWD_PROPAGATE_EXTENSIONAL_ASSERTION = ((Keyword*)(internRigidSymbolWrtModule("EXTENSIONAL-ASSERTION", NULL, 2)));
     SGT_PROPAGATE_PL_KERNEL_KB_INEQUALITY = ((Surrogate*)(internRigidSymbolWrtModule("INEQUALITY", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPAGATE_STELLA_SURROGATE = ((Surrogate*)(internRigidSymbolWrtModule("SURROGATE", getStellaModule("/STELLA", true), 1)));
     KWD_PROPAGATE_EXISTS = ((Keyword*)(internRigidSymbolWrtModule("EXISTS", NULL, 2)));
     KWD_PROPAGATE_FORALL = ((Keyword*)(internRigidSymbolWrtModule("FORALL", NULL, 2)));
-    SGT_PROPAGATE_STELLA_LITERAL_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL-WRAPPER", getStellaModule("/STELLA", true), 1)));
+    SGT_PROPAGATE_PL_KERNEL_KB_EQUIVALENT = ((Surrogate*)(internRigidSymbolWrtModule("EQUIVALENT", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SYM_PROPAGATE_LOGIC_DESCRIPTION = ((Symbol*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 0)));
     SGT_PROPAGATE_STELLA_SLOT = ((Surrogate*)(internRigidSymbolWrtModule("SLOT", getStellaModule("/STELLA", true), 1)));
     SGT_PROPAGATE_PL_KERNEL_KB_PHRASE = ((Surrogate*)(internRigidSymbolWrtModule("PHRASE", getStellaModule("/PL-KERNEL-KB", true), 1)));
@@ -2250,27 +2510,28 @@ void helpStartupPropagate1() {
 
 void helpStartupPropagate2() {
   {
-    defineExternalSlotFromStringifiedSource("(DEFSLOT CONTEXT DEFERRED-DEFAULT-PROPOSITIONS-INTERNAL :TYPE (CONS OF PROPOSITION) :PUBLIC? TRUE :DOCUMENTATION \"List of propositions infered to be true or false by\ndefault before we enter default propagation mode.\" :DEFAULT NULL :ALLOCATION :DYNAMIC)");
-    defineFunctionObject("DEFERRED-DEFAULT-PROPOSITIONS", "(DEFUN (DEFERRED-DEFAULT-PROPOSITIONS (CONS OF PROPOSITION)) ((SELF CONTEXT)))", ((cpp_function_code)(&deferredDefaultPropositions)), NULL);
-    defineFunctionObject("DEFERRED-DEFAULT-PROPOSITIONS-SETTER", "(DEFUN DEFERRED-DEFAULT-PROPOSITIONS-SETTER ((SELF CONTEXT) (NEWVALUE (CONS OF PROPOSITION))))", ((cpp_function_code)(&deferredDefaultPropositionsSetter)), NULL);
-    defineExternalSlotFromStringifiedSource("(DEFSLOT CONTEXT EVALUATION-QUEUE :TYPE (LIST OF PROPOSITION) :PUBLIC? TRUE :DOCUMENTATION \"List of propositions waiting for evaluation in \n*context*.\" :DEFAULT NULL :ALLOCATION :DYNAMIC)");
-    defineExternalSlotFromStringifiedSource("(DEFSLOT CONTEXT EVALUATION-STATE-TABLE :TYPE (HASH-TABLE OF PROPOSITION KEYWORD) :PUBLIC? TRUE :DOCUMENTATION \"Records which propositions have been evaluated at\nleast once in the world 'self'.\" :ALLOCATION :DYNAMIC)");
-    defineFunctionObject("EVALUATION-STATE", "(DEFUN (EVALUATION-STATE KEYWORD) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&evaluationState)), NULL);
-    defineFunctionObject("EVALUATION-STATE-SETTER", "(DEFUN EVALUATION-STATE-SETTER ((PROPOSITION PROPOSITION) (STATE KEYWORD)))", ((cpp_function_code)(&evaluationStateSetter)), NULL);
-    defineFunctionObject("POST-FOR-EVALUATION", "(DEFUN POST-FOR-EVALUATION ((SELF PROPOSITION)) :PUBLIC? TRUE)", ((cpp_function_code)(&postForEvaluation)), NULL);
-    defineExternalSlotFromStringifiedSource("(DEFSLOT CONTEXT FORWARD-CHAINING-QUEUE :TYPE (LIST OF PROPOSITION) :PUBLIC? TRUE :DOCUMENTATION \"Queue of recently asserted or inferred propositions\nhaving applicable forward rules.  Rules are triggered for each queue entry.\" :DEFAULT NULL :ALLOCATION :DYNAMIC)");
+    defineExternalSlotFromStringifiedSource("(DEFSLOT CONTEXT PROPAGATION-ENVIRONMENT :TYPE PROPAGATION-ENVIRONMENT :PUBLIC? TRUE :DOCUMENTATION \"Holds propositions posted for evaluation and\nforward chaining as well as various other propagation control information.\" :ALLOCATION :DYNAMIC)");
+    defineFunctionObject("GET-PROPAGATION-ENVIRONMENT", "(DEFUN (GET-PROPAGATION-ENVIRONMENT PROPAGATION-ENVIRONMENT) ((SELF CONTEXT)))", ((cpp_function_code)(&getPropagationEnvironment)), NULL);
+    defineFunctionObject("UNLINK-PROPAGATION-ENVIRONMENT", "(DEFUN UNLINK-PROPAGATION-ENVIRONMENT ((SELF CONTEXT)))", ((cpp_function_code)(&unlinkPropagationEnvironment)), NULL);
+    defineMethodObject("(DEFMETHOD DEFER-DEFAULT-PROPOSITION ((SELF PROPAGATION-ENVIRONMENT) (PROPOSITION PROPOSITION)))", ((cpp_method_code)(&PropagationEnvironment::deferDefaultProposition)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD CLEAR-PROPAGATION-QUEUES ((SELF PROPAGATION-ENVIRONMENT)))", ((cpp_method_code)(&PropagationEnvironment::clearPropagationQueues)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (COPY (LIKE SELF)) ((SELF PROPAGATION-ENVIRONMENT)))", ((cpp_method_code)(&PropagationEnvironment::copy)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("EVALUATION-STATE", "(DEFUN (EVALUATION-STATE KEYWORD) ((PROPOSITION PROPOSITION)) :DOCUMENTATION \"Return :POSTED if `proposition' is on the evaluation queue\nfor *context*, :EVALUATED if has been evaluated, or NULL if it has never been evaluated.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (IF (DESCRIPTION-MODE?) (RETURN NULL) (RETURN (LOOKUP (EVALUATION-STATES (GET-PROPAGATION-ENVIRONMENT *CONTEXT*)) PROPOSITION))))", ((cpp_function_code)(&evaluationState)), NULL);
+    defineFunctionObject("EVALUATION-STATE-SETTER", "(DEFUN EVALUATION-STATE-SETTER ((PROPOSITION PROPOSITION) (STATE KEYWORD)) :DOCUMENTATION \"Record the evaluation `state' of 'proposition'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&evaluationStateSetter)), NULL);
+    defineFunctionObject("POST-FOR-EVALUATION", "(DEFUN POST-FOR-EVALUATION ((SELF PROPOSITION) (WORLD CONTEXT)) :DOCUMENTATION \"Push 'self' onto the evaluation queue (unless it's already there).\" :PUBLIC? TRUE)", ((cpp_function_code)(&postForEvaluation)), NULL);
     defineFunctionObject("HELP-COLLECT-FORWARD-RULES", "(DEFUN (HELP-COLLECT-FORWARD-RULES (CONS OF KEY-VALUE-LIST)) ((DESCRIPTION DESCRIPTION) (RULES KEY-VALUE-LIST) (INDICES KEY-VALUE-LIST) (TOUCHEDDEFAULT? BOOLEAN) (BEENTHERE LIST)))", ((cpp_function_code)(&helpCollectForwardRules)), NULL);
     defineFunctionObject("COLLECT-FORWARD-CHAINING-RULES", "(DEFUN (COLLECT-FORWARD-CHAINING-RULES (KEY-VALUE-LIST OF PROPOSITION BOOLEAN-WRAPPER) (KEY-VALUE-LIST OF FORWARD-CHAINING-INDEX BOOLEAN-WRAPPER)) ((DESCRIPTION DESCRIPTION)))", ((cpp_function_code)(&collectForwardChainingRules)), NULL);
     defineFunctionObject("HAS-FORWARD-CHAINING-RULES?", "(DEFUN (HAS-FORWARD-CHAINING-RULES? BOOLEAN) ((DESCRIPTION DESCRIPTION) (PROPOSITION PROPOSITION)))", ((cpp_function_code)(&hasForwardChainingRulesP)), NULL);
     defineFunctionObject("POST-TO-FORWARD-CHAINING-QUEUE", "(DEFUN POST-TO-FORWARD-CHAINING-QUEUE ((SELF PROPOSITION) (WORLD WORLD)))", ((cpp_function_code)(&postToForwardChainingQueue)), NULL);
-    defineFunctionObject("APPLY-RULE-CONSEQUENT-TO-VECTOR", "(DEFUN APPLY-RULE-CONSEQUENT-TO-VECTOR ((CONSEQUENT DESCRIPTION) (ARGUMENTS ARGUMENTS-VECTOR) (RULE PROPOSITION) (TRIGGERDESCRIPTION DESCRIPTION) (TRIGGERPROPOSITION PROPOSITION) (TOUCHEDDEFAULT? BOOLEAN)))", ((cpp_function_code)(&applyRuleConsequentToVector)), NULL);
+    defineExternalSlotFromStringifiedSource("(DEFSLOT SKOLEM SKOLEM-GENERATION-COUNT :TYPE INTEGER :DEFAULT 0 :ALLOCATION :DYNAMIC)");
+    defineFunctionObject("APPLY-RULE-CONSEQUENT-TO-VECTOR", "(DEFUN APPLY-RULE-CONSEQUENT-TO-VECTOR ((CONSEQUENT DESCRIPTION) (ARGUMENTS ARGUMENTS-VECTOR) (RULE PROPOSITION) (TRIGGERDESCRIPTION DESCRIPTION) (TRIGGERPROPOSITION PROPOSITION) (TOUCHEDDEFAULT? BOOLEAN) (BC-JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&applyRuleConsequentToVector)), NULL);
     defineFunctionObject("TRACE-FORWARD-RULE", "(DEFUN TRACE-FORWARD-RULE ((RULE PROPOSITION) (TRIGGER PROPOSITION) (CONSEQUENTS (CONS OF PROPOSITION))))", ((cpp_function_code)(&traceForwardRule)), NULL);
     defineFunctionObject("APPLY-FORWARD-RULES-TO-VECTOR", "(DEFUN APPLY-FORWARD-RULES-TO-VECTOR ((TRIGGERDESCRIPTION DESCRIPTION) (ARGUMENTS ARGUMENTS-VECTOR) (TRIGGERPROPOSITION PROPOSITION)))", ((cpp_function_code)(&applyForwardRulesToVector)), NULL);
     defineFunctionObject("APPLICABLE-FORWARD-RULE?", "(DEFUN (APPLICABLE-FORWARD-RULE? BOOLEAN) ((RULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR)))", ((cpp_function_code)(&applicableForwardRuleP)), NULL);
     defineMethodObject("(DEFMETHOD REACT-TO-INFERENCE-UPDATE ((SELF SKOLEM)))", ((cpp_method_code)(&Skolem::reactToInferenceUpdate)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD REACT-TO-INFERENCE-UPDATE ((SELF PROPOSITION)))", ((cpp_method_code)(&Proposition::reactToInferenceUpdate)), ((cpp_method_code)(NULL)));
     defineFunctionObject("REACT-TO-KB-UPDATE", "(DEFUN REACT-TO-KB-UPDATE ((CONTEXT CONTEXT) (OBJECT OBJECT)))", ((cpp_function_code)(&reactToKbUpdate)), NULL);
-    defineFunctionObject("INITIALIZE-CONSTRAINT-PROPAGATION-QUEUES", "(DEFUN INITIALIZE-CONSTRAINT-PROPAGATION-QUEUES ((WORLD WORLD)))", ((cpp_function_code)(&initializeConstraintPropagationQueues)), NULL);
+    defineMethodObject("(DEFMETHOD EXECUTE-PROPAGATION-QUEUES ((SELF PROPAGATION-ENVIRONMENT)))", ((cpp_method_code)(&PropagationEnvironment::executePropagationQueues)), ((cpp_method_code)(NULL)));
     defineFunctionObject("EXECUTE-CONSTRAINT-PROPAGATION-QUEUES", "(DEFUN EXECUTE-CONSTRAINT-PROPAGATION-QUEUES ())", ((cpp_function_code)(&executeConstraintPropagationQueues)), NULL);
     defineFunctionObject("EVALUATE-NEW-PROPOSITION", "(DEFUN EVALUATE-NEW-PROPOSITION ((SELF PROPOSITION)))", ((cpp_function_code)(&evaluateNewProposition)), NULL);
     defineFunctionObject("EVALUATE-AND-PROPOSITION", "(DEFUN EVALUATE-AND-PROPOSITION ((SELF PROPOSITION)))", ((cpp_function_code)(&evaluateAndProposition)), NULL);
@@ -2280,19 +2541,20 @@ void helpStartupPropagate2() {
     defineFunctionObject("EQUATE-EQUIVALENT-FUNCTION-PROPOSITIONS", "(DEFUN EQUATE-EQUIVALENT-FUNCTION-PROPOSITIONS ((SELF PROPOSITION)))", ((cpp_function_code)(&equateEquivalentFunctionPropositions)), NULL);
     defineFunctionObject("EVALUATE-FUNCTION-PROPOSITION", "(DEFUN EVALUATE-FUNCTION-PROPOSITION ((SELF PROPOSITION)) :PUBLIC? TRUE)", ((cpp_function_code)(&evaluateFunctionProposition)), NULL);
     defineFunctionObject("EVALUATE-PREDICATE-PROPOSITION", "(DEFUN EVALUATE-PREDICATE-PROPOSITION ((SELF PROPOSITION)) :PUBLIC? TRUE)", ((cpp_function_code)(&evaluatePredicateProposition)), NULL);
-    defineFunctionObject("EVALUATE-PROPOSITION", "(DEFUN EVALUATE-PROPOSITION ((SELF PROPOSITION)) :PUBLIC? TRUE)", ((cpp_function_code)(&evaluateProposition)), NULL);
+    defineFunctionObject("EVALUATE-PROPOSITION", "(DEFUN EVALUATE-PROPOSITION ((SELF PROPOSITION)) :DOCUMENTATION \"Evaluate 'self' against its arguments, possibly resulting in\nthe setting or changing of its truth value.\" :PUBLIC? TRUE)", ((cpp_function_code)(&evaluateProposition)), NULL);
     defineMethodObject("(DEFMETHOD MARK-AS-INCOHERENT ((SELF LOGIC-OBJECT)))", ((cpp_method_code)(&LogicObject::markAsIncoherent)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD MARK-AS-INCOHERENT ((SELF SKOLEM)))", ((cpp_method_code)(&Skolem::markAsIncoherent)), ((cpp_method_code)(NULL)));
-    defineExternalSlotFromStringifiedSource("(DEFSLOT LOGIC-OBJECT ELABORATED-IN-WORLDS :TYPE (LIST OF WORLD) :DOCUMENTATION \"List of worlds in which 'elaborate-instance' has\nbeen applied to 'self'.\" :ALLOCATION :DYNAMIC)");
     defineFunctionObject("RECURSIVELY-REACT-TO-INFERENCE-UPDATE", "(DEFUN RECURSIVELY-REACT-TO-INFERENCE-UPDATE ((SELF PROPOSITION)))", ((cpp_function_code)(&recursivelyReactToInferenceUpdate)), NULL);
     defineFunctionObject("ELABORATE-META-INSTANCE", "(DEFUN ELABORATE-META-INSTANCE ((SELF OBJECT)))", ((cpp_function_code)(&elaborateMetaInstance)), NULL);
     defineFunctionObject("ELABORATE-INSTANCE", "(DEFUN ELABORATE-INSTANCE ((SELF OBJECT)))", ((cpp_function_code)(&elaborateInstance)), NULL);
     defineFunctionObject("EVALUATE-REACHABLE-INEQUALITIES", "(DEFUN EVALUATE-REACHABLE-INEQUALITIES ((SELF LOGIC-OBJECT) (VISITEDLIST LIST)))", ((cpp_function_code)(&evaluateReachableInequalities)), NULL);
     defineFunctionObject("ELABORATE-SURROGATES-IN-PROPOSITION", "(DEFUN ELABORATE-SURROGATES-IN-PROPOSITION ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&elaborateSurrogatesInProposition)), NULL);
-    defineFunctionObject("COLLECT-FUNCTION-PROPOSITION-FACTS", "(DEFUN COLLECT-FUNCTION-PROPOSITION-FACTS ((SELF PROPOSITION) (FACTS (LIST OF PROPOSITION)) (BEENTHERE (LIST OF PROPOSITION)) (INCLUDEUNKNOWN? BOOLEAN)))", ((cpp_function_code)(&collectFunctionPropositionFacts)), NULL);
-    defineFunctionObject("HELP-COLLECT-FACTS", "(DEFUN HELP-COLLECT-FACTS ((SELF OBJECT) (FACTS (LIST OF PROPOSITION)) (BEENTHERE (LIST OF PROPOSITION)) (INCLUDEUNKNOWN? BOOLEAN)))", ((cpp_function_code)(&helpCollectFacts)), NULL);
+    defineFunctionObject("FOLLOW-DEPENDENT-PROPOSITION-ARGUMENT?", "(DEFUN (FOLLOW-DEPENDENT-PROPOSITION-ARGUMENT? BOOLEAN) ((PROPOSITION PROPOSITION) (ARGUMENT OBJECT)))", ((cpp_function_code)(&followDependentPropositionArgumentP)), NULL);
+    defineFunctionObject("POST-RELATED-FACTS", "(DEFUN POST-RELATED-FACTS ((SELF OBJECT) (ENVIRONMENT PROPAGATION-ENVIRONMENT)))", ((cpp_function_code)(&postRelatedFacts)), NULL);
+    defineFunctionObject("HELP-COLLECT-FACTS", "(DEFUN HELP-COLLECT-FACTS ((SELF OBJECT) (FACTS (LIST OF PROPOSITION)) (BEENTHERE HASH-SET) (INCLUDEUNKNOWN? BOOLEAN)))", ((cpp_function_code)(&helpCollectFacts)), NULL);
     defineFunctionObject("ALL-FACTS-OF-INSTANCE", "(DEFUN (ALL-FACTS-OF-INSTANCE (LIST OF PROPOSITION)) ((SELF OBJECT) (INCLUDEUNKNOWNFACTS? BOOLEAN) (ELABORATE? BOOLEAN)) :DOCUMENTATION \"Return a list of all definite (TRUE or FALSE) propositions\nattached to `self'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allFactsOfInstance)), NULL);
-    defineFunctionObject("ALL-FACTS-OF", "(DEFUN (ALL-FACTS-OF (CONS OF PROPOSITION)) ((INSTANCEREF NAME)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Return a cons list of all definite (TRUE or FALSE) propositions\nthat reference the instance `instanceRef'.  This includes propositions\nasserted to be true by default, but it does not include propositions\nthat are found to be TRUE only by running the query engine.  Facts\ninferred to be TRUE by the forward chainer will be included.\nHence, the returned list of facts may be longer in a context where the\nforward chainer has been run then in one where it has not (see\n`run-forward-rules').\")", ((cpp_function_code)(&allFactsOf)), NULL);
+    defineFunctionObject("ALL-FACTS-OF", "(DEFUN (ALL-FACTS-OF (CONS OF PROPOSITION)) ((INSTANCEREF OBJECT)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Return a cons list of all definite (TRUE or FALSE) propositions\nthat reference the instance `instanceRef'.  This includes propositions\nasserted to be true by default, but it does not include propositions\nthat are found to be TRUE only by running the query engine.  Facts\ninferred to be TRUE by the forward chainer will be included.\nHence, the returned list of facts may be longer in a context where the\nforward chainer has been run then in one where it has not (see\n`run-forward-rules').  `instanceRef' can be a regular name such as\n`fred' as well as a function term such as `(father fred)'.\")", ((cpp_function_code)(&allFactsOf)), NULL);
+    defineFunctionObject("PRINT-FACTS", "(DEFUN PRINT-FACTS ((INSTANCEREF OBJECT)) :DOCUMENTATION \"Like ALL-FACTS-OF, but prints each fact on a separate \nline on the standard output stream.\" :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&printFacts)), NULL);
     defineFunctionObject("CALL-ALL-FACTS-OF", "(DEFUN (CALL-ALL-FACTS-OF (LIST OF PROPOSITION)) ((INSTANCEREF OBJECT)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? TRUE :DOCUMENTATION \"Return a list of all definite (TRUE or FALSE) propositions\nthat reference the instance `instanceRef'.\")", ((cpp_function_code)(&callAllFactsOf)), NULL);
     defineFunctionObject("RETRACT-FACTS-OF-INSTANCE", "(DEFUN RETRACT-FACTS-OF-INSTANCE ((SELF LOGIC-OBJECT)) :DOCUMENTATION \"Retract all definite (TRUE or FALSE) propositions attached to `self'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&retractFactsOfInstance)), NULL);
     defineFunctionObject("RETRACT-FACTS-OF", "(DEFUN RETRACT-FACTS-OF ((INSTANCEREF OBJECT)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Retract all definite (TRUE or FALSE) propositions\nthat reference the instance `instanceRef'.\")", ((cpp_function_code)(&retractFactsOf)), NULL);
@@ -2317,6 +2579,13 @@ void startupPropagate() {
     if (currentStartupTimePhaseP(2)) {
       helpStartupPropagate1();
     }
+    if (currentStartupTimePhaseP(5)) {
+      { Class* clasS = defineClassFromStringifiedSource("PROPAGATION-ENVIRONMENT", "(DEFCLASS PROPAGATION-ENVIRONMENT (STANDARD-OBJECT) :SLOTS ((EVALUATION-QUEUE :TYPE (LIST OF PROPOSITION) :INITIALLY (LIST)) (EVALUATION-STATES :TYPE (KEY-VALUE-MAP OF PROPOSITION KEYWORD) :INITIALLY (NEW KEY-VALUE-MAP)) (FORWARD-CHAINING-QUEUE :TYPE (LIST OF PROPOSITION) :INITIALLY (LIST)) (FORWARD-CHAINING-SET :TYPE (HASH-SET OF PROPOSITION PROPOSITION) :INITIALLY (NEW HASH-SET)) (DEFERRED-DEFAULT-PROPOSITIONS :TYPE (LIST OF PROPOSITION) :INITIALLY (LIST)) (ELABORATED-OBJECTS :TYPE HASH-SET :INITIALLY (NEW HASH-SET))))");
+
+        clasS->classConstructorCode = ((cpp_function_code)(&newPropagationEnvironment));
+        clasS->classSlotAccessorCode = ((cpp_function_code)(&accessPropagationEnvironmentSlotValue));
+      }
+    }
     if (currentStartupTimePhaseP(6)) {
       finalizeClasses();
     }
@@ -2328,22 +2597,33 @@ void startupPropagate() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *FILLINGCONSTRAINTPROPAGATIONQUEUES?* BOOLEAN FALSE :DOCUMENTATION \"True if we are inside of 'react-to-kb-update'.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *DEFERINGDEFAULTFORWARDINFERENCES?* BOOLEAN FALSE :DOCUMENTATION \"True if we are propagating strict inferences, and\nposting derived default propositions to temporary queues.\")");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CURRENTLYEXECUTINGFORWARDCHAININGQUEUE* (LIST OF PROPOSITION) NULL :DOCUMENTATION \"Points to an active queue of propositions that will trigger\nforward inference.  New queue entries are posted to a separate queue\nattached to *context*.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *COLLECTFORWARDPROPOSITIONS* (CONS OF PROPOSITION) NULL :DOCUMENTATION \"Collect goes-true propositions produced by forward\nchaining.\")");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAX-SKOLEM-GENERATION-COUNT* INTEGER 3)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *JUST-IN-TIME-FORWARD-INFERENCE?* BOOLEAN TRUE :DOCUMENTATION \"If TRUE, ensures that forward propagation has\nbeen applied to each instance 'touched' during a query.\")");
     }
   }
 }
 
-Symbol* SYM_PROPAGATE_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS_INTERNAL = NULL;
-
-Symbol* SYM_PROPAGATE_LOGIC_EVALUATION_STATE_TABLE = NULL;
-
-Keyword* KWD_PROPAGATE_POSTED = NULL;
+Surrogate* SGT_PROPAGATE_LOGIC_PROPAGATION_ENVIRONMENT = NULL;
 
 Symbol* SYM_PROPAGATE_LOGIC_EVALUATION_QUEUE = NULL;
+
+Symbol* SYM_PROPAGATE_LOGIC_EVALUATION_STATES = NULL;
+
+Symbol* SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE = NULL;
+
+Symbol* SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_SET = NULL;
+
+Symbol* SYM_PROPAGATE_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS = NULL;
+
+Symbol* SYM_PROPAGATE_LOGIC_ELABORATED_OBJECTS = NULL;
+
+Symbol* SYM_PROPAGATE_LOGIC_PROPAGATION_ENVIRONMENT = NULL;
+
+Keyword* KWD_PROPAGATE_POSTED = NULL;
 
 Keyword* KWD_PROPAGATE_FORWARD = NULL;
 
@@ -2359,23 +2639,27 @@ Surrogate* SGT_PROPAGATE_LOGIC_F_COLLECT_FORWARD_CHAINING_RULES_MEMO_TABLE_000 =
 
 Keyword* KWD_PROPAGATE_FUNCTION = NULL;
 
-Symbol* SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE = NULL;
-
 Keyword* KWD_PROPAGATE_ISA = NULL;
 
 Keyword* KWD_PROPAGATE_PREDICATE = NULL;
 
-Surrogate* SGT_PROPAGATE_LOGIC_SKOLEM = NULL;
-
-Symbol* SYM_PROPAGATE_LOGIC_HYPOTHESIZED_INSTANCEp = NULL;
+Symbol* SYM_PROPAGATE_LOGIC_SKOLEM_GENERATION_COUNT = NULL;
 
 Keyword* KWD_PROPAGATE_PROPAGATE = NULL;
+
+Symbol* SYM_PROPAGATE_LOGIC_HYPOTHESIZED_INSTANCEp = NULL;
 
 Surrogate* SGT_PROPAGATE_PL_KERNEL_KB_AND = NULL;
 
 Keyword* KWD_PROPAGATE_GOAL_TREE = NULL;
 
 Keyword* KWD_PROPAGATE_SINGLETONSp = NULL;
+
+Keyword* KWD_PROPAGATE_INFERENCE_LEVEL = NULL;
+
+Keyword* KWD_PROPAGATE_SHALLOW = NULL;
+
+Surrogate* SGT_PROPAGATE_LOGIC_SKOLEM = NULL;
 
 Surrogate* SGT_PROPAGATE_LOGIC_PROPOSITION = NULL;
 
@@ -2386,6 +2670,8 @@ Keyword* KWD_PROPAGATE_META_KB_UPDATE = NULL;
 Keyword* KWD_PROPAGATE_META = NULL;
 
 Surrogate* SGT_PROPAGATE_STELLA_MODULE = NULL;
+
+Symbol* SYM_PROPAGATE_LOGIC_DESCRIPTIVEp = NULL;
 
 Surrogate* SGT_PROPAGATE_LOGIC_LOGIC_OBJECT = NULL;
 
@@ -2401,8 +2687,6 @@ Keyword* KWD_PROPAGATE_NOT = NULL;
 
 Keyword* KWD_PROPAGATE_EQUIVALENT = NULL;
 
-Symbol* SYM_PROPAGATE_LOGIC_ELABORATED_IN_WORLDS = NULL;
-
 Keyword* KWD_PROPAGATE_ELABORATE = NULL;
 
 Keyword* KWD_PROPAGATE_EXTENSIONAL_ASSERTION = NULL;
@@ -2415,7 +2699,7 @@ Keyword* KWD_PROPAGATE_EXISTS = NULL;
 
 Keyword* KWD_PROPAGATE_FORALL = NULL;
 
-Surrogate* SGT_PROPAGATE_STELLA_LITERAL_WRAPPER = NULL;
+Surrogate* SGT_PROPAGATE_PL_KERNEL_KB_EQUIVALENT = NULL;
 
 Symbol* SYM_PROPAGATE_LOGIC_DESCRIPTION = NULL;
 

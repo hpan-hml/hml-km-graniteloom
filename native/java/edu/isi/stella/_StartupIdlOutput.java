@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,10 +56,10 @@ public class _StartupIdlOutput {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.SYM_STELLA_IDL_COMMENT = ((Symbol)(Stella.internRigidSymbolWrtModule("IDL_COMMENT", null, 0)));
-          Stella.SYM_STELLA_IDL_TYPE = ((Symbol)(Stella.internRigidSymbolWrtModule("IDL_TYPE", null, 0)));
-          Stella.SYM_STELLA_IDL_VAR_ARGS = ((Symbol)(Stella.internRigidSymbolWrtModule("IDL_VAR_ARGS", null, 0)));
-          Stella.SYM_STELLA_STARTUP_IDL_OUTPUT = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-IDL-OUTPUT", null, 0)));
+          Stella.SYM_STELLA_IDL_COMMENT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL_COMMENT", null, 0)));
+          Stella.SYM_STELLA_IDL_TYPE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL_TYPE", null, 0)));
+          Stella.SYM_STELLA_IDL_VAR_ARGS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL_VAR_ARGS", null, 0)));
+          Stella.SYM_STELLA_STARTUP_IDL_OUTPUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-IDL-OUTPUT", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Stella.$IDL_INDENT_CHARS$.setDefaultValue(new Integer(0));
@@ -110,6 +110,7 @@ public class _StartupIdlOutput {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *IDL-INDENT-CHARS* INTEGER 0)");
         }
 

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -53,6 +53,8 @@ namespace logic {
 boolean classNamesNextP(AllPurposeIterator* self);
 boolean allPropositionsNextP(AllPurposeIterator* self);
 Iterator* allPropositions(Module* module, boolean localP);
+boolean filterInconsistentPropositionP(Object* self, AllPurposeIterator* iterator);
+Iterator* allInconsistentPropositions(Module* module, boolean localP);
 boolean visibleTermP(LogicObject* term, Context* context, boolean localP);
 Iterator* allUnnamedTerms(Module* module, boolean localP);
 boolean namedTermP(Object* term, AllPurposeIterator* iter);

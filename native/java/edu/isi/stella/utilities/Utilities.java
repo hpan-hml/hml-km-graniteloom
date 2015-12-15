@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -179,30 +179,6 @@ public class Utilities {
   public static Symbol SYM_UTILITIES_STARTUP_UNITS = null;
 
   public static Symbol SYM_UTILITIES_STARTUP_UNIT_DEFS = null;
-
-  public static Keyword KWD_MAC = null;
-
-  public static Symbol SYM_STELLA_LET = null;
-
-  public static Symbol SYM_STELLA_INPUT_STREAM = null;
-
-  public static Symbol SYM_STELLA_NULL = null;
-
-  public static Symbol SYM_STELLA_UNWIND_PROTECT = null;
-
-  public static Symbol SYM_STELLA_PROGN = null;
-
-  public static Symbol SYM_STELLA_SETQ = null;
-
-  public static Symbol SYM_UTILITIES_OPEN_URL_STREAM = null;
-
-  public static Symbol SYM_STELLA_WHEN = null;
-
-  public static Symbol SYM_STELLA_DEFINEDp = null;
-
-  public static Symbol SYM_STELLA_FREE = null;
-
-  public static Symbol SYM_UTILITIES_STARTUP_HTTP = null;
 
   public static Symbol SYM_UTILITIES_STARTUP_UTILITIES_SYSTEM = null;
 
@@ -386,8 +362,9 @@ public class Utilities {
     { String quotedName = null;
       int closingQuotePosition = Stella.NULL_INTEGER;
       boolean beginningOfLineP = true;
+      boolean insideExampleP = false;
       String paragraphCommand = null;
-      List pendingParagraphCommands = Stella.list(Stella.NIL);
+      List pendingParagraphCommands = List.list(Stella.NIL);
 
       if (parameters == null) {
         parameters = Stella.NIL_LIST;
@@ -409,36 +386,38 @@ public class Utilities {
             switch (ch) {
               case '`': 
               case '\'': 
-                if (i == closingQuotePosition) {
-                  stream.nativeStream.print("}");
-                  continue loop000;
-                }
-                else if ((i == 0) ||
-                    Native.string_memberP(Utilities.$TEXINFO_WORD_DELIMITERS$, documentation.charAt((i - 1)))) {
-                  closingQuotePosition = Native.string_position(documentation, '\'', i + 1);
-                  if (closingQuotePosition != Stella.NULL_INTEGER) {
-                    quotedName = Native.stringUpcase(Native.string_subsequence(documentation, i + 1, closingQuotePosition));
-                    { boolean foundP000 = false;
+                if (!(insideExampleP)) {
+                  if (i == closingQuotePosition) {
+                    stream.nativeStream.print("}");
+                    continue loop000;
+                  }
+                  else if ((i == 0) ||
+                      Native.string_memberP(Utilities.$TEXINFO_WORD_DELIMITERS$, documentation.charAt((i - 1)))) {
+                    closingQuotePosition = Native.string_position(documentation, '\'', i + 1);
+                    if (closingQuotePosition != Stella.NULL_INTEGER) {
+                      quotedName = Native.stringUpcase(Native.string_subsequence(documentation, i + 1, closingQuotePosition));
+                      { boolean foundP000 = false;
 
-                      { Symbol pname = null;
-                        Cons iter001 = parameters.theConsList;
+                        { Symbol pname = null;
+                          Cons iter001 = parameters.theConsList;
 
-                        loop001 : for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
-                          pname = ((Symbol)(iter001.value));
-                          if (Stella.stringEqlP(pname.symbolName, quotedName)) {
-                            foundP000 = true;
-                            break loop001;
+                          loop001 : for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+                            pname = ((Symbol)(iter001.value));
+                            if (Stella.stringEqlP(pname.symbolName, quotedName)) {
+                              foundP000 = true;
+                              break loop001;
+                            }
                           }
                         }
+                        if (foundP000) {
+                          stream.nativeStream.print("@var{");
+                        }
+                        else {
+                          stream.nativeStream.print("@code{");
+                        }
                       }
-                      if (foundP000) {
-                        stream.nativeStream.print("@var{");
-                      }
-                      else {
-                        stream.nativeStream.print("@code{");
-                      }
+                      continue loop000;
                     }
-                    continue loop000;
                   }
                 }
                 stream.nativeStream.print(ch);
@@ -471,9 +450,15 @@ public class Utilities {
                           paragraphCommand = ((StringWrapper)(pendingParagraphCommands.pop())).wrapperValue;
                         }
                         stream.nativeStream.println("@end " + paragraphCommand);
+                        if (Stella.stringEqlP(paragraphCommand, "example")) {
+                          insideExampleP = false;
+                        }
                       }
                       else {
                         pendingParagraphCommands.push(StringWrapper.wrapString(paragraphCommand));
+                        if (Stella.stringEqlP(paragraphCommand, "example")) {
+                          insideExampleP = true;
+                        }
                         {
                           stream.nativeStream.println();
                           stream.nativeStream.print("@" + paragraphCommand);
@@ -590,7 +575,7 @@ public class Utilities {
   }
 
   public static List texinfoGetRealMethodParameterNames(MethodSlot method) {
-    { List result = Stella.list(Stella.NIL);
+    { List result = List.list(Stella.NIL);
       String documentation = ((StringWrapper)(KeyValueList.dynamicSlotValue(method.dynamicSlots, Utilities.SYM_STELLA_DOCUMENTATION, Stella.NULL_STRING_WRAPPER))).wrapperValue;
       String pName = null;
       int pNameLength = Stella.NULL_INTEGER;
@@ -661,7 +646,7 @@ public class Utilities {
           }
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(StringWrapper.wrapString(pName), Stella.NIL);
+              collect000 = Cons.cons(StringWrapper.wrapString(pName), Stella.NIL);
               if (result.theConsList == Stella.NIL) {
                 result.theConsList = collect000;
               }
@@ -672,7 +657,7 @@ public class Utilities {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(StringWrapper.wrapString(pName), Stella.NIL);
+              collect000.rest = Cons.cons(StringWrapper.wrapString(pName), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -685,8 +670,8 @@ public class Utilities {
   public static List texinfoGetRealMethodParametersAndTypes(MethodSlot method, Object [] MV_returnarray) {
     { String stringifiedSource = method.methodStringifiedSource;
       List realParameterNames = Utilities.texinfoGetRealMethodParameterNames(method);
-      List realParameterTypes = Stella.list(Stella.NIL);
-      List realReturnTypes = Stella.list(Stella.NIL);
+      List realParameterTypes = List.list(Stella.NIL);
+      List realReturnTypes = List.list(Stella.NIL);
       Cons definitionTree = null;
       Cons returnTypesTree = Stella.NIL;
       Cons parametersTree = Stella.NIL;
@@ -699,7 +684,7 @@ public class Utilities {
           pType = ((StandardObject)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(StandardObject.yieldTypeSpecTree(pType), Stella.NIL);
+              collect000 = Cons.cons(StandardObject.yieldTypeSpecTree(pType), Stella.NIL);
               if (realParameterTypes.theConsList == Stella.NIL) {
                 realParameterTypes.theConsList = collect000;
               }
@@ -710,7 +695,7 @@ public class Utilities {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(StandardObject.yieldTypeSpecTree(pType), Stella.NIL);
+              collect000.rest = Cons.cons(StandardObject.yieldTypeSpecTree(pType), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -724,7 +709,7 @@ public class Utilities {
           rtype = ((StandardObject)(iter001.value));
           if (collect001 == null) {
             {
-              collect001 = Stella_Object.cons(StandardObject.yieldTypeSpecTree(rtype), Stella.NIL);
+              collect001 = Cons.cons(StandardObject.yieldTypeSpecTree(rtype), Stella.NIL);
               if (realReturnTypes.theConsList == Stella.NIL) {
                 realReturnTypes.theConsList = collect001;
               }
@@ -735,7 +720,7 @@ public class Utilities {
           }
           else {
             {
-              collect001.rest = Stella_Object.cons(StandardObject.yieldTypeSpecTree(rtype), Stella.NIL);
+              collect001.rest = Cons.cons(StandardObject.yieldTypeSpecTree(rtype), Stella.NIL);
               collect001 = collect001.rest;
             }
           }
@@ -996,13 +981,13 @@ public class Utilities {
         if (Surrogate.subtypeOfP(testValue000, Utilities.SGT_STELLA_SLOT)) {
           { Slot object1000 = ((Slot)(object1));
 
-            name1 = object1000.slotName.visibleName();
+            name1 = object1000.slotName.visibleName(false);
           }
         }
         else if (Surrogate.subtypeOfP(testValue000, Utilities.SGT_STELLA_GLOBAL_VARIABLE)) {
           { GlobalVariable object1000 = ((GlobalVariable)(object1));
 
-            name1 = object1000.variableName.visibleName();
+            name1 = object1000.variableName.visibleName(false);
           }
         }
         else {
@@ -1018,13 +1003,13 @@ public class Utilities {
         if (Surrogate.subtypeOfP(testValue001, Utilities.SGT_STELLA_SLOT)) {
           { Slot object2000 = ((Slot)(object2));
 
-            name2 = object2000.slotName.visibleName();
+            name2 = object2000.slotName.visibleName(false);
           }
         }
         else if (Surrogate.subtypeOfP(testValue001, Utilities.SGT_STELLA_GLOBAL_VARIABLE)) {
           { GlobalVariable object2000 = ((GlobalVariable)(object2));
 
-            name2 = object2000.variableName.visibleName();
+            name2 = object2000.variableName.visibleName(false);
           }
         }
         else {
@@ -1052,7 +1037,7 @@ public class Utilities {
               (!Utilities.alreadyDocumentedObjectP(function))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(function, Stella.NIL);
+                collect000 = Cons.cons(function, Stella.NIL);
                 if (methods.theConsList == Stella.NIL) {
                   methods.theConsList = collect000;
                 }
@@ -1063,7 +1048,7 @@ public class Utilities {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(function, Stella.NIL);
+                collect000.rest = Cons.cons(function, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -1080,7 +1065,7 @@ public class Utilities {
               (!Utilities.alreadyDocumentedObjectP(method))) {
             if (collect001 == null) {
               {
-                collect001 = Stella_Object.cons(method, Stella.NIL);
+                collect001 = Cons.cons(method, Stella.NIL);
                 if (methods.theConsList == Stella.NIL) {
                   methods.theConsList = collect001;
                 }
@@ -1091,7 +1076,7 @@ public class Utilities {
             }
             else {
               {
-                collect001.rest = Stella_Object.cons(method, Stella.NIL);
+                collect001.rest = Cons.cons(method, Stella.NIL);
                 collect001 = collect001.rest;
               }
             }
@@ -1149,7 +1134,7 @@ public class Utilities {
             }
           }
           else {
-            { Symbol handlername = Stella.internSymbolInModule("TEXINFO-DESCRIBE-" + renamed_Object.primaryType().symbolName, ((Module)(Utilities.SYM_UTILITIES_MANUAL_DESCRIBE_OBJECT.homeContext)), true);
+            { Symbol handlername = Symbol.internSymbolInModule("TEXINFO-DESCRIBE-" + renamed_Object.primaryType().symbolName, ((Module)(Utilities.SYM_UTILITIES_MANUAL_DESCRIBE_OBJECT.homeContext)), true);
               MethodSlot handler = Symbol.lookupFunction(handlername);
 
               if (handler != null) {
@@ -1435,7 +1420,7 @@ public class Utilities {
               scaledP = false;
             }
             else if (testValue000 == Utilities.KWD_INTEGER) {
-              exponentValue = Native.stringToInteger(Stella.getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false));
+              exponentValue = ((int)(Native.stringToInteger(Stella.getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false))));
               if (invertP) {
                 exponentValue = 0 - exponentValue;
               }
@@ -1528,7 +1513,7 @@ public class Utilities {
           p = prime.wrapperValue;
           while ((value % p) == 0) {
             value = ((int)(((double)(value)) / p));
-            measures = Stella_Object.cons(((Measure)(Utilities.$PRIME_TO_BASE_MEASURE_TABLE$.lookup(p))), measures);
+            measures = Cons.cons(((Measure)(Utilities.$PRIME_TO_BASE_MEASURE_TABLE$.lookup(p))), measures);
           }
           if (value < p) {
             break loop000;
@@ -1564,11 +1549,11 @@ public class Utilities {
             }
             i = Stella.insertString(((Measure)(Utilities.$PRIME_TO_BASE_MEASURE_TABLE$.lookup(p))).baseUnit, 0, Stella.NULL_INTEGER, buffer, i, Utilities.KWD_PRESERVE);
             if (negateExponentP) {
-              i = Stella.insertString(Native.integerToString(0 - e), 0, Stella.NULL_INTEGER, buffer, i, Utilities.KWD_PRESERVE);
+              i = Stella.insertString(Native.integerToString(((long)(0 - e))), 0, Stella.NULL_INTEGER, buffer, i, Utilities.KWD_PRESERVE);
               previousNoExponentP = false;
             }
             else if (e > 1) {
-              i = Stella.insertString(Native.integerToString(e), 0, Stella.NULL_INTEGER, buffer, i, Utilities.KWD_PRESERVE);
+              i = Stella.insertString(Native.integerToString(((long)(e))), 0, Stella.NULL_INTEGER, buffer, i, Utilities.KWD_PRESERVE);
               previousNoExponentP = false;
             }
             else {
@@ -1812,17 +1797,6 @@ public class Utilities {
       m.addUnit("c", 2.99792458e+8, "m/s");
       m = Measure.defineDerivedMeasure("Acceleration", "m/s2", "m/s2");
       m.addUnit("G", 9.80665, "m/s2");
-      m = Measure.defineBaseMeasure("Angle", "deg");
-      m.addUnit("rad", 57.29577951308232, "deg");
-      m.addUnit("radian", 1.0, "rad");
-      m.addUnit("minute", 0.016666666666666666, "deg");
-      m.addUnit("sec", 0.016666666666666666, "minute");
-      m.addUnit("arcmin", 1.0, "minute");
-      m.addUnit("arcsec", 1.0, "sec");
-      m.addUnit("degree", 1.0, "deg");
-      m.addUnit("mil", 0.05625, "deg");
-      m = Measure.defineBaseMeasure("Solid-Angle", "sr");
-      m.addUnit("steradian", 1.0, "sr");
       m = Measure.defineBaseMeasure("Amount-Of-Substance", "mole");
       m.addUnit("mol", 1.0, "mole");
       m.addUnit("mmol", 0.001, "mole");
@@ -1884,17 +1858,6 @@ public class Utilities {
       m.addUnit("kWh", 1.0, "kW.h");
       m.addUnit("kiloton", 4.184e+12, "J");
       m.addUnit("Megaton", 1000.0, "kiloton");
-      m = Measure.defineDerivedMeasure("Revolution", "deg/s", "deg/s");
-      m.addUnit("rps", 360.0, "deg/s");
-      m.addUnit("rpm", 0.016666666666666666, "rps");
-      m = Measure.defineDerivedMeasure("Frequency", "Hz", "s-1");
-      m.addUnit("kHz", 1000.0, "Hz");
-      m.addUnit("MHz", 1000000.0, "Hz");
-      m.addUnit("GHz", 1.0e+9, "Hz");
-      m.addUnit("Bq", 1.0, "Hz");
-      m.addUnit("Ci", 3.7e+10, "Bq");
-      m.addUnit("mCi", 0.001, "Ci");
-      m.addUnit("pCi", 1.0e-9, "Ci");
       m = Measure.defineBaseMeasure("Electric-Current", "A");
       m.addUnit("mA", 0.001, "A");
       m = Measure.defineDerivedMeasure("Electric-Charge", "C", "s.A");
@@ -1922,6 +1885,12 @@ public class Utilities {
       m.addUnit("lm", 1.0, "Cd");
       m = Measure.defineDerivedMeasure("Illuminance", "lux", "Cd/m2");
       m.addUnit("lx", 1.0, "lux");
+      m = Measure.defineBaseMeasure("Temperature", "K");
+      m.addUnit("oK", 1.0, "K");
+      m.addUnit("Kelvin", 1.0, "K");
+      m.addUnit("oC", 1.0, "K");
+      m.addUnit("oF", 0.5555555555555556, "K");
+      m.addUnit("Rankine", 1.0, "oF");
       m = Measure.defineBaseMeasure("Data", "bit");
       m.addUnit("byte", 8.0, "bit");
       m.addUnit("B", 1.0, "byte");
@@ -1944,627 +1913,27 @@ public class Utilities {
       m = Measure.defineDimensionlessMeasure();
       m.addUnit("%", 0.01, "");
       m.addUnit("%%", 0.001, "");
-    }
-  }
-
-  /** Handles the first line of an http header.  
-   * Returns version, response code, response message.  The first
-   * line is inserted into <code>fields</code> fields with the empty string key &quot;&quot;
-   * This is a low-level utility routine that can be used to build custom
-   * message parsing code.
-   * @param line
-   * @param fields
-   * @param MV_returnarray
-   * @return String
-   */
-  public static String handleHttpHeaderFirstLine(String line, Dictionary fields, Object [] MV_returnarray) {
-    { int space1 = Native.string_position(line, ' ', 0);
-      int space2 = ((space1 == Stella.NULL_INTEGER) ? Stella.NULL_INTEGER : Native.string_position(line, ' ', space1 + 1));
-
-      if (space2 == Stella.NULL_INTEGER) {
-        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-          stream000.nativeStream.print("Malformed header line: `" + line + "'");
-          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-        }
-      }
-      fields.insertAt(StringWrapper.wrapString(""), StringWrapper.wrapString(line));
-      { String _return_temp = Native.string_subsequence(line, 0, space1);
-
-        MV_returnarray[0] = IntegerWrapper.wrapInteger(Native.stringToInteger(Native.string_subsequence(line, space1 + 1, space2)));
-        MV_returnarray[1] = StringWrapper.wrapString(Native.string_subsequence(line, space2 + 1, Stella.NULL_INTEGER));
-        return (_return_temp);
-      }
-    }
-  }
-
-  /** Handles header lines other than the first one.
-   * Each such line is inserted into <code>fields</code> as keyword value pairs.
-   * This is a low-level utility routine that can be used to build custom
-   * message parsing code.
-   * @param line
-   * @param fields
-   */
-  public static void handleHttpHeaderOtherLine(String line, Dictionary fields) {
-    { int colonPosition = Native.string_position(line, ':', 0);
-
-      if (colonPosition == Stella.NULL_INTEGER) {
-        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-          stream000.nativeStream.print("Bad header seen: `" + line + "'");
-          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-        }
-      }
-      else {
-        fields.insertAt(StringWrapper.wrapString(Native.string_subsequence(line, 0, colonPosition)), StringWrapper.wrapString(Native.string_subsequence(line, colonPosition + 2, Stella.NULL_INTEGER)));
-      }
-    }
-  }
-
-  /** Takes an internet style URL and returns the components of
-   * that URL as specified below.  Missing elements return the empty string &quot;&quot;.
-   *   PROTOCOL USERNAME:PASSWORD DOMAIN PORT PATH QUERY FRAGMENT
-   * <p>
-   *   o Protocol.  The access protocol.
-   * <p>
-   *        Those schemes which refer to internet protocols mostly have a
-   *        common syntax for the rest of the object name. This starts with a
-   *        double slash '//' to indicate its presence, and continues until
-   *        the following slash '/':
-   * <p>
-   *   o An optional user name, if required (as it is with a few FTP servers).
-   *     The password, if present, follows the user name, separated from it by a colon;
-   *     the user name and optional password are followed by a commercial at sign '@'. 
-   *   o The internet domain name of the host
-   *   o The port number, if it is not the default number for the protocol,
-   *     is given in decimal notation after a colon.
-   *   o Path The path is a hierarchical representation of a particular path. It may 
-   *     define details of how the client should communicate with the server, including
-   *     information to be passed transparently to the server without any processing by
-   *     the client.
-   *     The path is interpreted in a manner dependent on the scheme being used.
-   *     Generally, the reserved slash '/' character (ASCII 2F hex) denotes a level in a
-   *     hierarchical structure, the higher level part to the left of the slash.
-   *   o Query is the part of the hierarchical information following a '?' character.
-   *   o Fragment is the part of the hierarchical information following a '#' character.
-   * <p>
-   * References:  http://www.gbiv.com/protocols/uri/rfc/rfc3986.html
-   * 
-   * @param url
-   * @param MV_returnarray
-   * @return String
-   */
-  public static String decomposeInternetUrl(String url, Object [] MV_returnarray) {
-    { int fieldStart = 0;
-      int fieldEnd = Native.stringSearch(url, Native.makeString(1, ':'), 0);
-      String protocol = "";
-      String userInformation = "";
-      String domainName = "";
-      String portNumber = "";
-      String path = "";
-      String query = "";
-      String fragment = "";
-
-      if (fieldEnd != Stella.NULL_INTEGER) {
-        protocol = Native.string_subsequence(url, 0, fieldEnd);
-        if (fieldEnd == Native.stringSearch(url, "://", fieldEnd)) {
-          fieldEnd = fieldEnd + 3;
-        }
-        else {
-          fieldEnd = fieldEnd + 1;
-        }
-        fieldStart = fieldEnd;
-        fieldEnd = Native.string_position(url, '/', fieldStart);
-        domainName = Native.string_subsequence(url, fieldStart, fieldEnd);
-        fieldStart = fieldEnd;
-      }
-      fieldEnd = Native.string_position(url, '?', fieldStart);
-      if (fieldEnd != Stella.NULL_INTEGER) {
-        {
-          path = Native.string_subsequence(url, fieldStart, fieldEnd);
-          fieldStart = fieldEnd + 1;
-          fieldEnd = Native.string_position(url, '#', fieldStart);
-          if (fieldEnd != Stella.NULL_INTEGER) {
-            {
-              query = Native.string_subsequence(url, fieldStart, fieldEnd);
-              fieldStart = fieldEnd + 1;
-              fragment = Native.string_subsequence(url, fieldStart, Stella.NULL_INTEGER);
-            }
-          }
-          else {
-            query = Native.string_subsequence(url, fieldStart, Stella.NULL_INTEGER);
-          }
-        }
-      }
-      else {
-        {
-          fieldEnd = Native.string_position(url, '#', fieldStart);
-          if (fieldEnd != Stella.NULL_INTEGER) {
-            {
-              path = Native.string_subsequence(url, fieldStart, fieldEnd);
-              fieldStart = fieldEnd + 1;
-              fragment = Native.string_subsequence(url, fieldStart, Stella.NULL_INTEGER);
-            }
-          }
-          else {
-            path = Native.string_subsequence(url, fieldStart, Stella.NULL_INTEGER);
-          }
-        }
-      }
-      fieldEnd = Native.string_position(domainName, '@', 0);
-      if (fieldEnd != Stella.NULL_INTEGER) {
-        userInformation = Native.string_subsequence(domainName, 0, fieldEnd);
-        domainName = Native.string_subsequence(domainName, fieldEnd + 1, Stella.NULL_INTEGER);
-      }
-      fieldStart = Native.string_position(domainName, ':', 0);
-      if (fieldStart != Stella.NULL_INTEGER) {
-        portNumber = Native.string_subsequence(domainName, fieldStart + 1, Stella.NULL_INTEGER);
-        domainName = Native.string_subsequence(domainName, 0, fieldStart);
-      }
-      { String _return_temp = protocol;
-
-        MV_returnarray[0] = StringWrapper.wrapString(userInformation);
-        MV_returnarray[1] = StringWrapper.wrapString(domainName);
-        MV_returnarray[2] = StringWrapper.wrapString(portNumber);
-        MV_returnarray[3] = StringWrapper.wrapString(path);
-        MV_returnarray[4] = StringWrapper.wrapString(query);
-        MV_returnarray[5] = StringWrapper.wrapString(fragment);
-        return (_return_temp);
-      }
-    }
-  }
-
-  /** Reads the HTTP header from <code>stream</code>, parses the header fields
-   * and stores the results in <code>fields</code>.  The first line of the response will be
-   * stored in <code>fields</code> with the empty string &quot;&quot; as the key.  Other values will
-   * have the header name as the key.  The first return value is the response code
-   * of the HTTP request.  A response of 200 indicates success.  Other common
-   * responses are 404 (page not found).  The second return value is the message
-   * associated with the code.  The third return value is the version information.
-   * If the stream ends before a valid header is read, then <code>null</code> is returned for
-   * all values.
-   * @param stream
-   * @param fields
-   * @param MV_returnarray
-   * @return int
-   */
-  public static int readHttpHeader(InputStream stream, Dictionary fields, Object [] MV_returnarray) {
-    { StringBuffer buffer = Stella.makeRawMutableString(1024);
-      boolean firstLineP = true;
-      int responseCode = Stella.NULL_INTEGER;
-      String responseMessage = null;
-      String versionString = null;
-      char ch = Stella.NULL_CHARACTER;
-      int index = 0;
-      boolean eofP = false;
-      boolean returnP = false;
-
-      { Object [] caller_MV_returnarray = new Object[1];
-
-        ch = InputStream.readCharacter(stream, caller_MV_returnarray);
-        eofP = ((boolean)(((BooleanWrapper)(caller_MV_returnarray[0])).wrapperValue));
-      }
-      loop000 : while (!eofP) {
-        switch (ch) {
-          case '\r': 
-            if (returnP) {
-              {
-                break loop000;
-              }
-            }
-            else {
-              returnP = true;
-            }
-          break;
-          case '\n': 
-            if (!(returnP)) {
-            }
-            if (index == 0) {
-              break loop000;
-            }
-            else if (firstLineP) {
-              { Object [] caller_MV_returnarray = new Object[2];
-
-                versionString = Utilities.handleHttpHeaderFirstLine(Native.mutableString_subsequence(buffer, 0, index), fields, caller_MV_returnarray);
-                responseCode = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
-                responseMessage = ((String)(((StringWrapper)(caller_MV_returnarray[1])).wrapperValue));
-              }
-              firstLineP = false;
-            }
-            else {
-              Utilities.handleHttpHeaderOtherLine(Native.mutableString_subsequence(buffer, 0, index), fields);
-            }
-            returnP = false;
-            index = 0;
-          break;
-          default:
-            if (returnP) {
-              if (index == 0) {
-                break loop000;
-              }
-              else if (firstLineP) {
-                { Object [] caller_MV_returnarray = new Object[2];
-
-                  versionString = Utilities.handleHttpHeaderFirstLine(Native.mutableString_subsequence(buffer, 0, index), fields, caller_MV_returnarray);
-                  responseCode = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
-                  responseMessage = ((String)(((StringWrapper)(caller_MV_returnarray[1])).wrapperValue));
-                }
-                firstLineP = false;
-              }
-              else {
-                Utilities.handleHttpHeaderOtherLine(Native.mutableString_subsequence(buffer, 0, index), fields);
-              }
-            }
-            edu.isi.stella.javalib.Native.mutableString_nthSetter(buffer, ch, index);
-            index = index + 1;
-            returnP = false;
-          break;
-        }
-        { Object [] caller_MV_returnarray = new Object[1];
-
-          ch = InputStream.readCharacter(stream, caller_MV_returnarray);
-          eofP = ((boolean)(((BooleanWrapper)(caller_MV_returnarray[0])).wrapperValue));
-        }
-      }
-      { int _return_temp = responseCode;
-
-        MV_returnarray[0] = StringWrapper.wrapString(responseMessage);
-        MV_returnarray[1] = StringWrapper.wrapString(versionString);
-        return (_return_temp);
-      }
-    }
-  }
-
-  /** Send <code>content</code> as an HTTP 1.0 request on <code>stream</code> using <code>method</code>.
-   * The request is sent to <code>urlPath</code> at <code>host</code>.  The <code>stream</code> must be a TCP-stream
-   * that is connected to <code>host</code> at the appropriate port.
-   * @param stream
-   * @param method
-   * @param host
-   * @param urlPath
-   * @param headers
-   * @param content
-   */
-  public static void writeHttpRequest(OutputStream stream, String method, String host, String urlPath, Dictionary headers, String content) {
-    stream.nativeStream.print(method + " " + urlPath + " HTTP/1.0\r\n");
-    if (host != null) {
-      if (headers == null) {
-        headers = PropertyList.newPropertyList();
-      }
-      headers.insertAt(StringWrapper.wrapString("Host"), StringWrapper.wrapString(host));
-    }
-    if (content != null) {
-      if (headers == null) {
-        headers = PropertyList.newPropertyList();
-      }
-      headers.insertAt(StringWrapper.wrapString("Content-Length"), StringWrapper.wrapString(Native.integerToString(content.length())));
-    }
-    if (headers != null) {
-      { Stella_Object key = null;
-        Stella_Object value = null;
-        DictionaryIterator iter000 = ((DictionaryIterator)(headers.allocateIterator()));
-
-        while (iter000.nextP()) {
-          key = iter000.key;
-          value = iter000.value;
-          stream.nativeStream.print(StringWrapper.unwrapString(((StringWrapper)(key))) + ": " + StringWrapper.unwrapString(((StringWrapper)(value))) + "\r\n");
-        }
-      }
-    }
-    stream.nativeStream.print("\r\n");
-    if (content != null) {
-      stream.nativeStream.print(content);
-    }
-    OutputStream.flushOutput(stream);
-  }
-
-  public static void writePostRequest(OutputStream stream, String host, String urlPath, Dictionary headers, String content) {
-    Utilities.writeHttpRequest(stream, "POST", host, urlPath, headers, content);
-  }
-
-  /** Posts <code>content</code> as data to <code>urlPath</code> on <code>host</code> and <code>port</code>.
-   * The port value for standard http servers is 80.  Returns the body of the
-   * reply message as a string, if successful.  Otherwise an HTTP-EXCEPTION is
-   * signaled.
-   * @param host
-   * @param port
-   * @param urlPath
-   * @param headers
-   * @param content
-   * @return String
-   */
-  public static String postData(String host, int port, String urlPath, Dictionary headers, String content) {
-    { KeyValueList returnHeaders = KeyValueList.newKeyValueList();
-
-      { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
-
-        try {
-          Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, false);
-          { InputStream in = null;
-            OutputStream out = null;
-
-            try {
-              { Object [] caller_MV_returnarray = new Object[1];
-
-                in = Stella.openNetworkStream(host, port, caller_MV_returnarray);
-                out = ((OutputStream)(caller_MV_returnarray[0]));
-              }
-              Utilities.writePostRequest(out, host, urlPath, headers, content);
-              { int returnCode = Stella.NULL_INTEGER;
-                String returnMessage = null;
-                String version = null;
-
-                { Object [] caller_MV_returnarray = new Object[2];
-
-                  returnCode = Utilities.readHttpHeader(in, returnHeaders, caller_MV_returnarray);
-                  returnMessage = ((String)(((StringWrapper)(caller_MV_returnarray[0])).wrapperValue));
-                  version = ((String)(((StringWrapper)(caller_MV_returnarray[1])).wrapperValue));
-                }
-                version = version;
-                if (returnCode == 200) {
-                  return (in.streamToString());
-                }
-                else {
-                  { HttpException self001 = HttpException.newHttpException(returnMessage);
-
-                    self001.errorCode = returnCode;
-                    { HttpException ex = self001;
-
-                      System.out.print("code = " + returnCode + "    message = " + returnMessage + "    version = " + version);
-                      throw ((HttpException)(ex.fillInStackTrace()));
-                    }
-                  }
-                }
-              }
-
-            } finally {
-              if (in != null) {
-                in.free();
-              }
-              if (out != null) {
-                out.free();
-              }
-            }
-          }
-
-        } finally {
-          Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
-        }
-      }
-    }
-  }
-
-  /** Gets the webpage describe by path <code>urlPath</code> on <code>host</code> and <code>port</code>.
-   * The port value for standard http servers is 80.  If successful, 
-   * returns the body of the web message as a string.  The headers
-   * from the reply message will be set in <code>returnHeaders</code> if not
-   * <code>null</code>.  If an error occurs an HTTP-EXCEPTION is signaled.
-   * @param host
-   * @param port
-   * @param urlPath
-   * @param returnHeaders
-   * @return String
-   */
-  public static String getWebPage(String host, int port, String urlPath, Dictionary returnHeaders) {
-    if (returnHeaders == null) {
-      returnHeaders = KeyValueList.newKeyValueList();
-    }
-    { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
-
-      try {
-        Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, false);
-        { InputStream in = null;
-          OutputStream out = null;
-
-          try {
-            { Object [] caller_MV_returnarray = new Object[1];
-
-              in = Stella.openNetworkStream(host, port, caller_MV_returnarray);
-              out = ((OutputStream)(caller_MV_returnarray[0]));
-            }
-            Utilities.writeHttpRequest(out, "GET", host, urlPath, null, null);
-            { int returnCode = Stella.NULL_INTEGER;
-              String returnMessage = null;
-              String version = null;
-
-              { Object [] caller_MV_returnarray = new Object[2];
-
-                returnCode = Utilities.readHttpHeader(in, returnHeaders, caller_MV_returnarray);
-                returnMessage = ((String)(((StringWrapper)(caller_MV_returnarray[0])).wrapperValue));
-                version = ((String)(((StringWrapper)(caller_MV_returnarray[1])).wrapperValue));
-              }
-              version = version;
-              if (returnCode == 200) {
-                return (in.streamToString());
-              }
-              else {
-                { HttpException self001 = HttpException.newHttpException(returnMessage);
-
-                  self001.errorCode = returnCode;
-                  { HttpException ex = self001;
-
-                    System.out.print("code = " + returnCode + "    message = " + returnMessage + "    version = " + version);
-                    throw ((HttpException)(ex.fillInStackTrace()));
-                  }
-                }
-              }
-            }
-
-          } finally {
-            if (in != null) {
-              in.free();
-            }
-            if (out != null) {
-              out.free();
-            }
-          }
-        }
-
-      } finally {
-        Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
-      }
-    }
-  }
-
-  public static String buildFullUrlHierarchicalPart(String path, String query, String fragment) {
-    if (Stella.stringEqlP(query, "")) {
-      if (Stella.stringEqlP(fragment, "")) {
-        return (path);
-      }
-      else {
-        return (path + "#" + fragment);
-      }
-    }
-    else {
-      if (Stella.stringEqlP(fragment, "")) {
-        return (path + "?" + query);
-      }
-      else {
-        return (path + "?" + query + "#" + fragment);
-      }
-    }
-  }
-
-  public static String urlPathToFilename(String path) {
-    { char separator = Stella.directorySeparator();
-
-      if (separator == '/') {
-        return (Stella.unescapeUrlString(path));
-      }
-      else {
-        {
-          path = Stella.unescapeUrlString(Native.string_substitute(path, separator, '/'));
-          if ((Stella.operatingSystem() == Utilities.KWD_MAC) &&
-              (path.charAt(0) == separator)) {
-            path = Native.string_subsequence(path, 1, Stella.NULL_INTEGER);
-          }
-          return (path);
-        }
-      }
-    }
-  }
-
-  /** Opens an input stream to <code>url</code>.
-   * Currently only http: with no user name or password and file: urls on the local
-   * host with absolute pathnames are supported.
-   * @param url
-   * @return InputStream
-   */
-  public static InputStream openUrlStream(String url) {
-    { String protocol = null;
-      String userInfo = null;
-      String host = null;
-      String port = null;
-      String path = null;
-      String query = null;
-      String fragment = null;
-
-      { Object [] caller_MV_returnarray = new Object[6];
-
-        protocol = Utilities.decomposeInternetUrl(url, caller_MV_returnarray);
-        userInfo = ((String)(((StringWrapper)(caller_MV_returnarray[0])).wrapperValue));
-        host = ((String)(((StringWrapper)(caller_MV_returnarray[1])).wrapperValue));
-        port = ((String)(((StringWrapper)(caller_MV_returnarray[2])).wrapperValue));
-        path = ((String)(((StringWrapper)(caller_MV_returnarray[3])).wrapperValue));
-        query = ((String)(((StringWrapper)(caller_MV_returnarray[4])).wrapperValue));
-        fragment = ((String)(((StringWrapper)(caller_MV_returnarray[5])).wrapperValue));
-      }
-      if (Stella.stringEqlP(protocol, "http")) {
-        if (!Stella.stringEqlP(userInfo, "")) {
-          { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-            stream000.nativeStream.print("Only URL without user information are supported: `" + url + "'");
-            throw ((BadArgumentException)(BadArgumentException.newBadArgumentException(stream000.theStringReader()).fillInStackTrace()));
-          }
-        }
-        else {
-          { InputStream in = null;
-            OutputStream out = null;
-            KeyValueList returnHeaders = KeyValueList.newKeyValueList();
-
-            { Object [] caller_MV_returnarray = new Object[1];
-
-              in = Stella.openNetworkStream(host, ((!Stella.stringEqlP(port, "")) ? Native.stringToInteger(port) : 80), caller_MV_returnarray);
-              out = ((OutputStream)(caller_MV_returnarray[0]));
-            }
-            Utilities.writeHttpRequest(out, "GET", host, Utilities.buildFullUrlHierarchicalPart(path, query, fragment), null, null);
-            { int returnCode = Stella.NULL_INTEGER;
-              String returnMessage = null;
-              String version = null;
-
-              { Object [] caller_MV_returnarray = new Object[2];
-
-                returnCode = Utilities.readHttpHeader(in, returnHeaders, caller_MV_returnarray);
-                returnMessage = ((String)(((StringWrapper)(caller_MV_returnarray[0])).wrapperValue));
-                version = ((String)(((StringWrapper)(caller_MV_returnarray[1])).wrapperValue));
-              }
-              version = version;
-              if (returnCode == 200) {
-                return (in);
-              }
-              else {
-                { HttpException self003 = HttpException.newHttpException(returnMessage);
-
-                  self003.errorCode = returnCode;
-                  { HttpException ex = self003;
-
-                    System.out.print("code = " + returnCode + "    message = " + returnMessage + "    version = " + version);
-                    if (in != null) {
-                      in.free();
-                    }
-                    if (out != null) {
-                      out.free();
-                    }
-                    throw ((HttpException)(ex.fillInStackTrace()));
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      else if (Stella.stringEqlP(protocol, "file")) {
-        if (!Stella.stringEqlP(userInfo, "")) {
-          { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
-
-            stream001.nativeStream.print("Only URL without user information are supported: `" + url + "'");
-            throw ((BadArgumentException)(BadArgumentException.newBadArgumentException(stream001.theStringReader()).fillInStackTrace()));
-          }
-        }
-        else if (Stella.stringEqlP(host, "") ||
-            Stella.stringEqlP(host, "localhost")) {
-          return (InputFileStream.newInputFileStream(Utilities.urlPathToFilename(path)));
-        }
-        else {
-          { OutputStringStream stream002 = OutputStringStream.newOutputStringStream();
-
-            stream002.nativeStream.print("Only file URLs on the local host are supported: `" + url + "'");
-            throw ((BadArgumentException)(BadArgumentException.newBadArgumentException(stream002.theStringReader()).fillInStackTrace()));
-          }
-        }
-      }
-      else {
-        { OutputStringStream stream003 = OutputStringStream.newOutputStringStream();
-
-          stream003.nativeStream.print("Only http and file URLs are supported: `" + url + "'");
-          throw ((BadArgumentException)(BadArgumentException.newBadArgumentException(stream003.theStringReader()).fillInStackTrace()));
-        }
-      }
-    }
-  }
-
-  /** Sets up an unwind-protected form which opens a URL for
-   * input and closes it afterwards.  The stream for reading is bound to the
-   * variable provided in the macro form.
-   * Syntax is <code>_WITH_INPUT_URL__var_url__bodyI_</code>.
-   * @param binding
-   * @param body
-   * @return Stella_Object
-   */
-  public static Stella_Object withInputUrl(Cons binding, Cons body) {
-    { Symbol var = ((Symbol)(binding.value));
-
-      return (Stella.list$(Stella_Object.cons(Utilities.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(var, Stella.list$(Stella_Object.cons(Utilities.SYM_STELLA_INPUT_STREAM, Stella_Object.cons(Utilities.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.SYM_STELLA_UNWIND_PROTECT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.SYM_STELLA_SETQ, Stella_Object.cons(var, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.SYM_UTILITIES_OPEN_URL_STREAM, Stella_Object.cons(binding.rest.value, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.SYM_STELLA_DEFINEDp, Stella_Object.cons(var, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Utilities.SYM_STELLA_FREE, Stella_Object.cons(var, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+      m.addUnit("rad", 1.0, "");
+      m.addUnit("radian", 1.0, "rad");
+      m.addUnit("deg", 0.017453292519943295, "rad");
+      m.addUnit("minute", 0.016666666666666666, "deg");
+      m.addUnit("sec", 0.016666666666666666, "minute");
+      m.addUnit("arcmin", 1.0, "minute");
+      m.addUnit("arcsec", 1.0, "sec");
+      m.addUnit("degree", 1.0, "deg");
+      m.addUnit("mil", 0.05625, "deg");
+      m.addUnit("sr", 1.0, "");
+      m.addUnit("steradian", 1.0, "sr");
+      m = Measure.defineDerivedMeasure("Frequency", "Hz", "s-1");
+      m.addUnit("kHz", 1000.0, "Hz");
+      m.addUnit("MHz", 1000000.0, "Hz");
+      m.addUnit("GHz", 1.0e+9, "Hz");
+      m.addUnit("Bq", 1.0, "Hz");
+      m.addUnit("Ci", 3.7e+10, "Bq");
+      m.addUnit("mCi", 0.001, "Ci");
+      m.addUnit("pCi", 1.0e-9, "Ci");
+      m.addUnit("rps", 360.0, "deg/s");
+      m.addUnit("rpm", 0.016666666666666666, "rps");
     }
   }
 

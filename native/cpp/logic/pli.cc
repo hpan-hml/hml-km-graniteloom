@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -128,6 +128,12 @@ Environment* ASSERTION_ENV = NULL;
 Environment* TAXONOMIC_ENV = NULL;
 
 Environment* INFERENCE_ENV = NULL;
+
+boolean testEnvironmentLevelP(Environment* env, char* level) {
+  // Test if `env' has level set to `level'
+  return (((boolean)(env)) &&
+      stringEqlP(env->level, level));
+}
 
 PlIterator* newPlIterator() {
   { PlIterator* self = NULL;
@@ -1131,7 +1137,9 @@ Cons* helpGetPropositions(LogicObject* relation, Cons* arguments, int limit, Mod
       environment = environment;
       // Should be synchronized on process lock oPOWERLOOM_LOCKo
       {
-        { boolean specializeP = !(environment == ASSERTION_ENV);
+        { boolean assertionsonlyP = ((boolean)(environment)) &&
+              stringEqlP(environment->level, "ASSERTION");
+          boolean specializeP = !assertionsonlyP;
 
           { Object* value000 = NULL;
 
@@ -1151,6 +1159,9 @@ Cons* helpGetPropositions(LogicObject* relation, Cons* arguments, int limit, Mod
               Iterator* iterator = (((boolean)(argumentwithbacklinks)) ? ((Iterator*)(allTrueDependentPropositions(argumentwithbacklinks, relation->surrogateValueInverse, specializeP))) : helpGetTrueExtensionMembers(((NamedDescription*)(relation)), specializeP)->allocateIterator());
               Cons* results = NIL;
 
+              if (!(assertionsonlyP)) {
+                oCONTEXTo.set(getPropertyTestContext());
+              }
               { Proposition* p = NULL;
                 Iterator* iter001 = iterator;
 
@@ -1346,6 +1357,7 @@ PlIterator* getInferredBinaryPropositionValues(LogicObject* relation, Object* ar
   // Return all values `v' such that (`relation' `arg' `v')
   // has been asserted or can be inferred.
   { Cons* dummy1;
+    Cons* dummy2;
 
     { Module* mdl000 = module;
       Context* cxt000 = mdl000;
@@ -1360,7 +1372,7 @@ PlIterator* getInferredBinaryPropositionValues(LogicObject* relation, Object* ar
         environment = environment;
         // Should be synchronized on process lock oPOWERLOOM_LOCKo
         {
-          return (consToPlIterator(applyCachedRetrieve(listO(4, SYM_PLI_PLI_pR, SYM_PLI_PLI_pI, SYM_PLI_PLI_pV, NIL), listO(4, SYM_PLI_PLI_pR, SYM_PLI_PLI_pI, SYM_PLI_PLI_pV, NIL), consList(3, relation, arg, NULL), consList(0), SYM_PLI_PLI_F_GET_INFERRED_BINARY_PROPOSITION_VALUES_QUERY_000, dummy1)));
+          return (consToPlIterator(applyCachedRetrieve(listO(4, SYM_PLI_PLI_pR, SYM_PLI_PLI_pI, SYM_PLI_PLI_pV, NIL), listO(4, SYM_PLI_PLI_pR, SYM_PLI_PLI_pI, SYM_PLI_PLI_pV, NIL), consList(3, relation, arg, NULL), consList(0), SYM_PLI_PLI_F_GET_INFERRED_BINARY_PROPOSITION_VALUES_QUERY_000, dummy1, dummy2)));
         }
       }
     }
@@ -1810,39 +1822,7 @@ Object* getConceptInstanceMatchingValue(LogicObject* concept, LogicObject* relat
   }
 }
 
-PlIterator* getTypes(LogicObject* object, Module* module, Environment* environment) {
-  // Return all named concepts that `object' belongs to.
-  { PlIterator* directtypes = getDirectTypes(object, module, environment);
-    Cons* types = NIL;
-
-    { LogicObject* d = NULL;
-      PlIterator* iter000 = directtypes;
-
-      for (d, iter000; iter000->nextP(); ) {
-        d = ((LogicObject*)(iter000->value));
-        if (!types->memberP(d)) {
-          types = cons(d, types);
-        }
-        { LogicObject* c = NULL;
-          Iterator* iter001 = allSupercollections(d);
-
-          for (c, iter001; iter001->nextP(); ) {
-            c = ((LogicObject*)(iter001->value));
-            if (isaP(c, SGT_PLI_LOGIC_NAMED_DESCRIPTION)) {
-              if (!types->memberP(c)) {
-                types = cons(c, types);
-              }
-            }
-          }
-        }
-      }
-    }
-    return (consToPlIterator(types));
-  }
-}
-
-PlIterator* getDirectTypes(LogicObject* object, Module* module, Environment* environment) {
-  // Return most specific concepts that `object' belongs to.
+Cons* helpGetTypes(LogicObject* object, Module* module, Environment* environment) {
   { Module* mdl000 = module;
     Context* cxt000 = mdl000;
 
@@ -1858,21 +1838,34 @@ PlIterator* getDirectTypes(LogicObject* object, Module* module, Environment* env
       {
         { Cons* derivabletypes = NIL;
 
-          { Proposition* prop = NULL;
-            Iterator* iter000 = allTrueDependentPropositions(object, NULL, false);
-
-            for (prop, iter000; iter000->nextP(); ) {
-              prop = ((Proposition*)(iter000->value));
-              if (prop->kind == KWD_PLI_ISA) {
-                derivabletypes = cons(getNthValue(prop, 0, module, environment), derivabletypes);
-              }
-            }
+          if ((!((boolean)(environment))) ||
+              (((boolean)(environment)) &&
+               stringEqlP(environment->level, "INFERENCE"))) {
+            derivabletypes = allTypes(object);
           }
-          return (consToPlIterator(mostSpecificNamedDescriptions(derivabletypes)));
+          else if (((boolean)(environment)) &&
+              stringEqlP(environment->level, "ASSERTION")) {
+            derivabletypes = allAssertedTypes(object);
+          }
+          else if (((boolean)(environment)) &&
+              stringEqlP(environment->level, "TAXONOMIC")) {
+            derivabletypes = allTaxonomicTypes(object);
+          }
+          return (derivabletypes);
         }
       }
     }
   }
+}
+
+PlIterator* getTypes(LogicObject* object, Module* module, Environment* environment) {
+  // Return all named concepts that `object' belongs to.
+  return (consToPlIterator(helpGetTypes(object, module, environment)));
+}
+
+PlIterator* getDirectTypes(LogicObject* object, Module* module, Environment* environment) {
+  // Return most specific concepts that `object' belongs to.
+  return (consToPlIterator(mostSpecificNamedDescriptions(helpGetTypes(object, module, environment))));
 }
 
 PlIterator* getRelationExtension(LogicObject* relation, Module* module, Environment* environment) {
@@ -1891,7 +1884,8 @@ PlIterator* getRelationExtension(LogicObject* relation, Module* module, Environm
       environment = environment;
       // Should be synchronized on process lock oPOWERLOOM_LOCKo
       {
-        return (consToPlIterator(helpGetTrueExtensionMembers(((NamedDescription*)(relation)), !(environment == ASSERTION_ENV))));
+        return (consToPlIterator(helpGetTrueExtensionMembers(((NamedDescription*)(relation)), !(((boolean)(environment)) &&
+            stringEqlP(environment->level, "ASSERTION")))));
       }
     }
   }
@@ -2463,6 +2457,72 @@ void sRegisterSpecialistFunction(char* name, char* nativeName, char* moduleName,
   }
 }
 
+void registerComputationFunction(char* name, cpp_function_code functionReference, int arity, Module* module, Environment* environment) {
+  // Register `name' as a function name in `module' which will invoke the
+  // native code procedure described by `function-reference.'  The `name'
+  // is a fully-qualified name which will be interpreted by the normal
+  // rules for reading names in PowerLoom.  The function must conform
+  // to the signature for computation functions used by the computation
+  // specialist.  Arity specifies the number of arguments the computation
+  // accepts.
+  // 
+  // The exact form of `function-reference' depends on the underlying
+  // programming language.  The following type mappings are used:
+  //           C++:  cpp_function_code (a pointer to the function code)
+  //   Common Lisp:  FUNCTION   (result of #' or (FUNCTION ...))
+  //          Java:  java.lang.reflect.Method
+  { Module* mdl000 = module;
+    Context* cxt000 = mdl000;
+
+    if (!((boolean)(mdl000))) {
+      mdl000 = oMODULEo.get();
+      cxt000 = oCONTEXTo.get();
+    }
+    { 
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, cxt000);
+      environment = environment;
+      // Should be synchronized on process lock oPOWERLOOM_LOCKo
+      {
+        logic::registerComputationFunction(name, functionReference, arity);
+      }
+    }
+  }
+}
+
+void sRegisterComputationFunction(char* name, char* nativeName, int arity, char* moduleName, Environment* environment) {
+  // Register `name' as a function name in the module named `module-name'.
+  // This function will the native code named `native-name'.  The `name'
+  // is a fully-qualified name which will be interpreted by the normal
+  // rules for reading names in PowerLoom.  The `native-name' will be
+  // processed in a manner that depends on the underlying programming
+  // language.  The following type mappings are used:
+  //           C++:  Not available.  Error signaled.
+  //   Common Lisp:  The native-name is read by READ-FROM-STRING and then
+  //                 the SYMBOL-FUNCTION is taken.
+  //          Java:  A fully package-qualified name is required.  It is
+  //                 looked up using the Reflection tools.
+  // The function found must conform to the signature for computation functions.
+  // Arity specifies the number of arguments the computation accepts.
+  { Module* mdl000 = ((Module*)(safelyGetModule(moduleName, environment)));
+    Context* cxt000 = mdl000;
+
+    if (!((boolean)(mdl000))) {
+      mdl000 = oMODULEo.get();
+      cxt000 = oCONTEXTo.get();
+    }
+    { 
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, cxt000);
+      environment = environment;
+      // Should be synchronized on process lock oPOWERLOOM_LOCKo
+      {
+        registerComputationFunctionName(name, nativeName, arity);
+      }
+    }
+  }
+}
+
 LogicObject* createEnumeratedList(Cons* members, Module* module, Environment* environment) {
   // Create a logical term that denotes a list containing `members' in
   // `module' using `environment'.  Useful for passing lists as arguments
@@ -2522,11 +2582,11 @@ LogicObject* createEnumeratedSet(Cons* members, Module* module, Environment* env
   }
 }
 
-void destroyObject(LogicObject* object) {
+void destroyObject(Object* object) {
   // Delete the object `object', retracting all facts attached to it.
   // Should be synchronized on process lock oPOWERLOOM_LOCKo
   {
-    destroyInstance(object);
+    logic::destroyObject(object);
   }
 }
 
@@ -2541,7 +2601,7 @@ void sDestroyObject(char* objectName, char* moduleName, Environment* environment
     Object* object = safelyGetObject(objectName, ((Module*)(module)), environment);
 
     if (((boolean)(object))) {
-      destroyObject(((LogicObject*)(object)));
+      destroyObject(object);
     }
   }
 }
@@ -3119,57 +3179,30 @@ LogicObject* sGetRange(char* relationName, char* moduleName, Environment* enviro
 
 LogicObject* getNthDomain(LogicObject* relation, int n) {
   // Return the type (a concept) for the the nth argument of the
-  // relation `relation'.  Counting starts at zero.
+  // relation `relation'.  Counting starts at zero.  NOTE: if there are multiple
+  // `nth-domain' propositions for `relation', this arbitrarily returns one of them;
+  // it does not look for the most specific one (which might have to be created).
   if (classP(relation)) {
     return (((n == 0) ? relation : NULL));
   }
-  else {
-    if (subtypeOfP(safePrimaryType(relation), SGT_PLI_LOGIC_NAMED_DESCRIPTION)) {
-      { LogicObject* relation000 = relation;
-        NamedDescription* relation = ((NamedDescription*)(relation000));
+  if (subtypeOfP(safePrimaryType(relation), SGT_PLI_LOGIC_NAMED_DESCRIPTION)) {
+    { LogicObject* relation000 = relation;
+      NamedDescription* relation = ((NamedDescription*)(relation000));
 
-        if ((n >= 0) &&
-            (n < relation->ioVariableTypes->length())) {
-          { Object* type = ((Surrogate*)(relation->ioVariableTypes->nth(n)))->surrogateValue;
+      if ((n >= 0) &&
+          (n < relation->ioVariableTypes->length())) {
+        { Proposition* domainprop = ((Proposition*)(helpGetPropositions(((LogicObject*)(SGT_PLI_PL_KERNEL_KB_NTH_DOMAIN->surrogateValue)), cons(relation, cons(wrapInteger(n), cons(NULL, NIL))), 1, NULL, NULL)->value));
 
-            if (!((boolean)(type))) {
-              return (NULL);
-            }
-            { Surrogate* testValue000 = safePrimaryType(type);
-
-              if (subtypeOfClassP(testValue000)) {
-                { Object* type000 = type;
-                  Class* type = ((Class*)(type000));
-
-                  return (((NamedDescription*)(dynamicSlotValue(type->dynamicSlots, SYM_PLI_LOGIC_DESCRIPTION, NULL))));
-                }
-              }
-              else if (subtypeOfP(testValue000, SGT_PLI_LOGIC_LOGIC_OBJECT)) {
-                { Object* type001 = type;
-                  LogicObject* type = ((LogicObject*)(type001));
-
-                  return (type);
-                }
-              }
-              else {
-                { OutputStringStream* stream000 = newOutputStringStream();
-
-                  *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
-                  throw *newStellaException(stream000->theStringReader());
-                }
-              }
-            }
+          if (((boolean)(domainprop))) {
+            return (((LogicObject*)((domainprop->arguments->theArray)[(domainprop->arguments->length() - 1)])));
           }
-        }
-        else {
-          return (NULL);
         }
       }
     }
-    else {
-      return (NULL);
-    }
   }
+  else {
+  }
+  return (NULL);
 }
 
 LogicObject* sGetNthDomain(char* relationName, int n, char* moduleName, Environment* environment) {
@@ -3193,10 +3226,9 @@ LogicObject* sGetNthDomain(char* relationName, int n, char* moduleName, Environm
 
 void load(char* filename, Environment* environment) {
   // Read logic commands from the file named `filename' and evaluate them.
-  // The file should begin with an `in-module' declaration that specifies
-  // the module within which all remaining commands are to be evaluated
-  // The remaining commands are evaluated one-by-one, applying the function
-  // `evaluate' to each of them.
+  // The file should contain an `in-module' declaration that specifies the module
+  // within which all remaining commands are to be evaluated.  The remaining commands
+  // are evaluated one-by-one, applying the function `evaluate' to each of them.
   { Module* mdl000 = oMODULEo.get();
     Context* cxt000 = mdl000;
 
@@ -3216,10 +3248,37 @@ void load(char* filename, Environment* environment) {
   }
 }
 
+void loadInModule(char* filename, Module* module, Environment* environment) {
+  // Read logic commands from the file named `filename' and evaluate them.
+  // If the file does not have an `in-module' declaration that specifies the module
+  // within which all remaining commands are to be evaluated, it will be loaded
+  // in the `module' specified.  If no `module' is specified and the file does
+  // not contain an `in-module' declaration, an error will be signaled.
+  // The remaining commands are evaluated one-by-one, applying the function
+  // `evaluate' to each of them.
+  { Module* mdl000 = module;
+    Context* cxt000 = mdl000;
+
+    if (!((boolean)(mdl000))) {
+      mdl000 = oMODULEo.get();
+      cxt000 = oCONTEXTo.get();
+    }
+    { 
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, cxt000);
+      environment = environment;
+      // Should be synchronized on process lock oPOWERLOOM_LOCKo
+      {
+        logic::load(filename, consList(2, KWD_PLI_MODULE, module));
+      }
+    }
+  }
+}
+
 void loadStream(InputStream* stream, Environment* environment) {
   // Read logic commands from the STELLA stream `stream' and evaluate them.
-  // The stream should begin with an `in-module' declaration that specifies
-  // the module within which all remaining commands are to be evaluated
+  // The stream should contain an `in-module' declaration that specifies
+  // the module within which all remaining commands are to be evaluated.
   // The remaining commands are evaluated one-by-one, applying the function
   // `evaluate' to each of them.
   { Module* mdl000 = oMODULEo.get();
@@ -3236,6 +3295,33 @@ void loadStream(InputStream* stream, Environment* environment) {
       // Should be synchronized on process lock oPOWERLOOM_LOCKo
       {
         logic::loadStream(stream);
+      }
+    }
+  }
+}
+
+void loadStreamInModule(InputStream* stream, Module* module, Environment* environment) {
+  // Read logic commands from the STELLA stream `stream' and evaluate them.
+  // If the stream does not supply an `in-module' declaration that specifies the
+  // module within which all remaining commands are to be evaluated, it will be
+  // loaded in the `module' specified.  If no `module' is specified and the file 
+  // does not supply an `in-module' declaration, an error will be signaled.
+  // The remaining commands are evaluated one-by-one, applying the function
+  // `evaluate' to each of them.
+  { Module* mdl000 = module;
+    Context* cxt000 = mdl000;
+
+    if (!((boolean)(mdl000))) {
+      mdl000 = oMODULEo.get();
+      cxt000 = oCONTEXTo.get();
+    }
+    { 
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, cxt000);
+      environment = environment;
+      // Should be synchronized on process lock oPOWERLOOM_LOCKo
+      {
+        logic::loadStreamInModule(stream, module);
       }
     }
   }
@@ -3266,6 +3352,39 @@ void loadNativeStream(std::istream* stream, Environment* environment) {
 
           self000->nativeStream = stream;
           logic::loadStream(self000);
+        }
+      }
+    }
+  }
+}
+
+void loadNativeStreamInModule(std::istream* stream, Module* module, Environment* environment) {
+  // Read logic commands from the native input stream `stream' and evaluate them.
+  // Assumes `stream' is a line-buffered stream which is a safe compromise but does
+  // not generate the best efficiency for block-buffered streams such as files.
+  // If the stream does not supply an `in-module' declaration that specifies the
+  // module within which all remaining commands are to be evaluated, it will be
+  // loaded in the `module' specified.  If no `module' is specified and the file 
+  // does not supply an `in-module' declaration, an error will be signaled.
+  // The remaining commands are evaluated one-by-one, applying the function
+  // `evaluate' to each of them.
+  { Module* mdl000 = module;
+    Context* cxt000 = mdl000;
+
+    if (!((boolean)(mdl000))) {
+      mdl000 = oMODULEo.get();
+      cxt000 = oCONTEXTo.get();
+    }
+    { 
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, cxt000);
+      environment = environment;
+      // Should be synchronized on process lock oPOWERLOOM_LOCKo
+      {
+        { InputStream* self000 = newInputStream();
+
+          self000->nativeStream = stream;
+          logic::loadStreamInModule(self000, module);
         }
       }
     }
@@ -3375,7 +3494,8 @@ int getColumnCount(Object* obj) {
   // the number includes both the predidate and arguments. For the PL-iterator
   // case,the number of columns is for the current value of the iterator.
   // 
-  // For non sequence objects, the column count is zero.
+  // For a null item, the column count is zero.
+  // For non sequence objects, the column count is one.
   if (!((boolean)(obj))) {
     return (0);
   }
@@ -3731,6 +3851,11 @@ boolean isUnknown(TruthValue* tv) {
       (!((boolean)(tv))));
 }
 
+boolean isKnown(TruthValue* tv) {
+  // Tests whether `tv' is a known truth value (i.e., true or false).
+  return (knownTruthValueP(tv));
+}
+
 boolean isInconsistent(TruthValue* tv) {
   // Tests whether `tv' is an inconsistent truth value.
   return (tv == INCONSISTENT_TRUTH_VALUE);
@@ -3763,7 +3888,7 @@ TruthValue* ask(Cons* query, Module* module, Environment* environment) {
   // 	 
   //     (happy Fred)
   // 	
-  // is a legal `query' argument.  Note that for a setence whose relation is a list
+  // is a legal `query' argument.  Note that for a sentence whose relation is a list
   // itself, e.g., `((FruitFn BananaTree) MyBanana)' this shortcut is not available,
   // that is, in that case an extra level of list nesting is always necessary.
   // The returned truth value represents the logical truth of the queried sentence
@@ -4033,7 +4158,6 @@ void helpStartupPli1() {
     SYM_PLI_STELLA_EXISTS = ((Symbol*)(internRigidSymbolWrtModule("EXISTS", getStellaModule("/STELLA", true), 0)));
     SYM_PLI_LOGIC_pY = ((Symbol*)(internRigidSymbolWrtModule("?Y", getStellaModule("/LOGIC", true), 0)));
     SYM_PLI_PLI_PROPER_SUBRELATION = ((Symbol*)(internRigidSymbolWrtModule("PROPER-SUBRELATION", NULL, 0)));
-    KWD_PLI_ISA = ((Keyword*)(internRigidSymbolWrtModule("ISA", NULL, 2)));
     SYM_PLI_STELLA_TRUE = ((Symbol*)(internRigidSymbolWrtModule("TRUE", getStellaModule("/STELLA", true), 0)));
     SYM_PLI_STELLA_FALSE = ((Symbol*)(internRigidSymbolWrtModule("FALSE", getStellaModule("/STELLA", true), 0)));
     KWD_PLI_CASE_SENSITIVEp = ((Keyword*)(internRigidSymbolWrtModule("CASE-SENSITIVE?", NULL, 2)));
@@ -4042,7 +4166,8 @@ void helpStartupPli1() {
     KWD_PLI_RETRACT_TRUE = ((Keyword*)(internRigidSymbolWrtModule("RETRACT-TRUE", NULL, 2)));
     KWD_PLI_ASSERT_TRUE = ((Keyword*)(internRigidSymbolWrtModule("ASSERT-TRUE", NULL, 2)));
     SGT_PLI_LOGIC_PROPOSITION = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION", getStellaModule("/LOGIC", true), 1)));
-    SYM_PLI_LOGIC_DESCRIPTION = ((Symbol*)(internRigidSymbolWrtModule("DESCRIPTION", getStellaModule("/LOGIC", true), 0)));
+    SGT_PLI_PL_KERNEL_KB_NTH_DOMAIN = ((Surrogate*)(internRigidSymbolWrtModule("NTH-DOMAIN", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    KWD_PLI_MODULE = ((Keyword*)(internRigidSymbolWrtModule("MODULE", NULL, 2)));
     SGT_PLI_STELLA_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-WRAPPER", getStellaModule("/STELLA", true), 1)));
     SGT_PLI_STELLA_FLOAT_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT-WRAPPER", getStellaModule("/STELLA", true), 1)));
     SGT_PLI_STELLA_NUMBER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER-WRAPPER", getStellaModule("/STELLA", true), 1)));
@@ -4057,6 +4182,7 @@ void helpStartupPli2() {
     defineFunctionObject("INITIALIZE", "(DEFUN INITIALIZE () :DOCUMENTATION \"Initialize the PowerLoom logic system.  This function\nneeds to be called by all applications before using PowerLoom.  If it\nis called more than once, every call after the first one is a no-op.\" :PUBLIC? TRUE)", ((cpp_function_code)(&initialize)), NULL);
     defineFunctionObject("RESET-POWERLOOM", "(DEFUN RESET-POWERLOOM () :DOCUMENTATION \"Reset PowerLoom to its initial state.\nCAUTION: This will destroy all loaded knowledge bases and might break other\nloaded STELLA systems if they do reference PowerLoom symbols in their code.\" :PUBLIC? TRUE)", ((cpp_function_code)(&resetPowerloom)), NULL);
     defineFunctionObject("CLEAR-CACHES", "(DEFUN CLEAR-CACHES () :DOCUMENTATION \"Clear all query and memoization caches.\" :PUBLIC? TRUE)", ((cpp_function_code)(&clearCaches)), NULL);
+    defineFunctionObject("TEST-ENVIRONMENT-LEVEL?", "(DEFUN (TEST-ENVIRONMENT-LEVEL? BOOLEAN) ((ENV ENVIRONMENT) (LEVEL STRING)) :PUBLIC? FALSE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Test if `env' has level set to `level'\" (RETURN (AND (DEFINED? ENV) (STRING-EQL? (LEVEL ENV) LEVEL))))", ((cpp_function_code)(&testEnvironmentLevelP)), NULL);
     defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF PL-ITERATOR)) :PUBLIC? TRUE :DOCUMENTATION \"Advance the PL-Iterator `self' and return `true' if more\nelements are available, `false' otherwise.\")", ((cpp_method_code)(&PlIterator::nextP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF PL-ITERATOR)) :PUBLIC? TRUE :DOCUMENTATION \"Return TRUE if the iterator `self' has no more elements.\")", ((cpp_method_code)(&PlIterator::emptyP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF PL-ITERATOR)) :PUBLIC? TRUE :DOCUMENTATION \"Number of items remaining in `self'.  Non destructive.\")", ((cpp_method_code)(&PlIterator::length)), ((cpp_method_code)(NULL)));
@@ -4113,18 +4239,19 @@ void helpStartupPli2() {
     defineFunctionObject("GET-DIRECT-SUBRELATIONS", "(DEFUN (GET-DIRECT-SUBRELATIONS (PL-ITERATOR OF LOGIC-OBJECT)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return relations that directly specialize `relation'.\nNon-reflexive.\")", ((cpp_function_code)(&getDirectSubrelations)), NULL);
     defineFunctionObject("GET-PROPER-SUPERRELATIONS", "(DEFUN (GET-PROPER-SUPERRELATIONS (PL-ITERATOR OF LOGIC-OBJECT)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return relations that generalize `relation'.\nNon-reflexive.\")", ((cpp_function_code)(&getProperSuperrelations)), NULL);
     defineFunctionObject("GET-DIRECT-SUPERRELATIONS", "(DEFUN (GET-DIRECT-SUPERRELATIONS (PL-ITERATOR OF LOGIC-OBJECT)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return relations that directly generalize `relation'.\nNon-reflexive.\")", ((cpp_function_code)(&getDirectSuperrelations)), NULL);
-    defineFunctionObject("IS-A", "(DEFUN (IS-A BOOLEAN) ((OBJECT OBJECT) (CONCEPT LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return TRUE if `object' is a member of the concept `concept'.\")", ((cpp_function_code)(&isA)), NULL);
   }
 }
 
 void helpStartupPli3() {
   {
+    defineFunctionObject("IS-A", "(DEFUN (IS-A BOOLEAN) ((OBJECT OBJECT) (CONCEPT LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return TRUE if `object' is a member of the concept `concept'.\")", ((cpp_function_code)(&isA)), NULL);
     defineFunctionObject("GET-CONCEPT-INSTANCES", "(DEFUN (GET-CONCEPT-INSTANCES PL-ITERATOR) ((CONCEPT LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return instances of the concept `concept'.\nInclude instances of subconcepts of `concept'.  Depending on `concept',\nthe return values could be (wrapped) literals.\")", ((cpp_function_code)(&getConceptInstances)), NULL);
     defineFunctionObject("S-GET-CONCEPT-INSTANCES", "(DEFUN (S-GET-CONCEPT-INSTANCES PL-ITERATOR) ((CONCEPT-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return instances of concept `concept-name'.\nInclude instances of subconcepts of `concept-name'.  Depending on `concept-name',\nthe return values could be (wrapped) literals.\n\nA module name of `null' or the empty string refers to the current module. \nIf no module can be found with the name `module-name', then a Stella \n`no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetConceptInstances)), NULL);
     defineFunctionObject("GET-DIRECT-CONCEPT-INSTANCES", "(DEFUN (GET-DIRECT-CONCEPT-INSTANCES PL-ITERATOR) ((CONCEPT LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return instances of concept `concept'.\nExclude instances of subconcepts of `concept'.  Depending on `concept',\nthe return values could be (wrapped) literals.\")", ((cpp_function_code)(&getDirectConceptInstances)), NULL);
     defineFunctionObject("S-GET-DIRECT-CONCEPT-INSTANCES", "(DEFUN (S-GET-DIRECT-CONCEPT-INSTANCES PL-ITERATOR) ((CONCEPT-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return instances of concept `concept-name'.\nExclude instances of subconcepts of `concept-name'.  Depending on `concept-name',\nthe return values could be (wrapped) literals.\n\nA module name of `null' or the empty string refers to the current module. \nIf no module can be found with the name `module-name', then a Stella \n`no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetDirectConceptInstances)), NULL);
     defineFunctionObject("GET-CONCEPT-INSTANCES-MATCHING-VALUE", "(DEFUN (GET-CONCEPT-INSTANCES-MATCHING-VALUE PL-ITERATOR) ((CONCEPT LOGIC-OBJECT) (RELATION LOGIC-OBJECT) (VALUE OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return members of concept `concept' that\nhave an attribute matching `value' for the binary relation `relation', i.e.,\n`(relation <result> value)' holds.\")", ((cpp_function_code)(&getConceptInstancesMatchingValue)), NULL);
     defineFunctionObject("GET-CONCEPT-INSTANCE-MATCHING-VALUE", "(DEFUN (GET-CONCEPT-INSTANCE-MATCHING-VALUE OBJECT) ((CONCEPT LOGIC-OBJECT) (RELATION LOGIC-OBJECT) (VALUE OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return a member of concept `concept' that\nhas an attribute matching `value' for the binary relation `relation', i.e.,\n`(relation <result> value)' holds.\")", ((cpp_function_code)(&getConceptInstanceMatchingValue)), NULL);
+    defineFunctionObject("HELP-GET-TYPES", "(DEFUN (HELP-GET-TYPES (CONS OF LOGIC-OBJECT)) ((OBJECT LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? FALSE)", ((cpp_function_code)(&helpGetTypes)), NULL);
     defineFunctionObject("GET-TYPES", "(DEFUN (GET-TYPES (PL-ITERATOR OF LOGIC-OBJECT)) ((OBJECT LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return all named concepts that `object' belongs to.\")", ((cpp_function_code)(&getTypes)), NULL);
     defineFunctionObject("GET-DIRECT-TYPES", "(DEFUN (GET-DIRECT-TYPES (PL-ITERATOR OF LOGIC-OBJECT)) ((OBJECT LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return most specific concepts that `object' belongs to.\")", ((cpp_function_code)(&getDirectTypes)), NULL);
     defineFunctionObject("GET-RELATION-EXTENSION", "(DEFUN (GET-RELATION-EXTENSION (PL-ITERATOR OF PROPOSITION)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :DOCUMENTATION \"Return propositions that satisfy `relation'.\nInclude propositions that satisfy subrelations of `relation'.\")", ((cpp_function_code)(&getRelationExtension)), NULL);
@@ -4156,9 +4283,11 @@ void helpStartupPli3() {
     defineFunctionObject("S-CREATE-FUNCTION", "(DEFUN (S-CREATE-FUNCTION LOGIC-OBJECT) ((NAME STRING) (ARITY INTEGER) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Create a function named `name' with arity `arity' in the designated \nmodule.  Domain and range information can be added via assertions of\n`domain', `nth-domain' and `range' relations.\n\nA module name of `null' or the empty string refers to the current module. \nIf no module can be found with the name `module-name', then a Stella \n`no-such-context-exception' is thrown.\n\nNote that because names in modules that are not case-sensitive are canonicalized,\nthe name of the returned object may not match `name' exactly.\")", ((cpp_function_code)(&sCreateFunction)), NULL);
     defineFunctionObject("REGISTER-SPECIALIST-FUNCTION", "(DEFUN REGISTER-SPECIALIST-FUNCTION ((NAME STRING) (FUNCTION-REFERENCE FUNCTION-CODE) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Register `name' as a function name in `module' which will invoke the\nnative code procedure described by `function-reference.'  The `name'\nis a fully-qualified name which will be interpreted by the normal\nrules for reading names in PowerLoom.  The function must conform\nto the signature for specialist functions.\n\nThe exact form of `function-reference' depends on the underlying\nprogramming language.  The following type mappings are used:\n          C++:  \n  Common Lisp:  FUNCTION   (result of #' or (FUNCTION ...))\n         Java:  java.lang.reflect.Method\")", ((cpp_function_code)(&registerSpecialistFunction)), NULL);
     defineFunctionObject("S-REGISTER-SPECIALIST-FUNCTION", "(DEFUN S-REGISTER-SPECIALIST-FUNCTION ((NAME STRING) (NATIVE-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Register `name' as a function name in the module named `module-name'.\nThis function will the native code named `native-name'.  The `name'\nis a fully-qualified name which will be interpreted by the normal\nrules for reading names in PowerLoom.  The `native-name' will be\nprocessed in a manner that depends on the underlying programming\nlanguage.  The following type mappings are used:\n          C++:  Not available.  Error signaled.\n  Common Lisp:  The native-name is read by READ-FROM-STRING and then\n                the SYMBOL-FUNCTION is taken.\n         Java:  A fully package-qualified name is required.  It is\n                looked up using the Reflection tools.\nThe function found must conform to the signature for specialist functions.\")", ((cpp_function_code)(&sRegisterSpecialistFunction)), NULL);
+    defineFunctionObject("REGISTER-COMPUTATION-FUNCTION", "(DEFUN REGISTER-COMPUTATION-FUNCTION ((NAME STRING) (FUNCTION-REFERENCE FUNCTION-CODE) (ARITY INTEGER) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Register `name' as a function name in `module' which will invoke the\nnative code procedure described by `function-reference.'  The `name'\nis a fully-qualified name which will be interpreted by the normal\nrules for reading names in PowerLoom.  The function must conform\nto the signature for computation functions used by the computation\nspecialist.  Arity specifies the number of arguments the computation\naccepts.\n\nThe exact form of `function-reference' depends on the underlying\nprogramming language.  The following type mappings are used:\n          C++:  cpp_function_code (a pointer to the function code)\n  Common Lisp:  FUNCTION   (result of #' or (FUNCTION ...))\n         Java:  java.lang.reflect.Method\")", ((cpp_function_code)(&registerComputationFunction)), NULL);
+    defineFunctionObject("S-REGISTER-COMPUTATION-FUNCTION", "(DEFUN S-REGISTER-COMPUTATION-FUNCTION ((NAME STRING) (NATIVE-NAME STRING) (ARITY INTEGER) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Register `name' as a function name in the module named `module-name'.\nThis function will the native code named `native-name'.  The `name'\nis a fully-qualified name which will be interpreted by the normal\nrules for reading names in PowerLoom.  The `native-name' will be\nprocessed in a manner that depends on the underlying programming\nlanguage.  The following type mappings are used:\n          C++:  Not available.  Error signaled.\n  Common Lisp:  The native-name is read by READ-FROM-STRING and then\n                the SYMBOL-FUNCTION is taken.\n         Java:  A fully package-qualified name is required.  It is\n                looked up using the Reflection tools.\nThe function found must conform to the signature for computation functions.\nArity specifies the number of arguments the computation accepts.\")", ((cpp_function_code)(&sRegisterComputationFunction)), NULL);
     defineFunctionObject("CREATE-ENUMERATED-LIST", "(DEFUN (CREATE-ENUMERATED-LIST LOGIC-OBJECT) ((MEMBERS CONS) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Create a logical term that denotes a list containing `members' in\n`module' using `environment'.  Useful for passing lists as arguments\nto parameterized queries.\")", ((cpp_function_code)(&createEnumeratedList)), NULL);
     defineFunctionObject("CREATE-ENUMERATED-SET", "(DEFUN (CREATE-ENUMERATED-SET LOGIC-OBJECT) ((MEMBERS CONS) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Create a logical term that denotes the enumerated set containing `members'\nin `module' using `environment'.\")", ((cpp_function_code)(&createEnumeratedSet)), NULL);
-    defineFunctionObject("DESTROY-OBJECT", "(DEFUN DESTROY-OBJECT ((OBJECT LOGIC-OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Delete the object `object', retracting all facts attached to it.\")", ((cpp_function_code)(&destroyObject)), NULL);
+    defineFunctionObject("DESTROY-OBJECT", "(DEFUN DESTROY-OBJECT ((OBJECT OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Delete the object `object', retracting all facts attached to it.\")", ((cpp_function_code)(&destroyObject)), NULL);
     defineFunctionObject("S-DESTROY-OBJECT", "(DEFUN S-DESTROY-OBJECT ((OBJECT-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Delete the object named `object-name', retracting all facts\nattached to it.\n\nA module name of `null' or the empty string refers to the current module. \nIf no module can be found with the name `module-name', then a Stella \n`no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sDestroyObject)), NULL);
     defineFunctionObject("ASSERT-UNARY-PROPOSITION", "(DEFUN (ASSERT-UNARY-PROPOSITION PROPOSITION) ((RELATION LOGIC-OBJECT) (ARG OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Assert that the proposition (`relation' `arg') is TRUE in `module'.  Return the asserted proposition.\")", ((cpp_function_code)(&assertUnaryProposition)), NULL);
     defineFunctionObject("ASSERT-BINARY-PROPOSITION", "(DEFUN (ASSERT-BINARY-PROPOSITION PROPOSITION) ((RELATION LOGIC-OBJECT) (ARG OBJECT) (VALUE OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Assert that the proposition (`relation' `arg' `value') is TRUE\nin `module'.  Return the asserted proposition.\")", ((cpp_function_code)(&assertBinaryProposition)), NULL);
@@ -4175,27 +4304,30 @@ void helpStartupPli3() {
     defineFunctionObject("GET-RULES", "(DEFUN (GET-RULES (PL-ITERATOR OF PROPOSITION)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return rules attached to the concept/relation `relation'\nin either antecedent or consequent position.\")", ((cpp_function_code)(&getRules)), NULL);
     defineFunctionObject("S-GET-RULES", "(DEFUN (S-GET-RULES (PL-ITERATOR OF PROPOSITION)) ((RELATION-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return rules attached to the concept/relation named\n`relation-name' found in the module named `module-name'.\n\nA module name of `null' or the empty string refers to the current module.\nIf no module can be found with the name `module-name', then a Stella\n`No-Such-Context-Exception' is thrown.\")", ((cpp_function_code)(&sGetRules)), NULL);
     defineFunctionObject("S-PRINT-RULES", "(DEFUN S-PRINT-RULES ((NAME STRING) (STREAM OUTPUT-STREAM) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :DOCUMENTATION \"Print rules attached to the concept/relation named `name'.\n\nA module name of `null' or the empty string refers to the\ncurrent module.  If no module can be found with the name `module-name',\nthen a Stella `no-such-context-exception' is thrown.\" :PUBLIC? TRUE)", ((cpp_function_code)(&sPrintRules)), NULL);
-    defineFunctionObject("RUN-FORWARD-RULES", "(DEFUN RUN-FORWARD-RULES ((MODULE OBJECT) (FORCE? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Run forward inference rules in module `module'.\nIf `module' is NULL, the\ncurrent module will be used.  If forward inferencing is already up-to-date\nin the designated module, no additional inferencing will occur, unless `force'\nis set to TRUE, in which case all forward rules are run or rerun.\n\nCalling `run-forward-rules' temporarily puts the module into a mode where\nfuture assertional (monotonic) updates will trigger additional forward\ninference.  Once a non-monotonic update is performed, i.e., a retraction\nor clipping of relation value, all cached forward inferences will be discarded\nand forward inferencing will be disabled until this function is\ncalled again.\")", ((cpp_function_code)(&runForwardRules)), NULL);
-    defineFunctionObject("GET-ARITY", "(DEFUN (GET-ARITY INTEGER) ((RELATION LOGIC-OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the arity of the relation `relation'.\")", ((cpp_function_code)(&getArity)), NULL);
-    defineFunctionObject("S-GET-ARITY", "(DEFUN (S-GET-ARITY INTEGER) ((RELATION-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the arity of the relation named `relation-name'.\n\n A module name of `null' or the empty string refers to the\ncurrent module.  If no module can be found with the name `module-name',\nthen a Stella `no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetArity)), NULL);
-    defineFunctionObject("GET-DOMAIN", "(DEFUN (GET-DOMAIN LOGIC-OBJECT) ((RELATION LOGIC-OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the type (a concept) for the first argument to the binary\nrelation `relation'.\")", ((cpp_function_code)(&getDomain)), NULL);
   }
 }
 
 void helpStartupPli4() {
   {
+    defineFunctionObject("RUN-FORWARD-RULES", "(DEFUN RUN-FORWARD-RULES ((MODULE OBJECT) (FORCE? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Run forward inference rules in module `module'.\nIf `module' is NULL, the\ncurrent module will be used.  If forward inferencing is already up-to-date\nin the designated module, no additional inferencing will occur, unless `force'\nis set to TRUE, in which case all forward rules are run or rerun.\n\nCalling `run-forward-rules' temporarily puts the module into a mode where\nfuture assertional (monotonic) updates will trigger additional forward\ninference.  Once a non-monotonic update is performed, i.e., a retraction\nor clipping of relation value, all cached forward inferences will be discarded\nand forward inferencing will be disabled until this function is\ncalled again.\")", ((cpp_function_code)(&runForwardRules)), NULL);
+    defineFunctionObject("GET-ARITY", "(DEFUN (GET-ARITY INTEGER) ((RELATION LOGIC-OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the arity of the relation `relation'.\")", ((cpp_function_code)(&getArity)), NULL);
+    defineFunctionObject("S-GET-ARITY", "(DEFUN (S-GET-ARITY INTEGER) ((RELATION-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the arity of the relation named `relation-name'.\n\n A module name of `null' or the empty string refers to the\ncurrent module.  If no module can be found with the name `module-name',\nthen a Stella `no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetArity)), NULL);
+    defineFunctionObject("GET-DOMAIN", "(DEFUN (GET-DOMAIN LOGIC-OBJECT) ((RELATION LOGIC-OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the type (a concept) for the first argument to the binary\nrelation `relation'.\")", ((cpp_function_code)(&getDomain)), NULL);
     defineFunctionObject("S-GET-DOMAIN", "(DEFUN (S-GET-DOMAIN LOGIC-OBJECT) ((RELATION-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the type (concept) for the first argument to the binary\nrelation `relation-name'.\n\nA module name of `null' or the empty string refers to the\ncurrent module.  If no module can be found with the name `module-name',\nthen a Stella `no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetDomain)), NULL);
     defineFunctionObject("GET-RANGE", "(DEFUN (GET-RANGE LOGIC-OBJECT) ((RELATION LOGIC-OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the type (a concept) for fillers of the binary relation\n`relation'.\")", ((cpp_function_code)(&getRange)), NULL);
     defineFunctionObject("S-GET-RANGE", "(DEFUN (S-GET-RANGE LOGIC-OBJECT) ((RELATION-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the type (a concept) for fillers of the binary relation\n`relation-name'.\n\nA module name of `null' or the empty string refers to the\ncurrent module.  If no module can be found with the name `module-name',\nthen a Stella `no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetRange)), NULL);
-    defineFunctionObject("GET-NTH-DOMAIN", "(DEFUN (GET-NTH-DOMAIN LOGIC-OBJECT) ((RELATION LOGIC-OBJECT) (N INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Return the type (a concept) for the the nth argument of the\nrelation `relation'.  Counting starts at zero.\")", ((cpp_function_code)(&getNthDomain)), NULL);
+    defineFunctionObject("GET-NTH-DOMAIN", "(DEFUN (GET-NTH-DOMAIN LOGIC-OBJECT) ((RELATION LOGIC-OBJECT) (N INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Return the type (a concept) for the the nth argument of the\nrelation `relation'.  Counting starts at zero.  NOTE: if there are multiple\n`nth-domain' propositions for `relation', this arbitrarily returns one of them;\nit does not look for the most specific one (which might have to be created).\")", ((cpp_function_code)(&getNthDomain)), NULL);
     defineFunctionObject("S-GET-NTH-DOMAIN", "(DEFUN (S-GET-NTH-DOMAIN LOGIC-OBJECT) ((RELATION-NAME STRING) (N INTEGER) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the type (a concept) for the nth argument of the relation\nnamed `relation-name'.  Counting starts at zero.\n\nA module name of `null' or the empty string refers to the\ncurrent module.  If no module can be found with the name `module-name',\nthen a Stella `no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetNthDomain)), NULL);
-    defineFunctionObject("LOAD", "(DEFUN LOAD ((FILENAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Read logic commands from the file named `filename' and evaluate them.\nThe file should begin with an `in-module' declaration that specifies\nthe module within which all remaining commands are to be evaluated\nThe remaining commands are evaluated one-by-one, applying the function\n`evaluate' to each of them.\")", ((cpp_function_code)(&load)), NULL);
-    defineFunctionObject("LOAD-STREAM", "(DEFUN LOAD-STREAM ((STREAM INPUT-STREAM) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Read logic commands from the STELLA stream `stream' and evaluate them.\nThe stream should begin with an `in-module' declaration that specifies\nthe module within which all remaining commands are to be evaluated\nThe remaining commands are evaluated one-by-one, applying the function\n`evaluate' to each of them.\")", ((cpp_function_code)(&loadStream)), NULL);
+    defineFunctionObject("LOAD", "(DEFUN LOAD ((FILENAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Read logic commands from the file named `filename' and evaluate them.\nThe file should contain an `in-module' declaration that specifies the module\nwithin which all remaining commands are to be evaluated.  The remaining commands\nare evaluated one-by-one, applying the function `evaluate' to each of them.\")", ((cpp_function_code)(&load)), NULL);
+    defineFunctionObject("LOAD-IN-MODULE", "(DEFUN LOAD-IN-MODULE ((FILENAME STRING) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Read logic commands from the file named `filename' and evaluate them.\nIf the file does not have an `in-module' declaration that specifies the module\nwithin which all remaining commands are to be evaluated, it will be loaded\nin the `module' specified.  If no `module' is specified and the file does\nnot contain an `in-module' declaration, an error will be signaled.\nThe remaining commands are evaluated one-by-one, applying the function\n`evaluate' to each of them.\")", ((cpp_function_code)(&loadInModule)), NULL);
+    defineFunctionObject("LOAD-STREAM", "(DEFUN LOAD-STREAM ((STREAM INPUT-STREAM) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Read logic commands from the STELLA stream `stream' and evaluate them.\nThe stream should contain an `in-module' declaration that specifies\nthe module within which all remaining commands are to be evaluated.\nThe remaining commands are evaluated one-by-one, applying the function\n`evaluate' to each of them.\")", ((cpp_function_code)(&loadStream)), NULL);
+    defineFunctionObject("LOAD-STREAM-IN-MODULE", "(DEFUN LOAD-STREAM-IN-MODULE ((STREAM INPUT-STREAM) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Read logic commands from the STELLA stream `stream' and evaluate them.\nIf the stream does not supply an `in-module' declaration that specifies the\nmodule within which all remaining commands are to be evaluated, it will be\nloaded in the `module' specified.  If no `module' is specified and the file \ndoes not supply an `in-module' declaration, an error will be signaled.\nThe remaining commands are evaluated one-by-one, applying the function\n`evaluate' to each of them.\")", ((cpp_function_code)(&loadStreamInModule)), NULL);
     defineFunctionObject("LOAD-NATIVE-STREAM", "(DEFUN LOAD-NATIVE-STREAM ((STREAM NATIVE-INPUT-STREAM) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Read logic commands from the native input stream `stream' and evaluate them.\nAssumes `stream' is a line-buffered stream which is a safe compromise but does\nnot generate the best efficiency for block-buffered streams such as files.\nThe stream should begin with an `in-module' declaration that specifies\nthe module within which all remaining commands are to be evaluated\nThe remaining commands are evaluated one-by-one, applying the function\n`evaluate' to each of them.\")", ((cpp_function_code)(&loadNativeStream)), NULL);
+    defineFunctionObject("LOAD-NATIVE-STREAM-IN-MODULE", "(DEFUN LOAD-NATIVE-STREAM-IN-MODULE ((STREAM NATIVE-INPUT-STREAM) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Read logic commands from the native input stream `stream' and evaluate them.\nAssumes `stream' is a line-buffered stream which is a safe compromise but does\nnot generate the best efficiency for block-buffered streams such as files.\nIf the stream does not supply an `in-module' declaration that specifies the\nmodule within which all remaining commands are to be evaluated, it will be\nloaded in the `module' specified.  If no `module' is specified and the file \ndoes not supply an `in-module' declaration, an error will be signaled.\nThe remaining commands are evaluated one-by-one, applying the function\n`evaluate' to each of them.\")", ((cpp_function_code)(&loadNativeStreamInModule)), NULL);
     defineFunctionObject("SAVE-MODULE", "(DEFUN SAVE-MODULE ((MODULE MODULE) (FILENAME STRING) (IFEXISTS STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Save the contents of the module `mod' into a file named `filename'.\nIf a file named `filename' already exists, then the action taken depends on the\nvalue of `ifexists'.  Possible values are \\\"ASK\\\", \\\"REPLACE\\\", \\\"WARN\\\" and \\\"ERROR\\\":\n\n  REPLACE => Means overwrite without warning.\n  WARN    => Means overwrite with a warning.\n  ERROR   => Means don't overwrite, signal an error instead.\n  ASK     => Ask the user whether to overwrite or not.  If not overwritten, an \n             exception is thrown.\")", ((cpp_function_code)(&saveModule)), NULL);
     defineFunctionObject("S-SAVE-MODULE", "(DEFUN S-SAVE-MODULE ((MODULE-NAME STRING) (FILENAME STRING) (IFEXISTS STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Save the contents of the module `module-name' into a file named `filename'.\nIf a file named `filename' already exists, then the action taken depends on the\nvalue of `ifexists'.  Possible values are \\\"ASK\\\", \\\"REPLACE\\\", \\\"WARN\\\" and \\\"ERROR\\\":\n\n  REPLACE => Means overwrite without warning.\n  WARN    => Means overwrite with a warning.\n  ERROR   => Means don't overwrite, signal an error instead.\n  ASK     => Ask the user whether to overwrite or not.  If not overwritten, an\n             exception is thrown.\n\nA module name of `null' or the empty string refers to the\ncurrent module.  If no module can be found with the name `module-name',\nthen a Stella `no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sSaveModule)), NULL);
     defineFunctionObject("GET-PREDICATE", "(DEFUN (GET-PREDICATE LOGIC-OBJECT) ((PROP PROPOSITION)) :PUBLIC? TRUE :DOCUMENTATION \"Return the concept or relation predicate for\nthe proposition `prop'.\")", ((cpp_function_code)(&getPredicate)), NULL);
-    defineFunctionObject("GET-COLUMN-COUNT", "(DEFUN (GET-COLUMN-COUNT INTEGER) ((OBJ OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the number of columns in `obj', which must\nbe of type proposition, cons, vector or PL-iterator.  For a proposition,\nthe number includes both the predidate and arguments. For the PL-iterator\ncase,the number of columns is for the current value of the iterator.\n\nFor non sequence objects, the column count is zero.\")", ((cpp_function_code)(&getColumnCount)), NULL);
+    defineFunctionObject("GET-COLUMN-COUNT", "(DEFUN (GET-COLUMN-COUNT INTEGER) ((OBJ OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the number of columns in `obj', which must\nbe of type proposition, cons, vector or PL-iterator.  For a proposition,\nthe number includes both the predidate and arguments. For the PL-iterator\ncase,the number of columns is for the current value of the iterator.\n\nFor a null item, the column count is zero.\nFor non sequence objects, the column count is one.\")", ((cpp_function_code)(&getColumnCount)), NULL);
     defineFunctionObject("GET-NTH-VALUE", "(DEFUN (GET-NTH-VALUE OBJECT) ((SEQUENCE OBJECT) (N INTEGER) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the value in the `nth' column of `sequence'.\nCounting starts at zero.  Unless `n' is zero, `sequence' must be of type\nproposition, cons, vector or PL-iterator.  A zero column number returns\na proposition's relational predicate.  For the PL-iterator case, the number\nof columns is for the current value of the iterator.\n\nAs a special case, a column number of zero will also return `sequence' itself\nif it is not one of the types enumerated above.  This is done to allow the\nuse of `get-nth-value' on PL-iterators with only a single return variable.\")", ((cpp_function_code)(&getNthValue)), NULL);
     defineFunctionObject("GET-NTH-STRING", "(DEFUN (GET-NTH-STRING STRING) ((SEQUENCE OBJECT) (N INTEGER) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return a string representation of the value in the `nth' column of\n`sequence'. Counting starts at zero.   Unless `n' is zero, `sequence' must be of type\nproposition, cons, vector or PL-iterator.  A zero column number returns\na proposition's relational predicate.  For the PL-iterator case, the\nthe current value pointed to by the iterator is used.  This will always\nsucceed, even if the `nth' value is not a string object.  In that case, a\nstring reprensentation will be returned.\n\n\nAs a special case, a column number of zero will also return `sequence' itself\nas a string if it is not one of the types enumerated above.  This is done to \nallow the use of `get-nth-string' on PL-iterators with only a single return variable.\")", ((cpp_function_code)(&getNthString)), NULL);
     defineFunctionObject("GET-NTH-INTEGER", "(DEFUN (GET-NTH-INTEGER INTEGER) ((SEQUENCE OBJECT) (N INTEGER) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return an integer representation of the value in the `nth' column of\n`sequence'. Counting starts at zero.   Unless `n' is zero, `sequence' must be of type\nproposition, cons, vector or PL-iterator.  A zero column number returns\na proposition's relational predicate.  For the PL-iterator case, the\nthe current value pointed to by the iterator is used.  If this is not\nan integer value, then an exception will be thrown.\n\n\nAs a special case, a column number of zero will also return the integer\nvalue of `sequence' itself if it is not one of the types enumerated\nabove.   This allows the use of `get-nth-integer' on PL-iterators with\nonly a single return variable.  If  `sequence' cannot be turned into an\ninteger, an exception will be thrown.\")", ((cpp_function_code)(&getNthInteger)), NULL);
@@ -4215,10 +4347,11 @@ void helpStartupPli4() {
     defineFunctionObject("IS-TRUE", "(DEFUN (IS-TRUE BOOLEAN) ((TV TRUTH-VALUE)) :PUBLIC? TRUE :DOCUMENTATION \"Tests whether `tv' is a true truth value.  It can be true\neither absolutely or by default.\")", ((cpp_function_code)(&isTrue)), NULL);
     defineFunctionObject("IS-FALSE", "(DEFUN (IS-FALSE BOOLEAN) ((TV TRUTH-VALUE)) :PUBLIC? TRUE :DOCUMENTATION \"Tests whether `tv' is a false truth value.  It can be false\neither absolutely or by default.\")", ((cpp_function_code)(&isFalse)), NULL);
     defineFunctionObject("IS-UNKNOWN", "(DEFUN (IS-UNKNOWN BOOLEAN) ((TV TRUTH-VALUE)) :PUBLIC? TRUE :DOCUMENTATION \"Tests whether `tv' is an unknown truth value.\")", ((cpp_function_code)(&isUnknown)), NULL);
+    defineFunctionObject("IS-KNOWN", "(DEFUN (IS-KNOWN BOOLEAN) ((TV TRUTH-VALUE)) :PUBLIC? TRUE :DOCUMENTATION \"Tests whether `tv' is a known truth value (i.e., true or false).\")", ((cpp_function_code)(&isKnown)), NULL);
     defineFunctionObject("IS-INCONSISTENT", "(DEFUN (IS-INCONSISTENT BOOLEAN) ((TV TRUTH-VALUE)) :PUBLIC? TRUE :DOCUMENTATION \"Tests whether `tv' is an inconsistent truth value.\")", ((cpp_function_code)(&isInconsistent)), NULL);
     defineFunctionObject("IS-STRICT", "(DEFUN (IS-STRICT BOOLEAN) ((TV TRUTH-VALUE)) :PUBLIC? TRUE :DOCUMENTATION \"Tests whether `tv' is a strict (non-default) truth value.\")", ((cpp_function_code)(&isStrict)), NULL);
     defineFunctionObject("IS-DEFAULT", "(DEFUN (IS-DEFAULT BOOLEAN) ((TV TRUTH-VALUE)) :PUBLIC? TRUE :DOCUMENTATION \"Tests whether `tv' is a default truth value.\")", ((cpp_function_code)(&isDefault)), NULL);
-    defineFunctionObject("ASK", "(DEFUN (ASK TRUTH-VALUE) ((QUERY CONS) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :DOCUMENTATION \"Returns a truth value for `query' in `module' and `environment'.\n`query' has the same syntax as the PowerLoom `ask' command (which see)\nbut with the `ask' operator omitted.  For example, here are some legal\n`query' arguments:\n	 \n    ((happy Fred))\n    ((happy Fred) :inference-level :assertion)\n    ((happy Fred) :inference-level :assertion :timeout 1.0)\n	\nAs a convenience, a `query' argument whose first element is a symbol is\ninterpreted as a sentence that is queried without any options.  For example:\n	 \n    (happy Fred)\n	\nis a legal `query' argument.  Note that for a setence whose relation is a list\nitself, e.g., `((FruitFn BananaTree) MyBanana)' this shortcut is not available,\nthat is, in that case an extra level of list nesting is always necessary.\nThe returned truth value represents the logical truth of the queried sentence\nas determined by PowerLoom.  It can be be tested via the functions " "`is-true',\n`is-false' and `is-unknown' (which see).\" :PUBLIC? TRUE)", ((cpp_function_code)(&ask)), NULL);
+    defineFunctionObject("ASK", "(DEFUN (ASK TRUTH-VALUE) ((QUERY CONS) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :DOCUMENTATION \"Returns a truth value for `query' in `module' and `environment'.\n`query' has the same syntax as the PowerLoom `ask' command (which see)\nbut with the `ask' operator omitted.  For example, here are some legal\n`query' arguments:\n	 \n    ((happy Fred))\n    ((happy Fred) :inference-level :assertion)\n    ((happy Fred) :inference-level :assertion :timeout 1.0)\n	\nAs a convenience, a `query' argument whose first element is a symbol is\ninterpreted as a sentence that is queried without any options.  For example:\n	 \n    (happy Fred)\n	\nis a legal `query' argument.  Note that for a sentence whose relation is a list\nitself, e.g., `((FruitFn BananaTree) MyBanana)' this shortcut is not available,\nthat is, in that case an extra level of list nesting is always necessary.\nThe returned truth value represents the logical truth of the queried sentence\nas determined by PowerLoom.  It can be be tested via the functions" " `is-true',\n`is-false' and `is-unknown' (which see).\" :PUBLIC? TRUE)", ((cpp_function_code)(&ask)), NULL);
     defineFunctionObject("S-ASK", "(DEFUN (S-ASK TRUTH-VALUE) ((QUERY STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :DOCUMENTATION \"Returns a truth value for `query' in module `module-name' and `environment'.\n`query' has the same syntax as the PowerLoom `ask' command (which see) but\nwith the `ask' operator omitted.  Different from the PLI `ask' function, `s-ask'\ndoes not expect a top-level pair of parentheses.  For example, here are some legal\n`query' arguments:\n	 \n    \\\"(happy Fred)\\\"\n    \\\"(happy Fred) :inference-level :assertion\\\"\n    \\\"(happy Fred) :inference-level :assertion :timeout 1.0\\\"\n	\nNames in `query' will be interpreted relative to module `module-name'.\nA null `module-name' or the empty string refers to the current module.\nIf no module can be found with the name `module-name', then a STELLA\n`no-such-context-exception' is thrown.\nThe returned truth value represents the logical truth of the queried sentence\nas determined by PowerLoom.  It can be be tested via the functions `is-true',\n`is-false" "' and `is-unknown' (which see).\" :PUBLIC? TRUE)", ((cpp_function_code)(&sAsk)), NULL);
     defineFunctionObject("RETRIEVE", "(DEFUN (RETRIEVE PL-ITERATOR) ((QUERY CONS) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :DOCUMENTATION \"Returns an iterator of variable bindings that when substituted for the\nopen variables in `query' satisfy the query proposition.  The query is\nrun in `module' and relative to `environment'.  `query' has the same syntax\nas the PowerLoom `retrieve' command (which see) but with the `retrieve'\noperator omitted.    For example, here are some legal `query' arguments:\n	 \n    ((happy ?x))\n    (10 (happy ?x))\n    (all (happy ?x))\n    (all ?x (happy ?x))\n    (10 (happy ?x) :inference-level :assertion)\n    (10 (happy ?x) :inference-level :assertion :timeout 1.0)\n	\nIf there is only a single output variable (as in all the examples above)\neach element generated by the returned iterator will be a binding for\nthat variable - unless, the output variable was declared with a surrounding\npair of parentheses.  For example:\n	 \n    (all (?x) (happy ?x))\n	\nIn that case, the generated elements will be one-elemen" "t lists.  If there\nare multiple output variables, each element generated by the returned\niterator will be a list of variable bindings that can be accessed using\nthe various `get-nth-...' functions.  The list of output variables does\nnot need to be declared in which case they are taken to be the open variables\nin the query proposition in the order in which they were encountered.  If\norder does matter or should be different from its default, it can be forced\nby declaring the set of output variables.\" :PUBLIC? TRUE)", ((cpp_function_code)(&retrieve)), NULL);
     defineFunctionObject("S-RETRIEVE", "(DEFUN (S-RETRIEVE PL-ITERATOR) ((QUERY STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Returns an iterator of variable bindings that when substituted for the\nopen variables in `query' satisfy the query proposition.  The query is\nrun in `module' and relative to `environment'.  `query' has the same syntax\nas the PowerLoom `retrieve' command (which see) but with the `retrieve'\noperator omitted.  Different from the PLI `retrieve' function, `s-retrieve'\ndoes not expect a top-level pair of parentheses.  For example, here are some\nlegal `query' arguments:\n	 \n    \\\"(happy ?x)\\\"\n    \\\"10 (happy ?x)\\\"\n    \\\"all (happy ?x)\\\"\n    \\\"all ?x (happy ?x)\\\"\n    \\\"10 (happy ?x) :inference-level :assertion\\\"\n    \\\"10 (happy ?x) :inference-level :assertion :timeout 1.0\\\"\n	\nIf there is only a single output variable (as in all the examples above)\neach element generated by the returned iterator will be a binding for\nthat variable - unless, the output v" "ariable was declared with a surrounding\npair of parentheses.  For example:\n	 \n    \\\"all (?x) (happy ?x)\\\"\n	\nIn that case, the generated elements will be one-element lists.  If there\nare multiple output variables, each element generated by the returned\niterator will be a list of variable bindings that can be accessed using\nthe various `get-nth-...' functions.  The list of output variables does\nnot need to be declared in which case they are taken to be the open variables\nin the query proposition in the order in which they were encountered.  If\norder does matter or should be different from its default, it can be forced\nby declaring the set of output variables.\n\nNames in `query' will be interpreted relative to module `module-name'.\nA null `module-name' or the empty string refers to the current module.\nIf no module can be found with the name `module-name', then a STELLA\n`no-such-context-exception' is thrown.\" :PUBLIC? TRUE)", ((cpp_function_code)(&sRetrieve)), NULL);
@@ -4285,6 +4418,7 @@ void startupPli() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("PLI")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-INITIALIZED?* BOOLEAN FALSE)");
       oPOWERLOOM_INITIALIZEDpo = true;
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT ASSERTION-ENV ENVIRONMENT (NEW ENVIRONMENT :LEVEL \"ASSERTION\") :PUBLIC? TRUE)");
@@ -4357,8 +4491,6 @@ Symbol* SYM_PLI_LOGIC_pY = NULL;
 
 Symbol* SYM_PLI_PLI_PROPER_SUBRELATION = NULL;
 
-Keyword* KWD_PLI_ISA = NULL;
-
 Symbol* SYM_PLI_STELLA_TRUE = NULL;
 
 Symbol* SYM_PLI_STELLA_FALSE = NULL;
@@ -4375,7 +4507,9 @@ Keyword* KWD_PLI_ASSERT_TRUE = NULL;
 
 Surrogate* SGT_PLI_LOGIC_PROPOSITION = NULL;
 
-Symbol* SYM_PLI_LOGIC_DESCRIPTION = NULL;
+Surrogate* SGT_PLI_PL_KERNEL_KB_NTH_DOMAIN = NULL;
+
+Keyword* KWD_PLI_MODULE = NULL;
 
 Surrogate* SGT_PLI_STELLA_INTEGER_WRAPPER = NULL;
 

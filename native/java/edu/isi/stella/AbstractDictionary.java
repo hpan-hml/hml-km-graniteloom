@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -48,6 +48,95 @@ package edu.isi.stella;
 import edu.isi.stella.javalib.*;
 
 public abstract class AbstractDictionary extends AbstractCollection {
+  /** Return a dictionary of <code>collectiontype</code> containing <code>values</code>, in order.
+   * Currently supported <code>collectiontype</code>s are @HASH-TABLE, @STELLA-HASH-TABLE,
+   * @KEY-VALUE-LIST, @KEY-VALUE-MAP and @PROPERTY-LIST.
+   * @param collectiontype
+   * @param alternatingkeysandvalues
+   * @return AbstractDictionary
+   */
+  public static AbstractDictionary dictionary(Surrogate collectiontype, Cons alternatingkeysandvalues) {
+    { AbstractDictionary dictionary = ((AbstractDictionary)(Surrogate.createObject(collectiontype, Stella.NIL)));
+      Stella_Object key = null;
+      Stella_Object value = null;
+      Cons copy = Stella.NIL;
+      Cons cursor = null;
+
+      { Stella_Object item = null;
+        Cons iter000 = alternatingkeysandvalues;
+        Cons collect000 = null;
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          item = iter000.value;
+          if (collect000 == null) {
+            {
+              collect000 = Cons.cons(item, Stella.NIL);
+              if (copy == Stella.NIL) {
+                copy = collect000;
+              }
+              else {
+                Cons.addConsToEndOfConsList(copy, collect000);
+              }
+            }
+          }
+          else {
+            {
+              collect000.rest = Cons.cons(item, Stella.NIL);
+              collect000 = collect000.rest;
+            }
+          }
+        }
+      }
+      cursor = copy;
+      while (!(cursor == Stella.NIL)) {
+        key = cursor.value;
+        value = cursor.rest.value;
+        { Surrogate testValue000 = Stella_Object.safePrimaryType(dictionary);
+
+          if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_HASH_TABLE)) {
+            { HashTable dictionary000 = ((HashTable)(dictionary));
+
+              dictionary000.insertAt(key, value);
+            }
+          }
+          else if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_STELLA_HASH_TABLE)) {
+            { StellaHashTable dictionary000 = ((StellaHashTable)(dictionary));
+
+              dictionary000.insertAt(key, value);
+            }
+          }
+          else if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_KEY_VALUE_LIST)) {
+            { KeyValueList dictionary000 = ((KeyValueList)(dictionary));
+
+              dictionary000.insertAt(key, value);
+            }
+          }
+          else if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_KEY_VALUE_MAP)) {
+            { KeyValueMap dictionary000 = ((KeyValueMap)(dictionary));
+
+              dictionary000.insertAt(key, value);
+            }
+          }
+          else if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_PROPERTY_LIST)) {
+            { PropertyList dictionary000 = ((PropertyList)(dictionary));
+
+              dictionary000.insertAt(key, value);
+            }
+          }
+          else {
+            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+              stream000.nativeStream.print("dictionary: Can't create dictionaries of type `" + collectiontype + "'");
+              throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+            }
+          }
+        }
+        cursor = cursor.rest.rest;
+      }
+      return (dictionary);
+    }
+  }
+
   public AbstractIterator allocateIterator() {
     { AbstractDictionary self = this;
 

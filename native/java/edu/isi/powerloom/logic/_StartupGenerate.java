@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -58,10 +58,10 @@ public class _StartupGenerate {
         Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/LOGIC", Stella.$STARTUP_TIME_PHASE$ > 1));
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Logic.SYM_LOGIC_UNIDENTIFIED_SKOLEM = ((Symbol)(Stella.internRigidSymbolWrtModule("UNIDENTIFIED-SKOLEM", null, 0)));
-          Logic.SYM_LOGIC_UNNAMED_OBJECT = ((Symbol)(Stella.internRigidSymbolWrtModule("UNNAMED_OBJECT", null, 0)));
-          Logic.SYM_LOGIC_ILLEGAL_TERM = ((Symbol)(Stella.internRigidSymbolWrtModule("ILLEGAL-TERM", null, 0)));
-          Logic.SYM_LOGIC_STARTUP_GENERATE = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-GENERATE", null, 0)));
+          Logic.SYM_LOGIC_UNIDENTIFIED_SKOLEM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNIDENTIFIED-SKOLEM", null, 0)));
+          Logic.SYM_LOGIC_UNNAMED_OBJECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNNAMED_OBJECT", null, 0)));
+          Logic.SYM_LOGIC_ILLEGAL_TERM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ILLEGAL-TERM", null, 0)));
+          Logic.SYM_LOGIC_STARTUP_GENERATE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-GENERATE", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Logic.$CANONICALVARIABLENAMEMAPPING$.setDefaultValue(null);
@@ -105,6 +105,7 @@ public class _StartupGenerate {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CANONICALVARIABLENAMEMAPPING* KEY-VALUE-LIST NULL :DOCUMENTATION \"Maps variables to symbols in SYSTEM-DEFINED-ARGUMENT-NAMES.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CANONICALVARIABLECOUNTER* INTEGER NULL :DOCUMENTATION \"Number of the last canonically-mapped variable.\")");
         }

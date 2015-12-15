@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -79,12 +79,13 @@ public abstract class Wrapper extends Stella_Object {
   public boolean terminateWrapperP() {
     { Wrapper self = this;
 
-      if ((self == Stella.NULL_FLOAT_WRAPPER) ||
-          ((self == Stella.NULL_STRING_WRAPPER) ||
-           ((self == Stella.NULL_MUTABLE_STRING_WRAPPER) ||
-            ((self == Stella.NULL_CHARACTER_WRAPPER) ||
-             ((self == Stella.NULL_FUNCTION_CODE_WRAPPER) ||
-              (self == Stella.NULL_METHOD_CODE_WRAPPER)))))) {
+      if ((self == Stella.NULL_LONG_INTEGER_WRAPPER) ||
+          ((self == Stella.NULL_FLOAT_WRAPPER) ||
+           ((self == Stella.NULL_STRING_WRAPPER) ||
+            ((self == Stella.NULL_MUTABLE_STRING_WRAPPER) ||
+             ((self == Stella.NULL_CHARACTER_WRAPPER) ||
+              ((self == Stella.NULL_FUNCTION_CODE_WRAPPER) ||
+               (self == Stella.NULL_METHOD_CODE_WRAPPER))))))) {
         return (false);
       }
       else {

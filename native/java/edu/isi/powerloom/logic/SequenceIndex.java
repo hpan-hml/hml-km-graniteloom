@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -131,7 +131,7 @@ public abstract class SequenceIndex extends StandardObject {
             i = iter000.value;
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(i, Stella.NIL);
+                collect000 = Cons.cons(i, Stella.NIL);
                 if (value000 == Stella.NIL) {
                   value000 = collect000;
                 }
@@ -142,7 +142,7 @@ public abstract class SequenceIndex extends StandardObject {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(i, Stella.NIL);
+                collect000.rest = Cons.cons(i, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -237,7 +237,7 @@ public abstract class SequenceIndex extends StandardObject {
       if (!(!(self == Logic.NIL_NON_PAGING_INDEX))) {
         System.err.print("Safety violation: Attempt to insert into NIL-NON-PAGING-INDEX");
       }
-      self.theSequence = Stella_Object.cons(value, self.theSequence);
+      self.theSequence = Cons.cons(value, self.theSequence);
       { int length = self.theSequenceLength;
 
         if (length != Stella.NULL_INTEGER) {

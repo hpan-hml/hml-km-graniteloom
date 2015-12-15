@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,7 +56,7 @@ public class _StartupTools {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.SYM_STELLA_STARTUP_TOOLS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-TOOLS", null, 0)));
+          Stella.SYM_STELLA_STARTUP_TOOLS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-TOOLS", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -64,7 +64,7 @@ public class _StartupTools {
         if (Stella.currentStartupTimePhaseP(7)) {
           Stella.defineFunctionObject("OUTLINE-DEPTH-EXCEEDED?", "(DEFUN (OUTLINE-DEPTH-EXCEEDED? BOOLEAN) ((CURRENT-DEPTH INTEGER) (DEPTH-LIMIT INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Helper function that returns `true' if `current-depth' exceeds `depth-limit'.\nThis functions uses the convention that a `null' or negative value of\n`depth-limit' means the depth is unlimited.  In those cases it always\nreturns false.\" (RETURN (AND (DEFINED? DEPTH-LIMIT) (>= DEPTH-LIMIT 0) (>= CURRENT-DEPTH DEPTH-LIMIT))))", Native.find_java_method("edu.isi.stella.Stella", "outlineDepthExceededP", new java.lang.Class [] {java.lang.Integer.TYPE, java.lang.Integer.TYPE}), null);
           Stella.defineFunctionObject("INDENT-OUTLINE", "(DEFUN INDENT-OUTLINE ((CURRENT-DEPTH INTEGER) (STREAM OUTPUT-STREAM)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Helper function that indents outline printings for level\n`current-depth' on `stream' using the value of the global\nvariable `*OUTLINE-INDENT-STRING*'\" (FOREACH I IN (INTERVAL 1 CURRENT-DEPTH) DO (IGNORE I) (PRINT-STREAM STREAM *OUTLINE-INDENT-STRING*)))", Native.find_java_method("edu.isi.stella.Stella", "indentOutline", new java.lang.Class [] {java.lang.Integer.TYPE, Native.find_java_class("edu.isi.stella.OutputStream")}), null);
-          Stella.defineFunctionObject("PRINT-OUTLINE", "(DEFUN PRINT-OUTLINE ((THING OBJECT) (STREAM OUTPUT-STREAM) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :COMMAND? TRUE :DOCUMENTATION \"Print an outline of `thing' and its subparts on `stream'.\nIf `depth' is greater than 0, only `depth' levels will be printed.\nIf `named?' is `TRUE', then only named entities will be printed.\n\nThis function is intended to be used on things like modules, contexts,\nconcepts, etc. that have hierarchical structure.  If `thing' doesn't\nhave a hierarchical structure, it will just be printed.\")", Native.find_java_method("edu.isi.stella.Stella_Object", "printOutline", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.OutputStream"), java.lang.Integer.TYPE, java.lang.Boolean.TYPE}), Native.find_java_method("edu.isi.stella.Cons", "printOutlineEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
+          Stella.defineFunctionObject("PRINT-OUTLINE", "(DEFUN PRINT-OUTLINE ((THING OBJECT) (STREAM OUTPUT-STREAM) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :COMMAND? TRUE :DOCUMENTATION \"Print an outline of `thing' and its subparts on `stream'.\nIf `depth' is non-negative, only `depth' levels will be printed.\nIf `named?' is `TRUE', then only named entities will be printed.\n\nThis function is intended to be used on things like modules, contexts,\nconcepts, etc. that have hierarchical structure.  If `thing' doesn't\nhave a hierarchical structure, it will just be printed.\")", Native.find_java_method("edu.isi.stella.Stella_Object", "printOutline", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.OutputStream"), java.lang.Integer.TYPE, java.lang.Boolean.TYPE}), Native.find_java_method("edu.isi.stella.Cons", "printOutlineEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
           Stella.defineMethodObject("(DEFMETHOD HELP-PRINT-OUTLINE ((TOP OBJECT) (STREAM OUTPUT-STREAM) (CURRENT-DEPTH INTEGER) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Helper method for `print-outline'\")", Native.find_java_method("edu.isi.stella.Stella_Object", "helpPrintOutline", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.OutputStream"), java.lang.Integer.TYPE, java.lang.Integer.TYPE, java.lang.Boolean.TYPE}), ((java.lang.reflect.Method)(null)));
           Stella.defineMethodObject("(DEFMETHOD HELP-PRINT-OUTLINE ((TOP CONTEXT) (STREAM OUTPUT-STREAM) (CURRENT-DEPTH INTEGER) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Helper method for `print-outline'\")", Native.find_java_method("edu.isi.stella.Context", "helpPrintOutline", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.OutputStream"), java.lang.Integer.TYPE, java.lang.Integer.TYPE, java.lang.Boolean.TYPE}), ((java.lang.reflect.Method)(null)));
           Stella.defineMethodObject("(DEFMETHOD HELP-PRINT-OUTLINE ((TOP MODULE) (STREAM OUTPUT-STREAM) (CURRENT-DEPTH INTEGER) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Helper method for `print-outline'\")", Native.find_java_method("edu.isi.stella.Module", "helpPrintOutline", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.OutputStream"), java.lang.Integer.TYPE, java.lang.Integer.TYPE, java.lang.Boolean.TYPE}), ((java.lang.reflect.Method)(null)));
@@ -81,6 +81,7 @@ public class _StartupTools {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *OUTLINE-INDENT-STRING* STRING \"| \" :DOCUMENTATION \"String used in the PRINT-OUTLINE for each level of outline\")");
         }
 

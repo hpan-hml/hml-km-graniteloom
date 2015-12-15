@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -270,6 +270,11 @@ void unlinkTaxonomyNodes(TaxonomyGraph* graph, TaxonomyNode* parent, TaxonomyNod
 }
 
 void incrementallyUnlinkTaxonomyNodes(TaxonomyGraph* graph, TaxonomyNode* parent, TaxonomyNode* child) {
+  {
+    graph = graph;
+    parent = parent;
+    child = child;
+  }
   throw *newStellaException("incrementally-unlink-taxonomy-nodes: Rewrite me!");
 }
 
@@ -712,7 +717,7 @@ void finalizeTaxonomyGraph(TaxonomyGraph* graph) {
   // Finalize the taxonomy graph `graph'.
   if (graph->incrementalModeP &&
       ((graph->numberOfNodes > 0) &&
-       ((((double)(stella::max(graph->numberOfForeignIntervalNodes, graph->addedLinks->length()))) / graph->numberOfNodes) < graph->renumberRatio))) {
+       ((((double)(stella::integerMax(graph->numberOfForeignIntervalNodes, graph->addedLinks->length()))) / graph->numberOfNodes) < graph->renumberRatio))) {
     { Cons* link = NULL;
       Cons* iter000 = graph->addedLinks->theConsList;
 
@@ -863,6 +868,9 @@ void startupTaxonomies() {
       SYM_TAXONOMIES_STELLA_STARTUP_TAXONOMIES = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-TAXONOMIES", NULL, 0)));
       SYM_TAXONOMIES_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
     }
+    if (currentStartupTimePhaseP(4)) {
+      oTAXONOMY_POSTORDER_NUMBERo.set(NULL_INTEGER);
+    }
     if (currentStartupTimePhaseP(6)) {
       finalizeClasses();
     }
@@ -927,6 +935,7 @@ void startupTaxonomies() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *NUMBERING-INTERVAL* INTEGER 100 :PUBLIC? TRUE :DOCUMENTATION \"Spacing between postorder numbers for nodes.  Allows limited\nincremental insertions without having to renumber the whole graph.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MARKER-LABEL INTEGER -99 :DOCUMENTATION \"Dummy label used for marking a node\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT DELETED-LABEL INTEGER -99 :DOCUMENTATION \"Label used for marking deleted nodes\")");

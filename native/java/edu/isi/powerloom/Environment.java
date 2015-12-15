@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -69,6 +69,16 @@ public class Environment extends StandardObject {
   public static Module getCurrentModule(Environment environment) {
     environment = environment;
     return (((Module)(Stella.$MODULE$.get())));
+  }
+
+  /** Test if <code>env</code> has level set to <code>level</code>
+   * @param env
+   * @param level
+   * @return boolean
+   */
+  static boolean testEnvironmentLevelP(Environment env, String level) {
+    return ((env != null) &&
+        Stella.stringEqlP(env.level, level));
   }
 
   public void printObject(java.io.PrintStream stream) {

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -49,6 +49,42 @@ import edu.isi.stella.javalib.*;
 
 public class List extends Sequence {
     public Cons theConsList;
+
+  /** Return a list containing <code>values</code>, in order.
+   * @param values
+   * @return List
+   */
+  public static List list(Cons values) {
+    { List list = List.newList();
+
+      { Stella_Object v = null;
+        Cons iter000 = values;
+        Cons collect000 = null;
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          v = iter000.value;
+          if (collect000 == null) {
+            {
+              collect000 = Cons.cons(v, Stella.NIL);
+              if (list.theConsList == Stella.NIL) {
+                list.theConsList = collect000;
+              }
+              else {
+                Cons.addConsToEndOfConsList(list.theConsList, collect000);
+              }
+            }
+          }
+          else {
+            {
+              collect000.rest = Cons.cons(v, Stella.NIL);
+              collect000 = collect000.rest;
+            }
+          }
+        }
+      }
+      return (list);
+    }
+  }
 
   public static List newList() {
     { List self = null;
@@ -78,10 +114,10 @@ public class List extends Sequence {
                 ((testValue000 == Stella.SYM_STELLA_PRINT_METHOD) ||
                  (testValue000 == Stella.SYM_STELLA_MACRO))) {
               if (TranslationUnit.cppUnitDefinesMainP(unit)) {
-                main = Stella_Object.cons(unit, main);
+                main = Cons.cons(unit, main);
               }
               else {
-                methods = Stella_Object.cons(unit, methods);
+                methods = Cons.cons(unit, methods);
               }
             }
             else if (testValue000 == Stella.SYM_STELLA_VERBATIM) {
@@ -94,22 +130,22 @@ public class List extends Sequence {
 
                     self000.category = Stella.SYM_STELLA_VERBATIM;
                     self000.translation = Stella_Object.copyConsTree(unit.translation);
-                    includestatements = Stella_Object.cons(self000, includestatements);
+                    includestatements = Cons.cons(self000, includestatements);
                   }
                   translation.secondSetter(StringWrapper.wrapString(""));
                 }
               }
             }
             else if (testValue000 == Stella.SYM_STELLA_CLASS) {
-              classes = Stella_Object.cons(unit, classes);
+              classes = Cons.cons(unit, classes);
             }
             else if (testValue000 == Stella.SYM_STELLA_GLOBAL_VARIABLE) {
               if (TranslationUnit.auxiliaryVariableUnitP(unit)) {
-                auxiliaryglobals = Stella_Object.cons(unit, auxiliaryglobals);
+                auxiliaryglobals = Cons.cons(unit, auxiliaryglobals);
                 unit.category = Stella.SYM_STELLA_AUXILIARY_VARIABLE;
               }
               else {
-                globals = Stella_Object.cons(unit, globals);
+                globals = Cons.cons(unit, globals);
               }
             }
             else if (testValue000 == Stella.SYM_STELLA_TYPE) {
@@ -124,7 +160,7 @@ public class List extends Sequence {
           }
         }
       }
-      return (Stella.list(Stella_Object.cons(includestatements.reverse(), Stella_Object.cons(classes.reverse(), Stella_Object.cons(globals.reverse(), Stella_Object.cons(methods.reverse(), Stella_Object.cons(auxiliaryglobals.reverse(), Stella_Object.cons(main, Stella.NIL))))))));
+      return (List.list(Cons.cons(includestatements.reverse(), Cons.cons(classes.reverse(), Cons.cons(globals.reverse(), Cons.cons(methods.reverse(), Cons.cons(auxiliaryglobals.reverse(), Cons.cons(main, Stella.NIL))))))));
     }
   }
 
@@ -206,7 +242,7 @@ public class List extends Sequence {
       List classes = List.newList();
       Module currentmodule = ((Module)(Stella.$MODULE$.get()));
       String renamed_Package = null;
-      List ensuredpackages = Stella.list(Stella.NIL);
+      List ensuredpackages = List.list(Stella.NIL);
 
       { TranslationUnit unit = null;
         Cons iter000 = classunits.theConsList;
@@ -216,7 +252,7 @@ public class List extends Sequence {
           unit = ((TranslationUnit)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(unit.theObject, Stella.NIL);
+              collect000 = Cons.cons(unit.theObject, Stella.NIL);
               if (classes.theConsList == Stella.NIL) {
                 classes.theConsList = collect000;
               }
@@ -227,7 +263,7 @@ public class List extends Sequence {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(unit.theObject, Stella.NIL);
+              collect000.rest = Cons.cons(unit.theObject, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -290,8 +326,8 @@ public class List extends Sequence {
 
   public static List sortClStructClasses(List unsortedclasses) {
     { HashTable classtable = HashTable.newHashTable();
-      List roots = Stella.list(Stella.NIL);
-      List sortedclasses = Stella.list(Stella.NIL);
+      List roots = List.list(Stella.NIL);
+      List sortedclasses = List.list(Stella.NIL);
 
       { Stella_Class renamed_Class = null;
         Cons iter000 = unsortedclasses.theConsList;
@@ -328,7 +364,7 @@ public class List extends Sequence {
             if (testValue000) {
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(renamed_Class, Stella.NIL);
+                  collect000 = Cons.cons(renamed_Class, Stella.NIL);
                   if (roots.theConsList == Stella.NIL) {
                     roots.theConsList = collect000;
                   }
@@ -339,7 +375,7 @@ public class List extends Sequence {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(renamed_Class, Stella.NIL);
+                  collect000.rest = Cons.cons(renamed_Class, Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -389,10 +425,10 @@ public class List extends Sequence {
           phase = unitphase;
           continue loop000;
         }
-        { Symbol functionname = GeneralizedSymbol.internDerivedSymbol(startupfnname, "HELP-" + startupfnname.symbolName + Native.integerToString(helpfncounter = helpfncounter + 1));
+        { Symbol functionname = Symbol.internDerivedSymbol(startupfnname, "HELP-" + startupfnname.symbolName + Native.integerToString(((long)(helpfncounter = helpfncounter + 1))));
           Cons helpfntree = ((Cons)(((TranslationUnit)(phasestart.value)).theObject));
 
-          ((TranslationUnit)(phasestart.value)).theObject = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_CALL_FUNCTION, Stella_Object.cons(functionname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
+          ((TranslationUnit)(phasestart.value)).theObject = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_CALL_FUNCTION, Cons.cons(functionname, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
           phasestart = phasestart.rest;
           { ConsIterator it = phasestart.allocateIterator();
             int i = Stella.NULL_INTEGER;
@@ -410,7 +446,7 @@ public class List extends Sequence {
               it.valueSetter(null);
             }
           }
-          helpfntree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(functionname, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.NIL, Stella_Object.cons(Stella.KWD_PUBLICp, Stella_Object.cons(Stella.SYM_STELLA_FALSE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VOID_SYS, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_PROGN, helpfntree.concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL))));
+          helpfntree = Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(functionname, Cons.cons(Cons.list$(Cons.cons(Stella.NIL, Cons.cons(Stella.KWD_PUBLICp, Cons.cons(Stella.SYM_STELLA_FALSE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VOID_SYS, Cons.cons(Cons.cons(Stella.SYM_STELLA_PROGN, helpfntree.concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Stella.NIL))));
           KeyValueList.setDynamicSlotValue(((MethodSlot)(Cons.helpWalkAuxiliaryTree(helpfntree, true).theObject)).dynamicSlots, Stella.SYM_STELLA_METHOD_STARTUP_CLASSNAME, StringWrapper.wrapString(Symbol.yieldStartupFunctionClassname(startupfnname)), Stella.NULL_STRING_WRAPPER);
           remainingunits = remainingunits - (phaseunits - 1);
           if (remainingunits <= Stella.$MAX_NUMBER_OF_STARTUP_UNITS$) {
@@ -788,6 +824,19 @@ public class List extends Sequence {
     }
   }
 
+  /** <code>removeDuplicates</code> (which see) using an <code>equalP</code> test.
+   * @return List
+   */
+  public List removeDuplicatesEqual() {
+    { List self = this;
+
+      if (!(self.theConsList == Stella.NIL)) {
+        self.theConsList = self.theConsList.removeDuplicatesEqual();
+      }
+      return (self);
+    }
+  }
+
   /** Destructively remove duplicates from <code>self</code> and return the result.
    * Preserves the original order of the remaining members.
    * @return Collection
@@ -838,7 +887,7 @@ public class List extends Sequence {
         System.err.print("Safety violation: Attempt to insert into NIL-LIST.");
       }
       { Cons cursor = self.theConsList;
-        Cons lastcons = Stella_Object.cons(value, Stella.NIL);
+        Cons lastcons = Cons.cons(value, Stella.NIL);
 
         if (cursor == Stella.NIL) {
           self.theConsList = lastcons;
@@ -861,7 +910,7 @@ public class List extends Sequence {
         System.err.print("Safety violation: Attempt to insert into NIL-LIST.");
       }
       if (!self.theConsList.memberP(value)) {
-        self.theConsList = Stella_Object.cons(value, self.theConsList);
+        self.theConsList = Cons.cons(value, self.theConsList);
       }
     }
   }
@@ -875,7 +924,7 @@ public class List extends Sequence {
       if (!(!(self == Stella.NIL_LIST))) {
         System.err.print("Safety violation: Attempt to insert into NIL-LIST.");
       }
-      self.theConsList = Stella_Object.cons(value, self.theConsList);
+      self.theConsList = Cons.cons(value, self.theConsList);
     }
   }
 
@@ -888,7 +937,7 @@ public class List extends Sequence {
       if (!(!(self == Stella.NIL_LIST))) {
         System.err.print("Safety violation: Attempt to insert into NIL-LIST.");
       }
-      self.theConsList = Stella_Object.cons(value, self.theConsList);
+      self.theConsList = Cons.cons(value, self.theConsList);
     }
   }
 

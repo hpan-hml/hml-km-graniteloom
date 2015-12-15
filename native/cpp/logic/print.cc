@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -154,7 +154,7 @@ char* VALUE_OF_SEPARATOR = "//";
 
 // If set, maps some skolems to names other than
 // their own.
-DEFINE_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueList* , NULL);
+DEFINE_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueMap* , NULL);
 
 char* getSkolemPrintName(Skolem* self) {
   if (((boolean)(oSKOLEMNAMEMAPPINGTABLEo.get()))) {
@@ -480,6 +480,7 @@ void startupPrint() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTMODE* KEYWORD :FLAT :DOCUMENTATION \"Controls the kind of detail that gets printed about\nindividual objects.  Values are :ORIGINAL, :REALISTIC, :FLAT, :DEBUG-LOW, and\n :DEBUG-HIGH.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTFUNCTIONSASRELATIONS?* BOOLEAN FALSE :DOCUMENTATION \"Controls whether functions are printed as relations (F i v) or\nas functions (= (F i) v).\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT VARIABLE-BINDING-SEPARATOR STRING \"/\")");

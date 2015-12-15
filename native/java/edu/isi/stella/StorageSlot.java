@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -96,7 +96,7 @@ public class StorageSlot extends Slot {
           break loop000;
         }
       }
-      return (Stella.list$(Stella_Object.cons(allocationform.concatenate(Stella_Object.cons(StandardObject.idlTranslateTypeSpec(mostgeneralslot.computeReturnTypeSpec(renamed_Class.classType)), Stella.NIL), Stella.NIL), Stella_Object.cons(Symbol.idlTranslateName(slotname), Stella_Object.cons(Stella_Object.cons(initialvalueform, Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(allocationform.concatenate(Cons.cons(StandardObject.idlTranslateTypeSpec(mostgeneralslot.computeReturnTypeSpec(renamed_Class.classType)), Stella.NIL), Stella.NIL), Cons.cons(Symbol.idlTranslateName(slotname), Cons.cons(Cons.cons(initialvalueform, Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -116,12 +116,12 @@ public class StorageSlot extends Slot {
         allocationform = Stella.NIL;
       }
       else if (allocation == Stella.KWD_CLASS) {
-        allocationform = Stella.consList(Stella_Object.cons(StringWrapper.wrapString("static"), Stella.NIL));
+        allocationform = Cons.consList(Cons.cons(StringWrapper.wrapString("static"), Stella.NIL));
       }
       else {
         allocationform = Stella.NIL;
       }
-      return (Stella.list$(Stella_Object.cons(allocationform.concatenate(Stella_Object.cons(Symbol.idlTranslateClassParameterName(StorageSlot.getSlotClassParameterName(slot)), Stella.NIL), Stella.NIL), Stella_Object.cons(Symbol.idlTranslateName(slotname), Stella_Object.cons(Stella_Object.cons(initialvalueform, Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(allocationform.concatenate(Cons.cons(Symbol.idlTranslateClassParameterName(StorageSlot.getSlotClassParameterName(slot)), Stella.NIL), Stella.NIL), Cons.cons(Symbol.idlTranslateName(slotname), Cons.cons(Cons.cons(initialvalueform, Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -133,17 +133,17 @@ public class StorageSlot extends Slot {
 
       if (Stella_Class.idlClassCategory(renamed_Class) == Stella.SYM_STELLA_IDL_INTERFACE) {
         if (slot.slotReadOnlyP) {
-          facetform = Stella.list$(Stella_Object.cons(StringWrapper.wrapString("readonly"), Stella_Object.cons(StringWrapper.wrapString("attribute"), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+          facetform = Cons.list$(Cons.cons(StringWrapper.wrapString("readonly"), Cons.cons(StringWrapper.wrapString("attribute"), Cons.cons(Stella.NIL, Stella.NIL))));
         }
         else {
-          facetform = Stella_Object.cons(StringWrapper.wrapString("attribute"), Stella.NIL);
+          facetform = Cons.cons(StringWrapper.wrapString("attribute"), Stella.NIL);
         }
       }
       if (!(initialvalueform != null)) {
         initialvalueform = Stella.idlYieldInitialNullValue();
       }
       mostgeneralslot = slot;
-      return (Stella.list$(Stella_Object.cons(facetform.concatenate(Stella_Object.cons(StandardObject.idlTranslateTypeSpec(mostgeneralslot.computeReturnTypeSpec(renamed_Class.classType)), Stella.NIL), Stella.NIL), Stella_Object.cons(Symbol.idlTranslateName(slotname), Stella_Object.cons(Stella_Object.cons(initialvalueform, Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(facetform.concatenate(Cons.cons(StandardObject.idlTranslateTypeSpec(mostgeneralslot.computeReturnTypeSpec(renamed_Class.classType)), Stella.NIL), Stella.NIL), Cons.cons(Symbol.idlTranslateName(slotname), Cons.cons(Cons.cons(initialvalueform, Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -157,10 +157,10 @@ public class StorageSlot extends Slot {
       Cons documentationform = Stella.NIL;
 
       if (slot.slotPublicP) {
-        accessform = Stella_Object.cons(StringWrapper.wrapString("public"), Stella.NIL);
+        accessform = Cons.cons(StringWrapper.wrapString("public"), Stella.NIL);
       }
       else {
-        accessform = Stella_Object.cons(StringWrapper.wrapString("protected"), Stella.NIL);
+        accessform = Cons.cons(StringWrapper.wrapString("protected"), Stella.NIL);
       }
       if (allocation == Stella.KWD_EMBEDDED) {
         allocationform = Stella.NIL;
@@ -169,15 +169,15 @@ public class StorageSlot extends Slot {
         allocationform = Stella.NIL;
       }
       else if (allocation == Stella.KWD_CLASS) {
-        allocationform = Stella_Object.cons(StringWrapper.wrapString("static"), Stella.NIL);
+        allocationform = Cons.cons(StringWrapper.wrapString("static"), Stella.NIL);
       }
       else {
         allocationform = Stella.NIL;
       }
       if (documentation != null) {
-        documentationform = Stella_Object.cons(StringWrapper.wrapString(documentation), Stella.NIL);
+        documentationform = Cons.cons(StringWrapper.wrapString(documentation), Stella.NIL);
       }
-      return (Stella.list$(Stella_Object.cons(accessform.concatenate(allocationform.concatenate(Stella_Object.cons(StandardObject.javaTranslateTypeSpec(slottype), Stella.NIL), Stella.NIL), Stella.NIL), Stella_Object.cons(Symbol.javaTranslateName(slotname), Stella_Object.cons(documentationform.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(accessform.concatenate(allocationform.concatenate(Cons.cons(StandardObject.javaTranslateTypeSpec(slottype), Stella.NIL), Stella.NIL), Stella.NIL), Cons.cons(Symbol.javaTranslateName(slotname), Cons.cons(documentationform.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -205,7 +205,7 @@ public class StorageSlot extends Slot {
           break loop000;
         }
       }
-      return (Stella.list$(Stella_Object.cons(allocationform.concatenate(Stella_Object.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(mostgeneralslot.computeReturnTypeSpec(renamed_Class.classType)), Stella.NIL), Stella.NIL), Stella_Object.cons(Symbol.cppTranslateName(slotname), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(allocationform.concatenate(Cons.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(mostgeneralslot.computeReturnTypeSpec(renamed_Class.classType)), Stella.NIL), Stella.NIL), Cons.cons(Symbol.cppTranslateName(slotname), Cons.cons(Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -221,12 +221,12 @@ public class StorageSlot extends Slot {
         allocationform = Stella.NIL;
       }
       else if (allocation == Stella.KWD_CLASS) {
-        allocationform = Stella.consList(Stella_Object.cons(StringWrapper.wrapString("static"), Stella.NIL));
+        allocationform = Cons.consList(Cons.cons(StringWrapper.wrapString("static"), Stella.NIL));
       }
       else {
         allocationform = Stella.NIL;
       }
-      return (Stella.list$(Stella_Object.cons(allocationform.concatenate(Stella_Object.cons(Symbol.cppTranslateClassParameterName(StorageSlot.getSlotClassParameterName(slot)), Stella.NIL), Stella.NIL), Stella_Object.cons(Symbol.cppTranslateName(slotname), Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(allocationform.concatenate(Cons.cons(Symbol.cppTranslateClassParameterName(StorageSlot.getSlotClassParameterName(slot)), Stella.NIL), Stella.NIL), Cons.cons(Symbol.cppTranslateName(slotname), Cons.cons(Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -245,15 +245,15 @@ public class StorageSlot extends Slot {
         allocationform = Stella.NIL;
       }
       else if (allocation == Stella.KWD_CLASS) {
-        allocationform = Stella.consList(Stella_Object.cons(StringWrapper.wrapString("static"), Stella.NIL));
+        allocationform = Cons.consList(Cons.cons(StringWrapper.wrapString("static"), Stella.NIL));
       }
       else {
         allocationform = Stella.NIL;
       }
       if (documentation != null) {
-        documentationform = Stella_Object.cons(StringWrapper.wrapString(documentation), Stella.NIL);
+        documentationform = Cons.cons(StringWrapper.wrapString(documentation), Stella.NIL);
       }
-      return (Stella.list$(Stella_Object.cons(allocationform.concatenate(Stella_Object.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(slottype), Stella.NIL), Stella.NIL), Stella_Object.cons(Symbol.cppTranslateName(slotname), Stella_Object.cons(documentationform.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(allocationform.concatenate(Cons.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(slottype), Stella.NIL), Stella.NIL), Cons.cons(Symbol.cppTranslateName(slotname), Cons.cons(documentationform.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -268,7 +268,7 @@ public class StorageSlot extends Slot {
         Stella_Object.describeTersely(self, stream);
       }
       else if (mode == Stella.KWD_VERBOSE) {
-        Cons.prettyPrintDefinitionTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT, Stella_Object.cons(self.slotName, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_OWNER, Stella_Object.cons(StringWrapper.wrapString(self.slotOwner.symbolName), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_TYPE, Stella_Object.cons(self.slotBaseType, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_INITIALLY, Stella_Object.cons(KeyValueList.dynamicSlotValue(self.dynamicSlots, Stella.SYM_STELLA_SLOT_INITIAL_VALUE, null), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), stream);
+        Cons.prettyPrintDefinitionTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT, Cons.cons(self.slotName, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_OWNER, Cons.cons(StringWrapper.wrapString(self.slotOwner.symbolName), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_TYPE, Cons.cons(self.slotBaseType, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_INITIALLY, Cons.cons(KeyValueList.dynamicSlotValue(self.dynamicSlots, Stella.SYM_STELLA_SLOT_INITIAL_VALUE, null), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), stream);
       }
       else {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -323,13 +323,13 @@ public class StorageSlot extends Slot {
       Symbol wrappingfunction = ((slot.slotBaseType == Stella.SGT_STELLA_BOOLEAN) ? Stella.SYM_STELLA_WRAP_BOOLEAN : Stella.SYM_STELLA_WRAP_LITERAL);
 
       if (slot.collectionValuedP()) {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CANT_OVERWRITE_ACTIVE_COLLECTION_SLOT, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_BQUOTE, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CANT_OVERWRITE_ACTIVE_COLLECTION_SLOT, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BQUOTE, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slot.slotName, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))));
       }
       else if (Surrogate.subtypeOfP(slot.type(), Stella.SGT_STELLA_LITERAL)) {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_GET_SLOT, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_BQUOTE, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NOT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_EQLp, Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CHECK_FOR_SLOT_DEMONSp, Stella_Object.cons(Stella.SYM_STELLA_SLOT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDOLDVALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CHOOSE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella_Object.cons(wrappingfunction, Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella.NIL)), Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDNEWVALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CHOOSE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella_Object.cons(wrappingfunction, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella.NIL)), Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RUN_SLOT_GUARD_DEMONSp, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.SYM_STELLA_SLOT, Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDOLDVALUE, Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDNEWVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RUN_SLOT_DEMONS, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.SYM_STELLA_SLOT, Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDOLDVALUE, Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDNEWVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDOLDVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_FREE, Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDOLDVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDNEWVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_FREE, Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDNEWVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_GET_SLOT, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BQUOTE, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OLDVALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NOT, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_EQLp, Cons.cons(Stella.SYM_STELLA_OLDVALUE, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CHECK_FOR_SLOT_DEMONSp, Cons.cons(Stella.SYM_STELLA_SLOT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAPPEDOLDVALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CHOOSE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_OLDVALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.cons(wrappingfunction, Cons.cons(Stella.SYM_STELLA_OLDVALUE, Stella.NIL)), Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAPPEDNEWVALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CHOOSE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.cons(wrappingfunction, Cons.cons(Stella.SYM_STELLA_VALUE, Stella.NIL)), Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RUN_SLOT_GUARD_DEMONSp, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.SYM_STELLA_SLOT, Cons.cons(Stella.SYM_STELLA_WRAPPEDOLDVALUE, Cons.cons(Stella.SYM_STELLA_WRAPPEDNEWVALUE, Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RUN_SLOT_DEMONS, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.SYM_STELLA_SLOT, Cons.cons(Stella.SYM_STELLA_WRAPPEDOLDVALUE, Cons.cons(Stella.SYM_STELLA_WRAPPEDNEWVALUE, Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_WRAPPEDOLDVALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_FREE, Cons.cons(Stella.SYM_STELLA_WRAPPEDOLDVALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_WRAPPEDNEWVALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_FREE, Cons.cons(Stella.SYM_STELLA_WRAPPEDNEWVALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_OLDVALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))));
       }
       else {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_GET_SLOT, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_BQUOTE, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NOT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_EQp, Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RUN_SLOT_GUARD_DEMONSp, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.SYM_STELLA_SLOT, Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RUN_SLOT_DEMONS, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.SYM_STELLA_SLOT, Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_GET_SLOT, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BQUOTE, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OLDVALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NOT, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_EQp, Cons.cons(Stella.SYM_STELLA_OLDVALUE, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RUN_SLOT_GUARD_DEMONSp, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.SYM_STELLA_SLOT, Cons.cons(Stella.SYM_STELLA_OLDVALUE, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RUN_SLOT_DEMONS, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.SYM_STELLA_SLOT, Cons.cons(Stella.SYM_STELLA_OLDVALUE, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_OLDVALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))));
       }
     }
   }
@@ -362,7 +362,7 @@ public class StorageSlot extends Slot {
               }
             }
           }
-          return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NEW, Stella_Object.cons(Surrogate.typeToSymbol(slot.type()), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OWNER_INSTANCE, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ACTIVE_SLOT, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_GET_SLOT, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_BQUOTE, Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))))));
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NEW, Cons.cons(Surrogate.typeToSymbol(slot.type()), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OWNER_INSTANCE, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ACTIVE_SLOT, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_GET_SLOT, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BQUOTE, Cons.cons(slot.slotName, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))))))));
         }
       }
     }
@@ -381,14 +381,14 @@ public class StorageSlot extends Slot {
       Cons settertree = null;
 
       if (literalslotP) {
-        settertree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SET_DYNAMIC_SLOT_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Stella_Object.cons(objectref, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_BQUOTE, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella_Object.cons(Surrogate.lookupLiteralTypeInfo(slot.type(), Stella.KWD_WRAP_FUNCTION), Stella_Object.cons(valueref, Stella.NIL)), Stella_Object.cons(Surrogate.lookupLiteralTypeInfo(slot.type(), Stella.KWD_NULL_WRAPPER), Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+        settertree = Cons.list$(Cons.cons(Stella.SYM_STELLA_SET_DYNAMIC_SLOT_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Cons.cons(objectref, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BQUOTE, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(valueref, Cons.cons(Cons.cons(Surrogate.lookupLiteralTypeInfo(slot.type(), Stella.KWD_NULL_WRAPPER), Stella.NIL), Stella.NIL))))));
       }
       else {
-        settertree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SET_DYNAMIC_SLOT_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Stella_Object.cons(objectref, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_BQUOTE, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(valueref, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL))))));
+        settertree = Cons.list$(Cons.cons(Stella.SYM_STELLA_SET_DYNAMIC_SLOT_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Cons.cons(objectref, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BQUOTE, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(valueref, Cons.cons(Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL))))));
       }
       if (Stella.walkingExpressionP()) {
         if (literalslotP) {
-          settertree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SAFE_CAST, Stella_Object.cons(settertree, Stella_Object.cons(Stella_Object.cons(Surrogate.typeToSymbol(slot.type().typeToWrappedType()), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+          settertree = Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SAFE_CAST, Cons.cons(settertree, Cons.cons(Cons.cons(Surrogate.typeToSymbol(slot.type().typeToWrappedType()), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))));
         }
         else {
           settertree = Cons.yieldDownCastTree(Cons.walkAConsTree(settertree, new Object[1]), returntype);
@@ -402,10 +402,10 @@ public class StorageSlot extends Slot {
     { Symbol slotname = StorageSlot.canonicalSlot(slot).slotName;
 
       if (Slot.slotValueIsBareLiteralP(slot)) {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SAFE_CAST, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMIC_SLOT_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Stella_Object.cons(objectref, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_QUOTE, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Surrogate.lookupLiteralTypeInfo(slot.type(), Stella.KWD_NULL_WRAPPER), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Surrogate.typeToSymbol(slot.type().typeToWrappedType()), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SAFE_CAST, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMIC_SLOT_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Cons.cons(objectref, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_QUOTE, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Surrogate.lookupLiteralTypeInfo(slot.type(), Stella.KWD_NULL_WRAPPER), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Surrogate.typeToSymbol(slot.type().typeToWrappedType()), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))));
       }
       else {
-        return (Cons.yieldDownCastTree(Cons.walkAConsTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMIC_SLOT_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Stella_Object.cons(objectref, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_QUOTE, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), new Object[1]), returntype));
+        return (Cons.yieldDownCastTree(Cons.walkAConsTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMIC_SLOT_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Cons.cons(objectref, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_QUOTE, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))))), new Object[1]), returntype));
       }
     }
   }
@@ -421,10 +421,10 @@ public class StorageSlot extends Slot {
     { Stella_Object cltype = StandardObject.lookupClTypeFromStellaType(slot.slotBaseType);
 
       if (cltype != null) {
-        return (Stella_Object.cons(Symbol.clTranslateLocalSymbol(slot.slotName), Stella_Object.cons(Stella_Object.clTranslateATree(StandardObject.typeToWalkedNullValueTree(slot.typeSpecifier(), slot.slotBaseType)), Stella.list$(Stella_Object.cons(Stella.KWD_TYPE, Stella_Object.cons(cltype, Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+        return (Cons.cons(Symbol.clTranslateLocalSymbol(slot.slotName), Cons.cons(Stella_Object.clTranslateATree(StandardObject.typeToWalkedNullValueTree(slot.typeSpecifier(), slot.slotBaseType)), Cons.cons(Stella_Object.clConditionalizeTypeDeclarationTree(Stella.KWD_TYPE), Cons.cons(Stella_Object.clConditionalizeTypeDeclarationTree(cltype), Stella.NIL)))));
       }
       else {
-        return (Stella_Object.cons(Symbol.clTranslateLocalSymbol(slot.slotName), Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_NULL), Stella.NIL)));
+        return (Cons.cons(Symbol.clTranslateLocalSymbol(slot.slotName), Cons.cons(Symbol.clTranslateGlobalSymbol(Stella.SYM_STELLA_NULL), Stella.NIL)));
       }
     }
   }
@@ -442,12 +442,12 @@ public class StorageSlot extends Slot {
       else {
       }
       if (allocation != null) {
-        allocationform = Stella.list$(Stella_Object.cons(Stella.KWD_ALLOCATION, Stella_Object.cons(allocation, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        allocationform = Cons.list$(Cons.cons(Stella.KWD_ALLOCATION, Cons.cons(allocation, Cons.cons(Stella.NIL, Stella.NIL))));
       }
       if (documentation != null) {
-        documentationform = Stella.list$(Stella_Object.cons(Stella.KWD_DOCUMENTATION, Stella_Object.cons(StringWrapper.wrapString(documentation), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        documentationform = Cons.list$(Cons.cons(Stella.KWD_DOCUMENTATION, Cons.cons(StringWrapper.wrapString(documentation), Cons.cons(Stella.NIL, Stella.NIL))));
       }
-      return (Stella_Object.cons(Symbol.clTranslateGlobalSymbol(slotname), StorageSlot.yieldClosSlotTypeTree(slot).concatenate(documentationform.concatenate(allocationform.concatenate(Stella.list$(Stella_Object.cons(Stella.KWD_ACCESSOR, Stella_Object.cons(Symbol.yieldClosSlotAccessorName(slotname), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)));
+      return (Cons.cons(Symbol.clTranslateGlobalSymbol(slotname), StorageSlot.yieldClosSlotTypeTree(slot).concatenate(documentationform.concatenate(allocationform.concatenate(Cons.list$(Cons.cons(Stella.KWD_ACCESSOR, Cons.cons(Symbol.yieldClosSlotAccessorName(slotname), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL), Stella.NIL)));
     }
   }
 
@@ -455,7 +455,7 @@ public class StorageSlot extends Slot {
     { Stella_Object cltype = StandardObject.lookupClTypeFromStellaType(slot.slotBaseType);
 
       if (cltype != null) {
-        return (Stella.list$(Stella_Object.cons(Stella.KWD_TYPE, Stella_Object.cons(cltype, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_INITFORM, Stella_Object.cons(Stella_Object.clTranslateATree(StandardObject.typeToWalkedNullValueTree(slot.typeSpecifier(), slot.slotBaseType)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))));
+        return (Cons.cons(Stella_Object.clConditionalizeTypeDeclarationTree(Stella.KWD_TYPE), Cons.cons(Stella_Object.clConditionalizeTypeDeclarationTree(cltype), Cons.list$(Cons.cons(Stella.KWD_INITFORM, Cons.cons(Stella_Object.clTranslateATree(StandardObject.typeToWalkedNullValueTree(slot.typeSpecifier(), slot.slotBaseType)), Cons.cons(Stella.NIL, Stella.NIL)))))));
       }
       else {
         return (Stella.NIL);
@@ -600,7 +600,7 @@ public class StorageSlot extends Slot {
       }
       if (((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_COMMON_LISP) {
         if (slot.allocation() == Stella.KWD_EMBEDDED) {
-          return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ALLOCATE, Stella_Object.cons(Surrogate.typeToSymbol(slot.type()), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_ALLOCATE, Cons.cons(Surrogate.typeToSymbol(slot.type()), Cons.cons(Stella.NIL, Stella.NIL)))));
         }
       }
       else if ((((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_JAVA) ||
@@ -608,7 +608,7 @@ public class StorageSlot extends Slot {
            ((((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_CPP_STANDALONE) ||
             (((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_IDL)))) {
         if (slot.allocation() == Stella.KWD_EMBEDDED) {
-          return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ALLOCATE, Stella_Object.cons(Surrogate.typeToSymbol(slot.type()), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_ALLOCATE, Cons.cons(Surrogate.typeToSymbol(slot.type()), Cons.cons(Stella.NIL, Stella.NIL)))));
         }
       }
       else {
@@ -633,7 +633,7 @@ public class StorageSlot extends Slot {
           return (Cons.walkAConsTree(tree, MV_returnarray));
         }
         if (StorageSlot.systemDefinedSlotReaderP(self)) {
-          { Stella_Object _return_temp = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Stella_Object.cons(self.slotOwner, Stella_Object.cons(Stella_Object.cons(self.slotName, Stella_Object.cons(objectref, Stella.NIL)), Stella.NIL))));
+          { Stella_Object _return_temp = Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Cons.cons(self.slotOwner, Cons.cons(Cons.cons(self.slotName, Cons.cons(objectref, Stella.NIL)), Stella.NIL))));
 
             MV_returnarray[0] = otype;
             return (_return_temp);
@@ -698,11 +698,11 @@ public class StorageSlot extends Slot {
         newvaluevar = Stella.localGensym("NEW-VALUE");
         Symbol.pushVariableBinding(objectvar, slot.slotOwner);
         Symbol.pushVariableBinding(newvaluevar, Stella.SGT_STELLA_OBJECT);
-        oldvaluetree = Stella_Object.sysTree(Stella_Object.walkWithoutTypeTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(objectvar, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella.NIL), Stella.NIL))))), Stella.SGT_STELLA_OBJECT, new Object[1]);
-        setnewvaluetree = Stella_Object.sysTree(Stella_Object.walkWithoutTypeTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(objectvar, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella.NIL), Stella.NIL)))), Stella_Object.cons(newvaluevar, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.SGT_STELLA_OBJECT, new Object[1]);
+        oldvaluetree = Stella_Object.sysTree(Stella_Object.walkWithoutTypeTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(objectvar, Cons.cons(Cons.cons(slot.slotName, Stella.NIL), Stella.NIL))))), Stella.SGT_STELLA_OBJECT, new Object[1]);
+        setnewvaluetree = Stella_Object.sysTree(Stella_Object.walkWithoutTypeTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(objectvar, Cons.cons(Cons.cons(slot.slotName, Stella.NIL), Stella.NIL)))), Cons.cons(newvaluevar, Cons.cons(Stella.NIL, Stella.NIL)))))), Stella.SGT_STELLA_OBJECT, new Object[1]);
       }
       else {
-        setnewvaluetree = Stella_Object.sysTree(Stella_Object.walkWithoutTypeTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(objectref, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella.NIL), Stella.NIL)))), Stella_Object.cons(valueref, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.SGT_STELLA_OBJECT, new Object[1]);
+        setnewvaluetree = Stella_Object.sysTree(Stella_Object.walkWithoutTypeTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(objectref, Cons.cons(Cons.cons(slot.slotName, Stella.NIL), Stella.NIL)))), Cons.cons(valueref, Cons.cons(Stella.NIL, Stella.NIL)))))), Stella.SGT_STELLA_OBJECT, new Object[1]);
       }
       slot.slotBaseType = realbasetype;
       if (realtypespec != null) {
@@ -718,7 +718,7 @@ public class StorageSlot extends Slot {
       }
       Stella.popVariableBinding();
       Stella.popVariableBinding();
-      { Cons _return_temp = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VRLET, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella_Object.cons(objectvar, Stella_Object.cons(objectref, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(valuevar, Stella_Object.cons(realbasetype, Stella_Object.cons(valueref, Stella.NIL))), Stella_Object.cons(Stella_Object.cons(oldvaluevar, Stella_Object.cons(oldvaluetree, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(newvaluevar, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_UPDATE_IN_CONTEXT, Stella_Object.cons(oldvaluevar, Stella_Object.cons(Stella_Object.cons(valuevar, Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_HOME_CONTEXT, Stella_Object.cons(objectvar, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(copytochildren, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL)))), Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NOT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CS_VALUEp, Stella_Object.cons(oldvaluevar, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(setnewvaluetree, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(valuevar, Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+      { Cons _return_temp = Cons.list$(Cons.cons(Stella.SYM_STELLA_VRLET, Cons.cons(Cons.list$(Cons.cons(Cons.cons(objectvar, Cons.cons(objectref, Stella.NIL)), Cons.cons(Cons.cons(valuevar, Cons.cons(realbasetype, Cons.cons(valueref, Stella.NIL))), Cons.cons(Cons.cons(oldvaluevar, Cons.cons(oldvaluetree, Stella.NIL)), Cons.cons(Cons.cons(newvaluevar, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UPDATE_IN_CONTEXT, Cons.cons(oldvaluevar, Cons.cons(Cons.cons(valuevar, Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_HOME_CONTEXT, Cons.cons(objectvar, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(copytochildren, Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL)))), Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NOT, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CS_VALUEp, Cons.cons(oldvaluevar, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(setnewvaluetree, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(valuevar, Cons.cons(Stella.NIL, Stella.NIL))))));
 
         MV_returnarray[0] = returntype;
         return (_return_temp);
@@ -734,7 +734,7 @@ public class StorageSlot extends Slot {
       if (mixinslotP &&
           Stella.translateToSingleInheritanceLanguageP()) {
         if (objectclass.mixinP) {
-          return (Stella_Object.sysTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Stella_Object.cons(Stella.SGT_STELLA_OBJECT, Stella_Object.cons(StorageSlot.yieldNativeSlotReaderName(slot), Stella_Object.cons(Stella_Object.cons(objectref, Stella_Object.cons(valueref, Stella.NIL)), Stella.NIL))))), ((((CompoundTypeSpecifier)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, null))) != null) ? ((StandardObject)(((CompoundTypeSpecifier)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, null))))) : ((StandardObject)(slot.slotBaseType))), new Object[1]));
+          return (Stella_Object.sysTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Cons.cons(Stella.SGT_STELLA_OBJECT, Cons.cons(StorageSlot.yieldNativeSlotReaderName(slot), Cons.cons(Cons.cons(objectref, Cons.cons(valueref, Stella.NIL)), Stella.NIL))))), ((((CompoundTypeSpecifier)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, null))) != null) ? ((StandardObject)(((CompoundTypeSpecifier)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, null))))) : ((StandardObject)(slot.slotBaseType))), new Object[1]));
         }
       }
       if (slot.slotHardwiredP) {
@@ -758,7 +758,7 @@ public class StorageSlot extends Slot {
         }
         return (Stella_Object.walkDontCallMeTree(null, slot.slotBaseType, new Object[1]));
       }
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_SLOT_VALUE_SETTER, Stella_Object.cons(objectclass.classType, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(objectref, Stella_Object.cons(valueref, Stella.NIL))), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_SLOT_VALUE_SETTER, Cons.cons(objectclass.classType, Cons.cons(Cons.cons(slot.slotName, Cons.cons(objectref, Cons.cons(valueref, Stella.NIL))), Stella.NIL)))));
     }
   }
 
@@ -811,7 +811,7 @@ public class StorageSlot extends Slot {
         KeyValueList.setDynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, null, null);
       }
       slot.slotContextSensitiveP = false;
-      oldvaluetree = Stella_Object.sysTree(Stella_Object.walkWithoutTypeTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons((contextsensitiveP ? Stella_Object.copyConsTree(objectref) : objectref), Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella.NIL), Stella.NIL))))), Stella.SGT_STELLA_OBJECT, new Object[1]);
+      oldvaluetree = Stella_Object.sysTree(Stella_Object.walkWithoutTypeTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons((contextsensitiveP ? Stella_Object.copyConsTree(objectref) : objectref), Cons.cons(Cons.cons(slot.slotName, Stella.NIL), Stella.NIL))))), Stella.SGT_STELLA_OBJECT, new Object[1]);
       slot.slotBaseType = realbasetype;
       if (realtypespec != null) {
         KeyValueList.setDynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, realtypespec, null);
@@ -827,12 +827,12 @@ public class StorageSlot extends Slot {
       if (onceonlywrapperP) {
         Stella.popVariableBinding();
       }
-      accesstree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SAFE_CAST, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ACCESS_IN_CONTEXT, Stella_Object.cons((onceonlywrapperP ? oldvalueref : oldvaluetree), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_HOME_CONTEXT, Stella_Object.cons(objectref, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(dontinheritP, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella_Object.cons(StandardObject.yieldTypeSpecTree((literalslotP ? slot.type().typeToWrappedType() : ((StandardObject)(returntype)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      accesstree = Cons.list$(Cons.cons(Stella.SYM_STELLA_SAFE_CAST, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ACCESS_IN_CONTEXT, Cons.cons((onceonlywrapperP ? oldvalueref : oldvaluetree), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_HOME_CONTEXT, Cons.cons(objectref, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(dontinheritP, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Cons.cons(StandardObject.yieldTypeSpecTree((literalslotP ? slot.type().typeToWrappedType() : ((StandardObject)(returntype)))), Cons.cons(Stella.NIL, Stella.NIL)))));
       if (literalslotP) {
-        accesstree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(accesstree, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        accesstree = Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Cons.cons(accesstree, Cons.cons(Stella.NIL, Stella.NIL))));
       }
       if (onceonlywrapperP) {
-        { Cons _return_temp = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VRLET, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella_Object.cons(objectref, Stella_Object.cons(objectrefcopy, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(oldvalueref, Stella_Object.cons(oldvaluetree, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(accesstree, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        { Cons _return_temp = Cons.list$(Cons.cons(Stella.SYM_STELLA_VRLET, Cons.cons(Cons.list$(Cons.cons(Cons.cons(objectref, Cons.cons(objectrefcopy, Stella.NIL)), Cons.cons(Cons.cons(oldvalueref, Cons.cons(oldvaluetree, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(accesstree, Cons.cons(Stella.NIL, Stella.NIL)))));
 
           MV_returnarray[0] = returntype;
           return (_return_temp);
@@ -856,14 +856,14 @@ public class StorageSlot extends Slot {
       if (mixinslotP &&
           Stella.translateToSingleInheritanceLanguageP()) {
         if (objectclass.mixinP) {
-          return (Stella_Object.sysTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Stella_Object.cons(Stella.SGT_STELLA_OBJECT, Stella_Object.cons(StorageSlot.yieldNativeSlotReaderName(slot), Stella_Object.cons(Stella_Object.cons(objectref, Stella.NIL), Stella.NIL))))), ((((CompoundTypeSpecifier)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, null))) != null) ? ((StandardObject)(((CompoundTypeSpecifier)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, null))))) : ((StandardObject)(slot.slotBaseType))), new Object[1]));
+          return (Stella_Object.sysTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Cons.cons(Stella.SGT_STELLA_OBJECT, Cons.cons(StorageSlot.yieldNativeSlotReaderName(slot), Cons.cons(Cons.cons(objectref, Stella.NIL), Stella.NIL))))), ((((CompoundTypeSpecifier)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, null))) != null) ? ((StandardObject)(((CompoundTypeSpecifier)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, null))))) : ((StandardObject)(slot.slotBaseType))), new Object[1]));
         }
       }
       if (slot.slotHardwiredP) {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Stella_Object.cons(objectclass.classType, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(objectref, Stella.NIL)), Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Cons.cons(objectclass.classType, Cons.cons(Cons.cons(slot.slotName, Cons.cons(objectref, Stella.NIL)), Stella.NIL)))));
       }
       else {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_SLOT_VALUE, Stella_Object.cons(objectclass.classType, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(objectref, Stella.NIL)), Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_SLOT_VALUE, Cons.cons(objectclass.classType, Cons.cons(Cons.cons(slot.slotName, Cons.cons(objectref, Stella.NIL)), Stella.NIL)))));
       }
     }
   }
@@ -877,7 +877,7 @@ public class StorageSlot extends Slot {
       { Keyword testValue000 = slot.allocation();
 
         if (testValue000 == Stella.KWD_DYNAMIC) {
-          return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VRLET, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMICSLOTS, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Stella_Object.cons(objectref, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NEWVALUE, Stella_Object.cons(valueref, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_FOUNDMATCHINGENTRYp, Stella_Object.cons(Stella.SYM_STELLA_FALSE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_FOREACH, Stella_Object.cons(Stella.SYM_STELLA_IT, Stella_Object.cons(Stella.SYM_STELLA_ON, Stella_Object.cons(Stella.SYM_STELLA_DYNAMICSLOTS, Stella_Object.cons(Stella.SYM_STELLA_WHERE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_EQp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_KEY, Stella_Object.cons(Stella.SYM_STELLA_IT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_BQUOTE, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.SYM_STELLA_DO, Stella_Object.cons((Slot.slotValueIsBareLiteralP(slot) ? Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella_Object.cons(Surrogate.typeToSymbol(slot.type().typeToWrappedType()), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.SYM_STELLA_IT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Stella.SYM_STELLA_OLDVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_NEWVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))) : Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.SYM_STELLA_IT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_NEWVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_FOUNDMATCHINGENTRYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NOT, Stella_Object.cons(Stella.SYM_STELLA_FOUNDMATCHINGENTRYp, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_NEWVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_KV_LIST, Stella_Object.cons(Stella.SYM_STELLA_DYNAMICSLOTS, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_KV_CONS, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_BQUOTE, Stella_Object.cons(slotname, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons((Slot.slotValueIsBareLiteralP(slot) ? Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAP_LITERAL, Stella_Object.cons(Stella.SYM_STELLA_NEWVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))) : ((Stella_Object)(Stella.SYM_STELLA_NEWVALUE))), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_KV_LIST, Stella_Object.cons(Stella.SYM_STELLA_DYNAMICSLOTS, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.SYM_STELLA_NEWVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))))));
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_VRLET, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMICSLOTS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Cons.cons(objectref, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NEWVALUE, Cons.cons(valueref, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_FOUNDMATCHINGENTRYp, Cons.cons(Stella.SYM_STELLA_FALSE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_FOREACH, Cons.cons(Stella.SYM_STELLA_IT, Cons.cons(Stella.SYM_STELLA_ON, Cons.cons(Stella.SYM_STELLA_DYNAMICSLOTS, Cons.cons(Stella.SYM_STELLA_WHERE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_EQp, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_KEY, Cons.cons(Stella.SYM_STELLA_IT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BQUOTE, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.SYM_STELLA_DO, Cons.cons((Slot.slotValueIsBareLiteralP(slot) ? Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OLDVALUE, Cons.cons(Surrogate.typeToSymbol(slot.type().typeToWrappedType()), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.SYM_STELLA_IT, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Stella.SYM_STELLA_OLDVALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_NEWVALUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))) : Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.SYM_STELLA_IT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_NEWVALUE, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_FOUNDMATCHINGENTRYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Stella.NIL)))))))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NOT, Cons.cons(Stella.SYM_STELLA_FOUNDMATCHINGENTRYp, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_NEWVALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_KV_LIST, Cons.cons(Stella.SYM_STELLA_DYNAMICSLOTS, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_KV_CONS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BQUOTE, Cons.cons(slotname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons((Slot.slotValueIsBareLiteralP(slot) ? Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAP_LITERAL, Cons.cons(Stella.SYM_STELLA_NEWVALUE, Cons.cons(Stella.NIL, Stella.NIL)))) : ((Stella_Object)(Stella.SYM_STELLA_NEWVALUE))), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_KV_LIST, Cons.cons(Stella.SYM_STELLA_DYNAMICSLOTS, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.SYM_STELLA_NEWVALUE, Cons.cons(Stella.NIL, Stella.NIL))))))));
         }
         else if (testValue000 == Stella.KWD_BIT) {
           throw ((StellaException)(StellaException.newStellaException("Allocation :bit IS NOT YET IMPLEMENTED").fillInStackTrace()));
@@ -902,7 +902,7 @@ public class StorageSlot extends Slot {
       if (testValue000 == Stella.KWD_DYNAMIC) {
         { Symbol answervar = Stella.localGensym("ANSWER");
 
-          return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VRLET, Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(answervar, Stella_Object.cons(returntype, Stella_Object.cons(StandardObject.typeToWalkedNullValueTree(slot.typeSpecifier(), slot.type()), Stella.NIL))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_FOREACH, Stella_Object.cons(Stella.SYM_STELLA_IT, Stella_Object.cons(Stella.SYM_STELLA_ON, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Stella_Object.cons(objectref, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.SYM_STELLA_WHERE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_EQp, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_KEY, Stella_Object.cons(Stella.SYM_STELLA_IT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_BQUOTE, Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.SYM_STELLA_DO, Stella_Object.cons((Slot.slotValueIsBareLiteralP(slot) ? Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDVALUE, Stella_Object.cons(slot.type().typeToWrappedType(), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.SYM_STELLA_IT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(answervar, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Stella.SYM_STELLA_WRAPPEDVALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))) : Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(answervar, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.SYM_STELLA_IT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL))))), Stella_Object.cons(Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_BREAK, Stella.NIL), Stella.NIL), Stella.NIL)))))))))), Stella_Object.cons(answervar, Stella_Object.cons(Stella.NIL, Stella.NIL)))))));
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_VRLET, Cons.cons(Cons.cons(Cons.cons(answervar, Cons.cons(returntype, Cons.cons(StandardObject.typeToWalkedNullValueTree(slot.typeSpecifier(), slot.type()), Stella.NIL))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_FOREACH, Cons.cons(Stella.SYM_STELLA_IT, Cons.cons(Stella.SYM_STELLA_ON, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DYNAMIC_SLOTS, Cons.cons(objectref, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_WHERE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_EQp, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_KEY, Cons.cons(Stella.SYM_STELLA_IT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BQUOTE, Cons.cons(slot.slotName, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.SYM_STELLA_DO, Cons.cons((Slot.slotValueIsBareLiteralP(slot) ? Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAPPEDVALUE, Cons.cons(slot.type().typeToWrappedType(), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.SYM_STELLA_IT, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(answervar, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Stella.SYM_STELLA_WRAPPEDVALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))) : Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(answervar, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.SYM_STELLA_IT, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL))))), Cons.cons(Cons.cons(Cons.cons(Stella.SYM_STELLA_BREAK, Stella.NIL), Stella.NIL), Stella.NIL)))))))))), Cons.cons(answervar, Cons.cons(Stella.NIL, Stella.NIL)))))));
         }
       }
       else if (testValue000 == Stella.KWD_BIT) {
@@ -923,22 +923,17 @@ public class StorageSlot extends Slot {
       StorageSlot canonicalslot = StorageSlot.canonicalSlot(slot);
       Stella_Class nativeslothome = null;
 
-      if (!(((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_COMMON_LISP)) {
-        if (StorageSlot.nativeSlotP(canonicalslot)) {
-          nativeslothome = Slot.nativeSlotHome(slot, StandardObject.typeSpecToClass(firstargtype));
-        }
-        if (nativeslothome != null) {
-          slottype = StandardObject.typeSpecToBaseType(Stella_Class.lookupSlot(nativeslothome, canonicalslot.slotName).computeReturnTypeSpec(nativeslothome.classType));
-        }
-        else {
-          slottype = StandardObject.typeSpecToBaseType(slot.computeReturnTypeSpec(StandardObject.typeSpecToBaseType(firstargtype)));
-        }
-        if (slottype == StandardObject.typeSpecToBaseType(returntype)) {
-          slottype = returntype;
-        }
+      if (StorageSlot.nativeSlotP(canonicalslot)) {
+        nativeslothome = Slot.nativeSlotHome(slot, StandardObject.typeSpecToClass(firstargtype));
       }
-      if (!(slot == canonicalslot)) {
-        slottype = canonicalslot.slotBaseType;
+      if (nativeslothome != null) {
+        slottype = StandardObject.typeSpecToBaseType(Stella_Class.lookupSlot(nativeslothome, canonicalslot.slotName).computeReturnTypeSpec(nativeslothome.classType));
+      }
+      else {
+        slottype = StandardObject.typeSpecToBaseType(slot.computeReturnTypeSpec(StandardObject.typeSpecToBaseType(firstargtype)));
+      }
+      if (slottype == StandardObject.typeSpecToBaseType(returntype)) {
+        slottype = returntype;
       }
       return (slottype);
     }
@@ -976,7 +971,7 @@ public class StorageSlot extends Slot {
       Stella_Object typetree = StorageSlot.yieldSlotTypeTree(slot);
       boolean slotvisibleP = Surrogate.subtypeOfP(renamed_Class.classType, slot.slotOwner);
 
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella_Object.cons(writername, Stella_Object.cons(typetree, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella_Class.classSymbol(renamed_Class), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella_Object.copyConsTree(typetree), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.KWD_AUXILIARYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(((slotvisibleP ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_CONTEXT_SENSITIVEp, Stella_Object.cons(Stella.SYM_STELLA_FALSE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IGNORE, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ERROR, Stella_Object.cons(StringWrapper.wrapString("Slot '"), Stella_Object.cons(StringWrapper.wrapString(slot.slotName.symbolName), Stella_Object.cons(Stella.list$(Stella_Object.cons(StringWrapper.wrapString("' does not exist on "), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Cons.cons(writername, Cons.cons(typetree, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella_Class.classSymbol(renamed_Class), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella_Object.copyConsTree(typetree), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.KWD_AUXILIARYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(((slotvisibleP ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slot.slotName, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_CONTEXT_SENSITIVEp, Cons.cons(Stella.SYM_STELLA_FALSE, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IGNORE, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ERROR, Cons.cons(StringWrapper.wrapString("Slot '"), Cons.cons(StringWrapper.wrapString(slot.slotName.symbolName), Cons.cons(Cons.list$(Cons.cons(StringWrapper.wrapString("' does not exist on "), Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))))).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))))));
     }
   }
 
@@ -985,7 +980,7 @@ public class StorageSlot extends Slot {
       Stella_Object typetree = StorageSlot.yieldSlotTypeTree(slot);
       boolean slotvisibleP = Surrogate.subtypeOfP(renamed_Class.classType, slot.slotOwner);
 
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella_Object.cons(readername, Stella_Object.cons(typetree, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella_Class.classSymbol(renamed_Class), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.KWD_AUXILIARYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(((slotvisibleP ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_CONTEXT_SENSITIVEp, Stella_Object.cons(Stella.SYM_STELLA_FALSE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ERROR, Stella_Object.cons(StringWrapper.wrapString("Slot '"), Stella_Object.cons(StringWrapper.wrapString(slot.slotName.symbolName), Stella_Object.cons(Stella.list$(Stella_Object.cons(StringWrapper.wrapString("' does not exist on "), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Cons.cons(readername, Cons.cons(typetree, Stella.NIL)), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella_Class.classSymbol(renamed_Class), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Stella.KWD_AUXILIARYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(((slotvisibleP ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slot.slotName, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_CONTEXT_SENSITIVEp, Cons.cons(Stella.SYM_STELLA_FALSE, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ERROR, Cons.cons(StringWrapper.wrapString("Slot '"), Cons.cons(StringWrapper.wrapString(slot.slotName.symbolName), Cons.cons(Cons.list$(Cons.cons(StringWrapper.wrapString("' does not exist on "), Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))))));
     }
   }
 
@@ -997,7 +992,7 @@ public class StorageSlot extends Slot {
     { String baseName = slot.slotName.symbolName;
       String suffix = (Stella.allUpperCaseStringP(baseName) ? "-NATIVE-VALUE" : "-Native-Value");
 
-      return (GeneralizedSymbol.internDerivedSymbol(slot.slotName, baseName + suffix));
+      return (Symbol.internDerivedSymbol(slot.slotName, baseName + suffix));
     }
   }
 
@@ -1005,7 +1000,7 @@ public class StorageSlot extends Slot {
     { Symbol writername = StorageSlot.yieldMixinSlotWriterName(slot);
       Stella_Object typetree = StorageSlot.yieldSlotTypeTree(slot);
 
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(Stella_Object.cons(writername, Stella_Object.cons(typetree, Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.SYM_STELLA_OBJECT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella_Object.copyConsTree(typetree), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.KWD_AUXILIARYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_TYPECASE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella_Object.cons(Stella_Class.yieldMixinClassUsersTree(((Stella_Class)(slot.slotOwner.surrogateValue))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(Cons.cons(writername, Cons.cons(typetree, Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.SYM_STELLA_OBJECT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella_Object.copyConsTree(typetree), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.KWD_AUXILIARYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_TYPECASE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.cons(Stella_Class.yieldMixinClassUsersTree(((Stella_Class)(slot.slotOwner.surrogateValue))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.cons(slot.slotName, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))))))));
     }
   }
 
@@ -1013,7 +1008,7 @@ public class StorageSlot extends Slot {
     { Symbol readername = StorageSlot.yieldMixinSlotReaderName(slot);
       Stella_Object typetree = StorageSlot.yieldSlotTypeTree(slot);
 
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(Stella_Object.cons(readername, Stella_Object.cons(typetree, Stella.NIL)), Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.SYM_STELLA_OBJECT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.KWD_AUXILIARYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_TYPECASE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella_Object.cons(Stella_Class.yieldMixinClassUsersTree(((Stella_Class)(slot.slotOwner.surrogateValue))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_OTHERWISE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(Cons.cons(readername, Cons.cons(typetree, Stella.NIL)), Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.SYM_STELLA_OBJECT, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Stella.KWD_AUXILIARYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_TYPECASE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Cons.cons(Stella_Class.yieldMixinClassUsersTree(((Stella_Class)(slot.slotOwner.surrogateValue))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.cons(slot.slotName, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))))))));
     }
   }
 
@@ -1027,7 +1022,7 @@ public class StorageSlot extends Slot {
       String infix = ((Stella.allUpperCaseStringP(preName) &&
           Stella.allUpperCaseStringP(postName)) ? "-ON-" : "-On-");
 
-      return (GeneralizedSymbol.internDerivedSymbol(slot.slotName, preName + infix + postName));
+      return (Symbol.internDerivedSymbol(slot.slotName, preName + infix + postName));
     }
   }
 
@@ -1055,25 +1050,25 @@ public class StorageSlot extends Slot {
 
   public static Cons yieldSlotWriterTree(StorageSlot slot, Stella_Class renamed_Class) {
     { Stella_Object typetree = StorageSlot.yieldSlotTypeTree(slot);
-      Cons parameters = Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.internSymbolInModule(renamed_Class.classType.symbolName, ((Module)(renamed_Class.classType.homeContext)), true), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(typetree, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+      Cons parameters = Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Symbol.internSymbolInModule(renamed_Class.classType.symbolName, ((Module)(renamed_Class.classType.homeContext)), true), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(typetree, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))));
       boolean slotvisibleP = Surrogate.subtypeOfP(renamed_Class.classType, slot.slotOwner);
       Cons writecode = null;
 
       if (!slotvisibleP) {
-        writecode = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ERROR, Stella_Object.cons(StringWrapper.wrapString("Slot '"), Stella_Object.cons(StringWrapper.wrapString(slot.slotName.symbolName), Stella_Object.cons(Stella.list$(Stella_Object.cons(StringWrapper.wrapString("' does not exist on "), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        writecode = Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ERROR, Cons.cons(StringWrapper.wrapString("Slot '"), Cons.cons(StringWrapper.wrapString(slot.slotName.symbolName), Cons.cons(Cons.list$(Cons.cons(StringWrapper.wrapString("' does not exist on "), Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))));
       }
       else if (slot.activeP()) {
         writecode = StorageSlot.yieldActiveSlotWriterBody(slot);
       }
       else {
-        writecode = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        writecode = Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slot.slotName, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))));
       }
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella_Object.cons(Symbol.yieldSetterMethodName(slot.slotName), Stella_Object.cons(Stella_Object.copyConsTree(typetree), Stella.NIL)), Stella_Object.cons(parameters, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_AUXILIARYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(((slotvisibleP ? Stella.NIL : Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IGNORE, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))).concatenate(Stella_Object.cons(writecode, Stella.NIL), Stella.NIL), Stella.NIL)))), Stella.NIL))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Cons.cons(Symbol.yieldSetterMethodName(slot.slotName), Cons.cons(Stella_Object.copyConsTree(typetree), Stella.NIL)), Cons.cons(parameters, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_AUXILIARYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(((slotvisibleP ? Stella.NIL : Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IGNORE, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))).concatenate(Cons.cons(writecode, Stella.NIL), Stella.NIL), Stella.NIL)))), Stella.NIL))))));
     }
   }
 
   public static Cons yieldSlotReaderTree(StorageSlot slot, Stella_Class renamed_Class) {
-    { Cons parameters = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.internSymbolInModule(renamed_Class.classType.symbolName, ((Module)(renamed_Class.classType.homeContext)), true), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
+    { Cons parameters = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Symbol.internSymbolInModule(renamed_Class.classType.symbolName, ((Module)(renamed_Class.classType.homeContext)), true), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL);
       Stella_Object typetree = StorageSlot.yieldSlotTypeTree(slot);
       Stella_Object defaultexpression = (StorageSlot.hasNonNullDefaultValueP(slot) ? slot.systemDefaultValue() : ((Stella_Object)(null)));
       boolean slotvisibleP = Surrogate.subtypeOfP(renamed_Class.classType, slot.slotOwner);
@@ -1081,7 +1076,7 @@ public class StorageSlot extends Slot {
       Cons auxiliarycode = null;
 
       if (!slotvisibleP) {
-        readcode = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PROGN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ERROR, Stella_Object.cons(StringWrapper.wrapString("Slot '"), Stella_Object.cons(StringWrapper.wrapString(slot.slotName.symbolName), Stella_Object.cons(Stella.list$(Stella_Object.cons(StringWrapper.wrapString("' does not exist on "), Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        readcode = Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ERROR, Cons.cons(StringWrapper.wrapString("Slot '"), Cons.cons(StringWrapper.wrapString(slot.slotName.symbolName), Cons.cons(Cons.list$(Cons.cons(StringWrapper.wrapString("' does not exist on "), Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))));
       }
       else if (slot.activeP()) {
         readcode = StorageSlot.yieldActiveSlotReaderBody(slot, defaultexpression);
@@ -1099,12 +1094,12 @@ public class StorageSlot extends Slot {
       else {
         readcode = StorageSlot.wrapWithDefaultValueAndReturnCode(slot, defaultexpression);
       }
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(typetree, Stella.NIL)), Stella_Object.cons(parameters, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_AUXILIARYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(readcode, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(Cons.cons(slot.slotName, Cons.cons(typetree, Stella.NIL)), Cons.cons(parameters, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_AUXILIARYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(readcode, Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL))))));
     }
   }
 
   public static Cons wrapWithDefaultValueAndReturnCode(StorageSlot slot, Stella_Object defaultexpression) {
-    { Cons readcode = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(slot.slotName, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+    { Cons readcode = Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(slot.slotName, Cons.cons(Stella.NIL, Stella.NIL)))));
 
       if (defaultexpression != null) {
         if (slot.type() == Stella.SGT_STELLA_BOOLEAN) {
@@ -1132,21 +1127,21 @@ public class StorageSlot extends Slot {
           }
           else {
             {
-              Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_BOOLEAN, Stella.KWD_NULL_WRAPPER, Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_INLINE_WRAP_BOOLEAN, Stella_Object.cons(defaultexpression, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+              Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_BOOLEAN, Stella.KWD_NULL_WRAPPER, Cons.list$(Cons.cons(Stella.SYM_STELLA_INLINE_WRAP_BOOLEAN, Cons.cons(defaultexpression, Cons.cons(Stella.NIL, Stella.NIL)))));
               Symbol.pushVariableBinding(Stella.SYM_STELLA_SELF, slot.slotOwner);
               readcode = Stella_Object.sysTree(Stella_Object.walkExpressionTree(readcode, Stella.SGT_STELLA_BOOLEAN, slot.slotName, false, new Object[1]), Stella.SGT_STELLA_BOOLEAN, new Object[1]);
               Stella.popVariableBinding();
               Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_BOOLEAN, Stella.KWD_NULL_WRAPPER, Stella.SYM_STELLA_FALSE_WRAPPER);
             }
           }
-          return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(readcode, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(readcode, Cons.cons(Stella.NIL, Stella.NIL)))));
         }
         else {
-          return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ANSWER, Stella_Object.cons(readcode, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NULLp, Stella_Object.cons(Stella.SYM_STELLA_ANSWER, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella_Object.copyConsTree(defaultexpression), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_ANSWER, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ANSWER, Cons.cons(readcode, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NULLp, Cons.cons(Stella.SYM_STELLA_ANSWER, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella_Object.copyConsTree(defaultexpression), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_ANSWER, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))));
         }
       }
       else {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(readcode, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(readcode, Cons.cons(Stella.NIL, Stella.NIL)))));
       }
     }
   }
@@ -1155,16 +1150,16 @@ public class StorageSlot extends Slot {
     { Symbol slotvariable = StorageSlot.yieldHardwiredSlotVariable(slot);
       Stella_Object slottypedesc = StandardObject.yieldTypeSpecTree(slot.computeReturnTypeSpec(slot.slotOwner));
 
-      { Cons _return_temp = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(slotvariable, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+      { Cons _return_temp = Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(slotvariable, Cons.cons(Stella.NIL, Stella.NIL))));
 
-        MV_returnarray[0] = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFGLOBAL, Stella_Object.cons(slotvariable, Stella_Object.cons(Stella_Object.cons(slottypedesc, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), Stella.NIL))));
+        MV_returnarray[0] = Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFGLOBAL, Cons.cons(slotvariable, Cons.cons(Cons.cons(slottypedesc, Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), Stella.NIL))));
         return (_return_temp);
       }
     }
   }
 
   public static Symbol yieldHardwiredSlotVariable(StorageSlot slot) {
-    return (GeneralizedSymbol.internDerivedSymbol(slot.slotName, "*HARDWIRED-" + slot.slotName.symbolName + "-ON-" + slot.slotOwner.symbolName + "*"));
+    return (Symbol.internDerivedSymbol(slot.slotName, "*HARDWIRED-" + slot.slotName.symbolName + "-ON-" + slot.slotOwner.symbolName + "*"));
   }
 
   public static Stella_Object yieldSlotTypeTree(StorageSlot slot) {
@@ -1225,7 +1220,7 @@ public class StorageSlot extends Slot {
           }
         }
         if (initialvalueexpression != null) {
-          return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(StorageSlot.canonicalSlot(slot).slotName, Stella_Object.cons(((StorageSlot.isContextSensitiveSlotP(slot) ? Stella.list$(Stella_Object.cons(Stella.KWD_CONTEXT_SENSITIVEp, Stella_Object.cons(Stella.SYM_STELLA_FALSE, Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))), Stella_Object.cons(initialvalueexpression, Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(StorageSlot.canonicalSlot(slot).slotName, Cons.cons(((StorageSlot.isContextSensitiveSlotP(slot) ? Cons.list$(Cons.cons(Stella.KWD_CONTEXT_SENSITIVEp, Cons.cons(Stella.SYM_STELLA_FALSE, Cons.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))), Cons.cons(initialvalueexpression, Cons.cons(Stella.NIL, Stella.NIL))))));
         }
       }
       return (null);

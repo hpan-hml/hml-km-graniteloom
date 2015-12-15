@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -145,7 +145,7 @@ public class StellaToken extends TokenizerToken {
         tokentype = tokenlist.logicalTokenType;
         if (tokentype == Stella.KWD_OPEN_PAREN) {
           if (parsedtree != null) {
-            parsedtreestack = Stella_Object.cons(parsedtree, parsedtreestack);
+            parsedtreestack = Cons.cons(parsedtree, parsedtreestack);
           }
           parsedtree = Stella.NIL;
           tokenlist = ((StellaToken)(tokenlist.next));
@@ -159,10 +159,7 @@ public class StellaToken extends TokenizerToken {
           else {
             { Cons parenttree = parsedtreestack;
 
-              { Cons head000 = ((Cons)(parsedtreestack.value));
-
-                parsedtreestack = parsedtreestack.rest;
-              }
+              parsedtreestack = parsedtreestack.rest;
               parenttree.rest = ((Cons)(parenttree.value));
               parenttree.firstSetter(parsedtree.reverse());
               parsedtree = parenttree;
@@ -185,24 +182,23 @@ public class StellaToken extends TokenizerToken {
               }
             }
             else if (tokentype == Stella.KWD_SURROGATE) {
-              parsedtoken = Stella.internSurrogateInModule(name, module, false);
+              parsedtoken = Surrogate.internSurrogateInModule(name, module, false);
             }
             else {
               parsedtoken = ((((Boolean)(Stella.$TRANSIENTOBJECTSp$.get())).booleanValue() &&
-                  (modulename == null)) ? Stella.internTransientSymbol(name) : Stella.internSymbolInModule(name, module, false));
+                  (modulename == null)) ? Stella.internTransientSymbol(name) : Symbol.internSymbolInModule(name, module, false));
             }
           }
         }
         else if (tokentype == Stella.KWD_KEYWORD) {
-          parsedtoken = Stella.internRigidSymbolWrtModule(tokenlist.content, null, Stella.KEYWORD_SYM);
+          parsedtoken = GeneralizedSymbol.internRigidSymbolWrtModule(tokenlist.content, null, Stella.KEYWORD_SYM);
         }
         else if (tokentype == Stella.KWD_STRING) {
           parsedtoken = new StringWrapper();
           ((StringWrapper)(parsedtoken)).wrapperValue = tokenlist.content;
         }
         else if (tokentype == Stella.KWD_INTEGER) {
-          parsedtoken = new IntegerWrapper();
-          ((IntegerWrapper)(parsedtoken)).wrapperValue = Native.stringToInteger(tokenlist.content);
+          parsedtoken = Stella.wrapIntegerValue(Native.stringToInteger(tokenlist.content));
         }
         else if (tokentype == Stella.KWD_FLOAT) {
           parsedtoken = new FloatWrapper();

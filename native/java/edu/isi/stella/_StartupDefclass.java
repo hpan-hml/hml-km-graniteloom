@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,79 +50,78 @@ import edu.isi.stella.javalib.*;
 public class _StartupDefclass {
   static void helpStartupDefclass1() {
     {
-      Stella.SGT_STELLA_LITERAL = ((Surrogate)(Stella.internRigidSymbolWrtModule("LITERAL", null, 1)));
-      Stella.SGT_STELLA_SECOND_CLASS_OBJECT = ((Surrogate)(Stella.internRigidSymbolWrtModule("SECOND-CLASS-OBJECT", null, 1)));
-      Stella.KWD_OTHERWISE = ((Keyword)(Stella.internRigidSymbolWrtModule("OTHERWISE", null, 2)));
-      Stella.SYM_STELLA_DEFINE_CLASS_FROM_STRINGIFIED_SOURCE = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFINE-CLASS-FROM-STRINGIFIED-SOURCE", null, 0)));
-      Stella.KWD_IDL = ((Keyword)(Stella.internRigidSymbolWrtModule("IDL", null, 2)));
-      Stella.KWD_CPP_STANDALONE = ((Keyword)(Stella.internRigidSymbolWrtModule("CPP-STANDALONE", null, 2)));
-      Stella.SGT_STELLA_NON_OBJECT = ((Surrogate)(Stella.internRigidSymbolWrtModule("NON-OBJECT", null, 1)));
-      Stella.SGT_STELLA_NATIVE_EXCEPTION = ((Surrogate)(Stella.internRigidSymbolWrtModule("NATIVE-EXCEPTION", null, 1)));
-      Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT = ((Symbol)(Stella.internRigidSymbolWrtModule("NEXT-SWEEP-LIST-OBJECT", null, 0)));
-      Stella.KWD_FREE_LIST = ((Keyword)(Stella.internRigidSymbolWrtModule("FREE-LIST", null, 2)));
-      Stella.KWD_FREE_AND_SWEEP_LIST = ((Keyword)(Stella.internRigidSymbolWrtModule("FREE-AND-SWEEP-LIST", null, 2)));
-      Stella.KWD_SWEEP_LIST = ((Keyword)(Stella.internRigidSymbolWrtModule("SWEEP-LIST", null, 2)));
-      Stella.KWD_USE_COMMON_LISP_STRUCTS = ((Keyword)(Stella.internRigidSymbolWrtModule("USE-COMMON-LISP-STRUCTS", null, 2)));
-      Stella.KWD_USE_COMMON_LISP_VECTOR_STRUCTS = ((Keyword)(Stella.internRigidSymbolWrtModule("USE-COMMON-LISP-VECTOR-STRUCTS", null, 2)));
-      Stella.SYM_STELLA_DEFGLOBAL = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFGLOBAL", null, 0)));
-      Stella.SYM_STELLA_RECYCLE_LIST = ((Symbol)(Stella.internRigidSymbolWrtModule("RECYCLE-LIST", null, 0)));
-      Stella.SYM_STELLA_CREATE_RECYCLE_LIST = ((Symbol)(Stella.internRigidSymbolWrtModule("CREATE-RECYCLE-LIST", null, 0)));
-      Stella.SYM_STELLA_MAKE = ((Symbol)(Stella.internRigidSymbolWrtModule("MAKE", null, 0)));
-      Stella.SYM_STELLA_DYNAMIC_SLOTS = ((Symbol)(Stella.internRigidSymbolWrtModule("DYNAMIC-SLOTS", null, 0)));
-      Stella.SYM_STELLA_CLEAR = ((Symbol)(Stella.internRigidSymbolWrtModule("CLEAR", null, 0)));
-      Stella.KWD_FORCE_NULL_VALUE = ((Keyword)(Stella.internRigidSymbolWrtModule("FORCE-NULL-VALUE", null, 2)));
-      Stella.KWD_NULL_VALUE_ONLY = ((Keyword)(Stella.internRigidSymbolWrtModule("NULL-VALUE-ONLY", null, 2)));
-      Stella.SYM_STELLA_AND = ((Symbol)(Stella.internRigidSymbolWrtModule("AND", null, 0)));
-      Stella.SYM_STELLA_$RECYCLING_ENABLEDp$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*RECYCLING-ENABLED?*", null, 0)));
-      Stella.SYM_STELLA_COND = ((Symbol)(Stella.internRigidSymbolWrtModule("COND", null, 0)));
-      Stella.SYM_STELLA___ = ((Symbol)(Stella.internRigidSymbolWrtModule("--", null, 0)));
-      Stella.SYM_STELLA_OTHERWISE = ((Symbol)(Stella.internRigidSymbolWrtModule("OTHERWISE", null, 0)));
-      Stella.SYM_STELLA_POP = ((Symbol)(Stella.internRigidSymbolWrtModule("POP", null, 0)));
-      Stella.SYM_STELLA_SETF = ((Symbol)(Stella.internRigidSymbolWrtModule("SETF", null, 0)));
-      Stella.SYM_STELLA_ii = ((Symbol)(Stella.internRigidSymbolWrtModule("++", null, 0)));
-      Stella.SYM_STELLA_e = ((Symbol)(Stella.internRigidSymbolWrtModule("=", null, 0)));
-      Stella.SYM_STELLA_$RECYCLE_LISTS_MAINTENANCE_TIMER$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*RECYCLE-LISTS-MAINTENANCE-TIMER*", null, 0)));
-      Stella.SYM_STELLA_MAINTAIN_RECYCLE_LISTS = ((Symbol)(Stella.internRigidSymbolWrtModule("MAINTAIN-RECYCLE-LISTS", null, 0)));
-      Stella.KWD_INITIAL_VALUE_ONLY = ((Keyword)(Stella.internRigidSymbolWrtModule("INITIAL-VALUE-ONLY", null, 2)));
-      Stella.KWD_ANY_INITIAL_VALUE = ((Keyword)(Stella.internRigidSymbolWrtModule("ANY-INITIAL-VALUE", null, 2)));
-      Stella.SYM_STELLA_RUN_CONSTRUCTOR_DEMONS = ((Symbol)(Stella.internRigidSymbolWrtModule("RUN-CONSTRUCTOR-DEMONS", null, 0)));
-      Stella.SYM_STELLA_DEFUN = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFUN", null, 0)));
-      Stella.SYM_STELLA_MESSAGE = ((Symbol)(Stella.internRigidSymbolWrtModule("MESSAGE", null, 0)));
-      Stella.SYM_STELLA_DEFMETHOD = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFMETHOD", null, 0)));
-      Stella.SYM_STELLA_PUSH = ((Symbol)(Stella.internRigidSymbolWrtModule("PUSH", null, 0)));
-      Stella.SYM_STELLA_SWEEP = ((Symbol)(Stella.internRigidSymbolWrtModule("SWEEP", null, 0)));
-      Stella.SYM_STELLA_UNUSED = ((Symbol)(Stella.internRigidSymbolWrtModule("UNUSED", null, 0)));
-      Stella.SYM_STELLA_WHILE = ((Symbol)(Stella.internRigidSymbolWrtModule("WHILE", null, 0)));
-      Stella.SYM_STELLA_EQLp = ((Symbol)(Stella.internRigidSymbolWrtModule("EQL?", null, 0)));
-      Stella.SYM_STELLA_UNMAKE = ((Symbol)(Stella.internRigidSymbolWrtModule("UNMAKE", null, 0)));
-      Stella.SGT_STELLA_TRANSIENT_MIXIN = ((Surrogate)(Stella.internRigidSymbolWrtModule("TRANSIENT-MIXIN", null, 1)));
-      Stella.SYM_STELLA_RECYCLE_LIST_DEBUGGING_ENABLEDp = ((Symbol)(Stella.internRigidSymbolWrtModule("RECYCLE-LIST-DEBUGGING-ENABLED?", null, 0)));
-      Stella.SYM_STELLA_REGISTER_RECYCLED_ITEM = ((Symbol)(Stella.internRigidSymbolWrtModule("REGISTER-RECYCLED-ITEM", null, 0)));
-      Stella.SYM_STELLA_UNREGISTER_RECYCLED_ITEM = ((Symbol)(Stella.internRigidSymbolWrtModule("UNREGISTER-RECYCLED-ITEM", null, 0)));
-      Stella.SYM_STELLA_INLINE_WRAP_BOOLEAN = ((Symbol)(Stella.internRigidSymbolWrtModule("INLINE-WRAP-BOOLEAN", null, 0)));
-      Stella.SYM_STELLA_ANSWER = ((Symbol)(Stella.internRigidSymbolWrtModule("ANSWER", null, 0)));
-      Stella.SYM_STELLA_NULLp = ((Symbol)(Stella.internRigidSymbolWrtModule("NULL?", null, 0)));
-      Stella.SYM_STELLA_ERROR = ((Symbol)(Stella.internRigidSymbolWrtModule("ERROR", null, 0)));
-      Stella.SYM_STELLA_CAST = ((Symbol)(Stella.internRigidSymbolWrtModule("CAST", null, 0)));
-      Stella.SYM_STELLA_SETVALUEp = ((Symbol)(Stella.internRigidSymbolWrtModule("SETVALUE?", null, 0)));
-      Stella.SYM_STELLA_SLOTNAME = ((Symbol)(Stella.internRigidSymbolWrtModule("SLOTNAME", null, 0)));
-      Stella.SYM_STELLA_QUOTE = ((Symbol)(Stella.internRigidSymbolWrtModule("QUOTE", null, 0)));
-      Stella.SYM_STELLA_CASE = ((Symbol)(Stella.internRigidSymbolWrtModule("CASE", null, 0)));
-      Stella.SYM_STELLA_SET_DYNAMIC_SLOT_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("SET-DYNAMIC-SLOT-VALUE", null, 0)));
-      Stella.SYM_STELLA_LOOKUP = ((Symbol)(Stella.internRigidSymbolWrtModule("LOOKUP", null, 0)));
+      Stella.SGT_STELLA_LITERAL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("LITERAL", null, 1)));
+      Stella.SGT_STELLA_SECOND_CLASS_OBJECT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SECOND-CLASS-OBJECT", null, 1)));
+      Stella.SYM_STELLA_DEFINE_CLASS_FROM_STRINGIFIED_SOURCE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFINE-CLASS-FROM-STRINGIFIED-SOURCE", null, 0)));
+      Stella.KWD_IDL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL", null, 2)));
+      Stella.KWD_CPP_STANDALONE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP-STANDALONE", null, 2)));
+      Stella.SGT_STELLA_NON_OBJECT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NON-OBJECT", null, 1)));
+      Stella.SGT_STELLA_NATIVE_EXCEPTION = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NATIVE-EXCEPTION", null, 1)));
+      Stella.SYM_STELLA_NEXT_SWEEP_LIST_OBJECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NEXT-SWEEP-LIST-OBJECT", null, 0)));
+      Stella.KWD_FREE_LIST = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FREE-LIST", null, 2)));
+      Stella.KWD_FREE_AND_SWEEP_LIST = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FREE-AND-SWEEP-LIST", null, 2)));
+      Stella.KWD_SWEEP_LIST = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SWEEP-LIST", null, 2)));
+      Stella.KWD_USE_COMMON_LISP_STRUCTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("USE-COMMON-LISP-STRUCTS", null, 2)));
+      Stella.KWD_USE_COMMON_LISP_VECTOR_STRUCTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("USE-COMMON-LISP-VECTOR-STRUCTS", null, 2)));
+      Stella.SYM_STELLA_DEFGLOBAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFGLOBAL", null, 0)));
+      Stella.SYM_STELLA_RECYCLE_LIST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RECYCLE-LIST", null, 0)));
+      Stella.SYM_STELLA_CREATE_RECYCLE_LIST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CREATE-RECYCLE-LIST", null, 0)));
+      Stella.SYM_STELLA_MAKE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MAKE", null, 0)));
+      Stella.SYM_STELLA_DYNAMIC_SLOTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DYNAMIC-SLOTS", null, 0)));
+      Stella.SYM_STELLA_CLEAR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLEAR", null, 0)));
+      Stella.KWD_FORCE_NULL_VALUE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FORCE-NULL-VALUE", null, 2)));
+      Stella.KWD_NULL_VALUE_ONLY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL-VALUE-ONLY", null, 2)));
+      Stella.SYM_STELLA_AND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("AND", null, 0)));
+      Stella.SYM_STELLA_$RECYCLING_ENABLEDp$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*RECYCLING-ENABLED?*", null, 0)));
+      Stella.SYM_STELLA_COND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COND", null, 0)));
+      Stella.SYM_STELLA___ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("--", null, 0)));
+      Stella.SYM_STELLA_OTHERWISE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OTHERWISE", null, 0)));
+      Stella.SYM_STELLA_POP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("POP", null, 0)));
+      Stella.SYM_STELLA_SETF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SETF", null, 0)));
+      Stella.SYM_STELLA_ii = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("++", null, 0)));
+      Stella.SYM_STELLA_e = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("=", null, 0)));
+      Stella.SYM_STELLA_$RECYCLE_LISTS_MAINTENANCE_TIMER$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*RECYCLE-LISTS-MAINTENANCE-TIMER*", null, 0)));
+      Stella.SYM_STELLA_MAINTAIN_RECYCLE_LISTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MAINTAIN-RECYCLE-LISTS", null, 0)));
+      Stella.KWD_INITIAL_VALUE_ONLY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INITIAL-VALUE-ONLY", null, 2)));
+      Stella.KWD_ANY_INITIAL_VALUE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ANY-INITIAL-VALUE", null, 2)));
+      Stella.SYM_STELLA_RUN_CONSTRUCTOR_DEMONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RUN-CONSTRUCTOR-DEMONS", null, 0)));
+      Stella.SYM_STELLA_DEFUN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFUN", null, 0)));
+      Stella.SYM_STELLA_MESSAGE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MESSAGE", null, 0)));
+      Stella.SYM_STELLA_DEFMETHOD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFMETHOD", null, 0)));
+      Stella.SYM_STELLA_PUSH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PUSH", null, 0)));
+      Stella.SYM_STELLA_SWEEP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SWEEP", null, 0)));
+      Stella.SYM_STELLA_UNUSED = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNUSED", null, 0)));
+      Stella.SYM_STELLA_WHILE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WHILE", null, 0)));
+      Stella.SYM_STELLA_EQLp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EQL?", null, 0)));
+      Stella.SYM_STELLA_UNMAKE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNMAKE", null, 0)));
+      Stella.SGT_STELLA_TRANSIENT_MIXIN = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("TRANSIENT-MIXIN", null, 1)));
+      Stella.SYM_STELLA_RECYCLE_LIST_DEBUGGING_ENABLEDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RECYCLE-LIST-DEBUGGING-ENABLED?", null, 0)));
+      Stella.SYM_STELLA_REGISTER_RECYCLED_ITEM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("REGISTER-RECYCLED-ITEM", null, 0)));
+      Stella.SYM_STELLA_UNREGISTER_RECYCLED_ITEM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNREGISTER-RECYCLED-ITEM", null, 0)));
+      Stella.SYM_STELLA_INLINE_WRAP_BOOLEAN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INLINE-WRAP-BOOLEAN", null, 0)));
+      Stella.SYM_STELLA_ANSWER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ANSWER", null, 0)));
+      Stella.SYM_STELLA_NULLp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL?", null, 0)));
+      Stella.SYM_STELLA_ERROR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ERROR", null, 0)));
+      Stella.SYM_STELLA_CAST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CAST", null, 0)));
+      Stella.SYM_STELLA_SETVALUEp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SETVALUE?", null, 0)));
+      Stella.SYM_STELLA_SLOTNAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOTNAME", null, 0)));
+      Stella.SYM_STELLA_QUOTE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("QUOTE", null, 0)));
+      Stella.SYM_STELLA_CASE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CASE", null, 0)));
+      Stella.SYM_STELLA_SET_DYNAMIC_SLOT_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SET-DYNAMIC-SLOT-VALUE", null, 0)));
+      Stella.SYM_STELLA_LOOKUP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOKUP", null, 0)));
+      Stella.SYM_STELLA_OBJECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OBJECT", null, 0)));
     }
   }
 
   static void helpStartupDefclass2() {
     {
-      Stella.SYM_STELLA_OBJECT = ((Symbol)(Stella.internRigidSymbolWrtModule("OBJECT", null, 0)));
-      Stella.SYM_STELLA_SYMBOL = ((Symbol)(Stella.internRigidSymbolWrtModule("SYMBOL", null, 0)));
-      Stella.SYM_STELLA_BOOLEAN = ((Symbol)(Stella.internRigidSymbolWrtModule("BOOLEAN", null, 0)));
-      Stella.SYM_STELLA_TYPECASE = ((Symbol)(Stella.internRigidSymbolWrtModule("TYPECASE", null, 0)));
-      Stella.SYM_STELLA_EQp = ((Symbol)(Stella.internRigidSymbolWrtModule("EQ?", null, 0)));
-      Stella.SYM_STELLA_OTHER = ((Symbol)(Stella.internRigidSymbolWrtModule("OTHER", null, 0)));
-      Stella.SYM_STELLA_EQUAL = ((Symbol)(Stella.internRigidSymbolWrtModule("EQUAL", null, 0)));
-      Stella.SYM_STELLA_STARTUP_DEFCLASS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-DEFCLASS", null, 0)));
+      Stella.SYM_STELLA_SYMBOL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SYMBOL", null, 0)));
+      Stella.SYM_STELLA_BOOLEAN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BOOLEAN", null, 0)));
+      Stella.SYM_STELLA_TYPECASE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TYPECASE", null, 0)));
+      Stella.SYM_STELLA_EQp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EQ?", null, 0)));
+      Stella.SYM_STELLA_OTHER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OTHER", null, 0)));
+      Stella.SYM_STELLA_EQUAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EQUAL", null, 0)));
+      Stella.SYM_STELLA_STARTUP_DEFCLASS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-DEFCLASS", null, 0)));
     }
   }
 
@@ -281,6 +280,7 @@ public class _StartupDefclass {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *RECYCLING-ENABLED?* BOOLEAN TRUE :DOCUMENTATION \"If `TRUE' calls to `new' or `free' on classes with :recycle-method;\nspecifications will actually operate on recycle lists.  Otherwise, all\nrecycle list operations will be no-ops.\" :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *ALL-RECYCLE-LISTS* (LIST OF RECYCLE-LIST) NULL)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAX-RECYCLE-LIST-BYTES* INTEGER 3000000 :DOCUMENTATION \"Maximum number of bytes to be occupied by recycle lists.\" :PUBLIC? TRUE)");

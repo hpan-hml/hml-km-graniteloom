@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -80,7 +80,7 @@ public class PlIterator extends Iterator {
             x = iter000.value;
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(x, Stella.NIL);
+                collect000 = Cons.cons(x, Stella.NIL);
                 if (value000 == Stella.NIL) {
                   value000 = collect000;
                 }
@@ -91,7 +91,7 @@ public class PlIterator extends Iterator {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(x, Stella.NIL);
+                collect000.rest = Cons.cons(x, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -123,7 +123,7 @@ public class PlIterator extends Iterator {
               x = iter000.value;
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(x, Stella.NIL);
+                  collect000 = Cons.cons(x, Stella.NIL);
                   if (value001 == Stella.NIL) {
                     value001 = collect000;
                   }
@@ -134,7 +134,7 @@ public class PlIterator extends Iterator {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(x, Stella.NIL);
+                  collect000.rest = Cons.cons(x, Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }

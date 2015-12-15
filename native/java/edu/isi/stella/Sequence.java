@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -48,6 +48,38 @@ package edu.isi.stella;
 import edu.isi.stella.javalib.*;
 
 public abstract class Sequence extends Collection {
+  /** Return a sequence containing <code>values</code>, in order.
+   * @param collectiontype
+   * @param values
+   * @return Sequence
+   */
+  public static Sequence sequence(Surrogate collectiontype, Cons values) {
+    { Sequence sequence = ((Sequence)(Surrogate.createObject(collectiontype, Stella.NIL)));
+
+      { Stella_Object i = null;
+        Cons iter000 = values;
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          i = iter000.value;
+          if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(sequence), Stella.SGT_STELLA_LIST)) {
+            { List sequence000 = ((List)(sequence));
+
+              sequence000.insertLast(i);
+            }
+          }
+          else {
+            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+              stream000.nativeStream.print("sequence: Don't know how to `insert-last' into a `" + collectiontype + "'");
+              throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+            }
+          }
+        }
+      }
+      return (sequence);
+    }
+  }
+
   public static Cons yieldConsListFromSequence(Sequence sequence) {
     { Cons list = Stella.NIL;
 
@@ -59,7 +91,7 @@ public abstract class Sequence extends Collection {
           item = iter000.value;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(item, Stella.NIL);
+              collect000 = Cons.cons(item, Stella.NIL);
               if (list == Stella.NIL) {
                 list = collect000;
               }
@@ -70,7 +102,7 @@ public abstract class Sequence extends Collection {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(item, Stella.NIL);
+              collect000.rest = Cons.cons(item, Stella.NIL);
               collect000 = collect000.rest;
             }
           }

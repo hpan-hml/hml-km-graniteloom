@@ -8,9 +8,9 @@ int main(int count, char** arguments) {
   // Main STELLA entry point.
   { boolean testingP = count == 1;
 
-    std::cout << "Welcome to " << stellaVersionString() << std::endl;
     startup(testingP);
     startupStellaSystem();
+    std::cout << "Welcome to " << stellaVersionString() << std::endl;
     interpretCommandLineArguments(count, arguments);
     if (testingP) {
       std::cout << "Bye!" << std::endl;

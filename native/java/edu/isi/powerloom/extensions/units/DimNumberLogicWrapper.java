@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -116,7 +116,7 @@ public class DimNumberLogicWrapper extends QuantityLogicWrapper {
           return (term);
         }
         else if (dim != null) {
-          term = Stella_Object.cons(Logic.generateTerm(Units.SGT_UNIT_KB_UNITS), Stella_Object.cons(FloatWrapper.wrapFloat(dim.getMagnitude(dim.getUnit())), Stella_Object.cons(StringWrapper.wrapString(dim.getUnit()), Stella.NIL)));
+          term = Cons.cons(Logic.generateTerm(Units.SGT_UNIT_KB_UNITS), Cons.cons(FloatWrapper.wrapFloat(dim.getMagnitude(dim.getUnit())), Cons.cons(StringWrapper.wrapString(dim.getUnit()), Stella.NIL)));
           self.functionTerm = term;
           return (term);
         }

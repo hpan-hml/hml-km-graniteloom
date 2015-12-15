@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -58,6 +58,8 @@ boolean booleanP(Object* x);
 boolean subtypeOfBooleanP(Surrogate* type);
 boolean integerP(Object* x);
 boolean subtypeOfIntegerP(Surrogate* type);
+boolean longIntegerP(Object* x);
+boolean subtypeOfLongIntegerP(Surrogate* type);
 boolean floatP(Object* x);
 boolean subtypeOfFloatP(Surrogate* type);
 boolean stringP(Object* x);
@@ -97,6 +99,7 @@ void startupTypePredicates();
 extern Surrogate* SGT_TYPE_PREDICATES_STELLA_UNKNOWN;
 extern Surrogate* SGT_TYPE_PREDICATES_STELLA_BOOLEAN_WRAPPER;
 extern Surrogate* SGT_TYPE_PREDICATES_STELLA_INTEGER_WRAPPER;
+extern Surrogate* SGT_TYPE_PREDICATES_STELLA_LONG_INTEGER_WRAPPER;
 extern Surrogate* SGT_TYPE_PREDICATES_STELLA_FLOAT_WRAPPER;
 extern Surrogate* SGT_TYPE_PREDICATES_STELLA_STRING_WRAPPER;
 extern Surrogate* SGT_TYPE_PREDICATES_STELLA_VERBATIM_STRING_WRAPPER;

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -45,9 +45,11 @@
 
 
 
-
 namespace logic {
   using namespace stella;
+
+// Global declarations:
+extern boolean oLEVELLIZED_BACKCHAINING_ENABLEDpo;
 
 // Function signatures:
 Object* coerceToInstanceInModule(Object* self, Module* module, boolean localP, Object* original);
@@ -67,8 +69,10 @@ Object* termify(Object* self);
 boolean relationArityOkP(Surrogate* relationref, int arity);
 Cons* filterOutUnnamedDescriptions(Cons* descriptions);
 Cons* allAssertedTypes(Object* self);
+Cons* allTaxonomicTypes(Object* self);
 Cons* allTypes(Object* self);
-Cons* helpAllTypes(Object* self);
+Cons* helpAllTypes(Object* self, boolean doSubtypesP);
+void helpAllSubtypes(Description* super, Object* self, List* types);
 Cons* allDirectTypes(Object* self);
 boolean testTypeOnInstanceP(Object* self, Surrogate* type);
 Cons* allEquivalentRelations(NamedDescription* relation, boolean reflexiveP);
@@ -111,6 +115,7 @@ extern Surrogate* SGT_FRAME_SUPPORT_STELLA_LITERAL_WRAPPER;
 extern Surrogate* SGT_FRAME_SUPPORT_STELLA_LITERAL;
 extern Surrogate* SGT_FRAME_SUPPORT_PL_KERNEL_KB_SCALAR;
 extern Surrogate* SGT_FRAME_SUPPORT_LOGIC_NAMED_DESCRIPTION;
+extern Surrogate* SGT_FRAME_SUPPORT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000;
 extern Surrogate* SGT_FRAME_SUPPORT_LOGIC_F_ALL_TYPES_MEMO_TABLE_000;
 extern Keyword* KWD_FRAME_SUPPORT_ISA;
 extern Surrogate* SGT_FRAME_SUPPORT_LOGIC_F_ALL_EQUIVALENT_RELATIONS_MEMO_TABLE_000;

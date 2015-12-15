@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -54,7 +54,7 @@ public class Ratio extends Quantity {
     public int denominator;
 
   public static Ratio makeRatio(int num, int denom) {
-    { int thegcd = Stella.gcd(num, denom);
+    { long thegcd = Stella.gcd(((long)(num)), ((long)(denom)));
       int n = 0;
       int d = 0;
       boolean negativeP = false;

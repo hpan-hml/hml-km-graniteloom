@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -48,6 +48,22 @@ package edu.isi.stella;
 import edu.isi.stella.javalib.*;
 
 public class Keyword extends GeneralizedSymbol {
+  /** Return the keyword with <code>name</code> if it exists.
+   * @param name
+   * @return Keyword
+   */
+  public static Keyword lookupKeyword(String name) {
+    return (((Keyword)(GeneralizedSymbol.lookupRigidSymbol(name, Stella.KEYWORD_SYM))));
+  }
+
+  public static Keyword getKwdFromOffset(int offset) {
+    return (((Keyword)(GeneralizedSymbol.getGeneralizedSymbolFromOffset(Stella.$KEYWORD_ARRAY$, offset))));
+  }
+
+  public static Keyword getKwd(int offset) {
+    return (((Keyword)((Stella.$FIXED_KEYWORD_ARRAY$.theArray)[offset])));
+  }
+
   public static Keyword newKeyword(String symbolName) {
     { Keyword self = null;
 
@@ -242,7 +258,7 @@ public class Keyword extends GeneralizedSymbol {
     { Keyword tree = this;
 
       if (Stella.useHardcodedSymbolsP()) {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_SYMBOL, Stella_Object.cons(tree, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_SYMBOL, Cons.cons(tree, Cons.cons(Stella.NIL, Stella.NIL)))));
       }
       else {
         return (GeneralizedSymbol.yieldSymbolConstantName(tree).cppTranslateAtomicTree());
@@ -250,90 +266,37 @@ public class Keyword extends GeneralizedSymbol {
     }
   }
 
-  public static Keyword lispKeywordToStellaKeyword(Keyword key) {
-    { Keyword stellakeyword = null;
+  public static void transferDataFiles(Keyword outputLanguage) {
+    { Cons dataFiles = ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).dataFiles;
 
-      return (stellakeyword);
+      if (dataFiles != null) {
+        Cons.transferFiles(dataFiles, outputLanguage);
+      }
     }
   }
 
-  public static void transferNativeSystemFiles(Keyword outputlanguage) {
-    { Cons nativefiles = null;
-      String systemsubdirectory = (Stella.stringEqlP(((String)(Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.get())), "") ? "" : (((String)(Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.get())) + Stella.directorySeparatorString()));
-      String flotsamfilename = "";
+  public static void transferNativeSystemFiles(Keyword outputLanguage) {
+    { Cons nativeFiles = null;
 
-      if (outputlanguage == Stella.KWD_COMMON_LISP) {
-        nativefiles = ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).lispOnlyFiles;
+      if (outputLanguage == Stella.KWD_COMMON_LISP) {
+        nativeFiles = ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).lispOnlyFiles;
       }
-      else if (outputlanguage == Stella.KWD_JAVA) {
-        nativefiles = ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).javaOnlyFiles;
-        flotsamfilename = Module.javaYieldFlotsamClassName(SystemDefinition.getCardinalModule(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get()))));
+      else if (outputLanguage == Stella.KWD_JAVA) {
+        nativeFiles = ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).javaOnlyFiles;
       }
-      else if (outputlanguage == Stella.KWD_CPP) {
-        nativefiles = ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).cppOnlyFiles;
+      else if (outputLanguage == Stella.KWD_CPP) {
+        nativeFiles = ((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())).cppOnlyFiles;
       }
       else {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
 
-          stream000.nativeStream.print("`" + outputlanguage + "' is not a valid case option");
+          stream000.nativeStream.print("`" + outputLanguage + "' is not a valid case option");
           throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
         }
       }
-      if (nativefiles == null) {
-        return;
-      }
-      if (Stella.stringEqlP(Stella.rootSourceDirectory(), Stella.rootNativeDirectory())) {
-        return;
-      }
-      nativefiles = nativefiles.difference(SystemDefinition.systemDefinitionSourceFiles(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get()))));
-      { Object old$Module$000 = Stella.$MODULE$.get();
-        Object old$Context$000 = Stella.$CONTEXT$.get();
-
-        try {
-          Native.setSpecial(Stella.$MODULE$, SystemDefinition.getCardinalModule(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get()))));
-          Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
-          { StringWrapper f = null;
-            Cons iter000 = nativefiles;
-
-            for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-              f = ((StringWrapper)(iter000.value));
-              { String filename = f.wrapperValue;
-                Keyword type = Stella.classifyFileExtension(filename);
-                String relativefilename = Stella.relativizeFileName(filename, Stella.rootSourceDirectory());
-                String fromfilename = null;
-                String tofilename = null;
-
-                if (type == Stella.KWD_JAVA) {
-                  if (Stella.stringEqlP(Stella.fileBaseName(filename), flotsamfilename)) {
-                    {
-                      Stella.STANDARD_WARNING.nativeStream.println("Warning: Native Java filename `" + flotsamfilename + "'");
-                      Stella.STANDARD_WARNING.nativeStream.println(" conflicts with the Java catchall class' filename");
-                    }
-;
-                  }
-                }
-                else {
-                }
-                fromfilename = Stella.rootSourceDirectory() + systemsubdirectory + filename;
-                tofilename = Stella.makeFileName(relativefilename, type, true);
-                if (!(Stella.fileYoungerThanP(tofilename, fromfilename) == Stella.TRUE_WRAPPER)) {
-                  if (((Integer)(Stella.$TRANSLATIONVERBOSITYLEVEL$.get())).intValue() >= 1) {
-                    {
-                      System.out.println("Copying `" + fromfilename + "'");
-                      System.out.println(" to `" + tofilename + "' ...");
-                    }
-;
-                  }
-                  Stella.copyFile(fromfilename, tofilename);
-                }
-              }
-            }
-          }
-
-        } finally {
-          Stella.$CONTEXT$.set(old$Context$000);
-          Stella.$MODULE$.set(old$Module$000);
-        }
+      if (nativeFiles != null) {
+        nativeFiles = nativeFiles.difference(SystemDefinition.systemDefinitionSourceFiles(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get()))));
+        Cons.transferFiles(nativeFiles, outputLanguage);
       }
     }
   }
@@ -517,7 +480,7 @@ public class Keyword extends GeneralizedSymbol {
             }
           }
           if (foundP000) {
-            table.currentTimestamp = Stella_Object.cons(null, Stella.NIL);
+            table.currentTimestamp = Cons.cons(null, Stella.NIL);
           }
         }
       }
@@ -613,7 +576,7 @@ public class Keyword extends GeneralizedSymbol {
       if (Stella.useHardcodedSymbolsP()) {
         { IntegerWrapper offset = IntegerWrapper.wrapInteger(tree.keywordify().symbolId);
 
-          return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_GET_KWD, Stella_Object.cons(offset, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_GET_KWD, Cons.cons(offset, Cons.cons(Stella.NIL, Stella.NIL)))));
         }
       }
       else {
@@ -641,7 +604,7 @@ public class Keyword extends GeneralizedSymbol {
   public static Keyword setTranslatorOutputLanguage(Keyword newLanguage) {
     { Keyword oldlanguage = ((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get()));
 
-      if (!(Stella.list$(Stella_Object.cons(Stella.KWD_CPP, Stella_Object.cons(Stella.KWD_CPP_STANDALONE, Stella_Object.cons(Stella.KWD_COMMON_LISP, Stella_Object.cons(Stella.KWD_JAVA, Stella_Object.cons(Stella.KWD_IDL, Stella_Object.cons(Stella.NIL, Stella.NIL))))))).memberP(newLanguage))) {
+      if (!(Cons.list$(Cons.cons(Stella.KWD_CPP, Cons.cons(Stella.KWD_CPP_STANDALONE, Cons.cons(Stella.KWD_COMMON_LISP, Cons.cons(Stella.KWD_JAVA, Cons.cons(Stella.KWD_IDL, Cons.cons(Stella.NIL, Stella.NIL))))))).memberP(newLanguage))) {
         Stella.STANDARD_WARNING.nativeStream.println("Warning: `" + newLanguage + "' is not a legal translation language");
       }
       Native.setSpecial(Stella.$TRANSLATOROUTPUTLANGUAGE$, newLanguage);

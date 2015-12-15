@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -104,12 +104,12 @@ extern Symbol* SYM_LOOM_TO_KIF_LOGIC_THE;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_FILLED_BY;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_FILLERS;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_NOT_FILLED_BY;
-extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND;
-extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND;
-extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY;
 extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_LOWER_BOUND;
 extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_UPPER_BOUND;
 extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY;
+extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND;
+extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND;
+extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY;
 extern Symbol* SYM_LOOM_TO_KIF_STELLA_EXISTS;
 extern Symbol* SYM_LOOM_TO_KIF_STELLA_eg;
 extern Symbol* SYM_LOOM_TO_KIF_STELLA_AND;
@@ -117,6 +117,7 @@ extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_TYPE;
 extern Symbol* SYM_LOOM_TO_KIF_STELLA_NOT;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_RELATES;
 extern Surrogate* SGT_LOOM_TO_KIF_STELLA_NUMBER_WRAPPER;
+extern Symbol* SYM_LOOM_TO_KIF_LOGIC_FOR_SOME;
 extern Symbol* SYM_LOOM_TO_KIF_STELLA_FORALL;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_THROUGH;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_INTERVALii;
@@ -139,7 +140,7 @@ extern Symbol* SYM_LOOM_TO_KIF_LOGIC_DOMAIN;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_DOMAINS;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_RANGE;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_COMPOSE;
-extern Symbol* SYM_LOOM_TO_KIF_LOGIC_MEMBER_OF;
+extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_MEMBER_OF;
 extern Symbol* SYM_LOOM_TO_KIF_STELLA_SETOF;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_LISTOF;
 extern Keyword* KWD_LOOM_TO_KIF_ERROR;
@@ -180,15 +181,16 @@ extern Symbol* SYM_LOOM_TO_KIF_LOGIC_IN_DIALECT;
 extern Keyword* KWD_LOOM_TO_KIF_KIF;
 extern Symbol* SYM_LOOM_TO_KIF_STELLA_IN_MODULE;
 extern Symbol* SYM_LOOM_TO_KIF_STELLA_THING;
-extern Symbol* SYM_LOOM_TO_KIF_LOGIC_MUTUALLY_DISJOINT_COLLECTION;
-extern Symbol* SYM_LOOM_TO_KIF_LOGIC_COVERING;
+extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION;
+extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_SETOF;
+extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_COVERING;
 extern Keyword* KWD_LOOM_TO_KIF_SINGLE_VALUED;
 extern Keyword* KWD_LOOM_TO_KIF_CLOSED_WORLD;
-extern Symbol* SYM_LOOM_TO_KIF_LOGIC_CLOSED;
+extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_CLOSED;
 extern Keyword* KWD_LOOM_TO_KIF_COMMUTATIVE;
-extern Symbol* SYM_LOOM_TO_KIF_LOGIC_COMMUTATIVE;
+extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_COMMUTATIVE;
 extern Keyword* KWD_LOOM_TO_KIF_SYMMETRIC;
-extern Symbol* SYM_LOOM_TO_KIF_LOGIC_SYMMETRIC;
+extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_SYMMETRIC;
 extern Keyword* KWD_LOOM_TO_KIF_CLOS_CLASS;
 extern Keyword* KWD_LOOM_TO_KIF_MULTIPLE_VALUED;
 extern Keyword* KWD_LOOM_TO_KIF_HASH_ON_DOMAINS;

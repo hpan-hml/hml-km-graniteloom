@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -73,8 +73,9 @@ Object* typeToWalkedNullValueTree(StandardObject* typespec, Surrogate* type) {
       if (!(nullvalue == SYM_DEFCLASS_STELLA_NULL)) {
         nullvalue = walkExpressionTree(nullvalue, type, SYM_DEFCLASS_STELLA_NULL, false, dummy1);
       }
-      if (arrayTypeSpecifierP(typespec)) {
-        return (walkExpressionTree(listO(4, SYM_DEFCLASS_STELLA_VERBATIM, KWD_DEFCLASS_COMMON_LISP, wrapString(lispNullArraySymbolString(arrayTypeRank(((ParametricTypeSpecifier*)(typespec))))), listO(3, KWD_DEFCLASS_OTHERWISE, nullvalue, NIL)), type, SYM_DEFCLASS_STELLA_NULL, false, dummy2));
+      if (arrayTypeSpecifierP(typespec) &&
+          (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_COMMON_LISP)) {
+        return (walkExpressionTree(listO(4, SYM_DEFCLASS_STELLA_VERBATIM, KWD_DEFCLASS_COMMON_LISP, wrapString(lispNullArraySymbolString(arrayTypeRank(((ParametricTypeSpecifier*)(typespec))))), NIL), type, SYM_DEFCLASS_STELLA_NULL, false, dummy2));
       }
       else {
         return (nullvalue);
@@ -1942,9 +1943,8 @@ void helpStartupDefclass1() {
     SGT_DEFCLASS_STELLA_LITERAL = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL", NULL, 1)));
     SGT_DEFCLASS_STELLA_SECOND_CLASS_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("SECOND-CLASS-OBJECT", NULL, 1)));
     SYM_DEFCLASS_STELLA_NULL = ((Symbol*)(internRigidSymbolWrtModule("NULL", NULL, 0)));
-    SYM_DEFCLASS_STELLA_VERBATIM = ((Symbol*)(internRigidSymbolWrtModule("VERBATIM", NULL, 0)));
     KWD_DEFCLASS_COMMON_LISP = ((Keyword*)(internRigidSymbolWrtModule("COMMON-LISP", NULL, 2)));
-    KWD_DEFCLASS_OTHERWISE = ((Keyword*)(internRigidSymbolWrtModule("OTHERWISE", NULL, 2)));
+    SYM_DEFCLASS_STELLA_VERBATIM = ((Symbol*)(internRigidSymbolWrtModule("VERBATIM", NULL, 0)));
     SYM_DEFCLASS_STELLA_DEFINE_CLASS_FROM_STRINGIFIED_SOURCE = ((Symbol*)(internRigidSymbolWrtModule("DEFINE-CLASS-FROM-STRINGIFIED-SOURCE", NULL, 0)));
     SYM_DEFCLASS_STELLA_CLASS_CL_NATIVE_TYPE = ((Symbol*)(internRigidSymbolWrtModule("CLASS-CL-NATIVE-TYPE", NULL, 0)));
     KWD_DEFCLASS_IDL = ((Keyword*)(internRigidSymbolWrtModule("IDL", NULL, 2)));
@@ -1999,12 +1999,12 @@ void helpStartupDefclass1() {
     SYM_DEFCLASS_STELLA_LIST_OF_RECYCLED_ITEMS = ((Symbol*)(internRigidSymbolWrtModule("LIST-OF-RECYCLED-ITEMS", NULL, 0)));
     SYM_DEFCLASS_STELLA_SETF = ((Symbol*)(internRigidSymbolWrtModule("SETF", NULL, 0)));
     SYM_DEFCLASS_STELLA_SLOT_VALUE = ((Symbol*)(internRigidSymbolWrtModule("SLOT-VALUE", NULL, 0)));
+    SYM_DEFCLASS_STELLA_UNUSED_ITEMS = ((Symbol*)(internRigidSymbolWrtModule("UNUSED-ITEMS", NULL, 0)));
   }
 }
 
 void helpStartupDefclass2() {
   {
-    SYM_DEFCLASS_STELLA_UNUSED_ITEMS = ((Symbol*)(internRigidSymbolWrtModule("UNUSED-ITEMS", NULL, 0)));
     SYM_DEFCLASS_STELLA_ALL_ITEMS = ((Symbol*)(internRigidSymbolWrtModule("ALL-ITEMS", NULL, 0)));
     SYM_DEFCLASS_STELLA_ii = ((Symbol*)(internRigidSymbolWrtModule("++", NULL, 0)));
     SYM_DEFCLASS_STELLA_e = ((Symbol*)(internRigidSymbolWrtModule("=", NULL, 0)));
@@ -2064,6 +2064,7 @@ void helpStartupDefclass2() {
     SYM_DEFCLASS_STELLA_CLASS_SLOT_ACCESSOR_CODE = ((Symbol*)(internRigidSymbolWrtModule("CLASS-SLOT-ACCESSOR-CODE", NULL, 0)));
     SYM_DEFCLASS_STELLA_THE_CODE = ((Symbol*)(internRigidSymbolWrtModule("THE-CODE", NULL, 0)));
     KWD_DEFCLASS_FUNCTION = ((Keyword*)(internRigidSymbolWrtModule("FUNCTION", NULL, 2)));
+    SYM_DEFCLASS_STELLA_TYPECASE = ((Symbol*)(internRigidSymbolWrtModule("TYPECASE", NULL, 0)));
   }
 }
 
@@ -2202,7 +2203,6 @@ void startupDefclass() {
     if (currentStartupTimePhaseP(2)) {
       helpStartupDefclass1();
       helpStartupDefclass2();
-      SYM_DEFCLASS_STELLA_TYPECASE = ((Symbol*)(internRigidSymbolWrtModule("TYPECASE", NULL, 0)));
       SYM_DEFCLASS_STELLA_EQp = ((Symbol*)(internRigidSymbolWrtModule("EQ?", NULL, 0)));
       SYM_DEFCLASS_STELLA_OTHER = ((Symbol*)(internRigidSymbolWrtModule("OTHER", NULL, 0)));
       SYM_DEFCLASS_STELLA_EQUAL = ((Symbol*)(internRigidSymbolWrtModule("EQUAL", NULL, 0)));
@@ -2224,6 +2224,7 @@ void startupDefclass() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *RECYCLING-ENABLED?* BOOLEAN TRUE :DOCUMENTATION \"If `TRUE' calls to `new' or `free' on classes with :recycle-method;\nspecifications will actually operate on recycle lists.  Otherwise, all\nrecycle list operations will be no-ops.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *ALL-RECYCLE-LISTS* (LIST OF RECYCLE-LIST) NULL)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAX-RECYCLE-LIST-BYTES* INTEGER 3000000 :DOCUMENTATION \"Maximum number of bytes to be occupied by recycle lists.\" :PUBLIC? TRUE)");
@@ -2241,11 +2242,9 @@ Surrogate* SGT_DEFCLASS_STELLA_SECOND_CLASS_OBJECT = NULL;
 
 Symbol* SYM_DEFCLASS_STELLA_NULL = NULL;
 
-Symbol* SYM_DEFCLASS_STELLA_VERBATIM = NULL;
-
 Keyword* KWD_DEFCLASS_COMMON_LISP = NULL;
 
-Keyword* KWD_DEFCLASS_OTHERWISE = NULL;
+Symbol* SYM_DEFCLASS_STELLA_VERBATIM = NULL;
 
 Symbol* SYM_DEFCLASS_STELLA_DEFINE_CLASS_FROM_STRINGIFIED_SOURCE = NULL;
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -249,6 +249,7 @@ void texinfoDescribeDocumentationString(Object* object, char* documentation, Out
   { char* quotedName = NULL;
     int closingQuotePosition = NULL_INTEGER;
     boolean beginningOfLineP = true;
+    boolean insideExampleP = false;
     char* paragraphCommand = NULL;
     List* pendingParagraphCommands = list(0);
 
@@ -275,36 +276,38 @@ void texinfoDescribeDocumentationString(Object* object, char* documentation, Out
           switch (ch) {
             case '`': 
             case '\'': 
-              if (i == closingQuotePosition) {
-                *(stream->nativeStream) << "}";
-                continue;
-              }
-              else if ((i == 0) ||
-                  stringMemberP(oTEXINFO_WORD_DELIMITERSo, documentation[(i - 1)])) {
-                closingQuotePosition = stringPosition(documentation, '\'', i + 1);
-                if (closingQuotePosition != NULL_INTEGER) {
-                  quotedName = stringUpcase(stringSubsequence(documentation, i + 1, closingQuotePosition));
-                  { boolean foundP000 = false;
+              if (!(insideExampleP)) {
+                if (i == closingQuotePosition) {
+                  *(stream->nativeStream) << "}";
+                  continue;
+                }
+                else if ((i == 0) ||
+                    stringMemberP(oTEXINFO_WORD_DELIMITERSo, documentation[(i - 1)])) {
+                  closingQuotePosition = stringPosition(documentation, '\'', i + 1);
+                  if (closingQuotePosition != NULL_INTEGER) {
+                    quotedName = stringUpcase(stringSubsequence(documentation, i + 1, closingQuotePosition));
+                    { boolean foundP000 = false;
 
-                    { Symbol* pname = NULL;
-                      Cons* iter001 = parameters->theConsList;
+                      { Symbol* pname = NULL;
+                        Cons* iter001 = parameters->theConsList;
 
-                      for (pname, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
-                        pname = ((Symbol*)(iter001->value));
-                        if (stringEqlP(pname->symbolName, quotedName)) {
-                          foundP000 = true;
-                          break;
+                        for (pname, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+                          pname = ((Symbol*)(iter001->value));
+                          if (stringEqlP(pname->symbolName, quotedName)) {
+                            foundP000 = true;
+                            break;
+                          }
                         }
                       }
+                      if (foundP000) {
+                        *(stream->nativeStream) << "@var{";
+                      }
+                      else {
+                        *(stream->nativeStream) << "@code{";
+                      }
                     }
-                    if (foundP000) {
-                      *(stream->nativeStream) << "@var{";
-                    }
-                    else {
-                      *(stream->nativeStream) << "@code{";
-                    }
+                    continue;
                   }
-                  continue;
                 }
               }
               *(stream->nativeStream) << ch;
@@ -338,9 +341,15 @@ void texinfoDescribeDocumentationString(Object* object, char* documentation, Out
                         paragraphCommand = ((StringWrapper*)(pendingParagraphCommands->pop()))->wrapperValue;
                       }
                       *(stream->nativeStream) << "@end " << paragraphCommand << std::endl;
+                      if (stringEqlP(paragraphCommand, "example")) {
+                        insideExampleP = false;
+                      }
                     }
                     else {
                       pendingParagraphCommands->push(wrapString(paragraphCommand));
+                      if (stringEqlP(paragraphCommand, "example")) {
+                        insideExampleP = true;
+                      }
                       *(stream->nativeStream) << std::endl << "@" << paragraphCommand;
                     }
                   }
@@ -858,14 +867,14 @@ boolean texinfoObjectL(Object* object1, Object* object2) {
         { Object* object1000 = object1;
           Slot* object1 = ((Slot*)(object1000));
 
-          name1 = object1->slotName->visibleName();
+          name1 = object1->slotName->visibleName(false);
         }
       }
       else if (subtypeOfP(testValue000, SGT_MANUALS_STELLA_GLOBAL_VARIABLE)) {
         { Object* object1001 = object1;
           GlobalVariable* object1 = ((GlobalVariable*)(object1001));
 
-          name1 = object1->variableName->visibleName();
+          name1 = object1->variableName->visibleName(false);
         }
       }
       else {
@@ -882,14 +891,14 @@ boolean texinfoObjectL(Object* object1, Object* object2) {
         { Object* object2000 = object2;
           Slot* object2 = ((Slot*)(object2000));
 
-          name2 = object2->slotName->visibleName();
+          name2 = object2->slotName->visibleName(false);
         }
       }
       else if (subtypeOfP(testValue001, SGT_MANUALS_STELLA_GLOBAL_VARIABLE)) {
         { Object* object2001 = object2;
           GlobalVariable* object2 = ((GlobalVariable*)(object2001));
 
-          name2 = object2->variableName->visibleName();
+          name2 = object2->variableName->visibleName(false);
         }
       }
       else {
@@ -1174,33 +1183,40 @@ void texinfoInsertPreamble() {
   }
 }
 
+void helpStartupManuals1() {
+  {
+    SGT_MANUALS_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", getStellaModule("/STELLA", true), 1)));
+    SGT_MANUALS_STELLA_TYPE_SPEC = ((Surrogate*)(internRigidSymbolWrtModule("TYPE-SPEC", getStellaModule("/STELLA", true), 1)));
+    SYM_MANUALS_STELLA_VARIABLE_TYPE_SPECIFIER = ((Symbol*)(internRigidSymbolWrtModule("VARIABLE-TYPE-SPECIFIER", getStellaModule("/STELLA", true), 0)));
+    SYM_MANUALS_STELLA_DOCUMENTATION = ((Symbol*)(internRigidSymbolWrtModule("DOCUMENTATION", getStellaModule("/STELLA", true), 0)));
+    SYM_MANUALS_STELLA_SLOT_TYPE_SPECIFIER = ((Symbol*)(internRigidSymbolWrtModule("SLOT-TYPE-SPECIFIER", getStellaModule("/STELLA", true), 0)));
+    SYM_MANUALS_STELLA_aREST = ((Symbol*)(internRigidSymbolWrtModule("&REST", getStellaModule("/STELLA", true), 0)));
+    SYM_MANUALS_STELLA_aBODY = ((Symbol*)(internRigidSymbolWrtModule("&BODY", getStellaModule("/STELLA", true), 0)));
+    SYM_MANUALS_STELLA_METHOD_MACROp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-MACRO?", getStellaModule("/STELLA", true), 0)));
+    SYM_MANUALS_STELLA_METHOD_COMMANDp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-COMMAND?", getStellaModule("/STELLA", true), 0)));
+    SYM_MANUALS_STELLA_METHOD_VARIABLE_ARGUMENTSp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-VARIABLE-ARGUMENTS?", getStellaModule("/STELLA", true), 0)));
+    SYM_MANUALS_STELLA_METHOD_BODY_ARGUMENTp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-BODY-ARGUMENT?", getStellaModule("/STELLA", true), 0)));
+    KWD_MANUALS_INFIX_PARAMETER_LISTS = ((Keyword*)(internRigidSymbolWrtModule("INFIX-PARAMETER-LISTS", NULL, 2)));
+    KWD_MANUALS_TEXINFO = ((Keyword*)(internRigidSymbolWrtModule("TEXINFO", NULL, 2)));
+    SGT_MANUALS_STELLA_SLOT = ((Surrogate*)(internRigidSymbolWrtModule("SLOT", getStellaModule("/STELLA", true), 1)));
+    SGT_MANUALS_STELLA_GLOBAL_VARIABLE = ((Surrogate*)(internRigidSymbolWrtModule("GLOBAL-VARIABLE", getStellaModule("/STELLA", true), 1)));
+    SGT_MANUALS_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 1)));
+    SYM_MANUALS_UTILITIES_MANUAL_DESCRIBE_OBJECT = ((Symbol*)(internRigidSymbolWrtModule("MANUAL-DESCRIBE-OBJECT", NULL, 0)));
+    SYM_MANUALS_UTILITIES_STARTUP_MANUALS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-MANUALS", NULL, 0)));
+    SYM_MANUALS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
+  }
+}
+
 void startupManuals() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/UTILITIES", oSTARTUP_TIME_PHASEo > 1));
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
     if (currentStartupTimePhaseP(2)) {
-      SGT_MANUALS_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", getStellaModule("/STELLA", true), 1)));
-      SGT_MANUALS_STELLA_TYPE_SPEC = ((Surrogate*)(internRigidSymbolWrtModule("TYPE-SPEC", getStellaModule("/STELLA", true), 1)));
-      SYM_MANUALS_STELLA_VARIABLE_TYPE_SPECIFIER = ((Symbol*)(internRigidSymbolWrtModule("VARIABLE-TYPE-SPECIFIER", getStellaModule("/STELLA", true), 0)));
-      SYM_MANUALS_STELLA_DOCUMENTATION = ((Symbol*)(internRigidSymbolWrtModule("DOCUMENTATION", getStellaModule("/STELLA", true), 0)));
-      SYM_MANUALS_STELLA_SLOT_TYPE_SPECIFIER = ((Symbol*)(internRigidSymbolWrtModule("SLOT-TYPE-SPECIFIER", getStellaModule("/STELLA", true), 0)));
-      SYM_MANUALS_STELLA_aREST = ((Symbol*)(internRigidSymbolWrtModule("&REST", getStellaModule("/STELLA", true), 0)));
-      SYM_MANUALS_STELLA_aBODY = ((Symbol*)(internRigidSymbolWrtModule("&BODY", getStellaModule("/STELLA", true), 0)));
-      SYM_MANUALS_STELLA_METHOD_MACROp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-MACRO?", getStellaModule("/STELLA", true), 0)));
-      SYM_MANUALS_STELLA_METHOD_COMMANDp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-COMMAND?", getStellaModule("/STELLA", true), 0)));
-      SYM_MANUALS_STELLA_METHOD_VARIABLE_ARGUMENTSp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-VARIABLE-ARGUMENTS?", getStellaModule("/STELLA", true), 0)));
-      SYM_MANUALS_STELLA_METHOD_BODY_ARGUMENTp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-BODY-ARGUMENT?", getStellaModule("/STELLA", true), 0)));
-      KWD_MANUALS_INFIX_PARAMETER_LISTS = ((Keyword*)(internRigidSymbolWrtModule("INFIX-PARAMETER-LISTS", NULL, 2)));
-      KWD_MANUALS_TEXINFO = ((Keyword*)(internRigidSymbolWrtModule("TEXINFO", NULL, 2)));
-      SGT_MANUALS_STELLA_SLOT = ((Surrogate*)(internRigidSymbolWrtModule("SLOT", getStellaModule("/STELLA", true), 1)));
-      SGT_MANUALS_STELLA_GLOBAL_VARIABLE = ((Surrogate*)(internRigidSymbolWrtModule("GLOBAL-VARIABLE", getStellaModule("/STELLA", true), 1)));
-      SGT_MANUALS_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 1)));
-      SYM_MANUALS_UTILITIES_MANUAL_DESCRIBE_OBJECT = ((Symbol*)(internRigidSymbolWrtModule("MANUAL-DESCRIBE-OBJECT", NULL, 0)));
-      SYM_MANUALS_UTILITIES_STARTUP_MANUALS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-MANUALS", NULL, 0)));
-      SYM_MANUALS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
+      helpStartupManuals1();
     }
     if (currentStartupTimePhaseP(4)) {
       oTEXINFO_STYLE_FEATURESo = list(0);
+      oTEXINFO_WORD_DELIMITERSo = NULL;
       oMANUAL_OUTPUT_LANGUAGEo.set(KWD_MANUALS_TEXINFO);
       oDOCUMENTED_OBJECTS_REGISTRYo = newHashTable();
     }
@@ -1247,6 +1263,7 @@ void startupManuals() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("UTILITIES")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TEXINFO-STYLE-FEATURES* (LIST OF KEYWORD) (LIST) :DOCUMENTATION \"A list of features that can modulate some aspects of\nhow certain objects are described.  Currently understood features:\n:INFIX-PARAMETER-LISTS.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TEXINFO-WORD-DELIMITERS* STRING NULL)");
       { char* delimiters = strcpy(new (GC) char[strlen("     .:;,!?()[]{}\"")+1], "     .:;,!?()[]{}\"");

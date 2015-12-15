@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -260,8 +260,7 @@ Object* collect(Cons* body) {
   // the `foreach' keyword.
   { Symbol* collection = localGensym("VALUE");
 
-    if ((body->rest->value == SYM_MACROS_STELLA_FOREACH) &&
-        symbolP(body->rest->rest->value)) {
+    if (body->rest->value == SYM_MACROS_STELLA_FOREACH) {
       return (listO(5, SYM_MACROS_STELLA_VRLET, cons(cons(collection, cons(SYM_MACROS_STELLA_NIL, NIL)), NIL), cons(SYM_MACROS_STELLA_FOREACH, body->rest->rest->concatenate(listO(3, SYM_MACROS_STELLA_COLLECT, body->value, listO(3, SYM_MACROS_STELLA_INTO, collection, NIL)), 0)), collection, NIL));
     }
     else {
@@ -585,6 +584,7 @@ void startupMacros() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       registerNativeName(SYM_MACROS_STELLA___, KWD_MACROS_JAVA, KWD_MACROS_FUNCTION);
     }
   }

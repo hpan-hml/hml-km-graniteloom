@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -98,7 +98,11 @@ public class BooleanWrapper extends LiteralWrapper {
   public boolean objectEqlP(Stella_Object y) {
     { BooleanWrapper x = this;
 
-      return (x == y);
+      return ((x == y) ||
+          ((y != null) &&
+           (((y.primaryType() == Stella.SGT_STELLA_BOOLEAN_WRAPPER) ||
+          Stella_Object.isaP(y, Stella.SGT_STELLA_BOOLEAN_WRAPPER)) &&
+            (x.wrapperValue == ((BooleanWrapper)(y)).wrapperValue))));
     }
   }
 

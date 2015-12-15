@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -74,19 +74,25 @@ public class PatternVariable extends Skolem {
     }
   }
 
-  public static Skolem createSkolemForUnmappedVariable(PatternVariable variable, KeyValueList mapping) {
+  public static Skolem createSkolemForUnmappedVariable(PatternVariable variable, KeyValueMap mapping) {
     { Stella_Object skolem = mapping.lookup(variable);
+      List createdskolems = ((List)(mapping.lookup(Logic.KWD_CREATED_SKOLEMS)));
 
       if (skolem != null) {
         return (((Skolem)(skolem)));
       }
       skolem = Logic.createVariableOrSkolem(variable.skolemType, null);
       mapping.insertAt(variable, skolem);
+      if (createdskolems == null) {
+        createdskolems = List.list(Stella.NIL);
+        mapping.insertAt(Logic.KWD_CREATED_SKOLEMS, createdskolems);
+      }
+      createdskolems.insert(skolem);
       return (((Skolem)(skolem)));
     }
   }
 
-  public static PatternVariable copyVariable(PatternVariable self, KeyValueList mapping) {
+  public static PatternVariable copyVariable(PatternVariable self, KeyValueMap mapping) {
     { PatternVariable copy = ((PatternVariable)(mapping.lookup(self)));
 
       if (copy != null) {
@@ -100,7 +106,7 @@ public class PatternVariable extends Skolem {
       else {
         { String copyname = "?CP_" + Native.string_subsequence(self.skolemName.symbolName, 1, Stella.NULL_INTEGER);
 
-          copy.skolemName = Stella.internSymbol(copyname);
+          copy.skolemName = Symbol.internSymbol(copyname);
         }
       }
       copy.skolemType = self.skolemType;
@@ -218,30 +224,41 @@ public class PatternVariable extends Skolem {
   }
 
   public static boolean variableBoundP(PatternVariable variable) {
-    return (((((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(variable.boundToOffset)] != null) ||
+    return ((PatternVariable.safeBoundTo(variable) != null) ||
         (((Stella_Object)(Stella_Object.accessInContext(variable.variableValue, variable.homeContext, false))) != null));
   }
 
   public static Stella_Object generateOneVariable(PatternVariable self, boolean typedP) {
-    if ((((Justification)(Logic.$CURRENTJUSTIFICATION$.get())) != null) &&
-        (Logic.justificationArgumentBoundTo(self, null) != null)) {
-      return (Logic.generateTerm(Logic.justificationArgumentBoundTo(self, null)));
-    }
-    { Symbol name = PatternVariable.generateNameOfVariable(self);
+    { Stella_Object value = null;
 
-      if (typedP &&
-          (!(Logic.logicalType(self) == Logic.SGT_STELLA_THING))) {
-        return (Stella_Object.cons(name, Stella_Object.cons(Surrogate.symbolize(Logic.logicalType(self)), Stella.NIL)));
+      if (((Justification)(Logic.$CURRENTJUSTIFICATION$.get())) != null) {
+        value = Logic.justificationArgumentBoundTo(self, null);
+      }
+      if (value == null) {
+        value = Logic.safeArgumentBoundTo(self);
+      }
+      if ((value != null) &&
+          (!(value == self))) {
+        return (Logic.generateTerm(value));
       }
       else {
-        return (name);
+        { Symbol name = PatternVariable.generateNameOfVariable(self);
+
+          if (typedP &&
+              (!(Logic.logicalType(self) == Logic.SGT_STELLA_THING))) {
+            return (Cons.cons(name, Cons.cons(Surrogate.symbolize(Logic.logicalType(self)), Stella.NIL)));
+          }
+          else {
+            return (name);
+          }
+        }
       }
     }
   }
 
   public static Symbol generateNameOfVariable(PatternVariable self) {
-    if (((KeyValueList)(Logic.$SKOLEMNAMEMAPPINGTABLE$.get())) != null) {
-      { Skolem temp000 = ((Skolem)(((KeyValueList)(Logic.$SKOLEMNAMEMAPPINGTABLE$.get())).lookup(self)));
+    if (((KeyValueMap)(Logic.$SKOLEMNAMEMAPPINGTABLE$.get())) != null) {
+      { Skolem temp000 = ((Skolem)(((KeyValueMap)(Logic.$SKOLEMNAMEMAPPINGTABLE$.get())).lookup(self)));
 
         self = ((temp000 != null) ? ((PatternVariable)(temp000)) : self);
       }
@@ -347,7 +364,8 @@ public class PatternVariable extends Skolem {
   }
 
   public static boolean bindVariableToValueP(PatternVariable variable, Stella_Object value, boolean autocleanupP) {
-    if (value == null) {
+    if ((value == null) ||
+        (!Logic.argumentBoundP(value))) {
       if (((((QueryIterator)(Logic.$QUERYITERATOR$.get())) != null) &&
           (((QueryIterator)(Logic.$QUERYITERATOR$.get())).partialMatchStrategy != null)) &&
           ((QueryIterator)(Logic.$QUERYITERATOR$.get())).partialMatchStrategy.allowUnboundVariablesP()) {
@@ -366,6 +384,7 @@ public class PatternVariable extends Skolem {
       }
       return (false);
     }
+    value = Logic.instantiateExternalBindings(value);
     if (autocleanupP) {
       { PatternRecord patternrecord = ((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord;
         int ubstackoffset = patternrecord.topUnbindingStackOffset;
@@ -395,8 +414,8 @@ public class PatternVariable extends Skolem {
         if ((!typeisokP) &&
             Description.nonInferableP(Logic.surrogateToDescription(variable.skolemType))) {
           if ((Stella.$TRACED_KEYWORDS$ != null) &&
-              Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_PERFORMANCE_CLUES)) {
-            System.out.println("TYPE CHECK VIOLATION in 'bind-variable-to-value?'.  Type= " + variable.skolemType + " Value= " + value);
+              Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_GOAL_TREE)) {
+            System.out.println("*** type violation: var=" + variable.skolemName + " type=" + variable.skolemType + " value=" + value);
           }
           return (false);
         }
@@ -425,9 +444,6 @@ public class PatternVariable extends Skolem {
         PatternVariable.setPatternVariableBinding(variable, value);
       }
       else if (Stella_Object.equalP(Logic.valueOf(boundtovalue), Logic.valueOf(value))) {
-        if (!(Stella_Object.eqlP(boundtovalue, Logic.valueOf(boundtovalue)))) {
-          PatternVariable.changePatternVariableBinding(variable, Logic.valueOf(boundtovalue));
-        }
         return (true);
       }
       else {
@@ -614,7 +630,7 @@ public class PatternVariable extends Skolem {
         { Symbol newname = Stella.localGensym(variable.skolemName.symbolName);
 
           if (!(destructiveP)) {
-            variable = PatternVariable.copyVariable(variable, KeyValueList.newKeyValueList());
+            variable = PatternVariable.copyVariable(variable, KeyValueMap.newKeyValueMap());
           }
           variable.skolemName = newname;
           return (variable);
@@ -634,7 +650,7 @@ public class PatternVariable extends Skolem {
     { List types = ((List)(table.lookup(variable)));
 
       if (types == null) {
-        table.insertAt(variable, Stella.list(Stella_Object.cons(newtype, Stella.NIL)));
+        table.insertAt(variable, List.list(Cons.cons(newtype, Stella.NIL)));
       }
       else {
         {

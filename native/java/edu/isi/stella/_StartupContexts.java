@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,7 +56,7 @@ public class _StartupContexts {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.SYM_STELLA_STARTUP_CONTEXTS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-CONTEXTS", null, 0)));
+          Stella.SYM_STELLA_STARTUP_CONTEXTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-CONTEXTS", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -73,7 +73,7 @@ public class _StartupContexts {
           Stella.defineMethodObject("(DEFMETHOD (GET-STELLA-CONTEXT-SLOWLY CONTEXT) ((SELF SYMBOL)))", Native.find_java_method("edu.isi.stella.Symbol", "getStellaContextSlowly", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
           Stella.defineFunctionObject("CHANGE-CONTEXT-SLOWLY", "(DEFUN (CHANGE-CONTEXT-SLOWLY CONTEXT) ((SELF CONTEXT)))", Native.find_java_method("edu.isi.stella.Context", "changeContextSlowly", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Context")}), null);
           Stella.defineFunctionObject("CC", "(DEFUN (CC CONTEXT) (|&REST| (NAME NAME)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Change the current context to the one named `name'.  Return the\nvalue of the new current context.  If no `name' is supplied, return\nthe pre-existing value of the current context.  `cc' is a no-op if the\ncontext reference cannot be successfully evaluated.\")", Native.find_java_method("edu.isi.stella.Stella", "cc", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.stella.Cons", "ccEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
-          Stella.defineFunctionObject("CCC", "(DEFUN (CCC CONTEXT) (|&REST| (NAME NAME)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Change the current context to the one named `name'.  Return the\nvalue of the new current context.  If no `name' is supplied, return\nthe pre-existing value of the current context.  `cc' is a no-op if the\ncontext reference cannot be successfully evaluated.\nIn CommonLisp, if the new context is case sensitive, then change\nthe readtable case to :INVERT, otherwise to :UPCASE.\")", Native.find_java_method("edu.isi.stella.Stella", "ccc", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.stella.Cons", "cccEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
+          Stella.defineFunctionObject("CCC", "(DEFUN (CCC CONTEXT) (|&REST| (NAME NAME)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Change the current context to the one named `name'.  Return the\nvalue of the new current context.  If no `name' is supplied, return\nthe pre-existing value of the current context.  `cc' is a no-op if the\ncontext reference cannot be successfully evaluated.\nIn CommonLisp, if the new context is case sensitive, then change\nthe readtable case to the value of CL-USER::*STELLA-CASE-SENSITIVE-READ-MODE*\n[default = :INVERT], otherwise to :UPCASE.\")", Native.find_java_method("edu.isi.stella.Stella", "ccc", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.stella.Cons", "cccEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
           Stella.defineFunctionObject("PRINT-CONTEXT", "(DEFUN PRINT-CONTEXT ((SELF CONTEXT) (STREAM NATIVE-OUTPUT-STREAM)))", Native.find_java_method("edu.isi.stella.Context", "printContext", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Context"), Native.find_java_class("java.io.PrintStream")}), null);
           Stella.defineFunctionObject("HELP-PRINT-CONTEXT-TREE", "(DEFUN HELP-PRINT-CONTEXT-TREE ((LIST (LIST OF CONTEXT)) (LEVEL INTEGER)))", Native.find_java_method("edu.isi.stella.List", "helpPrintContextTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.List"), java.lang.Integer.TYPE}), null);
           Stella.defineFunctionObject("PRINT-CONTEXT-TREE", "(DEFUN PRINT-CONTEXT-TREE ((ROOT CONTEXT)))", Native.find_java_method("edu.isi.stella.Context", "printContextTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Context")}), null);
@@ -93,6 +93,7 @@ public class _StartupContexts {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *UNLINK-DISCARDED-CONTEXTS-ON-READ?* BOOLEAN TRUE :DOCUMENTATION \"Eliminate pointers to discarded contexts while\naccessing a CS-VALUE context table.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *UNLINK-DISCARDED-CONTEXTS-ON-WRITE?* BOOLEAN TRUE :DOCUMENTATION \"Eliminate pointers to discarded contexts while\ninserting into a CS-VALUE context table.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CONTEXT-BACKTRACKING-MODE* BOOLEAN FALSE :DOCUMENTATION \"If true, indicates that contexts are being allocated\nand deallocated in depth-first fashion, and that deallocation of\nCS-VALUE entries is taken care of during context destruction.\")");

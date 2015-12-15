@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -44,33 +44,51 @@
 */
 
 
-
 namespace logic {
   using namespace stella;
+
+// Class definitions:
+class PropagationEnvironment : public StandardObject {
+public:
+  List* evaluationQueue;
+  KeyValueMap* evaluationStates;
+  List* forwardChainingQueue;
+  HashSet* forwardChainingSet;
+  List* deferredDefaultPropositions;
+  HashSet* elaboratedObjects;
+public:
+  virtual Surrogate* primaryType();
+  virtual void executePropagationQueues();
+  virtual PropagationEnvironment* copy();
+  virtual void clearPropagationQueues();
+  virtual void deferDefaultProposition(Proposition* proposition);
+};
+
 
 // Global declarations:
 extern DECLARE_STELLA_SPECIAL(oFILLINGCONSTRAINTPROPAGATIONQUEUESpo, boolean );
 extern DECLARE_STELLA_SPECIAL(oDEFERINGDEFAULTFORWARDINFERENCESpo, boolean );
-extern DECLARE_STELLA_SPECIAL(oCURRENTLYEXECUTINGFORWARDCHAININGQUEUEo, List* );
 extern DECLARE_STELLA_SPECIAL(oCOLLECTFORWARDPROPOSITIONSo, Cons* );
+extern int oMAX_SKOLEM_GENERATION_COUNTo;
 extern boolean oJUST_IN_TIME_FORWARD_INFERENCEpo;
 
 // Function signatures:
-Cons* deferredDefaultPropositions(Context* self);
-void deferredDefaultPropositionsSetter(Context* self, Cons* newvalue);
+PropagationEnvironment* newPropagationEnvironment();
+Object* accessPropagationEnvironmentSlotValue(PropagationEnvironment* self, Symbol* slotname, Object* value, boolean setvalueP);
+PropagationEnvironment* getPropagationEnvironment(Context* self);
+void unlinkPropagationEnvironment(Context* self);
 Keyword* evaluationState(Proposition* proposition);
 void evaluationStateSetter(Proposition* proposition, Keyword* state);
-void postForEvaluation(Proposition* self);
+void postForEvaluation(Proposition* self, Context* world);
 Cons* helpCollectForwardRules(Description* description, KeyValueList* rules, KeyValueList* indices, boolean toucheddefaultP, List* beenthere);
 KeyValueList* collectForwardChainingRules(Description* description, KeyValueList*& _Return1);
 boolean hasForwardChainingRulesP(Description* description, Proposition* proposition);
 void postToForwardChainingQueue(Proposition* self, World* world);
-void applyRuleConsequentToVector(Description* consequent, Vector* arguments, Proposition* rule, Description* triggerdescription, Proposition* triggerproposition, boolean toucheddefaultP);
+void applyRuleConsequentToVector(Description* consequent, Vector* arguments, Proposition* rule, Description* triggerdescription, Proposition* triggerproposition, boolean toucheddefaultP, Justification* bcJustification);
 void traceForwardRule(Proposition* rule, Proposition* trigger, Cons* consequents);
 void applyForwardRulesToVector(Description* triggerdescription, Vector* arguments, Proposition* triggerproposition);
 boolean applicableForwardRuleP(Proposition* rule, Vector* arguments);
 void reactToKbUpdate(Context* context, Object* object);
-void initializeConstraintPropagationQueues(World* world);
 void executeConstraintPropagationQueues();
 void evaluateNewProposition(Proposition* self);
 void evaluateAndProposition(Proposition* self);
@@ -86,10 +104,12 @@ void elaborateMetaInstance(Object* self);
 void elaborateInstance(Object* self);
 void evaluateReachableInequalities(LogicObject* self, List* visitedlist);
 void elaborateSurrogatesInProposition(Proposition* proposition);
-void collectFunctionPropositionFacts(Proposition* self, List* facts, List* beenthere, boolean includeunknownP);
-void helpCollectFacts(Object* self, List* facts, List* beenthere, boolean includeunknownP);
+boolean followDependentPropositionArgumentP(Proposition* proposition, Object* argument);
+void postRelatedFacts(Object* self, PropagationEnvironment* environment);
+void helpCollectFacts(Object* self, List* facts, HashSet* beenthere, boolean includeunknownP);
 List* allFactsOfInstance(Object* self, boolean includeunknownfactsP, boolean elaborateP);
 Cons* allFactsOf(Object* instanceref);
+void printFacts(Object* instanceref);
 List* callAllFactsOf(Object* instanceref);
 void retractFactsOfInstance(LogicObject* self);
 void retractFactsOf(Object* instanceref);
@@ -105,10 +125,15 @@ void helpStartupPropagate2();
 void startupPropagate();
 
 // Auxiliary global declarations:
-extern Symbol* SYM_PROPAGATE_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS_INTERNAL;
-extern Symbol* SYM_PROPAGATE_LOGIC_EVALUATION_STATE_TABLE;
-extern Keyword* KWD_PROPAGATE_POSTED;
+extern Surrogate* SGT_PROPAGATE_LOGIC_PROPAGATION_ENVIRONMENT;
 extern Symbol* SYM_PROPAGATE_LOGIC_EVALUATION_QUEUE;
+extern Symbol* SYM_PROPAGATE_LOGIC_EVALUATION_STATES;
+extern Symbol* SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE;
+extern Symbol* SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_SET;
+extern Symbol* SYM_PROPAGATE_LOGIC_DEFERRED_DEFAULT_PROPOSITIONS;
+extern Symbol* SYM_PROPAGATE_LOGIC_ELABORATED_OBJECTS;
+extern Symbol* SYM_PROPAGATE_LOGIC_PROPAGATION_ENVIRONMENT;
+extern Keyword* KWD_PROPAGATE_POSTED;
 extern Keyword* KWD_PROPAGATE_FORWARD;
 extern Symbol* SYM_PROPAGATE_LOGIC_BACKWARD_ONLYp;
 extern Surrogate* SGT_PROPAGATE_LOGIC_NAMED_DESCRIPTION;
@@ -116,20 +141,23 @@ extern Symbol* SYM_PROPAGATE_LOGIC_FORWARD_ONLYp;
 extern Surrogate* SGT_PROPAGATE_LOGIC_DESCRIPTION;
 extern Surrogate* SGT_PROPAGATE_LOGIC_F_COLLECT_FORWARD_CHAINING_RULES_MEMO_TABLE_000;
 extern Keyword* KWD_PROPAGATE_FUNCTION;
-extern Symbol* SYM_PROPAGATE_LOGIC_FORWARD_CHAINING_QUEUE;
 extern Keyword* KWD_PROPAGATE_ISA;
 extern Keyword* KWD_PROPAGATE_PREDICATE;
-extern Surrogate* SGT_PROPAGATE_LOGIC_SKOLEM;
-extern Symbol* SYM_PROPAGATE_LOGIC_HYPOTHESIZED_INSTANCEp;
+extern Symbol* SYM_PROPAGATE_LOGIC_SKOLEM_GENERATION_COUNT;
 extern Keyword* KWD_PROPAGATE_PROPAGATE;
+extern Symbol* SYM_PROPAGATE_LOGIC_HYPOTHESIZED_INSTANCEp;
 extern Surrogate* SGT_PROPAGATE_PL_KERNEL_KB_AND;
 extern Keyword* KWD_PROPAGATE_GOAL_TREE;
 extern Keyword* KWD_PROPAGATE_SINGLETONSp;
+extern Keyword* KWD_PROPAGATE_INFERENCE_LEVEL;
+extern Keyword* KWD_PROPAGATE_SHALLOW;
+extern Surrogate* SGT_PROPAGATE_LOGIC_SKOLEM;
 extern Surrogate* SGT_PROPAGATE_LOGIC_PROPOSITION;
 extern Keyword* KWD_PROPAGATE_KB_UPDATE;
 extern Keyword* KWD_PROPAGATE_META_KB_UPDATE;
 extern Keyword* KWD_PROPAGATE_META;
 extern Surrogate* SGT_PROPAGATE_STELLA_MODULE;
+extern Symbol* SYM_PROPAGATE_LOGIC_DESCRIPTIVEp;
 extern Surrogate* SGT_PROPAGATE_LOGIC_LOGIC_OBJECT;
 extern Surrogate* SGT_PROPAGATE_STELLA_SYMBOL;
 extern Keyword* KWD_PROPAGATE_EVALUATED;
@@ -137,14 +165,13 @@ extern Keyword* KWD_PROPAGATE_AND;
 extern Keyword* KWD_PROPAGATE_OR;
 extern Keyword* KWD_PROPAGATE_NOT;
 extern Keyword* KWD_PROPAGATE_EQUIVALENT;
-extern Symbol* SYM_PROPAGATE_LOGIC_ELABORATED_IN_WORLDS;
 extern Keyword* KWD_PROPAGATE_ELABORATE;
 extern Keyword* KWD_PROPAGATE_EXTENSIONAL_ASSERTION;
 extern Surrogate* SGT_PROPAGATE_PL_KERNEL_KB_INEQUALITY;
 extern Surrogate* SGT_PROPAGATE_STELLA_SURROGATE;
 extern Keyword* KWD_PROPAGATE_EXISTS;
 extern Keyword* KWD_PROPAGATE_FORALL;
-extern Surrogate* SGT_PROPAGATE_STELLA_LITERAL_WRAPPER;
+extern Surrogate* SGT_PROPAGATE_PL_KERNEL_KB_EQUIVALENT;
 extern Symbol* SYM_PROPAGATE_LOGIC_DESCRIPTION;
 extern Surrogate* SGT_PROPAGATE_STELLA_SLOT;
 extern Surrogate* SGT_PROPAGATE_PL_KERNEL_KB_PHRASE;

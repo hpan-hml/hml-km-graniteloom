@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -82,6 +82,7 @@ extern Keyword* KWD_STARTUP_FINALIZE_CLASSES;
 extern Keyword* KWD_STARTUP_METHODS;
 extern Keyword* KWD_STARTUP_FINALIZE_METHODS;
 extern Keyword* KWD_STARTUP_FINAL;
+extern Keyword* KWD_STARTUP_WARN;
 extern Symbol* SYM_STARTUP_STELLA_STARTUP_STARTUP;
 extern Symbol* SYM_STARTUP_STELLA_METHOD_STARTUP_CLASSNAME;
 

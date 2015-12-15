@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -126,18 +126,18 @@ public class MruMemoizationTable extends MemoizationTable {
         }
       }
       if (entry == null) {
-        entry = Stella_Object.cons(null, args);
+        entry = Cons.cons(null, args);
       }
       if (mrubucket != null) {
-        mrubucket.rest = Stella_Object.cons(entry, mrubucket.rest);
+        mrubucket.rest = Cons.cons(entry, mrubucket.rest);
       }
       else {
-        mrubuckets[bucketindex] = (Stella_Object.cons(mrutimestamp, Stella_Object.cons(entry, Stella.NIL)));
+        mrubuckets[bucketindex] = (Cons.cons(mrutimestamp, Cons.cons(entry, Stella.NIL)));
       }
       if ((memotable.freeEntries = memotable.freeEntries - 1) == 0) {
         memotable.mruBuckets = lrubuckets;
         memotable.lruBuckets = mrubuckets;
-        memotable.mruTimestamp = Stella_Object.cons(null, Stella.NIL);
+        memotable.mruTimestamp = Cons.cons(null, Stella.NIL);
         memotable.currentTimestamp = memotable.mruTimestamp;
         memotable.lruTimestamp = mrutimestamp;
         memotable.freeEntries = memotable.maxEntries;
@@ -196,15 +196,15 @@ public class MruMemoizationTable extends MemoizationTable {
         entry = Stella_Object.makeMemoizedValueEntry(null, arg1, arg2, arg3, arg4);
       }
       if (mrubucket != null) {
-        mrubucket.rest = Stella_Object.cons(entry, mrubucket.rest);
+        mrubucket.rest = Cons.cons(entry, mrubucket.rest);
       }
       else {
-        mrubuckets[bucketindex] = (Stella_Object.cons(mrutimestamp, Stella_Object.cons(entry, Stella.NIL)));
+        mrubuckets[bucketindex] = (Cons.cons(mrutimestamp, Cons.cons(entry, Stella.NIL)));
       }
       if ((memotable.freeEntries = memotable.freeEntries - 1) == 0) {
         memotable.mruBuckets = lrubuckets;
         memotable.lruBuckets = mrubuckets;
-        memotable.mruTimestamp = Stella_Object.cons(null, Stella.NIL);
+        memotable.mruTimestamp = Cons.cons(null, Stella.NIL);
         memotable.currentTimestamp = memotable.mruTimestamp;
         memotable.lruTimestamp = mrutimestamp;
         memotable.freeEntries = memotable.maxEntries;
@@ -220,7 +220,7 @@ public class MruMemoizationTable extends MemoizationTable {
     memotable.mruBuckets = memotable.mruBucketsVector.theArray;
     memotable.lruBuckets = memotable.lruBucketsVector.theArray;
     memotable.freeEntries = memotable.maxEntries;
-    memotable.currentTimestamp = Stella_Object.cons(null, Stella.NIL);
+    memotable.currentTimestamp = Cons.cons(null, Stella.NIL);
     memotable.mruTimestamp = memotable.currentTimestamp;
     memotable.lruTimestamp = memotable.currentTimestamp;
   }

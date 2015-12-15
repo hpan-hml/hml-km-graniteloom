@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -928,7 +928,7 @@ Cons* clTranslateSpecialTree(Cons* tree) {
 Cons* clTranslateStartupTimePrognTree(Cons* tree) {
   tree->value = internCommonLispSymbol("PROGN");
   tree->rest = clTranslateListOfTrees(tree->rest);
-  return (listO(4, internCommonLispSymbol("EVAL-WHEN"), listO(3, internCommonLispSymbol("LOAD"), internCommonLispSymbol("EVAL"), NIL), tree, NIL));
+  return (listO(4, internCommonLispSymbol("EVAL-WHEN"), cons(newVerbatimStringWrapper(":LOAD-TOPLEVEL"), cons(newVerbatimStringWrapper(":EXECUTE"), NIL)), tree, NIL));
 }
 
 Cons* clTranslateUnwindProtectTree(Cons* tree) {
@@ -983,27 +983,76 @@ Object* cast(Object* value, Surrogate* type) {
   return (value);
 }
 
+NumberWrapper* coerceNumericConstant(NumberWrapper* constant, Surrogate* type) {
+  { Surrogate* testValue000 = safePrimaryType(constant);
+
+    if (subtypeOfIntegerP(testValue000)) {
+      { NumberWrapper* constant000 = constant;
+        IntegerWrapper* constant = ((IntegerWrapper*)(constant000));
+
+        if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_FLOAT)) {
+          return (wrapFloat(coerceToFloat(constant)));
+        }
+        else if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_INTEGER)) {
+          return (constant);
+        }
+        else if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_LONG_INTEGER)) {
+          return (wrapLongInteger(((long long int)(constant->wrapperValue))));
+        }
+      }
+    }
+    else if (subtypeOfLongIntegerP(testValue000)) {
+      { NumberWrapper* constant001 = constant;
+        LongIntegerWrapper* constant = ((LongIntegerWrapper*)(constant001));
+
+        if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_FLOAT)) {
+          return (wrapFloat(coerceToFloat(constant)));
+        }
+        else if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_INTEGER)) {
+          return (wrapInteger(((int)(constant->wrapperValue))));
+        }
+        else if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_LONG_INTEGER)) {
+          return (constant);
+        }
+      }
+    }
+    else if (subtypeOfFloatP(testValue000)) {
+      { NumberWrapper* constant002 = constant;
+        FloatWrapper* constant = ((FloatWrapper*)(constant002));
+
+        if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_FLOAT)) {
+          return (constant);
+        }
+        else if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_INTEGER)) {
+          return (wrapInteger(((int)(constant->wrapperValue))));
+        }
+        else if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_LONG_INTEGER)) {
+          return (wrapLongInteger(((long long int)(constant->wrapperValue))));
+        }
+      }
+    }
+    else {
+    }
+  }
+  return (constant);
+}
+
 Object* clTranslateCastTree(Cons* tree) {
   { Object* expression = tree->rest->value;
     Surrogate* type = typeSpecToBaseType(((StandardObject*)(tree->rest->rest->value)));
 
     tree->secondSetter(clTranslateATree(expression));
     tree->thirdSetter(clTranslateATree(type));
-    if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_FLOAT)) {
-      if (isaP(expression, SGT_CL_TRANSLATE_STELLA_INTEGER_WRAPPER)) {
-        return (wrapFloat(((double)(((IntegerWrapper*)(expression))->wrapperValue)))->clTranslateAtomicTree());
-      }
-      else {
-        return (listO(3, internCommonLispSymbol("FLOAT"), tree->rest->value, cons(newVerbatimStringWrapper("0.0d0"), NIL)));
-      }
+    if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_NUMBER) &&
+        isaP(expression, SGT_CL_TRANSLATE_STELLA_NUMBER_WRAPPER)) {
+      return (coerceNumericConstant(((NumberWrapper*)(expression)), type)->clTranslateAtomicTree());
     }
-    if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_INTEGER)) {
-      if (isaP(expression, SGT_CL_TRANSLATE_STELLA_FLOAT_WRAPPER)) {
-        return (wrapInteger(((int)(((FloatWrapper*)(expression))->wrapperValue))));
-      }
-      else {
-        return (listO(3, internCommonLispSymbol("TRUNCATE"), tree->rest->value, NIL));
-      }
+    else if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_FLOAT)) {
+      return (listO(3, internCommonLispSymbol("FLOAT"), tree->rest->value, cons(newVerbatimStringWrapper("0.0d0"), NIL)));
+    }
+    else if (subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_INTEGER) ||
+        subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_LONG_INTEGER)) {
+      return (listO(3, internCommonLispSymbol("TRUNCATE"), tree->rest->value, NIL));
     }
     if ((oSAFETYo.get() < 2) ||
         ((tree->value == SYM_CL_TRANSLATE_STELLA_SAFE_CAST) ||
@@ -1161,16 +1210,18 @@ Object* clTranslatePlainBooleanTest(Object* tree, boolean invertP) {
           if (methodCallInliningEnabledP()) {
             if ((owner == SGT_CL_TRANSLATE_STELLA_OBJECT) ||
                 ((owner == SGT_CL_TRANSLATE_STELLA_SECOND_CLASS_OBJECT) ||
-                 ((owner == SGT_CL_TRANSLATE_STELLA_NATIVE_VECTOR) ||
-                  ((owner == SGT_CL_TRANSLATE_STELLA_STRING) ||
-                   ((owner == SGT_CL_TRANSLATE_STELLA_CODE) ||
-                    ((owner == SGT_CL_TRANSLATE_STELLA_FLOAT) ||
-                     (owner == SGT_CL_TRANSLATE_STELLA_ARRAY))))))) {
+                 ((owner == SGT_CL_TRANSLATE_STELLA_STRING) ||
+                  ((owner == SGT_CL_TRANSLATE_STELLA_NATIVE_VECTOR) ||
+                   ((owner == SGT_CL_TRANSLATE_STELLA_ARRAY) ||
+                    ((owner == SGT_CL_TRANSLATE_STELLA_INTEGER) ||
+                     ((owner == SGT_CL_TRANSLATE_STELLA_LONG_INTEGER) ||
+                      ((owner == SGT_CL_TRANSLATE_STELLA_FLOAT) ||
+                       (owner == SGT_CL_TRANSLATE_STELLA_CODE))))))))) {
               if (owner == SGT_CL_TRANSLATE_STELLA_ARRAY) {
                 tree = cons(clTranslateGlobalSymbol(SYM_CL_TRANSLATE_STELLA_NULL_ARRAYp), cons(clTranslateATree(arguments->value), NIL));
               }
               else {
-                tree = listO(3, internCommonLispSymbol("EQ"), clTranslateATree(arguments->value), cons(clTranslateATree(typeToWalkedNullValueTree(owner, owner)), NIL));
+                tree = cons((subtypeOfP(owner, SGT_CL_TRANSLATE_STELLA_NUMBER) ? internCommonLispSymbol("=") : internCommonLispSymbol("EQ")), cons(clTranslateATree(arguments->value), cons(clTranslateATree(typeToWalkedNullValueTree(owner, owner)), NIL)));
               }
               if (owner == SGT_CL_TRANSLATE_STELLA_FLOAT) {
                 tree->firstSetter(internCommonLispSymbol("="));
@@ -1874,7 +1925,7 @@ Cons* clYieldGlobalVariableTypeDeclarationTree(GlobalVariable* global) {
   { Object* cltype = lookupClTypeFromStellaType(globalVariableTypeSpec(global));
 
     if (((boolean)(cltype))) {
-      return (listO(3, internCommonLispSymbol("TYPE"), cltype, cons(clTranslateGlobalSymbol(global->variableName), NIL)));
+      return (((Cons*)(clConditionalizeTypeDeclarationTree(listO(3, internCommonLispSymbol("TYPE"), cltype, cons(clTranslateGlobalSymbol(global->variableName), NIL))))));
     }
     else {
       return (NULL);
@@ -1892,6 +1943,9 @@ Cons* clYieldMethodArglistTypeDeclarations(MethodSlot* method) {
       for (tspec, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         tspec = ((StandardObject*)(iter000->value));
         cltype = ((Symbol*)(lookupClTypeFromStellaType(computeRelativeTypeSpec(tspec, method->slotOwner))));
+        if (subTypeSpecOfP(tspec, SGT_CL_TRANSLATE_STELLA_ARGUMENT_LIST)) {
+          types = cons(internCommonLispSymbol("&REST"), types);
+        }
         if (((boolean)(cltype))) {
           types = cons(cltype, types);
         }
@@ -1938,7 +1992,7 @@ Cons* clYieldMethodTypeDeclarationTree(MethodSlot* method) {
   { Object* cltype = lookupClTypeFromStellaType(method->slotBaseType);
 
     if (((boolean)(cltype))) {
-      return (listO(4, internCommonLispSymbol("FTYPE"), listO(3, internCommonLispSymbol("FUNCTION"), clYieldMethodArglistTypeDeclarations(method), cons(clYieldMethodReturnTypeDeclaration(method), NIL)), clTranslateGlobalSymbol(yieldRenamedNameIfNative(method->slotName, KWD_CL_TRANSLATE_COMMON_LISP, KWD_CL_TRANSLATE_FUNCTION)), NIL));
+      return (((Cons*)(clConditionalizeTypeDeclarationTree(listO(4, internCommonLispSymbol("FTYPE"), listO(3, internCommonLispSymbol("FUNCTION"), clYieldMethodArglistTypeDeclarations(method), cons(clYieldMethodReturnTypeDeclaration(method), NIL)), clTranslateGlobalSymbol(yieldRenamedNameIfNative(method->slotName, KWD_CL_TRANSLATE_COMMON_LISP, KWD_CL_TRANSLATE_FUNCTION)), NIL)))));
     }
     else {
       return (NULL);
@@ -1992,8 +2046,12 @@ Cons* clYieldDeclareTree(Cons* declarations, boolean includeTypeChecksP) {
         otherdeclarations = otherdeclarations->rest;
       }
     }
-    return (cons(cons(internCommonLispSymbol("DECLARE"), declarations->remove(NULL)->concatenate(NIL, 0)), typechecks->concatenate(NIL, 0)));
+    return (cons(clConditionalizeTypeDeclarationTree(cons(internCommonLispSymbol("DECLARE"), declarations->remove(NULL)->concatenate(NIL, 0))), typechecks->concatenate(NIL, 0)));
   }
+}
+
+Object* clConditionalizeTypeDeclarationTree(Object* declaration) {
+  return (declaration);
 }
 
 Object* clTranslateUnit(TranslationUnit* unit) {
@@ -2086,6 +2144,25 @@ Cons* clTranslateMethodParameters(MethodSlot* method) {
   }
 }
 
+Symbol* clMethodDefinitionOperator(MethodSlot* method) {
+  if (method->methodFunctionP) {
+    return (internCommonLispSymbol("DEFUN"));
+  }
+  else if (method->abstractP) {
+    return (internCommonLispSymbol("DEFGENERIC"));
+  }
+  else if (useDefconsmethodP(method)) {
+    return (SYM_CL_TRANSLATE_STELLA_rrDEFCONSMETHOD);
+  }
+  else if ((method->slotOwner == SGT_CL_TRANSLATE_STELLA_INTEGER) ||
+      (method->slotOwner == SGT_CL_TRANSLATE_STELLA_LONG_INTEGER)) {
+    return (SYM_CL_TRANSLATE_STELLA_rrDEFINTEGERMETHOD);
+  }
+  else {
+    return (internCommonLispSymbol("DEFMETHOD"));
+  }
+}
+
 Cons* clTranslateDefineMethodUnit(TranslationUnit* unit) {
   { MethodSlot* method = ((MethodSlot*)(unit->theObject));
     Symbol* methodname = method->slotName;
@@ -2118,10 +2195,10 @@ Cons* clTranslateDefineMethodUnit(TranslationUnit* unit) {
     }
     if ((!functionP) &&
         method->abstractP) {
-      otree = listO(3, internCommonLispSymbol("DEFGENERIC"), clTranslateGlobalSymbol(yieldRenamedNameIfNative(methodname, KWD_CL_TRANSLATE_COMMON_LISP, KWD_CL_TRANSLATE_FUNCTION)), cons(clTranslateMethodParameters(method), NIL));
+      otree = cons(clMethodDefinitionOperator(method), cons(clTranslateGlobalSymbol(yieldRenamedNameIfNative(methodname, KWD_CL_TRANSLATE_COMMON_LISP, KWD_CL_TRANSLATE_FUNCTION)), cons(clTranslateMethodParameters(method), NIL)));
     }
     else {
-      otree = cons((functionP ? internCommonLispSymbol("DEFUN") : ((useDefconsmethodP(method) ? SYM_CL_TRANSLATE_STELLA_rrDEFCONSMETHOD : internCommonLispSymbol("DEFMETHOD")))), cons(clTranslateGlobalSymbol(yieldRenamedNameIfNative(methodname, KWD_CL_TRANSLATE_COMMON_LISP, KWD_CL_TRANSLATE_FUNCTION)), cons(clTranslateMethodParameters(method), (((documentation != NULL) ? cons(wrapString(documentation), NIL) : NIL))->concatenate(clYieldDeclareTree(declarations, true)->concatenate(clTranslateListOfTrees(bodytree)->concatenate((((voidP(method->type()) &&
+      otree = cons(clMethodDefinitionOperator(method), cons(clTranslateGlobalSymbol(yieldRenamedNameIfNative(methodname, KWD_CL_TRANSLATE_COMMON_LISP, KWD_CL_TRANSLATE_FUNCTION)), cons(clTranslateMethodParameters(method), (((documentation != NULL) ? cons(wrapString(documentation), NIL) : NIL))->concatenate(clYieldDeclareTree(declarations, true)->concatenate(clTranslateListOfTrees(bodytree)->concatenate((((voidP(method->type()) &&
           (!preserveTailMergeOptimizabilityP())) ? cons(KWD_CL_TRANSLATE_VOID, NIL) : NIL))->concatenate(NIL, 0), 0), 0), 0))));
     }
     if (((BooleanWrapper*)(dynamicSlotValue(method->dynamicSlots, SYM_CL_TRANSLATE_STELLA_SLOT_AUXILIARYp, FALSE_WRAPPER)))->wrapperValue) {
@@ -2138,7 +2215,7 @@ Cons* yieldClosSlotTypeTree(StorageSlot* slot) {
   { Object* cltype = lookupClTypeFromStellaType(slot->slotBaseType);
 
     if (((boolean)(cltype))) {
-      return (listO(3, KWD_CL_TRANSLATE_TYPE, cltype, listO(3, KWD_CL_TRANSLATE_INITFORM, clTranslateATree(typeToWalkedNullValueTree(slot->typeSpecifier(), slot->slotBaseType)), NIL)));
+      return (cons(clConditionalizeTypeDeclarationTree(KWD_CL_TRANSLATE_TYPE), cons(clConditionalizeTypeDeclarationTree(cltype), listO(3, KWD_CL_TRANSLATE_INITFORM, clTranslateATree(typeToWalkedNullValueTree(slot->typeSpecifier(), slot->slotBaseType)), NIL))));
     }
     else {
       return (NIL);
@@ -2384,7 +2461,7 @@ Cons* yieldStructSlotTree(StorageSlot* slot) {
   { Object* cltype = lookupClTypeFromStellaType(slot->slotBaseType);
 
     if (((boolean)(cltype))) {
-      return (cons(clTranslateLocalSymbol(slot->slotName), cons(clTranslateATree(typeToWalkedNullValueTree(slot->typeSpecifier(), slot->slotBaseType)), listO(3, KWD_CL_TRANSLATE_TYPE, cltype, NIL))));
+      return (cons(clTranslateLocalSymbol(slot->slotName), cons(clTranslateATree(typeToWalkedNullValueTree(slot->typeSpecifier(), slot->slotBaseType)), cons(clConditionalizeTypeDeclarationTree(KWD_CL_TRANSLATE_TYPE), cons(clConditionalizeTypeDeclarationTree(cltype), NIL)))));
     }
     else {
       return (cons(clTranslateLocalSymbol(slot->slotName), cons(clTranslateGlobalSymbol(SYM_CL_TRANSLATE_STELLA_NULL), NIL)));
@@ -2560,10 +2637,6 @@ Cons* clTranslateDefineGlobalVariableUnit(TranslationUnit* unit) {
     Symbol* operatoR = internCommonLispSymbol("DEFVAR");
     Cons* otree = NIL;
 
-    if (global->variableConstantP &&
-        false) {
-      operatoR = internCommonLispSymbol("DEFCONSTANT");
-    }
     otree = (unboundspecialP ? listO(3, internCommonLispSymbol("DEFVAR"), name, NIL) : cons(operatoR, cons(name, cons(initialvaluetree, (((documentation != NULL) ? cons(wrapString(documentation), NIL) : NIL))->concatenate(NIL, 0)))));
     if (((boolean)(typedeclarationtree))) {
       otree = listO(3, internCommonLispSymbol("PROGN"), otree, cons(listO(3, internCommonLispSymbol("DECLAIM"), typedeclarationtree, NIL), NIL));
@@ -2700,12 +2773,12 @@ void helpStartupClTranslate2() {
     SYM_CL_TRANSLATE_STELLA_ARGUMENT = ((Symbol*)(internRigidSymbolWrtModule("ARGUMENT", NULL, 0)));
     SYM_CL_TRANSLATE_STELLA_DO = ((Symbol*)(internRigidSymbolWrtModule("DO", NULL, 0)));
     SGT_CL_TRANSLATE_STELLA_FLOAT = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT", NULL, 1)));
-    SGT_CL_TRANSLATE_STELLA_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-WRAPPER", NULL, 1)));
-    SGT_CL_TRANSLATE_STELLA_FLOAT_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT-WRAPPER", NULL, 1)));
+    SGT_CL_TRANSLATE_STELLA_LONG_INTEGER = ((Surrogate*)(internRigidSymbolWrtModule("LONG-INTEGER", NULL, 1)));
+    SGT_CL_TRANSLATE_STELLA_NUMBER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER", NULL, 1)));
+    SGT_CL_TRANSLATE_STELLA_NUMBER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER-WRAPPER", NULL, 1)));
     SYM_CL_TRANSLATE_STELLA_PRIMARY_TYPE = ((Symbol*)(internRigidSymbolWrtModule("PRIMARY-TYPE", NULL, 0)));
     SGT_CL_TRANSLATE_STELLA_LITERAL = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL", NULL, 1)));
     SGT_CL_TRANSLATE_STELLA_BOOLEAN = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN", NULL, 1)));
-    SGT_CL_TRANSLATE_STELLA_NUMBER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER", NULL, 1)));
     SGT_CL_TRANSLATE_STELLA_SECOND_CLASS_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("SECOND-CLASS-OBJECT", NULL, 1)));
     SGT_CL_TRANSLATE_STELLA_CODE = ((Surrogate*)(internRigidSymbolWrtModule("CODE", NULL, 1)));
     SYM_CL_TRANSLATE_STELLA_NULL_ARRAYp = ((Symbol*)(internRigidSymbolWrtModule("NULL-ARRAY?", NULL, 0)));
@@ -2735,14 +2808,15 @@ void helpStartupClTranslate3() {
     SYM_CL_TRANSLATE_STELLA_CLSYS_SELF = ((Symbol*)(internRigidSymbolWrtModule("CLSYS-SELF", NULL, 0)));
     SYM_CL_TRANSLATE_STELLA_CLSYS_DUMMY = ((Symbol*)(internRigidSymbolWrtModule("CLSYS-DUMMY", NULL, 0)));
     SYM_CL_TRANSLATE_STELLA_METHOD_VARIABLE_ARGUMENTSp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-VARIABLE-ARGUMENTS?", NULL, 0)));
+    SYM_CL_TRANSLATE_STELLA_rrDEFCONSMETHOD = ((Symbol*)(internRigidSymbolWrtModule("%%DEFCONSMETHOD", NULL, 0)));
+    SYM_CL_TRANSLATE_STELLA_rrDEFINTEGERMETHOD = ((Symbol*)(internRigidSymbolWrtModule("%%DEFINTEGERMETHOD", NULL, 0)));
     SYM_CL_TRANSLATE_STELLA_DOCUMENTATION = ((Symbol*)(internRigidSymbolWrtModule("DOCUMENTATION", NULL, 0)));
     SYM_CL_TRANSLATE_STELLA_SELF = ((Symbol*)(internRigidSymbolWrtModule("SELF", NULL, 0)));
     SYM_CL_TRANSLATE_STELLA_oCLSYS_SELFo = ((Symbol*)(internRigidSymbolWrtModule("*CLSYS-SELF*", NULL, 0)));
-    SYM_CL_TRANSLATE_STELLA_rrDEFCONSMETHOD = ((Symbol*)(internRigidSymbolWrtModule("%%DEFCONSMETHOD", NULL, 0)));
     KWD_CL_TRANSLATE_VOID = ((Keyword*)(internRigidSymbolWrtModule("VOID", NULL, 2)));
     SYM_CL_TRANSLATE_STELLA_SLOT_AUXILIARYp = ((Symbol*)(internRigidSymbolWrtModule("SLOT-AUXILIARY?", NULL, 0)));
-    KWD_CL_TRANSLATE_TYPE = ((Keyword*)(internRigidSymbolWrtModule("TYPE", NULL, 2)));
     KWD_CL_TRANSLATE_INITFORM = ((Keyword*)(internRigidSymbolWrtModule("INITFORM", NULL, 2)));
+    KWD_CL_TRANSLATE_TYPE = ((Keyword*)(internRigidSymbolWrtModule("TYPE", NULL, 2)));
     KWD_CL_TRANSLATE_EMBEDDED = ((Keyword*)(internRigidSymbolWrtModule("EMBEDDED", NULL, 2)));
     KWD_CL_TRANSLATE_INSTANCE = ((Keyword*)(internRigidSymbolWrtModule("INSTANCE", NULL, 2)));
     KWD_CL_TRANSLATE_ALLOCATION = ((Keyword*)(internRigidSymbolWrtModule("ALLOCATION", NULL, 2)));
@@ -2811,6 +2885,7 @@ void helpStartupClTranslate4() {
     defineFunctionObject("CL-TRANSLATE-HANDLER-CASE-TREE", "(DEFUN (CL-TRANSLATE-HANDLER-CASE-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&clTranslateHandlerCaseTree)), NULL);
     defineFunctionObject("CL-TRANSLATE-HANDLE-EXCEPTION-TREE", "(DEFUN (CL-TRANSLATE-HANDLE-EXCEPTION-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&clTranslateHandleExceptionTree)), NULL);
     defineFunctionObject("CAST", "(DEFUN (CAST OBJECT) ((VALUE OBJECT) (TYPE TYPE)) :DOCUMENTATION \"Perform a run-time type check, and then return `value'.\")", ((cpp_function_code)(&cast)), NULL);
+    defineFunctionObject("COERCE-NUMERIC-CONSTANT", "(DEFUN (COERCE-NUMERIC-CONSTANT NUMBER-WRAPPER) ((CONSTANT NUMBER-WRAPPER) (TYPE TYPE)))", ((cpp_function_code)(&coerceNumericConstant)), NULL);
     defineFunctionObject("CL-TRANSLATE-CAST-TREE", "(DEFUN (CL-TRANSLATE-CAST-TREE OBJECT) ((TREE CONS)))", ((cpp_function_code)(&clTranslateCastTree)), NULL);
     defineFunctionObject("CL-TRANSLATE-RETURN-TREE", "(DEFUN (CL-TRANSLATE-RETURN-TREE OBJECT) ((TREE CONS)))", ((cpp_function_code)(&clTranslateReturnTree)), NULL);
     defineFunctionObject("CL-TRANSLATE-BOOLEAN-TEST", "(DEFUN (CL-TRANSLATE-BOOLEAN-TEST OBJECT) ((TREE OBJECT) (INVERT? BOOLEAN)))", ((cpp_function_code)(&clTranslateBooleanTest)), NULL);
@@ -2825,7 +2900,6 @@ void helpStartupClTranslate4() {
     defineFunctionObject("CL-TRANSLATE-MAKE-TREE", "(DEFUN (CL-TRANSLATE-MAKE-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&clTranslateMakeTree)), NULL);
     defineFunctionObject("CL-TRANSLATE-NEW-TREE", "(DEFUN (CL-TRANSLATE-NEW-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&clTranslateNewTree)), NULL);
     defineFunctionObject("CL-TRANSLATE-NEW-ARRAY-TREE", "(DEFUN (CL-TRANSLATE-NEW-ARRAY-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&clTranslateNewArrayTree)), NULL);
-    defineFunctionObject("CL-TRANSLATE-OPERATOR-TREE", "(DEFUN (CL-TRANSLATE-OPERATOR-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&clTranslateOperatorTree)), NULL);
   }
 }
 
@@ -2847,6 +2921,7 @@ void startupClTranslate() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupClTranslate4();
+      defineFunctionObject("CL-TRANSLATE-OPERATOR-TREE", "(DEFUN (CL-TRANSLATE-OPERATOR-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&clTranslateOperatorTree)), NULL);
       defineFunctionObject("YIELD-FORMAT-ARGUMENTS", "(DEFUN (YIELD-FORMAT-ARGUMENTS CONS) ((TREE CONS)))", ((cpp_function_code)(&yieldFormatArguments)), NULL);
       defineFunctionObject("YIELD-PRINT-TREE", "(DEFUN (YIELD-PRINT-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&yieldPrintTree)), NULL);
       defineFunctionObject("CL-TRANSLATE-PRINT-STREAM-TREE", "(DEFUN (CL-TRANSLATE-PRINT-STREAM-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&clTranslatePrintStreamTree)), NULL);
@@ -2866,8 +2941,10 @@ void startupClTranslate() {
       defineFunctionObject("CL-YIELD-METHOD-RETURN-TYPE-DECLARATION", "(DEFUN (CL-YIELD-METHOD-RETURN-TYPE-DECLARATION OBJECT) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&clYieldMethodReturnTypeDeclaration)), NULL);
       defineFunctionObject("CL-YIELD-METHOD-TYPE-DECLARATION-TREE", "(DEFUN (CL-YIELD-METHOD-TYPE-DECLARATION-TREE CONS) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&clYieldMethodTypeDeclarationTree)), NULL);
       defineFunctionObject("CL-YIELD-DECLARE-TREE", "(DEFUN (CL-YIELD-DECLARE-TREE CONS) ((DECLARATIONS (CONS OF CONS)) (INCLUDE-TYPE-CHECKS? BOOLEAN)))", ((cpp_function_code)(&clYieldDeclareTree)), NULL);
+      defineFunctionObject("CL-CONDITIONALIZE-TYPE-DECLARATION-TREE", "(DEFUN (CL-CONDITIONALIZE-TYPE-DECLARATION-TREE OBJECT) ((DECLARATION OBJECT)))", ((cpp_function_code)(&clConditionalizeTypeDeclarationTree)), NULL);
       defineFunctionObject("CL-TRANSLATE-UNIT", "(DEFUN (CL-TRANSLATE-UNIT OBJECT) ((UNIT TRANSLATION-UNIT)))", ((cpp_function_code)(&clTranslateUnit)), NULL);
       defineFunctionObject("CL-TRANSLATE-METHOD-PARAMETERS", "(DEFUN (CL-TRANSLATE-METHOD-PARAMETERS CONS) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&clTranslateMethodParameters)), NULL);
+      defineFunctionObject("CL-METHOD-DEFINITION-OPERATOR", "(DEFUN (CL-METHOD-DEFINITION-OPERATOR SYMBOL) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&clMethodDefinitionOperator)), NULL);
       defineFunctionObject("CL-TRANSLATE-DEFINE-METHOD-UNIT", "(DEFUN (CL-TRANSLATE-DEFINE-METHOD-UNIT CONS) ((UNIT TRANSLATION-UNIT)))", ((cpp_function_code)(&clTranslateDefineMethodUnit)), NULL);
       defineFunctionObject("YIELD-CLOS-SLOT-TYPE-TREE", "(DEFUN (YIELD-CLOS-SLOT-TYPE-TREE CONS) ((SLOT STORAGE-SLOT)))", ((cpp_function_code)(&yieldClosSlotTypeTree)), NULL);
       defineFunctionObject("YIELD-CLOS-SLOT-TREE", "(DEFUN (YIELD-CLOS-SLOT-TREE CONS) ((SLOT STORAGE-SLOT)))", ((cpp_function_code)(&yieldClosSlotTree)), NULL);
@@ -2896,6 +2973,7 @@ void startupClTranslate() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CL-TRUE-STRING-WRAPPER* VERBATIM-STRING-WRAPPER (NEW VERBATIM-STRING-WRAPPER :WRAPPER-VALUE \"CL:T\"))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CL-FALSE-STRING-WRAPPER* VERBATIM-STRING-WRAPPER (NEW VERBATIM-STRING-WRAPPER :WRAPPER-VALUE \"CL:NIL\"))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CL-OPERATOR-TABLE* KEY-VALUE-LIST NULL :DOCUMENTATION \"Mapping from STELLA operators to Common-Lisp operators.\")");
@@ -3133,17 +3211,17 @@ Symbol* SYM_CL_TRANSLATE_STELLA_DO = NULL;
 
 Surrogate* SGT_CL_TRANSLATE_STELLA_FLOAT = NULL;
 
-Surrogate* SGT_CL_TRANSLATE_STELLA_INTEGER_WRAPPER = NULL;
+Surrogate* SGT_CL_TRANSLATE_STELLA_LONG_INTEGER = NULL;
 
-Surrogate* SGT_CL_TRANSLATE_STELLA_FLOAT_WRAPPER = NULL;
+Surrogate* SGT_CL_TRANSLATE_STELLA_NUMBER = NULL;
+
+Surrogate* SGT_CL_TRANSLATE_STELLA_NUMBER_WRAPPER = NULL;
 
 Symbol* SYM_CL_TRANSLATE_STELLA_PRIMARY_TYPE = NULL;
 
 Surrogate* SGT_CL_TRANSLATE_STELLA_LITERAL = NULL;
 
 Surrogate* SGT_CL_TRANSLATE_STELLA_BOOLEAN = NULL;
-
-Surrogate* SGT_CL_TRANSLATE_STELLA_NUMBER = NULL;
 
 Surrogate* SGT_CL_TRANSLATE_STELLA_SECOND_CLASS_OBJECT = NULL;
 
@@ -3193,21 +3271,23 @@ Symbol* SYM_CL_TRANSLATE_STELLA_CLSYS_DUMMY = NULL;
 
 Symbol* SYM_CL_TRANSLATE_STELLA_METHOD_VARIABLE_ARGUMENTSp = NULL;
 
+Symbol* SYM_CL_TRANSLATE_STELLA_rrDEFCONSMETHOD = NULL;
+
+Symbol* SYM_CL_TRANSLATE_STELLA_rrDEFINTEGERMETHOD = NULL;
+
 Symbol* SYM_CL_TRANSLATE_STELLA_DOCUMENTATION = NULL;
 
 Symbol* SYM_CL_TRANSLATE_STELLA_SELF = NULL;
 
 Symbol* SYM_CL_TRANSLATE_STELLA_oCLSYS_SELFo = NULL;
 
-Symbol* SYM_CL_TRANSLATE_STELLA_rrDEFCONSMETHOD = NULL;
-
 Keyword* KWD_CL_TRANSLATE_VOID = NULL;
 
 Symbol* SYM_CL_TRANSLATE_STELLA_SLOT_AUXILIARYp = NULL;
 
-Keyword* KWD_CL_TRANSLATE_TYPE = NULL;
-
 Keyword* KWD_CL_TRANSLATE_INITFORM = NULL;
+
+Keyword* KWD_CL_TRANSLATE_TYPE = NULL;
 
 Keyword* KWD_CL_TRANSLATE_EMBEDDED = NULL;
 

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -105,6 +105,18 @@ public class TruthValue extends LogicObject {
    */
   public static boolean inconsistentTruthValueP(TruthValue self) {
     return (self == Logic.INCONSISTENT_TRUTH_VALUE);
+  }
+
+  /** Return TRUE if <code>self</code> is a known truth value, that is
+   * either TRUE or FALSE, but not UNKNOWN, INCONSISTENT, etc.
+   * @param self
+   * @return boolean
+   */
+  public static boolean knownTruthValueP(TruthValue self) {
+    return (((self == Logic.TRUE_TRUTH_VALUE) ||
+        (self == Logic.DEFAULT_TRUE_TRUTH_VALUE)) ||
+        ((self == Logic.FALSE_TRUTH_VALUE) ||
+         (self == Logic.DEFAULT_FALSE_TRUTH_VALUE)));
   }
 
   /** Return TRUE if <code>self</code> represents UNKNOWN.

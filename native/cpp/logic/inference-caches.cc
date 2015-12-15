@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -90,8 +90,6 @@ World* lookupInferenceCache(Context* context, Keyword* kind) {
 }
 
 void initializeInferenceWorld(World* world) {
-  setDynamicSlotValue(world->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_EVALUATION_STATE_TABLE, newHashTable(), NULL);
-  setDynamicSlotValue(world->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_EVALUATION_QUEUE, newList(), NULL);
 }
 
 World* createInferenceCache(Context* context, Keyword* kind) {
@@ -101,7 +99,7 @@ World* createInferenceCache(Context* context, Keyword* kind) {
       setDynamicSlotValue(context->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_JUST_IN_TIME_INFERENCE_CACHE, world, NULL);
     }
     else if (kind == KWD_INFERENCE_CACHES_META) {
-      setDynamicSlotValue(world->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_MONOTONICp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(world->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_MONOTONICp, TRUE_WRAPPER, FALSE_WRAPPER);
       setDynamicSlotValue(world->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_UP_TO_DATE_INFERENCESp, ((!allPropositions(context->baseModule, true)->nextP()) ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
       setDynamicSlotValue(context->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_META_INFERENCE_CACHE, world, NULL);
     }
@@ -323,7 +321,7 @@ void handleOutOfDateInferenceCache(Keyword* assertorretract, Proposition* propos
       }
     }
     if (!((BooleanWrapper*)(dynamicSlotValue(world->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_TRUTH_MAINTAINEDp, FALSE_WRAPPER)))->wrapperValue) {
-      setDynamicSlotValue(world->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_UP_TO_DATE_INFERENCESp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(world->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_UP_TO_DATE_INFERENCESp, FALSE_WRAPPER, FALSE_WRAPPER);
     }
   }
 }
@@ -441,7 +439,7 @@ void callPropagateConstraints(Context* context) {
       *(STANDARD_ERROR->nativeStream) << exceptionMessage(e) << std::endl;
       *(STANDARD_ERROR->nativeStream) << "One or more facts need to be retracted to eliminate" << std::endl << "   the inconsistency." << std::endl;
     }
-    setDynamicSlotValue(propagationworld->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_UP_TO_DATE_INFERENCESp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+    setDynamicSlotValue(propagationworld->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_UP_TO_DATE_INFERENCESp, TRUE_WRAPPER, FALSE_WRAPPER);
   }
 }
 
@@ -518,7 +516,7 @@ void callRunForwardRules(Module* module, boolean forceP) {
         reactToKbUpdate(propagationworld, p);
       }
     }
-    setDynamicSlotValue(propagationworld->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_UP_TO_DATE_INFERENCESp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+    setDynamicSlotValue(propagationworld->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_UP_TO_DATE_INFERENCESp, TRUE_WRAPPER, FALSE_WRAPPER);
   }
 }
 
@@ -572,8 +570,6 @@ void startupInferenceCaches() {
       SYM_INFERENCE_CACHES_LOGIC_META_INFERENCE_CACHE = ((Symbol*)(internRigidSymbolWrtModule("META-INFERENCE-CACHE", NULL, 0)));
       KWD_INFERENCE_CACHES_TMS = ((Keyword*)(internRigidSymbolWrtModule("TMS", NULL, 2)));
       SYM_INFERENCE_CACHES_LOGIC_TRUTH_MAINTAINED_INFERENCE_CACHE = ((Symbol*)(internRigidSymbolWrtModule("TRUTH-MAINTAINED-INFERENCE-CACHE", NULL, 0)));
-      SYM_INFERENCE_CACHES_LOGIC_EVALUATION_STATE_TABLE = ((Symbol*)(internRigidSymbolWrtModule("EVALUATION-STATE-TABLE", NULL, 0)));
-      SYM_INFERENCE_CACHES_LOGIC_EVALUATION_QUEUE = ((Symbol*)(internRigidSymbolWrtModule("EVALUATION-QUEUE", NULL, 0)));
       SYM_INFERENCE_CACHES_LOGIC_UP_TO_DATE_INFERENCESp = ((Symbol*)(internRigidSymbolWrtModule("UP-TO-DATE-INFERENCES?", NULL, 0)));
       KWD_INFERENCE_CACHES_PREORDER = ((Keyword*)(internRigidSymbolWrtModule("PREORDER", NULL, 2)));
       SGT_INFERENCE_CACHES_LOGIC_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 1)));
@@ -631,6 +627,7 @@ void startupInferenceCaches() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *INVISIBLEASSERTION?* BOOLEAN FALSE :DOCUMENTATION \"Used to signal an assertion that doesn't\nblow away inference caches.\")");
     }
   }
@@ -653,10 +650,6 @@ Symbol* SYM_INFERENCE_CACHES_LOGIC_META_INFERENCE_CACHE = NULL;
 Keyword* KWD_INFERENCE_CACHES_TMS = NULL;
 
 Symbol* SYM_INFERENCE_CACHES_LOGIC_TRUTH_MAINTAINED_INFERENCE_CACHE = NULL;
-
-Symbol* SYM_INFERENCE_CACHES_LOGIC_EVALUATION_STATE_TABLE = NULL;
-
-Symbol* SYM_INFERENCE_CACHES_LOGIC_EVALUATION_QUEUE = NULL;
 
 Symbol* SYM_INFERENCE_CACHES_LOGIC_UP_TO_DATE_INFERENCESp = NULL;
 

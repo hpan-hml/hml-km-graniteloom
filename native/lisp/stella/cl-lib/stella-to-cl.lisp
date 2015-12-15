@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -47,6 +47,10 @@
 
 ;;; Auxiliary variables:
 
+(CL:DEFVAR SGT-STELLA-TO-CL-STELLA-UNKNOWN NULL)
+(CL:DEFVAR SYM-STELLA-TO-CL-STELLA-VERBATIM NULL)
+(CL:DEFVAR KWD-STELLA-TO-CL-COMMON-LISP NULL)
+(CL:DEFVAR SYM-STELLA-TO-CL-STELLA-CAST NULL)
 (CL:DEFVAR KWD-STELLA-TO-CL-STELLA NULL)
 (CL:DEFVAR KWD-STELLA-TO-CL-LISP NULL)
 (CL:DEFVAR SGT-STELLA-TO-CL-STELLA-CONS NULL)
@@ -61,8 +65,8 @@
 ;;; Forward declarations:
 
 (CL:DECLAIM
- (CL:SPECIAL *STELLA-MODULE* EOL TRUE-WRAPPER FALSE-WRAPPER CL-NIL *MODULE*
-  NIL))
+ (CL:SPECIAL *STELLA-MODULE* EOL TRUE-WRAPPER FALSE-WRAPPER CL-NIL
+  *MODULE* NIL))
 
 ;;; (DEFUN (CL-INCREMENTALLY-TRANSLATE LISP-CODE) ...)
 
@@ -83,7 +87,8 @@ due to the head of the result matching the head of 'form'."
   (CL:LET
    ((HEAD (CL:AND (CL:CONSP FORM) (CL:CAR FORM)))
     (EXPANDEDFORM (CL-INCREMENTALLY-TRANSLATE FORM)))
-   (CL:IF (CL:AND (CL:CONSP EXPANDEDFORM) (CL:EQ HEAD (CL:CAR EXPANDEDFORM)))
+   (CL:IF
+    (CL:AND (CL:CONSP EXPANDEDFORM) (CL:EQ HEAD (CL:CAR EXPANDEDFORM)))
     (CL:PROGN (CL:FORMAT CL:T "Can't expand the macro ~A~%" HEAD)
      (CL:RETURN-FROM SAFELY-EXPAND-MACRO NULL))
     (CL:RETURN-FROM SAFELY-EXPAND-MACRO EXPANDEDFORM))))
@@ -91,7 +96,8 @@ due to the head of the result matching the head of 'form'."
 ;;; (DEFUN (BI-MODAL-TRANSLATE LISP-CODE) ...)
 
 (CL:DEFUN BI-MODAL-TRANSLATE (STATEMENT)
-  (CL:RETURN-FROM BI-MODAL-TRANSLATE (HELP-BI-MODAL-TRANSLATE STATEMENT)))
+  (CL:RETURN-FROM BI-MODAL-TRANSLATE
+   (HELP-BI-MODAL-TRANSLATE STATEMENT)))
 
 ;;; (DEFUN (HELP-BI-MODAL-TRANSLATE LISP-CODE) ...)
 
@@ -105,6 +111,41 @@ due to the head of the result matching the head of 'form'."
     "Translate and evaluate a STELLA statement or expression."
     (CL:list
      'CL:eval (CL:list 'bi-modal-translate (CL:list 'CL:quote statement))))
+
+;;; (DEFMACRO CLV ...)
+
+(CL:DEFUN CLV (CODE)
+  "Convenience macro to splice Lisp expressions into STELLA expressions
+without upsetting the translator during interactive sessions.
+If `code' is a currently bound Lisp variable, this tries to infer the
+type of the resulting expression from the object `code' is bound to
+and generates an appropriate cast.  `clv' stands for Common-Lisp Value
+or Verbatim."
+  (CL:LET*
+   ((TYPE SGT-STELLA-TO-CL-STELLA-UNKNOWN)
+    (LISPCODE STELLA::NULL-STRING))
+   (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING LISPCODE))
+   (CL:WHEN (SYMBOL? CODE) (CL:let ((lispSymbol (lispify code)))
+           ;; if the symbol is unbound and we are in a module with a Lisp pkg
+           ;; different from the current pkg, also look in the current pkg:
+           (CL:when (CL:and (CL:not (CL:boundp lispSymbol))
+                            (CL:find-symbol (CL:symbol-name lispSymbol)))
+             (CL:setq lispSymbol (CL:find-symbol (CL:symbol-name lispSymbol))))
+           (CL:when (CL:boundp lispSymbol)
+             (CL:setq type (safe-primary-type (CL:eval lispSymbol)))
+             ;; this qualifies the symbol with a package:
+             (CL:let ((CL:*package* (cl:find-package "KEYWORD")))
+               (CL:setq lispCode (CL:prin1-to-string lispSymbol))))))
+   (CL:WHEN (UNKNOWN-TYPE? TYPE)
+    (CL:RETURN-FROM CLV
+     (LIST* SYM-STELLA-TO-CL-STELLA-VERBATIM
+      KWD-STELLA-TO-CL-COMMON-LISP CODE NIL)))
+   (CL:SETQ CODE (NEW-VERBATIM-STRING-WRAPPER LISPCODE))
+   (CL:RETURN-FROM CLV
+    (LIST* SYM-STELLA-TO-CL-STELLA-CAST
+     (LIST* SYM-STELLA-TO-CL-STELLA-VERBATIM
+      KWD-STELLA-TO-CL-COMMON-LISP CODE NIL)
+     TYPE NIL))))
 
 ;;; (DEFUN (EMACS-REGION-TO-STATEMENTS (CONS OF CONS)) ...)
 
@@ -121,15 +162,18 @@ due to the head of the result matching the head of 'form'."
     (CL:WHEN (CL:EQ LISPSTATEMENT EOFVALUE) (CL:RETURN))
     (CL:HANDLER-CASE
      (CL:SETQ STELLASTATEMENT
-      (READ-S-EXPRESSION-FROM-STRING (SUBSEQUENCE REGION START NEWSTART)))
+      (READ-S-EXPRESSION-FROM-STRING
+       (SUBSEQUENCE REGION START NEWSTART)))
      (READ-EXCEPTION () (CL:SETQ STELLASTATEMENT NULL)))
     (CL:IF
      (CL:AND (CONS? STELLASTATEMENT)
       (CL:OR (DECLARATION-TREE? STELLASTATEMENT)
        (CL:AND (SYMBOL? (%%VALUE STELLASTATEMENT))
-        (CL:NOT (CL:EQ (LOOKUP-COMMAND (%%VALUE STELLASTATEMENT)) NULL)))))
+        (CL:NOT
+         (CL:EQ (LOOKUP-COMMAND (%%VALUE STELLASTATEMENT)) NULL)))))
      (CL:SETQ RESULT
-      (CONS (CONS-LIST KWD-STELLA-TO-CL-STELLA STELLASTATEMENT) RESULT))
+      (CONS (CONS-LIST KWD-STELLA-TO-CL-STELLA STELLASTATEMENT)
+       RESULT))
      (CL:SETQ RESULT
       (CONS (CONS-LIST KWD-STELLA-TO-CL-LISP LISPSTATEMENT) RESULT)))
     (CL:SETQ START NEWSTART))
@@ -145,9 +189,11 @@ due to the head of the result matching the head of 'form'."
   (CL:CHECK-TYPE REGION CL:SIMPLE-STRING)
   (CL:LET* ((RESULT CL:NIL))
    (CL:LET*
-    ((*MODULE* (GET-STELLA-MODULE MODULENAME CL:T)) (*CONTEXT* *MODULE*))
+    ((*MODULE* (GET-STELLA-MODULE MODULENAME CL:T))
+     (*CONTEXT* *MODULE*))
     (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
-    (CL:LET* ((STATEMENT NULL) (ITER-000 (EMACS-REGION-TO-STATEMENTS REGION)))
+    (CL:LET*
+     ((STATEMENT NULL) (ITER-000 (EMACS-REGION-TO-STATEMENTS REGION)))
      (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
       (CL:SETQ STATEMENT (%%VALUE ITER-000))
       (CL:COND
@@ -158,7 +204,8 @@ due to the head of the result matching the head of 'form'."
          RESULT))
        (CL:T (CL:PUSH (%%VALUE (%%REST STATEMENT)) RESULT)))
       (CL:SETQ ITER-000 (%%REST ITER-000))))
-    (CL:RETURN-FROM TRANSLATE-EMACS-REGION-IN-MODULE (CL:REVERSE RESULT)))))
+    (CL:RETURN-FROM TRANSLATE-EMACS-REGION-IN-MODULE
+     (CL:REVERSE RESULT)))))
 
 ;;; (VERBATIM :COMMON-LISP ...)
 
@@ -195,7 +242,8 @@ due to the head of the result matching the head of 'form'."
   #+MCL
   (CL:CHECK-TYPE MODULENAME CL:SIMPLE-STRING)
   (CL:LET*
-   ((*MODULE* (GET-STELLA-MODULE MODULENAME CL:T)) (*CONTEXT* *MODULE*))
+   ((*MODULE* (GET-STELLA-MODULE MODULENAME CL:T))
+    (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:RETURN-FROM LISP-EVAL-FORM-IN-MODULE (CL:EVAL FORM))))
 
@@ -221,16 +269,21 @@ Unsupported types are left unchanged."
        (CL:WHEN (CL:EQ THING NIL)
         (CL:RETURN-FROM LISPIFY (CL:IDENTITY CL-NIL)))
        (CL:LET*
-        ((FIRST (LISPIFY (%%VALUE THING))) (REST (LISPIFY (%%REST THING))))
+        ((FIRST (LISPIFY (%%VALUE THING)))
+         (REST (LISPIFY (%%REST THING))))
         (CL:RETURN-FROM LISPIFY (CL:CONS FIRST REST)))))
      ((SUBTYPE-OF? TEST-VALUE-000 SGT-STELLA-TO-CL-STELLA-LIST)
-      (CL:PROGN (CL:RETURN-FROM LISPIFY (LISPIFY (%THE-CONS-LIST THING)))))
-     ((SUBTYPE-OF? TEST-VALUE-000 SGT-STELLA-TO-CL-STELLA-KEY-VALUE-LIST)
+      (CL:PROGN
+       (CL:RETURN-FROM LISPIFY (LISPIFY (%THE-CONS-LIST THING)))))
+     ((SUBTYPE-OF? TEST-VALUE-000
+       SGT-STELLA-TO-CL-STELLA-KEY-VALUE-LIST)
       (CL:PROGN
        (CL:LET* ((RESULT CL-NIL))
-        (CL:LET* ((KEY NULL) (VALUE NULL) (ITER-000 (%THE-KV-LIST THING)))
+        (CL:LET*
+         ((KEY NULL) (VALUE NULL) (ITER-000 (%THE-KV-LIST THING)))
          (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NULL)) DO
-          (CL:SETQ KEY (%KEY ITER-000)) (CL:SETQ VALUE (%VALUE ITER-000))
+          (CL:SETQ KEY (%KEY ITER-000))
+          (CL:SETQ VALUE (%VALUE ITER-000))
           (CL:PUSH (CL:CONS (LISPIFY KEY) (LISPIFY VALUE)) RESULT)
           (CL:SETQ ITER-000 (%REST ITER-000))))
         (CL:RETURN-FROM LISPIFY (CL:NREVERSE RESULT)))))
@@ -241,14 +294,18 @@ Unsupported types are left unchanged."
        (CL:RETURN-FROM LISPIFY
         (CONS-TREE-TO-LISP-CODE (CL-TRANSLATE-GLOBAL-SYMBOL THING)))))
      ((SUBTYPE-OF-KEYWORD? TEST-VALUE-000)
-      (CL:PROGN (CL:RETURN-FROM LISPIFY (CONS-TREE-TO-LISP-CODE THING))))
+      (CL:PROGN
+       (CL:RETURN-FROM LISPIFY (CONS-TREE-TO-LISP-CODE THING))))
      ((SUBTYPE-OF-BOOLEAN? TEST-VALUE-000)
       (CL:PROGN
        (CL:LET* ((TRUTHVALUE (%WRAPPER-VALUE THING)))
         (CL:RETURN-FROM LISPIFY TRUTHVALUE))))
      ((SUBTYPE-OF-VERBATIM-STRING? TEST-VALUE-000)
-      (CL:PROGN (CL:RETURN-FROM LISPIFY (CONS-TREE-TO-LISP-CODE THING))))
+      (CL:PROGN
+       (CL:RETURN-FROM LISPIFY (CONS-TREE-TO-LISP-CODE THING))))
      ((SUBTYPE-OF-INTEGER? TEST-VALUE-000)
+      (CL:PROGN (CL:RETURN-FROM LISPIFY (%WRAPPER-VALUE THING))))
+     ((SUBTYPE-OF-LONG-INTEGER? TEST-VALUE-000)
       (CL:PROGN (CL:RETURN-FROM LISPIFY (%WRAPPER-VALUE THING))))
      ((SUBTYPE-OF-FLOAT? TEST-VALUE-000)
       (CL:PROGN (CL:RETURN-FROM LISPIFY (%WRAPPER-VALUE THING))))
@@ -303,13 +360,14 @@ In a call directly from Lisp 'slotName' can also be supplied as a Lisp symbol."
       (INTERN-DERIVED-SYMBOL OBJECTTYPE SLOTNAME)))
     (VALUE NULL))
    (CL:WHEN (CL:EQ SLOT NULL)
-    (CL:WARN "slot-value: Slot `~A' does not exist on object `~A'." SLOTNAME
-     OBJECT)
+    (CL:WARN "slot-value: Slot `~A' does not exist on object `~A'."
+     SLOTNAME OBJECT)
     (CL:RETURN-FROM CL-SLOT-VALUE NULL))
    (CL:COND
     ((SUBTYPE-OF-STORAGE-SLOT? (SAFE-PRIMARY-TYPE SLOT))
      (CL:PROGN (CL:SETQ VALUE (READ-SLOT-VALUE OBJECT SLOT))
-      (CL:IF (CL:EQ DONTCONVERT? CL:T) (CL:RETURN-FROM CL-SLOT-VALUE VALUE)
+      (CL:IF (CL:EQ DONTCONVERT? CL:T)
+       (CL:RETURN-FROM CL-SLOT-VALUE VALUE)
        (CL:IF (CL:EQ (TYPE SLOT) SGT-STELLA-TO-CL-STELLA-BOOLEAN)
         (CL:RETURN-FROM CL-SLOT-VALUE (LISPIFY-BOOLEAN VALUE))
         (CL:RETURN-FROM CL-SLOT-VALUE (LISPIFY VALUE))))))
@@ -335,14 +393,16 @@ directly from Lisp 'slotName' can also be supplied as a Lisp symbol."
       (INTERN-DERIVED-SYMBOL OBJECTTYPE SLOTNAME)))
     (STELLAVALUE VALUE))
    (CL:WHEN (CL:EQ SLOT NULL)
-    (CL:WARN "slot-value-setter: Slot `~A' does not exist on object `~A'."
+    (CL:WARN
+     "slot-value-setter: Slot `~A' does not exist on object `~A'."
      SLOTNAME OBJECT)
     (CL:RETURN-FROM CL-SLOT-VALUE-SETTER NULL))
    (CL:WHEN (CL:NOT (CL:EQ DONTCONVERT? CL:T))
     (CL:SETQ STELLAVALUE (STELLAFY VALUE (TYPE SLOT))))
    (CL:WHEN
     (CL:NOT
-     (CL:AND (CL:NOT (CL:EQ (CL:TYPEP STELLAVALUE (CL:QUOTE OBJECT)) CL-NIL))
+     (CL:AND
+      (CL:NOT (CL:EQ (CL:TYPEP STELLAVALUE (CL:QUOTE OBJECT)) CL-NIL))
       (SUBTYPE-OF? (PRIMARY-TYPE STELLAVALUE)
        (TYPE-TO-WRAPPED-TYPE (TYPE SLOT)))))
     (CL:WARN
@@ -361,7 +421,8 @@ directly from Lisp 'slotName' can also be supplied as a Lisp symbol."
 (CL:DEFUN SLOT-VALUE (OBJECT SLOTNAME CL:&OPTIONAL DONTCONVERT?)
   "See 'cl-slot-value'."
   (CL:IF (CL:OR (CL:NOT DONTCONVERT?) (CL:EQL DONTCONVERT? FALSE))
-   (CL-SLOT-VALUE OBJECT SLOTNAME FALSE) (CL-SLOT-VALUE OBJECT SLOTNAME TRUE)))
+   (CL-SLOT-VALUE OBJECT SLOTNAME FALSE)
+   (CL-SLOT-VALUE OBJECT SLOTNAME TRUE)))
 
 ;;; (VERBATIM :COMMON-LISP ...)
 
@@ -497,6 +558,14 @@ rather than an append."
   (CL:LET* ((*MODULE* *STELLA-MODULE*) (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
+    (CL:SETQ SGT-STELLA-TO-CL-STELLA-UNKNOWN
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "UNKNOWN" NULL 1))
+    (CL:SETQ SYM-STELLA-TO-CL-STELLA-VERBATIM
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "VERBATIM" NULL 0))
+    (CL:SETQ KWD-STELLA-TO-CL-COMMON-LISP
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "COMMON-LISP" NULL 2))
+    (CL:SETQ SYM-STELLA-TO-CL-STELLA-CAST
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "CAST" NULL 0))
     (CL:SETQ KWD-STELLA-TO-CL-STELLA
      (INTERN-RIGID-SYMBOL-WRT-MODULE "STELLA" NULL 2))
     (CL:SETQ KWD-STELLA-TO-CL-LISP
@@ -516,7 +585,8 @@ rather than an append."
     (CL:SETQ SYM-STELLA-TO-CL-STELLA-STARTUP-STELLA-TO-CL
      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-STELLA-TO-CL" NULL 0))
     (CL:SETQ SYM-STELLA-TO-CL-STELLA-METHOD-STARTUP-CLASSNAME
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME" NULL 0)))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME" NULL
+      0)))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7)
     (DEFINE-FUNCTION-OBJECT "CL-INCREMENTALLY-TRANSLATE"
@@ -528,6 +598,13 @@ rather than an append."
     (DEFINE-FUNCTION-OBJECT "HELP-BI-MODAL-TRANSLATE"
      "(DEFUN (HELP-BI-MODAL-TRANSLATE LISP-CODE) ((STATEMENT LISP-CODE)))"
      (CL:FUNCTION HELP-BI-MODAL-TRANSLATE) NULL)
+    (DEFINE-FUNCTION-OBJECT "CLV"
+     "(DEFUN CLV ((CODE OBJECT)) :TYPE OBJECT :MACRO? TRUE :DOCUMENTATION \"Convenience macro to splice Lisp expressions into STELLA expressions
+without upsetting the translator during interactive sessions.
+If `code' is a currently bound Lisp variable, this tries to infer the
+type of the resulting expression from the object `code' is bound to
+and generates an appropriate cast.  `clv' stands for Common-Lisp Value
+or Verbatim.\" :PUBLIC? TRUE)" (CL:FUNCTION CLV) NULL)
     (DEFINE-FUNCTION-OBJECT "EMACS-REGION-TO-STATEMENTS"
      "(DEFUN (EMACS-REGION-TO-STATEMENTS (CONS OF CONS)) ((REGION STRING)))"
      (CL:FUNCTION EMACS-REGION-TO-STATEMENTS) NULL)
@@ -542,8 +619,8 @@ rather than an append."
 Common-Lisp analogue.  The currently supported 'thing' types are CONS, LIST,
 KEY-VALUE-LIST, ITERATOR, SYMBOL, KEYWORD, and all wrapped and unwrapped
 literal types.  BOOLEANs are translated into Lisp's CL:T and CL:NIL logic.
-Unsupported types are left unchanged.\" :PUBLIC? TRUE)" (CL:FUNCTION LISPIFY)
-     NULL)
+Unsupported types are left unchanged.\" :PUBLIC? TRUE)"
+     (CL:FUNCTION LISPIFY) NULL)
     (DEFINE-FUNCTION-OBJECT "LISPIFY-BOOLEAN"
      "(DEFUN (LISPIFY-BOOLEAN LISP-CODE) ((THING UNKNOWN)) :DOCUMENTATION \"Lispify 'thing' which is assumed to be a (possibly wrapped) 
 Stella boolean.\" :PUBLIC? TRUE)" (CL:FUNCTION LISPIFY-BOOLEAN) NULL)
@@ -576,5 +653,7 @@ directly from Lisp 'slotName' can also be supplied as a Lisp symbol.\" :PUBLIC? 
       SYM-STELLA-TO-CL-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupStellaToCl") NULL-STRING-WRAPPER)))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 8) (FINALIZE-SLOTS)
-    (CLEANUP-UNFINALIZED-CLASSES)))
+    (CLEANUP-UNFINALIZED-CLASSES))
+   (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 9)
+    (%IN-MODULE (COPY-CONS-TREE (WRAP-STRING "/STELLA")))))
   :VOID)

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,11 +56,11 @@ public class _StartupCppTranslateFile {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.SYM_STELLA_AUXILIARY_VARIABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("AUXILIARY-VARIABLE", null, 0)));
-          Stella.SYM_STELLA_CPP_FUNCTION = ((Symbol)(Stella.internRigidSymbolWrtModule("CPP_FUNCTION", null, 0)));
-          Stella.SYM_STELLA_CPP_DEFPRINT = ((Symbol)(Stella.internRigidSymbolWrtModule("CPP_DEFPRINT", null, 0)));
-          Stella.KWD_UPPERCASE = ((Keyword)(Stella.internRigidSymbolWrtModule("UPPERCASE", null, 2)));
-          Stella.SYM_STELLA_STARTUP_CPP_TRANSLATE_FILE = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-CPP-TRANSLATE-FILE", null, 0)));
+          Stella.SYM_STELLA_AUXILIARY_VARIABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("AUXILIARY-VARIABLE", null, 0)));
+          Stella.SYM_STELLA_CPP_FUNCTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_FUNCTION", null, 0)));
+          Stella.SYM_STELLA_CPP_DEFPRINT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_DEFPRINT", null, 0)));
+          Stella.KWD_UPPERCASE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UPPERCASE", null, 2)));
+          Stella.SYM_STELLA_STARTUP_CPP_TRANSLATE_FILE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-CPP-TRANSLATE-FILE", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Stella.$CURRENT_STREAM$.setDefaultValue(Stella.STANDARD_OUTPUT);
@@ -111,6 +111,7 @@ public class _StartupCppTranslateFile {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CURRENT-STREAM* OUTPUT-STREAM STANDARD-OUTPUT)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CPP-TRANSLATED-FILE-SUFFIX* STRING \"\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAKEFILE-TEMPLATE-VARIABLE-PREFIX* STRING \"#$\")");

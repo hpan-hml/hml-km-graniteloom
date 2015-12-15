@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -165,7 +165,7 @@ public class Set extends List {
             if (!resultset.memberP(elt)) {
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(elt, Stella.NIL);
+                  collect000 = Cons.cons(elt, Stella.NIL);
                   if (resultset == Stella.NIL) {
                     resultset = collect000;
                   }
@@ -176,7 +176,7 @@ public class Set extends List {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(elt, Stella.NIL);
+                  collect000.rest = Cons.cons(elt, Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -198,7 +198,7 @@ public class Set extends List {
                   if (!resultset.memberP(elt)) {
                     if (collect001 == null) {
                       {
-                        collect001 = Stella_Object.cons(elt, Stella.NIL);
+                        collect001 = Cons.cons(elt, Stella.NIL);
                         if (resultset == Stella.NIL) {
                           resultset = collect001;
                         }
@@ -209,7 +209,7 @@ public class Set extends List {
                     }
                     else {
                       {
-                        collect001.rest = Stella_Object.cons(elt, Stella.NIL);
+                        collect001.rest = Cons.cons(elt, Stella.NIL);
                         collect001 = collect001.rest;
                       }
                     }
@@ -256,7 +256,7 @@ public class Set extends List {
 
       if (!self.memberP(value)) {
         { Cons cursor = self.theConsList;
-          Cons lastcons = Stella_Object.cons(value, Stella.NIL);
+          Cons lastcons = Cons.cons(value, Stella.NIL);
 
           if (cursor == Stella.NIL) {
             self.theConsList = lastcons;
@@ -276,7 +276,7 @@ public class Set extends List {
     { Set self = this;
 
       if (!self.memberP(value)) {
-        self.theConsList = Stella_Object.cons(value, self.theConsList);
+        self.theConsList = Cons.cons(value, self.theConsList);
       }
     }
   }
@@ -288,7 +288,7 @@ public class Set extends List {
     { Set self = this;
 
       if (!self.memberP(value)) {
-        self.theConsList = Stella_Object.cons(value, self.theConsList);
+        self.theConsList = Cons.cons(value, self.theConsList);
       }
     }
   }

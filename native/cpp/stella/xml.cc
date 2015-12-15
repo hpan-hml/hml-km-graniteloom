@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -794,6 +794,7 @@ KeyValueList* makeXmlEntityTable() {
     addXmlReference("amp", "&#38;", table);
     addXmlReference("apos", "&#39;", table);
     addXmlReference("quot", "&#34;", table);
+    addXmlReference("nbsp", "&#160;", table);
     return (table);
   }
 }
@@ -862,15 +863,15 @@ boolean externalIdHeadP(Object* attribute) {
 }
 
 char* decodeXmlEntityRef(XmlDoctype* doctype, char* name, boolean peReferenceAllowedP) {
-  { char* value = NULL;
+  { StringWrapper* value = NULL;
 
     if (((boolean)(doctype))) {
-      value = ((StringWrapper*)(doctype->entityTable->lookup(wrapString(name))))->wrapperValue;
+      value = ((StringWrapper*)(doctype->entityTable->lookup(wrapString(name))));
     }
-    if (value == NULL) {
-      value = ((StringWrapper*)(oXML_BASE_ENTITY_TABLEo->lookup(wrapString(name))))->wrapperValue;
+    if (!((boolean)(value))) {
+      value = ((StringWrapper*)(oXML_BASE_ENTITY_TABLEo->lookup(wrapString(name))));
     }
-    if (value == NULL) {
+    if (!((boolean)(value))) {
       { OutputStringStream* stream000 = newOutputStringStream();
 
         *(stream000->nativeStream) << "Couldn't find entity reference for " << "`" << name << "'";
@@ -878,7 +879,7 @@ char* decodeXmlEntityRef(XmlDoctype* doctype, char* name, boolean peReferenceAll
       }
     }
     else {
-      return (decodeXmlString(doctype, value, peReferenceAllowedP));
+      return (decodeXmlString(doctype, value->wrapperValue, peReferenceAllowedP));
     }
   }
 }
@@ -1124,9 +1125,10 @@ TokenizerToken* tokenizeXmlExpression(InputStream* stream, TokenizerToken* token
                 tok_endoftokensP_ = readIntoTokenizerBuffer(tok_inputstream_, tok_streamstate_, tok_tokenstart_);
                 tok_buffer_ = tok_streamstate_->buffer;
                 tok_size_ = tok_streamstate_->bufferSize;
-                tok_cursor_ = mod(tok_streamstate_->cursor, tok_size_);
+                tok_cursor_ = integerMod(tok_streamstate_->cursor, tok_size_);
                 tok_end_ = tok_streamstate_->end;
                 if (tok_endoftokensP_) {
+                  tok_checkpoint_ = tok_cursor_;
                   if (tok_nextstate_ == -1) {
                   }
                   else if (coerceWrappedBooleanToBoolean(((BooleanWrapper*)((tok_table_->legalEofStates->theArray)[tok_state_])))) {
@@ -1680,6 +1682,59 @@ Object* readXmlExpression(InputStream* stream, Object* startTag, boolean& _Retur
   }
 }
 
+Cons* readXmlExpressions(char* filename) {
+  // Read all of the top-level XML expressions from `filename' and
+  // return them in a list.
+  { InputFileStream* in = NULL;
+
+    try {
+      in = openInputFile(filename, 0);
+      { Cons* value000 = NIL;
+
+        { Object* item = NULL;
+          XmlExpressionIterator* iter000 = xmlExpressions(in, NULL);
+          Cons* collect000 = NULL;
+
+          for  (item, iter000, collect000; 
+                iter000->nextP(); ) {
+            item = iter000->value;
+            if (!((boolean)(collect000))) {
+              {
+                collect000 = cons(item, NIL);
+                if (value000 == NIL) {
+                  value000 = collect000;
+                }
+                else {
+                  addConsToEndOfConsList(value000, collect000);
+                }
+              }
+            }
+            else {
+              {
+                collect000->rest = cons(item, NIL);
+                collect000 = collect000->rest;
+              }
+            }
+          }
+        }
+        { Cons* value001 = value000;
+
+          return (value001);
+        }
+      }
+    }
+catch (...) {
+      if (((boolean)(in))) {
+        in->free();
+      }
+      throw;
+    }
+    if (((boolean)(in))) {
+      in->free();
+    }
+  }
+}
+
 XmlExpressionIterator* newXmlExpressionIterator() {
   { XmlExpressionIterator* self = NULL;
 
@@ -2069,6 +2124,23 @@ boolean xmlAttributeP(Object* item) {
   return (isaP(item, SGT_XML_STELLA_XML_ATTRIBUTE));
 }
 
+boolean xmlGlobalAttributeP(Object* item) {
+  // Return `true' if `item' is an XML attribute object
+  return (isaP(item, SGT_XML_STELLA_XML_GLOBAL_ATTRIBUTE));
+}
+
+boolean xmlLocalAttributeP(Object* item) {
+  // Return `true' if `item' is an XML attribute object
+  return (isaP(item, SGT_XML_STELLA_XML_LOCAL_ATTRIBUTE));
+}
+
+boolean xmlBaseAttributeP(Object* item) {
+  // Return `true' if `item' is an XML attribute object
+  return (isaP(item, SGT_XML_STELLA_XML_GLOBAL_ATTRIBUTE) &&
+      (stringEqlP("base", ((XmlGlobalAttribute*)(item))->name) &&
+       stringEqlP(oXML_URNo, ((XmlGlobalAttribute*)(item))->namespaceUri)));
+}
+
 boolean xmlDeclarationP(Object* item) {
   // Return `true' if `item' is an XML declaration object
   return (isaP(item, SGT_XML_STELLA_XML_DECLARATION));
@@ -2118,6 +2190,35 @@ XmlElement* getXmlTag(Cons* expression) {
 Cons* getXmlAttributes(Cons* expression) {
   // Return the list of attributes of an XML `expression' (may be empty).
   return (((Cons*)(expression->rest->value)));
+}
+
+char* getXmlBaseAttributeValue(Cons* expression) {
+  // Return the last base url attribute in the attribute list of this
+  // element if it exists.  Otherwise NULL.
+  { Cons* attributeList = ((Cons*)(expression->rest->value));
+    XmlAttribute* attribute = NULL;
+    char* value = NULL;
+    char* baseAttributeValue = NULL;
+
+    while (!(attributeList == NIL)) {
+      { Object* head000 = attributeList->value;
+
+        attributeList = attributeList->rest;
+        attribute = ((XmlAttribute*)(head000));
+      }
+      { Object* head001 = attributeList->value;
+
+        attributeList = attributeList->rest;
+        value = ((StringWrapper*)(head001))->wrapperValue;
+      }
+      if (isaP(attribute, SGT_XML_STELLA_XML_GLOBAL_ATTRIBUTE) &&
+          (stringEqlP("base", ((XmlGlobalAttribute*)(attribute))->name) &&
+           stringEqlP(oXML_URNo, ((XmlGlobalAttribute*)(attribute))->namespaceUri))) {
+        baseAttributeValue = value;
+      }
+    }
+    return (baseAttributeValue);
+  }
 }
 
 Cons* getXmlContent(Cons* expression) {
@@ -2810,6 +2911,7 @@ void helpStartupXml4() {
     defineFunctionObject("PROCESS-ATTRIBUTE-LIST", "(DEFUN (PROCESS-ATTRIBUTE-LIST CONS) ((REVERSEATTRIBUTELIST CONS) (ELEMENT XML-ELEMENT) (NAMESPACE-TABLE (KV-CONS OF STRING-WRAPPER STRING-WRAPPER))))", ((cpp_function_code)(&processAttributeList)), NULL);
     defineFunctionObject("XML-TOKEN-LIST-TO-S-EXPRESSION", "(DEFUN (XML-TOKEN-LIST-TO-S-EXPRESSION OBJECT) ((TOKENLIST TOKENIZER-TOKEN) (DOCTYPE XML-DOCTYPE) (DOCTYPE-DEFINITION? BOOLEAN)) :DOCUMENTATION \"Convert the XML `tokenList' (using `doctype' for guidance) into a\nrepresentative s-expression and return the result.    The `doctype' argument is\ncurrently only used for expansion of entity references.  It can be 'null'.  The\nflag `doctype-definition?' should be true only when processing the DTD definition\nof a DOCTYPE tag, since it enables substitution of parameter entity values.\n\nEvery XML tag is represented as a cons-list starting with the tag as its header,\nfollowed by a possibly empty list of keyword value pairs representing tag attributes,\nfollowed by a possibly empty list of content expressions which might themselves\nbe XML expressions.  For example, the expression\n\n    <a a1=v1 a2='v2'> foo <b a3=v3/> bar </a>\n\nbecomes\n\n   (<a> (<a1> \\\"v1\\\" <a2> \\\"v2\\\") \\\"foo\\\" (<b> (<a3> \\\"v3\\\")) \\\"bar\\\")\n\nwhen represented as an s-expre" "ssion.  The tag names are subtypes of XML-OBJECT\nsuch as XML-ELEMENT, XML-LOCAL-ATTRIBUTE, XML-GLOBAL-ATTRIBUTE, etc.\n?, ! and [ prefixed tags are encoded as their own subtypes of XML-OBJECT, namely\nXML-PROCESSING-INSTRUCTION, XML-DECLARATION, XML-SPECIAL, XML-COMMENT, etc.\nCDATA is an XML-SPECIAL tag with a name of CDATA.\n\nThe name is available using class accessors.\" :PUBLIC? TRUE)", ((cpp_function_code)(&xmlTokenListToSExpression)), NULL);
     defineFunctionObject("READ-XML-EXPRESSION", "(DEFUN (READ-XML-EXPRESSION OBJECT BOOLEAN) ((STREAM INPUT-STREAM) (START-TAG OBJECT)) :DOCUMENTATION \"Read one balanced XML expression from `stream' and return\nits s-expression representation (see `xml-token-list-to-s-expression').  If\n`startTagName' is non-`null', skip all tags until a start tag matching `start-tag'\nis encountered.  XML namespaces are ignored for outside of the start tag.\nUse s-expression representation to specify `start-tag', e.g., '(KIF (:version \\\"1.0\\\"))'.\nThe tag can be an XML element object, a symbol, a string or a cons.  If the tag is a cons\nthe first element can also be (name namespace) pair.\n\nReturn `true' as the second value on EOF.\n\nCHANGE WARNING:  It is anticipated that this function will change to\n a) Properly take XML namespaces into account and\n b) require XML element objects instead of strings as the second argument.\nThis change will not be backwards-compatible.\" :PUBLIC? TRUE)", ((cpp_function_code)(&readXmlExpression)), NULL);
+    defineFunctionObject("READ-XML-EXPRESSIONS", "(DEFUN (READ-XML-EXPRESSIONS CONS) ((FILENAME STRING)) :DOCUMENTATION \"Read all of the top-level XML expressions from `filename' and\nreturn them in a list.\")", ((cpp_function_code)(&readXmlExpressions)), NULL);
     defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF XML-EXPRESSION-ITERATOR)) :PUBLIC? TRUE)", ((cpp_method_code)(&XmlExpressionIterator::nextP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (CONSIFY CONS) ((ITER XML-EXPRESSION-ITERATOR)))", ((cpp_method_code)(&XmlExpressionIterator::consify)), ((cpp_method_code)(NULL)));
     defineFunctionObject("XML-REGION-MATCHES?", "(DEFUN (XML-REGION-MATCHES? BOOLEAN) ((REGIONSPEC CONS) (REGIONTAG CONS)))", ((cpp_function_code)(&xmlRegionMatchesP)), NULL);
@@ -2818,6 +2920,9 @@ void helpStartupXml4() {
     defineFunctionObject("XML-CDATA?", "(DEFUN (XML-CDATA? BOOLEAN) ((ITEM OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `item' is an XML CDATA tag object\")", ((cpp_function_code)(&xmlCdataP)), NULL);
     defineFunctionObject("XML-ELEMENT?", "(DEFUN (XML-ELEMENT? BOOLEAN) ((ITEM OBJECT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return `true' if `item' is an XML element object\" (RETURN (ISA? ITEM @XML-ELEMENT)))", ((cpp_function_code)(&xmlElementP)), NULL);
     defineFunctionObject("XML-ATTRIBUTE?", "(DEFUN (XML-ATTRIBUTE? BOOLEAN) ((ITEM OBJECT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return `true' if `item' is an XML attribute object\" (RETURN (ISA? ITEM @XML-ATTRIBUTE)))", ((cpp_function_code)(&xmlAttributeP)), NULL);
+    defineFunctionObject("XML-GLOBAL-ATTRIBUTE?", "(DEFUN (XML-GLOBAL-ATTRIBUTE? BOOLEAN) ((ITEM OBJECT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return `true' if `item' is an XML attribute object\" (RETURN (ISA? ITEM @XML-GLOBAL-ATTRIBUTE)))", ((cpp_function_code)(&xmlGlobalAttributeP)), NULL);
+    defineFunctionObject("XML-LOCAL-ATTRIBUTE?", "(DEFUN (XML-LOCAL-ATTRIBUTE? BOOLEAN) ((ITEM OBJECT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return `true' if `item' is an XML attribute object\" (RETURN (ISA? ITEM @XML-LOCAL-ATTRIBUTE)))", ((cpp_function_code)(&xmlLocalAttributeP)), NULL);
+    defineFunctionObject("XML-BASE-ATTRIBUTE?", "(DEFUN (XML-BASE-ATTRIBUTE? BOOLEAN) ((ITEM OBJECT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return `true' if `item' is an XML attribute object\" (RETURN (AND (XML-GLOBAL-ATTRIBUTE? ITEM) (STRING-EQL? \"base\" (NAME (CAST ITEM XML-GLOBAL-ATTRIBUTE))) (STRING-EQL? *XML-URN* (NAMESPACE-URI (CAST ITEM XML-GLOBAL-ATTRIBUTE))))))", ((cpp_function_code)(&xmlBaseAttributeP)), NULL);
     defineFunctionObject("XML-DECLARATION?", "(DEFUN (XML-DECLARATION? BOOLEAN) ((ITEM OBJECT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return `true' if `item' is an XML declaration object\" (RETURN (ISA? ITEM @XML-DECLARATION)))", ((cpp_function_code)(&xmlDeclarationP)), NULL);
     defineFunctionObject("XML-PROCESSING-INSTRUCTION?", "(DEFUN (XML-PROCESSING-INSTRUCTION? BOOLEAN) ((ITEM OBJECT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return `true' if `item' is an XML processing instruction object\" (RETURN (ISA? ITEM @XML-PROCESSING-INSTRUCTION)))", ((cpp_function_code)(&xmlProcessingInstructionP)), NULL);
     defineFunctionObject("XML-ELEMENT-FORM?", "(DEFUN (XML-ELEMENT-FORM? BOOLEAN) ((FORM OBJECT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return `true' if `form' is a CONS headed by an XML ELEMENT tag\" (RETURN (AND (ISA? FORM @CONS) (XML-ELEMENT? (FIRST (CAST FORM CONS))))))", ((cpp_function_code)(&xmlElementFormP)), NULL);
@@ -2827,17 +2932,13 @@ void helpStartupXml4() {
     defineFunctionObject("XML-CDATA-FORM?", "(DEFUN (XML-CDATA-FORM? BOOLEAN) ((FORM OBJECT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return `true' if `form' is a CONS headed by a CDATA tag\" (RETURN (AND (ISA? FORM @CONS) (XML-CDATA? (FIRST (CAST FORM CONS))))))", ((cpp_function_code)(&xmlCdataFormP)), NULL);
     defineFunctionObject("GET-XML-TAG", "(DEFUN (GET-XML-TAG XML-ELEMENT) ((EXPRESSION CONS)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the XML tag object of an XML `expression'.\" (RETURN (FIRST EXPRESSION)))", ((cpp_function_code)(&getXmlTag)), NULL);
     defineFunctionObject("GET-XML-ATTRIBUTES", "(DEFUN (GET-XML-ATTRIBUTES CONS) ((EXPRESSION CONS)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the list of attributes of an XML `expression' (may be empty).\" (RETURN (SECOND EXPRESSION)))", ((cpp_function_code)(&getXmlAttributes)), NULL);
+    defineFunctionObject("GET-XML-BASE-ATTRIBUTE-VALUE", "(DEFUN (GET-XML-BASE-ATTRIBUTE-VALUE STRING) ((EXPRESSION CONS)) :PUBLIC? TRUE :DOCUMENTATION \"Return the last base url attribute in the attribute list of this\nelement if it exists.  Otherwise NULL.\")", ((cpp_function_code)(&getXmlBaseAttributeValue)), NULL);
     defineFunctionObject("GET-XML-CONTENT", "(DEFUN (GET-XML-CONTENT CONS) ((EXPRESSION CONS)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the list of content elements of an XML `expression' (may be empty).\" (RETURN (REST (REST EXPRESSION))))", ((cpp_function_code)(&getXmlContent)), NULL);
     defineFunctionObject("GET-XML-CDATA-CONTENT", "(DEFUN (GET-XML-CDATA-CONTENT STRING) ((FORM CONS)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the CDATA content of a CDATA `form'.  Does NOT make sure that `form'\nactually is a CDATA form, so bad things can happen if it is given wrong input.\" (RETURN (UNWRAP-STRING (FIRST (CAST (SECOND FORM) CONS)))))", ((cpp_function_code)(&getXmlCdataContent)), NULL);
     defineMethodObject("(DEFMETHOD (XML-ELEMENT-MATCH? BOOLEAN) ((TAG XML-ELEMENT) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Returns `true' if `tag' is an XML element with the name `name'\nin namespace `namespace'.  Note that `namespace' is the full URI, not an abbreviation.\nAlso, `namespace' may be `null', in which case `tag' must not have a namespace\nassociated with it.\" (RETURN (AND (EQL? (NAME TAG) NAME) (EQL? (NAMESPACE-URI TAG) NAMESPACE))))", ((cpp_method_code)(&XmlElement::xmlElementMatchP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is an XML attribute with name `name'\nin namespace `namespace'.  Note that `namespace' is the full URI, not an\nabbreviation.  Also, `namespace' may be `null', in which case `attribute'\nmust not have a namespace associated with it.\")", ((cpp_method_code)(&XmlAttribute::xmlAttributeMatchP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-GLOBAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is a global  XML attribute with name `name'\nin namespace `namespace'.  Note that `namespace' is the full URI, not an\nabbreviation.  Also, `namespace' may be `null', in which case `attribute'\nmust not have a namespace associated with it.\")", ((cpp_method_code)(&XmlGlobalAttribute::xmlAttributeMatchP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-LOCAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is a local XML attribute with name `name'.\nNote that `namespace' must be `null' and that the `attribute's parent element\nelement is not considered by the match.  To take the parent element into\naccount use `xml-local-attribute-match?'.\")", ((cpp_method_code)(&XmlLocalAttribute::xmlAttributeMatchP)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("XML-GLOBAL-ATTRIBUTE-MATCH?", "(DEFUN (XML-GLOBAL-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-GLOBAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :GLOBALLY-INLINE? TRUE (RETURN (AND (STRING-EQL? (NAME ATTRIBUTE) NAME) (EQL? (NAMESPACE-URI ATTRIBUTE) NAMESPACE))))", ((cpp_function_code)(&xmlGlobalAttributeMatchP)), NULL);
-    defineFunctionObject("XML-LOCAL-ATTRIBUTE-MATCH?", "(DEFUN (XML-LOCAL-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-LOCAL-ATTRIBUTE) (NAME STRING) (ELEMENT-NAME STRING) (ELEMENT-NAMESPACE STRING)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return true if `attribute' is a local attribute with `name' and whose\nparent element matches `element-name' and `element-namespace'.\" (RETURN (AND (STRING-EQL? (NAME ATTRIBUTE) NAME) (XML-ELEMENT-MATCH? (PARENT-ELEMENT ATTRIBUTE) ELEMENT-NAME ELEMENT-NAMESPACE))))", ((cpp_function_code)(&xmlLocalAttributeMatchP)), NULL);
-    defineFunctionObject("XML-LOOKUP-ATTRIBUTE", "(DEFUN (XML-LOOKUP-ATTRIBUTE STRING) ((ATTRIBUTES CONS) (NAME STRING) (NAMESPACE STRING)) :DOCUMENTATION \"Find the XML attribute in `attributes' with `name' and `namespace' and\nreturn its value.  Note that it is assumed that all `attributes' come from\nthe same known tag, hence, the parent elements of any local attributes are\nnot considered by the lookup.\" :PUBLIC? TRUE)", ((cpp_function_code)(&xmlLookupAttribute)), NULL);
-    defineFunctionObject("EXPAND-XML-TAG-CASE", "(DEFUN (EXPAND-XML-TAG-CASE CONS) ((ITEM SYMBOL) (CLAUSES (CONS OF CONS))))", ((cpp_function_code)(&expandXmlTagCase)), NULL);
-    defineFunctionObject("XML-TAG-CASE", "(DEFUN XML-TAG-CASE ((ITEM OBJECT) |&BODY| (CLAUSES CONS)) :TYPE OBJECT :MACRO? TRUE :PUBLIC? TRUE :DOCUMENTATION \"A case form for matching `item' against XML element tags.  Each\nelement of `clauses' should be a clause with the form\n  (\\\"tagname\\\" ...)     or\n  ((\\\"tagname\\\" \\\"namespace-uri\\\") ...)\nThe clause heads can optionally be symbols instead of strings.  The key forms the\nparameters to the method `xml-element-match?', with a missing namespace argument\npassed as NULL.\n\nThe namespace argument will be evaluated, so one can use bound variables in\nplace of a fixed string.   As a special case, if the namespace argument is\n:ANY, then the test will be done for a match on the tag name alone.\")", ((cpp_function_code)(&xmlTagCase)), NULL);
   }
 }
 
@@ -2864,6 +2965,11 @@ void startupXml() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupXml4();
+      defineFunctionObject("XML-GLOBAL-ATTRIBUTE-MATCH?", "(DEFUN (XML-GLOBAL-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-GLOBAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :GLOBALLY-INLINE? TRUE (RETURN (AND (STRING-EQL? (NAME ATTRIBUTE) NAME) (EQL? (NAMESPACE-URI ATTRIBUTE) NAMESPACE))))", ((cpp_function_code)(&xmlGlobalAttributeMatchP)), NULL);
+      defineFunctionObject("XML-LOCAL-ATTRIBUTE-MATCH?", "(DEFUN (XML-LOCAL-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-LOCAL-ATTRIBUTE) (NAME STRING) (ELEMENT-NAME STRING) (ELEMENT-NAMESPACE STRING)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return true if `attribute' is a local attribute with `name' and whose\nparent element matches `element-name' and `element-namespace'.\" (RETURN (AND (STRING-EQL? (NAME ATTRIBUTE) NAME) (XML-ELEMENT-MATCH? (PARENT-ELEMENT ATTRIBUTE) ELEMENT-NAME ELEMENT-NAMESPACE))))", ((cpp_function_code)(&xmlLocalAttributeMatchP)), NULL);
+      defineFunctionObject("XML-LOOKUP-ATTRIBUTE", "(DEFUN (XML-LOOKUP-ATTRIBUTE STRING) ((ATTRIBUTES CONS) (NAME STRING) (NAMESPACE STRING)) :DOCUMENTATION \"Find the XML attribute in `attributes' with `name' and `namespace' and\nreturn its value.  Note that it is assumed that all `attributes' come from\nthe same known tag, hence, the parent elements of any local attributes are\nnot considered by the lookup.\" :PUBLIC? TRUE)", ((cpp_function_code)(&xmlLookupAttribute)), NULL);
+      defineFunctionObject("EXPAND-XML-TAG-CASE", "(DEFUN (EXPAND-XML-TAG-CASE CONS) ((ITEM SYMBOL) (CLAUSES (CONS OF CONS))))", ((cpp_function_code)(&expandXmlTagCase)), NULL);
+      defineFunctionObject("XML-TAG-CASE", "(DEFUN XML-TAG-CASE ((ITEM OBJECT) |&BODY| (CLAUSES CONS)) :TYPE OBJECT :MACRO? TRUE :PUBLIC? TRUE :DOCUMENTATION \"A case form for matching `item' against XML element tags.  Each\nelement of `clauses' should be a clause with the form\n  (\\\"tagname\\\" ...)     or\n  ((\\\"tagname\\\" \\\"namespace-uri\\\") ...)\nThe clause heads can optionally be symbols instead of strings.  The key forms the\nparameters to the method `xml-element-match?', with a missing namespace argument\npassed as NULL.\n\nThe namespace argument will be evaluated, so one can use bound variables in\nplace of a fixed string.   As a special case, if the namespace argument is\n:ANY, then the test will be done for a match on the tag name alone.\")", ((cpp_function_code)(&xmlTagCase)), NULL);
       defineFunctionObject("PRINT-XML-NON-ELEMENT-ATTRIBUTES", "(DEFUN PRINT-XML-NON-ELEMENT-ATTRIBUTES ((STREAM OUTPUT-STREAM) (ATTRIBUTES CONS)))", ((cpp_function_code)(&printXmlNonElementAttributes)), NULL);
       defineFunctionObject("PRINT-XML-ELEMENT-ATTRIBUTES", "(DEFUN PRINT-XML-ELEMENT-ATTRIBUTES ((STREAM OUTPUT-STREAM) (ATTRIBUTES CONS)))", ((cpp_function_code)(&printXmlElementAttributes)), NULL);
       defineFunctionObject("PRINT-XML-EXPRESSION", "(DEFUN PRINT-XML-EXPRESSION ((STREAM OUTPUT-STREAM) (XML-EXPRESSION CONS) (INDENT INTEGER)) :DOCUMENTATION \"Prints `xml-expression' on `stream'.  Indentation begins with the\nvalue of `indent'.  If this is the `null' integer, no indentation is\nperformed.  Otherwise it should normally be specified as 0 (zero) for\ntop-level calls.\n\nIt is assumed that the `xml-expression' is a well-formed CONS-list\nrepresentation of an XML  form.  It expects a form like that form\nreturned by `read-XML-expression'.\n\nAlso handles a list of xml forms such as that returned by `XML-expressions'.\nIn that case, each of the forms is indented by `indent' spaces.\" :PUBLIC? TRUE)", ((cpp_function_code)(&printXmlExpression)), NULL);
@@ -2878,6 +2984,7 @@ void startupXml() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *XML-URN* STRING \"http://www.w3.org/XML/1998/namespaces\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *HTML-V4-0-URN* STRING \"http://www.w3.org/TR/REC-html40\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *XML-ELEMENT-NULL-NAMESPACE-TABLE* (STRING-HASH-TABLE OF STRING XML-ELEMENT) (NEW (STRING-HASH-TABLE OF STRING XML-ELEMENT)) :DOCUMENTATION \"Hash Table for interning XML elements that don't appear in any namespace.\")");

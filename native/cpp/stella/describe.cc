@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -1364,6 +1364,7 @@ void startupDescribe() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STRING-TO-OBJECT-FUNCTIONS* (KEY-VALUE-LIST OF TYPE CODE-WRAPPER) (NEW KEY-VALUE-LIST) :DOCUMENTATION \"Table of functions (keyed by type of object returned) that can\nbe called to search for an object identified by a string.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *INTEGER-TO-OBJECT-FUNCTIONS* (LIST OF CODE-WRAPPER) (LIST) :DOCUMENTATION \"List of functions that can be called to search for\nan object identified by an integer.\")");
       oSTRING_TO_OBJECT_FUNCTIONSo->clear();

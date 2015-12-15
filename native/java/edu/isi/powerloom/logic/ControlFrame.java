@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -176,6 +176,11 @@ public class ControlFrame extends StandardObject {
     }
   }
 
+  public static boolean collectDescriptionExtensionFrameP(ControlFrame frame) {
+    return ((frame.patternRecord != null) &&
+        (frame.patternRecord.collectionList != null));
+  }
+
   public static void createCollectDescriptionExtensionFrame(ControlFrame frame, Description description) {
     { ControlFrame downframe = ControlFrame.createDownFrame(frame, null);
 
@@ -214,16 +219,29 @@ public class ControlFrame extends StandardObject {
         }
         matchmode = Logic.lookupQueryOption(subqueryiterator, Logic.KWD_MATCH_MODE);
         if ((matchmode != null) &&
-            (!Stella.stringEqualP(Logic.coerceToString(matchmode), "STRICT"))) {
+            (!Stella.stringEqualP(Stella_Object.coerceToString(matchmode), "STRICT"))) {
           partialqueryP = true;
         }
-        Logic.collectFreeVariables(proposition, iovariables, Stella.list(Stella.NIL), Stella.list(Stella.NIL));
+        Logic.collectFreeVariables(proposition, iovariables, List.list(Stella.NIL), List.list(Stella.NIL));
         KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_QUERY_SPECIALIST_IO_VARIABLES, iovariables, null);
-        { Description self001 = Description.newDescription();
+        { Object old$Evaluationmode$000 = Logic.$EVALUATIONMODE$.get();
 
-          self001.ioVariables = ((Vector)(Logic.copyListToArgumentsVector(iovariables)));
-          self001.proposition = proposition;
-          subquerydescription = self001;
+          try {
+            Native.setSpecial(Logic.$EVALUATIONMODE$, Logic.KWD_DESCRIPTION);
+            { Description self001 = Description.newDescription();
+
+              self001.ioVariables = ((Vector)(Logic.copyListToArgumentsVector(iovariables)));
+              self001.proposition = proposition;
+              subquerydescription = self001;
+            }
+            { Description temp000 = Description.findDuplicateDescription(subquerydescription);
+
+              subquerydescription = ((temp000 != null) ? temp000 : subquerydescription);
+            }
+
+          } finally {
+            Logic.$EVALUATIONMODE$.set(old$Evaluationmode$000);
+          }
         }
         Description.computeInternalVariables(subquerydescription);
         iovariablebindings = Vector.newVector(iovariables.length());
@@ -421,7 +439,7 @@ public class ControlFrame extends StandardObject {
         { Justification self000 = Justification.newJustification();
 
           self000.inferenceRule = Logic.KWD_EXISTENTIAL_INTRODUCTION;
-          self000.antecedents = ((((Justification)(KeyValueList.dynamicSlotValue(argument.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))) != null) ? Stella_Object.cons(((Justification)(KeyValueList.dynamicSlotValue(argument.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL) : Stella.NIL);
+          self000.antecedents = ((((Justification)(KeyValueList.dynamicSlotValue(argument.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))) != null) ? Cons.cons(((Justification)(KeyValueList.dynamicSlotValue(argument.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL) : Stella.NIL);
           ControlFrame.recordGoalJustification(frame, self000);
         }
       }
@@ -463,7 +481,7 @@ public class ControlFrame extends StandardObject {
         { Justification self000 = Justification.newJustification();
 
           self000.inferenceRule = Logic.KWD_DISPROOF;
-          self000.antecedents = Stella_Object.cons(((Justification)(KeyValueList.dynamicSlotValue(argument.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL);
+          self000.antecedents = Cons.cons(((Justification)(KeyValueList.dynamicSlotValue(argument.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL);
           ControlFrame.recordGoalJustification(frame, self000);
         }
       }
@@ -479,7 +497,7 @@ public class ControlFrame extends StandardObject {
         { Justification self000 = Justification.newJustification();
 
           self000.inferenceRule = Logic.KWD_OR_INTRODUCTION;
-          self000.antecedents = Stella_Object.cons(((Justification)(KeyValueList.dynamicSlotValue(disjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL);
+          self000.antecedents = Cons.cons(((Justification)(KeyValueList.dynamicSlotValue(disjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL);
           ControlFrame.recordGoalJustification(frame, self000);
         }
       }
@@ -505,7 +523,7 @@ public class ControlFrame extends StandardObject {
             }
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(((conjunct.state == Logic.KWD_POPPED) ? ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))).copy() : ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)))), Stella.NIL);
+                collect000 = Cons.cons(((conjunct.state == Logic.KWD_POPPED) ? ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))).copy() : ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)))), Stella.NIL);
                 if (antecedents == Stella.NIL) {
                   antecedents = collect000;
                 }
@@ -516,7 +534,7 @@ public class ControlFrame extends StandardObject {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(((conjunct.state == Logic.KWD_POPPED) ? ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))).copy() : ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)))), Stella.NIL);
+                collect000.rest = Cons.cons(((conjunct.state == Logic.KWD_POPPED) ? ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))).copy() : ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)))), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -555,7 +573,7 @@ public class ControlFrame extends StandardObject {
               self002.proposition = rule;
               self002.truthValue = ((TruthValue)(Stella_Object.accessInContext(rule.truthValue, rule.homeContext, false)));
               self002.positiveScore = ((TruthValue)(Stella_Object.accessInContext(rule.truthValue, rule.homeContext, false))).positiveScore;
-              self001.antecedents = Stella_Object.cons(self002, Stella_Object.cons(((Justification)(KeyValueList.dynamicSlotValue(antecedent.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL));
+              self001.antecedents = Cons.cons(self002, Cons.cons(((Justification)(KeyValueList.dynamicSlotValue(antecedent.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL));
             }
             { Justification justification = self001;
 
@@ -572,59 +590,95 @@ public class ControlFrame extends StandardObject {
 
   public static void recordPatternJustification(ControlFrame frame, Keyword lastmove) {
     { ControlFrame argument = frame.result;
+      Justification justification = ((Justification)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)));
 
       if ((lastmove == Logic.KWD_UP_TRUE) ||
           (lastmove == Logic.KWD_UP_FAIL)) {
         if (((Justification)(KeyValueList.dynamicSlotValue(argument.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))) == null) {
           return;
         }
-        { Justification self000 = Justification.newJustification();
+        if (justification == null) {
+          { Justification self000 = Justification.newJustification();
 
-          self000.inferenceRule = Logic.KWD_PATTERN;
-          self000.antecedents = Stella_Object.cons(((Justification)(KeyValueList.dynamicSlotValue(argument.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL);
-          ControlFrame.recordGoalJustification(frame, self000);
+            self000.inferenceRule = Logic.KWD_PATTERN;
+            ControlFrame.recordGoalJustification(frame, self000);
+          }
+          justification = ((Justification)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)));
         }
-        Justification.backlinkToPatternJustification(((Justification)(KeyValueList.dynamicSlotValue(argument.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), ((Justification)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))));
-        { KeyValueList substitution = KeyValueList.newKeyValueList();
+        { KeyValueMap substitution = KeyValueMap.newKeyValueMap();
           PatternRecord patternrecord = frame.patternRecord;
           Description description = null;
+          boolean collectionframeP = false;
 
           if (patternrecord != null) {
-            if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(patternrecord), Logic.SGT_LOGIC_PATTERN_RECORD)) {
-              { PatternRecord patternrecord000 = ((PatternRecord)(patternrecord));
+            collectionframeP = patternrecord.collectionList != null;
+            description = patternrecord.optimalPattern;
+            if (description != null) {
+              { PatternVariable vbl = null;
+                Vector vector000 = description.ioVariables;
+                int index000 = 0;
+                int length000 = vector000.length();
 
-                description = patternrecord000.optimalPattern;
-                if (description != null) {
-                  { PatternVariable vbl = null;
-                    Vector vector000 = description.ioVariables;
-                    int index000 = 0;
-                    int length000 = vector000.length();
+                for (;index000 < length000; index000 = index000 + 1) {
+                  vbl = ((PatternVariable)((vector000.theArray)[index000]));
+                  substitution.insertAt(vbl, (((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(vbl.boundToOffset)]);
+                }
+              }
+              { PatternVariable vbl = null;
+                Vector vector001 = description.internalVariables;
+                int index001 = 0;
+                int length001 = vector001.length();
 
-                    for (;index000 < length000; index000 = index000 + 1) {
-                      vbl = ((PatternVariable)((vector000.theArray)[index000]));
-                      substitution.insertAt(vbl, (((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(vbl.boundToOffset)]);
-                    }
-                  }
-                  { PatternVariable vbl = null;
-                    Vector vector001 = description.internalVariables;
-                    int index001 = 0;
-                    int length001 = vector001.length();
-
-                    for (;index001 < length001; index001 = index001 + 1) {
-                      vbl = ((PatternVariable)((vector001.theArray)[index001]));
-                      substitution.insertAt(vbl, (((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(vbl.boundToOffset)]);
-                    }
-                  }
+                for (;index001 < length001; index001 = index001 + 1) {
+                  vbl = ((PatternVariable)((vector001.theArray)[index001]));
+                  substitution.insertAt(vbl, (((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(vbl.boundToOffset)]);
                 }
               }
             }
-            else {
-            }
           }
           if (Stella_Object.isaP(substitution, Logic.SGT_STELLA_KEY_VALUE_LIST)) {
-            substitution = ((KeyValueList)(((KeyValueList)(substitution)).reverse()));
+            { KeyValueMap oldsubstitution = substitution;
+
+              substitution = KeyValueMap.newKeyValueMap();
+              { Stella_Object key = null;
+                Stella_Object val = null;
+                DictionaryIterator iter000 = ((DictionaryIterator)(oldsubstitution.allocateIterator()));
+
+                while (iter000.nextP()) {
+                  key = iter000.key;
+                  val = iter000.value;
+                  substitution.insertAt(key, val);
+                }
+              }
+            }
           }
-          ((Justification)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))).substitution = ((KeyValueList)(substitution));
+          justification.substitution = ((KeyValueMap)(substitution));
+          { Justification antecedent = ((Justification)(KeyValueList.dynamicSlotValue(argument.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)));
+
+            if (collectionframeP) {
+              justification.inferenceRule = Logic.KWD_AND_INTRODUCTION;
+              { Justification patterncopy = null;
+
+                { Justification self004 = Justification.newJustification();
+
+                  self004.inferenceRule = Logic.KWD_PATTERN;
+                  self004.antecedents = Cons.cons(antecedent, Stella.NIL);
+                  ControlFrame.recordGoalJustification(frame, self004);
+                }
+                patterncopy = ((Justification)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)));
+                KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, justification, null);
+                Justification.backlinkToPatternJustification(antecedent, patterncopy);
+                Justification.backlinkToPatternJustification(patterncopy, justification);
+                patterncopy.substitution = ((KeyValueMap)(substitution));
+                justification.substitution = null;
+                antecedent = patterncopy;
+              }
+            }
+            justification.antecedents = Cons.cons(antecedent, justification.antecedents);
+            if (!(collectionframeP)) {
+              Justification.backlinkToPatternJustification(antecedent, justification);
+            }
+          }
         }
       }
       else {
@@ -635,15 +689,42 @@ public class ControlFrame extends StandardObject {
   public static void recordPrimitiveJustification(ControlFrame frame, Keyword lastmove) {
     if ((lastmove == Logic.KWD_UP_TRUE) ||
         (lastmove == Logic.KWD_UP_FAIL)) {
-      { Cons antecedents = (((frame.result != null) &&
-            (((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))) != null)) ? Stella_Object.cons(((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL) : Stella.NIL);
+      { Keyword strategy = ((lastmove == Logic.KWD_UP_FAIL) ? Logic.KWD_FAILURE : frame.currentStrategy);
+        Justification justification = null;
 
-        { PrimitiveStrategy self000 = PrimitiveStrategy.newPrimitiveStrategy();
-
-          self000.strategy = ((lastmove == Logic.KWD_UP_FAIL) ? Logic.KWD_FAILURE : frame.currentStrategy);
-          self000.antecedents = antecedents;
-          ControlFrame.recordGoalJustification(frame, self000);
+        if ((frame.justifications != null) &&
+            (!frame.justifications.emptyP())) {
+          justification = ((Justification)(frame.justifications.first()));
         }
+        else if (frame.result != null) {
+          if (((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))) != null) {
+            { PrimitiveStrategy self000 = PrimitiveStrategy.newPrimitiveStrategy();
+
+              self000.strategy = strategy;
+              self000.antecedents = Cons.cons(((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL);
+              justification = self000;
+            }
+          }
+          else if ((frame.result.proposition != null) &&
+              frame.result.proposition.forwardJustifications().nonEmptyP()) {
+            justification = ((Justification)(frame.result.proposition.forwardJustifications().first()));
+          }
+        }
+        else if ((frame.proposition != null) &&
+            frame.proposition.forwardJustifications().nonEmptyP()) {
+          System.out.println("RECORD-PRIMITIVE-JUSTIFICATION:  Test to see if clause needed.");
+          justification = ((Justification)(frame.proposition.forwardJustifications().first()));
+        }
+        else {
+        }
+        if (justification == null) {
+          { PrimitiveStrategy self001 = PrimitiveStrategy.newPrimitiveStrategy();
+
+            self001.strategy = strategy;
+            justification = self001;
+          }
+        }
+        ControlFrame.recordGoalJustification(frame, justification);
       }
     }
     else {
@@ -726,10 +807,9 @@ public class ControlFrame extends StandardObject {
 
   public static void registerInferenceCutoff(ControlFrame frame, Keyword reason) {
     while (frame != null) {
-      if (frame.state == Logic.KWD_FAIL) {
+      if ((frame.state == Logic.KWD_FAIL) ||
+          ControlFrame.collectDescriptionExtensionFrameP(frame)) {
         KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_INFERENCE_CUTOFF_REASON, reason, null);
-      }
-      else {
       }
       frame = frame.up;
     }
@@ -821,22 +901,27 @@ public class ControlFrame extends StandardObject {
         testValue000 = true;
       }
       else {
-        { boolean alwaysP000 = true;
+        {
+          { boolean alwaysP000 = true;
 
-          { PatternVariable var = null;
-            Vector vector000 = ((Vector)(KeyValueList.dynamicSlotValue(frame.proposition.dynamicSlots, Logic.SYM_LOGIC_IO_VARIABLES, null)));
-            int index000 = 0;
-            int length000 = vector000.length();
+            { PatternVariable var = null;
+              Vector vector000 = ((Vector)(KeyValueList.dynamicSlotValue(frame.proposition.dynamicSlots, Logic.SYM_LOGIC_IO_VARIABLES, null)));
+              int index000 = 0;
+              int length000 = vector000.length();
 
-            loop000 : for (;index000 < length000; index000 = index000 + 1) {
-              var = ((PatternVariable)((vector000.theArray)[index000]));
-              if (!Logic.closedTermP(Logic.getDescription(Logic.logicalType(var)))) {
-                alwaysP000 = false;
-                break loop000;
+              loop000 : for (;index000 < length000; index000 = index000 + 1) {
+                var = ((PatternVariable)((vector000.theArray)[index000]));
+                if (!Logic.closedTermP(Logic.getDescription(Logic.logicalType(var)))) {
+                  alwaysP000 = false;
+                  break loop000;
+                }
               }
             }
+            testValue000 = alwaysP000;
           }
-          testValue000 = alwaysP000;
+          if (!testValue000) {
+            testValue000 = Proposition.closedPropositionP(((Proposition)((frame.proposition.arguments.theArray)[0])));
+          }
         }
       }
       if (testValue000) {
@@ -943,6 +1028,31 @@ public class ControlFrame extends StandardObject {
     }
   }
 
+  public static Keyword resumeDisjunctiveImplicationProof(ControlFrame frame, Keyword lastmove) {
+    if (lastmove == Logic.KWD_UP_TRUE) {
+      ControlFrame.propagateFrameTruthValue(frame.result, frame);
+      if (frame.result.partialMatchFrame != null) {
+        frame.result.partialMatchFrame.propagateFramePartialTruth(frame);
+      }
+      if (frame.down != null) {
+        return (Logic.KWD_CONTINUING_SUCCESS);
+      }
+      else {
+        return (Logic.KWD_FINAL_SUCCESS);
+      }
+    }
+    else if (lastmove == Logic.KWD_UP_FAIL) {
+      return (Logic.KWD_FAILURE);
+    }
+    else {
+      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+        stream000.nativeStream.print("`" + lastmove + "' is not a valid case option");
+        throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+      }
+    }
+  }
+
   public static Keyword tryDisjunctiveImplicationProof(ControlFrame frame) {
     { ParallelThread parallelthread = ((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentParallelThread;
       ParallelControlFrame parallelframe = ((ParallelControlFrame)(parallelthread.topControlFrame.up));
@@ -999,7 +1109,7 @@ public class ControlFrame extends StandardObject {
               for (;index002 < length002; index002 = index002 + 1) {
                 disj = ((Proposition)((vector002.theArray)[index002]));
                 if (!(disj == subgoaldisjunct)) {
-                  assumption = Proposition.recursivelyFastenDownPropositions(((!negatedtruthvalueP) ? Proposition.inheritProposition(disj, KeyValueList.newKeyValueList()) : Logic.conjoinPropositions(Proposition.inheritAsTopLevelProposition(disj, KeyValueList.newKeyValueList()))), false);
+                  assumption = Proposition.recursivelyFastenDownPropositions(((!negatedtruthvalueP) ? Proposition.inheritProposition(disj, KeyValueMap.newKeyValueMap()) : Logic.conjoinPropositions(Proposition.inheritAsTopLevelProposition(disj, KeyValueMap.newKeyValueMap()))), false);
                   if ((Stella.$TRACED_KEYWORDS$ != null) &&
                       Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_GOAL_TREE)) {
                     {
@@ -1444,14 +1554,14 @@ public class ControlFrame extends StandardObject {
       Iterator iterator = ((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null)));
 
       if (iterator == null) {
-        { NamedDescription collection = Proposition.extractCollectionArgument(proposition);
+        { Description collection = Proposition.extractCollectionArgument(proposition);
           List members = null;
 
           { boolean collectdirectmembersonlyP = Description.inferableP(collection);
 
             members = Logic.assertedCollectionMembers(collection, collectdirectmembersonlyP);
             if (!collectdirectmembersonlyP) {
-              NamedDescription.updateObservedCardinality(collection, members.length());
+              NamedDescription.updateObservedCardinality(((NamedDescription)(collection)), members.length());
             }
           }
           if (members == null) {
@@ -1504,7 +1614,7 @@ public class ControlFrame extends StandardObject {
       if (scanisapropositionsP) {
         return (ControlFrame.tryScanPropositionsProof(frame));
       }
-      { NamedDescription collection = Proposition.extractCollectionArgument(proposition);
+      { Description collection = Proposition.extractCollectionArgument(proposition);
 
         if (Logic.testIsaP(member, collection.surrogateValueInverse)) {
           return (Logic.KWD_FINAL_SUCCESS);
@@ -1548,7 +1658,7 @@ public class ControlFrame extends StandardObject {
         Proposition.assignTruthValue(provablerule, frame.result.truthValue);
         { ControlFrame downframe = ControlFrame.createSubgoalFrame(frame, frame.proposition, Logic.KWD_ANTECEDENTS);
 
-          KeyValueList.setDynamicSlotValue(downframe.dynamicSlots, Logic.SYM_STELLA_ITERATOR, Stella.consList(Stella_Object.cons(provablerule, Stella.NIL)).allocateIterator(), null);
+          KeyValueList.setDynamicSlotValue(downframe.dynamicSlots, Logic.SYM_STELLA_ITERATOR, Cons.consList(Cons.cons(provablerule, Stella.NIL)).allocateIterator(), null);
           proofadjunct.phase = Logic.KWD_ORIGINAL_GOAL;
           return (Logic.KWD_MOVE_DOWN);
         }
@@ -1665,6 +1775,7 @@ public class ControlFrame extends StandardObject {
           if (ControlFrame.checkForDuplicateRuleP(frame, impliesproposition)) {
             continue loop000;
           }
+          KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_ANTECEDENTS_RULE, impliesproposition, null);
           if (!Proposition.trueP(impliesproposition)) {
             if (Proposition.getForwardGoals(impliesproposition).emptyP()) {
               continue loop000;
@@ -1676,7 +1787,6 @@ public class ControlFrame extends StandardObject {
               }
             }
           }
-          KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_ANTECEDENTS_RULE, impliesproposition, null);
           { ControlFrame downframe = ControlFrame.createSubgoalFrame(frame, null, Logic.KWD_FULL_SUBQUERY);
 
             KeyValueList.setDynamicSlotValue(downframe.dynamicSlots, Logic.SYM_LOGIC_DESCRIPTION, antecedentdescription, null);
@@ -1798,19 +1908,19 @@ public class ControlFrame extends StandardObject {
           chooseValue000 = Description.inferableP(description);
         }
         if (chooseValue000) {
-          strategies = Stella_Object.cons(Logic.KWD_ANTECEDENTS, strategies);
+          strategies = Cons.cons(Logic.KWD_ANTECEDENTS, strategies);
         }
       }
       if (reversepolarityP &&
           (Description.getInferableComplementDescription(description) != null)) {
-        strategies = Stella_Object.cons(Logic.KWD_GOAL_COMPLEMENT, strategies);
+        strategies = Cons.cons(Logic.KWD_GOAL_COMPLEMENT, strategies);
       }
       { Proposition proposition = frame.proposition;
 
         if ((proposition != null) &&
             (Proposition.allArgumentsBoundP(proposition) &&
              (Proposition.findMatchingConceivedProposition(proposition) != null))) {
-          strategies = Stella_Object.cons(Logic.KWD_FORWARD_GOALS, strategies);
+          strategies = Cons.cons(Logic.KWD_FORWARD_GOALS, strategies);
         }
       }
       { Stella_Object s = null;
@@ -1875,7 +1985,7 @@ public class ControlFrame extends StandardObject {
 
         for (;index000 < length000; index000 = index000 + 1) {
           arg = (vector000.theArray)[index000];
-          argumentvalues = Stella_Object.cons(Logic.argumentBoundTo(arg), argumentvalues);
+          argumentvalues = Cons.cons(Logic.argumentBoundTo(arg), argumentvalues);
         }
       }
       { boolean testValue000 = false;
@@ -1905,7 +2015,7 @@ public class ControlFrame extends StandardObject {
         }
       }
       { Cons inputvalues = argumentvalues.rest.reverse();
-        Proposition definingproposition = Logic.createFunctionProposition(((Surrogate)(proposition.operator)), inputvalues);
+        Proposition definingproposition = Logic.findOrCreateFunctionProposition(((Surrogate)(proposition.operator)), inputvalues);
 
         PatternVariable.bindVariableToValueP(((PatternVariable)((proposition.arguments.theArray)[(proposition.arguments.length() - 1)])), (definingproposition.arguments.theArray)[(definingproposition.arguments.length() - 1)], true);
         return (Logic.KWD_FINAL_SUCCESS);
@@ -2090,7 +2200,8 @@ public class ControlFrame extends StandardObject {
       }
       if (!(result == Logic.KWD_FAILURE)) {
         { TruthValue truthvalue = Logic.propositionsIteratorTruthValue(iterator);
-          double weight = ((FloatWrapper)(KeyValueList.dynamicSlotValue(((Proposition)(iterator.value)).dynamicSlots, Logic.SYM_LOGIC_WEIGHT, Stella.NULL_FLOAT_WRAPPER))).wrapperValue;
+          Proposition matchingProposition = ((Proposition)(iterator.value));
+          double weight = ((FloatWrapper)(KeyValueList.dynamicSlotValue(matchingProposition.dynamicSlots, Logic.SYM_LOGIC_WEIGHT, Stella.NULL_FLOAT_WRAPPER))).wrapperValue;
 
           if ((truthvalue == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
               (truthvalue == Logic.DEFAULT_FALSE_TRUTH_VALUE)) {
@@ -2101,7 +2212,8 @@ public class ControlFrame extends StandardObject {
                 iterator = Proposition.allMatchingPropositions(proposition);
                 if (iterator.nextP()) {
                   truthvalue = Logic.propositionsIteratorTruthValue(iterator);
-                  weight = ((FloatWrapper)(KeyValueList.dynamicSlotValue(((Proposition)(iterator.value)).dynamicSlots, Logic.SYM_LOGIC_WEIGHT, Stella.NULL_FLOAT_WRAPPER))).wrapperValue;
+                  matchingProposition = ((Proposition)(iterator.value));
+                  weight = ((FloatWrapper)(KeyValueList.dynamicSlotValue(matchingProposition.dynamicSlots, Logic.SYM_LOGIC_WEIGHT, Stella.NULL_FLOAT_WRAPPER))).wrapperValue;
                 }
 
               } finally {
@@ -2110,6 +2222,23 @@ public class ControlFrame extends StandardObject {
             }
           }
           frame.truthValue = truthvalue;
+          if (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue()) {
+            { Justification fj = null;
+              Cons iter000 = matchingProposition.forwardJustifications().theConsList;
+
+              loop001 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+                fj = ((Justification)(iter000.value));
+                frame.justifications.push(fj);
+                break loop001;
+              }
+            }
+            { Justification subsetJustification = Proposition.createSubsetJustification(proposition, matchingProposition);
+
+              if (subsetJustification != null) {
+                frame.justifications.push(subsetJustification);
+              }
+            }
+          }
           if (frame.partialMatchFrame != null) {
             if (weight == Stella.NULL_FLOAT) {
               weight = 1.0;
@@ -2153,7 +2282,15 @@ public class ControlFrame extends StandardObject {
         }
       }
     }
-    return (ControlFrame.scanCachedGoals(frame));
+    if (Proposition.allKeyArgumentsBoundP(frame.proposition)) {
+      if (ControlFrame.scanCachedGoals(frame) == Logic.KWD_FAILURE) {
+        return (Logic.KWD_FAILURE);
+      }
+      else {
+        return (Logic.KWD_FINAL_SUCCESS);
+      }
+    }
+    return (Logic.KWD_FAILURE);
   }
 
   public static Keyword scanCachedGoals(ControlFrame frame) {
@@ -2232,14 +2369,31 @@ public class ControlFrame extends StandardObject {
     { Proposition proposition = frame.proposition;
       NamedDescription description = Logic.getDescription(((Surrogate)(proposition.operator)));
       java.lang.reflect.Method specialistcode = NamedDescription.lookupSpecialist(description);
-      Keyword result = ((specialistcode != null) ? ((Keyword)(edu.isi.stella.javalib.Native.funcall(specialistcode, null, new java.lang.Object [] {frame, lastmove}))) : Logic.KWD_FAILURE);
+      Keyword result = Logic.KWD_FAILURE;
 
-      if (frame.truthValue == null) {
-        if ((result == Logic.KWD_FINAL_SUCCESS) ||
-            (result == Logic.KWD_CONTINUING_SUCCESS)) {
-          ControlFrame.setFrameTruthValue(frame, Logic.TRUE_TRUTH_VALUE);
+      if ((specialistcode != null) &&
+          NamedDescription.specialistApplicableP(description, proposition)) {
+        if (Logic.$POWERLOOM_EXECUTION_MODE$ == Logic.KWD_DEBUG) {
+          result = ((Keyword)(edu.isi.stella.javalib.Native.funcall(specialistcode, null, new java.lang.Object [] {frame, lastmove})));
         }
         else {
+          try {
+            result = ((Keyword)(edu.isi.stella.javalib.Native.funcall(specialistcode, null, new java.lang.Object [] {frame, lastmove})));
+          } catch (java.lang.Exception ne) {
+            {
+              Stella.STANDARD_WARNING.nativeStream.println("Warning: Exception executing specialist for `" + description + "': ");
+              Stella.STANDARD_WARNING.nativeStream.println("`" + ne + "'");
+            }
+;
+          }
+        }
+        if (frame.truthValue == null) {
+          if ((result == Logic.KWD_FINAL_SUCCESS) ||
+              (result == Logic.KWD_CONTINUING_SUCCESS)) {
+            ControlFrame.setFrameTruthValue(frame, Logic.TRUE_TRUTH_VALUE);
+          }
+          else {
+          }
         }
       }
       return (result);
@@ -2265,7 +2419,7 @@ public class ControlFrame extends StandardObject {
   }
 
   public static void pushNextStrategy(ControlFrame frame, Keyword strategy) {
-    frame.nextStrategies = Stella_Object.cons(strategy, frame.nextStrategies);
+    frame.nextStrategies = Cons.cons(strategy, frame.nextStrategies);
   }
 
   public static Keyword tryParallelThreadProof(ControlFrame frame) {
@@ -2387,6 +2541,9 @@ public class ControlFrame extends StandardObject {
         }
         else if (testValue000 == Logic.KWD_CONDITIONAL_ANTECEDENT) {
           result = ControlFrame.continueConditionalAntecedentProof(frame, lastmove);
+        }
+        else if (testValue000 == Logic.KWD_DISJUNCTIVE_IMPLICATION_INTRODUCTION) {
+          result = ControlFrame.resumeDisjunctiveImplicationProof(frame, lastmove);
         }
         else {
           ControlFrame.propagateFrameTruthValue(frame.result, frame);
@@ -2566,7 +2723,7 @@ public class ControlFrame extends StandardObject {
           }
           if (Logic.parallelStrategyP(strategy)) {
             frame = ControlFrame.parallelizeControlFrame(frame);
-            frame.nextStrategies = Stella_Object.cons(strategy, frame.nextStrategies);
+            frame.nextStrategies = Cons.cons(strategy, frame.nextStrategies);
             strategy = Logic.KWD_SELECT_PARALLEL_THREAD;
           }
           ControlFrame.clearStrategySlots(frame);
@@ -2805,6 +2962,25 @@ public class ControlFrame extends StandardObject {
       if (frame.goalBindings == null) {
         return;
       }
+      { Stella_Object binding = null;
+        Cons iter000 = frame.goalBindings;
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          binding = iter000.value;
+          if (binding != null) {
+            if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(binding), Logic.SGT_LOGIC_DESCRIPTION)) {
+              { Description binding000 = ((Description)(binding));
+
+                if (((Vector)(KeyValueList.dynamicSlotValue(binding000.dynamicSlots, Logic.SYM_LOGIC_EXTERNAL_VARIABLES, null))) != null) {
+                  return;
+                }
+              }
+            }
+            else {
+            }
+          }
+        }
+      }
       if (successP) {
         frame.dontCacheGoalFailureP = true;
       }
@@ -2826,7 +3002,7 @@ public class ControlFrame extends StandardObject {
               System.out.println("=========> CACHED " + ((successP ? "SUCCESS" : "FAILURE")) + " AT " + (((ControlFrame.goalHashCode(frame)) & 0x7FFFFFFF) % 1541) + ": " + frame.proposition);
             }
             Logic.updateNowTimestamp(Logic.KWD_EXECUTE_QUERY);
-            KeyValueList.setDynamicSlotValue(Logic.surrogateToDescription(((Surrogate)(frame.proposition.operator))).dynamicSlots, Logic.SYM_LOGIC_CHECK_FOR_CACHED_GOALSp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+            KeyValueList.setDynamicSlotValue(Logic.surrogateToDescription(((Surrogate)(frame.proposition.operator))).dynamicSlots, Logic.SYM_LOGIC_CHECK_FOR_CACHED_GOALSp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
             { int index = Stella.NULL_INTEGER;
               AtomicGoalCache cachedgoal = null;
 
@@ -2882,23 +3058,26 @@ public class ControlFrame extends StandardObject {
   }
 
   public static AtomicGoalCache createAtomicGoalCache(ControlFrame frame, AtomicGoalCache cache, boolean successP) {
-    if (cache == null) {
-      cache = AtomicGoalCache.newAtomicGoalCache();
-    }
-    { Proposition proposition = frame.proposition;
+    { boolean collisionP = cache != null;
+      Proposition proposition = frame.proposition;
 
+      if (!collisionP) {
+        cache = AtomicGoalCache.newAtomicGoalCache();
+      }
       if (successP) {
-        if (cache.next != null) {
-          cache.next.previous = cache.previous;
-          if (cache.previous == null) {
-            Proposition.setGoalCacheList(cache.next.proposition, cache.next);
+        if (collisionP) {
+          if (cache.next != null) {
+            cache.next.previous = cache.previous;
           }
+          if (cache.previous == null) {
+            Proposition.setGoalCacheList(cache.proposition, cache.next);
+          }
+          else {
+            cache.previous.next = cache.next;
+          }
+          cache.previous = null;
+          cache.next = null;
         }
-        if (cache.previous != null) {
-          cache.previous.next = cache.next;
-        }
-        cache.previous = null;
-        cache.next = null;
         { AtomicGoalCache previousstart = Proposition.getGoalCacheList(proposition);
 
           if (!(cache == previousstart)) {
@@ -2934,7 +3113,7 @@ public class ControlFrame extends StandardObject {
 
       code = ((Context)(Stella.$CONTEXT$.get())).hashCode_();
       if (frame.reversePolarityP) {
-        code = (((((code & 1) == 0) ? (code >>> 1) : (((code >> 1)) | Stella.$INTEGER_MSB_MASK$))) ^ 48312004);
+        code = (((((code & 1) == 0) ? (code >>> 1) : (((code >> 1)) | Stella.$INTEGER_MSB_MASK$))) ^ 8312004);
       }
       code = (((((code & 1) == 0) ? (code >>> 1) : (((code >> 1)) | Stella.$INTEGER_MSB_MASK$))) ^ (Stella_Object.safeHashCode(operator)));
       { Stella_Object arg = null;
@@ -3035,7 +3214,7 @@ public class ControlFrame extends StandardObject {
           arg = (vector000.theArray)[index000];
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Logic.argumentBoundTo(arg), Stella.NIL);
+              collect000 = Cons.cons(Logic.argumentBoundTo(arg), Stella.NIL);
               if (result == Stella.NIL) {
                 result = collect000;
               }
@@ -3046,7 +3225,7 @@ public class ControlFrame extends StandardObject {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Logic.argumentBoundTo(arg), Stella.NIL);
+              collect000.rest = Cons.cons(Logic.argumentBoundTo(arg), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -3280,7 +3459,7 @@ public class ControlFrame extends StandardObject {
            ((prop.kind == Logic.KWD_FUNCTION) &&
             (Stella_Object.isaP(prop.arguments.last(), Logic.SGT_LOGIC_PATTERN_VARIABLE) &&
              (Logic.argumentBoundTo(prop.arguments.last()) == null))))) {
-        pframe.unboundVars = Stella_Object.cons(((PatternVariable)(prop.arguments.last())), pframe.unboundVars);
+        pframe.unboundVars = Cons.cons(((PatternVariable)(prop.arguments.last())), pframe.unboundVars);
       }
       pframe.recordPartialMatchScore(((FloatWrapper)(KeyValueList.dynamicSlotValue(((QueryIterator)(Logic.$QUERYITERATOR$.get())).dynamicSlots, Logic.SYM_LOGIC_LATEST_POSITIVE_SCORE, Stella.NULL_FLOAT_WRAPPER))).wrapperValue, pframe.propositionWeight(prop));
     }
@@ -3496,6 +3675,7 @@ public class ControlFrame extends StandardObject {
       ControlFrame.dontCacheGoalFailureBetweenFrames(frame, ((QueryIterator)(Logic.$QUERYITERATOR$.get())).baseControlFrame);
     }
     ControlFrame.registerInferenceCutoff(frame, Logic.KWD_DEPTH_VIOLATION);
+    ((QueryIterator)(Logic.$QUERYITERATOR$.get())).depthCutoffsP = true;
     if ((Logic.$DUPLICATE_SUBGOAL_STRATEGY$ == Logic.KWD_DUPLICATE_GOALS) ||
         (Logic.$DUPLICATE_SUBGOAL_STRATEGY$ == Logic.KWD_DUPLICATE_GOALS_WITH_CACHING)) {
       ControlFrame.setFrameTruthValue(frame, Logic.UNKNOWN_TRUTH_VALUE);
@@ -3807,7 +3987,7 @@ public class ControlFrame extends StandardObject {
           v = ((PatternVariable)((vector000.theArray)[index000]));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons((((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(v.boundToOffset)], Stella.NIL);
+              collect000 = Cons.cons((((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(v.boundToOffset)], Stella.NIL);
               if (iovariablevalues == Stella.NIL) {
                 iovariablevalues = collect000;
               }
@@ -3818,7 +3998,7 @@ public class ControlFrame extends StandardObject {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons((((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(v.boundToOffset)], Stella.NIL);
+              collect000.rest = Cons.cons((((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(v.boundToOffset)], Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -3863,7 +4043,7 @@ public class ControlFrame extends StandardObject {
           i = iter000;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(((!BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)((booleanvector.theArray)[i])))) ? (((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(((PatternVariable)((iovariables.theArray)[i])).boundToOffset)] : null), Stella.NIL);
+              collect000 = Cons.cons(((!BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)((booleanvector.theArray)[i])))) ? (((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(((PatternVariable)((iovariables.theArray)[i])).boundToOffset)] : null), Stella.NIL);
               if (iovariablevalues == Stella.NIL) {
                 iovariablevalues = collect000;
               }
@@ -3874,7 +4054,7 @@ public class ControlFrame extends StandardObject {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(((!BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)((booleanvector.theArray)[i])))) ? (((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(((PatternVariable)((iovariables.theArray)[i])).boundToOffset)] : null), Stella.NIL);
+              collect000.rest = Cons.cons(((!BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)((booleanvector.theArray)[i])))) ? (((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord.variableBindings.theArray)[(((PatternVariable)((iovariables.theArray)[i])).boundToOffset)] : null), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -3937,7 +4117,7 @@ public class ControlFrame extends StandardObject {
           while (v.nextP()) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(null, Stella.NIL);
+                collect000 = Cons.cons(null, Stella.NIL);
                 if (iobindings == Stella.NIL) {
                   iobindings = collect000;
                 }
@@ -3948,7 +4128,7 @@ public class ControlFrame extends StandardObject {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(null, Stella.NIL);
+                collect000.rest = Cons.cons(null, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -3959,7 +4139,7 @@ public class ControlFrame extends StandardObject {
       optimalpattern = Description.selectOptimalQueryPattern(description, patternrecord.booleanVector, frame);
       patternrecord.optimalPattern = optimalpattern;
       if (Description.checkForSingleValuedGoalP(optimalpattern, iobindings)) {
-        KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_CACHED_SINGLE_VALUEDp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_CACHED_SINGLE_VALUEDp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       }
       frame.proposition = optimalpattern.proposition;
       { int variablescount = iobindings.length() + optimalpattern.internalVariables.length() + externalbindings.length();
@@ -4031,7 +4211,7 @@ public class ControlFrame extends StandardObject {
               while (v.nextP()) {
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(Stella.ZERO_WRAPPER, Stella.NIL);
+                    collect000 = Cons.cons(Stella.ZERO_WRAPPER, Stella.NIL);
                     if (oneslist.theConsList == Stella.NIL) {
                       oneslist.theConsList = collect000;
                     }
@@ -4042,7 +4222,7 @@ public class ControlFrame extends StandardObject {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(Stella.ZERO_WRAPPER, Stella.NIL);
+                    collect000.rest = Cons.cons(Stella.ZERO_WRAPPER, Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -4081,6 +4261,7 @@ public class ControlFrame extends StandardObject {
                 }
                 else if (Logic.$DUPLICATE_SUBGOAL_STRATEGY$ == Logic.KWD_DUPLICATE_GOALS_WITH_CACHING) {
                   frame.state = Logic.KWD_SCAN_CACHED_BINDINGS;
+                  ControlFrame.createChoicePoint(frame);
                   return (Logic.KWD_MOVE_IN_PLACE);
                 }
                 else {
@@ -4099,11 +4280,11 @@ public class ControlFrame extends StandardObject {
                 strategies = Stella.getQuotedTree("((:SPECIALIST :LOOKUP-GOAL-CACHES :LOOKUP-ASSERTIONS :SHALLOW-DISPROOF :ALL-SUBGOAL-STRATEGIES :REFUTATION) \"/LOGIC\")", "/LOGIC");
               }
               else {
-                strategies = Stella.getQuotedTree("((:SPECIALIST :LOOKUP-ASSERTIONS :SHALLOW-DISPROOF) \"/LOGIC\")", "/LOGIC");
+                strategies = Stella.getQuotedTree("((:SPECIALIST :LOOKUP-GOAL-CACHES :LOOKUP-ASSERTIONS :SHALLOW-DISPROOF) \"/LOGIC\")", "/LOGIC");
               }
               if ((proposition.kind == Logic.KWD_FUNCTION) &&
                   (!((Boolean)(Logic.$REVERSEPOLARITYp$.get())).booleanValue())) {
-                strategies = Cons.copyConsList(strategies).concatenate(Stella.consList(Stella_Object.cons(Logic.KWD_MANUFACTURE_SKOLEM, Stella.NIL)), Stella.NIL);
+                strategies = Cons.copyConsList(strategies).concatenate(Cons.consList(Cons.cons(Logic.KWD_MANUFACTURE_SKOLEM, Stella.NIL)), Stella.NIL);
               }
             }
             else if (testValue000 == Logic.KWD_EQUIVALENT) {
@@ -4122,6 +4303,7 @@ public class ControlFrame extends StandardObject {
           }
           frame.nextStrategies = strategies;
           frame.state = Logic.KWD_ATOMIC_GOAL;
+          ControlFrame.createChoicePoint(frame);
           return (Logic.KWD_MOVE_IN_PLACE);
         }
 
@@ -4209,7 +4391,7 @@ public class ControlFrame extends StandardObject {
   }
 
   public static Keyword overlayWithStrategyFrame(ControlFrame frame, Keyword strategy) {
-    frame.nextStrategies = Stella.consList(Stella_Object.cons(strategy, Stella.NIL));
+    frame.nextStrategies = Cons.consList(Cons.cons(strategy, Stella.NIL));
     frame.state = Logic.KWD_STRATEGY;
     return (Logic.KWD_MOVE_IN_PLACE);
   }
@@ -4255,7 +4437,8 @@ public class ControlFrame extends StandardObject {
     }
     else if (lastmove == Logic.KWD_UP_FAIL) {
       frame.truthValue = TruthValue.invertTruthValue(frame.result.truthValue);
-      if (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue()) {
+      if (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue() &&
+          (((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))) != null)) {
         ControlFrame.recordDisproofJustification(frame, lastmove);
       }
       return (Logic.KWD_FAILURE);
@@ -4277,7 +4460,9 @@ public class ControlFrame extends StandardObject {
             Proposition.closedPropositionP(proposition)) {
           return (ControlFrame.overlayWithFailFrame(frame, proposition));
         }
-        ControlFrame.createChoicePoint(frame);
+        if (!(frame.down != null)) {
+          ControlFrame.createChoicePoint(frame);
+        }
         return (Logic.KWD_MOVE_DOWN);
       }
       else if (lastmove == Logic.KWD_UP_TRUE) {
@@ -4513,7 +4698,6 @@ public class ControlFrame extends StandardObject {
            ((testValue000 == Logic.KWD_PREDICATE) ||
             ((testValue000 == Logic.KWD_EQUIVALENT) ||
              (testValue000 == Logic.KWD_IMPLIES))))) {
-        ControlFrame.createChoicePoint(frame);
         return (ControlFrame.initiateAtomicGoalProofs(frame));
       }
       else if ((testValue000 == Logic.KWD_ATOMIC_GOAL) ||
@@ -4714,10 +4898,10 @@ public class ControlFrame extends StandardObject {
         support.argumentScores = Cons.copyConsList(((NnPartialMatch)(pmf.child)).argumentScores).reverse();
         support.score = ((FloatWrapper)(KeyValueList.dynamicSlotValue(support.fact.dynamicSlots, Logic.SYM_LOGIC_MATCH_SCORE, Stella.NULL_FLOAT_WRAPPER))).wrapperValue;
         if (frame.proposition.support() != null) {
-          KeyValueList.setDynamicSlotValue(frame.proposition.dynamicSlots, Logic.SYM_LOGIC_SUPPORT, Stella_Object.cons(support, frame.proposition.support()), null);
+          KeyValueList.setDynamicSlotValue(frame.proposition.dynamicSlots, Logic.SYM_LOGIC_SUPPORT, Cons.cons(support, frame.proposition.support()), null);
         }
         else {
-          KeyValueList.setDynamicSlotValue(frame.proposition.dynamicSlots, Logic.SYM_LOGIC_SUPPORT, Stella.consList(Stella_Object.cons(support, Stella.NIL)), null);
+          KeyValueList.setDynamicSlotValue(frame.proposition.dynamicSlots, Logic.SYM_LOGIC_SUPPORT, Cons.consList(Cons.cons(support, Stella.NIL)), null);
         }
       }
     }
@@ -5275,10 +5459,10 @@ public class ControlFrame extends StandardObject {
   }
 
   public static void unwindToChoicePointsBelowFrame(ControlFrame frame) {
-    if (frame != null) {
-      ControlFrame.unwindToChoicePoint(frame);
-      ControlFrame.unwindToChoicePointsBelowFrame(frame.down);
+    while (frame.down != null) {
+      frame = frame.down;
     }
+    ControlFrame.unwindToChoicePoint(frame);
   }
 
   public static int computeFrameDepth(ControlFrame frame) {
@@ -5763,7 +5947,7 @@ public class ControlFrame extends StandardObject {
       { BooleanWrapper answer = ((BooleanWrapper)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_STELLA_BADp, null)));
 
         if (answer == null) {
-          return ((false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER));
+          return (Stella.FALSE_WRAPPER);
         }
         else {
           return (answer);

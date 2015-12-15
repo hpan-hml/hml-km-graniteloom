@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,20 +52,20 @@ import edu.isi.stella.*;
 public class _StartupWhynot {
   static void helpStartupWhynot1() {
     {
-      Logic.SYM_LOGIC_UNKNOWN_GOAL_CUTOFF = ((Symbol)(Stella.internRigidSymbolWrtModule("UNKNOWN-GOAL-CUTOFF", null, 0)));
-      Logic.SGT_LOGIC_WHYNOT_DEEP_PARTIAL_MATCH = ((Surrogate)(Stella.internRigidSymbolWrtModule("WHYNOT-DEEP-PARTIAL-MATCH", null, 1)));
-      Logic.SGT_LOGIC_M_WHYNOT_PARTIAL_MATCHdNUMBER_OF_FAILED_SUBGOALS_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("M-WHYNOT-PARTIAL-MATCH.NUMBER-OF-FAILED-SUBGOALS-MEMO-TABLE-000", null, 1)));
-      Logic.SYM_LOGIC_REAL_ALLOTTED_CLOCK_TICKS = ((Symbol)(Stella.internRigidSymbolWrtModule("REAL-ALLOTTED-CLOCK-TICKS", null, 0)));
-      Logic.SGT_STELLA_CONS_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("CONS-ITERATOR", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.SGT_LOGIC_WHYNOT_PROOF_CLASS = ((Surrogate)(Stella.internRigidSymbolWrtModule("WHYNOT-PROOF-CLASS", null, 1)));
-      Logic.SYM_LOGIC_REPRESENTATIVE = ((Symbol)(Stella.internRigidSymbolWrtModule("REPRESENTATIVE", null, 0)));
-      Logic.SYM_LOGIC_DEVIATING_PATTERN = ((Symbol)(Stella.internRigidSymbolWrtModule("DEVIATING-PATTERN", null, 0)));
-      Logic.SYM_LOGIC_DEVIATING_VARIABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("DEVIATING-VARIABLE", null, 0)));
-      Logic.SYM_LOGIC_DEVIATING_INSTANCES = ((Symbol)(Stella.internRigidSymbolWrtModule("DEVIATING-INSTANCES", null, 0)));
-      Logic.SYM_LOGIC_THE_VARIABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("THE-VARIABLE", null, 0)));
-      Logic.KWD_WHYNOT = ((Keyword)(Stella.internRigidSymbolWrtModule("WHYNOT", null, 2)));
-      Logic.KWD_JUSTIFICATIONS = ((Keyword)(Stella.internRigidSymbolWrtModule("JUSTIFICATIONS", null, 2)));
-      Logic.SYM_LOGIC_STARTUP_WHYNOT = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-WHYNOT", null, 0)));
+      Logic.SYM_LOGIC_UNKNOWN_GOAL_CUTOFF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNKNOWN-GOAL-CUTOFF", null, 0)));
+      Logic.SGT_LOGIC_WHYNOT_DEEP_PARTIAL_MATCH = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("WHYNOT-DEEP-PARTIAL-MATCH", null, 1)));
+      Logic.SGT_LOGIC_M_WHYNOT_PARTIAL_MATCHdNUMBER_OF_FAILED_SUBGOALS_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("M-WHYNOT-PARTIAL-MATCH.NUMBER-OF-FAILED-SUBGOALS-MEMO-TABLE-000", null, 1)));
+      Logic.SYM_LOGIC_REAL_ALLOTTED_CLOCK_TICKS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("REAL-ALLOTTED-CLOCK-TICKS", null, 0)));
+      Logic.SGT_STELLA_CONS_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CONS-ITERATOR", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.SGT_LOGIC_WHYNOT_PROOF_CLASS = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("WHYNOT-PROOF-CLASS", null, 1)));
+      Logic.SYM_LOGIC_REPRESENTATIVE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("REPRESENTATIVE", null, 0)));
+      Logic.SYM_LOGIC_DEVIATING_PATTERN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEVIATING-PATTERN", null, 0)));
+      Logic.SYM_LOGIC_DEVIATING_VARIABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEVIATING-VARIABLE", null, 0)));
+      Logic.SYM_LOGIC_DEVIATING_INSTANCES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEVIATING-INSTANCES", null, 0)));
+      Logic.SYM_LOGIC_THE_VARIABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-VARIABLE", null, 0)));
+      Logic.KWD_WHYNOT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("WHYNOT", null, 2)));
+      Logic.KWD_JUSTIFICATIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("JUSTIFICATIONS", null, 2)));
+      Logic.SYM_LOGIC_STARTUP_WHYNOT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-WHYNOT", null, 0)));
     }
   }
 
@@ -157,6 +157,7 @@ public class _StartupWhynot {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MIN-CLOCK-TICKS-PER-WHYNOT-ANTECEDENT* INTEGER 5)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *MAX-WHYNOT-PROOF-CLASS-DEVIATIONS* INTEGER 1)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SIMILAR-WHYNOT-PROOF-CUTOFF* INTEGER 3)");

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -81,6 +81,7 @@ void startupUtilitiesSystem() {
         cleanupUnfinalizedClasses();
       }
       if (currentStartupTimePhaseP(9)) {
+        inModule(((StringWrapper*)(copyConsTree(wrapString("/UTILITIES")))));
         { int phase = NULL_INTEGER;
           int iter006 = 0;
           int upperBound007 = 9;
@@ -93,7 +94,6 @@ void startupUtilitiesSystem() {
             startupManuals();
             startupUnits();
             startupUnitDefs();
-            startupHttp();
           }
         }
         oSTARTUP_TIME_PHASEo = 999;

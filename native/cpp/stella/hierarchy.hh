@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -364,6 +364,7 @@ public:
   virtual List* substitute(Object* invalue, Object* outvalue);
   virtual List* reverse();
   virtual Object* pop();
+  virtual List* removeDuplicatesEqual();
   virtual Collection* removeDuplicates();
   virtual List* removeIf(cpp_function_code testP);
   virtual AbstractCollection* remove(Object* value);
@@ -460,6 +461,7 @@ public:
   virtual Cons* reverse();
   virtual Cons* prepend(Cons* list1);
   virtual Cons* concatenate(Cons* list2, int otherlists, ...);
+  virtual Cons* removeDuplicatesEqual();
   virtual Cons* removeDuplicates();
   virtual Cons* removeIf(cpp_function_code testP);
   virtual Cons* remove(Object* value);
@@ -622,6 +624,7 @@ public:
   Object** theArray;
 public:
   virtual void printObject(std::ostream* stream);
+  virtual Vector* sort(cpp_function_code predicate);
   virtual Iterator* butLast();
   virtual AbstractIterator* allocateIterator();
   virtual int equalHashCode();
@@ -674,19 +677,37 @@ public:
 };
 
 class VectorSequence : public Vector {
+// Extensible sequence implemented by a vector.  Whenever we run
+// out of room, we grow the sequence by a factor of two.  Note that this keeps the
+// average insertion cost per element constant.  This is generally preferable over
+// linked lists unless we need within-list insertions or removals, since it uses
+// less space and has better cache locality.
 public:
   int sequenceLength;
 public:
-  virtual int length();
+  virtual boolean objectEqualP(Object* y);
+  virtual void clear();
+  virtual Vector* copy();
+  virtual VectorSequence* reverse();
   virtual AbstractCollection* remove(Object* value);
   virtual void insert(Object* value);
-  virtual int resizeIncrement_reader();
+  virtual Object* lastSetter(Object* value);
+  virtual Object* last();
+  virtual int length();
+  virtual boolean nonEmptyP();
+  virtual boolean emptyP();
+  virtual Surrogate* primaryType();
 };
 
-class ShortVectorSequence : public VectorSequence {
+class CustomVectorSequence : public VectorSequence {
+// VECTOR-SEQUENCE (which see) with a customizable resize factor.
+// The resize factor needs to be > 1.
 public:
+  double resizeFactor;
+public:
+  virtual Vector* copy();
+  virtual void insert(Object* value);
   virtual Surrogate* primaryType();
-  virtual int resizeIncrement_reader();
 };
 
 class BooleanVector : public Vector {
@@ -746,9 +767,9 @@ public:
   int symbolId;
 public:
   virtual GlobalVariable* lookupGlobalVariable();
-  virtual char* visibleName();
-  virtual char* relativeName();
-  virtual char* localPrintName();
+  virtual char* visibleName(boolean readableP);
+  virtual char* relativeName(boolean readableP);
+  virtual char* localPrintName(boolean readableP);
   virtual Keyword* keywordify();
   virtual boolean deletedP();
 };
@@ -794,7 +815,7 @@ public:
   virtual StandardObject* yieldTypeSpecifier();
   virtual void destroyClass();
   virtual Class* getStellaClass(boolean errorP);
-  virtual char* localPrintName();
+  virtual char* localPrintName(boolean readableP);
   virtual Surrogate* surrogatify();
   virtual Surrogate* primaryType();
 };
@@ -1352,6 +1373,13 @@ public:
 
 };
 
+class TimeoutException : public StellaException {
+public:
+  TimeoutException(const std::string& msg) : StellaException(msg) {
+}
+
+};
+
 class Quantity : public Object {
 // General superclass for extensible quantity objects
 public:
@@ -1377,6 +1405,9 @@ public:
 };
 
 class NumberWrapper : public LiteralWrapper {
+public:
+  virtual NumberWrapper* max(NumberWrapper* y);
+  virtual NumberWrapper* min(NumberWrapper* y);
 };
 
 class IntegerWrapper : public NumberWrapper {
@@ -1390,6 +1421,20 @@ public:
   virtual boolean objectEqlP(Object* y);
   virtual Object* copyWrappedLiteral();
   virtual boolean terminateWrapperP();
+  virtual int hashCode();
+  virtual Surrogate* primaryType();
+};
+
+class LongIntegerWrapper : public NumberWrapper {
+public:
+  long long int wrapperValue;
+public:
+  virtual void printObject(std::ostream* stream);
+  virtual void javaOutputLiteral();
+  virtual void cppOutputLiteral();
+  virtual double numberWrapperToFloat();
+  virtual boolean objectEqlP(Object* y);
+  virtual Object* copyWrappedLiteral();
   virtual int hashCode();
   virtual Surrogate* primaryType();
 };
@@ -1507,6 +1552,7 @@ public:
   Cons* lispOnlyFiles;
   Cons* cppOnlyFiles;
   Cons* javaOnlyFiles;
+  Cons* dataFiles;
   Cons* preprocessedFiles;
   Cons* requiredSystems;
   boolean loadedP;
@@ -1561,6 +1607,8 @@ public:
 public:
   virtual void printObject(std::ostream* stream);
   virtual void free();
+  virtual long long int streamPositionSetter(long long int newpos);
+  virtual long long int streamPosition();
   virtual Surrogate* primaryType();
 };
 
@@ -1571,6 +1619,8 @@ public:
 public:
   virtual void printObject(std::ostream* stream);
   virtual void free();
+  virtual long long int streamPositionSetter(long long int newpos);
+  virtual long long int streamPosition();
   virtual Surrogate* primaryType();
 };
 
@@ -1643,9 +1693,10 @@ Object* accessVectorSlotValue(Vector* self, Symbol* slotname, Object* value, boo
 ExtensibleVector* newExtensibleVector(int arraySize);
 ExtensibleSymbolArray* newExtensibleSymbolArray(int arraySize);
 Object* accessExtensibleSymbolArraySlotValue(ExtensibleSymbolArray* self, Symbol* slotname, Object* value, boolean setvalueP);
+VectorSequence* newVectorSequence(int arraySize);
 Object* accessVectorSequenceSlotValue(VectorSequence* self, Symbol* slotname, Object* value, boolean setvalueP);
-ShortVectorSequence* newShortVectorSequence(int arraySize);
-Object* accessShortVectorSequenceSlotValue(ShortVectorSequence* self, Symbol* slotname, Object* value, boolean setvalueP);
+CustomVectorSequence* newCustomVectorSequence(int arraySize);
+Object* accessCustomVectorSequenceSlotValue(CustomVectorSequence* self, Symbol* slotname, Object* value, boolean setvalueP);
 BooleanVector* newBooleanVector(int arraySize);
 IntegerVector* newIntegerVector(int arraySize);
 ActiveList* newActiveList();
@@ -1708,8 +1759,11 @@ UndefinedClassException* newUndefinedClassException(char* message);
 BadArgumentException* newBadArgumentException(char* message);
 ObjectNotClassException* newObjectNotClassException(char* message);
 IncompatibleQuantityException* newIncompatibleQuantityException(char* message);
+TimeoutException* newTimeoutException(char* message);
 IntegerWrapper* newIntegerWrapper(int wrapperValue);
 Object* accessIntegerWrapperSlotValue(IntegerWrapper* self, Symbol* slotname, Object* value, boolean setvalueP);
+LongIntegerWrapper* newLongIntegerWrapper(long long int wrapperValue);
+Object* accessLongIntegerWrapperSlotValue(LongIntegerWrapper* self, Symbol* slotname, Object* value, boolean setvalueP);
 FloatWrapper* newFloatWrapper(double wrapperValue);
 Object* accessFloatWrapperSlotValue(FloatWrapper* self, Symbol* slotname, Object* value, boolean setvalueP);
 StringWrapper* newStringWrapper(char* wrapperValue);
@@ -1826,13 +1880,10 @@ extern Surrogate* SGT_HIERARCHY_STELLA_EXTENSIBLE_VECTOR;
 extern Surrogate* SGT_HIERARCHY_STELLA_EXTENSIBLE_SYMBOL_ARRAY;
 extern Symbol* SYM_HIERARCHY_STELLA_TOP_SYMBOL_OFFSET;
 extern Symbol* SYM_HIERARCHY_STELLA_POTENTIAL_FREE_SYMBOL_OFFSET;
-extern int oHARDWIRED_RESIZE_INCREMENT_ON_VECTOR_SEQUENCEo;
-extern Symbol* SYM_HIERARCHY_STELLA_RESIZE_INCREMENT;
+extern Surrogate* SGT_HIERARCHY_STELLA_VECTOR_SEQUENCE;
 extern Symbol* SYM_HIERARCHY_STELLA_SEQUENCE_LENGTH;
-extern Symbol* SYM_HIERARCHY_STELLA_VSEQ;
-extern Surrogate* SGT_HIERARCHY_STELLA_SHORT_VECTOR_SEQUENCE;
-extern int oHARDWIRED_RESIZE_INCREMENT_ON_SHORT_VECTOR_SEQUENCEo;
-extern Symbol* SYM_HIERARCHY_STELLA_SVSEQ;
+extern Surrogate* SGT_HIERARCHY_STELLA_CUSTOM_VECTOR_SEQUENCE;
+extern Symbol* SYM_HIERARCHY_STELLA_RESIZE_FACTOR;
 extern Surrogate* SGT_HIERARCHY_STELLA_BOOLEAN_VECTOR;
 extern Surrogate* SGT_HIERARCHY_STELLA_INTEGER_VECTOR;
 extern Surrogate* SGT_HIERARCHY_STELLA_ACTIVE_LIST;
@@ -2051,6 +2102,8 @@ extern Symbol* SYM_HIERARCHY_STELLA_FILE_NAME;
 extern Surrogate* SGT_HIERARCHY_STELLA_INTEGER_WRAPPER;
 extern Symbol* SYM_HIERARCHY_STELLA_WRAPPER_VALUE;
 extern Symbol* SYM_HIERARCHY_STELLA_NULL_INTEGER;
+extern Surrogate* SGT_HIERARCHY_STELLA_LONG_INTEGER_WRAPPER;
+extern Symbol* SYM_HIERARCHY_STELLA_NULL_LONG_INTEGER;
 extern Surrogate* SGT_HIERARCHY_STELLA_FLOAT_WRAPPER;
 extern Symbol* SYM_HIERARCHY_STELLA_NULL_FLOAT;
 extern Surrogate* SGT_HIERARCHY_STELLA_STRING_WRAPPER;
@@ -2073,6 +2126,7 @@ extern Symbol* SYM_HIERARCHY_STELLA_FILES;
 extern Symbol* SYM_HIERARCHY_STELLA_LISP_ONLY_FILES;
 extern Symbol* SYM_HIERARCHY_STELLA_CPP_ONLY_FILES;
 extern Symbol* SYM_HIERARCHY_STELLA_JAVA_ONLY_FILES;
+extern Symbol* SYM_HIERARCHY_STELLA_DATA_FILES;
 extern Symbol* SYM_HIERARCHY_STELLA_PREPROCESSED_FILES;
 extern Symbol* SYM_HIERARCHY_STELLA_REQUIRED_SYSTEMS;
 extern Symbol* SYM_HIERARCHY_STELLA_LOADEDp;

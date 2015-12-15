@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -93,7 +93,7 @@ Object* accessGoalRecordSlotValue(GoalRecord* self, Symbol* slotname, Object* va
 }
 
 boolean variableBoundP(PatternVariable* variable) {
-  return (((boolean)((oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(variable->boundToOffset)])) ||
+  return (((boolean)(safeBoundTo(variable))) ||
       ((boolean)(((Object*)(accessInContext(variable->variableValue, variable->homeContext, false))))));
 }
 
@@ -366,11 +366,29 @@ boolean computedConstraintP(Description* self) {
 }
 
 boolean computedPredicateP(Proposition* goal) {
-  { NamedDescription* description = getDescription(((Surrogate*)(goal->operatoR)));
+  { GeneralizedSymbol* operatoR = goal->operatoR;
+    Description* description = NULL;
 
+    if (operatoR == SGT_OPTIMIZE_PL_KERNEL_KB_HOLDS) {
+      { Object* relationarg = argumentBoundTo((goal->arguments->theArray)[0]);
+
+        if (((boolean)(relationarg)) &&
+            isaP(relationarg, SGT_OPTIMIZE_LOGIC_DESCRIPTION)) {
+          description = ((Description*)(relationarg));
+          operatoR = description->surrogateValueInverse;
+        }
+        else {
+          return (false);
+        }
+      }
+    }
+    if (!((boolean)(description))) {
+      description = getDescription(operatoR);
+    }
     return (((boolean)(description)) &&
         (computedTermP(description) ||
-         getQuotedTree("((/PL-KERNEL-KB/@LISTOF /PL-KERNEL-KB/@SETOF) \"/LOGIC\")", "/LOGIC")->memberP(description->surrogateValueInverse)));
+         ((operatoR == SGT_OPTIMIZE_PL_KERNEL_KB_SETOF) ||
+          (operatoR == SGT_OPTIMIZE_PL_KERNEL_KB_LISTOF))));
   }
 }
 
@@ -782,7 +800,7 @@ double estimateCardinalityOfExtension(NamedDescription* description) {
     if (estimate == NULL_INTEGER) {
       estimate = 0;
     }
-    return (((double)(stella::max(estimate, (classDescriptionP(description) ? ((int)(ESTIMATED_SIZE_OF_CLASS_EXTENSION)) : ((int)(ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS * ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS * ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS)))))));
+    return (((double)(stella::integerMax(estimate, (classDescriptionP(description) ? ((int)(ESTIMATED_SIZE_OF_CLASS_EXTENSION)) : ((int)(ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS * ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS * ESTIMATED_NUMBER_OF_PREDICATE_BINDINGS)))))));
   }
 }
 
@@ -1749,7 +1767,7 @@ void reorderGoals(Proposition* andproposition, List* initiallyclosedgoals, List*
       }
     }
     if (index < originalnumberofarguments) {
-      andproposition->arguments = newVector(index);
+      andproposition->arguments = stella::newVector(index);
       { Object* arg = NULL;
         Vector* vector000 = arguments;
         int index000 = 0;
@@ -2199,6 +2217,38 @@ Description* selectOptimalQueryPattern(Description* description, BooleanVector* 
   }
 }
 
+double dynamicallyEstimateInferenceCost(NamedDescription* self) {
+  { MemoizationTable* memoTable000 = NULL;
+    Cons* memoizedEntry000 = NULL;
+    Object* memoizedValue000 = NULL;
+
+    if (oMEMOIZATION_ENABLEDpo) {
+      memoTable000 = ((MemoizationTable*)(SGT_OPTIMIZE_LOGIC_F_DYNAMICALLY_ESTIMATE_INFERENCE_COST_MEMO_TABLE_000->surrogateValue));
+      if (!((boolean)(memoTable000))) {
+        initializeMemoizationTable(SGT_OPTIMIZE_LOGIC_F_DYNAMICALLY_ESTIMATE_INFERENCE_COST_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:IMPLIES-PROPOSITION-UPDATE))");
+        memoTable000 = ((MemoizationTable*)(SGT_OPTIMIZE_LOGIC_F_DYNAMICALLY_ESTIMATE_INFERENCE_COST_MEMO_TABLE_000->surrogateValue));
+      }
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, NULL, -1);
+      memoizedValue000 = memoizedEntry000->value;
+    }
+    if (((boolean)(memoizedValue000))) {
+      if (memoizedValue000 == MEMOIZED_NULL_VALUE) {
+        memoizedValue000 = NULL;
+      }
+    }
+    else {
+      memoizedValue000 = wrapInteger(applicableRulesOfDescription(self, KWD_OPTIMIZE_BACKWARD, true)->length());
+      if (oMEMOIZATION_ENABLEDpo) {
+        memoizedEntry000->value = ((!((boolean)(memoizedValue000))) ? MEMOIZED_NULL_VALUE : memoizedValue000);
+      }
+    }
+    { IntegerWrapper* nofrules = ((IntegerWrapper*)(memoizedValue000));
+
+      return (stella::floatMax(INFERABLE_PENALTY_COST * nofrules->wrapperValue, 1.0));
+    }
+  }
+}
+
 double dynamicallyEstimateGoalCost(Proposition* goal) {
   { Keyword* testValue000 = goal->kind;
 
@@ -2228,7 +2278,7 @@ double dynamicallyEstimateGoalCost(Proposition* goal) {
           return (1.0);
         }
         else {
-          return (INFERABLE_PENALTY_COST);
+          return (dynamicallyEstimateInferenceCost(description));
         }
       }
     }
@@ -2490,6 +2540,65 @@ double dynamicallyEstimateExtensionSize(NamedDescription* description) {
   }
 }
 
+int countBoundArguments(Proposition* goal) {
+  { int count = 0;
+
+    { Keyword* testValue000 = goal->kind;
+
+      if ((testValue000 == KWD_OPTIMIZE_NOT) ||
+          (testValue000 == KWD_OPTIMIZE_FAIL)) {
+        return (countBoundArguments(((Proposition*)((goal->arguments->theArray)[0]))));
+      }
+      else if ((testValue000 == KWD_OPTIMIZE_AND) ||
+          (testValue000 == KWD_OPTIMIZE_OR)) {
+        { Object* arg = NULL;
+          Vector* vector000 = goal->arguments;
+          int index000 = 0;
+          int length000 = vector000->length();
+
+          for  (arg, vector000, index000, length000; 
+                index000 < length000; 
+                index000 = index000 + 1) {
+            arg = (vector000->theArray)[index000];
+            count = count + countBoundArguments(((Proposition*)(arg)));
+          }
+        }
+      }
+      else if ((testValue000 == KWD_OPTIMIZE_FUNCTION) ||
+          ((testValue000 == KWD_OPTIMIZE_PREDICATE) ||
+           ((testValue000 == KWD_OPTIMIZE_EQUIVALENT) ||
+            (testValue000 == KWD_OPTIMIZE_ISA)))) {
+        { Object* arg = NULL;
+          Vector* vector001 = goal->arguments;
+          int index001 = 0;
+          int length001 = vector001->length();
+          int i = NULL_INTEGER;
+          int iter000 = 0;
+
+          for  (arg, vector001, index001, length001, i, iter000; 
+                index001 < length001; 
+                index001 = index001 + 1,
+                iter000 = iter000 + 1) {
+            arg = (vector001->theArray)[index001];
+            i = iter000;
+            if ((i == 0) &&
+                (goal->operatoR == SGT_OPTIMIZE_PL_KERNEL_KB_HOLDS)) {
+              continue;
+            }
+            if (!(unboundVariableP(arg))) {
+              count = count + 1;
+            }
+          }
+        }
+      }
+      else {
+        count = 1;
+      }
+    }
+    return (count);
+  }
+}
+
 double dynamicallyEstimateUnboundVariablePenalty(Proposition* goal) {
   { Keyword* testValue000 = goal->kind;
 
@@ -2554,6 +2663,9 @@ double dynamicallyEstimateUnboundVariablePenalty(Proposition* goal) {
         int nofunboundvars = ((holdsP &&
             unboundVariableP((arguments->theArray)[0])) ? 10 : 0);
 
+        if (lastkeyargindex < firstkeyargindex) {
+          return (0.0);
+        }
         { int i = NULL_INTEGER;
           int iter000 = firstkeyargindex;
           int upperBound000 = lastkeyargindex;
@@ -2600,7 +2712,9 @@ void dynamicallyReoptimizeArguments(Vector* arguments, int cursor) {
     double cost = NULL_FLOAT;
     double fanout = NULL_FLOAT;
     double unbound = NULL_FLOAT;
+    int nofboundargs = 0;
     double bestcost = NULL_FLOAT;
+    int bestnofboundargs = 0;
     Proposition* argument = NULL;
 
     if (cursor >= lastargindex) {
@@ -2624,9 +2738,11 @@ void dynamicallyReoptimizeArguments(Vector* arguments, int cursor) {
         unbound = dynamicallyEstimateUnboundVariablePenalty(argument);
         if (unbound == 1.0) {
           fanout = 1.0;
+          nofboundargs = argument->arguments->length();
         }
         else {
           fanout = dynamicallyEstimateGoalFanout(argument);
+          nofboundargs = countBoundArguments(argument);
         }
         if (fanout == NULL_FLOAT) {
           continue;
@@ -2637,8 +2753,14 @@ void dynamicallyReoptimizeArguments(Vector* arguments, int cursor) {
         cost = dynamicallyEstimateGoalCost(argument);
         cost = cost * fanout * unbound;
         if ((bestcost == NULL_FLOAT) ||
-            (cost < bestcost)) {
+            (((cost < bestcost) &&
+            ((bestnofboundargs == 0) ||
+             (!(nofboundargs == 0)))) ||
+             ((cost >= bestcost) &&
+              ((bestnofboundargs == 0) &&
+               (!(nofboundargs == 0)))))) {
           bestcost = cost;
+          bestnofboundargs = nofboundargs;
           cheapestargindex = i;
           if (bestcost == 1.0) {
             break;
@@ -2669,7 +2791,7 @@ void simplifyDescription(Description* description, boolean postoptimizationP) {
 }
 
 Vector* copyListToArgumentsVector(List* arguments) {
-  { Vector* vector = newVector(arguments->length());
+  { Vector* vector = stella::newVector(arguments->length());
 
     { Object* arg = NULL;
       Cons* iter000 = arguments->theConsList;
@@ -2921,21 +3043,20 @@ void simplifyProposition(Proposition* proposition) {
   }
 }
 
-Description* copyDescription(Description* self, KeyValueList* parentmapping, boolean addbacklinksP) {
+Description* copyDescription(Description* self, KeyValueMap* parentmapping, boolean addbacklinksP) {
   { 
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, self->homeContext);
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
     { Description* copy = createDescription(NULL_INTEGER, false);
-      KeyValueList* mapping = newKeyValueList();
+      KeyValueMap* mapping = newKeyValueMap();
 
       if (((boolean)(parentmapping))) {
         { Object* k = NULL;
           Object* v = NULL;
-          KvCons* iter000 = parentmapping->theKvList;
+          DictionaryIterator* iter000 = ((DictionaryIterator*)(parentmapping->allocateIterator()));
 
           for  (k, v, iter000; 
-                ((boolean)(iter000)); 
-                iter000 = iter000->rest) {
+                iter000->nextP(); ) {
             k = iter000->key;
             v = iter000->value;
             if (isaP(k, SGT_OPTIMIZE_LOGIC_PATTERN_VARIABLE)) {
@@ -3004,7 +3125,7 @@ Description* copyDescription(Description* self, KeyValueList* parentmapping, boo
         }
       }
       if (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_OPTIMIZE_LOGIC_DONT_OPTIMIZEp, FALSE_WRAPPER)))->wrapperValue) {
-        setDynamicSlotValue(copy->dynamicSlots, SYM_OPTIMIZE_LOGIC_DONT_OPTIMIZEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+        setDynamicSlotValue(copy->dynamicSlots, SYM_OPTIMIZE_LOGIC_DONT_OPTIMIZEp, TRUE_WRAPPER, FALSE_WRAPPER);
       }
       mapping->free();
       return (copy);
@@ -3012,7 +3133,7 @@ Description* copyDescription(Description* self, KeyValueList* parentmapping, boo
   }
 }
 
-PatternVariable* copyVariable(PatternVariable* self, KeyValueList* mapping) {
+PatternVariable* copyVariable(PatternVariable* self, KeyValueMap* mapping) {
   { PatternVariable* copy = ((PatternVariable*)(mapping->lookup(self)));
 
     if (((boolean)(copy))) {
@@ -3047,11 +3168,11 @@ PatternVariable* copyVariable(PatternVariable* self, KeyValueList* mapping) {
   }
 }
 
-Vector* copyVariablesVector(Vector* self, KeyValueList* mapping) {
-  if (self->arraySize == 0) {
+Vector* copyVariablesVector(Vector* self, KeyValueMap* mapping) {
+  if (self->emptyP()) {
     return (ZERO_VARIABLES_VECTOR);
   }
-  { Vector* copy = newVector(self->length());
+  { Vector* copy = stella::newVector(self->length());
 
     { PatternVariable* vbl = NULL;
       Vector* vector000 = self;
@@ -3080,7 +3201,7 @@ Vector* copyVariablesVector(Vector* self, KeyValueList* mapping) {
   }
 }
 
-Proposition* copyProposition(Proposition* self, KeyValueList* mapping) {
+Proposition* copyProposition(Proposition* self, KeyValueMap* mapping) {
   { Proposition* copy = ((Proposition*)(mapping->lookup(self)));
 
     if (((boolean)(copy))) {
@@ -3110,10 +3231,10 @@ Proposition* copyProposition(Proposition* self, KeyValueList* mapping) {
       setDynamicSlotValue(copy->dynamicSlots, SYM_OPTIMIZE_LOGIC_VARIABLE_TYPEp, TRUE_WRAPPER, NULL);
     }
     if (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_OPTIMIZE_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue) {
-      setDynamicSlotValue(copy->dynamicSlots, SYM_OPTIMIZE_LOGIC_DESCRIPTIVEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(copy->dynamicSlots, SYM_OPTIMIZE_LOGIC_DESCRIPTIVEp, TRUE_WRAPPER, FALSE_WRAPPER);
     }
     if (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_OPTIMIZE_LOGIC_DONT_OPTIMIZEp, FALSE_WRAPPER)))->wrapperValue) {
-      setDynamicSlotValue(copy->dynamicSlots, SYM_OPTIMIZE_LOGIC_DONT_OPTIMIZEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(copy->dynamicSlots, SYM_OPTIMIZE_LOGIC_DONT_OPTIMIZEp, TRUE_WRAPPER, FALSE_WRAPPER);
     }
     if (((boolean)(((PropertyList*)(dynamicSlotValue(self->dynamicSlots, SYM_OPTIMIZE_LOGIC_ANNOTATIONS, NULL)))))) {
       setDynamicSlotValue(copy->dynamicSlots, SYM_OPTIMIZE_LOGIC_ANNOTATIONS, ((PropertyList*)(dynamicSlotValue(self->dynamicSlots, SYM_OPTIMIZE_LOGIC_ANNOTATIONS, NULL)))->copy(), NULL);
@@ -3149,7 +3270,7 @@ Proposition* copyProposition(Proposition* self, KeyValueList* mapping) {
   }
 }
 
-Object* copyPropositionArgument(Object* self, KeyValueList* mapping) {
+Object* copyPropositionArgument(Object* self, KeyValueMap* mapping) {
   { Object* copy = mapping->lookup(self);
 
     if (((boolean)(copy))) {
@@ -3216,7 +3337,7 @@ Object* copyPropositionArgument(Object* self, KeyValueList* mapping) {
   }
 }
 
-Object* mappedValueOf(Object* self, KeyValueList* mapping, boolean createskolemP) {
+Object* mappedValueOf(Object* self, KeyValueMap* mapping, boolean createskolemP) {
   { Object* value = (((boolean)(mapping)) ? mapping->lookup(self) : ((Object*)(NULL)));
 
     if (((boolean)(value))) {
@@ -3288,7 +3409,7 @@ Proposition* inheritEquivalentProposition(Skolem* skolem, Object* value) {
   }
 }
 
-Proposition* inheritFunctionProposition(Proposition* self, KeyValueList* mapping) {
+Proposition* inheritFunctionProposition(Proposition* self, KeyValueMap* mapping, boolean createskolemP) {
   { Proposition* copy = NULL;
     Cons* inputargs = NIL;
     int nofinputargs = self->arguments->length() - 1;
@@ -3309,13 +3430,13 @@ Proposition* inheritFunctionProposition(Proposition* self, KeyValueList* mapping
         arg = (vector000->theArray)[index000];
         i = iter000;
         if (i <= nofinputargs) {
-          argmapsto = mappedValueOf(arg, mapping, false);
+          argmapsto = mappedValueOf(arg, mapping, createskolemP);
           if (!((boolean)(argmapsto))) {
             return (NULL);
           }
           if (!((boolean)(collect000))) {
             {
-              collect000 = cons(argmapsto, NIL);
+              collect000 = cons(inheritPropositionArgument(argmapsto, self, mapping), NIL);
               if (inputargs == NIL) {
                 inputargs = collect000;
               }
@@ -3326,19 +3447,19 @@ Proposition* inheritFunctionProposition(Proposition* self, KeyValueList* mapping
           }
           else {
             {
-              collect000->rest = cons(argmapsto, NIL);
+              collect000->rest = cons(inheritPropositionArgument(argmapsto, self, mapping), NIL);
               collect000 = collect000->rest;
             }
           }
         }
       }
     }
-    copy = createFunctionProposition(((Surrogate*)(self->operatoR)), inputargs);
+    copy = findOrCreateFunctionProposition(((Surrogate*)(self->operatoR)), inputargs);
     return (copy);
   }
 }
 
-boolean equalUpToSkolemIdentityP(Object* inheritedarg, Object* basearg, KeyValueList* mapping) {
+boolean equalUpToSkolemIdentityP(Object* inheritedarg, Object* basearg, KeyValueMap* mapping) {
   { Object* inheritedvalue = (((boolean)(mapping)) ? mappedValueOf(inheritedarg, mapping, false) : inheritedarg);
     Object* basevalue = valueOf(basearg);
 
@@ -3349,7 +3470,7 @@ boolean equalUpToSkolemIdentityP(Object* inheritedarg, Object* basearg, KeyValue
   }
 }
 
-Proposition* findSimilarProposition(Proposition* proposition, KeyValueList* mapping) {
+Proposition* oldFindSimilarProposition(Proposition* proposition, KeyValueMap* mapping) {
   if (proposition->kind == KWD_OPTIMIZE_CONSTANT) {
     return (NULL);
   }
@@ -3526,7 +3647,105 @@ Proposition* findSimilarProposition(Proposition* proposition, KeyValueList* mapp
   }
 }
 
-Object* inheritPropositionArgument(Object* argument, Proposition* parent, KeyValueList* mapping) {
+Proposition* newFindSimilarProposition(Proposition* proposition, KeyValueMap* mapping) {
+  if (proposition->kind == KWD_OPTIMIZE_CONSTANT) {
+    return (NULL);
+  }
+  { IntegerWrapper* index = wrapInteger(propositionHashIndex(proposition, mapping));
+    List* bucket = ((List*)(oSTRUCTURED_OBJECTS_INDEXo->lookup(index)));
+    boolean functionP = proposition->kind == KWD_OPTIMIZE_FUNCTION;
+
+    if (!((boolean)(bucket))) {
+      return (NULL);
+    }
+    { GeneralizedSymbol* operatoR = proposition->operatoR;
+      Vector* arguments = proposition->arguments;
+      int arity = arguments->length();
+
+      { ContextSensitiveObject* p = NULL;
+        Cons* iter000 = bucket->theConsList;
+
+        for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+          p = ((ContextSensitiveObject*)(iter000->value));
+          if (subtypeOfP(safePrimaryType(p), SGT_OPTIMIZE_LOGIC_PROPOSITION)) {
+            { ContextSensitiveObject* p000 = p;
+              Proposition* p = ((Proposition*)(p000));
+
+              { boolean testValue000 = false;
+
+                testValue000 = operatoR == p->operatoR;
+                if (testValue000) {
+                  testValue000 = arity == p->arguments->length();
+                  if (testValue000) {
+                    testValue000 = functionP;
+                    if (testValue000) {
+                      { boolean alwaysP000 = true;
+
+                        { Object* arg1 = NULL;
+                          Vector* vector000 = arguments;
+                          int index000 = 0;
+                          int length000 = vector000->length();
+                          Object* arg2 = NULL;
+                          Vector* vector001 = p->arguments;
+                          int index001 = 0;
+                          int length001 = vector001->length();
+                          int i = NULL_INTEGER;
+                          int iter001 = 2;
+                          int upperBound000 = arity;
+                          boolean unboundedP000 = upperBound000 == NULL_INTEGER;
+
+                          for  (arg1, vector000, index000, length000, arg2, vector001, index001, length001, i, iter001, upperBound000, unboundedP000; 
+                                (index000 < length000) &&
+                                    ((index001 < length001) &&
+                                     (unboundedP000 ||
+                                      (iter001 <= upperBound000))); 
+                                index000 = index000 + 1,
+                                index001 = index001 + 1,
+                                iter001 = iter001 + 1) {
+                            arg1 = (vector000->theArray)[index000];
+                            arg2 = (vector001->theArray)[index001];
+                            i = iter001;
+                            if (!eqlP(mappedValueOf(arg1, mapping, false), valueOf(arg2))) {
+                              alwaysP000 = false;
+                              break;
+                            }
+                          }
+                        }
+                        testValue000 = alwaysP000;
+                      }
+                    }
+                    if (!testValue000) {
+                      testValue000 = (!functionP) &&
+                          equivalentPropositionsP(proposition, p, mapping);
+                    }
+                    if (testValue000) {
+                      testValue000 = subcontextP(oMODULEo.get(), p->homeContext->baseModule);
+                    }
+                  }
+                }
+                if (testValue000) {
+                  return (p);
+                }
+              }
+            }
+          }
+          else {
+          }
+        }
+      }
+      return (NULL);
+    }
+  }
+}
+
+Proposition* findSimilarProposition(Proposition* proposition, KeyValueMap* mapping) {
+  { Proposition* result = newFindSimilarProposition(proposition, mapping);
+
+    return (result);
+  }
+}
+
+Object* inheritPropositionArgument(Object* argument, Proposition* parent, KeyValueMap* mapping) {
   { Surrogate* testValue000 = safePrimaryType(argument);
 
     if (subtypeOfP(testValue000, SGT_OPTIMIZE_LOGIC_PROPOSITION)) {
@@ -3614,7 +3833,7 @@ Proposition* eradicateHoldsProposition(Proposition* self) {
   return (self);
 }
 
-Proposition* inheritProposition(Proposition* self, KeyValueList* mapping) {
+Proposition* inheritProposition(Proposition* self, KeyValueMap* mapping) {
   { Keyword* testValue000 = self->kind;
 
     if ((testValue000 == KWD_OPTIMIZE_FORALL) ||
@@ -3633,7 +3852,7 @@ Proposition* inheritProposition(Proposition* self, KeyValueList* mapping) {
         }
         copy = findSimilarProposition(self, mapping);
         if (!((boolean)(copy))) {
-          copy = inheritFunctionProposition(self, mapping);
+          copy = inheritFunctionProposition(self, mapping, true);
           copy = eradicateHoldsProposition(copy);
         }
         if (eqlP((copy->arguments->theArray)[(copy->arguments->length() - 1)], value)) {
@@ -3719,23 +3938,29 @@ Proposition* inheritProposition(Proposition* self, KeyValueList* mapping) {
   }
 }
 
-Skolem* createSkolemForUnmappedVariable(PatternVariable* variable, KeyValueList* mapping) {
+Skolem* createSkolemForUnmappedVariable(PatternVariable* variable, KeyValueMap* mapping) {
   { Object* skolem = mapping->lookup(variable);
+    List* createdskolems = ((List*)(mapping->lookup(KWD_OPTIMIZE_CREATED_SKOLEMS)));
 
     if (((boolean)(skolem))) {
       return (((Skolem*)(skolem)));
     }
     skolem = createVariableOrSkolem(variable->skolemType, NULL);
     mapping->insertAt(variable, skolem);
+    if (!((boolean)(createdskolems))) {
+      createdskolems = list(0);
+      mapping->insertAt(KWD_OPTIMIZE_CREATED_SKOLEMS, createdskolems);
+    }
+    createdskolems->insert(skolem);
     return (((Skolem*)(skolem)));
   }
 }
 
-Cons* inheritAsTopLevelProposition(Proposition* proposition, KeyValueList* mapping) {
+Cons* inheritAsTopLevelProposition(Proposition* proposition, KeyValueMap* mapping) {
   { Cons* resultlist = NIL;
 
     if (!((boolean)(mapping))) {
-      mapping = newKeyValueList();
+      mapping = newKeyValueMap();
     }
     { Keyword* testValue000 = proposition->kind;
 
@@ -3772,20 +3997,245 @@ Cons* inheritAsTopLevelProposition(Proposition* proposition, KeyValueList* mappi
         resultlist = cons(inheritProposition(proposition, mapping), resultlist);
       }
     }
-    mapping->free();
     { Object* p = NULL;
       Cons* iter000 = resultlist;
 
       for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         p = iter000->value;
-        normalizeTopLevelProposition(((Proposition*)(p)), NULL);
+        normalizeTopLevelProposition(((Proposition*)(p)));
       }
     }
-    return (resultlist);
+    return (resultlist->reverse());
   }
 }
 
-boolean mapAndEnqueueVariableP(Object* variable, Object* localvalue, KeyValueList* mapping, List* queue) {
+boolean propositionReferencesTermsP(Proposition* self, HashSet* terms) {
+  { Object* arg = NULL;
+    Vector* vector000 = self->arguments;
+    int index000 = 0;
+    int length000 = vector000->length();
+
+    for  (arg, vector000, index000, length000; 
+          index000 < length000; 
+          index000 = index000 + 1) {
+      arg = (vector000->theArray)[index000];
+      if (terms->memberP(arg)) {
+        return (true);
+      }
+      { Surrogate* testValue000 = safePrimaryType(arg);
+
+        if (subtypeOfP(testValue000, SGT_OPTIMIZE_LOGIC_PROPOSITION)) {
+          { Object* arg000 = arg;
+            Proposition* arg = ((Proposition*)(arg000));
+
+            if (propositionReferencesTermsP(arg, terms)) {
+              return (true);
+            }
+          }
+        }
+        else if (subtypeOfP(testValue000, SGT_OPTIMIZE_LOGIC_SKOLEM)) {
+          { Object* arg001 = arg;
+            Skolem* arg = ((Skolem*)(arg001));
+
+            { Proposition* definingprop = arg->definingProposition;
+
+              if (((boolean)(definingprop)) &&
+                  ((!(definingprop == self)) &&
+                   propositionReferencesTermsP(definingprop, terms))) {
+                return (true);
+              }
+            }
+          }
+        }
+        else {
+        }
+      }
+    }
+  }
+  return (false);
+}
+
+Cons* createSkolemPropositionsQuery(Cons* inheritedprops, Description* description, KeyValueMap* mapping) {
+  { HashSet* createdskolems = NULL;
+    Cons* skolemprops = NIL;
+    Cons* filteredpropsindices = NIL;
+
+    { 
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      { Keyword* testValue000 = description->proposition->kind;
+
+        if (testValue000 == KWD_OPTIMIZE_AND) {
+          createdskolems = newHashSet();
+          { Object* skolem = NULL;
+            Cons* iter000 = ((List*)(mapping->lookup(KWD_OPTIMIZE_CREATED_SKOLEMS)))->theConsList;
+
+            for (skolem, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+              skolem = iter000->value;
+              createdskolems->insert(((Skolem*)(skolem)));
+            }
+          }
+          { Proposition* iprop = NULL;
+            Cons* iter001 = inheritedprops;
+            int ipropindex = NULL_INTEGER;
+            int iter002 = 0;
+            Proposition* dprop = NULL;
+            Vector* vector000 = ((Vector*)(description->proposition->arguments));
+            int index000 = 0;
+            int length000 = vector000->length();
+            Cons* collect000 = NULL;
+
+            for  (iprop, iter001, ipropindex, iter002, dprop, vector000, index000, length000, collect000; 
+                  (!(iter001 == NIL)) &&
+                      (index000 < length000); 
+                  iter001 = iter001->rest,
+                  iter002 = iter002 + 1,
+                  index000 = index000 + 1) {
+              iprop = ((Proposition*)(iter001->value));
+              ipropindex = iter002;
+              dprop = ((Proposition*)((vector000->theArray)[index000]));
+              if (!propositionReferencesTermsP(iprop, createdskolems)) {
+                filteredpropsindices = cons(wrapInteger(ipropindex), filteredpropsindices);
+                continue;
+              }
+              if (!((boolean)(collect000))) {
+                {
+                  collect000 = cons(dprop, NIL);
+                  if (skolemprops == NIL) {
+                    skolemprops = collect000;
+                  }
+                  else {
+                    addConsToEndOfConsList(skolemprops, collect000);
+                  }
+                }
+              }
+              else {
+                {
+                  collect000->rest = cons(dprop, NIL);
+                  collect000 = collect000->rest;
+                }
+              }
+            }
+          }
+          filteredpropsindices = filteredpropsindices->reverse();
+          if (!(filteredpropsindices == NIL)) {
+            { Description* self001 = newDescription();
+
+              self001->ioVariables = description->ioVariables;
+              self001->proposition = conjoinPropositions(skolemprops);
+              description = self001;
+            }
+            computeInternalVariables(description);
+          }
+        }
+        else if ((testValue000 == KWD_OPTIMIZE_ISA) ||
+            ((testValue000 == KWD_OPTIMIZE_FUNCTION) ||
+             (testValue000 == KWD_OPTIMIZE_PREDICATE))) {
+        }
+        else {
+        }
+      }
+      return (consList(2, initializeQueryIterator(allocateQueryIterator(), description, stella::newVector(description->arity())), filteredpropsindices));
+    }
+  }
+}
+
+Cons* filterImpliedSkolemPropositions(Cons* inheritedprops, Description* description, Vector* arguments, KeyValueMap* mapping) {
+  { List* createdskolems = (((boolean)(mapping)) ? ((List*)(mapping->lookup(KWD_OPTIMIZE_CREATED_SKOLEMS))) : NULL);
+    Cons* filteredprops = inheritedprops;
+    Cons* filteredpropsindices = NIL;
+    QueryIterator* query = NULL;
+    Cons* cachedqueryrecord = NIL;
+
+    if (((boolean)(createdskolems))) {
+      { MemoizationTable* memoTable000 = NULL;
+        Cons* memoizedEntry000 = NULL;
+        Object* memoizedValue000 = NULL;
+
+        if (oMEMOIZATION_ENABLEDpo) {
+          memoTable000 = ((MemoizationTable*)(SGT_OPTIMIZE_LOGIC_F_FILTER_IMPLIED_SKOLEM_PROPOSITIONS_MEMO_TABLE_000->surrogateValue));
+          if (!((boolean)(memoTable000))) {
+            initializeMemoizationTable(SGT_OPTIMIZE_LOGIC_F_FILTER_IMPLIED_SKOLEM_PROPOSITIONS_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:MODULE-UPDATE))");
+            memoTable000 = ((MemoizationTable*)(SGT_OPTIMIZE_LOGIC_F_FILTER_IMPLIED_SKOLEM_PROPOSITIONS_MEMO_TABLE_000->surrogateValue));
+          }
+          memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), description, MEMOIZED_NULL_VALUE, NULL, NULL, -1);
+          memoizedValue000 = memoizedEntry000->value;
+        }
+        if (((boolean)(memoizedValue000))) {
+          if (memoizedValue000 == MEMOIZED_NULL_VALUE) {
+            memoizedValue000 = NULL;
+          }
+        }
+        else {
+          memoizedValue000 = createSkolemPropositionsQuery(inheritedprops, description, mapping);
+          if (oMEMOIZATION_ENABLEDpo) {
+            memoizedEntry000->value = ((!((boolean)(memoizedValue000))) ? MEMOIZED_NULL_VALUE : memoizedValue000);
+          }
+        }
+        cachedqueryrecord = ((Cons*)(memoizedValue000));
+      }
+      query = ((QueryIterator*)(cachedqueryrecord->value));
+      filteredpropsindices = ((Cons*)(cachedqueryrecord->rest->value));
+      { Object* arg = NULL;
+        Vector* vector000 = arguments;
+        int index000 = 0;
+        int length000 = vector000->length();
+        int i = NULL_INTEGER;
+        int iter000 = 0;
+
+        for  (arg, vector000, index000, length000, i, iter000; 
+              index000 < length000; 
+              index000 = index000 + 1,
+              iter000 = iter000 + 1) {
+          arg = (vector000->theArray)[index000];
+          i = iter000;
+          (((Vector*)(dynamicSlotValue(query->dynamicSlots, SYM_OPTIMIZE_LOGIC_INITIAL_BINDINGS, NULL)))->theArray)[i] = arg;
+        }
+      }
+      { 
+        BIND_STELLA_SPECIAL(oTYPE_CHECK_STRATEGYo, Keyword*, KWD_OPTIMIZE_NONE);
+        BIND_STELLA_SPECIAL(oQUERYITERATORo, QueryIterator*, query);
+        BIND_STELLA_SPECIAL(oREVERSEPOLARITYpo, boolean, false);
+        BIND_STELLA_SPECIAL(oINFERENCELEVELo, NormalInferenceLevel*, SUBSUMPTION_INFERENCE);
+        BIND_STELLA_SPECIAL(oGENERATE_ALL_PROOFSpo, boolean, false);
+        query->reset();
+        if (query->nextP()) {
+          filteredprops = NIL;
+          { IntegerWrapper* i = NULL;
+            Cons* iter001 = filteredpropsindices;
+            Cons* collect000 = NULL;
+
+            for  (i, iter001, collect000; 
+                  !(iter001 == NIL); 
+                  iter001 = iter001->rest) {
+              i = ((IntegerWrapper*)(iter001->value));
+              if (!((boolean)(collect000))) {
+                {
+                  collect000 = cons(((Proposition*)(inheritedprops->nth(i->wrapperValue))), NIL);
+                  if (filteredprops == NIL) {
+                    filteredprops = collect000;
+                  }
+                  else {
+                    addConsToEndOfConsList(filteredprops, collect000);
+                  }
+                }
+              }
+              else {
+                {
+                  collect000->rest = cons(((Proposition*)(inheritedprops->nth(i->wrapperValue))), NIL);
+                  collect000 = collect000->rest;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return (filteredprops);
+  }
+}
+
+boolean mapAndEnqueueVariableP(Object* variable, Object* localvalue, KeyValueMap* mapping) {
   if (subtypeOfP(safePrimaryType(variable), SGT_OPTIMIZE_LOGIC_PATTERN_VARIABLE)) {
     { Object* variable000 = variable;
       PatternVariable* variable = ((PatternVariable*)(variable000));
@@ -3806,15 +4256,11 @@ boolean mapAndEnqueueVariableP(Object* variable, Object* localvalue, KeyValueLis
         }
         else if (((boolean)(localvalue))) {
           mapping->insertAt(variable, localvalue);
-          if (isaP(localvalue, SGT_OPTIMIZE_LOGIC_LOGIC_OBJECT)) {
-            queue->push(variable);
-          }
         }
         else {
           { Skolem* skolem = createVariableOrSkolem(variable->skolemType, NULL);
 
             mapping->insertAt(variable, skolem);
-            queue->push(variable);
           }
         }
       }
@@ -3858,27 +4304,171 @@ void collectStructuralFunctions(Proposition* proposition, List* structuralfuncti
   }
 }
 
-boolean mapFunctionalValueP(Proposition* proposition, KeyValueList* mapping, List* queue) {
+List* computeStructuralFunctionEvaluationOrder(Description* self) {
+  { List* structuralfunctions = newList();
+    Vector* iovariables = self->ioVariables;
+    Vector* internalvariables = self->internalVariables;
+    HashSet* candidates = newHashSet();
+    HashSet* unboundinternals = newHashSet();
+    List* sortedfunctions = newList();
+    boolean progressP = true;
+
+    collectStructuralFunctions(self->proposition, structuralfunctions);
+    { Proposition* function = NULL;
+      Cons* iter000 = structuralfunctions->theConsList;
+
+      for (function, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+        function = ((Proposition*)(iter000->value));
+        if (iovariables->memberP((function->arguments->theArray)[(function->arguments->length() - 1)]) ||
+            internalvariables->memberP((function->arguments->theArray)[(function->arguments->length() - 1)])) {
+          candidates->insert(function);
+        }
+      }
+    }
+    { PatternVariable* var = NULL;
+      Vector* vector000 = internalvariables;
+      int index000 = 0;
+      int length000 = vector000->length();
+
+      for  (var, vector000, index000, length000; 
+            index000 < length000; 
+            index000 = index000 + 1) {
+        var = ((PatternVariable*)((vector000->theArray)[index000]));
+        unboundinternals->insert(var);
+      }
+    }
+    while (progressP) {
+      progressP = false;
+      { Proposition* candidate = NULL;
+        DictionaryIterator* iter001 = ((DictionaryIterator*)(candidates->allocateIterator()));
+
+        for (candidate, iter001; iter001->nextP(); ) {
+          candidate = ((Proposition*)(iter001->value));
+          { boolean testValue000 = false;
+
+            testValue000 = !unboundinternals->memberP((candidate->arguments->theArray)[(candidate->arguments->length() - 1)]);
+            if (testValue000) {
+              { boolean alwaysP000 = true;
+
+                { Object* arg = NULL;
+                  Vector* vector001 = candidate->arguments;
+                  int index001 = 0;
+                  int length001 = vector001->length();
+                  int i = NULL_INTEGER;
+                  int iter002 = 2;
+                  int upperBound000 = candidate->arguments->length();
+
+                  for  (arg, vector001, index001, length001, i, iter002, upperBound000; 
+                        (index001 < length001) &&
+                            (iter002 <= upperBound000); 
+                        index001 = index001 + 1,
+                        iter002 = iter002 + 1) {
+                    arg = (vector001->theArray)[index001];
+                    i = iter002;
+                    if (!(!unboundinternals->memberP(arg))) {
+                      alwaysP000 = false;
+                      break;
+                    }
+                  }
+                }
+                testValue000 = alwaysP000;
+              }
+            }
+            if (testValue000) {
+              sortedfunctions->push(candidate);
+              candidates->remove(candidate);
+              progressP = true;
+            }
+          }
+        }
+      }
+      { Proposition* candidate = NULL;
+        DictionaryIterator* iter003 = ((DictionaryIterator*)(candidates->allocateIterator()));
+
+        for (candidate, iter003; iter003->nextP(); ) {
+          candidate = ((Proposition*)(iter003->value));
+          { boolean alwaysP001 = true;
+
+            { Object* arg = NULL;
+              Vector* vector002 = candidate->arguments;
+              int index002 = 0;
+              int length002 = vector002->length();
+              int i = NULL_INTEGER;
+              int iter004 = 2;
+              int upperBound001 = candidate->arguments->length();
+
+              for  (arg, vector002, index002, length002, i, iter004, upperBound001; 
+                    (index002 < length002) &&
+                        (iter004 <= upperBound001); 
+                    index002 = index002 + 1,
+                    iter004 = iter004 + 1) {
+                arg = (vector002->theArray)[index002];
+                i = iter004;
+                if (!(!unboundinternals->memberP(arg))) {
+                  alwaysP001 = false;
+                  break;
+                }
+              }
+            }
+            if (alwaysP001) {
+              sortedfunctions->push(candidate);
+              candidates->remove(candidate);
+              unboundinternals->remove(((PatternVariable*)((candidate->arguments->theArray)[(candidate->arguments->length() - 1)])));
+              progressP = true;
+            }
+          }
+        }
+      }
+    }
+    return (sortedfunctions->reverse());
+  }
+}
+
+List* Description::structuralFunctionEvaluationOrder_reader() {
+  { Description* self = this;
+
+    { List* answer = ((List*)(dynamicSlotValue(self->dynamicSlots, SYM_OPTIMIZE_LOGIC_STRUCTURAL_FUNCTION_EVALUATION_ORDER, NULL)));
+
+      if (!((boolean)(answer))) {
+        return (NIL_LIST);
+      }
+      else {
+        return (answer);
+      }
+    }
+  }
+}
+
+List* getStructuralFunctionEvaluationOrder(Description* self) {
+  { List* evaluationorder = self->structuralFunctionEvaluationOrder_reader();
+
+    if (nullListP(evaluationorder)) {
+      evaluationorder = computeStructuralFunctionEvaluationOrder(self);
+      setDynamicSlotValue(self->dynamicSlots, SYM_OPTIMIZE_LOGIC_STRUCTURAL_FUNCTION_EVALUATION_ORDER, evaluationorder, NULL);
+    }
+    return (evaluationorder);
+  }
+}
+
+boolean mapFunctionalValueP(Proposition* proposition, KeyValueMap* mapping) {
   { Proposition* copy = findSimilarProposition(proposition, mapping);
 
     if ((!((boolean)(copy))) &&
         (proposition->kind == KWD_OPTIMIZE_FUNCTION)) {
-      copy = inheritFunctionProposition(proposition, mapping);
+      copy = inheritFunctionProposition(proposition, mapping, false);
     }
     if (((boolean)(copy))) {
       { Object* localfunctionalvalue = valueOf((copy->arguments->theArray)[(copy->arguments->length() - 1)]);
 
-        return (mapAndEnqueueVariableP((proposition->arguments->theArray)[(proposition->arguments->length() - 1)], localfunctionalvalue, mapping, queue));
+        return (mapAndEnqueueVariableP((proposition->arguments->theArray)[(proposition->arguments->length() - 1)], localfunctionalvalue, mapping));
       }
     }
     return (true);
   }
 }
 
-Cons* inheritDescriptionPropositions(Vector* arguments, Description* description) {
-  { KeyValueList* mapping = newKeyValueList();
-    List* variablequeue = newList();
-    List* structuralfunctions = newList();
+Cons* inheritDescriptionPropositions(Vector* arguments, Description* description, KeyValueMap*& _Return1) {
+  { KeyValueMap* mapping = newKeyValueMap();
 
     { PatternVariable* v = NULL;
       Vector* vector000 = description->ioVariables;
@@ -3896,58 +4486,20 @@ Cons* inheritDescriptionPropositions(Vector* arguments, Description* description
             index001 = index001 + 1) {
         v = ((PatternVariable*)((vector000->theArray)[index000]));
         arg = (vector001->theArray)[index001];
-        if (!(mapAndEnqueueVariableP(v, arg, mapping, variablequeue))) {
+        if (!(mapAndEnqueueVariableP(v, arg, mapping))) {
+          _Return1 = NULL;
           return (NIL);
         }
       }
     }
-    { PatternVariable* v = NULL;
-      Vector* vector002 = description->internalVariables;
-      int index002 = 0;
-      int length002 = vector002->length();
-      Cons* collect000 = NULL;
+    { Proposition* p = NULL;
+      Cons* iter000 = getStructuralFunctionEvaluationOrder(description)->theConsList;
 
-      for  (v, vector002, index002, length002, collect000; 
-            index002 < length002; 
-            index002 = index002 + 1) {
-        v = ((PatternVariable*)((vector002->theArray)[index002]));
-        if (!((boolean)(collect000))) {
-          {
-            collect000 = cons(v, NIL);
-            if (variablequeue->theConsList == NIL) {
-              variablequeue->theConsList = collect000;
-            }
-            else {
-              addConsToEndOfConsList(variablequeue->theConsList, collect000);
-            }
-          }
-        }
-        else {
-          {
-            collect000->rest = cons(v, NIL);
-            collect000 = collect000->rest;
-          }
-        }
-      }
-    }
-    collectStructuralFunctions(description->proposition, structuralfunctions);
-    for (;;) {
-      if (variablequeue->emptyP()) {
-        break;
-      }
-      { PatternVariable* variable = ((PatternVariable*)(variablequeue->pop()));
-
-        { Proposition* p = NULL;
-          Iterator* iter000 = unfilteredDependentPropositions(variable, NULL)->allocateIterator();
-
-          for (p, iter000; iter000->nextP(); ) {
-            p = ((Proposition*)(iter000->value));
-            if (structuralfunctions->memberP(p)) {
-              if (!(mapFunctionalValueP(p, mapping, variablequeue))) {
-                return (NIL);
-              }
-            }
-          }
+      for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+        p = ((Proposition*)(iter000->value));
+        if (!(mapFunctionalValueP(p, mapping))) {
+          _Return1 = NULL;
+          return (NIL);
         }
       }
     }
@@ -3959,6 +4511,7 @@ Cons* inheritDescriptionPropositions(Vector* arguments, Description* description
           it->valueSetter(recursivelyFastenDownPropositions(((Proposition*)(it->value)), false));
         }
       }
+      _Return1 = mapping;
       return (propositions);
     }
   }
@@ -3992,34 +4545,39 @@ void inheritUnnamedDescription(Object* self, Description* description, boolean d
 }
 
 void vectorDinheritUnnamedDescription(Vector* arguments, Description* description, boolean defaulttrueP) {
-  { Proposition* prop = NULL;
-    Cons* iter000 = inheritDescriptionPropositions(arguments, description);
-    Cons* collect000 = NULL;
+  { Cons* propositions = NULL;
+    KeyValueMap* mapping = NULL;
 
-    for  (prop, iter000, collect000; 
-          !(iter000 == NIL); 
-          iter000 = iter000->rest) {
-      prop = ((Proposition*)(iter000->value));
-      if (!trueP(prop)) {
-        assignTruthValue(prop, (defaulttrueP ? DEFAULT_TRUE_TRUTH_VALUE : TRUE_TRUTH_VALUE));
-        if (!(((boolean)(oCOLLECTFORWARDPROPOSITIONSo.get())))) {
-          continue;
-        }
-        if (!((boolean)(collect000))) {
-          {
-            collect000 = cons(prop, NIL);
-            if (oCOLLECTFORWARDPROPOSITIONSo.get() == NIL) {
-              oCOLLECTFORWARDPROPOSITIONSo.set(collect000);
-            }
-            else {
-              addConsToEndOfConsList(oCOLLECTFORWARDPROPOSITIONSo.get(), collect000);
+    propositions = inheritDescriptionPropositions(arguments, description, mapping);
+    { Proposition* prop = NULL;
+      Cons* iter000 = filterImpliedSkolemPropositions(propositions, description, arguments, mapping);
+      Cons* collect000 = NULL;
+
+      for  (prop, iter000, collect000; 
+            !(iter000 == NIL); 
+            iter000 = iter000->rest) {
+        prop = ((Proposition*)(iter000->value));
+        if (!trueP(prop)) {
+          assignTruthValue(prop, (defaulttrueP ? DEFAULT_TRUE_TRUTH_VALUE : TRUE_TRUTH_VALUE));
+          if (!(((boolean)(oCOLLECTFORWARDPROPOSITIONSo.get())))) {
+            continue;
+          }
+          if (!((boolean)(collect000))) {
+            {
+              collect000 = cons(prop, NIL);
+              if (oCOLLECTFORWARDPROPOSITIONSo.get() == NIL) {
+                oCOLLECTFORWARDPROPOSITIONSo.set(collect000);
+              }
+              else {
+                addConsToEndOfConsList(oCOLLECTFORWARDPROPOSITIONSo.get(), collect000);
+              }
             }
           }
-        }
-        else {
-          {
-            collect000->rest = cons(prop, NIL);
-            collect000 = collect000->rest;
+          else {
+            {
+              collect000->rest = cons(prop, NIL);
+              collect000 = collect000->rest;
+            }
           }
         }
       }
@@ -4028,7 +4586,7 @@ void vectorDinheritUnnamedDescription(Vector* arguments, Description* descriptio
 }
 
 void logicObjectDinheritUnnamedDescription(LogicObject* instance, Description* description, boolean defaulttrueP) {
-  { Vector* vector = newVector(1);
+  { Vector* vector = stella::newVector(1);
 
     (vector->theArray)[0] = instance;
     inheritUnnamedDescription(vector, description, defaulttrueP);
@@ -4070,6 +4628,9 @@ void helpStartupOptimize1() {
     SYM_OPTIMIZE_LOGIC_PERMUTATION_TABLE = ((Symbol*)(internRigidSymbolWrtModule("PERMUTATION-TABLE", NULL, 0)));
     SGT_OPTIMIZE_PL_KERNEL_KB_COMPUTED = ((Surrogate*)(internRigidSymbolWrtModule("COMPUTED", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_OPTIMIZE_PL_KERNEL_KB_RELATION_CONSTRAINT = ((Surrogate*)(internRigidSymbolWrtModule("RELATION-CONSTRAINT", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    SGT_OPTIMIZE_PL_KERNEL_KB_HOLDS = ((Surrogate*)(internRigidSymbolWrtModule("HOLDS", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    SGT_OPTIMIZE_PL_KERNEL_KB_SETOF = ((Surrogate*)(internRigidSymbolWrtModule("SETOF", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    SGT_OPTIMIZE_PL_KERNEL_KB_LISTOF = ((Surrogate*)(internRigidSymbolWrtModule("LISTOF", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_OPTIMIZE_PL_KERNEL_KB_ABSTRACT = ((Surrogate*)(internRigidSymbolWrtModule("ABSTRACT", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_OPTIMIZE_LOGIC_NAMED_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("NAMED-DESCRIPTION", NULL, 1)));
     SYM_OPTIMIZE_LOGIC_OPTIMIZER_GOAL_RECORDS = ((Symbol*)(internRigidSymbolWrtModule("OPTIMIZER-GOAL-RECORDS", NULL, 0)));
@@ -4104,7 +4665,8 @@ void helpStartupOptimize1() {
     KWD_OPTIMIZE_NONE = ((Keyword*)(internRigidSymbolWrtModule("NONE", NULL, 2)));
     SGT_OPTIMIZE_PL_KERNEL_KB_CUT = ((Surrogate*)(internRigidSymbolWrtModule("CUT", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_OPTIMIZE_PL_KERNEL_KB_BOUND_VARIABLES = ((Surrogate*)(internRigidSymbolWrtModule("BOUND-VARIABLES", getStellaModule("/PL-KERNEL-KB", true), 1)));
-    SGT_OPTIMIZE_PL_KERNEL_KB_HOLDS = ((Surrogate*)(internRigidSymbolWrtModule("HOLDS", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    KWD_OPTIMIZE_BACKWARD = ((Keyword*)(internRigidSymbolWrtModule("BACKWARD", NULL, 2)));
+    SGT_OPTIMIZE_LOGIC_F_DYNAMICALLY_ESTIMATE_INFERENCE_COST_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-DYNAMICALLY-ESTIMATE-INFERENCE-COST-MEMO-TABLE-000", NULL, 1)));
     SGT_OPTIMIZE_PL_KERNEL_KB_INSTANCE_OF = ((Surrogate*)(internRigidSymbolWrtModule("INSTANCE-OF", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_OPTIMIZE_PL_KERNEL_KB_TOTAL = ((Surrogate*)(internRigidSymbolWrtModule("TOTAL", getStellaModule("/PL-KERNEL-KB", true), 1)));
     KWD_OPTIMIZE_RELATION = ((Keyword*)(internRigidSymbolWrtModule("RELATION", NULL, 2)));
@@ -4114,19 +4676,24 @@ void helpStartupOptimize1() {
     SGT_OPTIMIZE_STELLA_CS_VALUE = ((Surrogate*)(internRigidSymbolWrtModule("CS-VALUE", getStellaModule("/STELLA", true), 1)));
     KWD_OPTIMIZE_CONSTANT = ((Keyword*)(internRigidSymbolWrtModule("CONSTANT", NULL, 2)));
     SYM_OPTIMIZE_STELLA_PREDICATE = ((Symbol*)(internRigidSymbolWrtModule("PREDICATE", getStellaModule("/STELLA", true), 0)));
-    SYM_OPTIMIZE_LOGIC_WEIGHT = ((Symbol*)(internRigidSymbolWrtModule("WEIGHT", NULL, 0)));
-    SYM_OPTIMIZE_LOGIC_VARIABLE_TYPEp = ((Symbol*)(internRigidSymbolWrtModule("VARIABLE-TYPE?", NULL, 0)));
-    SYM_OPTIMIZE_LOGIC_DESCRIPTIVEp = ((Symbol*)(internRigidSymbolWrtModule("DESCRIPTIVE?", NULL, 0)));
-    SYM_OPTIMIZE_LOGIC_ANNOTATIONS = ((Symbol*)(internRigidSymbolWrtModule("ANNOTATIONS", NULL, 0)));
   }
 }
 
 void helpStartupOptimize2() {
   {
+    SYM_OPTIMIZE_LOGIC_WEIGHT = ((Symbol*)(internRigidSymbolWrtModule("WEIGHT", NULL, 0)));
+    SYM_OPTIMIZE_LOGIC_VARIABLE_TYPEp = ((Symbol*)(internRigidSymbolWrtModule("VARIABLE-TYPE?", NULL, 0)));
+    SYM_OPTIMIZE_LOGIC_DESCRIPTIVEp = ((Symbol*)(internRigidSymbolWrtModule("DESCRIPTIVE?", NULL, 0)));
+    SYM_OPTIMIZE_LOGIC_ANNOTATIONS = ((Symbol*)(internRigidSymbolWrtModule("ANNOTATIONS", NULL, 0)));
     SGT_OPTIMIZE_LOGIC_LOGIC_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("LOGIC-OBJECT", NULL, 1)));
     SGT_OPTIMIZE_PL_KERNEL_KB_EQUIVALENT = ((Surrogate*)(internRigidSymbolWrtModule("EQUIVALENT", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SYM_OPTIMIZE_LOGIC_EQUIVALENT = ((Symbol*)(internRigidSymbolWrtModule("EQUIVALENT", NULL, 0)));
     SYM_OPTIMIZE_LOGIC_CONSTANT = ((Symbol*)(internRigidSymbolWrtModule("CONSTANT", NULL, 0)));
+    KWD_OPTIMIZE_CREATED_SKOLEMS = ((Keyword*)(internRigidSymbolWrtModule("CREATED-SKOLEMS", NULL, 2)));
+    SGT_OPTIMIZE_LOGIC_SKOLEM = ((Surrogate*)(internRigidSymbolWrtModule("SKOLEM", NULL, 1)));
+    SGT_OPTIMIZE_LOGIC_F_FILTER_IMPLIED_SKOLEM_PROPOSITIONS_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-FILTER-IMPLIED-SKOLEM-PROPOSITIONS-MEMO-TABLE-000", NULL, 1)));
+    SYM_OPTIMIZE_LOGIC_INITIAL_BINDINGS = ((Symbol*)(internRigidSymbolWrtModule("INITIAL-BINDINGS", NULL, 0)));
+    SYM_OPTIMIZE_LOGIC_STRUCTURAL_FUNCTION_EVALUATION_ORDER = ((Symbol*)(internRigidSymbolWrtModule("STRUCTURAL-FUNCTION-EVALUATION-ORDER", NULL, 0)));
     SGT_OPTIMIZE_STELLA_VECTOR = ((Surrogate*)(internRigidSymbolWrtModule("VECTOR", getStellaModule("/STELLA", true), 1)));
     KWD_OPTIMIZE_CONCEIVE = ((Keyword*)(internRigidSymbolWrtModule("CONCEIVE", NULL, 2)));
     SYM_OPTIMIZE_LOGIC_STARTUP_OPTIMIZE = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-OPTIMIZE", NULL, 0)));
@@ -4143,6 +4710,8 @@ void helpStartupOptimize3() {
     V_1_0_AND_V_0_1 = list(2, V_1_0, V_0_1);
     V_1_0_SINGLETON = list(1, V_1_0);
     V_0_1_SINGLETON = list(1, V_0_1);
+    oOPTIMALGOALORDERINGRECURSIONSo.set(NULL_INTEGER);
+    oBOUNDTOOFFSETCOUNTERo.set(NULL_INTEGER);
     oQUERY_OPTIMIZATION_STRATEGYo = KWD_OPTIMIZE_DYNAMIC;
   }
 }
@@ -4207,16 +4776,18 @@ void helpStartupOptimize4() {
     defineFunctionObject("STATICALLY-OPTIMIZE-PROPOSITION?", "(DEFUN (STATICALLY-OPTIMIZE-PROPOSITION? BOOLEAN) ((SELF PROPOSITION)))", ((cpp_function_code)(&staticallyOptimizePropositionP)), NULL);
     defineFunctionObject("TRY-TO-CLUSTER-CONJUNCTIONS?", "(DEFUN (TRY-TO-CLUSTER-CONJUNCTIONS? BOOLEAN) () :GLOBALLY-INLINE? TRUE (RETURN (OR (EQL? *QUERY-OPTIMIZATION-STRATEGY* :STATIC-WITH-CLUSTERING))))", ((cpp_function_code)(&tryToClusterConjunctionsP)), NULL);
     defineFunctionObject("SELECT-OPTIMAL-QUERY-PATTERN", "(DEFUN (SELECT-OPTIMAL-QUERY-PATTERN DESCRIPTION) ((DESCRIPTION DESCRIPTION) (BOOLEANVECTOR BOOLEAN-VECTOR) (PARENTFRAME CONTROL-FRAME)))", ((cpp_function_code)(&selectOptimalQueryPattern)), NULL);
+    defineFunctionObject("DYNAMICALLY-ESTIMATE-INFERENCE-COST", "(DEFUN (DYNAMICALLY-ESTIMATE-INFERENCE-COST COST-ESTIMATE) ((SELF NAMED-DESCRIPTION)))", ((cpp_function_code)(&dynamicallyEstimateInferenceCost)), NULL);
     defineFunctionObject("DYNAMICALLY-ESTIMATE-GOAL-COST", "(DEFUN (DYNAMICALLY-ESTIMATE-GOAL-COST COST-ESTIMATE) ((GOAL PROPOSITION)))", ((cpp_function_code)(&dynamicallyEstimateGoalCost)), NULL);
-    defineFunctionObject("DYNAMICALLY-ESTIMATE-GOAL-FANOUT", "(DEFUN (DYNAMICALLY-ESTIMATE-GOAL-FANOUT COST-ESTIMATE) ((GOAL PROPOSITION)))", ((cpp_function_code)(&dynamicallyEstimateGoalFanout)), NULL);
   }
 }
 
 void helpStartupOptimize5() {
   {
+    defineFunctionObject("DYNAMICALLY-ESTIMATE-GOAL-FANOUT", "(DEFUN (DYNAMICALLY-ESTIMATE-GOAL-FANOUT COST-ESTIMATE) ((GOAL PROPOSITION)))", ((cpp_function_code)(&dynamicallyEstimateGoalFanout)), NULL);
     defineFunctionObject("DYNAMICALLY-ESTIMATE-PREDICATE-GOAL-FANOUT", "(DEFUN (DYNAMICALLY-ESTIMATE-PREDICATE-GOAL-FANOUT COST-ESTIMATE) ((GOAL PROPOSITION)))", ((cpp_function_code)(&dynamicallyEstimatePredicateGoalFanout)), NULL);
     defineFunctionObject("DYNAMICALLY-ESTIMATE-INSTANCE-OF-GOAL-FANOUT", "(DEFUN (DYNAMICALLY-ESTIMATE-INSTANCE-OF-GOAL-FANOUT COST-ESTIMATE) ((GOAL PROPOSITION)))", ((cpp_function_code)(&dynamicallyEstimateInstanceOfGoalFanout)), NULL);
     defineFunctionObject("DYNAMICALLY-ESTIMATE-EXTENSION-SIZE", "(DEFUN (DYNAMICALLY-ESTIMATE-EXTENSION-SIZE COST-ESTIMATE) ((DESCRIPTION NAMED-DESCRIPTION)))", ((cpp_function_code)(&dynamicallyEstimateExtensionSize)), NULL);
+    defineFunctionObject("COUNT-BOUND-ARGUMENTS", "(DEFUN (COUNT-BOUND-ARGUMENTS INTEGER) ((GOAL PROPOSITION)))", ((cpp_function_code)(&countBoundArguments)), NULL);
     defineFunctionObject("DYNAMICALLY-ESTIMATE-UNBOUND-VARIABLE-PENALTY", "(DEFUN (DYNAMICALLY-ESTIMATE-UNBOUND-VARIABLE-PENALTY COST-ESTIMATE) ((GOAL PROPOSITION)))", ((cpp_function_code)(&dynamicallyEstimateUnboundVariablePenalty)), NULL);
     defineFunctionObject("DYNAMICALLY-REOPTIMIZE-ARGUMENTS", "(DEFUN DYNAMICALLY-REOPTIMIZE-ARGUMENTS ((ARGUMENTS (VECTOR OF PROPOSITION)) (CURSOR INTEGER)))", ((cpp_function_code)(&dynamicallyReoptimizeArguments)), NULL);
     defineFunctionObject("SIMPLIFY-DESCRIPTION", "(DEFUN SIMPLIFY-DESCRIPTION ((DESCRIPTION DESCRIPTION) (POSTOPTIMIZATION? BOOLEAN)))", ((cpp_function_code)(&simplifyDescription)), NULL);
@@ -4233,18 +4804,26 @@ void helpStartupOptimize5() {
     defineFunctionObject("SINGLE-VALUED-PREDICATE?", "(DEFUN (SINGLE-VALUED-PREDICATE? BOOLEAN) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&singleValuedPredicateP)), NULL);
     defineFunctionObject("BINARY-PROPOSITION?", "(DEFUN (BINARY-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)) :GLOBALLY-INLINE? TRUE (RETURN (EQL? (LENGTH (ARGUMENTS PROPOSITION)) 2)))", ((cpp_function_code)(&binaryPropositionP)), NULL);
     defineFunctionObject("INHERIT-EQUIVALENT-PROPOSITION", "(DEFUN (INHERIT-EQUIVALENT-PROPOSITION PROPOSITION) ((SKOLEM SKOLEM) (VALUE OBJECT)))", ((cpp_function_code)(&inheritEquivalentProposition)), NULL);
-    defineFunctionObject("INHERIT-FUNCTION-PROPOSITION", "(DEFUN (INHERIT-FUNCTION-PROPOSITION PROPOSITION) ((SELF PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&inheritFunctionProposition)), NULL);
+    defineFunctionObject("INHERIT-FUNCTION-PROPOSITION", "(DEFUN (INHERIT-FUNCTION-PROPOSITION PROPOSITION) ((SELF PROPOSITION) (MAPPING ENTITY-MAPPING) (CREATESKOLEM? BOOLEAN)))", ((cpp_function_code)(&inheritFunctionProposition)), NULL);
     defineFunctionObject("EQUAL-UP-TO-SKOLEM-IDENTITY?", "(DEFUN (EQUAL-UP-TO-SKOLEM-IDENTITY? BOOLEAN) ((INHERITEDARG OBJECT) (BASEARG OBJECT) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&equalUpToSkolemIdentityP)), NULL);
+    defineFunctionObject("OLD-FIND-SIMILAR-PROPOSITION", "(DEFUN (OLD-FIND-SIMILAR-PROPOSITION PROPOSITION) ((PROPOSITION PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&oldFindSimilarProposition)), NULL);
+    defineFunctionObject("NEW-FIND-SIMILAR-PROPOSITION", "(DEFUN (NEW-FIND-SIMILAR-PROPOSITION PROPOSITION) ((PROPOSITION PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&newFindSimilarProposition)), NULL);
     defineFunctionObject("FIND-SIMILAR-PROPOSITION", "(DEFUN (FIND-SIMILAR-PROPOSITION PROPOSITION) ((PROPOSITION PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&findSimilarProposition)), NULL);
     defineFunctionObject("INHERIT-PROPOSITION-ARGUMENT", "(DEFUN (INHERIT-PROPOSITION-ARGUMENT OBJECT) ((ARGUMENT OBJECT) (PARENT PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&inheritPropositionArgument)), NULL);
     defineFunctionObject("ERADICATE-HOLDS-PROPOSITION", "(DEFUN (ERADICATE-HOLDS-PROPOSITION PROPOSITION) ((SELF PROPOSITION)))", ((cpp_function_code)(&eradicateHoldsProposition)), NULL);
     defineFunctionObject("INHERIT-PROPOSITION", "(DEFUN (INHERIT-PROPOSITION PROPOSITION) ((SELF PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&inheritProposition)), NULL);
     defineFunctionObject("CREATE-SKOLEM-FOR-UNMAPPED-VARIABLE", "(DEFUN (CREATE-SKOLEM-FOR-UNMAPPED-VARIABLE SKOLEM) ((VARIABLE PATTERN-VARIABLE) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&createSkolemForUnmappedVariable)), NULL);
     defineFunctionObject("INHERIT-AS-TOP-LEVEL-PROPOSITION", "(DEFUN (INHERIT-AS-TOP-LEVEL-PROPOSITION (CONS OF PROPOSITION)) ((PROPOSITION PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&inheritAsTopLevelProposition)), NULL);
-    defineFunctionObject("MAP-AND-ENQUEUE-VARIABLE?", "(DEFUN (MAP-AND-ENQUEUE-VARIABLE? BOOLEAN) ((VARIABLE OBJECT) (LOCALVALUE OBJECT) (MAPPING ENTITY-MAPPING) (QUEUE LIST)))", ((cpp_function_code)(&mapAndEnqueueVariableP)), NULL);
+    defineFunctionObject("PROPOSITION-REFERENCES-TERMS?", "(DEFUN (PROPOSITION-REFERENCES-TERMS? BOOLEAN) ((SELF PROPOSITION) (TERMS HASH-SET)))", ((cpp_function_code)(&propositionReferencesTermsP)), NULL);
+    defineFunctionObject("CREATE-SKOLEM-PROPOSITIONS-QUERY", "(DEFUN (CREATE-SKOLEM-PROPOSITIONS-QUERY CONS) ((INHERITEDPROPS (CONS OF PROPOSITION)) (DESCRIPTION DESCRIPTION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&createSkolemPropositionsQuery)), NULL);
+    defineFunctionObject("FILTER-IMPLIED-SKOLEM-PROPOSITIONS", "(DEFUN (FILTER-IMPLIED-SKOLEM-PROPOSITIONS (CONS OF PROPOSITION)) ((INHERITEDPROPS (CONS OF PROPOSITION)) (DESCRIPTION DESCRIPTION) (ARGUMENTS VECTOR) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&filterImpliedSkolemPropositions)), NULL);
+    defineFunctionObject("MAP-AND-ENQUEUE-VARIABLE?", "(DEFUN (MAP-AND-ENQUEUE-VARIABLE? BOOLEAN) ((VARIABLE OBJECT) (LOCALVALUE OBJECT) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&mapAndEnqueueVariableP)), NULL);
     defineFunctionObject("COLLECT-STRUCTURAL-FUNCTIONS", "(DEFUN COLLECT-STRUCTURAL-FUNCTIONS ((PROPOSITION PROPOSITION) (STRUCTURALFUNCTIONS (LIST OF PROPOSITION))))", ((cpp_function_code)(&collectStructuralFunctions)), NULL);
-    defineFunctionObject("MAP-FUNCTIONAL-VALUE?", "(DEFUN (MAP-FUNCTIONAL-VALUE? BOOLEAN) ((PROPOSITION PROPOSITION) (MAPPING ENTITY-MAPPING) (QUEUE LIST)))", ((cpp_function_code)(&mapFunctionalValueP)), NULL);
-    defineFunctionObject("INHERIT-DESCRIPTION-PROPOSITIONS", "(DEFUN (INHERIT-DESCRIPTION-PROPOSITIONS (CONS OF PROPOSITION)) ((ARGUMENTS VECTOR) (DESCRIPTION DESCRIPTION)))", ((cpp_function_code)(&inheritDescriptionPropositions)), NULL);
+    defineFunctionObject("COMPUTE-STRUCTURAL-FUNCTION-EVALUATION-ORDER", "(DEFUN (COMPUTE-STRUCTURAL-FUNCTION-EVALUATION-ORDER (LIST OF PROPOSITION)) ((SELF DESCRIPTION)))", ((cpp_function_code)(&computeStructuralFunctionEvaluationOrder)), NULL);
+    defineExternalSlotFromStringifiedSource("(DEFSLOT DESCRIPTION STRUCTURAL-FUNCTION-EVALUATION-ORDER :TYPE (LIST OF PROPOSITION) :ALLOCATION :DYNAMIC)");
+    defineFunctionObject("GET-STRUCTURAL-FUNCTION-EVALUATION-ORDER", "(DEFUN (GET-STRUCTURAL-FUNCTION-EVALUATION-ORDER (LIST OF PROPOSITION)) ((SELF DESCRIPTION)))", ((cpp_function_code)(&getStructuralFunctionEvaluationOrder)), NULL);
+    defineFunctionObject("MAP-FUNCTIONAL-VALUE?", "(DEFUN (MAP-FUNCTIONAL-VALUE? BOOLEAN) ((PROPOSITION PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&mapFunctionalValueP)), NULL);
+    defineFunctionObject("INHERIT-DESCRIPTION-PROPOSITIONS", "(DEFUN (INHERIT-DESCRIPTION-PROPOSITIONS (CONS OF PROPOSITION) ENTITY-MAPPING) ((ARGUMENTS VECTOR) (DESCRIPTION DESCRIPTION)))", ((cpp_function_code)(&inheritDescriptionPropositions)), NULL);
     defineFunctionObject("INHERIT-UNNAMED-DESCRIPTION", "(DEFUN INHERIT-UNNAMED-DESCRIPTION ((SELF OBJECT) (DESCRIPTION DESCRIPTION) (DEFAULTTRUE? BOOLEAN)) :PUBLIC? TRUE)", ((cpp_function_code)(&inheritUnnamedDescription)), NULL);
     defineFunctionObject("VECTOR.INHERIT-UNNAMED-DESCRIPTION", "(DEFUN VECTOR.INHERIT-UNNAMED-DESCRIPTION ((ARGUMENTS VECTOR) (DESCRIPTION DESCRIPTION) (DEFAULTTRUE? BOOLEAN)))", ((cpp_function_code)(&vectorDinheritUnnamedDescription)), NULL);
     defineFunctionObject("LOGIC-OBJECT.INHERIT-UNNAMED-DESCRIPTION", "(DEFUN LOGIC-OBJECT.INHERIT-UNNAMED-DESCRIPTION ((INSTANCE LOGIC-OBJECT) (DESCRIPTION DESCRIPTION) (DEFAULTTRUE? BOOLEAN)))", ((cpp_function_code)(&logicObjectDinheritUnnamedDescription)), NULL);
@@ -4287,6 +4866,7 @@ void startupOptimize() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *DISTRIBUTEDOPENGOAL?* BOOLEAN FALSE :DOCUMENTATION \"Used by 'distribute-open-goal' to signal that\na goal was distributed by 'help-distribute-goal'.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT V-0-0 BOOLEAN-VECTOR (ZERO-ONE-LIST-TO-BOOLEAN-VECTOR (LIST 0 0)))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT V-1-0 BOOLEAN-VECTOR (ZERO-ONE-LIST-TO-BOOLEAN-VECTOR (LIST 1 0)))");
@@ -4336,6 +4916,12 @@ Symbol* SYM_OPTIMIZE_LOGIC_PERMUTATION_TABLE = NULL;
 Surrogate* SGT_OPTIMIZE_PL_KERNEL_KB_COMPUTED = NULL;
 
 Surrogate* SGT_OPTIMIZE_PL_KERNEL_KB_RELATION_CONSTRAINT = NULL;
+
+Surrogate* SGT_OPTIMIZE_PL_KERNEL_KB_HOLDS = NULL;
+
+Surrogate* SGT_OPTIMIZE_PL_KERNEL_KB_SETOF = NULL;
+
+Surrogate* SGT_OPTIMIZE_PL_KERNEL_KB_LISTOF = NULL;
 
 Surrogate* SGT_OPTIMIZE_PL_KERNEL_KB_ABSTRACT = NULL;
 
@@ -4405,7 +4991,9 @@ Surrogate* SGT_OPTIMIZE_PL_KERNEL_KB_CUT = NULL;
 
 Surrogate* SGT_OPTIMIZE_PL_KERNEL_KB_BOUND_VARIABLES = NULL;
 
-Surrogate* SGT_OPTIMIZE_PL_KERNEL_KB_HOLDS = NULL;
+Keyword* KWD_OPTIMIZE_BACKWARD = NULL;
+
+Surrogate* SGT_OPTIMIZE_LOGIC_F_DYNAMICALLY_ESTIMATE_INFERENCE_COST_MEMO_TABLE_000 = NULL;
 
 Surrogate* SGT_OPTIMIZE_PL_KERNEL_KB_INSTANCE_OF = NULL;
 
@@ -4440,6 +5028,16 @@ Surrogate* SGT_OPTIMIZE_PL_KERNEL_KB_EQUIVALENT = NULL;
 Symbol* SYM_OPTIMIZE_LOGIC_EQUIVALENT = NULL;
 
 Symbol* SYM_OPTIMIZE_LOGIC_CONSTANT = NULL;
+
+Keyword* KWD_OPTIMIZE_CREATED_SKOLEMS = NULL;
+
+Surrogate* SGT_OPTIMIZE_LOGIC_SKOLEM = NULL;
+
+Surrogate* SGT_OPTIMIZE_LOGIC_F_FILTER_IMPLIED_SKOLEM_PROPOSITIONS_MEMO_TABLE_000 = NULL;
+
+Symbol* SYM_OPTIMIZE_LOGIC_INITIAL_BINDINGS = NULL;
+
+Symbol* SYM_OPTIMIZE_LOGIC_STRUCTURAL_FUNCTION_EVALUATION_ORDER = NULL;
 
 Surrogate* SGT_OPTIMIZE_STELLA_VECTOR = NULL;
 

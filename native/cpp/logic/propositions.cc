@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -143,7 +143,7 @@ BooleanWrapper* LogicObject::badP_reader() {
     { BooleanWrapper* answer = ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_STELLA_BADp, NULL)));
 
       if (!((boolean)(answer))) {
-        return ((false ? TRUE_WRAPPER : FALSE_WRAPPER));
+        return (FALSE_WRAPPER);
       }
       else {
         return (answer);
@@ -506,6 +506,14 @@ Object* accessForwardChainingIndexSlotValue(ForwardChainingIndex* self, Symbol* 
   return (value);
 }
 
+boolean ForwardChainingIndex::deletedP() {
+  { ForwardChainingIndex* self = this;
+
+    return ((!((boolean)(self->masterRule))) ||
+        deletedPropositionP(self->masterRule));
+  }
+}
+
 Description* newDescription() {
   { Description* self = NULL;
 
@@ -559,7 +567,7 @@ BooleanWrapper* Description::deferredContrapositivesP_reader() {
     { BooleanWrapper* answer = ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_DEFERRED_CONTRAPOSITIVESp, NULL)));
 
       if (!((boolean)(answer))) {
-        return ((false ? TRUE_WRAPPER : FALSE_WRAPPER));
+        return (FALSE_WRAPPER);
       }
       else {
         return (answer);
@@ -890,7 +898,7 @@ BooleanWrapper* Proposition::variableTypeP_reader() {
     { BooleanWrapper* answer = ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_VARIABLE_TYPEp, NULL)));
 
       if (!((boolean)(answer))) {
-        return ((false ? TRUE_WRAPPER : FALSE_WRAPPER));
+        return (FALSE_WRAPPER);
       }
       else {
         return (answer);
@@ -920,7 +928,7 @@ BooleanWrapper* Proposition::unfastenedP_reader() {
     { BooleanWrapper* answer = ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_UNFASTENEDp, NULL)));
 
       if (!((boolean)(answer))) {
-        return ((false ? TRUE_WRAPPER : FALSE_WRAPPER));
+        return (FALSE_WRAPPER);
       }
       else {
         return (answer);
@@ -965,7 +973,7 @@ BooleanWrapper* Proposition::badP_reader() {
     { BooleanWrapper* answer = ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_STELLA_BADp, NULL)));
 
       if (!((boolean)(answer))) {
-        return ((false ? TRUE_WRAPPER : FALSE_WRAPPER));
+        return (FALSE_WRAPPER);
       }
       else {
         return (answer);
@@ -1422,7 +1430,7 @@ Proposition* createProposition(Symbol* kind, int argumentcount) {
   enforceCodeOnly();
   { Proposition* proposition = newProposition();
 
-    proposition->arguments = newVector(argumentcount);
+    proposition->arguments = stella::newVector(argumentcount);
     proposition->kind = internKeyword(kind->symbolName);
     if ((kind == SYM_PROPOSITIONS_STELLA_FUNCTION) ||
         ((kind == SYM_PROPOSITIONS_STELLA_PREDICATE) ||
@@ -1432,7 +1440,7 @@ Proposition* createProposition(Symbol* kind, int argumentcount) {
       proposition->operatoR = ((Surrogate*)(oOPERATOR_NAME_TO_SURROGATE_TABLEo->lookup(proposition->kind)));
     }
     if (descriptionModeP()) {
-      setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_DESCRIPTIVEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_DESCRIPTIVEp, TRUE_WRAPPER, FALSE_WRAPPER);
     }
     setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_UNFASTENEDp, TRUE_WRAPPER, NULL);
     return (proposition);
@@ -1451,6 +1459,25 @@ void enforceCodeOnly() {
       throw *newPropositionError(stream000->theStringReader());
     }
   }
+}
+
+Surrogate* getPropositionBaseOperator(Proposition* prop) {
+  if (prop->kind == KWD_PROPOSITIONS_EQUIVALENT) {
+    { Object* term1 = (prop->arguments->theArray)[0];
+      Object* term2 = (prop->arguments->theArray)[1];
+
+      if (functionOutputSkolemP(term1)) {
+        return (((Surrogate*)(((Skolem*)(term1))->definingProposition->operatoR)));
+      }
+      else if (functionOutputSkolemP(term2)) {
+        return (((Surrogate*)(((Skolem*)(term2))->definingProposition->operatoR)));
+      }
+      else {
+        return (((Surrogate*)(prop->operatoR)));
+      }
+    }
+  }
+  return (((Surrogate*)(prop->operatoR)));
 }
 
 Module* oLOGIC_MODULEo = NULL;
@@ -1951,7 +1978,7 @@ void clipOrClashWithOldPredicateValue(Proposition* proposition) {
               deassignTruthValue(p, KWD_PROPOSITIONS_RETRACT_TRUE);
             }
             else {
-              signalUnificationClash(valueOf((p->arguments->theArray)[(p->arguments->length() - 1)]), valueOf(arguments->last()));
+              equateValues(valueOf((p->arguments->theArray)[(p->arguments->length() - 1)]), valueOf(arguments->last()));
             }
           }
         }
@@ -2176,6 +2203,7 @@ void assignTruthValue(Proposition* self, Object* truthvalue) {
     else if (((boolean)(oldtruthvalue))) {
       if ((self == TRUE_PROPOSITION) ||
           (self == FALSE_PROPOSITION)) {
+        signalTruthValueClash(self);
       }
       else if (oldtruthvalue == INCONSISTENT_TRUTH_VALUE) {
       }
@@ -2225,7 +2253,7 @@ void assignTruthValue(Proposition* self, Object* truthvalue) {
       }
       else if (newtruthvalue == DEFAULT_TRUE_TRUTH_VALUE) {
         if (oDEFERINGDEFAULTFORWARDINFERENCESpo.get()) {
-          deferredDefaultPropositionsSetter(oCONTEXTo.get(), cons(self, deferredDefaultPropositions(oCONTEXTo.get())));
+          getPropagationEnvironment(oCONTEXTo.get())->deferDefaultProposition(self);
           return;
         }
         else if ((oldtruthvalue == TRUE_TRUTH_VALUE) ||
@@ -2237,7 +2265,7 @@ void assignTruthValue(Proposition* self, Object* truthvalue) {
       }
       else if (newtruthvalue == DEFAULT_FALSE_TRUTH_VALUE) {
         if (oDEFERINGDEFAULTFORWARDINFERENCESpo.get()) {
-          deferredDefaultPropositionsSetter(oCONTEXTo.get(), cons(self, deferredDefaultPropositions(oCONTEXTo.get())));
+          getPropagationEnvironment(oCONTEXTo.get())->deferDefaultProposition(self);
           return;
         }
         else if ((oldtruthvalue == FALSE_TRUTH_VALUE) ||
@@ -2972,7 +3000,7 @@ int oSKOLEM_ID_COUNTERo = 0;
 DEFINE_STELLA_SPECIAL(oVARIABLEIDCOUNTERo, int , 0);
 
 Symbol* yieldAnonymousSkolemName(boolean variableP) {
-  { char* suffix = (variableP ? integerToString(oVARIABLEIDCOUNTERo.set(oVARIABLEIDCOUNTERo.get() + 1)) : integerToString(oSKOLEM_ID_COUNTERo = oSKOLEM_ID_COUNTERo + 1));
+  { char* suffix = (variableP ? integerToString(((long long int)(oVARIABLEIDCOUNTERo.set(oVARIABLEIDCOUNTERo.get() + 1)))) : integerToString(((long long int)(oSKOLEM_ID_COUNTERo = oSKOLEM_ID_COUNTERo + 1))));
 
     return (internSymbol(stringConcatenate((variableP ? (char*)"?V" : (char*)"SK"), ((strlen(suffix) == 1) ? (char*)"0" : (char*)""), 1, suffix)));
   }
@@ -3307,6 +3335,15 @@ boolean unknownTruthValueP(TruthValue* self) {
       (!((boolean)(self))));
 }
 
+boolean knownTruthValueP(TruthValue* self) {
+  // Return TRUE if `self' is a known truth value, that is
+  // either TRUE or FALSE, but not UNKNOWN, INCONSISTENT, etc.
+  return (((self == TRUE_TRUTH_VALUE) ||
+      (self == DEFAULT_TRUE_TRUTH_VALUE)) ||
+      ((self == FALSE_TRUTH_VALUE) ||
+       (self == DEFAULT_FALSE_TRUTH_VALUE)));
+}
+
 boolean inconsistentTruthValueP(TruthValue* self) {
   // Return TRUE if `self' represents INCONSISTENT.
   return (self == INCONSISTENT_TRUTH_VALUE);
@@ -3365,7 +3402,10 @@ void signalVariableValueClash(Skolem* skolem, Object* value1, Object* value2) {
 }
 
 void signalTruthValueClash(Proposition* proposition) {
-  assignTruthValue(proposition, INCONSISTENT_TRUTH_VALUE);
+  if (!((proposition == TRUE_PROPOSITION) ||
+      (proposition == FALSE_PROPOSITION))) {
+    assignTruthValue(proposition, INCONSISTENT_TRUTH_VALUE);
+  }
   if (oCONTEXTo.get() == ((World*)(dynamicSlotValue(oMODULEo.get()->dynamicSlots, SYM_PROPOSITIONS_LOGIC_META_INFERENCE_CACHE, NULL)))) {
     { OutputStringStream* stream000 = newOutputStringStream();
 
@@ -3408,7 +3448,7 @@ Surrogate* logicalType(Object* self) {
           return (((PatternVariable*)((self->ioVariables->theArray)[0]))->skolemType);
         }
         else if (monadicP(self) &&
-            ((self->ioVariables->arraySize > 0) &&
+            (self->ioVariables->nonEmptyP() &&
              (((boolean)(((PatternVariable*)((self->ioVariables->theArray)[0]))->skolemType)) &&
               classDescriptionP(surrogateToDescription(((PatternVariable*)((self->ioVariables->theArray)[0]))->skolemType))))) {
           return (SGT_PROPOSITIONS_PL_KERNEL_KB_CONCEPT);
@@ -4400,6 +4440,9 @@ Object* evaluateLogicObjectTerm(LogicObject* self) {
       { LogicObject* self000 = self;
         PatternVariable* self = ((PatternVariable*)(self000));
 
+        if (((boolean)(lookupLogicVariableBinding(self->skolemName)))) {
+          return (self);
+        }
       }
     }
     else if (subtypeOfP(testValue000, SGT_PROPOSITIONS_LOGIC_SKOLEM)) {
@@ -4688,7 +4731,7 @@ void printExtensionSizes(Module* module, int sizecutoff) {
 
       for (desc, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
         desc = ((NamedDescription*)(iter001->value));
-        size = integerToString(desc->extension->estimatedLength());
+        size = integerToString(((long long int)(desc->extension->estimatedLength())));
         size = stringConcatenate(makeString(8 - strlen(size), ' '), size, 0);
         std::cout << size << " : " << desc->descriptionName() << std::endl;
       }
@@ -4762,7 +4805,7 @@ Proposition* assertDescriptionImpliesDescription(Description* sub, Description* 
 Proposition* assertImpliesLinkBetweenRelations(NamedDescription* sub, NamedDescription* super) {
   { Proposition* impliesprop = assertDescriptionImpliesDescription(sub, super, true);
 
-    setDynamicSlotValue(impliesprop->dynamicSlots, SYM_PROPOSITIONS_LOGIC_SUBRELATION_LINKp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+    setDynamicSlotValue(impliesprop->dynamicSlots, SYM_PROPOSITIONS_LOGIC_SUBRELATION_LINKp, TRUE_WRAPPER, FALSE_WRAPPER);
     updatePropositionTruthValue(impliesprop, KWD_PROPOSITIONS_ASSERT_TRUE);
     linkOriginatedProposition(sub, impliesprop);
     return (impliesprop);
@@ -4813,7 +4856,7 @@ Proposition* updateIsaProposition(Object* self, Surrogate* type, Keyword* update
         isaproposition = createProposition(SYM_PROPOSITIONS_STELLA_ISA, 1);
         isaproposition->operatoR = type;
         (isaproposition->arguments->theArray)[0] = self;
-        fastenDownOneProposition(isaproposition, true);
+        fastenDownOneProposition(isaproposition, false);
       }
       updatePropositionTruthValue(isaproposition, updatemode);
       return (isaproposition);
@@ -4865,7 +4908,7 @@ Proposition* updateProperty(LogicObject* self, Surrogate* surrogate, Keyword* up
         propertyproposition = createProposition(SYM_PROPOSITIONS_STELLA_PREDICATE, 1);
         (propertyproposition->arguments->theArray)[0] = self;
         propertyproposition->operatoR = surrogate;
-        fastenDownOneProposition(propertyproposition, true);
+        fastenDownOneProposition(propertyproposition, false);
       }
       updatePropositionTruthValue(propertyproposition, updatemode);
       return (propertyproposition);
@@ -4882,9 +4925,15 @@ Proposition* retractProperty(LogicObject* instance, Surrogate* property) {
 }
 
 Proposition* updateTuple(Surrogate* relation, Cons* arguments, Keyword* updatemode) {
-  { NamedDescription* description = getDescription(relation);
+  // Assert or retract a proposition that applies 'relation' to 'arguments'.
+  { boolean holdsP = relation == SGT_PROPOSITIONS_PL_KERNEL_KB_HOLDS;
+    NamedDescription* description = (holdsP ? getDescription(arguments->value) : getDescription(relation));
     Proposition* proposition = NULL;
 
+    if (holdsP) {
+      relation = description->surrogateValueInverse;
+      arguments = arguments->rest;
+    }
     if (functionDescriptionP(description)) {
       { Proposition* definingproposition = findOrCreateFunctionProposition(relation, arguments->butLast()->consify());
 
@@ -5181,8 +5230,12 @@ void cleanupStructuredObjectsIndex(Module* clearmodule) {
   }
 }
 
-int propositionHashIndex(Proposition* self) {
-  { int code = (size_t)(self->operatoR);
+int propositionHashIndex(Proposition* self, KeyValueMap* mapping) {
+  { boolean mappedP = ((boolean)(mapping));
+    int code = (size_t)(self->operatoR);
+    Vector* arguments = self->arguments;
+    Object* functionoutput = ((mappedP &&
+        (self->kind == KWD_PROPOSITIONS_FUNCTION)) ? arguments->last() : ((Object*)(NULL)));
     int argcode = 0;
     boolean commutativeP = false;
 
@@ -5198,7 +5251,7 @@ int propositionHashIndex(Proposition* self) {
     }
     code = (((code & 1) == 0) ? ((unsigned int)code >> 1) : (((code >> 1)) | oINTEGER_MSB_MASKo));
     { Object* arg = NULL;
-      Vector* vector000 = self->arguments;
+      Vector* vector000 = arguments;
       int index000 = 0;
       int length000 = vector000->length();
 
@@ -5206,6 +5259,14 @@ int propositionHashIndex(Proposition* self) {
             index000 < length000; 
             index000 = index000 + 1) {
         arg = (vector000->theArray)[index000];
+        if (mappedP) {
+          if (eqlP(arg, functionoutput)) {
+            arg = NULL;
+          }
+          else {
+            arg = mappedValueOf(arg, mapping, false);
+          }
+        }
         if (((boolean)(oQUERYITERATORo.get())) &&
             variableP(arg)) {
           { Object* temp000 = safeBoundTo(((PatternVariable*)(arg)));
@@ -5223,7 +5284,7 @@ int propositionHashIndex(Proposition* self) {
               { Object* arg000 = arg;
                 Proposition* arg = ((Proposition*)(arg000));
 
-                argcode = propositionHashIndex(arg);
+                argcode = propositionHashIndex(arg, mapping);
               }
             }
             else if (subtypeOfP(testValue001, SGT_PROPOSITIONS_LOGIC_NAMED_DESCRIPTION)) {
@@ -5237,7 +5298,7 @@ int propositionHashIndex(Proposition* self) {
               { Object* arg002 = arg;
                 Description* arg = ((Description*)(arg002));
 
-                argcode = propositionHashIndex(arg->proposition);
+                argcode = propositionHashIndex(arg->proposition, mapping);
               }
             }
             else if (subtypeOfP(testValue001, SGT_PROPOSITIONS_LOGIC_PATTERN_VARIABLE)) {
@@ -5255,7 +5316,7 @@ int propositionHashIndex(Proposition* self) {
 
                   if (((boolean)(definingprop)) &&
                       (!(definingprop == self))) {
-                    argcode = propositionHashIndex(definingprop);
+                    argcode = propositionHashIndex(definingprop, mapping);
                   }
                   else {
                     argcode = (size_t)SGT_PROPOSITIONS_LOGIC_SKOLEM;
@@ -5286,7 +5347,7 @@ int propositionHashIndex(Proposition* self) {
 }
 
 Proposition* findDuplicateComplexProposition(Proposition* self) {
-  { IntegerWrapper* index = wrapInteger(propositionHashIndex(self));
+  { IntegerWrapper* index = wrapInteger(propositionHashIndex(self, NULL));
     List* bucket = ((List*)(oSTRUCTURED_OBJECTS_INDEXo->lookup(index)));
     Module* homemodule = self->homeContext->baseModule;
     boolean functionP = self->kind == KWD_PROPOSITIONS_FUNCTION;
@@ -5296,78 +5357,89 @@ Proposition* findDuplicateComplexProposition(Proposition* self) {
       return (NULL);
     }
     bucket->removeDeletedMembers();
-    { ContextSensitiveObject* p = NULL;
-      Cons* iter000 = bucket->theConsList;
+    { GeneralizedSymbol* operatoR = self->operatoR;
+      Vector* arguments = self->arguments;
+      int arity = arguments->length();
+      boolean rewrappedP = false;
 
-      for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-        p = ((ContextSensitiveObject*)(iter000->value));
-        if (subtypeOfP(safePrimaryType(p), SGT_PROPOSITIONS_LOGIC_PROPOSITION)) {
-          { ContextSensitiveObject* p000 = p;
-            Proposition* p = ((Proposition*)(p000));
+      { ContextSensitiveObject* p = NULL;
+        Cons* iter000 = bucket->theConsList;
 
-            if (functionP) {
-              { GeneralizedSymbol* operatoR = self->operatoR;
-                Vector* arguments = self->arguments;
-                int arity = arguments->length();
+        for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+          p = ((ContextSensitiveObject*)(iter000->value));
+          if (subtypeOfP(safePrimaryType(p), SGT_PROPOSITIONS_LOGIC_PROPOSITION)) {
+            { ContextSensitiveObject* p000 = p;
+              Proposition* p = ((Proposition*)(p000));
 
-                { boolean testValue000 = false;
+              if ((operatoR == p->operatoR) &&
+                  (arity == p->arguments->length())) {
+                for (;;) {
+                  { boolean testValue000 = false;
 
-                  testValue000 = operatoR == p->operatoR;
-                  if (testValue000) {
-                    { boolean alwaysP000 = true;
+                    testValue000 = functionP;
+                    if (testValue000) {
+                      { boolean alwaysP000 = true;
 
-                      { Object* arg1 = NULL;
-                        Vector* vector000 = arguments;
-                        int index000 = 0;
-                        int length000 = vector000->length();
-                        Object* arg2 = NULL;
-                        Vector* vector001 = p->arguments;
-                        int index001 = 0;
-                        int length001 = vector001->length();
-                        int i = NULL_INTEGER;
-                        int iter001 = 2;
-                        int upperBound000 = arity;
-                        boolean unboundedP000 = upperBound000 == NULL_INTEGER;
+                        { Object* arg1 = NULL;
+                          Vector* vector000 = arguments;
+                          int index000 = 0;
+                          int length000 = vector000->length();
+                          Object* arg2 = NULL;
+                          Vector* vector001 = p->arguments;
+                          int index001 = 0;
+                          int length001 = vector001->length();
+                          int i = NULL_INTEGER;
+                          int iter001 = 2;
+                          int upperBound000 = arity;
+                          boolean unboundedP000 = upperBound000 == NULL_INTEGER;
 
-                        for  (arg1, vector000, index000, length000, arg2, vector001, index001, length001, i, iter001, upperBound000, unboundedP000; 
-                              (index000 < length000) &&
-                                  ((index001 < length001) &&
-                                   (unboundedP000 ||
-                                    (iter001 <= upperBound000))); 
-                              index000 = index000 + 1,
-                              index001 = index001 + 1,
-                              iter001 = iter001 + 1) {
-                          arg1 = (vector000->theArray)[index000];
-                          arg2 = (vector001->theArray)[index001];
-                          i = iter001;
-                          if (!eqlP(valueOf(arg1), valueOf(arg2))) {
-                            alwaysP000 = false;
-                            break;
+                          for  (arg1, vector000, index000, length000, arg2, vector001, index001, length001, i, iter001, upperBound000, unboundedP000; 
+                                (index000 < length000) &&
+                                    ((index001 < length001) &&
+                                     (unboundedP000 ||
+                                      (iter001 <= upperBound000))); 
+                                index000 = index000 + 1,
+                                index001 = index001 + 1,
+                                iter001 = iter001 + 1) {
+                            arg1 = (vector000->theArray)[index000];
+                            arg2 = (vector001->theArray)[index001];
+                            i = iter001;
+                            if (!eqlP(valueOf(arg1), valueOf(arg2))) {
+                              alwaysP000 = false;
+                              break;
+                            }
                           }
                         }
+                        testValue000 = alwaysP000;
                       }
-                      testValue000 = alwaysP000;
+                    }
+                    if (!testValue000) {
+                      testValue000 = (!functionP) &&
+                          equivalentPropositionsP(self, p, NULL);
                     }
                     if (testValue000) {
-                      testValue000 = (arity == p->arguments->length()) &&
-                          subcontextP(homemodule, p->homeContext->baseModule);
+                      if (subcontextP(homemodule, p->homeContext->baseModule)) {
+                        return (p);
+                      }
+                      else {
+                        break;
+                      }
                     }
                   }
-                  if (testValue000) {
-                    return (p);
+                  if (rewrappedP) {
+                    break;
+                  }
+                  else {
+                    rewrapPropositionArguments(self);
+                    rewrappedP = true;
+                    continue;
                   }
                 }
               }
             }
-            else {
-              if (equivalentPropositionsP(self, p, NULL) &&
-                  subcontextP(homemodule, p->homeContext->baseModule)) {
-                return (p);
-              }
-            }
           }
-        }
-        else {
+          else {
+          }
         }
       }
     }
@@ -5627,7 +5699,7 @@ Proposition* buildTopLevelProposition(Object* tree, boolean trueassertionP) {
       BIND_STELLA_SPECIAL(oTERMUNDERCONSTRUCTIONo, Object*, tree);
       proposition = ((Proposition*)(buildProposition(tree)));
       if (((boolean)(proposition))) {
-        normalizeTopLevelProposition(proposition, NULL);
+        normalizeTopLevelProposition(proposition);
         verifyForallPropositions(proposition);
         if (!(collectUnresolvedSlotReferences(proposition) == NIL)) {
           if (trueassertionP) {
@@ -6086,10 +6158,10 @@ void finalizePropositionAnnotations(Proposition* proposition) {
                 { char* testValue000 = stringUpcase(value->symbolName);
 
                   if (stringEqlP(testValue000, "FORWARD")) {
-                    setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_FORWARD_ONLYp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+                    setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_FORWARD_ONLYp, TRUE_WRAPPER, FALSE_WRAPPER);
                   }
                   else if (stringEqlP(testValue000, "BACKWARD")) {
-                    setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_BACKWARD_ONLYp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+                    setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_BACKWARD_ONLYp, TRUE_WRAPPER, FALSE_WRAPPER);
                   }
                   else {
                     annotations->removeAt(option);
@@ -6187,8 +6259,8 @@ void clearPropositionAnnotations(Proposition* proposition) {
           value = iter000->rest->value;
           value = value;
           if (option == KWD_PROPOSITIONS_DIRECTION) {
-            setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_FORWARD_ONLYp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
-            setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_BACKWARD_ONLYp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+            setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_FORWARD_ONLYp, FALSE_WRAPPER, FALSE_WRAPPER);
+            setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_BACKWARD_ONLYp, FALSE_WRAPPER, FALSE_WRAPPER);
           }
           else if (option == KWD_PROPOSITIONS_WEIGHT) {
             setDynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_WEIGHT, wrapFloat(NULL_FLOAT), NULL_FLOAT_WRAPPER);
@@ -6200,6 +6272,18 @@ void clearPropositionAnnotations(Proposition* proposition) {
       }
     }
   }
+}
+
+void forwardBackwardOptionHandler(Proposition* self, StorageSlot* slot, Object* tree) {
+  if (tree == SYM_PROPOSITIONS_STELLA_TRUE) {
+    if (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_FORWARD_ONLYp, FALSE_WRAPPER)))->wrapperValue) {
+      setDynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_FORWARD_ONLYp, FALSE_WRAPPER, FALSE_WRAPPER);
+    }
+    if (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_BACKWARD_ONLYp, FALSE_WRAPPER)))->wrapperValue) {
+      setDynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_BACKWARD_ONLYp, FALSE_WRAPPER, FALSE_WRAPPER);
+    }
+  }
+  defaultOptionHandler(self, slot, tree);
 }
 
 boolean functionInducedExistsP(Proposition* proposition) {
@@ -6836,7 +6920,7 @@ Object* evaluateTypedArgument(Object* argument, Surrogate* type) {
   if ((type == SGT_PROPOSITIONS_LOGIC_PROPOSITION) ||
       (oAUTO_COERCE_PROPOSITIONAL_ARGUMENTSpo &&
        propositionalArgumentP(argument))) {
-    return (buildProposition(argument));
+    return (evaluatePropositionTerm(argument));
   }
   else if (((boolean)(type))) {
     { 
@@ -6846,6 +6930,80 @@ Object* evaluateTypedArgument(Object* argument, Surrogate* type) {
   }
   else {
     return (evaluateTerm(argument));
+  }
+}
+
+Object* evaluatePropositionTerm(Object* tree) {
+  { Surrogate* testValue000 = safePrimaryType(tree);
+
+    if (subtypeOfP(testValue000, SGT_PROPOSITIONS_LOGIC_PROPOSITION)) {
+      { Object* tree000 = tree;
+        Proposition* tree = ((Proposition*)(tree000));
+
+        return (tree);
+      }
+    }
+    else if (testValue000 == SGT_PROPOSITIONS_STELLA_CONS) {
+      { Object* tree001 = tree;
+        Cons* tree = ((Cons*)(tree001));
+
+        { LogicObject* predicate = NULL;
+          Object* firstargument = NULL;
+
+          predicate = evaluatePredicateAndFirstArgument(tree, firstargument);
+          if (((boolean)(firstargument))) {
+            tree->secondSetter(firstargument);
+          }
+          if (functionP(predicate) &&
+              (((NamedDescription*)(predicate))->arity() == tree->length())) {
+            return (evaluateFunctionTerm(tree));
+          }
+          else {
+            return (buildProposition(tree));
+          }
+        }
+      }
+    }
+    else {
+      return (buildProposition(tree));
+    }
+  }
+}
+
+LogicObject* evaluatePredicateAndFirstArgument(Cons* tree, Object*& _Return1) {
+  { Object* predicate = tree->value;
+    Object* firstargument = tree->rest->value;
+
+    if (subtypeOfP(safePrimaryType(predicate), SGT_PROPOSITIONS_STELLA_GENERALIZED_SYMBOL)) {
+      { Object* predicate000 = predicate;
+        GeneralizedSymbol* predicate = ((GeneralizedSymbol*)(predicate000));
+
+        if ((predicate == SYM_PROPOSITIONS_STELLA_EXISTS) ||
+            (predicate == SYM_PROPOSITIONS_STELLA_FORALL)) {
+          firstargument = NULL;
+          predicate = NULL;
+        }
+        else if ((predicate == SYM_PROPOSITIONS_STELLA_AND) ||
+            ((predicate == SYM_PROPOSITIONS_STELLA_OR) ||
+             (predicate == SYM_PROPOSITIONS_STELLA_NOT))) {
+          firstargument = NULL;
+          predicate = NULL;
+        }
+        else {
+        }
+      }
+    }
+    else {
+      predicate = NULL;
+    }
+    if (((boolean)(predicate))) {
+      if (((boolean)(firstargument))) {
+        firstargument = evaluateFirstArgument(tree->rest->value, ((Symbol*)(predicate)));
+      }
+      predicate = evaluatePredicate(((GeneralizedSymbol*)(predicate)), firstargument);
+    }
+    _Return1 = firstargument;
+    return (((LogicObject*)(predicate)));
   }
 }
 
@@ -7005,18 +7163,11 @@ Proposition* buildPredicateProposition(Cons* tree) {
     Object* firstargument = NULL;
     LogicObject* predicatevalue = NULL;
 
-    if (tree->rest == NIL) {
-      if (predicatename == SYM_PROPOSITIONS_PL_KERNEL_KB_CUT) {
-      }
-      else {
-        std::cout << "Predicate " << "`" << predicatename << "'" << " applied to zero arguments." << std::endl;
-      }
-    }
-    else {
-      firstargument = evaluateFirstArgument(tree->rest->value, ((Symbol*)(predicatename)));
+    predicatevalue = evaluatePredicateAndFirstArgument(tree, firstargument);
+    if (((boolean)(firstargument))) {
+      tree->secondSetter(firstargument);
       (proposition->arguments->theArray)[0] = firstargument;
     }
-    predicatevalue = evaluatePredicate(((GeneralizedSymbol*)(predicatename)), firstargument);
     if (((boolean)(predicatevalue)) &&
         functionP(predicatevalue)) {
       if (descriptionModeP()) {
@@ -7024,7 +7175,7 @@ Proposition* buildPredicateProposition(Cons* tree) {
       }
       else {
         { int lastargindex = tree->length() - 1;
-          Object* resultargument = tree->nth(lastargindex);
+          Object* resultargument = evaluateTypedArgument(tree->nth(lastargindex), ((Surrogate*)(((NamedDescription*)(predicatevalue))->ioVariableTypes->last())));
 
           tree->nthSetter(NULL, lastargindex);
           tree = tree->remove(NULL);
@@ -7062,6 +7213,11 @@ boolean checkStrictTypeP(Object* self, Surrogate* type, boolean shallowP) {
        (type == SGT_PROPOSITIONS_STELLA_THING))) {
     return (true);
   }
+  if ((type == SGT_PROPOSITIONS_STELLA_BOOLEAN) &&
+      ((self == TRUE_PROPOSITION) ||
+       (self == FALSE_PROPOSITION))) {
+    return (true);
+  }
   { Surrogate* testValue000 = safePrimaryType(self);
 
     if (subtypeOfP(testValue000, SGT_PROPOSITIONS_LOGIC_PATTERN_VARIABLE)) {
@@ -7089,6 +7245,13 @@ boolean checkStrictTypeP(Object* self, Surrogate* type, boolean shallowP) {
             subtypeOfP(logicalType(self), type)) {
           return (true);
         }
+      }
+    }
+    else if (subtypeOfP(testValue000, SGT_PROPOSITIONS_LOGIC_QUANTITY_LOGIC_WRAPPER)) {
+      { Object* self003 = self;
+        QuantityLogicWrapper* self = ((QuantityLogicWrapper*)(self003));
+
+        return (true);
       }
     }
     else {
@@ -7371,7 +7534,7 @@ void handleArgumentTypeViolation(Proposition* proposition, Object* arg, Surrogat
   else if (oTYPECHECKMODEo.get() == KWD_PROPOSITIONS_AUTOMATICALLY_FIX_TYPE_VIOLATIONS) {
     { Proposition* isaproposition = assertIsaProposition(arg, requiredtype);
 
-      setDynamicSlotValue(isaproposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_ASSERTED_BY_TYPE_CHECKERp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(isaproposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_ASSERTED_BY_TYPE_CHECKERp, TRUE_WRAPPER, FALSE_WRAPPER);
     }
   }
   else {
@@ -7416,6 +7579,7 @@ CheckTypesRecord* newCheckTypesRecord() {
     self->module = NULL;
     self->parentDescription = NULL;
     self->parentProposition = NULL;
+    self->proposition = NULL;
     return (self);
   }
 }
@@ -7428,7 +7592,15 @@ Surrogate* CheckTypesRecord::primaryType() {
 }
 
 Object* accessCheckTypesRecordSlotValue(CheckTypesRecord* self, Symbol* slotname, Object* value, boolean setvalueP) {
-  if (slotname == SYM_PROPOSITIONS_LOGIC_PARENT_PROPOSITION) {
+  if (slotname == SYM_PROPOSITIONS_LOGIC_PROPOSITION) {
+    if (setvalueP) {
+      self->proposition = ((Proposition*)(value));
+    }
+    else {
+      value = self->proposition;
+    }
+  }
+  else if (slotname == SYM_PROPOSITIONS_LOGIC_PARENT_PROPOSITION) {
     if (setvalueP) {
       self->parentProposition = value;
     }
@@ -7464,47 +7636,64 @@ Object* accessCheckTypesRecordSlotValue(CheckTypesRecord* self, Symbol* slotname
 
 // List of propositions that have failed a type check,
 // but might pass once finalization is complete.
-KeyValueList* oCHECK_TYPES_AGENDAo = NULL;
+VectorSequence* oCHECK_TYPES_AGENDAo = NULL;
 
 void postToCheckTypesAgenda(Proposition* self) {
-  { CheckTypesRecord* self000 = newCheckTypesRecord();
+  { int length = oCHECK_TYPES_AGENDAo->sequenceLength;
 
-    self000->parentProposition = oTERMUNDERCONSTRUCTIONo.get();
-    self000->parentDescription = ((Description*)(oDESCRIPTIONUNDERCONSTRUCTIONo.get()));
-    self000->module = oMODULEo.get();
-    oCHECK_TYPES_AGENDAo->insertAt(self, self000);
+    if ((length == 0) ||
+        (!(self == ((CheckTypesRecord*)((oCHECK_TYPES_AGENDAo->theArray)[(length - 1)]))->proposition))) {
+      { CheckTypesRecord* self000 = newCheckTypesRecord();
+
+        self000->proposition = self;
+        self000->parentProposition = oTERMUNDERCONSTRUCTIONo.get();
+        self000->parentDescription = ((Description*)(oDESCRIPTIONUNDERCONSTRUCTIONo.get()));
+        self000->module = oMODULEo.get();
+        oCHECK_TYPES_AGENDAo->insert(self000);
+      }
+      length = length + 1;
+    }
+    if (integerMod(length, 100000) == 0) {
+      { 
+        BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+        *(STANDARD_WARNING->nativeStream) << "WARNING: " << "Queued " << length << " type violations, consider running `(process-definitions)'" << std::endl;
+        helpSignalPropositionError(STANDARD_WARNING, KWD_PROPOSITIONS_WARNING);
+      }
+    }
   }
 }
 
 void processCheckTypesAgenda() {
-  if (oCHECK_TYPES_AGENDAo->emptyP() ||
+  if ((oCHECK_TYPES_AGENDAo->sequenceLength == 0) ||
       oINHIBITOBJECTFINALIZATIONpo.get()) {
     return;
   }
   plLog(KWD_PROPOSITIONS_MEDIUM, 1, wrapString("Processing check-types agenda..."));
-  { KeyValueList* agenda = oCHECK_TYPES_AGENDAo->reverse();
+  { VectorSequence* agenda = oCHECK_TYPES_AGENDAo;
+    Proposition* proposition = NULL;
 
-    oCHECK_TYPES_AGENDAo = newKeyValueList();
-    { Proposition* proposition = NULL;
-      CheckTypesRecord* record = NULL;
-      KvCons* iter000 = agenda->theKvList;
+    oCHECK_TYPES_AGENDAo = newVectorSequence(4);
+    { CheckTypesRecord* record = NULL;
+      VectorSequence* vector000 = agenda;
+      int index000 = 0;
+      int length000 = vector000->sequenceLength;
 
-      for  (proposition, record, iter000; 
-            ((boolean)(iter000)); 
-            iter000 = iter000->rest) {
-        proposition = ((Proposition*)(iter000->key));
-        record = ((CheckTypesRecord*)(iter000->value));
+      for  (record, vector000, index000, length000; 
+            index000 < length000; 
+            index000 = index000 + 1) {
+        record = ((CheckTypesRecord*)((vector000->theArray)[index000]));
+        proposition = record->proposition;
         if (!proposition->deletedP()) {
           { 
             BIND_STELLA_SPECIAL(oTYPECHECKMODEo, Keyword*, ((((BooleanWrapper*)(dynamicSlotValue(proposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue &&
                 (!(oTYPE_CHECK_POLICYo == KWD_PROPOSITIONS_IGNORE_TYPE_VIOLATIONS))) ? KWD_PROPOSITIONS_REPORT_TYPE_VIOLATIONS : oTYPE_CHECK_POLICYo));
             BIND_STELLA_SPECIAL(oTERMUNDERCONSTRUCTIONo, Object*, record->parentProposition);
             BIND_STELLA_SPECIAL(oDESCRIPTIONUNDERCONSTRUCTIONo, Object*, record->parentDescription);
-            if (proposition->deletedP() ||
-                ((((boolean)(oTERMUNDERCONSTRUCTIONo.get())) &&
+            BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_PROPOSITIONS_EXTENSIONAL_ASSERTION);
+            if ((((boolean)(oTERMUNDERCONSTRUCTIONo.get())) &&
                 oTERMUNDERCONSTRUCTIONo.get()->deletedP()) ||
-                 (((boolean)(oDESCRIPTIONUNDERCONSTRUCTIONo.get())) &&
-                  oDESCRIPTIONUNDERCONSTRUCTIONo.get()->deletedP()))) {
+                (((boolean)(oDESCRIPTIONUNDERCONSTRUCTIONo.get())) &&
+                 oDESCRIPTIONUNDERCONSTRUCTIONo.get()->deletedP())) {
               continue;
             }
             try {
@@ -7571,7 +7760,7 @@ Vector* collectSkolemizedExistsVariables(Proposition* proposition) {
       result = ZERO_VARIABLES_VECTOR;
     }
     else {
-      result = newVector(skolems->length());
+      result = stella::newVector(skolems->length());
     }
     { Skolem* skolem = NULL;
       Cons* iter000 = skolems->theConsList;
@@ -7852,9 +8041,13 @@ Proposition* finishCreatingFunctionProposition(Proposition* proposition) {
     if (proposition->operatoR == SGT_PROPOSITIONS_PL_KERNEL_KB_VALUE) {
       proposition = normalizeValueFunction(proposition);
     }
+    else {
+      normalizeFunctionProposition(proposition);
+    }
     verifyArgumentTypesAndCount(proposition);
     if (isaP(proposition->operatoR, SGT_PROPOSITIONS_STELLA_SURROGATE)) {
       fastenDownOneProposition(proposition, true);
+      helpFastenDownPropositions(proposition, false);
     }
     return (proposition);
   }
@@ -7903,7 +8096,11 @@ Proposition* findOrCreateFunctionProposition(GeneralizedSymbol* predicate, Cons*
 
 Proposition* createFunctionProposition(GeneralizedSymbol* predicate, Cons* inputarguments) {
   { Proposition* proposition = beginCreatingFunctionProposition(predicate, inputarguments);
+    Proposition* duplicate = ((!descriptionModeP()) ? findDuplicateFunctionProposition(proposition) : ((Proposition*)(NULL)));
 
+    if (!(!((boolean)(duplicate)))) {
+      std::cerr << "Safety violation: " << "INTERNAL ERROR: encountered unexpected duplicate" << " function proposition: " << "`" << duplicate << "'";
+    }
     return (finishCreatingFunctionProposition(proposition));
   }
 }
@@ -8033,7 +8230,8 @@ boolean functionWithDefinedValueP(Proposition* proposition) {
         { Object* lastargument000 = lastargument;
           Skolem* lastargument = ((Skolem*)(lastargument000));
 
-          if (((boolean)(lastargument->skolemType))) {
+          if (((boolean)(lastargument->skolemType)) &&
+              (!(lastargument->skolemType == SGT_PROPOSITIONS_STELLA_THING))) {
             { 
               BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_PROPOSITIONS_EXTENSIONAL_ASSERTION);
               BIND_STELLA_SPECIAL(oINVISIBLEASSERTIONpo, boolean, true);
@@ -8050,9 +8248,14 @@ boolean functionWithDefinedValueP(Proposition* proposition) {
 }
 
 Skolem* createEnumeratedSet(List* set) {
-  { Proposition* setprop = beginCreatingFunctionProposition(SGT_PROPOSITIONS_PL_KERNEL_KB_SETOF, set->theConsList);
-    Skolem* skolem = createSkolem(SGT_PROPOSITIONS_PL_KERNEL_KB_SET, NULL);
+  { Proposition* setprop = beginCreatingFunctionProposition(SGT_PROPOSITIONS_PL_KERNEL_KB_SETOF, copyConsList(set->theConsList)->sort(((cpp_function_code)(&logicFormLessP))));
+    Proposition* duplicate = ((!descriptionModeP()) ? findDuplicateFunctionProposition(setprop) : ((Proposition*)(NULL)));
+    Skolem* skolem = NULL;
 
+    if (((boolean)(duplicate))) {
+      return (((Skolem*)((duplicate->arguments->theArray)[(duplicate->arguments->length() - 1)])));
+    }
+    skolem = createSkolem(SGT_PROPOSITIONS_PL_KERNEL_KB_SET, NULL);
     (setprop->arguments->theArray)[(set->length())] = skolem;
     skolem->definingProposition = setprop;
     addDependentPropositionLink(skolem, setprop);
@@ -8063,8 +8266,13 @@ Skolem* createEnumeratedSet(List* set) {
 
 Skolem* createLogicalList(List* list) {
   { Proposition* listprop = beginCreatingFunctionProposition(SGT_PROPOSITIONS_PL_KERNEL_KB_LISTOF, list->theConsList);
-    Skolem* skolem = createSkolem(SGT_PROPOSITIONS_PL_KERNEL_KB_LIST, NULL);
+    Proposition* duplicate = ((!descriptionModeP()) ? findDuplicateFunctionProposition(listprop) : ((Proposition*)(NULL)));
+    Skolem* skolem = NULL;
 
+    if (((boolean)(duplicate))) {
+      return (((Skolem*)((duplicate->arguments->theArray)[(duplicate->arguments->length() - 1)])));
+    }
+    skolem = createSkolem(SGT_PROPOSITIONS_PL_KERNEL_KB_LIST, NULL);
     (listprop->arguments->theArray)[(list->length())] = skolem;
     skolem->definingProposition = listprop;
     addDependentPropositionLink(skolem, listprop);
@@ -8090,6 +8298,19 @@ boolean logicalCollectionP(Object* self) {
   }
 }
 
+boolean functionOutputSkolemP(Object* self) {
+  if (subtypeOfP(safePrimaryType(self), SGT_PROPOSITIONS_LOGIC_SKOLEM)) {
+    { Object* self000 = self;
+      Skolem* self = ((Skolem*)(self000));
+
+      return (((boolean)(self->definingProposition)));
+    }
+  }
+  else {
+    return (false);
+  }
+}
+
 boolean skolemDefinedByOperatorP(Object* self, Surrogate* operatoR) {
   if (subtypeOfP(safePrimaryType(self), SGT_PROPOSITIONS_LOGIC_SKOLEM)) {
     { Object* self000 = self;
@@ -8107,6 +8328,25 @@ boolean skolemDefinedByOperatorP(Object* self, Surrogate* operatoR) {
   }
 }
 
+Skolem* getSkolemAndValueTerms(Proposition* proposition, Object*& _Return1) {
+  { Object* term1 = (proposition->arguments->theArray)[0];
+    Object* term2 = (proposition->arguments->theArray)[1];
+
+    if (functionOutputSkolemP(term1)) {
+      _Return1 = term2;
+      return (((Skolem*)(term1)));
+    }
+    else if (functionOutputSkolemP(term2)) {
+      _Return1 = term1;
+      return (((Skolem*)(term2)));
+    }
+    else {
+      _Return1 = NULL;
+      return (NULL);
+    }
+  }
+}
+
 boolean enumeratedSetP(Object* self) {
   return (skolemDefinedByOperatorP(self, SGT_PROPOSITIONS_PL_KERNEL_KB_SETOF));
 }
@@ -8117,26 +8357,6 @@ boolean enumeratedListP(Object* self) {
 
 Object* canonicalizePropositionTree(Object* tree) {
   return (tree);
-}
-
-void eraseProposition(Proposition* proposition) {
-  { Object* arg = NULL;
-    Vector* vector000 = proposition->arguments;
-    int index000 = 0;
-    int length000 = vector000->length();
-
-    for  (arg, vector000, index000, length000; 
-          index000 < length000; 
-          index000 = index000 + 1) {
-      arg = (vector000->theArray)[index000];
-      if (((boolean)(arg))) {
-        removeDependentPropositionLink(arg, proposition);
-      }
-    }
-  }
-  proposition->arguments->free();
-  proposition->arguments = NULL;
-  proposition->deletedPSetter(true);
 }
 
 Proposition* updateEquivalenceProposition(Proposition* proposition, Keyword* updatemode) {
@@ -8200,7 +8420,7 @@ Proposition* updateEquivalenceProposition(Proposition* proposition, Keyword* upd
 }
 
 Proposition* skolemizeExistsProposition(Proposition* existsproposition) {
-  { KeyValueList* mapping = newKeyValueList();
+  { KeyValueMap* mapping = newKeyValueMap();
     Proposition* skolemizedproposition = NULL;
 
     { PatternVariable* var = NULL;
@@ -8216,7 +8436,7 @@ Proposition* skolemizeExistsProposition(Proposition* existsproposition) {
       }
     }
     skolemizedproposition = recursivelyFastenDownPropositions(inheritProposition(((Proposition*)((existsproposition->arguments->theArray)[0])), mapping), false);
-    eraseProposition(existsproposition);
+    destroyRedundantProposition(existsproposition);
     return (skolemizedproposition);
   }
 }
@@ -8283,7 +8503,7 @@ Cons* helpUpdateTopLevelProposition(Proposition* proposition, Keyword* updatemod
               }
             }
           }
-          eraseProposition(proposition);
+          destroyRedundantProposition(proposition);
           return (propositions);
         }
       }
@@ -8303,7 +8523,7 @@ Cons* helpUpdateTopLevelProposition(Proposition* proposition, Keyword* updatemod
                  ((updatemode == KWD_PROPOSITIONS_RETRACT_TRUE) ||
                   (updatemode == KWD_PROPOSITIONS_RETRACT_FALSE)))))) {
             updatePropositionTruthValue(((Proposition*)(argument)), invertUpdateMode(updatemode));
-            eraseProposition(proposition);
+            destroyRedundantProposition(proposition);
             if (((boolean)(argument)) &&
                 (!argument->deletedP())) {
               return (consList(1, argument));
@@ -8542,7 +8762,7 @@ Object* conceiveFormula(Object* tree) {
       { Object* tree003 = tree;
         Surrogate* tree = ((Surrogate*)(tree003));
 
-        return (conceiveTerm(surrogateToSymbol(tree)));
+        return (conceiveTerm(internSymbolInModule(tree->symbolName, ((Module*)(tree->homeContext)), true)));
       }
     }
     else {
@@ -8781,6 +9001,11 @@ Proposition* destroyProposition(Proposition* proposition) {
   proposition->truthValue = NULL;
   proposition->dynamicSlots = NULL;
   return (proposition);
+}
+
+void destroyRedundantProposition(Proposition* proposition) {
+  proposition->homeContext = NULL;
+  destroyProposition(proposition);
 }
 
 void destroyLogicInstance(Object* self) {
@@ -9082,7 +9307,7 @@ void clearLogicModuleHook(Module* module) {
     BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
     destroyInferenceCaches(module);
-    flushInlineQueryCaches();
+    clearInlineQueryCaches();
     { Object* term = NULL;
       Cons* iter000 = allTerms(module, true)->listify()->theConsList;
 
@@ -9159,7 +9384,7 @@ void doClearInstances(Module* module) {
 }
 
 void destroyLogicContextHook(Context* self) {
-  setDynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_MONOTONICp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+  setDynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_MONOTONICp, FALSE_WRAPPER, FALSE_WRAPPER);
   { 
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, self);
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
@@ -9178,12 +9403,15 @@ void destroyLogicContextHook(Context* self) {
   }
   if (isaP(self, SGT_PROPOSITIONS_STELLA_WORLD)) {
     unlinkInferenceCache(((World*)(self)));
+    unlinkPropagationEnvironment(self);
   }
+  self->dynamicSlots->clear();
 }
 
 void clearCaches() {
   // Clear all query and memoization caches.
   clearQueryResultsCache();
+  clearInlineQueryCaches();
   clearAllMemoizationTables();
 }
 
@@ -9201,8 +9429,8 @@ void resetPowerloom() {
 
         for (mod, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
           mod = ((Module*)(iter000->value));
-          setDynamicSlotValue(mod->dynamicSlots, SYM_PROPOSITIONS_STELLA_CLEARABLEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
-          setDynamicSlotValue(mod->dynamicSlots, SYM_PROPOSITIONS_STELLA_PROTECT_SURROGATESp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+          setDynamicSlotValue(mod->dynamicSlots, SYM_PROPOSITIONS_STELLA_CLEARABLEp, TRUE_WRAPPER, FALSE_WRAPPER);
+          setDynamicSlotValue(mod->dynamicSlots, SYM_PROPOSITIONS_STELLA_PROTECT_SURROGATESp, FALSE_WRAPPER, FALSE_WRAPPER);
           { Context* sub = NULL;
             AllPurposeIterator* iter001 = allSubcontexts(mod, KWD_PROPOSITIONS_PREORDER);
 
@@ -9212,8 +9440,8 @@ void resetPowerloom() {
                 { Context* sub000 = sub;
                   Module* sub = ((Module*)(sub000));
 
-                  setDynamicSlotValue(sub->dynamicSlots, SYM_PROPOSITIONS_STELLA_CLEARABLEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
-                  setDynamicSlotValue(sub->dynamicSlots, SYM_PROPOSITIONS_STELLA_PROTECT_SURROGATESp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+                  setDynamicSlotValue(sub->dynamicSlots, SYM_PROPOSITIONS_STELLA_CLEARABLEp, TRUE_WRAPPER, FALSE_WRAPPER);
+                  setDynamicSlotValue(sub->dynamicSlots, SYM_PROPOSITIONS_STELLA_PROTECT_SURROGATESp, FALSE_WRAPPER, FALSE_WRAPPER);
                 }
               }
               else {
@@ -9333,39 +9561,63 @@ boolean moduleNameLessThanP(Context* m1, Context* m2) {
 }
 
 boolean propositionLessThanP(Proposition* p1, Proposition* p2) {
-  if (stringLessP(p1->operatoR->symbolName, p2->operatoR->symbolName)) {
-    return (true);
-  }
-  if (stringLessP(p2->operatoR->symbolName, p1->operatoR->symbolName)) {
-    return (false);
-  }
-  { Object* a1 = NULL;
-    Vector* vector000 = p1->arguments;
-    int index000 = 0;
-    int length000 = vector000->length();
+  { char* operator1 = p1->operatoR->symbolName;
+    char* operator2 = p2->operatoR->symbolName;
+    Vector* arguments1 = p1->arguments;
+    Vector* arguments2 = p2->arguments;
+    int end1 = arguments1->length() - 1;
+    int end2 = arguments2->length() - 1;
+    Object* a1 = NULL;
     Object* a2 = NULL;
-    Vector* vector001 = p2->arguments;
-    int index001 = 0;
-    int length001 = vector001->length();
 
-    for  (a1, vector000, index000, length000, a2, vector001, index001, length001; 
-          (index000 < length000) &&
-              (index001 < length001); 
-          index000 = index000 + 1,
-          index001 = index001 + 1) {
-      a1 = (vector000->theArray)[index000];
-      a2 = (vector001->theArray)[index001];
-      if (logicFormLessP(a1, a2)) {
-        return (true);
-      }
-      else {
-        if (logicFormLessP(a2, a1)) {
+    if (stringLessP(operator1, operator2)) {
+      return (true);
+    }
+    if (stringLessP(operator2, operator1)) {
+      return (false);
+    }
+    { int i1 = NULL_INTEGER;
+      int iter000 = 0;
+      int upperBound000 = end1;
+      boolean unboundedP000 = upperBound000 == NULL_INTEGER;
+      int i2 = NULL_INTEGER;
+      int iter001 = 0;
+      int upperBound001 = end2;
+      boolean unboundedP001 = upperBound001 == NULL_INTEGER;
+
+      for  (i1, iter000, upperBound000, unboundedP000, i2, iter001, upperBound001, unboundedP001; 
+            (unboundedP000 ||
+                (iter000 <= upperBound000)) &&
+                (unboundedP001 ||
+                 (iter001 <= upperBound001)); 
+            iter000 = iter000 + 1,
+            iter001 = iter001 + 1) {
+        i1 = iter000;
+        i2 = iter001;
+        a1 = (arguments1->theArray)[i1];
+        a2 = (arguments2->theArray)[i2];
+        if ((i1 == end1) &&
+            ((i2 == end2) &&
+             (functionOutputSkolemP(a1) &&
+              (functionOutputSkolemP(a2) &&
+               ((((Skolem*)(a1))->definingProposition == p1) &&
+                ((((Skolem*)(a2))->definingProposition == p2) &&
+                 (eqlP(valueOf(a1), a1) &&
+                  eqlP(valueOf(a2), a2)))))))) {
           return (false);
+        }
+        if (logicFormLessP(a1, a2)) {
+          return (true);
+        }
+        else {
+          if (logicFormLessP(a2, a1)) {
+            return (false);
+          }
         }
       }
     }
+    return (end1 < end2);
   }
-  return (p1->arguments->length() < p2->arguments->length());
 }
 
 char* propositionHeadSortString(Proposition* p) {
@@ -9496,24 +9748,28 @@ boolean logicFormLessP(Object* o1, Object* o2) {
   if (isaP(o1, SGT_PROPOSITIONS_LOGIC_SKOLEM)) {
     { Object* value = ((Object*)(accessInContext(((Skolem*)(o1))->variableValue, ((Skolem*)(o1))->homeContext, false)));
 
-      if ((!((boolean)(value))) &&
-          functionOutputSkolemP(o1)) {
+      if (((boolean)(value))) {
+        o1 = value;
+      }
+      else if (functionOutputSkolemP(o1)) {
         o1 = ((Skolem*)(o1))->definingProposition;
       }
       else {
-        o1 = value;
+        o1 = ((Skolem*)(o1))->skolemName;
       }
     }
   }
   if (isaP(o2, SGT_PROPOSITIONS_LOGIC_SKOLEM)) {
     { Object* value = ((Object*)(accessInContext(((Skolem*)(o2))->variableValue, ((Skolem*)(o2))->homeContext, false)));
 
-      if ((!((boolean)(value))) &&
-          functionOutputSkolemP(o2)) {
+      if (((boolean)(value))) {
+        o2 = value;
+      }
+      else if (functionOutputSkolemP(o2)) {
         o2 = ((Skolem*)(o2))->definingProposition;
       }
       else {
-        o2 = value;
+        o2 = ((Skolem*)(o2))->skolemName;
       }
     }
   }
@@ -9608,7 +9864,7 @@ boolean logicFormLessP(Object* o1, Object* o2) {
             { Object* o2007 = o2;
               NumberWrapper* o2 = ((NumberWrapper*)(o2007));
 
-              return (o1->wrapperValue->lessP(o2));
+              return (safeQuantityLessP(o1->wrapperValue, o2));
             }
           }
           else {
@@ -9811,6 +10067,7 @@ void helpStartupPropositions2() {
     SGT_PROPOSITIONS_LOGIC_INTEGER_LOGIC_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-LOGIC-WRAPPER", NULL, 1)));
     SGT_PROPOSITIONS_LOGIC_FLOAT_LOGIC_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT-LOGIC-WRAPPER", NULL, 1)));
     SGT_PROPOSITIONS_LOGIC_STRING_LOGIC_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("STRING-LOGIC-WRAPPER", NULL, 1)));
+    SYM_PROPOSITIONS_LOGIC_ENTITY_MAPPING = ((Symbol*)(internRigidSymbolWrtModule("ENTITY-MAPPING", NULL, 0)));
     KWD_PROPOSITIONS_AND = ((Keyword*)(internRigidSymbolWrtModule("AND", NULL, 2)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_AND = ((Surrogate*)(internRigidSymbolWrtModule("AND", getStellaModule("/PL-KERNEL-KB", true), 1)));
     KWD_PROPOSITIONS_OR = ((Keyword*)(internRigidSymbolWrtModule("OR", NULL, 2)));
@@ -9848,12 +10105,12 @@ void helpStartupPropositions2() {
     SGT_PROPOSITIONS_STELLA_CLASS = ((Surrogate*)(internRigidSymbolWrtModule("CLASS", getStellaModule("/STELLA", true), 1)));
     SGT_PROPOSITIONS_STELLA_LITERAL_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL-WRAPPER", getStellaModule("/STELLA", true), 1)));
     SGT_PROPOSITIONS_STELLA_BOOLEAN = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN", getStellaModule("/STELLA", true), 1)));
-    SGT_PROPOSITIONS_STELLA_BOOLEAN_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN-WRAPPER", getStellaModule("/STELLA", true), 1)));
   }
 }
 
 void helpStartupPropositions3() {
   {
+    SGT_PROPOSITIONS_STELLA_BOOLEAN_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN-WRAPPER", getStellaModule("/STELLA", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_VARIABLE_ARITY = ((Surrogate*)(internRigidSymbolWrtModule("VARIABLE-ARITY", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_STELLA_COLLECTION = ((Surrogate*)(internRigidSymbolWrtModule("COLLECTION", getStellaModule("/STELLA", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_RELATION_COMPUTATION = ((Surrogate*)(internRigidSymbolWrtModule("RELATION-COMPUTATION", getStellaModule("/PL-KERNEL-KB", true), 1)));
@@ -9913,18 +10170,19 @@ void helpStartupPropositions3() {
     SGT_PROPOSITIONS_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", getStellaModule("/STELLA", true), 1)));
     SYM_PROPOSITIONS_LOGIC_SETOFALL = ((Symbol*)(internRigidSymbolWrtModule("SETOFALL", NULL, 0)));
     SYM_PROPOSITIONS_LOGIC_THE_ONLY = ((Symbol*)(internRigidSymbolWrtModule("THE-ONLY", NULL, 0)));
-    SYM_PROPOSITIONS_LOGIC_KAPPA = ((Symbol*)(internRigidSymbolWrtModule("KAPPA", NULL, 0)));
   }
 }
 
 void helpStartupPropositions4() {
   {
+    SYM_PROPOSITIONS_LOGIC_KAPPA = ((Symbol*)(internRigidSymbolWrtModule("KAPPA", NULL, 0)));
     SYM_PROPOSITIONS_LOGIC_CREATE = ((Symbol*)(internRigidSymbolWrtModule("CREATE", NULL, 0)));
     KWD_PROPOSITIONS_INTENSIONAL_ASSERTION = ((Keyword*)(internRigidSymbolWrtModule("INTENSIONAL-ASSERTION", NULL, 2)));
     SYM_PROPOSITIONS_STELLA_p = ((Symbol*)(internRigidSymbolWrtModule("?", getStellaModule("/STELLA", true), 0)));
     SYM_PROPOSITIONS_STELLA_CLASS_EXTENSION = ((Symbol*)(internRigidSymbolWrtModule("CLASS-EXTENSION", getStellaModule("/STELLA", true), 0)));
     SYM_PROPOSITIONS_LOGIC_TRANSFER_LOGIC_INFORMATION_FROM_RELATION_HOOK = ((Symbol*)(internRigidSymbolWrtModule("TRANSFER-LOGIC-INFORMATION-FROM-RELATION-HOOK", NULL, 0)));
     SYM_PROPOSITIONS_LOGIC_SUBRELATION_LINKp = ((Symbol*)(internRigidSymbolWrtModule("SUBRELATION-LINK?", NULL, 0)));
+    SGT_PROPOSITIONS_PL_KERNEL_KB_HOLDS = ((Surrogate*)(internRigidSymbolWrtModule("HOLDS", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_MEMBER_OF = ((Surrogate*)(internRigidSymbolWrtModule("MEMBER-OF", getStellaModule("/PL-KERNEL-KB", true), 1)));
     KWD_PROPOSITIONS_DISABLED = ((Keyword*)(internRigidSymbolWrtModule("DISABLED", NULL, 2)));
     SYM_PROPOSITIONS_LOGIC_ANNOTATIONS = ((Symbol*)(internRigidSymbolWrtModule("ANNOTATIONS", NULL, 0)));
@@ -9956,11 +10214,9 @@ void helpStartupPropositions4() {
     SYM_PROPOSITIONS_LOGIC_LISTOF = ((Symbol*)(internRigidSymbolWrtModule("LISTOF", NULL, 0)));
     SYM_PROPOSITIONS_LOGIC_EQUIVALENT = ((Symbol*)(internRigidSymbolWrtModule("EQUIVALENT", NULL, 0)));
     SYM_PROPOSITIONS_PL_KERNEL_KB_HOLDS = ((Symbol*)(internRigidSymbolWrtModule("HOLDS", getStellaModule("/PL-KERNEL-KB", true), 0)));
-    SGT_PROPOSITIONS_PL_KERNEL_KB_HOLDS = ((Surrogate*)(internRigidSymbolWrtModule("HOLDS", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_STELLA_TABLE = ((Surrogate*)(internRigidSymbolWrtModule("TABLE", getStellaModule("/STELLA", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_POLYMORPHIC = ((Surrogate*)(internRigidSymbolWrtModule("POLYMORPHIC", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SYM_PROPOSITIONS_PL_KERNEL_KB_VALUE = ((Symbol*)(internRigidSymbolWrtModule("VALUE", getStellaModule("/PL-KERNEL-KB", true), 0)));
-    SYM_PROPOSITIONS_PL_KERNEL_KB_CUT = ((Symbol*)(internRigidSymbolWrtModule("CUT", getStellaModule("/PL-KERNEL-KB", true), 0)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_VALUE = ((Surrogate*)(internRigidSymbolWrtModule("VALUE", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_QUANTITY = ((Surrogate*)(internRigidSymbolWrtModule("QUANTITY", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_DATE = ((Surrogate*)(internRigidSymbolWrtModule("DATE", getStellaModule("/PL-KERNEL-KB", true), 1)));
@@ -10014,7 +10270,7 @@ void helpStartupPropositions5() {
 
 void helpStartupPropositions6() {
   {
-    ZERO_VARIABLES_VECTOR = newVector(0);
+    ZERO_VARIABLES_VECTOR = stella::newVector(0);
     { PropertyList* self003 = newPropertyList();
 
       self003->thePlist = listO(19, KWD_PROPOSITIONS_AND, SGT_PROPOSITIONS_PL_KERNEL_KB_AND, KWD_PROPOSITIONS_OR, SGT_PROPOSITIONS_PL_KERNEL_KB_OR, KWD_PROPOSITIONS_NOT, SGT_PROPOSITIONS_PL_KERNEL_KB_NOT, KWD_PROPOSITIONS_FORALL, SGT_PROPOSITIONS_PL_KERNEL_KB_FORALL, KWD_PROPOSITIONS_EXISTS, SGT_PROPOSITIONS_PL_KERNEL_KB_EXISTS, KWD_PROPOSITIONS_EQUIVALENT, SGT_PROPOSITIONS_PL_KERNEL_KB_EQUIVALENT, KWD_PROPOSITIONS_FAIL, SGT_PROPOSITIONS_PL_KERNEL_KB_FAIL, KWD_PROPOSITIONS_COLLECT_INTO, SGT_PROPOSITIONS_PL_KERNEL_KB_COLLECT_INTO, KWD_PROPOSITIONS_IMPLIES, SGT_PROPOSITIONS_PL_KERNEL_KB_SUBSET_OF, NIL);
@@ -10067,7 +10323,7 @@ void helpStartupPropositions6() {
 
       self010->kind = KWD_PROPOSITIONS_CONSTANT;
       self010->operatoR = SGT_PROPOSITIONS_STELLA_TRUE;
-      self010->arguments = newVector(0);
+      self010->arguments = stella::newVector(0);
       { Proposition* object012 = self010;
         TruthValue* value013 = TRUE_TRUTH_VALUE;
         Object* oldValue014 = object012->truthValue;
@@ -10078,13 +10334,14 @@ void helpStartupPropositions6() {
           object012->truthValue = newValue015;
         }
       }
+      self010->homeContext = oPL_KERNEL_MODULEo;
       TRUE_PROPOSITION = self010;
     }
     { Proposition* self016 = newProposition();
 
       self016->kind = KWD_PROPOSITIONS_CONSTANT;
       self016->operatoR = SGT_PROPOSITIONS_STELLA_FALSE;
-      self016->arguments = newVector(0);
+      self016->arguments = stella::newVector(0);
       { Proposition* object018 = self016;
         TruthValue* value019 = FALSE_TRUTH_VALUE;
         Object* oldValue020 = object018->truthValue;
@@ -10095,6 +10352,7 @@ void helpStartupPropositions6() {
           object018->truthValue = newValue021;
         }
       }
+      self016->homeContext = oPL_KERNEL_MODULEo;
       FALSE_PROPOSITION = self016;
     }
     ANONYMOUS_VARIABLE_NAME = SYM_PROPOSITIONS_STELLA_p;
@@ -10103,7 +10361,7 @@ void helpStartupPropositions6() {
     oSTRUCTURED_OBJECTS_INDEXo = newKeyValueMap();
     oTYPE_CHECK_POLICYo = KWD_PROPOSITIONS_AUTOMATICALLY_FIX_TYPE_VIOLATIONS;
     oTYPECHECKMODEo.set(KWD_PROPOSITIONS_POST_TYPE_VIOLATIONS);
-    oCHECK_TYPES_AGENDAo = newKeyValueList();
+    oCHECK_TYPES_AGENDAo = newVectorSequence(4);
   }
 }
 
@@ -10167,7 +10425,7 @@ void helpStartupPropositions7() {
       clasS->classConstructorCode = ((cpp_function_code)(&newPartialSupport));
       clasS->classSlotAccessorCode = ((cpp_function_code)(&accessPartialSupportSlotValue));
     }
-    { Class* clasS = defineClassFromStringifiedSource("PROPOSITION", "(DEFCLASS PROPOSITION (CONTEXT-SENSITIVE-OBJECT DYNAMIC-SLOTS-MIXIN BACKLINKS-MIXIN) :DOCUMENTATION \"\" :PUBLIC-SLOTS ((HOME-CONTEXT :INITIALLY *MODULE*) (KIND :TYPE KEYWORD) (TRUTH-VALUE :TYPE TRUTH-VALUE :CONTEXT-SENSITIVE? TRUE) (ARGUMENTS :TYPE VECTOR) (OPERATOR :TYPE GENERALIZED-SYMBOL) (RELATIONREF :TYPE SURROGATE :RENAMES OPERATOR) (DEPENDENT-PROPOSITIONS :TYPE (NON-PAGING-INDEX OF PROPOSITION) :INITIALLY NIL-NON-PAGING-INDEX) (SURROGATE-VALUE-INVERSE :TYPE SURROGATE :ALLOCATION :DYNAMIC) (IO-VARIABLES :TYPE VARIABLES-VECTOR :ALLOCATION :DYNAMIC) (VARIABLE-TYPE? :TYPE BOOLEAN-WRAPPER :ALLOCATION :DYNAMIC :DEFAULT FALSE) (ASSERTED-BY-TYPE-CHECKER? :TYPE BOOLEAN :ALLOCATION :DYNAMIC) (DESCRIPTIVE? :TYPE BOOLEAN :ALLOCATION :DYNAMIC) (SUBRELATION-LINK? :TYPE BOOLEAN :ALLOCATION :DYNAMIC) (SUBSUMPTION-LINK? :TYPE BOOLEAN :ALLOCATION :DYNAMIC) (SATELLITE-PROPOSITIONS :TYPE (LIST OF PROPOSITION) :ALLOCATION :DYNAMIC) (MASTER-PROPOSITION :TYPE PROPOSITION :ALLOCATION :DYNAMIC) (PROPOSITION-ORIGINATED-PROPOS" "ITIONS :TYPE (LIST OF PROPOSITION) :DEFAULT NIL-LIST :ALLOCATION :DYNAMIC :READER ORIGINATED-PROPOSITIONS :WRITER ORIGINATED-PROPOSITIONS-SETTER :DOCUMENTATION \"List of propositions generated by the definition of\nthis proposition.\") (DONT-OPTIMIZE? :TYPE BOOLEAN :ALLOCATION :DYNAMIC :OPTION-KEYWORD :DONT-OPTIMIZE?) (FORWARD-ONLY? :TYPE BOOLEAN :ALLOCATION :DYNAMIC :OPTION-KEYWORD :FORWARD-ONLY?) (BACKWARD-ONLY? :TYPE BOOLEAN :ALLOCATION :DYNAMIC :OPTION-KEYWORD :BACKWARD-ONLY?) (PROPOSITION-STRINGIFIED-SOURCE :TYPE STRING :ALLOCATION :DYNAMIC :READER STRINGIFIED-SOURCE :WRITER STRINGIFIED-SOURCE-SETTER) (UNFASTENED? :TYPE BOOLEAN-WRAPPER :ALLOCATION :DYNAMIC :DEFAULT FALSE) (ANNOTATIONS :TYPE (PROPERTY-LIST OF KEYWORD OBJECT) :ALLOCATION :DYNAMIC) (WEIGHT :TYPE FLOAT :ALLOCATION :DYNAMIC) (NEURAL-NETWORK :TYPE PROPOSITION-NEURAL-NETWORK :ALLOCATION :DYNAMIC) (WEIGHT-DELTA :TYPE FLOAT :DEFAULT 0.0 :ALLOCATION :DYNAMIC) (MATCH-SCORE :TYPE FLOAT :ALLOCATION :DYNAMIC) (SUPPORT :TYPE (CONS OF PARTIAL-SUPPORT) " ":ALLOCATION :DYNAMIC)) :PRINT-FORM (PRINT-TOP-LEVEL-OBJECT SELF STREAM))");
+    { Class* clasS = defineClassFromStringifiedSource("PROPOSITION", "(DEFCLASS PROPOSITION (CONTEXT-SENSITIVE-OBJECT DYNAMIC-SLOTS-MIXIN BACKLINKS-MIXIN) :DOCUMENTATION \"\" :PUBLIC-SLOTS ((HOME-CONTEXT :INITIALLY *MODULE*) (KIND :TYPE KEYWORD) (TRUTH-VALUE :TYPE TRUTH-VALUE :CONTEXT-SENSITIVE? TRUE) (ARGUMENTS :TYPE VECTOR) (OPERATOR :TYPE GENERALIZED-SYMBOL) (RELATIONREF :TYPE SURROGATE :RENAMES OPERATOR) (DEPENDENT-PROPOSITIONS :TYPE (NON-PAGING-INDEX OF PROPOSITION) :INITIALLY NIL-NON-PAGING-INDEX) (SURROGATE-VALUE-INVERSE :TYPE SURROGATE :ALLOCATION :DYNAMIC) (IO-VARIABLES :TYPE VARIABLES-VECTOR :ALLOCATION :DYNAMIC) (VARIABLE-TYPE? :TYPE BOOLEAN-WRAPPER :ALLOCATION :DYNAMIC :DEFAULT FALSE) (ASSERTED-BY-TYPE-CHECKER? :TYPE BOOLEAN :ALLOCATION :DYNAMIC) (DESCRIPTIVE? :TYPE BOOLEAN :ALLOCATION :DYNAMIC) (SUBRELATION-LINK? :TYPE BOOLEAN :ALLOCATION :DYNAMIC) (SUBSUMPTION-LINK? :TYPE BOOLEAN :ALLOCATION :DYNAMIC) (SATELLITE-PROPOSITIONS :TYPE (LIST OF PROPOSITION) :ALLOCATION :DYNAMIC) (MASTER-PROPOSITION :TYPE PROPOSITION :ALLOCATION :DYNAMIC) (PROPOSITION-ORIGINATED-PROPOS" "ITIONS :TYPE (LIST OF PROPOSITION) :DEFAULT NIL-LIST :ALLOCATION :DYNAMIC :READER ORIGINATED-PROPOSITIONS :WRITER ORIGINATED-PROPOSITIONS-SETTER :DOCUMENTATION \"List of propositions generated by the definition of\nthis proposition.\") (DONT-OPTIMIZE? :TYPE BOOLEAN :ALLOCATION :DYNAMIC :OPTION-KEYWORD :DONT-OPTIMIZE?) (FORWARD-ONLY? :TYPE BOOLEAN :ALLOCATION :DYNAMIC :OPTION-KEYWORD :FORWARD-ONLY? :OPTION-HANDLER FORWARD-BACKWARD-OPTION-HANDLER) (BACKWARD-ONLY? :TYPE BOOLEAN :ALLOCATION :DYNAMIC :OPTION-KEYWORD :BACKWARD-ONLY? :OPTION-HANDLER FORWARD-BACKWARD-OPTION-HANDLER) (PROPOSITION-STRINGIFIED-SOURCE :TYPE STRING :ALLOCATION :DYNAMIC :READER STRINGIFIED-SOURCE :WRITER STRINGIFIED-SOURCE-SETTER) (UNFASTENED? :TYPE BOOLEAN-WRAPPER :ALLOCATION :DYNAMIC :DEFAULT FALSE) (ANNOTATIONS :TYPE (PROPERTY-LIST OF KEYWORD OBJECT) :ALLOCATION :DYNAMIC) (WEIGHT :TYPE FLOAT :ALLOCATION :DYNAMIC) (NEURAL-NETWORK :TYPE PROPOSITION-NEURAL-NETWORK :ALLOCATION :DYNAMIC) (WEIGHT-DELTA :TYPE FLOAT :DEFAULT 0.0 :ALLOCATION :D" "YNAMIC) (MATCH-SCORE :TYPE FLOAT :ALLOCATION :DYNAMIC) (SUPPORT :TYPE (CONS OF PARTIAL-SUPPORT) :ALLOCATION :DYNAMIC)) :PRINT-FORM (PRINT-TOP-LEVEL-OBJECT SELF STREAM))");
 
       clasS->classConstructorCode = ((cpp_function_code)(&newProposition));
       clasS->classSlotAccessorCode = ((cpp_function_code)(&accessPropositionSlotValue));
@@ -10189,11 +10447,12 @@ void helpStartupPropositions7() {
 
       clasS->classConstructorCode = ((cpp_function_code)(&newStringLogicWrapper));
     }
+    defineStellaTypeFromStringifiedSource("(DEFTYPE ENTITY-MAPPING (KEY-VALUE-MAP OF OBJECT OBJECT) :DOCUMENTATION \"Used to keep track of copied or substituted variables\nand propositions within 'copy-description', etc.  This needs to be a\nsubtype of DICTIONARY.  KEY-VALUE-LIST is a good choice for most cases,\nhowever, for very high-arity relations and descriptions we do get bad performance\nduring copying and equivalence checking and KEY-VALUE-MAP (though more\nheavy-weight) would be the better option.\")");
     { Class* clasS = defineClassFromStringifiedSource("OBJECT-ALREADY-EXISTS-EXCEPTION", "(DEFCLASS OBJECT-ALREADY-EXISTS-EXCEPTION (STELLA-EXCEPTION) :PUBLIC? TRUE :PUBLIC-SLOTS ((EXISTING-OBJECT :TYPE OBJECT)))");
 
       clasS->classConstructorCode = ((cpp_function_code)(&newObjectAlreadyExistsException));
     }
-    { Class* clasS = defineClassFromStringifiedSource("CHECK-TYPES-RECORD", "(DEFCLASS CHECK-TYPES-RECORD (STANDARD-OBJECT) :SLOTS ((PARENT-PROPOSITION :TYPE OBJECT) (PARENT-DESCRIPTION :TYPE DESCRIPTION) (MODULE :TYPE MODULE)))");
+    { Class* clasS = defineClassFromStringifiedSource("CHECK-TYPES-RECORD", "(DEFCLASS CHECK-TYPES-RECORD (STANDARD-OBJECT) :SLOTS ((PROPOSITION :TYPE PROPOSITION) (PARENT-PROPOSITION :TYPE OBJECT) (PARENT-DESCRIPTION :TYPE DESCRIPTION) (MODULE :TYPE MODULE)))");
 
       clasS->classConstructorCode = ((cpp_function_code)(&newCheckTypesRecord));
       clasS->classSlotAccessorCode = ((cpp_function_code)(&accessCheckTypesRecordSlotValue));
@@ -10204,12 +10463,14 @@ void helpStartupPropositions7() {
 void helpStartupPropositions8() {
   {
     defineFunctionObject("LOG-LOGIC-OBJECT", "(DEFUN LOG-LOGIC-OBJECT ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&logLogicObject)), NULL);
+    defineMethodObject("(DEFMETHOD (DELETED? BOOLEAN) ((SELF FORWARD-CHAINING-INDEX)))", ((cpp_method_code)(&ForwardChainingIndex::deletedP)), ((cpp_method_code)(NULL)));
     defineFunctionObject("STRINGIFIED-SOURCE", "(DEFUN (STRINGIFIED-SOURCE STRING) ((SELF OBJECT)))", ((cpp_function_code)(&stringifiedSource)), NULL);
     defineFunctionObject("STRINGIFIED-SOURCE-SETTER", "(DEFUN (STRINGIFIED-SOURCE-SETTER STRING) ((SELF OBJECT) (VALUE STRING)))", ((cpp_function_code)(&stringifiedSourceSetter)), NULL);
     defineFunctionObject("ORIGINATED-PROPOSITIONS", "(DEFUN (ORIGINATED-PROPOSITIONS (LIST OF PROPOSITION)) ((SELF OBJECT)))", ((cpp_function_code)(&originatedPropositions)), NULL);
     defineFunctionObject("ORIGINATED-PROPOSITIONS-SETTER", "(DEFUN (ORIGINATED-PROPOSITIONS-SETTER (LIST OF PROPOSITION)) ((SELF OBJECT) (VALUE (LIST OF PROPOSITION))))", ((cpp_function_code)(&originatedPropositionsSetter)), NULL);
     defineFunctionObject("CREATE-PROPOSITION", "(DEFUN (CREATE-PROPOSITION PROPOSITION) ((KIND SYMBOL) (ARGUMENTCOUNT INTEGER)))", ((cpp_function_code)(&createProposition)), NULL);
     defineFunctionObject("ENFORCE-CODE-ONLY", "(DEFUN ENFORCE-CODE-ONLY ())", ((cpp_function_code)(&enforceCodeOnly)), NULL);
+    defineFunctionObject("GET-PROPOSITION-BASE-OPERATOR", "(DEFUN (GET-PROPOSITION-BASE-OPERATOR SURROGATE) ((PROP PROPOSITION)) :PUBLIC? TRUE)", ((cpp_function_code)(&getPropositionBaseOperator)), NULL);
     defineExternalSlotFromStringifiedSource("(DEFSLOT CONTEXT MONOTONIC? :TYPE BOOLEAN :PUBLIC? TRUE :ALLOCATION :DYNAMIC)");
     defineExternalSlotFromStringifiedSource("(DEFSLOT WORLD TRUTH-MAINTAINED? :TYPE BOOLEAN :PUBLIC? TRUE :ALLOCATION :DYNAMIC)");
     defineExternalSlotFromStringifiedSource("(DEFSLOT WORLD UP-TO-DATE-INFERENCES? :TYPE BOOLEAN :PUBLIC? TRUE :ALLOCATION :DYNAMIC)");
@@ -10261,13 +10522,13 @@ void helpStartupPropositions8() {
     defineFunctionObject("ASSIGN-PROPOSITION-WEIGHT", "(DEFUN ASSIGN-PROPOSITION-WEIGHT ((SELF PROPOSITION) (WEIGHT PARTIAL-MATCH-SCORE)))", ((cpp_function_code)(&assignPropositionWeight)), NULL);
     defineFunctionObject("TICKLE-CONTEXT", "(DEFUN (TICKLE-CONTEXT CONTEXT) ())", ((cpp_function_code)(&tickleContext)), NULL);
     defineFunctionObject("TICKLE-INSTANCES", "(DEFUN (TICKLE-INSTANCES CONTEXT) ())", ((cpp_function_code)(&tickleInstances)), NULL);
-    defineFunctionObject("REACT-TO-SKOLEM-VALUE-UPDATE", "(DEFUN REACT-TO-SKOLEM-VALUE-UPDATE ((SKOLEM SKOLEM) (OLDVALUE OBJECT) (NEWVALUE OBJECT) (TOPLEVELUPDATE? BOOLEAN)))", ((cpp_function_code)(&reactToSkolemValueUpdate)), NULL);
-    defineFunctionObject("NATIVE-SLOT-PROPOSITION?", "(DEFUN (NATIVE-SLOT-PROPOSITION? BOOLEAN) ((SELF PROPOSITION)))", ((cpp_function_code)(&nativeSlotPropositionP)), NULL);
   }
 }
 
 void helpStartupPropositions9() {
   {
+    defineFunctionObject("REACT-TO-SKOLEM-VALUE-UPDATE", "(DEFUN REACT-TO-SKOLEM-VALUE-UPDATE ((SKOLEM SKOLEM) (OLDVALUE OBJECT) (NEWVALUE OBJECT) (TOPLEVELUPDATE? BOOLEAN)))", ((cpp_function_code)(&reactToSkolemValueUpdate)), NULL);
+    defineFunctionObject("NATIVE-SLOT-PROPOSITION?", "(DEFUN (NATIVE-SLOT-PROPOSITION? BOOLEAN) ((SELF PROPOSITION)))", ((cpp_function_code)(&nativeSlotPropositionP)), NULL);
     defineFunctionObject("UPDATE-NATIVE-SLOT-PROPOSITION", "(DEFUN (UPDATE-NATIVE-SLOT-PROPOSITION (CONS OF PROPOSITION)) ((PROPOSITION PROPOSITION) (UPDATEMODE KEYWORD)))", ((cpp_function_code)(&updateNativeSlotProposition)), NULL);
     defineFunctionObject("ASSIGN-NATIVE-SLOT-VALUE", "(DEFUN ASSIGN-NATIVE-SLOT-VALUE ((SELF THING) (SLOT STORAGE-SLOT) (VALUE OBJECT)))", ((cpp_function_code)(&assignNativeSlotValue)), NULL);
     defineFunctionObject("CLEAR-NATIVE-SLOT-VALUE", "(DEFUN CLEAR-NATIVE-SLOT-VALUE ((OBJECT THING) (SLOT STORAGE-SLOT)))", ((cpp_function_code)(&clearNativeSlotValue)), NULL);
@@ -10308,6 +10569,7 @@ void helpStartupPropositions9() {
     defineFunctionObject("STRICT-TRUTH-VALUE?", "(DEFUN (STRICT-TRUTH-VALUE? BOOLEAN) ((SELF TRUTH-VALUE)) :DOCUMENTATION \"Return TRUE if `self' is a strict truth value.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (OR (EQL? SELF TRUE-TRUTH-VALUE) (EQL? SELF FALSE-TRUTH-VALUE))))", ((cpp_function_code)(&strictTruthValueP)), NULL);
     defineFunctionObject("DEFAULT-TRUTH-VALUE?", "(DEFUN (DEFAULT-TRUTH-VALUE? BOOLEAN) ((SELF TRUTH-VALUE)) :DOCUMENTATION \"Return TRUE if `self' is a default truth value.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (OR (EQL? SELF DEFAULT-TRUE-TRUTH-VALUE) (EQL? SELF DEFAULT-FALSE-TRUTH-VALUE))))", ((cpp_function_code)(&defaultTruthValueP)), NULL);
     defineFunctionObject("UNKNOWN-TRUTH-VALUE?", "(DEFUN (UNKNOWN-TRUTH-VALUE? BOOLEAN) ((SELF TRUTH-VALUE)) :DOCUMENTATION \"Return TRUE if `self' represents UNKNOWN.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (OR (EQL? SELF UNKNOWN-TRUTH-VALUE) (NULL? SELF))))", ((cpp_function_code)(&unknownTruthValueP)), NULL);
+    defineFunctionObject("KNOWN-TRUTH-VALUE?", "(DEFUN (KNOWN-TRUTH-VALUE? BOOLEAN) ((SELF TRUTH-VALUE)) :DOCUMENTATION \"Return TRUE if `self' is a known truth value, that is\neither TRUE or FALSE, but not UNKNOWN, INCONSISTENT, etc.\")", ((cpp_function_code)(&knownTruthValueP)), NULL);
     defineFunctionObject("INCONSISTENT-TRUTH-VALUE?", "(DEFUN (INCONSISTENT-TRUTH-VALUE? BOOLEAN) ((SELF TRUTH-VALUE)) :DOCUMENTATION \"Return TRUE if `self' represents INCONSISTENT.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (EQL? SELF INCONSISTENT-TRUTH-VALUE)))", ((cpp_function_code)(&inconsistentTruthValueP)), NULL);
     defineFunctionObject("PRINT-TRUTH-VALUE", "(DEFUN PRINT-TRUTH-VALUE ((SELF TRUTH-VALUE) (STREAM OUTPUT-STREAM)))", ((cpp_function_code)(&printTruthValue)), NULL);
     defineFunctionObject("SIGNAL-UNIFICATION-CLASH", "(DEFUN SIGNAL-UNIFICATION-CLASH ((TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&signalUnificationClash)), NULL);
@@ -10325,14 +10587,14 @@ void helpStartupPropositions9() {
     defineFunctionObject("LOGIC-COLLECTION?", "(DEFUN (LOGIC-COLLECTION? BOOLEAN) ((TERM OBJECT)))", ((cpp_function_code)(&logicCollectionP)), NULL);
     defineFunctionObject("EQUATE-VALUES", "(DEFUN EQUATE-VALUES ((TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&equateValues)), NULL);
     defineExternalSlotFromStringifiedSource("(DEFSLOT SKOLEM CONFLICTING-DEFAULT-VALUES :TYPE (CONS OF PROPOSITION) :DEFAULT NIL :ALLOCATION :DYNAMIC)");
-    defineFunctionObject("UNEQUATE-CONFLICTING-DEFAULT-VALUES?", "(DEFUN (UNEQUATE-CONFLICTING-DEFAULT-VALUES? BOOLEAN) ((NEWEQUATINGPROP PROPOSITION)))", ((cpp_function_code)(&unequateConflictingDefaultValuesP)), NULL);
-    defineFunctionObject("UNEQUATE-VALUES?", "(DEFUN (UNEQUATE-VALUES? BOOLEAN) ((TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&unequateValuesP)), NULL);
-    defineFunctionObject("BIND-TO-EQUIVALENT-VALUE", "(DEFUN BIND-TO-EQUIVALENT-VALUE ((FROM LOGIC-OBJECT) (TO DESCRIPTION)))", ((cpp_function_code)(&bindToEquivalentValue)), NULL);
   }
 }
 
 void helpStartupPropositions10() {
   {
+    defineFunctionObject("UNEQUATE-CONFLICTING-DEFAULT-VALUES?", "(DEFUN (UNEQUATE-CONFLICTING-DEFAULT-VALUES? BOOLEAN) ((NEWEQUATINGPROP PROPOSITION)))", ((cpp_function_code)(&unequateConflictingDefaultValuesP)), NULL);
+    defineFunctionObject("UNEQUATE-VALUES?", "(DEFUN (UNEQUATE-VALUES? BOOLEAN) ((TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&unequateValuesP)), NULL);
+    defineFunctionObject("BIND-TO-EQUIVALENT-VALUE", "(DEFUN BIND-TO-EQUIVALENT-VALUE ((FROM LOGIC-OBJECT) (TO DESCRIPTION)))", ((cpp_function_code)(&bindToEquivalentValue)), NULL);
     defineFunctionObject("UNBIND-EQUIVALENT-VALUE", "(DEFUN UNBIND-EQUIVALENT-VALUE ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&unbindEquivalentValue)), NULL);
     defineFunctionObject("UNLINK-EQUIVALENT-VALUE", "(DEFUN UNLINK-EQUIVALENT-VALUE ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&unlinkEquivalentValue)), NULL);
     defineFunctionObject("EQUIVALENT-COLLECTION-PRIORITY", "(DEFUN (EQUIVALENT-COLLECTION-PRIORITY INTEGER) ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&equivalentCollectionPriority)), NULL);
@@ -10365,7 +10627,7 @@ void helpStartupPropositions10() {
     defineFunctionObject("UPDATE-PROPERTY", "(DEFUN (UPDATE-PROPERTY PROPOSITION) ((SELF LOGIC-OBJECT) (SURROGATE SURROGATE) (UPDATEMODE KEYWORD)) :PUBLIC? TRUE)", ((cpp_function_code)(&updateProperty)), NULL);
     defineFunctionObject("ASSERT-PROPERTY", "(DEFUN (ASSERT-PROPERTY PROPOSITION) ((INSTANCE LOGIC-OBJECT) (PROPERTY SURROGATE)) :PUBLIC? TRUE)", ((cpp_function_code)(&assertProperty)), NULL);
     defineFunctionObject("RETRACT-PROPERTY", "(DEFUN (RETRACT-PROPERTY PROPOSITION) ((INSTANCE LOGIC-OBJECT) (PROPERTY SURROGATE)) :PUBLIC? TRUE)", ((cpp_function_code)(&retractProperty)), NULL);
-    defineFunctionObject("UPDATE-TUPLE", "(DEFUN (UPDATE-TUPLE PROPOSITION) ((RELATION SURROGATE) (ARGUMENTS (CONS OF OBJECT)) (UPDATEMODE KEYWORD)) :PUBLIC? TRUE)", ((cpp_function_code)(&updateTuple)), NULL);
+    defineFunctionObject("UPDATE-TUPLE", "(DEFUN (UPDATE-TUPLE PROPOSITION) ((RELATION SURROGATE) (ARGUMENTS (CONS OF OBJECT)) (UPDATEMODE KEYWORD)) :DOCUMENTATION \"Assert or retract a proposition that applies 'relation' to 'arguments'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&updateTuple)), NULL);
     defineFunctionObject("ASSERT-TUPLE", "(DEFUN (ASSERT-TUPLE PROPOSITION) ((RELATION SURROGATE) (ARGUMENTS (CONS OF OBJECT))) :PUBLIC? TRUE)", ((cpp_function_code)(&assertTuple)), NULL);
     defineFunctionObject("UPDATE-BINARY-VALUE", "(DEFUN (UPDATE-BINARY-VALUE PROPOSITION) ((RELATION SURROGATE) (SELF OBJECT) (VALUE OBJECT) (UPDATEMODE KEYWORD)) :PUBLIC? TRUE)", ((cpp_function_code)(&updateBinaryValue)), NULL);
     defineFunctionObject("ASSERT-BINARY-VALUE", "(DEFUN (ASSERT-BINARY-VALUE PROPOSITION) ((RELATION SURROGATE) (SELF OBJECT) (VALUE OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&assertBinaryValue)), NULL);
@@ -10374,7 +10636,7 @@ void helpStartupPropositions10() {
     defineFunctionObject("HELP-CREATE-LOGIC-INSTANCE", "(DEFUN (HELP-CREATE-LOGIC-INSTANCE OBJECT) ((NAME SURROGATE) (TYPE SURROGATE)) :PUBLIC? TRUE)", ((cpp_function_code)(&helpCreateLogicInstance)), NULL);
     defineFunctionObject("CREATE-LOGIC-INSTANCE", "(DEFUN (CREATE-LOGIC-INSTANCE OBJECT) ((NAME SURROGATE) (TYPE SURROGATE)) :PUBLIC? TRUE)", ((cpp_function_code)(&createLogicInstance)), NULL);
     defineFunctionObject("CLEANUP-STRUCTURED-OBJECTS-INDEX", "(DEFUN CLEANUP-STRUCTURED-OBJECTS-INDEX ((CLEARMODULE MODULE)))", ((cpp_function_code)(&cleanupStructuredObjectsIndex)), NULL);
-    defineFunctionObject("PROPOSITION-HASH-INDEX", "(DEFUN (PROPOSITION-HASH-INDEX INTEGER) ((SELF PROPOSITION)))", ((cpp_function_code)(&propositionHashIndex)), NULL);
+    defineFunctionObject("PROPOSITION-HASH-INDEX", "(DEFUN (PROPOSITION-HASH-INDEX INTEGER) ((SELF PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&propositionHashIndex)), NULL);
     defineFunctionObject("FIND-DUPLICATE-COMPLEX-PROPOSITION", "(DEFUN (FIND-DUPLICATE-COMPLEX-PROPOSITION PROPOSITION) ((SELF PROPOSITION)))", ((cpp_function_code)(&findDuplicateComplexProposition)), NULL);
     defineFunctionObject("FIND-DUPLICATE-PROPOSITION", "(DEFUN (FIND-DUPLICATE-PROPOSITION PROPOSITION) ((SELF PROPOSITION)))", ((cpp_function_code)(&findDuplicateProposition)), NULL);
     defineFunctionObject("FASTEN-DOWN-ONE-PROPOSITION", "(DEFUN (FASTEN-DOWN-ONE-PROPOSITION PROPOSITION) ((SELF PROPOSITION) (DONTCHECKFORDUPLICATES? BOOLEAN)))", ((cpp_function_code)(&fastenDownOneProposition)), NULL);
@@ -10390,14 +10652,14 @@ void helpStartupPropositions10() {
     defineFunctionObject("VERIFY-NUMBER-OF-PROPOSITION-ARGUMENTS", "(DEFUN VERIFY-NUMBER-OF-PROPOSITION-ARGUMENTS ((TREE CONS) (CORRECTNUMBER INTEGER)))", ((cpp_function_code)(&verifyNumberOfPropositionArguments)), NULL);
     defineMethodObject("(DEFMETHOD (DESCRIPTION-SURROGATE TYPE) ((SELF DESCRIPTION)))", ((cpp_method_code)(&Description::descriptionSurrogate)), ((cpp_method_code)(NULL)));
     defineFunctionObject("BUILD-ISA-PROPOSITION", "(DEFUN (BUILD-ISA-PROPOSITION PROPOSITION) ((TREE CONS)))", ((cpp_function_code)(&buildIsaProposition)), NULL);
-    defineFunctionObject("BUILD-MEMBER-OF-PROPOSITION", "(DEFUN (BUILD-MEMBER-OF-PROPOSITION PROPOSITION) ((TREE CONS)))", ((cpp_function_code)(&buildMemberOfProposition)), NULL);
-    defineFunctionObject("MEMBER-OF-PROPOSITION?", "(DEFUN (MEMBER-OF-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)) :GLOBALLY-INLINE? TRUE (RETURN (EQL? (OPERATOR PROPOSITION) /PL-KERNEL-KB/@MEMBER-OF)))", ((cpp_function_code)(&memberOfPropositionP)), NULL);
-    defineFunctionObject("SUBSET-OF-PROPOSITION?", "(DEFUN (SUBSET-OF-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)) :GLOBALLY-INLINE? TRUE (RETURN (EQL? (OPERATOR PROPOSITION) /PL-KERNEL-KB/@SUBSET-OF)))", ((cpp_function_code)(&subsetOfPropositionP)), NULL);
   }
 }
 
 void helpStartupPropositions11() {
   {
+    defineFunctionObject("BUILD-MEMBER-OF-PROPOSITION", "(DEFUN (BUILD-MEMBER-OF-PROPOSITION PROPOSITION) ((TREE CONS)))", ((cpp_function_code)(&buildMemberOfProposition)), NULL);
+    defineFunctionObject("MEMBER-OF-PROPOSITION?", "(DEFUN (MEMBER-OF-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)) :GLOBALLY-INLINE? TRUE (RETURN (EQL? (OPERATOR PROPOSITION) /PL-KERNEL-KB/@MEMBER-OF)))", ((cpp_function_code)(&memberOfPropositionP)), NULL);
+    defineFunctionObject("SUBSET-OF-PROPOSITION?", "(DEFUN (SUBSET-OF-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)) :GLOBALLY-INLINE? TRUE (RETURN (EQL? (OPERATOR PROPOSITION) /PL-KERNEL-KB/@SUBSET-OF)))", ((cpp_function_code)(&subsetOfPropositionP)), NULL);
     defineFunctionObject("SIMPLE-SUBRELATION-PROPOSITION?", "(DEFUN (SIMPLE-SUBRELATION-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)) :PUBLIC? TRUE)", ((cpp_function_code)(&simpleSubrelationPropositionP)), NULL);
     defineFunctionObject("EXTRACT-ANNOTATION", "(DEFUN (EXTRACT-ANNOTATION OBJECT OBJECT) ((TREE OBJECT) (OPTION KEYWORD)))", ((cpp_function_code)(&extractAnnotation)), NULL);
     defineFunctionObject("LOOKUP-ANNOTATION", "(DEFUN (LOOKUP-ANNOTATION OBJECT) ((PROPOSITION PROPOSITION) (KEY KEYWORD)))", ((cpp_function_code)(&lookupAnnotation)), NULL);
@@ -10406,6 +10668,7 @@ void helpStartupPropositions11() {
     defineFunctionObject("BUILD-ANNOTATED-PROPOSITION", "(DEFUN (BUILD-ANNOTATED-PROPOSITION PROPOSITION) ((TREE CONS)))", ((cpp_function_code)(&buildAnnotatedProposition)), NULL);
     defineFunctionObject("FINALIZE-PROPOSITION-ANNOTATIONS", "(DEFUN FINALIZE-PROPOSITION-ANNOTATIONS ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&finalizePropositionAnnotations)), NULL);
     defineFunctionObject("CLEAR-PROPOSITION-ANNOTATIONS", "(DEFUN CLEAR-PROPOSITION-ANNOTATIONS ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&clearPropositionAnnotations)), NULL);
+    defineFunctionObject("FORWARD-BACKWARD-OPTION-HANDLER", "(DEFUN FORWARD-BACKWARD-OPTION-HANDLER ((SELF PROPOSITION) (SLOT STORAGE-SLOT) (TREE OBJECT)))", ((cpp_function_code)(&forwardBackwardOptionHandler)), NULL);
     defineFunctionObject("FUNCTION-INDUCED-EXISTS?", "(DEFUN (FUNCTION-INDUCED-EXISTS? BOOLEAN) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&functionInducedExistsP)), NULL);
     defineFunctionObject("PREDICATE-OF-FUNCTION-INDUCED-EXISTS", "(DEFUN (PREDICATE-OF-FUNCTION-INDUCED-EXISTS PROPOSITION) ((EXISTSPROPOSITION PROPOSITION)))", ((cpp_function_code)(&predicateOfFunctionInducedExists)), NULL);
     defineFunctionObject("EMBED-NEGATION-WITHIN-FUNCTION-INDUCED-EXISTS", "(DEFUN (EMBED-NEGATION-WITHIN-FUNCTION-INDUCED-EXISTS PROPOSITION) ((EXISTSPROPOSITION PROPOSITION)))", ((cpp_function_code)(&embedNegationWithinFunctionInducedExists)), NULL);
@@ -10426,6 +10689,8 @@ void helpStartupPropositions11() {
     defineFunctionObject("EVALUATE-PREDICATE", "(DEFUN (EVALUATE-PREDICATE LOGIC-OBJECT) ((NAME GENERALIZED-SYMBOL) (FIRSTARGUMENT OBJECT)))", ((cpp_function_code)(&evaluatePredicate)), NULL);
     defineFunctionObject("PROPOSITIONAL-ARGUMENT?", "(DEFUN (PROPOSITIONAL-ARGUMENT? BOOLEAN) ((ARGUMENT OBJECT)))", ((cpp_function_code)(&propositionalArgumentP)), NULL);
     defineFunctionObject("EVALUATE-TYPED-ARGUMENT", "(DEFUN (EVALUATE-TYPED-ARGUMENT OBJECT) ((ARGUMENT OBJECT) (TYPE SURROGATE)))", ((cpp_function_code)(&evaluateTypedArgument)), NULL);
+    defineFunctionObject("EVALUATE-PROPOSITION-TERM", "(DEFUN (EVALUATE-PROPOSITION-TERM OBJECT) ((TREE OBJECT)))", ((cpp_function_code)(&evaluatePropositionTerm)), NULL);
+    defineFunctionObject("EVALUATE-PREDICATE-AND-FIRST-ARGUMENT", "(DEFUN (EVALUATE-PREDICATE-AND-FIRST-ARGUMENT LOGIC-OBJECT OBJECT) ((TREE CONS)))", ((cpp_function_code)(&evaluatePredicateAndFirstArgument)), NULL);
     defineFunctionObject("EVALUATE-FIRST-ARGUMENT", "(DEFUN (EVALUATE-FIRST-ARGUMENT OBJECT) ((ARGUMENT OBJECT) (RELATIONNAME SYMBOL)))", ((cpp_function_code)(&evaluateFirstArgument)), NULL);
     defineFunctionObject("EVALUATE-REMAINING-ARGUMENTS", "(DEFUN (EVALUATE-REMAINING-ARGUMENTS CONS) ((PREDICATEVALUE LOGIC-OBJECT) (ARGUMENTS CONS)))", ((cpp_function_code)(&evaluateRemainingArguments)), NULL);
     defineFunctionObject("CLASS-OPERATOR?", "(DEFUN (CLASS-OPERATOR? BOOLEAN) ((OPERATOR GENERALIZED-SYMBOL)))", ((cpp_function_code)(&classOperatorP)), NULL);
@@ -10452,28 +10717,29 @@ void helpStartupPropositions11() {
     defineFunctionObject("MAYBE-SUBSTITUTE-SURROGATE-ARGUMENT", "(DEFUN (MAYBE-SUBSTITUTE-SURROGATE-ARGUMENT OBJECT) ((ARG1 OBJECT) (ARG2 OBJECT)))", ((cpp_function_code)(&maybeSubstituteSurrogateArgument)), NULL);
     defineFunctionObject("CREATE-IMPLIES-PROPOSITION", "(DEFUN (CREATE-IMPLIES-PROPOSITION PROPOSITION) ((TAIL OBJECT) (HEAD OBJECT)))", ((cpp_function_code)(&createImpliesProposition)), NULL);
     defineFunctionObject("BUILD-IMPLIES-PROPOSITION", "(DEFUN (BUILD-IMPLIES-PROPOSITION PROPOSITION) ((TREE CONS)))", ((cpp_function_code)(&buildImpliesProposition)), NULL);
+  }
+}
+
+void helpStartupPropositions12() {
+  {
     defineFunctionObject("FIND-DUPLICATE-FUNCTION-PROPOSITION", "(DEFUN (FIND-DUPLICATE-FUNCTION-PROPOSITION PROPOSITION) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&findDuplicateFunctionProposition)), NULL);
     defineFunctionObject("UNWRAP-WRAPPED-TYPE", "(DEFUN (UNWRAP-WRAPPED-TYPE TYPE) ((TYPE TYPE)))", ((cpp_function_code)(&unwrapWrappedType)), NULL);
     defineFunctionObject("BEGIN-CREATING-FUNCTION-PROPOSITION", "(DEFUN (BEGIN-CREATING-FUNCTION-PROPOSITION PROPOSITION) ((SURROGATE GENERALIZED-SYMBOL) (INPUTARGUMENTS CONS)))", ((cpp_function_code)(&beginCreatingFunctionProposition)), NULL);
     defineFunctionObject("FINISH-CREATING-FUNCTION-PROPOSITION", "(DEFUN (FINISH-CREATING-FUNCTION-PROPOSITION PROPOSITION) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&finishCreatingFunctionProposition)), NULL);
     defineFunctionObject("FIND-OR-CREATE-FUNCTION-PROPOSITION", "(DEFUN (FIND-OR-CREATE-FUNCTION-PROPOSITION PROPOSITION) ((PREDICATE GENERALIZED-SYMBOL) (INPUTARGUMENTS CONS)))", ((cpp_function_code)(&findOrCreateFunctionProposition)), NULL);
     defineFunctionObject("CREATE-FUNCTION-PROPOSITION", "(DEFUN (CREATE-FUNCTION-PROPOSITION PROPOSITION) ((PREDICATE GENERALIZED-SYMBOL) (INPUTARGUMENTS CONS)))", ((cpp_function_code)(&createFunctionProposition)), NULL);
-  }
-}
-
-void helpStartupPropositions12() {
-  {
     defineFunctionObject("EVALUATE-FUNCTION-TERM", "(DEFUN (EVALUATE-FUNCTION-TERM OBJECT) ((TREE CONS)))", ((cpp_function_code)(&evaluateFunctionTerm)), NULL);
     defineFunctionObject("EXTENSIONAL-INDIVIDUAL?", "(DEFUN (EXTENSIONAL-INDIVIDUAL? BOOLEAN) ((INDIVIDUAL OBJECT)))", ((cpp_function_code)(&extensionalIndividualP)), NULL);
     defineFunctionObject("FUNCTION-WITH-DEFINED-VALUE?", "(DEFUN (FUNCTION-WITH-DEFINED-VALUE? BOOLEAN) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&functionWithDefinedValueP)), NULL);
     defineFunctionObject("CREATE-ENUMERATED-SET", "(DEFUN (CREATE-ENUMERATED-SET SKOLEM) ((SET LIST)))", ((cpp_function_code)(&createEnumeratedSet)), NULL);
     defineFunctionObject("CREATE-LOGICAL-LIST", "(DEFUN (CREATE-LOGICAL-LIST SKOLEM) ((LIST LIST)))", ((cpp_function_code)(&createLogicalList)), NULL);
     defineFunctionObject("LOGICAL-COLLECTION?", "(DEFUN (LOGICAL-COLLECTION? BOOLEAN) ((SELF OBJECT)))", ((cpp_function_code)(&logicalCollectionP)), NULL);
+    defineFunctionObject("FUNCTION-OUTPUT-SKOLEM?", "(DEFUN (FUNCTION-OUTPUT-SKOLEM? BOOLEAN) ((SELF OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&functionOutputSkolemP)), NULL);
     defineFunctionObject("SKOLEM-DEFINED-BY-OPERATOR?", "(DEFUN (SKOLEM-DEFINED-BY-OPERATOR? BOOLEAN) ((SELF OBJECT) (OPERATOR SURROGATE)) :GLOBALLY-INLINE? TRUE (TYPECASE SELF (SKOLEM (LET ((DEFININGPROPOSITION (DEFINING-PROPOSITION SELF))) (RETURN (AND (DEFINED? DEFININGPROPOSITION) (EQL? (OPERATOR DEFININGPROPOSITION) OPERATOR))))) (OTHERWISE (RETURN FALSE))))", ((cpp_function_code)(&skolemDefinedByOperatorP)), NULL);
+    defineFunctionObject("GET-SKOLEM-AND-VALUE-TERMS", "(DEFUN (GET-SKOLEM-AND-VALUE-TERMS SKOLEM OBJECT) ((PROPOSITION PROPOSITION)) :PUBLIC? TRUE)", ((cpp_function_code)(&getSkolemAndValueTerms)), NULL);
     defineFunctionObject("ENUMERATED-SET?", "(DEFUN (ENUMERATED-SET? BOOLEAN) ((SELF OBJECT)))", ((cpp_function_code)(&enumeratedSetP)), NULL);
     defineFunctionObject("ENUMERATED-LIST?", "(DEFUN (ENUMERATED-LIST? BOOLEAN) ((SELF OBJECT)))", ((cpp_function_code)(&enumeratedListP)), NULL);
     defineFunctionObject("CANONICALIZE-PROPOSITION-TREE", "(DEFUN (CANONICALIZE-PROPOSITION-TREE OBJECT) ((TREE OBJECT)))", ((cpp_function_code)(&canonicalizePropositionTree)), NULL);
-    defineFunctionObject("ERASE-PROPOSITION", "(DEFUN ERASE-PROPOSITION ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&eraseProposition)), NULL);
     defineFunctionObject("UPDATE-EQUIVALENCE-PROPOSITION", "(DEFUN (UPDATE-EQUIVALENCE-PROPOSITION PROPOSITION) ((PROPOSITION PROPOSITION) (UPDATEMODE KEYWORD)))", ((cpp_function_code)(&updateEquivalenceProposition)), NULL);
     defineFunctionObject("SKOLEMIZE-EXISTS-PROPOSITION", "(DEFUN (SKOLEMIZE-EXISTS-PROPOSITION PROPOSITION) ((EXISTSPROPOSITION PROPOSITION)))", ((cpp_function_code)(&skolemizeExistsProposition)), NULL);
     defineFunctionObject("HELP-UPDATE-TOP-LEVEL-PROPOSITION", "(DEFUN (HELP-UPDATE-TOP-LEVEL-PROPOSITION (CONS OF PROPOSITION)) ((PROPOSITION PROPOSITION) (UPDATEMODE KEYWORD)))", ((cpp_function_code)(&helpUpdateTopLevelProposition)), NULL);
@@ -10498,6 +10764,7 @@ void helpStartupPropositions12() {
     defineMethodObject("(DEFMETHOD (DELETED?-SETTER BOOLEAN) ((SELF PROPOSITION) (VALUE BOOLEAN)))", ((cpp_method_code)(&Proposition::deletedPSetter)), ((cpp_method_code)(NULL)));
     defineFunctionObject("DELETED-PROPOSITION?", "(DEFUN (DELETED-PROPOSITION? BOOLEAN) ((SELF PROPOSITION)))", ((cpp_function_code)(&deletedPropositionP)), NULL);
     defineFunctionObject("DESTROY-PROPOSITION", "(DEFUN (DESTROY-PROPOSITION PROPOSITION) ((PROPOSITION PROPOSITION)) :DOCUMENTATION \"Retract and destroy the proposition 'proposition'.\nRecursively destroy all propositions that reference 'proposition'.\nAlso, destroy all satellite propositions of 'proposition'.\")", ((cpp_function_code)(&destroyProposition)), NULL);
+    defineFunctionObject("DESTROY-REDUNDANT-PROPOSITION", "(DEFUN DESTROY-REDUNDANT-PROPOSITION ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&destroyRedundantProposition)), NULL);
     defineFunctionObject("DESTROY-LOGIC-INSTANCE", "(DEFUN DESTROY-LOGIC-INSTANCE ((SELF OBJECT)))", ((cpp_function_code)(&destroyLogicInstance)), NULL);
     defineFunctionObject("DESTROY-TERM", "(DEFUN DESTROY-TERM ((SELF LOGIC-OBJECT)) :DOCUMENTATION \"Destroy all propositions that reference 'self',\nand mark it as 'deleted?', thereby making it invisible within class\nextensions.  Unlink descriptions from native relations.\" :PUBLIC? TRUE)", ((cpp_function_code)(&destroyTerm)), NULL);
     defineFunctionObject("DESTROY-INSTANCE", "(DEFUN DESTROY-INSTANCE ((SELF OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Destroy all propositions that reference 'self',\nand mark it as 'deleted?', thereby making it invisible within class\nextensions.\")", ((cpp_function_code)(&destroyInstance)), NULL);
@@ -10515,6 +10782,11 @@ void helpStartupPropositions12() {
     defineFunctionObject("SAFE-STRING-LESS?", "(DEFUN (SAFE-STRING-LESS? BOOLEAN) ((S1 STRING) (S2 STRING)))", ((cpp_function_code)(&safeStringLessP)), NULL);
     defineFunctionObject("SAFE-QUANTITY-LESS?", "(DEFUN (SAFE-QUANTITY-LESS? BOOLEAN) ((Q1 QUANTITY) (O2 OBJECT)))", ((cpp_function_code)(&safeQuantityLessP)), NULL);
     defineFunctionObject("SAFE-QUANTITY-GREATER-EQUAL?", "(DEFUN (SAFE-QUANTITY-GREATER-EQUAL? BOOLEAN) ((Q1 QUANTITY) (O2 OBJECT)))", ((cpp_function_code)(&safeQuantityGreaterEqualP)), NULL);
+  }
+}
+
+void helpStartupPropositions13() {
+  {
     defineFunctionObject("OBJECT-NAME-LESS-THAN?", "(DEFUN (OBJECT-NAME-LESS-THAN? BOOLEAN) ((O1 LOGIC-OBJECT) (O2 LOGIC-OBJECT)))", ((cpp_function_code)(&objectNameLessThanP)), NULL);
     defineFunctionObject("MODULE-NAME-LESS-THAN?", "(DEFUN (MODULE-NAME-LESS-THAN? BOOLEAN) ((M1 CONTEXT) (M2 CONTEXT)))", ((cpp_function_code)(&moduleNameLessThanP)), NULL);
     defineFunctionObject("PROPOSITION-LESS-THAN?", "(DEFUN (PROPOSITION-LESS-THAN? BOOLEAN) ((P1 PROPOSITION) (P2 PROPOSITION)))", ((cpp_function_code)(&propositionLessThanP)), NULL);
@@ -10555,12 +10827,14 @@ void startupPropositions() {
       helpStartupPropositions10();
       helpStartupPropositions11();
       helpStartupPropositions12();
+      helpStartupPropositions13();
     }
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT ZERO-VARIABLES-VECTOR VARIABLES-VECTOR (NEW VARIABLES-VECTOR :ARRAY-SIZE 0) :DOCUMENTATION \"Save space by structure-sharing zero-length variable vectors.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *PARTIAL-SUPPORT-COUNTER* INTEGER 0)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *OPERATOR-NAME-TO-SURROGATE-TABLE* (PROPERTY-LIST OF KEYWORD SURROGATE) (NEW PROPERTY-LIST :THE-PLIST (BQUOTE (:AND /PL-KERNEL-KB/@AND :OR /PL-KERNEL-KB/@OR :NOT /PL-KERNEL-KB/@NOT :FORALL /PL-KERNEL-KB/@FORALL :EXISTS /PL-KERNEL-KB/@EXISTS :EQUIVALENT /PL-KERNEL-KB/@EQUIVALENT :FAIL /PL-KERNEL-KB/@FAIL :COLLECT-INTO /PL-KERNEL-KB/@COLLECT-INTO :IMPLIES /PL-KERNEL-KB/@SUBSET-OF))) :DOCUMENTATION \"Maps names of KIF operators to relational surrogates.\")");
@@ -10586,10 +10860,12 @@ void startupPropositions() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT INCONSISTENT-TRUTH-VALUE TRUTH-VALUE (NEW TRUTH-VALUE :POLARITY :INCONSISTENT :STRENGTH :STRICT) :DOCUMENTATION \"Value representing a contradiction.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SUPPRESSUNTYPEDTYPEERROR?* BOOLEAN FALSE :DOCUMENTATION \"Used by 'safe-logical-type' to ask for a type\nwithout signalling an error if none exists.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *EQUIVALENCE-COLLECTIONS?* BOOLEAN TRUE :DOCUMENTATION \"Experiment with equality reasoning on collections.\")");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT TRUE-PROPOSITION PROPOSITION (NEW PROPOSITION :KIND :CONSTANT :OPERATOR @TRUE :ARGUMENTS (NEW ARGUMENTS-VECTOR :ARRAY-SIZE 0) :TRUTH-VALUE TRUE-TRUTH-VALUE))");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT FALSE-PROPOSITION PROPOSITION (NEW PROPOSITION :KIND :CONSTANT :OPERATOR @FALSE :ARGUMENTS (NEW ARGUMENTS-VECTOR :ARRAY-SIZE 0) :TRUTH-VALUE FALSE-TRUTH-VALUE))");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT TRUE-PROPOSITION PROPOSITION (NEW PROPOSITION :KIND :CONSTANT :OPERATOR @TRUE :ARGUMENTS (NEW ARGUMENTS-VECTOR :ARRAY-SIZE 0) :TRUTH-VALUE TRUE-TRUTH-VALUE :HOME-CONTEXT *PL-KERNEL-MODULE*))");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT FALSE-PROPOSITION PROPOSITION (NEW PROPOSITION :KIND :CONSTANT :OPERATOR @FALSE :ARGUMENTS (NEW ARGUMENTS-VECTOR :ARRAY-SIZE 0) :TRUTH-VALUE FALSE-TRUTH-VALUE :HOME-CONTEXT *PL-KERNEL-MODULE*))");
       SGT_PROPOSITIONS_STELLA_TRUE->surrogateValue = TRUE_PROPOSITION;
       SGT_PROPOSITIONS_STELLA_FALSE->surrogateValue = FALSE_PROPOSITION;
+      findDuplicateProposition(TRUE_PROPOSITION);
+      findDuplicateProposition(FALSE_PROPOSITION);
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT ANONYMOUS-VARIABLE-NAME SYMBOL (QUOTE ?) :DOCUMENTATION \"Variables with name 'ANONYMOUS-VARIABLE-NAME' are considered\nanonymous, and are not assumed to be identical to any other variable also named\n'ANONYMOUS-VARIABLE-NAME'.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MISSING-KEY-VALUE-LIST* KEY-VALUE-LIST (NEW KEY-VALUE-LIST) :DOCUMENTATION \"Represents a key-value list that should never be used.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *AUTOMATICINSTANCETABLE* (KEY-VALUE-LIST OF SYMBOL LOGIC-OBJECT) *MISSING-KEY-VALUE-LIST* :DOCUMENTATION \"Used by 'evaluate-automatic-instance' to\nrecord current bindings of automatic instance symbols.\")");
@@ -10601,7 +10877,7 @@ void startupPropositions() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AUTO-COERCE-PROPOSITIONAL-ARGUMENTS?* BOOLEAN FALSE :DOCUMENTATION \"If TRUE, automatically coerce propositional arguments of a\nproposition, even if the corresponding argument type of the hosting relation\ndoesn't indicate that.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TYPE-CHECK-POLICY* KEYWORD :AUTOMATICALLY-FIX-TYPE-VIOLATIONS :DOCUMENTATION \"Three policies are implemented:\n   :AUTOMATICALLY-FIX-TYPE-VIOLATIONS asserts missing types to fix type\n       violations (default),\n   :REPORT-TYPE-VIOLATIONS complains about missing or incorrect types,\n   :SIGNAL-TYPE-VIOLATIONS throws exception for missing or incorrect types, and\n   :IGNORE-TYPE-VIOLATIONS which disables all type checking.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *TYPECHECKMODE* KEYWORD :POST-TYPE-VIOLATIONS :DOCUMENTATION \"Controls the behavior of the type-checking\nroutines in the event that a type-check fails.  Options are:\n  :POST-TYPE-VIOLATIONS              push offending proposition onto queue,\n  :REPORT-TYPE-VIOLATIONS            print occasions of failed type checks,\n  :SIGNAL-TYPE-VIOLATIONS            throw exception for failed type checks,\n  :AUTOMATICALLY-FIX-TYPE-VIOLATIONS assert missing types on propositions, and\n  :IGNORE-TYPE-VIOLATIONS            don't perform any type checking at all.\")");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CHECK-TYPES-AGENDA* (KEY-VALUE-LIST OF PROPOSITION CHECK-TYPES-RECORD) (NEW KEY-VALUE-LIST) :DOCUMENTATION \"List of propositions that have failed a type check,\nbut might pass once finalization is complete.\")");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CHECK-TYPES-AGENDA* (VECTOR-SEQUENCE OF CHECK-TYPES-RECORD) (NEW VECTOR-SEQUENCE :ARRAY-SIZE 4) :DOCUMENTATION \"List of propositions that have failed a type check,\nbut might pass once finalization is complete.\")");
       registerNativeName(SYM_PROPOSITIONS_STELLA_ASSERT, KWD_PROPOSITIONS_CPP, KWD_PROPOSITIONS_FUNCTION);
       addHook(oDEFINE_MODULE_HOOKSo, SYM_PROPOSITIONS_LOGIC_INTRODUCE_MODULE);
       addHook(oCLEAR_MODULE_HOOKSo, SYM_PROPOSITIONS_LOGIC_CLEAR_LOGIC_MODULE_HOOK);
@@ -10773,6 +11049,8 @@ Surrogate* SGT_PROPOSITIONS_LOGIC_INTEGER_LOGIC_WRAPPER = NULL;
 Surrogate* SGT_PROPOSITIONS_LOGIC_FLOAT_LOGIC_WRAPPER = NULL;
 
 Surrogate* SGT_PROPOSITIONS_LOGIC_STRING_LOGIC_WRAPPER = NULL;
+
+Symbol* SYM_PROPOSITIONS_LOGIC_ENTITY_MAPPING = NULL;
 
 Keyword* KWD_PROPOSITIONS_AND = NULL;
 
@@ -10982,6 +11260,8 @@ Symbol* SYM_PROPOSITIONS_LOGIC_TRANSFER_LOGIC_INFORMATION_FROM_RELATION_HOOK = N
 
 Symbol* SYM_PROPOSITIONS_LOGIC_SUBRELATION_LINKp = NULL;
 
+Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_HOLDS = NULL;
+
 Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_MEMBER_OF = NULL;
 
 Keyword* KWD_PROPOSITIONS_DISABLED = NULL;
@@ -11044,15 +11324,11 @@ Symbol* SYM_PROPOSITIONS_LOGIC_EQUIVALENT = NULL;
 
 Symbol* SYM_PROPOSITIONS_PL_KERNEL_KB_HOLDS = NULL;
 
-Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_HOLDS = NULL;
-
 Surrogate* SGT_PROPOSITIONS_STELLA_TABLE = NULL;
 
 Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_POLYMORPHIC = NULL;
 
 Symbol* SYM_PROPOSITIONS_PL_KERNEL_KB_VALUE = NULL;
-
-Symbol* SYM_PROPOSITIONS_PL_KERNEL_KB_CUT = NULL;
 
 Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_VALUE = NULL;
 

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -1094,7 +1094,7 @@ void evaluateAdjacentInequalities(LogicObject* self) {
           }
         }
         if (alwaysP000) {
-          postForEvaluation(dep);
+          postForEvaluation(dep, oCONTEXTo.get());
         }
       }
     }
@@ -1915,47 +1915,22 @@ void inequalityEvaluator(Proposition* self) {
   }
 }
 
-Object* concatenateConstraint(IntegerWrapper* missingArgument, StringWrapper* x1, StringWrapper* x2, StringWrapper* x3) {
-  { Object* value = NULL;
+StringWrapper* stringConcatenateComputation(Object* x, Cons* yargs) {
+  { 
+    BIND_STELLA_SPECIAL(oPRINTMODEo, Keyword*, KWD_ARITHMETIC_ORIGINAL);
+    { OutputStringStream* out = newOutputStringStream();
 
-    switch (missingArgument->wrapperValue) {
-      case -1: 
-        value = (stringEqlP(stringConcatenate(x1->wrapperValue, x2->wrapperValue, 0), x3->wrapperValue) ? TRUE_WRAPPER : FALSE_WRAPPER);
-      break;
-      case 0: 
-        { char* s2 = x2->wrapperValue;
-          char* s3 = x3->wrapperValue;
-          int n = strlen(s3) - strlen(s2);
+      *(out->nativeStream) << pli::objectToString(x);
+      { Object* arg = NULL;
+        Cons* iter000 = yargs;
 
-          if ((n >= 0) &&
-              stringEqlP(stringSubsequence(s3, n, NULL_INTEGER), s2)) {
-            value = wrapString(stringSubsequence(s3, 0, n));
-          }
-          else {
-            value = NULL;
-          }
+        for (arg, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+          arg = iter000->value;
+          *(out->nativeStream) << pli::objectToString(arg);
         }
-      break;
-      case 1: 
-        { char* s1 = x1->wrapperValue;
-          char* s3 = x3->wrapperValue;
-          int l1 = strlen(s1);
-
-          if (stringEqlP(stringSubsequence(s3, 0, l1), s1)) {
-            value = wrapString(stringSubsequence(s3, l1, NULL_INTEGER));
-          }
-          else {
-            value = NULL;
-          }
-        }
-      break;
-      case 2: 
-        value = wrapString(stringConcatenate(x1->wrapperValue, x2->wrapperValue, 0));
-      break;
-      default:
-      break;
+      }
+      return (wrapString(out->theStringReader()));
     }
-    return (value);
   }
 }
 
@@ -2067,7 +2042,7 @@ Keyword* subsequenceSpecialist(ControlFrame* frame, Keyword* lastmove) {
   }
 }
 
-IntegerWrapper* stringMatchComputation(Object* pattern, Object* x, Object* start, Object* end) {
+IntegerWrapper* stringMatchComputationHelper(Object* pattern, Object* x, Object* start, Object* end, boolean ignoreCaseP) {
   if (!(stringP(pattern) &&
       (integerP(start) &&
        integerP(end)))) {
@@ -2077,20 +2052,44 @@ IntegerWrapper* stringMatchComputation(Object* pattern, Object* x, Object* start
     int thestart = ((IntegerWrapper*)(start))->wrapperValue;
     int theend = ((IntegerWrapper*)(end))->wrapperValue;
     char* name = (stringP(x) ? ((StringWrapper*)(x))->wrapperValue : objectNameString(x));
+    int namelength = strlen(name);
     int matchposition = NULL_INTEGER;
 
-    if ((theend >= 0) &&
-        (theend <= strlen(name))) {
-      name = stringSubsequence(name, thestart, theend);
+    if (thestart < 0) {
+      thestart = namelength + thestart + 1;
     }
-    matchposition = stringSearch(name, thepattern, thestart);
-    if (matchposition != NULL_INTEGER) {
+    if (thestart < 0) {
+      return (NULL);
+    }
+    if (theend < 0) {
+      theend = namelength + theend + 1;
+    }
+    if ((theend < 0) ||
+        (theend > namelength)) {
+      return (NULL);
+    }
+    if (ignoreCaseP) {
+      matchposition = stringSearchIgnoreCase(name, thepattern, thestart);
+    }
+    else {
+      matchposition = stringSearch(name, thepattern, thestart);
+    }
+    if ((matchposition != NULL_INTEGER) &&
+        (matchposition < theend)) {
       return (wrapInteger(matchposition));
     }
     else {
       return (NULL);
     }
   }
+}
+
+IntegerWrapper* stringMatchComputation(Object* pattern, Object* x, Object* start, Object* end) {
+  return (stringMatchComputationHelper(pattern, x, start, end, false));
+}
+
+IntegerWrapper* stringMatchIgnoreCaseComputation(Object* pattern, Object* x, Object* start, Object* end) {
+  return (stringMatchComputationHelper(pattern, x, start, end, true));
 }
 
 IntegerWrapper* lengthComputation(Object* x) {
@@ -2137,6 +2136,7 @@ void helpStartupArithmetic1() {
     SGT_ARITHMETIC_STELLA_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-WRAPPER", getStellaModule("/STELLA", true), 1)));
     KWD_ARITHMETIC_FINAL_SUCCESS = ((Keyword*)(internRigidSymbolWrtModule("FINAL-SUCCESS", NULL, 2)));
     KWD_ARITHMETIC_FAILURE = ((Keyword*)(internRigidSymbolWrtModule("FAILURE", NULL, 2)));
+    KWD_ARITHMETIC_ORIGINAL = ((Keyword*)(internRigidSymbolWrtModule("ORIGINAL", NULL, 2)));
     SYM_ARITHMETIC_STELLA_ITERATOR = ((Symbol*)(internRigidSymbolWrtModule("ITERATOR", getStellaModule("/STELLA", true), 0)));
     KWD_ARITHMETIC_CONTINUING_SUCCESS = ((Keyword*)(internRigidSymbolWrtModule("CONTINUING-SUCCESS", NULL, 2)));
     SYM_ARITHMETIC_PL_KERNEL_KB_STARTUP_ARITHMETIC = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-ARITHMETIC", NULL, 0)));
@@ -2205,9 +2205,11 @@ void startupArithmetic() {
       defineFunctionObject("LESS-SPECIALIST-HELPER", "(DEFUN (LESS-SPECIALIST-HELPER KEYWORD) ((FRAME CONTROL-FRAME) (RELATION SURROGATE) (XARG OBJECT) (YARG OBJECT)))", ((cpp_function_code)(&lessSpecialistHelper)), NULL);
       defineFunctionObject("INEQUALITY-SPECIALIST", "(DEFUN (INEQUALITY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&inequalitySpecialist)), NULL);
       defineFunctionObject("INEQUALITY-EVALUATOR", "(DEFUN INEQUALITY-EVALUATOR ((SELF PROPOSITION)))", ((cpp_function_code)(&inequalityEvaluator)), NULL);
-      defineFunctionObject("CONCATENATE-CONSTRAINT", "(DEFUN (CONCATENATE-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 STRING-WRAPPER) (X2 STRING-WRAPPER) (X3 STRING-WRAPPER)))", ((cpp_function_code)(&concatenateConstraint)), NULL);
+      defineFunctionObject("STRING-CONCATENATE-COMPUTATION", "(DEFUN (STRING-CONCATENATE-COMPUTATION STRING-WRAPPER) ((X OBJECT) (YARGS CONS)))", ((cpp_function_code)(&stringConcatenateComputation)), NULL);
       defineFunctionObject("SUBSEQUENCE-SPECIALIST", "(DEFUN (SUBSEQUENCE-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&subsequenceSpecialist)), NULL);
+      defineFunctionObject("STRING-MATCH-COMPUTATION-HELPER", "(DEFUN (STRING-MATCH-COMPUTATION-HELPER INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT) (IGNORE-CASE? BOOLEAN)) :PUBLIC? FALSE)", ((cpp_function_code)(&stringMatchComputationHelper)), NULL);
       defineFunctionObject("STRING-MATCH-COMPUTATION", "(DEFUN (STRING-MATCH-COMPUTATION INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT)))", ((cpp_function_code)(&stringMatchComputation)), NULL);
+      defineFunctionObject("STRING-MATCH-IGNORE-CASE-COMPUTATION", "(DEFUN (STRING-MATCH-IGNORE-CASE-COMPUTATION INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT)))", ((cpp_function_code)(&stringMatchIgnoreCaseComputation)), NULL);
       defineFunctionObject("LENGTH-COMPUTATION", "(DEFUN (LENGTH-COMPUTATION INTEGER-WRAPPER) ((X OBJECT)))", ((cpp_function_code)(&lengthComputation)), NULL);
       defineFunctionObject("STARTUP-ARITHMETIC", "(DEFUN STARTUP-ARITHMETIC () :PUBLIC? TRUE)", ((cpp_function_code)(&startupArithmetic)), NULL);
       { MethodSlot* function = lookupFunction(SYM_ARITHMETIC_PL_KERNEL_KB_STARTUP_ARITHMETIC);
@@ -2218,6 +2220,9 @@ void startupArithmetic() {
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
+    }
+    if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("PL-KERNEL")))));
     }
   }
 }
@@ -2277,6 +2282,8 @@ Surrogate* SGT_ARITHMETIC_STELLA_INTEGER_WRAPPER = NULL;
 Keyword* KWD_ARITHMETIC_FINAL_SUCCESS = NULL;
 
 Keyword* KWD_ARITHMETIC_FAILURE = NULL;
+
+Keyword* KWD_ARITHMETIC_ORIGINAL = NULL;
 
 Symbol* SYM_ARITHMETIC_STELLA_ITERATOR = NULL;
 

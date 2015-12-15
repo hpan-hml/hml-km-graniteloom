@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,17 +56,17 @@ public class _StartupStellaIn {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.KWD_PUBLIC_SLOTS = ((Keyword)(Stella.internRigidSymbolWrtModule("PUBLIC-SLOTS", null, 2)));
-          Stella.KWD_SLOTS = ((Keyword)(Stella.internRigidSymbolWrtModule("SLOTS", null, 2)));
-          Stella.KWD_PUBLIC_METHODS = ((Keyword)(Stella.internRigidSymbolWrtModule("PUBLIC-METHODS", null, 2)));
-          Stella.KWD_METHODS = ((Keyword)(Stella.internRigidSymbolWrtModule("METHODS", null, 2)));
-          Stella.SYM_STELLA_SETTER = ((Symbol)(Stella.internRigidSymbolWrtModule("SETTER", null, 0)));
-          Stella.KWD_SETTERp = ((Keyword)(Stella.internRigidSymbolWrtModule("SETTER?", null, 2)));
-          Stella.SYM_STELLA_DEFAULT_OPTION_HANDLER = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFAULT-OPTION-HANDLER", null, 0)));
-          Stella.SYM_STELLA_STARTUP_STELLA_IN = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-STELLA-IN", null, 0)));
+          Stella.KWD_PUBLIC_SLOTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PUBLIC-SLOTS", null, 2)));
+          Stella.KWD_SLOTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOTS", null, 2)));
+          Stella.KWD_PUBLIC_METHODS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PUBLIC-METHODS", null, 2)));
+          Stella.KWD_METHODS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("METHODS", null, 2)));
+          Stella.SYM_STELLA_SETTER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SETTER", null, 0)));
+          Stella.KWD_SETTERp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SETTER?", null, 2)));
+          Stella.SYM_STELLA_DEFAULT_OPTION_HANDLER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFAULT-OPTION-HANDLER", null, 0)));
+          Stella.SYM_STELLA_STARTUP_STELLA_IN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-STELLA-IN", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
-          Stella.$UNSUPPORTED_EXTERNAL_SLOT_OPTIONS$ = Stella.list(Stella_Object.cons(Stella.KWD_ALLOCATION, Stella_Object.cons(Stella.KWD_INITIALLY, Stella_Object.cons(Stella.KWD_CONTEXT_SENSITIVEp, Stella_Object.cons(Stella.KWD_HARDWIREDp, Stella.NIL)))));
+          Stella.$UNSUPPORTED_EXTERNAL_SLOT_OPTIONS$ = List.list(Cons.cons(Stella.KWD_ALLOCATION, Cons.cons(Stella.KWD_INITIALLY, Cons.cons(Stella.KWD_CONTEXT_SENSITIVEp, Cons.cons(Stella.KWD_HARDWIREDp, Stella.NIL)))));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -117,6 +117,7 @@ public class _StartupStellaIn {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *REDEFINE-IDENTICAL-CLASSES?* BOOLEAN FALSE :DOCUMENTATION \"If `true', always redefine classes, even if an\n                  identical class exists\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *UNSUPPORTED-EXTERNAL-SLOT-OPTIONS* (LIST OF KEYWORD) (LIST :ALLOCATION :INITIALLY :CONTEXT-SENSITIVE? :HARDWIRED?))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEFAULT-OPTION-HANDLER* METHOD-SLOT NULL)");

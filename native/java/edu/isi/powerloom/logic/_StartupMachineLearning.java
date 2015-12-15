@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,24 +52,24 @@ import edu.isi.stella.*;
 public class _StartupMachineLearning {
   static void helpStartupMachineLearning1() {
     {
-      Logic.SGT_LOGIC_TRAINING_EXAMPLE = ((Surrogate)(Stella.internRigidSymbolWrtModule("TRAINING-EXAMPLE", null, 1)));
-      Logic.SYM_LOGIC_CONCEPT = ((Symbol)(Stella.internRigidSymbolWrtModule("CONCEPT", null, 0)));
-      Logic.SYM_STELLA_NAME = ((Symbol)(Stella.internRigidSymbolWrtModule("NAME", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_INPUT_FEATURES = ((Symbol)(Stella.internRigidSymbolWrtModule("INPUT-FEATURES", null, 0)));
-      Logic.SYM_LOGIC_INPUT = ((Symbol)(Stella.internRigidSymbolWrtModule("INPUT", null, 0)));
-      Logic.SYM_LOGIC_FACTS = ((Symbol)(Stella.internRigidSymbolWrtModule("FACTS", null, 0)));
-      Logic.SYM_LOGIC_NN_HIDDEN = ((Symbol)(Stella.internRigidSymbolWrtModule("NN-HIDDEN", null, 0)));
-      Logic.SYM_LOGIC_OUTPUT = ((Symbol)(Stella.internRigidSymbolWrtModule("OUTPUT", null, 0)));
-      Logic.SYM_LOGIC_TEMP = ((Symbol)(Stella.internRigidSymbolWrtModule("TEMP", null, 0)));
-      Logic.SYM_LOGIC_CACHED_SOLUTION = ((Symbol)(Stella.internRigidSymbolWrtModule("CACHED-SOLUTION", null, 0)));
-      Logic.SYM_LOGIC_DEFRELATION = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFRELATION", null, 0)));
-      Logic.SYM_STELLA_THING = ((Symbol)(Stella.internRigidSymbolWrtModule("THING", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_DEFRULE = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFRULE", null, 0)));
-      Logic.SYM_LOGIC_pY = ((Symbol)(Stella.internRigidSymbolWrtModule("?Y", null, 0)));
-      Logic.SYM_STELLA_ge = ((Symbol)(Stella.internRigidSymbolWrtModule(">=", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_STELLA_el = ((Symbol)(Stella.internRigidSymbolWrtModule("=<", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.KWD_IN = ((Keyword)(Stella.internRigidSymbolWrtModule("IN", null, 2)));
-      Logic.SYM_LOGIC_STARTUP_MACHINE_LEARNING = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-MACHINE-LEARNING", null, 0)));
+      Logic.SGT_LOGIC_TRAINING_EXAMPLE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("TRAINING-EXAMPLE", null, 1)));
+      Logic.SYM_LOGIC_CONCEPT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CONCEPT", null, 0)));
+      Logic.SYM_STELLA_NAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NAME", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_INPUT_FEATURES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INPUT-FEATURES", null, 0)));
+      Logic.SYM_LOGIC_INPUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INPUT", null, 0)));
+      Logic.SYM_LOGIC_FACTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FACTS", null, 0)));
+      Logic.SYM_LOGIC_NN_HIDDEN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NN-HIDDEN", null, 0)));
+      Logic.SYM_LOGIC_OUTPUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OUTPUT", null, 0)));
+      Logic.SYM_LOGIC_TEMP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TEMP", null, 0)));
+      Logic.SYM_LOGIC_CACHED_SOLUTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CACHED-SOLUTION", null, 0)));
+      Logic.SYM_LOGIC_DEFRELATION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFRELATION", null, 0)));
+      Logic.SYM_STELLA_THING = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THING", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_DEFRULE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFRULE", null, 0)));
+      Logic.SYM_LOGIC_pY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?Y", null, 0)));
+      Logic.SYM_STELLA_ge = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule(">=", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_STELLA_el = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("=<", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.KWD_IN = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IN", null, 2)));
+      Logic.SYM_LOGIC_STARTUP_MACHINE_LEARNING = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-MACHINE-LEARNING", null, 0)));
     }
   }
 
@@ -135,7 +135,6 @@ public class _StartupMachineLearning {
           Stella.defineFunctionObject("CONSIFY-ARGUMENT", "(DEFUN (CONSIFY-ARGUMENT OBJECT) ((ARG OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "consifyArgument", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
           Stella.defineFunctionObject("PROPOSITION-TO-CONS", "(DEFUN (PROPOSITION-TO-CONS CONS) ((PROP PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "propositionToCons", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("THINGIFY-UNTYPED-INSTANCES", "(DEFUN THINGIFY-UNTYPED-INSTANCES () :COMMAND? TRUE :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "thingifyUntypedInstances", new java.lang.Class [] {}), null);
-          Stella.defineFunctionObject("PRINT-FACTS", "(DEFUN PRINT-FACTS ((INSTANCEREF OBJECT)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "printFacts", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
           Stella.defineFunctionObject("STARTUP-MACHINE-LEARNING", "(DEFUN STARTUP-MACHINE-LEARNING () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic._StartupMachineLearning", "startupMachineLearning", new java.lang.Class [] {}), null);
           { MethodSlot function = Symbol.lookupFunction(Logic.SYM_LOGIC_STARTUP_MACHINE_LEARNING);
 
@@ -147,6 +146,7 @@ public class _StartupMachineLearning {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TRAINING-EXAMPLES* (LIST OF TRAINING-EXAMPLE) (NEW LIST))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TESTING-EXAMPLES* (LIST OF TRAINING-EXAMPLE) (NEW LIST))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CLOSED-WORLD-TRAINING-EXAMPLES* BOOLEAN TRUE)");

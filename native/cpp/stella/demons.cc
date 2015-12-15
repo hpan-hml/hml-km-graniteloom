@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -958,6 +958,13 @@ HookList* oFINALIZE_RELATION_HOOKSo = NULL;
 // a STELLA class.  Return value of TRUE blocks creation.
 HookList* oBLOCK_NATIVE_CLASS_CREATION_HOOKSo = NULL;
 
+// HOOK-LIST of cleanup functions to be called upon exit from
+// the STELLA application or any point where such cleanup is required.  The
+// functions on this list should be highly tolerant of their invocation environment
+// and not assume any special state; that is, they should be no-ops if no special
+// cleanup is required.
+HookList* oSTELLA_EXIT_HOOKSo = NULL;
+
 void helpStartupDemons1() {
   {
     KWD_DEMONS_MODIFY = ((Keyword*)(internRigidSymbolWrtModule("MODIFY", NULL, 2)));
@@ -1023,6 +1030,19 @@ void helpStartupDemons1() {
   }
 }
 
+void helpStartupDemons2() {
+  {
+    oDEMONS_TABLEo = newStringHashTable();
+    oCHANGE_MODULE_HOOKSo = newHookList();
+    oCLEAR_MODULE_HOOKSo = newHookList();
+    oDESTROY_CONTEXT_HOOKSo = newHookList();
+    oREDEFINE_RELATION_HOOKSo = newHookList();
+    oFINALIZE_RELATION_HOOKSo = newHookList();
+    oBLOCK_NATIVE_CLASS_CREATION_HOOKSo = newHookList();
+    oSTELLA_EXIT_HOOKSo = newHookList();
+  }
+}
+
 void startupDemons() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
@@ -1036,13 +1056,7 @@ void startupDemons() {
       SYM_DEMONS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
     }
     if (currentStartupTimePhaseP(4)) {
-      oDEMONS_TABLEo = newStringHashTable();
-      oCHANGE_MODULE_HOOKSo = newHookList();
-      oCLEAR_MODULE_HOOKSo = newHookList();
-      oDESTROY_CONTEXT_HOOKSo = newHookList();
-      oREDEFINE_RELATION_HOOKSo = newHookList();
-      oFINALIZE_RELATION_HOOKSo = newHookList();
-      oBLOCK_NATIVE_CLASS_CREATION_HOOKSo = newHookList();
+      helpStartupDemons2();
     }
     if (currentStartupTimePhaseP(5)) {
       { Class* clasS = defineClassFromStringifiedSource("HOOK-LIST", "(DEFCLASS HOOK-LIST (KEY-VALUE-LIST) :DOCUMENTATION \"Each HOOK-LIST object contains a list of zero or\nmore function codes that get funcall'd some procedure.\" :PARAMETERS ((ANY-KEY :TYPE SYMBOL) (ANY-VALUE :TYPE FUNCTION-CODE-WRAPPER)) :SLOTS ((SIGNATURE :TYPE STRING) (DOCUMENTATION :TYPE STRING)))");
@@ -1096,6 +1110,7 @@ void startupDemons() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEMONS-TABLE* STRING-HASH-TABLE (NEW STRING-HASH-TABLE) :DOCUMENTATION \"Table containing all active and inactive demons, indexed\non their names.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CONSTRUCTOR-DEMONS* (LIST OF DEMON) NULL :DOCUMENTATION \"These demons trigger every time an active instance is created.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DESTRUCTOR-DEMONS* (LIST OF DEMON) NULL :DOCUMENTATION \"These demons trigger every time an active instance is destroyed.\")");
@@ -1107,6 +1122,7 @@ void startupDemons() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *REDEFINE-RELATION-HOOKS* HOOK-LIST (NEW HOOK-LIST) :DOCUMENTATION \"HOOK-LIST is called by `undefine-old-class'.  Each\nhook function is passed a LIST of two RELATION objects; the first is the\nold relation object and the second is the new (redefined) relation object.\nThe hook functions are expected to copy/transfer information from the\nold relation to the new relation so that it won't be lost.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *FINALIZE-RELATION-HOOKS* HOOK-LIST (NEW HOOK-LIST) :DOCUMENTATION \"HOOK-LIST is called by `finalize-one-class'\nand `finalize-local-slot', applied to a RELATION argument.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *BLOCK-NATIVE-CLASS-CREATION-HOOKS* HOOK-LIST (NEW HOOK-LIST) :DOCUMENTATION \"HOOK-LIST called by `create-native-class', applied to\na STELLA class.  Return value of TRUE blocks creation.\")");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-EXIT-HOOKS* HOOK-LIST (NEW HOOK-LIST) :DOCUMENTATION \"HOOK-LIST of cleanup functions to be called upon exit from\nthe STELLA application or any point where such cleanup is required.  The\nfunctions on this list should be highly tolerant of their invocation environment\nand not assume any special state; that is, they should be no-ops if no special\ncleanup is required.\")");
     }
   }
 }

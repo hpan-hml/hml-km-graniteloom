@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -415,22 +415,22 @@ public class DecodedDateTime extends StandardObject {
         int index = 0;
 
         if (date.dateTimeYear != Stella.NULL_INTEGER) {
-          index = Stella.insertString(Native.integerToString(date.dateTimeYear), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
+          index = Stella.insertString(Native.integerToString(((long)(date.dateTimeYear))), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
           if (date.dateTimeMonth != Stella.NULL_INTEGER) {
             index = Stella.insertString("-", 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
-            index = Stella.insertString(Stella.formatWithPadding(Native.integerToString(date.dateTimeMonth), 2, '0', Stella.KWD_RIGHT, false), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
+            index = Stella.insertString(Stella.formatWithPadding(Native.integerToString(((long)(date.dateTimeMonth))), 2, '0', Stella.KWD_RIGHT, false), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
             if (date.dateTimeDay != Stella.NULL_INTEGER) {
               index = Stella.insertString("-", 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
-              index = Stella.insertString(Stella.formatWithPadding(Native.integerToString(date.dateTimeDay), 2, '0', Stella.KWD_RIGHT, false), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
+              index = Stella.insertString(Stella.formatWithPadding(Native.integerToString(((long)(date.dateTimeDay))), 2, '0', Stella.KWD_RIGHT, false), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
               if (date.dateTimeHour != Stella.NULL_INTEGER) {
                 index = Stella.insertString("T", 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
-                index = Stella.insertString(Stella.formatWithPadding(Native.integerToString(date.dateTimeHour), 2, '0', Stella.KWD_RIGHT, false), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
+                index = Stella.insertString(Stella.formatWithPadding(Native.integerToString(((long)(date.dateTimeHour))), 2, '0', Stella.KWD_RIGHT, false), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
                 if (date.dateTimeMinute != Stella.NULL_INTEGER) {
                   index = Stella.insertString(":", 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
-                  index = Stella.insertString(Stella.formatWithPadding(Native.integerToString(date.dateTimeMinute), 2, '0', Stella.KWD_RIGHT, false), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
+                  index = Stella.insertString(Stella.formatWithPadding(Native.integerToString(((long)(date.dateTimeMinute))), 2, '0', Stella.KWD_RIGHT, false), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
                   if (date.dateTimeSecond != Stella.NULL_INTEGER) {
                     index = Stella.insertString(":", 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
-                    index = Stella.insertString(Stella.formatWithPadding(Native.integerToString(date.dateTimeSecond), 2, '0', Stella.KWD_RIGHT, false), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
+                    index = Stella.insertString(Stella.formatWithPadding(Native.integerToString(((long)(date.dateTimeSecond))), 2, '0', Stella.KWD_RIGHT, false), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
                   }
                 }
                 if (date.dateTimeZone != Stella.NULL_FLOAT) {
@@ -438,7 +438,7 @@ public class DecodedDateTime extends StandardObject {
                     index = Stella.insertString("Z", 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
                   }
                   else {
-                    index = Stella.insertString(Stella.timeZoneFormat60(date.dateTimeZone), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
+                    index = Stella.insertString(Stella.timeZoneFormat60(date.dateTimeZone, true), 0, Stella.NULL_INTEGER, buffer, index, Stella.KWD_PRESERVE);
                   }
                 }
               }

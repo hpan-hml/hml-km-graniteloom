@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,9 +56,9 @@ public class _StartupTypePredicates {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.SGT_STELLA_UNKNOWN = ((Surrogate)(Stella.internRigidSymbolWrtModule("UNKNOWN", null, 1)));
-          Stella.SGT_STELLA_WRAPPER = ((Surrogate)(Stella.internRigidSymbolWrtModule("WRAPPER", null, 1)));
-          Stella.SYM_STELLA_STARTUP_TYPE_PREDICATES = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-TYPE-PREDICATES", null, 0)));
+          Stella.SGT_STELLA_UNKNOWN = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("UNKNOWN", null, 1)));
+          Stella.SGT_STELLA_WRAPPER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAPPER", null, 1)));
+          Stella.SYM_STELLA_STARTUP_TYPE_PREDICATES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-TYPE-PREDICATES", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -71,6 +71,8 @@ public class _StartupTypePredicates {
           Stella.defineFunctionObject("SUBTYPE-OF-BOOLEAN?", "(DEFUN (SUBTYPE-OF-BOOLEAN? BOOLEAN) ((TYPE TYPE)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Surrogate", "subtypeOfBooleanP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate")}), null);
           Stella.defineFunctionObject("INTEGER?", "(DEFUN (INTEGER? BOOLEAN) ((X OBJECT)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "integerP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
           Stella.defineFunctionObject("SUBTYPE-OF-INTEGER?", "(DEFUN (SUBTYPE-OF-INTEGER? BOOLEAN) ((TYPE TYPE)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Surrogate", "subtypeOfIntegerP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate")}), null);
+          Stella.defineFunctionObject("LONG-INTEGER?", "(DEFUN (LONG-INTEGER? BOOLEAN) ((X OBJECT)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "longIntegerP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+          Stella.defineFunctionObject("SUBTYPE-OF-LONG-INTEGER?", "(DEFUN (SUBTYPE-OF-LONG-INTEGER? BOOLEAN) ((TYPE TYPE)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Surrogate", "subtypeOfLongIntegerP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate")}), null);
           Stella.defineFunctionObject("FLOAT?", "(DEFUN (FLOAT? BOOLEAN) ((X OBJECT)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "floatP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
           Stella.defineFunctionObject("SUBTYPE-OF-FLOAT?", "(DEFUN (SUBTYPE-OF-FLOAT? BOOLEAN) ((TYPE TYPE)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Surrogate", "subtypeOfFloatP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate")}), null);
           Stella.defineFunctionObject("STRING?", "(DEFUN (STRING? BOOLEAN) ((X OBJECT)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "stringP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
@@ -116,6 +118,7 @@ public class _StartupTypePredicates {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CLASS-HIERARCHY-BOOTED?* BOOLEAN FALSE)");
         }
 

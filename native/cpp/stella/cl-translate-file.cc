@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -203,7 +203,7 @@ void clOutputFileHeader(OutputStream* stream, char* file, boolean ensurepackageP
 }
 
 void clOutputEnsurePackageDefinition(OutputStream* stream, char* package) {
-  *(stream->nativeStream) << "(CL:EVAL-WHEN (CL:COMPILE CL:LOAD CL:EVAL)" << std::endl << "  (CL:UNLESS (CL:FIND-PACKAGE \"" << package << "\")" << std::endl << "     (CL:DEFPACKAGE \"" << package << "\" (:USE))))" << std::endl;
+  *(stream->nativeStream) << "(CL:EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)" << std::endl << "  (CL:UNLESS (CL:FIND-PACKAGE \"" << package << "\")" << std::endl << "     (CL:DEFPACKAGE \"" << package << "\" (:USE))))" << std::endl;
 }
 
 void clOutputInPackageDeclaration(OutputStream* stream, char* package) {
@@ -541,7 +541,7 @@ void clOutputSystemClStructsFile(List* classunits) {
 
 void clTranslateSystem(char* systemName) {
   // Translate a Stella system named `system-name' to Common Lisp.
-  translateSystem(systemName, KWD_CL_TRANSLATE_FILE_COMMON_LISP, 6, KWD_CL_TRANSLATE_FILE_TWO_PASSp, TRUE_WRAPPER, KWD_CL_TRANSLATE_FILE_FORCE_TRANSLATIONp, TRUE_WRAPPER, KWD_CL_TRANSLATE_FILE_PRODUCTION_SETTINGSp, TRUE_WRAPPER);
+  translateSystem(systemName, consList(7, KWD_CL_TRANSLATE_FILE_COMMON_LISP, KWD_CL_TRANSLATE_FILE_TWO_PASSp, TRUE_WRAPPER, KWD_CL_TRANSLATE_FILE_FORCE_TRANSLATIONp, TRUE_WRAPPER, KWD_CL_TRANSLATE_FILE_PRODUCTION_SETTINGSp, TRUE_WRAPPER));
 }
 
 boolean clCompileAndLoadFiles(Cons* files, boolean relativeP, boolean forcerecompilationP) {
@@ -554,11 +554,11 @@ boolean clCompileAndLoadFiles(Cons* files, boolean relativeP, boolean forcerecom
 }
 
 void clTranslateStella(boolean productionsettingsP) {
-  translateSystem("stella", KWD_CL_TRANSLATE_FILE_COMMON_LISP, 4, KWD_CL_TRANSLATE_FILE_FORCE_TRANSLATIONp, TRUE_WRAPPER, KWD_CL_TRANSLATE_FILE_PRODUCTION_SETTINGSp, (productionsettingsP ? TRUE_WRAPPER : FALSE_WRAPPER));
+  translateSystem("stella", consList(5, KWD_CL_TRANSLATE_FILE_COMMON_LISP, KWD_CL_TRANSLATE_FILE_FORCE_TRANSLATIONp, TRUE_WRAPPER, KWD_CL_TRANSLATE_FILE_PRODUCTION_SETTINGSp, (productionsettingsP ? TRUE_WRAPPER : FALSE_WRAPPER)));
 }
 
 void clRetranslateStella(boolean productionsettingsP) {
-  translateSystem("stella", KWD_CL_TRANSLATE_FILE_COMMON_LISP, 6, KWD_CL_TRANSLATE_FILE_TWO_PASSp, TRUE_WRAPPER, KWD_CL_TRANSLATE_FILE_FORCE_TRANSLATIONp, TRUE_WRAPPER, KWD_CL_TRANSLATE_FILE_PRODUCTION_SETTINGSp, (productionsettingsP ? TRUE_WRAPPER : FALSE_WRAPPER));
+  translateSystem("stella", consList(7, KWD_CL_TRANSLATE_FILE_COMMON_LISP, KWD_CL_TRANSLATE_FILE_TWO_PASSp, TRUE_WRAPPER, KWD_CL_TRANSLATE_FILE_FORCE_TRANSLATIONp, TRUE_WRAPPER, KWD_CL_TRANSLATE_FILE_PRODUCTION_SETTINGSp, (productionsettingsP ? TRUE_WRAPPER : FALSE_WRAPPER)));
 }
 
 void startupClTranslateFile() {
@@ -614,6 +614,9 @@ void startupClTranslateFile() {
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
+    }
+    if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("STELLA")))));
     }
   }
 }

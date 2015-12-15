@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -123,7 +123,7 @@ public class Module extends Context {
                     { Module c000 = ((Module)(c));
 
                       if (c000.uses.emptyP()) {
-                        c000.uses = Stella.list(Stella_Object.cons(c000, Stella.NIL));
+                        c000.uses = List.list(Cons.cons(c000, Stella.NIL));
                       }
                       Module.finalizeModule(c000);
                     }
@@ -353,7 +353,7 @@ public class Module extends Context {
         Stella_Object.describeTersely(self, stream);
       }
       else if (mode == Stella.KWD_VERBOSE) {
-        Cons.prettyPrintDefinitionTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMODULE, Stella_Object.cons(StringWrapper.wrapString(self.moduleName), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_INCLUDES, Stella_Object.cons(self.parentModules, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_USES, Stella_Object.cons(self.uses, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_SHADOWS, Stella_Object.cons(self.shadowedSurrogates(), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_gg_INFERRED_SLOTS, Stella_Object.cons(Stella.KWD_CHILDREN, Stella_Object.cons(self.childContexts, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_USED_BY, Stella_Object.cons(self.usedBy, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_CARDINAL_MODULE, Stella_Object.cons(self.cardinalModule, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL))))), Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), stream);
+        Cons.prettyPrintDefinitionTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMODULE, Cons.cons(StringWrapper.wrapString(self.moduleName), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_INCLUDES, Cons.cons(self.parentModules, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_USES, Cons.cons(self.uses, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_SHADOWS, Cons.cons(self.shadowedSurrogates(), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_gg_INFERRED_SLOTS, Cons.cons(Stella.KWD_CHILDREN, Cons.cons(self.childContexts, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_USED_BY, Cons.cons(self.usedBy, Cons.cons(Cons.list$(Cons.cons(Stella.KWD_CARDINAL_MODULE, Cons.cons(self.cardinalModule, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL))))), Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), stream);
       }
       else {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -400,13 +400,13 @@ public class Module extends Context {
   public static Cons helpMemoizeVisibleModules(Module from) {
     { Cons visiblemodules = Stella.NIL;
 
-      visiblemodules = Stella_Object.cons(from, visiblemodules);
+      visiblemodules = Cons.cons(from, visiblemodules);
       { Context renamed_Super = null;
         Cons iter000 = from.allSuperContexts;
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           renamed_Super = ((Context)(iter000.value));
-          visiblemodules = Stella_Object.cons(renamed_Super, visiblemodules);
+          visiblemodules = Cons.cons(renamed_Super, visiblemodules);
         }
       }
       { Module usee = null;
@@ -415,7 +415,7 @@ public class Module extends Context {
         for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
           usee = ((Module)(iter001.value));
           if (!visiblemodules.membP(usee)) {
-            visiblemodules = Stella_Object.cons(usee, visiblemodules);
+            visiblemodules = Cons.cons(usee, visiblemodules);
           }
           { Context useesuper = null;
             Cons iter002 = usee.allSuperContexts;
@@ -423,7 +423,7 @@ public class Module extends Context {
             for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
               useesuper = ((Context)(iter002.value));
               if (!visiblemodules.membP(useesuper)) {
-                visiblemodules = Stella_Object.cons(useesuper, visiblemodules);
+                visiblemodules = Cons.cons(useesuper, visiblemodules);
               }
             }
           }
@@ -483,13 +483,13 @@ public class Module extends Context {
   public static Iterator allIncludedModules(Module self) {
     { Cons copy = Cons.copyConsList(((Cons)(self.allSuperContexts)));
 
-      copy = Stella_Object.cons(self, copy);
+      copy = Cons.cons(self, copy);
       return (copy.reverse().allocateDestructiveListIterator());
     }
   }
 
   public static Cons yieldDefineModule(Module module) {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINE_MODULE_FROM_STRINGIFIED_SOURCE, Stella_Object.cons(StringWrapper.wrapString(module.moduleFullName), Stella_Object.cons(Stella_Object.cons(Stella.yieldStringConstantTree(module.stringifiedOptions), Stella.NIL), Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINE_MODULE_FROM_STRINGIFIED_SOURCE, Cons.cons(StringWrapper.wrapString(module.moduleFullName), Cons.cons(Cons.cons(Stella.yieldStringConstantTree(module.stringifiedOptions), Stella.NIL), Stella.NIL)))));
   }
 
   public static boolean identicalModuleStructureP(Module oldmodule, Module newmodule, String newoptions) {
@@ -588,17 +588,17 @@ public class Module extends Context {
                 newvalue = newplist.lookup(option);
                 if (!(Stella_Object.eqlP(oldvalue, newvalue))) {
                   if (newvalue != null) {
-                    changedValues = Stella_Object.cons(newvalue, changedValues);
+                    changedValues = Cons.cons(newvalue, changedValues);
                   }
                   else {
                     {
                       if (newmodule == null) {
                         newmodule = Module.newModule();
                       }
-                      changedValues = Stella_Object.cons(StandardObject.readSlotValue(newmodule, Surrogate.lookupSlotFromOptionKeyword(newmodule.primaryType(), option)), changedValues);
+                      changedValues = Cons.cons(StandardObject.readSlotValue(newmodule, Surrogate.lookupSlotFromOptionKeyword(newmodule.primaryType(), option)), changedValues);
                     }
                   }
-                  changedValues = Stella_Object.cons(option, changedValues);
+                  changedValues = Cons.cons(option, changedValues);
                 }
               }
             }
@@ -1188,7 +1188,7 @@ public class Module extends Context {
         { Module onlyparent = ((Module)(module.parentModules.first()));
 
           if (onlyparent != null) {
-            module.allSuperContexts = Stella_Object.cons(onlyparent, onlyparent.allSuperContexts);
+            module.allSuperContexts = Cons.cons(onlyparent, onlyparent.allSuperContexts);
             return;
           }
         }
@@ -1213,7 +1213,7 @@ public class Module extends Context {
                 if (!allsupercontexts.memberP(ancestor)) {
                   if (collect000 == null) {
                     {
-                      collect000 = Stella_Object.cons(ancestor, Stella.NIL);
+                      collect000 = Cons.cons(ancestor, Stella.NIL);
                       if (sublist == Stella.NIL) {
                         sublist = collect000;
                       }
@@ -1224,14 +1224,14 @@ public class Module extends Context {
                   }
                   else {
                     {
-                      collect000.rest = Stella_Object.cons(ancestor, Stella.NIL);
+                      collect000.rest = Cons.cons(ancestor, Stella.NIL);
                       collect000 = collect000.rest;
                     }
                   }
                 }
               }
             }
-            sublist = Stella_Object.cons(parent, sublist);
+            sublist = Cons.cons(parent, sublist);
             allsupercontexts = sublist.concatenate(allsupercontexts, Stella.NIL);
           }
         }
@@ -1246,6 +1246,7 @@ public class Module extends Context {
       return;
     }
     { List parents = self.parentModules;
+      boolean recomputefullnameP = false;
 
       { Module supermodule = null;
         Cons iter000 = parents.theConsList;
@@ -1260,11 +1261,16 @@ public class Module extends Context {
               if (!(othersupermodule == supermodule)) {
                 if (supermodule.allSuperContexts.memberP(othersupermodule)) {
                   parents.remove(othersupermodule);
+                  othersupermodule.childContexts.remove(self);
+                  recomputefullnameP = true;
                 }
               }
             }
           }
         }
+      }
+      if (recomputefullnameP) {
+        self.moduleFullName = Stella.computeFullName("", self);
       }
     }
   }
@@ -1371,7 +1377,7 @@ public class Module extends Context {
                (!MethodSlot.methodContainsUnknownTypeP(method)))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(method, Stella.NIL);
+                collect000 = Cons.cons(method, Stella.NIL);
                 if (undefinedmethods == Stella.NIL) {
                   undefinedmethods = collect000;
                 }
@@ -1382,7 +1388,7 @@ public class Module extends Context {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(method, Stella.NIL);
+                collect000.rest = Cons.cons(method, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -1398,7 +1404,7 @@ public class Module extends Context {
           if (((BooleanWrapper)(KeyValueList.dynamicSlotValue(function.dynamicSlots, Stella.SYM_STELLA_FORWARD_DECLARATIONp, Stella.FALSE_WRAPPER))).wrapperValue) {
             if (collect001 == null) {
               {
-                collect001 = Stella_Object.cons(function, Stella.NIL);
+                collect001 = Cons.cons(function, Stella.NIL);
                 if (undefinedmethods == Stella.NIL) {
                   undefinedmethods = collect001;
                 }
@@ -1409,7 +1415,7 @@ public class Module extends Context {
             }
             else {
               {
-                collect001.rest = Stella_Object.cons(function, Stella.NIL);
+                collect001.rest = Cons.cons(function, Stella.NIL);
                 collect001 = collect001.rest;
               }
             }

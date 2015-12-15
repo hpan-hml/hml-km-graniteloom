@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -135,6 +135,7 @@ public abstract class Slot extends PolymorphicRelation {
 
         try {
           Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+          Stella.signalTranslationNote();
           if (!(Stella.suppressWarningsP())) {
             Stella.printErrorContext(">> NOTE: ", Stella.STANDARD_OUTPUT);
             {
@@ -154,7 +155,7 @@ public abstract class Slot extends PolymorphicRelation {
     }
     if (MethodSlot.passVariableArgumentsAsListP(((MethodSlot)(Stella.$METHODBEINGWALKED$.get())))) {
       if (self.slotName == Stella.SYM_STELLA_LENGTH) {
-        return (Stella_Object.sysTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Stella_Object.cons(StandardObject.typeSpecToBaseType(MethodSlot.yieldListifiedVariableArgumentsType(((MethodSlot)(Stella.$METHODBEINGWALKED$.get())))), Stella_Object.cons(tree.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella.SGT_STELLA_INTEGER, MV_returnarray));
+        return (Stella_Object.sysTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Cons.cons(StandardObject.typeSpecToBaseType(MethodSlot.yieldListifiedVariableArgumentsType(((MethodSlot)(Stella.$METHODBEINGWALKED$.get())))), Cons.cons(tree.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella.SGT_STELLA_INTEGER, MV_returnarray));
       }
       else {
         return (self.finishWalkingCallSlotTree(tree, firstargtype, MV_returnarray));
@@ -181,7 +182,7 @@ public abstract class Slot extends PolymorphicRelation {
   }
 
   public static Cons yieldFixedSlotValueSetterTree(Slot slot, Stella_Object objectref, Stella_Object valuetree) {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_SLOT_VALUE_SETTER, Stella_Object.cons(slot.slotOwner, Stella_Object.cons(Stella_Object.cons(slot.slotName, Stella_Object.cons(objectref, Stella_Object.cons(Stella_Object.walkExpressionTree(valuetree, slot.type(), Stella.SYM_STELLA_SLOT_VALUE_SETTER, false, new Object[1]), Stella.NIL))), Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_SLOT_VALUE_SETTER, Cons.cons(slot.slotOwner, Cons.cons(Cons.cons(slot.slotName, Cons.cons(objectref, Cons.cons(Stella_Object.walkExpressionTree(valuetree, slot.type(), Stella.SYM_STELLA_SLOT_VALUE_SETTER, false, new Object[1]), Stella.NIL))), Stella.NIL)))));
   }
 
   public static Stella_Object sysTreeIfNeeded(Slot slot, Stella_Object tree, StandardObject firstargtype, StandardObject returntype, Object [] MV_returnarray) {
@@ -740,7 +741,7 @@ public abstract class Slot extends PolymorphicRelation {
       }
       else {
         ownerclass.classLocalSlots.substitute(newslot, oldslot);
-        HookList.runHooks(Stella.$REDEFINE_RELATION_HOOKS$, Stella.list(Stella_Object.cons(oldslot, Stella_Object.cons(newslot, Stella.NIL))));
+        HookList.runHooks(Stella.$REDEFINE_RELATION_HOOKS$, List.list(Cons.cons(oldslot, Cons.cons(newslot, Stella.NIL))));
         oldslot.free();
         Stella_Class.helpUnfinalizeClassSlots(ownerclass);
         return (newslot);

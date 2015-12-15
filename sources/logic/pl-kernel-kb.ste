@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: pl-kernel-kb.ste,v 1.62 2006/05/11 07:05:27 hans Exp
+;;; Version: pl-kernel-kb.ste,v 1.72 2010/09/11 02:20:55 hans Exp
 
 ;;; Support to bootstrap the built-in PL-KERNEL KB that defines a fairly
 ;;; minimal set of mathematical and logical definitions.
@@ -370,8 +370,36 @@ to `?term'.  Retraction eliminates a synonym relation.")
 
 
   ;;
+;;;;;; Skolem functions
+  ;;
+
+(defconcept SKOLEM-FUNCTION (?x FUNCTION)
+  :documentation "Skolem function meta class to annotate user-defined skolem
+functions.  Using this is generally not necessary given the generic `skolem-fn'
+definitiont below."
+  :=>> (total ?x)) ;; generates new skolem for each set of inputs
+
+(deffunction skolem-fn (?id ?args ?sk)
+  :documentation "A generic skolem function that can be instantiated into
+a unique skolem function term by providing an appropriately unique ?id.
+?args are the universally quantfied arguments relative to which we postulate
+the existence of ?sk.  For example, to represent the rule `every person
+has a mother' we could write:
+  (=> (and (person ?x) (skolem-fn $skfn ?x ?m)) (mother ?x ?m)).
+Note the use of the automatic instance `$skfn' to uniquely identify this
+skolem function term.  Any other unique ID could have been used as well."
+  :variable-arity TRUE
+  ;; this would tell the optimizer that all inputs have to be bound, but that
+  ;; prevents us to generate input variables from previously generated skolems:
+  ;:computed TRUE
+  :total TRUE)
+
+
+  ;;
 ;;;;;; Collection-forming functions
   ;;
+
+;;; TO DO: ALLOW `(SETOF)' AND `(LISTOF)' TERMS.
 
 (deffunction collectionof (?m) :-> (?c COLLECTION)
   :documentation "Abstract function existing to subsume 'SETOF'
@@ -382,9 +410,10 @@ and 'LISTOF'."
   :documentation "Term-forming function that defines an enumerated set
 consisting of all function arguments.  `setof' is like `listof' except
 that it removes duplicate values."
-  :axioms (and (subset-of SETOF COLLECTIONOF)
-               (variable-arity SETOF)
-               (total SETOF)))
+  :subset-of collectionof
+  :variable-arity TRUE
+  :total TRUE
+  :closed TRUE)
 
 (deffunction listof (?m) :-> (?c LIST)
   :documentation "Term-forming function that defines an ordered list
@@ -395,9 +424,10 @@ predicate.  For example the query
   (retrieve ?x (member-of ?x (listof a b c)))
 	
 returns the constants `a', `b', and `c' on successive iterations."
-  :axioms (and (subset-of LISTOF COLLECTIONOF)
-               (variable-arity LISTOF)
-               (total LISTOF)))
+  :subset-of collectionof
+  :variable-arity TRUE
+  :total TRUE
+  :closed TRUE)
 
 
   ;;
@@ -429,7 +459,9 @@ relates `Fred' to that relation."
 yields the value '?value'.  The `value' predicate is the analog
 of `holds', except that it applies to functions instead of relations."
   :axioms (and (variable-arity VALUE)
-               (relation-specialist VALUE value-specialist)))
+               ;; VALUE-SPECIALIST doesn't exist yet!
+               ; (relation-specialist VALUE value-specialist)
+               ))
 
 (defrelation IST ((?context CONTEXT) (?p PROPOSITION))
   :documentation "True if proposition '?p' is true in context '?context'.
@@ -448,6 +480,32 @@ a rule that accesses a `patient-record' relation in a module called
 "
   :axioms (and (relation-specialist IST IST-specialist)
                (handles-reverse-polarity IST-specialist)))
+
+;;; Accessors to deconstruct propositions:
+
+(deffunction proposition-relation ((?p PROPOSITION) (?op RELATION))
+  :documentation "Return the predicate operator ?op of ?p."
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation proposition-relation-computation)
+
+(deffunction proposition-argument ((?p PROPOSITION) (?i INTEGER) ?arg)
+  :documentation "Return the ?i-th ?arg of ?p (zero-based)."
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation proposition-argument-computation)
+
+(deffunction proposition-arguments ((?p PROPOSITION) (?args LIST))
+  :documentation "Return all arguments of ?p as a list ?args."
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation proposition-arguments-computation)
+
+(deffunction proposition-arity ((?p PROPOSITION) (?arity INTEGER))
+  :documentation "Return the number of arguments in ?p."
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation proposition-arity-computation)
 
 
   ;;
@@ -483,8 +541,8 @@ an example that uses `bound-variables'."
   :axioms (relation-specialist FORK fork-specialist))
 
 (defrelation QUERY ((?prop PROPOSITION) ?options)
-  :documentation "EXPERIMENTAL search-control relation that allows one to prove
-or retrieve bindings for ?prop with modified search control ?options.  The list
+  :documentation "Search-control relation that allows one to prove or
+retrieve bindings for ?prop with modified search control ?options.  The list
 of accepted ?options is currently the same as are legal for a top-level `ask'
 or `retrieve' query.  The special option value :INHERIT inherits the option
 value from the parent or top-level query.  The option pair :INHERIT :ALL
@@ -498,6 +556,36 @@ generated eagerly, therefore, a default of generating all solutions is not
 desirable."
   :variable-arity TRUE
   :relation-specialist query-specialist)
+
+(defrelation ASSERTION-QUERY ((?prop PROPOSITION))
+  :documentation "Query ?prop with :inference-level set to :assertion.
+Equivalent to `(query ?prop :inference-level :assertion)' but more efficient."
+  :relation-specialist leveled-query-specialist)
+
+(defrelation SHALLOW-QUERY ((?prop PROPOSITION))
+  :documentation "Query ?prop with :inference-level set to :shallow.
+Equivalent to `(query ?prop :inference-level :shallow)' but more efficient."
+  :relation-specialist leveled-query-specialist)
+
+(defrelation SUBSUMPTION-QUERY ((?prop PROPOSITION))
+  :documentation "Query ?prop with :inference-level set to :subsumption.
+Equivalent to `(query ?prop :inference-level :subsumption)' but more efficient."
+  :relation-specialist leveled-query-specialist)
+
+(defrelation BACKTRACKING-QUERY ((?prop PROPOSITION))
+  :documentation "Query ?prop with :inference-level set to :backtracking.
+Equivalent to `(query ?prop :inference-level :backtracking)' but more efficient."
+  :relation-specialist leveled-query-specialist)
+
+(defrelation NORMAL-QUERY ((?prop PROPOSITION))
+  :documentation "Query ?prop with :inference-level set to :normal.
+Equivalent to `(query ?prop :inference-level :normal)' but more efficient."
+  :relation-specialist leveled-query-specialist)
+
+(defrelation REFUTATION-QUERY ((?prop PROPOSITION))
+  :documentation "Query ?prop with :inference-level set to :refutation.
+Equivalent to `(query ?prop :inference-level :refutation)' but more efficient."
+  :relation-specialist leveled-query-specialist)
 
      
   ;;
@@ -529,8 +617,7 @@ be used to generate concept values of ?c, given an instance ?x."
 
 (defrelation type-of ((?c COLLECTION) (?x THING))
   :documentation "True if ?x is a member of the concept ?c."
-  :<<=>> (instance-of ?x ?c)
-  :axioms (inverse instance-of type-of))
+  :inverse instance-of)
 
 (defrelation subset-of ((?sub COLLECTION) (?super COLLECTION))
   :documentation "True if ?sub is a subset of ?super.  For performance
@@ -610,8 +697,11 @@ proof strategy which returns TRUE if `Fred' cannot be proved to be happy.
 Also, if the relation `children' is closed, then a value for the expression
 `(range-max-cardinality children Fred)' can be inferred merely by
 counting the number of fillers of the `children' role on `Fred'."
-  :axioms (and (handles-reverse-polarity closed-specialist)
-               (relation-specialist CLOSED closed-specialist)))
+  ;; this is too strong, we might not be able to determine whether something
+  ;; is closed, but that doesn't necessarily mean that it is not closed:
+  ;:closed TRUE
+  :relation-specialist closed-specialist
+  :axioms (handles-reverse-polarity closed-specialist))
 
 (defrelation empty ((?c COLLECTION))
   :documentation "The collection ?c is empty if it has no members.  Note
@@ -649,6 +739,8 @@ corresponding set of role fillers."
 ;                   (the-roleset ?superR ?i ?superRS)
 ;                   (subset-of ?subR ?superR))
 ;              (subset-of ?subRS ?superRS))
+  ;; DOES THIS GENERATE TOO MANY ROLESETS? -- tar 9/2006
+;  :<=  (and (closed ?r) (fillers ?r ?i ?rs))
   )
 
 (deffunction fillers ((?r RELATION) ?i) :-> (?members SET)
@@ -668,9 +760,9 @@ intensional fillers such as skolems that might be identical extensionally."
   :documentation "A frame predicate is a second-order relation that
 is used to describe constraints on the set of fillers for a binary
 relation applied to an instance.  Examples of frame predicates are
-`range-cardinality', `range-type', and `numeric-minimum'.  Frame predicates
-are typically used to capture the kinds of relations manipulated
-by description logic systems such as USC/ISI's Loom system.")
+`range-cardinality', `range-type', and `numeric-inclusive-minimum'.
+Frame predicates are typically used to capture the kinds of relations
+manipulated by description logics such as USC/ISI's Loom and W3C's OWL.")
   
 ;; THIS REALLY NEEDS A SPECIALIST TO COMPUTE A MOST SPECIFIC TYPE:
 (defrelation range-type ((?r RELATION) ?i (?type COLLECTION))
@@ -787,7 +879,8 @@ cardinality of the set of fillers of the relation ?r applied to ?i.
                      )))
             ?minCard))
   :axioms (and (frame-predicate RANGE-MIN-CARDINALITY)
-               #|(computed RANGE-MIN-CARDINALITY)
+               #| 
+               (computed RANGE-MIN-CARDINALITY)
                ;; NOT SURE IF WE NEED A SPECIALIST HERE: -rmm
                (relation-specialist
                 RANGE-MIN-CARDINALITY range-min-cardinality-specialist)
@@ -832,6 +925,15 @@ cardinality of the set of fillers of the relation ?r applied to ?i.
                 |#
                ))
 
+(defrelation qualified-range-cardinality-lower-bound ((?r RELATION) ?i (?q COLLECTION) (?lb INTEGER))
+  :documentation "Lower bound on range cardinality for qualified cardinality restrictions.  Like `range-cardinality-lower-bound'.  NOT IMPLEMENTED YET!"
+  )
+
+(defrelation qualified-range-cardinality-upper-bound ((?r RELATION) ?i (?q COLLECTION) (?ub INTEGER))
+  :documentation "Upper bound on range cardinality for qualified cardinality restrictions.  Like `range-cardinality-upper-bound'.  NOT IMPLEMENTED YET!"
+  )
+
+
 (deffunction qualified-range-min-cardinality ((?r RELATION) ?i (?q COLLECTION))
   :-> (?card INTEGER)
   :documentation "Function that returns the minimum cardinality of the set of
@@ -873,6 +975,11 @@ compute a tight bound.  NOT YET IMPLEMENTED."
 the range of allowable numeric values for its members."
   :=>> (SCALAR-INTERVAL ?interval))
 
+(deffunction interval-cache-of (?x) :-> (?b INTERVAL-CACHE)
+  :documentation "Binds an instance ?x of type NUMBER or QUANTITY to a 
+structure that records its tightest lower and upper bounds."
+  :axioms (hidden-relation INTERVAL-CACHE-OF))
+
 (defrelation numeric-minimum ((?r RELATION) ?i (?n NUMBER))
   :documentation "Relation that specifies a lower bound '?n' on any numeric
 value that can belong to the set of fillers of the relation ?r applied to ?i."
@@ -885,10 +992,72 @@ value that can belong to the set of fillers of the relation ?r applied to ?i."
   :<<=>> (=< (interval-upper-bound (numeric-interval (the-roleset ?r ?i))) ?n)
   :axioms (frame-predicate numeric-maximum))
 
-(deffunction interval-cache-of (?x) :-> (?b INTERVAL-CACHE)
-  :documentation "Binds an instance ?x of type NUMBER or QUANTITY to a 
-structure that records its tightest lower and upper bounds."
-  :axioms (hidden-relation INTERVAL-CACHE-OF))
+#|
+(defrelation numeric-inclusive-lower-bound ((?r RELATION) ?i (?n NUMBER))
+  :documentation "Relation that specifies an inclusive lower bound '?n' on any numeric
+value that can belong to the set of fillers of the relation ?r applied to ?i."
+  :<<=>> (>= (interval-lower-bound (numeric-interval (the-roleset ?r ?i))) ?n)
+  :=>> (=> (holds ?r ?i ?x) (>= ?x ?n))
+  :axioms (frame-predicate numeric-inclusive-lower-bound))
+
+(defrelation numeric-exclusive-lower-bound ((?r RELATION) ?i (?n NUMBER))
+  :documentation "Relation that specifies an exclusive lower bound '?n' on any numeric
+value that can belong to the set of fillers of the relation ?r applied to ?i."
+  :<<=>> (> (interval-lower-bound (numeric-interval (the-roleset ?r ?i))) ?n)
+  :=>> (=> (holds ?r ?i ?x) (> ?x ?n))
+  :axioms (frame-predicate numeric-exclusive-lower-bound))
+
+(defrelation numeric-inclusive-upper-bound ((?r RELATION) ?i (?n NUMBER))
+  :documentation "Relation that specifies an inclusive upper bound '?n' on any numeric
+value that can belong to the set of fillers of the relation ?r applied to ?i."
+  :<<=>> (=< (interval-upper-bound (numeric-interval (the-roleset ?r ?i))) ?n)
+  :=>> (=> (holds ?r ?i ?x) (=< ?x ?n))
+  :axioms (frame-predicate numeric-inclusive-upper-bound))
+
+(defrelation numeric-exclusive-upper-bound ((?r RELATION) ?i (?n NUMBER))
+  :documentation "Relation that specifies an exclusive upper bound '?n' on any numeric
+value that can belong to the set of fillers of the relation ?r applied to ?i."
+  :<<=>> (=< (interval-upper-bound (numeric-interval (the-roleset ?r ?i))) ?n)
+  :=>> (=> (holds ?r ?i ?x) (< ?x ?n))
+  :axioms (frame-predicate numeric-exclusive-upper-bound))
+
+(deffunction numeric-inclusive-minimum ((?r RELATION) ?i (?n NUMBER))
+  :documentation "Function that returns the highest inclusive lower bound '?n' on any numeric
+value that can belong to the set of fillers of the relation ?r applied to ?i.
+Should be treated as a read-only relation.  
+See the discussion of `range-cardinality-lower-bound'."
+  :<= (maximum-value (collect-into-set 
+                      (setofall (?x) (numeric-inclusive-lower-bound ?r ?i ?x))) ?n)
+  :axioms (frame-predicate numeric-inclusive-minimum))
+
+(deffunction numeric-exclusive-minimum ((?r RELATION) ?i (?n NUMBER))
+  :documentation "Function that returns the highest exclusive lower bound '?n' on any numeric
+value that can belong to the set of fillers of the relation ?r applied to ?i.
+Should be treated as a read-only relation.  
+See the discussion of `range-cardinality-lower-bound'."
+  :<= (maximum-value (collect-into-set
+                      (setofall (?x) (numeric-exclusive-lower-bound ?r ?i ?x))) ?n)
+  :axioms (frame-predicate numeric-exclusive-minimum))
+
+(deffunction numeric-inclusive-maximum ((?r RELATION) ?i (?n NUMBER))
+  :documentation "Function that returns the highest inclusive lower bound '?n' on any numeric
+value that can belong to the set of fillers of the relation ?r applied to ?i.
+Should be treated as a read-only relation.  
+See the discussion of `range-cardinality-lower-bound'."
+  :<= (minimum-value (collect-into-set
+                      (setofall (?x) (numeric-inclusive-upper-bound ?r ?i ?x))) ?n)
+  :axioms (frame-predicate numeric-inclusive-maximum))
+
+(deffunction numeric-exclusive-maximum ((?r RELATION) ?i (?n NUMBER))
+  :documentation "Function that returns the highest exclusive lower bound '?n' on any numeric
+value that can belong to the set of fillers of the relation ?r applied to ?i.
+Should be treated as a read-only relation.  
+See the discussion of `range-cardinality-lower-bound'."
+  :<= (minimum-value (collect-into-set
+                      (setofall (?x) (numeric-exclusive-upper-bound ?r ?i ?x))) ?n)
+  :axioms (frame-predicate numeric-exclusive-maximum))
+
+|#
 
 
   ;;
@@ -1012,13 +1181,14 @@ equals ?union."
                (relation-specialist SQUARE-ROOT square-root-specialist)))
 
 
-(defrelation ABSOLUTE-VALUE ((?x NUMBER) (?y NUMBER))
+(deffunction ABSOLUTE-VALUE ((?x NUMBER) (?y NUMBER))
   :documentation "Relation that computes ?y = abs(?x).  If ?x is unbound,
-then both positive and negative values of ?y will be returned."
+then ?x will get both positive and negative values of the 
+magnitude of ?y."
   :axioms (and (computed ABSOLUTE-VALUE)
                (relation-specialist ABSOLUTE-VALUE absolute-value-specialist)))
 
-(defrelation NEGATE ((?x NUMBER) (?y NUMBER))
+(deffunction NEGATE ((?x NUMBER) (?y NUMBER))
   :documentation "Relation that computes ?y = - ?x."
   :axioms (and (computed NEGATE)
 	       (relation-constraint NEGATE negate-constraint)
@@ -1088,7 +1258,7 @@ then both positive and negative values of ?y will be returned."
 collect them into a set ?l.  For example, here is a rule
 used to compute bindings for the `fillers' predicate:
 	 
-  (<= (fillers ?r ?i ?v)
+  (<= (fillers ?r ?i ?members)
       (and (bound-variables ?r ?i)
            (collect-into-set (setofall ?v (holds ?r ?i ?v)) ?members)))
 	
@@ -1097,8 +1267,92 @@ evaluates to a unary relation satisfied for each filler of the relation
 in `?r' applied to the instance in `?i'.  `collect-into-set' causes
 the extension of this (dynamically-defined) unary relation to be
 computed.  Note the use of `bound-variables' to screen out unbound
-variables before they are passed to the `setofall' predicate."
-  :axioms (relation-specialist COLLECT-INTO-SET collect-into-set-specialist))
+variables before they are passed to the `setofall' term."
+  :relation-specialist collect-members-specialist)
+
+(deffunction collect-into-list ((?c COLLECTION)) :-> (?l LIST)
+  :documentation "Infer as many members of ?c as possible and
+collect them into a list ?l.  This is similar to `collect-into-set'
+but collects members in the order they are encountered.  If a member
+is derived multiple times, all occurrences are kept.  This is
+useful, for example, to collect and then sum up number-valued
+attributes of objects."
+  :relation-specialist collect-members-specialist)
+
+(deffunction collect-into-ordered-set ((?c COLLECTION)) :-> (?l LIST)
+  :documentation "This is similar to `collect-into-list', but if a
+member is derived multiple times, only the first occurrence is kept
+- hence, the name, even though ordered sets are represented as lists."
+  :relation-specialist collect-members-specialist)
+
+(deffunction collect-into-ascending-set ((?c COLLECTION) (?sortBy RELATION) (?orderedSet LIST))
+  :documentation "Collect elements of ?c into an ascending ?orderedSet where the position of each
+element is determined by the value computed for it by the ?sortBy relation.  Ordering is done via
+sorting (as opposed to using a comparison relation) similar to the :sort-by option to the `retrieve'
+command.  If ?sortBy is not single-valued, the position of an element is determined by its largest
+?sortBy value.  Note that, similar to other `collect-into-...' functions, ?c can be a named concept,
+a `setofall' or an enumerated collection, and ?sortBy can be a named relation or a `kappa'."
+  :<<= (collect-into-ordered-set
+        (setofall (?element)
+          (exists ?value
+            (query (and (fail (bound-variables ?value)) ;; kludge to get output variable order right
+                        (member-of ?element ?c)
+                        (holds ?sortby ?element ?value))
+                   :how-many :all :sort-by :values-ascending)))
+        ?orderedset)
+  :computed TRUE)
+
+(deffunction collect-into-descending-set ((?c COLLECTION) (?sortBy RELATION) (?orderedSet LIST))
+  :documentation "Collect elements of ?c into a descending ?orderedSet where the position of each
+element is determined by the value computed for it by the ?sortBy relation.  Ordering is done via
+sorting (as opposed to using a comparison relation) similar to the :sort-by option to the `retrieve'
+command.  If ?sortBy is not single-valued, the position of an element is determined by its largest
+?sortBy value.  Note that, similar to other `collect-into-...' functions, ?c can be a named concept,
+a `setofall' or an enumerated collection, and ?sortBy can be a named relation or a `kappa'."
+  :<<= (collect-into-ordered-set
+        (setofall (?element)
+          (exists ?value
+            (query (and (fail (bound-variables ?value)) ;; kludge to get output variable order right
+                        (member-of ?element ?c)
+                        (holds ?sortBy ?element ?value))
+                   :how-many :all :sort-by :values-descending)))
+        ?orderedSet)
+  :computed TRUE)
+
+(defrelation minimum-element ((?c COLLECTION) (?sortBy RELATION) ?element)
+  :documentation "Find those ?element(s) of ?c with the minimum ?sortBy value, for example,
+`(retrieve (minimum-element relation arity ?x))' (see also `collect-into-ascending-set')."
+  :<<= (exists (?orderedSet ?firstElement ?minValue)
+         (and (collect-into-ascending-set ?c ?sortBy ?orderedSet)
+              (nth-element ?orderedSet 0 ?firstElement)
+              (fork (single-valued ?sortBy)
+                    (holds ?sortBy ?firstElement ?minValue)
+                    ;; if we might have multiple ?sortBy values for ?firstElement,
+                    ;; we need another subquery to find the smallest one:
+                    (and (query (holds ?sortBy ?firstElement ?minValue)
+                                :how-many :all :sort-by :values-ascending)
+                         (cut)))
+              (member-of ?element ?orderedSet)
+              (holds ?sortBy ?element ?minValue)))
+  :computed TRUE)
+
+(defrelation maximum-element ((?c COLLECTION) (?sortBy RELATION) ?element)
+  :documentation "Find those ?element(s) of ?c with the maximum ?sortBy value, for example,
+`(retrieve (maximum-element relation arity ?x))' (see also `collect-into-descending-set')."
+  :<<= (exists (?orderedSet ?firstElement ?maxValue)
+         (and (collect-into-descending-set ?c ?sortBy ?orderedSet)
+              (nth-element ?orderedSet 0 ?firstElement)
+              (fork (single-valued ?sortBy)
+                    (holds ?sortBy ?firstElement ?maxValue)
+                    ;; if we might have multiple ?sortBy values for ?firstElement,
+                    ;; we need another subquery to find the largest one:
+                    (and (query (holds ?sortBy ?firstElement ?maxValue)
+                                :how-many :all :sort-by :values-descending)
+                         (cut)))
+              (member-of ?element ?orderedSet)
+              (holds ?sortBy ?element ?maxValue)))
+  :computed TRUE)
+
 
 ;;; TO DO: SHOULD BE REPLACED BY `LENGTH':
 (defrelation length-of-list ((?l COLLECTION) (?length INTEGER))
@@ -1107,6 +1361,76 @@ variables before they are passed to the `setofall' predicate."
                (relation-specialist
                 LENGTH-OF-LIST length-of-list-specialist)
                (single-valued LENGTH-OF-LIST)))
+
+(deffunction nth-element ((?l COLLECTION) (?n INTEGER) (?e THING))
+  :documentation "Return the ?n-th element ?e of ?l (zero-based).
+Count from end of the list if ?n is negative.  If ?n is unbound
+and ?e is bound, this computes the position of ?e.  If both are
+unbound, collection elements and their respective positions will
+be enumerated."
+  :relation-specialist nth-element-specialist)
+
+(deffunction first-element ((?l COLLECTION) (?e THING))
+  :documentation "Return the first element ?e of ?l."
+  :computed TRUE
+  :<=> (nth-element ?l 0 ?e))
+
+(deffunction second-element ((?l COLLECTION) (?e THING))
+  :documentation "Return the second element ?e of ?l."
+  :computed TRUE
+  :<=> (nth-element ?l 1 ?e))
+
+(deffunction third-element ((?l COLLECTION) (?e THING))
+  :documentation "Return the third element ?e of ?l."
+  :computed TRUE
+  :<=> (nth-element ?l 2 ?e))
+
+(deffunction fourth-element ((?l COLLECTION) (?e THING))
+  :documentation "Return the fourth element ?e of ?l."
+  :computed TRUE
+  :<=> (nth-element ?l 3 ?e))
+
+(deffunction fifth-element ((?l COLLECTION) (?e THING))
+  :documentation "Return the fifth element ?e of ?l."
+  :computed TRUE
+  :<=> (nth-element ?l 4 ?e))
+
+(deffunction nth-head ((?l LIST) (?n INTEGER) (?h LIST))
+  :documentation "Return the ?n head elements ?h of ?l.
+Count from end of the list if ?n is negative."
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation nth-head-computation)
+
+(deffunction nth-rest ((?l LIST) (?n INTEGER) (?r LIST))
+  :documentation "Return the ?n-th rest ?r of ?l (zero-based).
+Count from end of the list if ?n is negative."
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation nth-rest-computation)
+
+(deffunction insert-element ((?l LIST) (?n INTEGER) (?e THING) (?r LIST))
+  :documentation "Add ?e at position ?n (zero-based) to ?l to construct ?r
+ (shifts the remaining elements right).  Count from end of the list and shift
+left if ?n is  negative such that -1 inserts at the end of the list, -2 second
+to last, etc."
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation insert-element-computation)
+
+(deffunction list-concatenate ((?x COLLECTION) (?y COLLECTION) (?r LIST))
+  :documentation "Concatenate lists ?x and ?y into ?r.  If ?x and/or ?y
+are not lists but sets or more general collections, the order of the
+elements in the result list ?r will be arbitrary."
+  ;; implement like this for now; if necessary we can generalize this
+  ;; and use a specialist similar to `string-concatenate'.
+  :<<= (COLLECT-INTO-LIST
+        (SETOFALL ?e
+          ;; exploits deterministic nature of PL inference engine:
+          (OR (MEMBER-OF ?e ?x)
+              (MEMBER-OF ?e ?y)))
+        ?r)
+  :computed TRUE)
 
 (defrelation minimum-value ((?l COLLECTION) (?min NUMBER))
   :documentation "Binds ?min to the minimum of the numbers in the list ?l."
@@ -1166,16 +1490,18 @@ of ?c and collect them into a list ?l. "
 ;;;;;; Literal manipulations
   ;;
 
-(deffunction string-concatenate ((?x1 STRING) (?x2 STRING)) :-> (?x3 STRING)
-  :documentation "Concatenate strings ?x1 and ?x2 and bind ?x3 to the result."
-  :axioms (and (computed string-concatenate)
-               (relation-constraint STRING-CONCATENATE concatenate-constraint)
-               (relation-specialist STRING-CONCATENATE constraint-specialist)))
+(deffunction string-concatenate ((?x THING) (?y THING)) :-> (?z STRING)
+  :documentation "Concatenate ?x and zero or more strings ?y (variable arity)
+and bind ?z to the result.  Coerces any type argument to a string if necessary."
+  :variable-arity TRUE
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation string-concatenate-computation)
 
 (deffunction substring ((?s STRING) (?start INTEGER) (?end INTEGER))
   :-> (?sub STRING)
-  :documentation "Generate the substring of ?s starting at position ?start
-(zero-based), ending just before position ?end and bind ?sub to the result.
+  :documentation "Generate the substring of ?s starting at position ?start (zero-based),
+ending just before position ?end and bind ?sub to the result.
 This is the PowerLoom equivalent to the STELLA method `subsequence'.  In
 addition, this function can be used to locate substrings in strings by
 supplying values for ?s and ?sub and allowing ?start and ?end to be
@@ -1189,17 +1515,31 @@ bound by the function specialist.  In other words,
 (deffunction string-match ((?pattern STRING) (?object THING)
                            (?start INTEGER) (?end INTEGER))
   :-> (?match-position INTEGER)
-  :documentation "Match ?pattern against ?object between ?start and ?end
-(zero-based), and return the position of the first match or fail if no
-match exists.  Supplying -1 for ?end indicates the end of ?object.  ?object
-can be a named logic object or a string.  ?pattern will eventually allow
-support regular expressions, currently it only handles string literals.
-Apart from doing to-string coercion on ?object this is somewhat redundant,
-since `substring' can generate ?start/?end pairs if its string and
-substring arguments are bound."
+  :documentation "Match ?pattern against ?object between ?start and ?end (zero-based),
+and return the position of the first match or fail if no match exists.
+Supplying -1 for ?end indicates the end of ?object.  ?object can be a
+named logic object or a string.  ?pattern will eventually allow
+support regular expressions, currently it only handles string
+literals.  Apart from doing to-string coercion on ?object this is
+somewhat redundant, since `substring' can generate ?start/?end pairs
+if its string and substring arguments are bound."
   :axioms (and (computed string-match)
                (relation-computation string-match string-match-computation)
                (relation-specialist string-match computation-specialist)))
+
+(deffunction string-match-ignore-case ((?pattern STRING) (?object THING)
+				       (?start INTEGER) (?end INTEGER))
+  :-> (?match-position INTEGER)
+  :documentation "Match ?pattern against ?object between ?start and ?end (zero-based),
+and return the position of the first match or fail if no match exists.
+Supplying -1 for ?end indicates the end of ?object.  ?object can be a
+named logic object or a string.  This match compares the strings
+ignoring differences in letter case."
+  :axioms (and (computed string-match-ignore-case)
+               (relation-computation string-match-ignore-case 
+                                     string-match-ignore-case-computation)
+               (relation-specialist string-match-ignore-case
+                                    computation-specialist)))
 
 ;;; TO DO: FOLD `LENGTH-OF-LIST' INTO THIS:
 (deffunction LENGTH ((?x THING)) :-> (?z INTEGER)
@@ -1231,11 +1571,12 @@ name, with module prefixes NOT included."
                (relation-specialist object-name
                                     computation-specialist)))
 
-(deffunction name-to-object ((?n STRING)) :-> ?o
+(deffunction name-to-object (?n) :-> ?o
   :documentation "Find or create the PowerLoom logic object ?o named by
 the name ?n in the current module.  We are interpreting the name ?n literally
 here, i.e., it is not a print name as assumed by PLI functions and an object
-with exactly that name will be looked up or created.  We are intentionally
+with exactly that name will be looked up or created.  If ?n is not a string,
+this will coerce it to a string first.  We are intentionally
 using a separate function here (instead of folding this into `object-name'),
 since we might want to be able to look for an object with a certain name
 but not create one if it doesn't exist."
@@ -1299,7 +1640,8 @@ collection object.  The main use for this is to state and test pairwise
 inequalities between N entities without having to generate O(N**2) statements."
   :variable-arity TRUE
   :computed TRUE
-  :relation-specialist different-specialist)
+  :relation-specialist different-specialist
+  :axioms (handles-reverse-polarity different-specialist))
 
 (defrelation ordered ((?c COLLECTION))
   :documentation "?c is ordered if the ordering of its
@@ -1310,14 +1652,17 @@ members is significant.  Lists are ordered, while sets are not.")
 invariant with any permutation of its arguments."
   ;; TO DO: Add a rule or specialist to handle this case.
   ;; Also, should this have a definition for functions as well?
-  :=>> (=> (binary-relation ?r)
-           (symmetric ?r)))
+  :axioms (=>> (and (commutative ?r)
+                    ;; don't use `binary-relation' here, because it can't
+                    ;; be evaluated in shallow inference mode:
+                    (= (arity ?r) 2))
+               (symmetric ?r)))
 
 (defrelation reflexive ((?r RELATION))
   :documentation "A binary relation ?r is reflexive if it is always true when
 both of its arguments are identical."
   :=>> (binary-relation ?r)
-  :<=> (not (irreflexive ?r))
+  :=> (not (irreflexive ?r))
 
   #|
   ;; more (too) ambitious by ensuring that ?x satisfies all domains of ?r,
@@ -1341,7 +1686,7 @@ both of its arguments are identical."
   :documentation "A binary relation ?r is irreflexive if it is false when both
 of its arguments are identical."
   :=>> (binary-relation ?r)
-  :<=> (not (reflexive ?r))
+  :=> (not (reflexive ?r))
 
   :<= (and (binary-relation ?r) (forall ?x (not (holds ?r ?x ?x))))
   ;; Other half of inference rule replaced by specialist:
@@ -1353,13 +1698,13 @@ of its arguments are identical."
   :=>> (binary-relation ?r)
   :=>> (commutative ?r)
   :=>> (forall (?x ?y) (<<= (holds ?r ?x ?y) (holds ?r ?y ?x)))
-  :<=> (not (antisymmetric ?r)))
+  :=> (not (antisymmetric ?r)))
 
 (defrelation antisymmetric ((?r RELATION))
   :documentation "A binary relation ?r is antisymmetric if whenever (?r ?x ?y)
 is true (?r ?y ?x) is false unless ?x equals ?y."
   :=>> (binary-relation ?r)
-  :<=> (not (symmetric ?r))
+  :=> (not (symmetric ?r))
 ;;; THIS WE CAN'T INDEX AND IT'S ONLY USEFUL FOR IDENTIFYING SKOLEMS:
 ;  :=>> (forall (?x ?y)
 ;         (=> (and (holds ?r ?x ?y)
@@ -1413,9 +1758,9 @@ to the relation ?r.")
 instance that inherits all constraints that apply to any concept member,
 and has no additional constraints."
 ;  :=>> (holds ?c ?i)
-  :axioms (and (relation-specialist
-                CONCEPT-PROTOTYPE CONCEPT-PROTOTYPE-specialist)
-               (total CONCEPT-PROTOTYPE))
+  :relation-specialist CONCEPT-PROTOTYPE-specialist
+  :total TRUE
+  :closed TRUE
   :synonym CLASS-PROTOTYPE)
 
 

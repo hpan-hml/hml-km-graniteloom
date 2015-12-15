@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -628,7 +628,7 @@ Vector* Vector::copy() {
 
     { int size = self->arraySize;
       Object** sourcearray = self->theArray;
-      Vector* copy = newVector(size);
+      Vector* copy = stella::newVector(size);
       Object** copyarray = copy->theArray;
 
       { int i = NULL_INTEGER;
@@ -668,9 +668,9 @@ void Vector::clear() {
   }
 }
 
-Vector* stella::vector(int values, ...) {
+Vector* vector(int values, ...) {
   // Return a vector containing `values', in order.
-  { Vector* vector = newVector(values);
+  { Vector* vector = stella::newVector(values);
 
     { va_list iter000;
       int iter000Count = values;
@@ -790,6 +790,44 @@ void ExtensibleSymbolArray::insertAt(int offset, Object* value) {
   }
 }
 
+boolean VectorSequence::emptyP() {
+  // Return `true' if `self' has length 0.
+  { VectorSequence* self = this;
+
+    return (self->sequenceLength == 0);
+  }
+}
+
+boolean VectorSequence::nonEmptyP() {
+  // Return `true' if `self' has length > 0.
+  { VectorSequence* self = this;
+
+    return (self->sequenceLength > 0);
+  }
+}
+
+int VectorSequence::length() {
+  { VectorSequence* self = this;
+
+    return (self->sequenceLength);
+  }
+}
+
+Object* VectorSequence::last() {
+  // Return the last item in the vector `self'.
+  { VectorSequence* self = this;
+
+    return ((self->theArray)[(self->sequenceLength - 1)]);
+  }
+}
+
+Object* VectorSequence::lastSetter(Object* value) {
+  { VectorSequence* self = this;
+
+    return ((self->theArray)[(self->sequenceLength - 1)] = value);
+  }
+}
+
 void VectorSequence::insert(Object* value) {
   // Append `value' to the END of the sequence `self'.  
   // Resize the array if necessary.
@@ -798,7 +836,26 @@ void VectorSequence::insert(Object* value) {
     { int oldlength = self->sequenceLength;
 
       if (oldlength == self->arraySize) {
-        resizeVector(self, self->arraySize + self->resizeIncrement_reader());
+        resizeVector(self, self->arraySize * 2);
+      }
+      (self->theArray)[oldlength] = value;
+      self->sequenceLength = oldlength + 1;
+    }
+  }
+}
+
+void CustomVectorSequence::insert(Object* value) {
+  // Append `value' to the END of the sequence `self'.  
+  // Resize the array if necessary.
+  { CustomVectorSequence* self = this;
+
+    { int oldlength = self->sequenceLength;
+
+      if (oldlength == self->arraySize) {
+        if (!(self->resizeFactor > 1.0)) {
+          std::cerr << "Safety violation: " << "CUSTOM-VECTOR-SEQUENCE.insert: resize factor needs to be > 1";
+        }
+        resizeVector(self, ((int)(self->arraySize * self->resizeFactor)));
       }
       (self->theArray)[oldlength] = value;
       self->sequenceLength = oldlength + 1;
@@ -856,10 +913,118 @@ AbstractCollection* VectorSequence::remove(Object* value) {
   }
 }
 
-int VectorSequence::length() {
+VectorSequence* VectorSequence::reverse() {
+  // Reverse the order of elements in the active portion of `self'.
   { VectorSequence* self = this;
 
-    return (self->sequenceLength);
+    { Object** array = self->theArray;
+      int bottom = 0;
+      int top = self->sequenceLength - 1;
+      Object* elt = NULL;
+
+      while (bottom < top) {
+        elt = array[bottom];
+        array[bottom] = (array[top]);
+        array[top] = elt;
+        bottom = bottom + 1;
+        top = top - 1;
+      }
+      return (self);
+    }
+  }
+}
+
+void copyVectorSequence(VectorSequence* source, VectorSequence* copy) {
+  { Object** sourcearray = source->theArray;
+    Object** copyarray = copy->theArray;
+    int length = source->sequenceLength;
+
+    copy->sequenceLength = length;
+    { int i = NULL_INTEGER;
+      int iter000 = 0;
+      int upperBound000 = length - 1;
+
+      for  (i, iter000, upperBound000; 
+            iter000 <= upperBound000; 
+            iter000 = iter000 + 1) {
+        i = iter000;
+        copyarray[i] = (sourcearray[i]);
+      }
+    }
+  }
+}
+
+Vector* VectorSequence::copy() {
+  // Return a copy of the vector sequence `self'.
+  { VectorSequence* self = this;
+
+    { VectorSequence* copy = newVectorSequence(self->arraySize);
+
+      copyVectorSequence(self, copy);
+      return (copy);
+    }
+  }
+}
+
+Vector* CustomVectorSequence::copy() {
+  // Return a copy of the vector sequence `self'.
+  { CustomVectorSequence* self = this;
+
+    { CustomVectorSequence* copy = newCustomVectorSequence(self->arraySize);
+
+      copy->resizeFactor = self->resizeFactor;
+      copyVectorSequence(self, copy);
+      return (copy);
+    }
+  }
+}
+
+void VectorSequence::clear() {
+  // Clear `self' by setting its active length to zero.
+  { VectorSequence* self = this;
+
+    self->sequenceLength = 0;
+  }
+}
+
+boolean VectorSequence::objectEqualP(Object* y) {
+  // Return TRUE iff the sequences `x' and `y' are structurally
+  // equivalent.  Uses `equal?' to test equality of elements.
+  { VectorSequence* x = this;
+
+    if (subtypeOfP(safePrimaryType(y), SGT_COLLECTIONS_STELLA_VECTOR_SEQUENCE)) {
+      { Object* y000 = y;
+        VectorSequence* y = ((VectorSequence*)(y000));
+
+        if (x->sequenceLength == y->sequenceLength) {
+          { Object* eltx = NULL;
+            VectorSequence* vector000 = x;
+            int index000 = 0;
+            int length000 = vector000->sequenceLength;
+            Object* elty = NULL;
+            VectorSequence* vector001 = y;
+            int index001 = 0;
+            int length001 = vector001->sequenceLength;
+
+            for  (eltx, vector000, index000, length000, elty, vector001, index001, length001; 
+                  (index000 < length000) &&
+                      (index001 < length001); 
+                  index000 = index000 + 1,
+                  index001 = index001 + 1) {
+              eltx = (vector000->theArray)[index000];
+              elty = (vector001->theArray)[index001];
+              if (!equalP(eltx, elty)) {
+                return (false);
+              }
+            }
+          }
+          return (true);
+        }
+      }
+    }
+    else {
+    }
+    return (false);
   }
 }
 
@@ -870,7 +1035,7 @@ AbstractIterator* Vector::allocateIterator() {
 
       iterator->iteratorObject = self;
       iterator->iteratorInteger = 0;
-      iterator->iteratorSecondInteger = self->arraySize;
+      iterator->iteratorSecondInteger = self->length();
       iterator->iteratorNextCode = ((cpp_function_code)(&vectorNextP));
       return (iterator);
     }
@@ -904,6 +1069,474 @@ Iterator* Vector::butLast() {
   }
 }
 
+Vector* Vector::sort(cpp_function_code predicate) {
+  // Perform a destructive sort of `self' according to
+  // `predicate', and return the result.  If `predicate' has a '<' semantics, the
+  // result will be in ascending order.  If `predicate' is `null', a
+  // suitable '<' predicate is chosen depending on the first element of `self',
+  // and it is assumed that all elements of `self' have the same type (supported
+  // element types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT).
+  { Vector* self = this;
+
+    { int length = self->length();
+
+      if (length == 0) {
+        return (self);
+      }
+      else if (predicate == NULL) {
+        predicate = chooseSortPredicate((self->theArray)[0]);
+      }
+      heapSortNativeVector(self->theArray, self->length(), predicate);
+      return (self);
+    }
+  }
+}
+
+void heapSortNativeVector(Object** vector, int size, cpp_function_code predicate) {
+  heapSortHeapify(vector, size, predicate);
+  { int end = size - 1;
+    Object* aux = NULL;
+
+    while (end > 0) {
+      aux = vector[0];
+      vector[0] = (vector[end]);
+      vector[end] = aux;
+      end = end - 1;
+      heapSortSiftDown(vector, 0, end, predicate);
+    }
+  }
+}
+
+void heapSortHeapify(Object** vector, int size, cpp_function_code predicate) {
+  { int start = (size >> 1) - 1;
+
+    while (start >= 0) {
+      heapSortSiftDown(vector, start, size - 1, predicate);
+      start = start - 1;
+    }
+  }
+}
+
+void heapSortSiftDown(Object** vector, int start, int end, cpp_function_code predicate) {
+  { int root = start;
+    int child = 0;
+    Object* aux = NULL;
+
+    for (;;) {
+      child = (root << 1) + 1;
+      if (child > end) {
+        break;
+      }
+      if ((child < end) &&
+          ((boolean  (*) (Object*, Object*))predicate)(vector[child], vector[(child + 1)])) {
+        child = child + 1;
+      }
+      if (((boolean  (*) (Object*, Object*))predicate)(vector[root], vector[child])) {
+        aux = vector[root];
+        vector[root] = (vector[child]);
+        vector[child] = aux;
+        root = child;
+      }
+      else {
+        return;
+      }
+    }
+  }
+}
+
+Object* quickSortPickSplitElement(Object** vector, int start, int end, cpp_function_code predicate) {
+  { Object* splitelement = vector[start];
+    int middle = ((start + end) >> 1);
+
+    end = end - 1;
+    if (((boolean  (*) (Object*, Object*))predicate)(splitelement, vector[middle])) {
+      if (((boolean  (*) (Object*, Object*))predicate)(vector[middle], vector[end])) {
+        splitelement = vector[middle];
+        vector[middle] = (vector[start]);
+      }
+      else if (((boolean  (*) (Object*, Object*))predicate)(splitelement, vector[end])) {
+        splitelement = vector[end];
+        vector[end] = (vector[start]);
+      }
+      else {
+      }
+    }
+    else {
+      if (((boolean  (*) (Object*, Object*))predicate)(splitelement, vector[end])) {
+      }
+      else if (((boolean  (*) (Object*, Object*))predicate)(vector[middle], vector[end])) {
+        splitelement = vector[end];
+        vector[end] = (vector[start]);
+      }
+      else {
+        splitelement = vector[middle];
+        vector[middle] = (vector[start]);
+      }
+    }
+    return (splitelement);
+  }
+}
+
+void quickSortNativeVector(Object** vector, int start, int end, cpp_function_code predicate) {
+  for (;;) {
+    { int length = end - start;
+      Object* splitelement = NULL;
+      Object* element = NULL;
+      int lowcursor = start;
+      int highcursor = end;
+
+      if (length <= 1) {
+        return;
+      }
+      else if (length >= 10) {
+        splitelement = quickSortPickSplitElement(vector, start, end, predicate);
+      }
+      else {
+        splitelement = vector[start];
+      }
+      while (lowcursor < highcursor) {
+        while (lowcursor < highcursor) {
+          highcursor = highcursor - 1;
+          element = vector[highcursor];
+          if (((boolean  (*) (Object*, Object*))predicate)(element, splitelement)) {
+            vector[lowcursor] = element;
+            break;
+          }
+        }
+        while (lowcursor < highcursor) {
+          lowcursor = lowcursor + 1;
+          element = vector[lowcursor];
+          if (((boolean  (*) (Object*, Object*))predicate)(splitelement, element)) {
+            vector[highcursor] = element;
+            break;
+          }
+        }
+      }
+      vector[highcursor] = splitelement;
+      if (((start + end) >> 1) < highcursor) {
+        quickSortNativeVector(vector, highcursor + 1, end, predicate);
+        end = highcursor;
+      }
+      else {
+        quickSortNativeVector(vector, start, highcursor, predicate);
+        start = highcursor + 1;
+      }
+    }
+  }
+}
+
+Heap* newHeap(cpp_function_code predicate, int arraySize) {
+  { Heap* self = NULL;
+
+    self = new Heap();
+    self->predicate = predicate;
+    self->arraySize = arraySize;
+    self->theArray = NULL;
+    self->fillPointer = 0;
+    self->initializeVector();
+    self->initializeHeap();
+    return (self);
+  }
+}
+
+Surrogate* Heap::primaryType() {
+  { Heap* self = this;
+
+    return (SGT_COLLECTIONS_STELLA_HEAP);
+  }
+}
+
+Object* accessHeapSlotValue(Heap* self, Symbol* slotname, Object* value, boolean setvalueP) {
+  if (slotname == SYM_COLLECTIONS_STELLA_PREDICATE) {
+    if (setvalueP) {
+      self->predicate = ((FunctionCodeWrapper*)(value))->wrapperValue;
+    }
+    else {
+      value = wrapFunctionCode(self->predicate);
+    }
+  }
+  else if (slotname == SYM_COLLECTIONS_STELLA_FILL_POINTER) {
+    if (setvalueP) {
+      self->fillPointer = ((IntegerWrapper*)(value))->wrapperValue;
+    }
+    else {
+      value = wrapInteger(self->fillPointer);
+    }
+  }
+  else {
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "`" << slotname << "'" << " is not a valid case option";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
+  return (value);
+}
+
+void Heap::initializeHeap() {
+  { Heap* self = this;
+
+    { int size = self->arraySize;
+
+      if (!(size > 0)) {
+        std::cerr << "Safety violation: " << "Trying to create an empty heap";
+      }
+    }
+  }
+}
+
+void Heap::clear() {
+  // Clear `self' by setting its active length to zero.
+  { Heap* self = this;
+
+    self->fillPointer = 0;
+  }
+}
+
+int Heap::length() {
+  // Return the length of the currently filled portion of `self'.
+  { Heap* self = this;
+
+    return (self->fillPointer);
+  }
+}
+
+boolean Heap::emptyP() {
+  // Return TRUE if `self' is empty.
+  { Heap* self = this;
+
+    return (self->fillPointer == 0);
+  }
+}
+
+Object* Heap::heapRoot() {
+  // Return the root of `self' (NULL if `self' is empty).
+  { Heap* self = this;
+
+    return ((self->emptyP() ? NULL : (self->theArray)[0]));
+  }
+}
+
+Object* Heap::fastHeapRoot() {
+  // Return the root of `self' which is assumed to be non-empty.
+  { Heap* self = this;
+
+    return ((self->theArray)[0]);
+  }
+}
+
+void heapSiftUp(Object** heap, int start, int end, Object* value, cpp_function_code predicate) {
+  { int parent = NULL_INTEGER;
+    int child = end;
+
+    heap[end] = value;
+    while (child > start) {
+      if ((child & 1) == 0) {
+        parent = ((child - 2) >> 1);
+      }
+      else {
+        parent = ((child - 1) >> 1);
+      }
+      if (((boolean  (*) (Object*, Object*))predicate)(value, heap[parent])) {
+        heap[child] = (heap[parent]);
+        heap[parent] = value;
+        child = parent;
+      }
+      else {
+        break;
+      }
+    }
+  }
+}
+
+void heapSiftDown(Object** heap, int start, int end, Object* value, cpp_function_code predicate) {
+  { int parent = start;
+    int child = NULL_INTEGER;
+    Object* leftchild = NULL;
+    Object* rightchild = NULL;
+
+    heap[start] = value;
+    end = end - 1;
+    for (;;) {
+      child = (parent << 1) + 1;
+      if (child > end) {
+        break;
+      }
+      else if (child == end) {
+        if (!(((boolean  (*) (Object*, Object*))predicate)(heap[child], value))) {
+          break;
+        }
+      }
+      else {
+        leftchild = heap[child];
+        rightchild = heap[(child + 1)];
+        if (((boolean  (*) (Object*, Object*))predicate)(leftchild, value)) {
+          if (((boolean  (*) (Object*, Object*))predicate)(rightchild, value) &&
+              ((boolean  (*) (Object*, Object*))predicate)(rightchild, leftchild)) {
+            child = child + 1;
+          }
+        }
+        else if (((boolean  (*) (Object*, Object*))predicate)(rightchild, value)) {
+          child = child + 1;
+        }
+        else {
+          break;
+        }
+      }
+      heap[parent] = (heap[child]);
+      heap[child] = value;
+      parent = child;
+    }
+  }
+}
+
+void Heap::insert(Object* value) {
+  // Insert `value' into `self' and restore the heap property.
+  // Signal an error if there is no more room in `self'.  Maintains `self' as
+  // a Min-heap if `self's `predicate' has `<' semantics; otherwise as a Max-heap.
+  { Heap* self = this;
+
+    { Object** values = self->theArray;
+      int fillpointer = self->fillPointer;
+      cpp_function_code predicate = self->predicate;
+
+      if (fillpointer < self->arraySize) {
+        heapSiftUp(values, 0, fillpointer, value, predicate);
+        self->fillPointer = fillpointer + 1;
+      }
+      else {
+        { OutputStringStream* stream000 = newOutputStringStream();
+
+          *(stream000->nativeStream) << "HEAP.insert: heap overflow, can't insert new value: " << "`" << value << "'";
+          throw *newStellaException(stream000->theStringReader());
+        }
+      }
+    }
+  }
+}
+
+void Heap::replaceHeapRoot(Object* value) {
+  // Replace the current root of `self' with `value' and restore
+  // the heap property.  Signal an error if `self' is empty.  Maintains `self' as
+  // a Min-heap if `self's `predicate' has `<' semantics; otherwise as a Max-heap.
+  { Heap* self = this;
+
+    { Object** values = self->theArray;
+      int fillpointer = self->fillPointer;
+      cpp_function_code predicate = self->predicate;
+
+      if (fillpointer == 0) {
+        throw *newStellaException("HEAP.replace-heap-root: can't replace root of an empty heap");
+      }
+      else {
+        heapSiftDown(values, 0, fillpointer, value, predicate);
+      }
+    }
+  }
+}
+
+void Heap::insertIfBetter(Object* value) {
+  // Insert `value' into `self' and restore the heap property.
+  // If `self' has available room, simply insert `value'.  If the heap is full, only
+  // insert `value' if it is better than the current root (i.e., the minimum of `self'
+  // if `self's `predicate' has `<' semantics).  In that case, replace the root of
+  // `self' and restore the heap property.  This is useful to build and maintain a
+  // heap with some top-N elements (relative to `predicate') where the root (or
+  // minimum) of `self' is the currently weakest element at the end of the list.
+  { Heap* self = this;
+
+    { Object** values = self->theArray;
+      int fillpointer = self->fillPointer;
+      cpp_function_code predicate = self->predicate;
+
+      if (fillpointer == self->arraySize) {
+        if (((boolean  (*) (Object*, Object*))predicate)((self->theArray)[0], value)) {
+          heapSiftDown(values, 0, fillpointer, value, predicate);
+        }
+      }
+      else {
+        heapSiftUp(values, 0, fillpointer, value, predicate);
+        self->fillPointer = fillpointer + 1;
+      }
+    }
+  }
+}
+
+void Heap::heapify() {
+  // Restore the heap property of `self' according to its
+  // `predicate'.  Normally, this is not needed, since insert operations
+  // preserve the heap property.  However, this can be useful after bulk
+  // insertion of values or if `predicate' has been changed.
+  { Heap* self = this;
+
+    { Object** values = self->theArray;
+      int fillpointer = self->fillPointer;
+      cpp_function_code predicate = self->predicate;
+
+      { int i = NULL_INTEGER;
+        int iter000 = 0;
+        int upperBound000 = fillpointer - 1;
+
+        for  (i, iter000, upperBound000; 
+              iter000 <= upperBound000; 
+              iter000 = iter000 + 1) {
+          i = iter000;
+          heapSiftUp(values, 0, i, values[i], predicate);
+        }
+      }
+    }
+  }
+}
+
+Vector* Heap::sort(cpp_function_code predicate) {
+  // Sort the heap `self' according to `predicate' (in
+  // ascending order if `predicate' has `<' semantics).  If `predicate'
+  // is NULL simply use `self's internal predicate (the normal case).
+  // If it is different from `self's internal predicate, heapify `self' first
+  // according to the new predicate, store the new predicate in `self' and
+  // then sort the heap.  Note that a sorted array automatically satisfies
+  // the heap property.  This is slightly different than a regular heap
+  // sort due to the way HEAP's are maintained; however, the complexity is
+  // the same.
+  { Heap* self = this;
+
+    { Object** values = self->theArray;
+      int cursor = self->fillPointer;
+      Object* value = NULL;
+
+      if (predicate == NULL) {
+        predicate = self->predicate;
+      }
+      else if (!(predicate == self->predicate)) {
+        self->predicate = predicate;
+        self->heapify();
+      }
+      while (cursor > 0) {
+        cursor = cursor - 1;
+        value = values[cursor];
+        values[cursor] = (values[0]);
+        heapSiftDown(values, 0, cursor, value, predicate);
+      }
+      cursor = self->fillPointer;
+      { int i = NULL_INTEGER;
+        int iter000 = 0;
+
+        for (i, iter000; true; iter000 = iter000 + 1) {
+          i = iter000;
+          cursor = cursor - 1;
+          if (i >= cursor) {
+            break;
+          }
+          value = values[i];
+          values[i] = (values[cursor]);
+          values[cursor] = value;
+        }
+      }
+      return (self);
+    }
+  }
+}
+
 boolean oUSE_STELLA_HASH_TABLESpo = 
 #ifndef HAVE_SGI_HASH_MAPS
   TRUE
@@ -922,6 +1555,7 @@ StellaHashTable* newStellaHashTable() {
     self->freeElements = NULL_INTEGER;
     self->initialSize = 50;
     self->size = NULL_INTEGER;
+    self->theTable = NULL;
     self->initializeHashTable();
     return (self);
   }
@@ -1067,7 +1701,7 @@ void rehashStellaHashTable(StellaHashTable* self, int newsize) {
     }
     self->theTable = newtable;
     self->size = newsize;
-    self->freeElements = stella::max(self->freeElements + stella::floor((newsize - size) * oSTELLA_HASH_TABLE_AVG_BUCKET_LENGTHo), 0);
+    self->freeElements = stella::integerMax(self->freeElements + stella::floor((newsize - size) * oSTELLA_HASH_TABLE_AVG_BUCKET_LENGTHo), 0);
   }
 }
 
@@ -1471,6 +2105,7 @@ StellaHashTableIterator* newStellaHashTableIterator() {
     self->key = NULL;
     self->bucketCursor = NULL;
     self->bucketIndex = 0;
+    self->bucketTable = NULL;
     self->size = NULL_INTEGER;
     return (self);
   }
@@ -2083,6 +2718,105 @@ HashSet* hashSet(int values, ...) {
   }
 }
 
+HashSet* coerceToHashSet(Object* self, boolean equaltestP) {
+  // Coerce the collection `self' into a HASH-SET.  Use an
+  // equal test if `equalTest?' is TRUE (`equalTest?' will be ignored if `self'
+  // already is a HASH-SET).
+  { HashSet* chooseValue000 = NULL;
+
+    if (isaP(self, SGT_COLLECTIONS_STELLA_HASH_SET)) {
+      chooseValue000 = ((HashSet*)(self));
+    }
+    else {
+      { HashSet* self000 = newHashSet();
+
+        self000->equalTestP = equaltestP;
+        chooseValue000 = self000;
+      }
+    }
+    { HashSet* theset = chooseValue000;
+
+      { Surrogate* testValue000 = safePrimaryType(self);
+
+        if (subtypeOfP(testValue000, SGT_COLLECTIONS_STELLA_HASH_SET)) {
+          { Object* self001 = self;
+            HashSet* self = ((HashSet*)(self001));
+
+          }
+        }
+        else if (testValue000 == SGT_COLLECTIONS_STELLA_CONS) {
+          { Object* self002 = self;
+            Cons* self = ((Cons*)(self002));
+
+            { Object* elt = NULL;
+              Cons* iter000 = self;
+
+              for (elt, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+                elt = iter000->value;
+                theset->insertAt(elt, elt);
+              }
+            }
+          }
+        }
+        else if (subtypeOfP(testValue000, SGT_COLLECTIONS_STELLA_LIST)) {
+          { Object* self003 = self;
+            List* self = ((List*)(self003));
+
+            { Object* elt = NULL;
+              Cons* iter001 = self->theConsList;
+
+              for (elt, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+                elt = iter001->value;
+                theset->insertAt(elt, elt);
+              }
+            }
+          }
+        }
+        else if (subtypeOfP(testValue000, SGT_COLLECTIONS_STELLA_VECTOR)) {
+          { Object* self004 = self;
+            Vector* self = ((Vector*)(self004));
+
+            { Object* elt = NULL;
+              Vector* vector000 = self;
+              int index000 = 0;
+              int length000 = vector000->length();
+
+              for  (elt, vector000, index000, length000; 
+                    index000 < length000; 
+                    index000 = index000 + 1) {
+                elt = (vector000->theArray)[index000];
+                theset->insertAt(elt, elt);
+              }
+            }
+          }
+        }
+        else if (subtypeOfP(testValue000, SGT_COLLECTIONS_STELLA_COLLECTION)) {
+          { Object* self005 = self;
+            Collection* self = ((Collection*)(self005));
+
+            { Object* elt = NULL;
+              Iterator* iter002 = ((Iterator*)(self->allocateIterator()));
+
+              for (elt, iter002; iter002->nextP(); ) {
+                elt = iter002->value;
+                theset->insertAt(elt, elt);
+              }
+            }
+          }
+        }
+        else {
+          { OutputStringStream* stream000 = newOutputStringStream();
+
+            *(stream000->nativeStream) << "coerce-to-hash-set: don't know how to coerce a " << "`" << self->primaryType() << "'" << " into a hash-set";
+            throw *newStellaException(stream000->theStringReader());
+          }
+        }
+      }
+      return (theset);
+    }
+  }
+}
+
 boolean HashSet::memberP(Object* object) {
   // Return TRUE iff `object' is a member of the set `self'.
   // Uses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.
@@ -2488,6 +3222,380 @@ int HashSet::equalHashCode() {
   }
 }
 
+oneDArray* new1DArray(int dim1) {
+  { oneDArray* self = NULL;
+
+    self = new oneDArray();
+    self->dim1 = dim1;
+    self->theArray = NULL;
+    self->initializeDimensionalArray();
+    return (self);
+  }
+}
+
+Surrogate* oneDArray::primaryType() {
+  { oneDArray* self = this;
+
+    return (SGT_COLLECTIONS_STELLA_1D_ARRAY);
+  }
+}
+
+int oneDArray::oneDArefAddress(int i) {
+  // Return the 1D address of the element at position `[i]'.
+  // This is useful for fast element-wise iteration that doesn't need arithmetic.
+  { oneDArray* self = this;
+
+    return (i);
+  }
+}
+
+Object* oneDArray::oneDArefSetter(Object* value, int i) {
+  // Set the element of `self' at position `[i]' to `value'
+  // and return the result.
+  { oneDArray* self = this;
+
+    return (self->theArray[i] = value);
+  }
+}
+
+Object* oneDArray::oneDAref(int i) {
+  // Return the element of `self' at position `[i]'.
+  { oneDArray* self = this;
+
+    return (self->theArray[i]);
+  }
+}
+
+void oneDArray::initializeArray(Object* initialvalue) {
+  // Initialize the elements of `self' with `initialValue'.
+  { oneDArray* self = this;
+
+    { Object** array = self->theArray;
+
+      { int i = NULL_INTEGER;
+        int iter000 = 0;
+        int upperBound000 = self->length() - 1;
+
+        for  (i, iter000, upperBound000; 
+              iter000 <= upperBound000; 
+              iter000 = iter000 + 1) {
+          i = iter000;
+          array[i] = initialvalue;
+        }
+      }
+    }
+  }
+}
+
+int oneDArray::length() {
+  // Return the total number of elements in `self'.
+  { oneDArray* self = this;
+
+    return (self->dim1);
+  }
+}
+
+void oneDArray::initializeDimensionalArray() {
+  { oneDArray* self = this;
+
+    self->theArray = new (GC)(Object*[self->length()]);
+  }
+}
+
+oneDFloatArray* new1DFloatArray(int dim1) {
+  { oneDFloatArray* self = NULL;
+
+    self = new oneDFloatArray();
+    self->dim1 = dim1;
+    self->theArray = NULL;
+    self->initializeDimensionalArray();
+    return (self);
+  }
+}
+
+Surrogate* oneDFloatArray::primaryType() {
+  { oneDFloatArray* self = this;
+
+    return (SGT_COLLECTIONS_STELLA_1D_FLOAT_ARRAY);
+  }
+}
+
+int oneDFloatArray::oneDArefAddress(int i) {
+  // Return the 1D address of the element at position `[i]'.
+  // This is useful for fast element-wise iteration that doesn't need arithmetic.
+  { oneDFloatArray* self = this;
+
+    return (i);
+  }
+}
+
+double oneDFloatArray::oneDArefSetter(double value, int i) {
+  // Set the element of `self' at position `[i]' to `value'
+  // and return the result.
+  { oneDFloatArray* self = this;
+
+    return (self->theArray[i] = value);
+  }
+}
+
+double oneDFloatArray::oneDAref(int i) {
+  // Return the element of `self' at position `[i]'.
+  { oneDFloatArray* self = this;
+
+    return (self->theArray[i]);
+  }
+}
+
+void oneDFloatArray::initializeArray(double initialvalue) {
+  // Initialize the elements of `self' with `initialValue'.
+  { oneDFloatArray* self = this;
+
+    { double* array = self->theArray;
+
+      { int i = NULL_INTEGER;
+        int iter000 = 0;
+        int upperBound000 = self->length() - 1;
+
+        for  (i, iter000, upperBound000; 
+              iter000 <= upperBound000; 
+              iter000 = iter000 + 1) {
+          i = iter000;
+          array[i] = initialvalue;
+        }
+      }
+    }
+  }
+}
+
+int oneDFloatArray::length() {
+  // Return the total number of elements in `self'.
+  { oneDFloatArray* self = this;
+
+    return (self->dim1);
+  }
+}
+
+void oneDFloatArray::initializeDimensionalArray() {
+  { oneDFloatArray* self = this;
+
+    self->theArray = new (PointerFreeGC)(double[self->length()]);
+  }
+}
+
+twoDArray* new2DArray(int dim2, int dim1) {
+  { twoDArray* self = NULL;
+
+    self = new twoDArray();
+    self->dim2 = dim2;
+    self->dim1 = dim1;
+    self->theArray = NULL;
+    self->initializeDimensionalArray();
+    return (self);
+  }
+}
+
+Surrogate* twoDArray::primaryType() {
+  { twoDArray* self = this;
+
+    return (SGT_COLLECTIONS_STELLA_2D_ARRAY);
+  }
+}
+
+int twoDArray::twoDArefAddress(int i, int j) {
+  // Return the 1D address of the element at position `[i, j]'.
+  // This is useful for fast element-wise iteration that doesn't need arithmetic.
+  { twoDArray* self = this;
+
+    return ((i * self->dim2) + j);
+  }
+}
+
+Object* twoDArray::twoDArefSetter(Object* value, int i, int j) {
+  // Set the element of `self' at position `[i, j]' to `value'
+  // and return the result.
+  { twoDArray* self = this;
+
+    return (self->theArray[(i * self->dim2) + j] = value);
+  }
+}
+
+Object* twoDArray::twoDAref(int i, int j) {
+  // Return the element of `self' at position `[i, j]'.
+  { twoDArray* self = this;
+
+    return (self->theArray[(i * self->dim2) + j]);
+  }
+}
+
+int twoDArray::length() {
+  // Return the total number of elements in `self'.
+  { twoDArray* self = this;
+
+    return (self->dim1 * self->dim2);
+  }
+}
+
+int twoDArray::oneDArefAddress(int i) {
+  // Return the 1D address of the element at position `[i]'.
+  // This is useful for fast element-wise iteration that doesn't need arithmetic.
+  { twoDArray* self = this;
+
+    return (i);
+  }
+}
+
+Object* twoDArray::oneDArefSetter(Object* value, int i) {
+  // Set the element of `self' at position `[i]' to `value'
+  // and return the result.
+  { twoDArray* self = this;
+
+    return (self->theArray[i] = value);
+  }
+}
+
+Object* twoDArray::oneDAref(int i) {
+  // Return the element of `self' at position `[i]'.
+  { twoDArray* self = this;
+
+    return (self->theArray[i]);
+  }
+}
+
+void twoDArray::initializeArray(Object* initialvalue) {
+  // Initialize the elements of `self' with `initialValue'.
+  { twoDArray* self = this;
+
+    { Object** array = self->theArray;
+
+      { int i = NULL_INTEGER;
+        int iter000 = 0;
+        int upperBound000 = self->length() - 1;
+
+        for  (i, iter000, upperBound000; 
+              iter000 <= upperBound000; 
+              iter000 = iter000 + 1) {
+          i = iter000;
+          array[i] = initialvalue;
+        }
+      }
+    }
+  }
+}
+
+void twoDArray::initializeDimensionalArray() {
+  { twoDArray* self = this;
+
+    self->theArray = new (GC)(Object*[self->length()]);
+  }
+}
+
+twoDFloatArray* new2DFloatArray(int dim2, int dim1) {
+  { twoDFloatArray* self = NULL;
+
+    self = new twoDFloatArray();
+    self->dim2 = dim2;
+    self->dim1 = dim1;
+    self->theArray = NULL;
+    self->initializeDimensionalArray();
+    return (self);
+  }
+}
+
+Surrogate* twoDFloatArray::primaryType() {
+  { twoDFloatArray* self = this;
+
+    return (SGT_COLLECTIONS_STELLA_2D_FLOAT_ARRAY);
+  }
+}
+
+int twoDFloatArray::twoDArefAddress(int i, int j) {
+  // Return the 1D address of the element at position `[i, j]'.
+  // This is useful for fast element-wise iteration that doesn't need arithmetic.
+  { twoDFloatArray* self = this;
+
+    return ((i * self->dim2) + j);
+  }
+}
+
+double twoDFloatArray::twoDArefSetter(double value, int i, int j) {
+  // Set the element of `self' at position `[i, j]' to `value'
+  // and return the result.
+  { twoDFloatArray* self = this;
+
+    return (self->theArray[(i * self->dim2) + j] = value);
+  }
+}
+
+double twoDFloatArray::twoDAref(int i, int j) {
+  // Return the element of `self' at position `[i, j]'.
+  { twoDFloatArray* self = this;
+
+    return (self->theArray[(i * self->dim2) + j]);
+  }
+}
+
+int twoDFloatArray::length() {
+  // Return the total number of elements in `self'.
+  { twoDFloatArray* self = this;
+
+    return (self->dim1 * self->dim2);
+  }
+}
+
+int twoDFloatArray::oneDArefAddress(int i) {
+  // Return the 1D address of the element at position `[i]'.
+  // This is useful for fast element-wise iteration that doesn't need arithmetic.
+  { twoDFloatArray* self = this;
+
+    return (i);
+  }
+}
+
+double twoDFloatArray::oneDArefSetter(double value, int i) {
+  // Set the element of `self' at position `[i]' to `value'
+  // and return the result.
+  { twoDFloatArray* self = this;
+
+    return (self->theArray[i] = value);
+  }
+}
+
+double twoDFloatArray::oneDAref(int i) {
+  // Return the element of `self' at position `[i]'.
+  { twoDFloatArray* self = this;
+
+    return (self->theArray[i]);
+  }
+}
+
+void twoDFloatArray::initializeArray(double initialvalue) {
+  // Initialize the elements of `self' with `initialValue'.
+  { twoDFloatArray* self = this;
+
+    { double* array = self->theArray;
+
+      { int i = NULL_INTEGER;
+        int iter000 = 0;
+        int upperBound000 = self->length() - 1;
+
+        for  (i, iter000, upperBound000; 
+              iter000 <= upperBound000; 
+              iter000 = iter000 + 1) {
+          i = iter000;
+          array[i] = initialvalue;
+        }
+      }
+    }
+  }
+}
+
+void twoDFloatArray::initializeDimensionalArray() {
+  { twoDFloatArray* self = this;
+
+    self->theArray = new (PointerFreeGC)(double[self->length()]);
+  }
+}
+
 void helpStartupCollections1() {
   {
     SGT_COLLECTIONS_STELLA_COLLECTION = ((Surrogate*)(internRigidSymbolWrtModule("COLLECTION", NULL, 1)));
@@ -2496,6 +3604,10 @@ void helpStartupCollections1() {
     KWD_COLLECTIONS_CPP = ((Keyword*)(internRigidSymbolWrtModule("CPP", NULL, 2)));
     KWD_COLLECTIONS_FUNCTION = ((Keyword*)(internRigidSymbolWrtModule("FUNCTION", NULL, 2)));
     SGT_COLLECTIONS_STELLA_VECTOR = ((Surrogate*)(internRigidSymbolWrtModule("VECTOR", NULL, 1)));
+    SGT_COLLECTIONS_STELLA_VECTOR_SEQUENCE = ((Surrogate*)(internRigidSymbolWrtModule("VECTOR-SEQUENCE", NULL, 1)));
+    SGT_COLLECTIONS_STELLA_HEAP = ((Surrogate*)(internRigidSymbolWrtModule("HEAP", NULL, 1)));
+    SYM_COLLECTIONS_STELLA_PREDICATE = ((Symbol*)(internRigidSymbolWrtModule("PREDICATE", NULL, 0)));
+    SYM_COLLECTIONS_STELLA_FILL_POINTER = ((Symbol*)(internRigidSymbolWrtModule("FILL-POINTER", NULL, 0)));
     SGT_COLLECTIONS_STELLA_STELLA_HASH_TABLE = ((Surrogate*)(internRigidSymbolWrtModule("STELLA-HASH-TABLE", NULL, 1)));
     SYM_COLLECTIONS_STELLA_SIZE = ((Symbol*)(internRigidSymbolWrtModule("SIZE", NULL, 0)));
     SYM_COLLECTIONS_STELLA_INITIAL_SIZE = ((Symbol*)(internRigidSymbolWrtModule("INITIAL-SIZE", NULL, 0)));
@@ -2508,12 +3620,68 @@ void helpStartupCollections1() {
     SYM_COLLECTIONS_STELLA_THE_MAP = ((Symbol*)(internRigidSymbolWrtModule("THE-MAP", NULL, 0)));
     SYM_COLLECTIONS_STELLA_CROSSOVER_POINT = ((Symbol*)(internRigidSymbolWrtModule("CROSSOVER-POINT", NULL, 0)));
     SGT_COLLECTIONS_STELLA_HASH_SET = ((Surrogate*)(internRigidSymbolWrtModule("HASH-SET", NULL, 1)));
+    SGT_COLLECTIONS_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", NULL, 1)));
+    SGT_COLLECTIONS_STELLA_LIST = ((Surrogate*)(internRigidSymbolWrtModule("LIST", NULL, 1)));
+    SGT_COLLECTIONS_STELLA_1D_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("1D-ARRAY", NULL, 1)));
+    SYM_COLLECTIONS_STELLA_OBJECT_ARRAY = ((Symbol*)(internRigidSymbolWrtModule("OBJECT-ARRAY", NULL, 0)));
+    SGT_COLLECTIONS_STELLA_1D_FLOAT_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("1D-FLOAT-ARRAY", NULL, 1)));
+    SYM_COLLECTIONS_STELLA_FLOAT_ARRAY = ((Symbol*)(internRigidSymbolWrtModule("FLOAT-ARRAY", NULL, 0)));
+    SGT_COLLECTIONS_STELLA_2D_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("2D-ARRAY", NULL, 1)));
+    SGT_COLLECTIONS_STELLA_2D_FLOAT_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("2D-FLOAT-ARRAY", NULL, 1)));
     SYM_COLLECTIONS_STELLA_STARTUP_COLLECTIONS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-COLLECTIONS", NULL, 0)));
     SYM_COLLECTIONS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
   }
 }
 
 void helpStartupCollections2() {
+  {
+    { Class* clasS = defineClassFromStringifiedSource("HEAP", "(DEFCLASS HEAP (VECTOR) :DOCUMENTATION \"Implements a Min or Max heap depending on the semantics\nof `predicate' (Min if `predicate' has a `<' semantics).  This is useful\nfor in-place sorting (even though we have specialzed sort routines for that)\nor to maintain top-N lists with log(N) insertion time.  We place this under\nVECTOR instead of VECTOR-SEQUENCE for now, since sequential order isn't\nreally maintained or accessible until we sort the heap.\" :PUBLIC? TRUE :PARAMETERS ((ANY-VALUE :TYPE OBJECT)) :SLOTS ((PREDICATE :TYPE FUNCTION-CODE :REQUIRED? TRUE) (FILL-POINTER :TYPE INTEGER :INITIALLY 0)) :INITIALIZER INITIALIZE-HEAP)");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newHeap));
+      clasS->classSlotAccessorCode = ((cpp_function_code)(&accessHeapSlotValue));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("STELLA-HASH-TABLE", "(DEFCLASS STELLA-HASH-TABLE (ABSTRACT-HASH-TABLE) :PARAMETERS ((ANY-KEY :TYPE OBJECT) (ANY-VALUE :TYPE OBJECT)) :SLOTS ((THE-TABLE :TYPE (ARRAY () OF KV-CONS)) (SIZE :TYPE INTEGER) (INITIAL-SIZE :TYPE INTEGER :INITIALLY 50 :PUBLIC? TRUE :DOCUMENTATION \"If supplied, the initial hash table\nwill be sized to hold at least that many elements.\") (FREE-ELEMENTS :TYPE INTEGER) (EQUAL-TEST? :TYPE BOOLEAN :INITIALLY FALSE :PUBLIC? TRUE :DOCUMENTATION \"If true use `equal?' as the\nequality test and `equal-hash-code' as the hash function, otherwise,\nuse `eql?' and `hash-code' (the default).\")))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newStellaHashTable));
+      clasS->classSlotAccessorCode = ((cpp_function_code)(&accessStellaHashTableSlotValue));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("STELLA-HASH-TABLE-ITERATOR", "(DEFCLASS STELLA-HASH-TABLE-ITERATOR (DICTIONARY-ITERATOR) :DOCUMENTATION \"Iterator class for STELLA-HASH-TABLE's.  The only modifying\noperations allowed during iteration are removal of the current element or\nchanging its value.  All other removal or insertion operations might lead\nto corruption or undefined results.\" :SLOTS ((SIZE :TYPE INTEGER) (BUCKET-TABLE :TYPE (ARRAY () OF KV-CONS)) (BUCKET-INDEX :TYPE INTEGER :INITIALLY 0) (BUCKET-CURSOR :TYPE KV-CONS)))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newStellaHashTableIterator));
+      clasS->classSlotAccessorCode = ((cpp_function_code)(&accessStellaHashTableIteratorSlotValue));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("KEY-VALUE-MAP", "(DEFCLASS KEY-VALUE-MAP (DICTIONARY) :DOCUMENTATION \"Full-featured dictionary class that supports `eql?' or\n`equal?' equality tests, O(1) access operations even for large numbers\nof entries by using a hash table, light-weight KV-CONS representation for\nsmall tables and iteration even if the dictionary is represented by a\nhash table.\" :PUBLIC? TRUE :SLOTS ((THE-MAP :TYPE OBJECT) (EQUAL-TEST? :TYPE BOOLEAN :INITIALLY FALSE :PUBLIC? TRUE :DOCUMENTATION \"If true use `equal?' as the\nequality test (and `equal-hash-code' as the hash function), otherwise,\nuse `eql?' (and `hash-code') (the default).\") (INITIAL-SIZE :TYPE INTEGER :INITIALLY *KEY-VALUE-MAP-CROSSOVER-POINT* :PUBLIC? TRUE :DOCUMENTATION \"If supplied, the initial table\nwill be sized to hold at least that many elements.\") (CROSSOVER-POINT :TYPE INTEGER :INITIALLY *KEY-VALUE-MAP-CROSSOVER-POINT*)))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newKeyValueMap));
+      clasS->classSlotAccessorCode = ((cpp_function_code)(&accessKeyValueMapSlotValue));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("HASH-SET", "(DEFCLASS HASH-SET (KEY-VALUE-MAP SET-MIXIN) :DOCUMENTATION \"Full-featured set class that supports `eql?' or `equal?'\nequality tests, O(1) insert and `member?' operations & O(N) `intersection'\netc. operations even for large numbers of entries by using a hash table,\nlight-weight KV-CONS representation for small sets and iteration even if the\nset is represented by a hash table.  The only minor drawback right now is that\nthis wastes a value slot per entry, since we piggy-back off KEY-VALUE-MAP's,\nhowever, that wastes at most 25% space.\" :PUBLIC? TRUE)");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newHashSet));
+    }
+    defineClassFromStringifiedSource("DIMENSIONAL-ARRAY-MIXIN", "(DEFCLASS DIMENSIONAL-ARRAY-MIXIN () :MIXIN? TRUE :PARAMETERS ((ANY-VALUE :TYPE UNKNOWN)) :SLOTS ((DIM1 :TYPE INTEGER :REQUIRED? TRUE) (THE-ARRAY :TYPE (ARRAY () OF (LIKE (ANY-VALUE SELF))))) :INITIALIZER INITIALIZE-DIMENSIONAL-ARRAY)");
+    defineClassFromStringifiedSource("2-DIMENSIONAL-ARRAY-MIXIN", "(DEFCLASS 2-DIMENSIONAL-ARRAY-MIXIN (DIMENSIONAL-ARRAY-MIXIN) :MIXIN? TRUE :PUBLIC? TRUE :SLOTS ((DIM2 :TYPE INTEGER :REQUIRED? TRUE)))");
+    defineClassFromStringifiedSource("ABSTRACT-DIMENSIONAL-ARRAY", "(DEFCLASS ABSTRACT-DIMENSIONAL-ARRAY (ABSTRACT-COLLECTION) :DOCUMENTATION \"Array objects that are aware of their dimensions.\" :PUBLIC? TRUE :ABSTRACT? TRUE :PARAMETERS ((ANY-VALUE :TYPE UNKNOWN)))");
+    { Class* clasS = defineClassFromStringifiedSource("1D-ARRAY", "(DEFCLASS 1D-ARRAY (ABSTRACT-DIMENSIONAL-ARRAY DIMENSIONAL-ARRAY-MIXIN) :DOCUMENTATION \"1-dimensional array with OBJECT values.  This is more or\nless equivalent to VECTOR (fewer methods) but kept here for symmetry.\" :PUBLIC? TRUE :SYNONYMS (OBJECT-ARRAY) :PARAMETERS ((ANY-VALUE :TYPE OBJECT)))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&new1DArray));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("1D-FLOAT-ARRAY", "(DEFCLASS 1D-FLOAT-ARRAY (ABSTRACT-DIMENSIONAL-ARRAY DIMENSIONAL-ARRAY-MIXIN) :DOCUMENTATION \"1-dimensional array with float values.\" :PUBLIC? TRUE :SYNONYMS (FLOAT-ARRAY) :PARAMETERS ((ANY-VALUE :TYPE FLOAT)))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&new1DFloatArray));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("2D-ARRAY", "(DEFCLASS 2D-ARRAY (ABSTRACT-DIMENSIONAL-ARRAY 2-DIMENSIONAL-ARRAY-MIXIN) :DOCUMENTATION \"2-dimensional array with object values.\" :PUBLIC? TRUE :PARAMETERS ((ANY-VALUE :TYPE OBJECT)))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&new2DArray));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("2D-FLOAT-ARRAY", "(DEFCLASS 2D-FLOAT-ARRAY (ABSTRACT-DIMENSIONAL-ARRAY 2-DIMENSIONAL-ARRAY-MIXIN) :DOCUMENTATION \"2-dimensional array with float values.\" :PUBLIC? TRUE :PARAMETERS ((ANY-VALUE :TYPE FLOAT)))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&new2DFloatArray));
+    }
+  }
+}
+
+void helpStartupCollections3() {
   {
     defineMethodObject("(DEFMETHOD (MEMBER? BOOLEAN) ((SELF COLLECTION) (OBJECT OBJECT)) :DOCUMENTATION \"Return true iff `object' is a member of the collection `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Collection::memberP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (REMOVE-DUPLICATES (LIKE SELF)) ((SELF COLLECTION)) :DOCUMENTATION \"Return `self' with duplicates removed.  Preserves the\noriginal order of the remaining members.\" :PUBLIC? TRUE :ABSTRACT? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
@@ -2533,8 +3701,8 @@ void helpStartupCollections2() {
     defineMethodObject("(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF SET)) :DOCUMENTATION \"Return an `equal?' hash code for `self'.  Note that this\nis O(N) in the number of elements of `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Set::equalHashCode)), ((cpp_method_code)(NULL)));
     defineFunctionObject("SET", "(DEFUN (SET SET) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return a set containing `values', in order.\" :PUBLIC? TRUE)", ((cpp_function_code)(&set)), NULL);
     defineMethodObject("(DEFMETHOD PRINT-VECTOR ((SELF VECTOR) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_method_code)(&Vector::printVector)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF VECTOR)) :DOCUMENTATION \"Return `true' if `self' has length 0.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (EQL? (ARRAY-SIZE SELF) 0)))", ((cpp_method_code)(&Vector::emptyP)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF VECTOR)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `self' has length > 0.\" :GLOBALLY-INLINE? TRUE (RETURN (> (ARRAY-SIZE SELF) 0)))", ((cpp_method_code)(&Vector::nonEmptyP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF VECTOR)) :DOCUMENTATION \"Return `true' if `self' has length 0.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Vector::emptyP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF VECTOR)) :DOCUMENTATION \"Return `true' if `self' has length > 0.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Vector::nonEmptyP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (FIRST (LIKE (ANY-VALUE SELF))) ((SELF VECTOR)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NTH SELF 0)))", ((cpp_method_code)(&Vector::first)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (SECOND (LIKE (ANY-VALUE SELF))) ((SELF VECTOR)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NTH SELF 1)))", ((cpp_method_code)(&Vector::second)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (THIRD (LIKE (ANY-VALUE SELF))) ((SELF VECTOR)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NTH SELF 2)))", ((cpp_method_code)(&Vector::third)), ((cpp_method_code)(NULL)));
@@ -2561,12 +3729,47 @@ void helpStartupCollections2() {
     defineMethodObject("(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF VECTOR)) :DOCUMENTATION \"Return an `equal?' hash code for `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Vector::equalHashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD INSERT-AT ((SELF EXTENSIBLE-VECTOR) (OFFSET INTEGER) (VALUE (LIKE (ANY-VALUE SELF)))) :PUBLIC? TRUE)", ((cpp_method_code)(&ExtensibleVector::insertAt)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD INSERT-AT ((SELF EXTENSIBLE-SYMBOL-ARRAY) (OFFSET INTEGER) (VALUE (LIKE (ANY-VALUE SELF)))) :PUBLIC? TRUE)", ((cpp_method_code)(&ExtensibleSymbolArray::insertAt)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF VECTOR-SEQUENCE)) :DOCUMENTATION \"Return `true' if `self' has length 0.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (EQL? (LENGTH SELF) 0)))", ((cpp_method_code)(&VectorSequence::emptyP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF VECTOR-SEQUENCE)) :DOCUMENTATION \"Return `true' if `self' has length > 0.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (> (LENGTH SELF) 0)))", ((cpp_method_code)(&VectorSequence::nonEmptyP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF VECTOR-SEQUENCE)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (SEQUENCE-LENGTH SELF)))", ((cpp_method_code)(&VectorSequence::length)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LAST (LIKE (ANY-VALUE SELF))) ((SELF VECTOR-SEQUENCE)) :PUBLIC? TRUE :DOCUMENTATION \"Return the last item in the vector `self'.\")", ((cpp_method_code)(&VectorSequence::last)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LAST-SETTER (LIKE (ANY-VALUE SELF))) ((SELF VECTOR-SEQUENCE) (VALUE (LIKE (ANY-VALUE SELF)))) :PUBLIC? TRUE)", ((cpp_method_code)(&VectorSequence::lastSetter)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD INSERT ((SELF VECTOR-SEQUENCE) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Append `value' to the END of the sequence `self'.  \nResize the array if necessary.\" :PUBLIC? TRUE)", ((cpp_method_code)(&VectorSequence::insert)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD INSERT ((SELF CUSTOM-VECTOR-SEQUENCE) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Append `value' to the END of the sequence `self'.  \nResize the array if necessary.\" :PUBLIC? TRUE)", ((cpp_method_code)(&CustomVectorSequence::insert)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (REMOVE VECTOR-SEQUENCE) ((SELF VECTOR-SEQUENCE) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Remove `value' from the sequence `self', and left shift\nthe values after it to close the gap.\" :PUBLIC? TRUE)", ((cpp_method_code)(&VectorSequence::remove)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF VECTOR-SEQUENCE)) :PUBLIC? TRUE)", ((cpp_method_code)(&VectorSequence::length)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (REVERSE (LIKE SELF)) ((SELF VECTOR-SEQUENCE)) :DOCUMENTATION \"Reverse the order of elements in the active portion of `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&VectorSequence::reverse)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("COPY-VECTOR-SEQUENCE", "(DEFUN COPY-VECTOR-SEQUENCE ((SOURCE VECTOR-SEQUENCE) (COPY VECTOR-SEQUENCE)))", ((cpp_function_code)(&copyVectorSequence)), NULL);
+    defineMethodObject("(DEFMETHOD (COPY (VECTOR-SEQUENCE OF (LIKE (ANY-VALUE SELF)))) ((SELF VECTOR-SEQUENCE)) :DOCUMENTATION \"Return a copy of the vector sequence `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&VectorSequence::copy)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (COPY (CUSTOM-VECTOR-SEQUENCE OF (LIKE (ANY-VALUE SELF)))) ((SELF CUSTOM-VECTOR-SEQUENCE)) :DOCUMENTATION \"Return a copy of the vector sequence `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&CustomVectorSequence::copy)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD CLEAR ((SELF VECTOR-SEQUENCE)) :DOCUMENTATION \"Clear `self' by setting its active length to zero.\" :PUBLIC? TRUE)", ((cpp_method_code)(&VectorSequence::clear)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (OBJECT-EQUAL? BOOLEAN) ((X VECTOR-SEQUENCE) (Y OBJECT)) :DOCUMENTATION \"Return TRUE iff the sequences `x' and `y' are structurally\nequivalent.  Uses `equal?' to test equality of elements.\" :PUBLIC? TRUE)", ((cpp_method_code)(&VectorSequence::objectEqualP)), ((cpp_method_code)(NULL)));
+  }
+}
+
+void helpStartupCollections4() {
+  {
     defineMethodObject("(DEFMETHOD (ALLOCATE-ITERATOR (ITERATOR OF (LIKE (ANY-VALUE SELF)))) ((SELF VECTOR)))", ((cpp_method_code)(&Vector::allocateIterator)), ((cpp_method_code)(NULL)));
     defineFunctionObject("VECTOR-NEXT?", "(DEFUN (VECTOR-NEXT? BOOLEAN) ((SELF ALL-PURPOSE-ITERATOR)))", ((cpp_function_code)(&vectorNextP)), NULL);
     defineMethodObject("(DEFMETHOD (BUT-LAST (ITERATOR OF (LIKE (ANY-VALUE SELF)))) ((SELF VECTOR)) :DOCUMENTATION \"Generate all but the last element of the vector `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Vector::butLast)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (SORT (VECTOR OF (LIKE (ANY-VALUE SELF)))) ((SELF VECTOR) (PREDICATE FUNCTION-CODE)) :PUBLIC? TRUE :DOCUMENTATION \"Perform a destructive sort of `self' according to\n`predicate', and return the result.  If `predicate' has a '<' semantics, the\nresult will be in ascending order.  If `predicate' is `null', a\nsuitable '<' predicate is chosen depending on the first element of `self',\nand it is assumed that all elements of `self' have the same type (supported\nelement types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT).\")", ((cpp_method_code)(&Vector::sort)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("HEAP-SORT-NATIVE-VECTOR", "(DEFUN HEAP-SORT-NATIVE-VECTOR ((VECTOR NATIVE-VECTOR) (SIZE INTEGER) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&heapSortNativeVector)), NULL);
+    defineFunctionObject("HEAP-SORT-HEAPIFY", "(DEFUN HEAP-SORT-HEAPIFY ((VECTOR NATIVE-VECTOR) (SIZE INTEGER) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&heapSortHeapify)), NULL);
+    defineFunctionObject("HEAP-SORT-SIFT-DOWN", "(DEFUN HEAP-SORT-SIFT-DOWN ((VECTOR NATIVE-VECTOR) (START INTEGER) (END INTEGER) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&heapSortSiftDown)), NULL);
+    defineFunctionObject("QUICK-SORT-PICK-SPLIT-ELEMENT", "(DEFUN (QUICK-SORT-PICK-SPLIT-ELEMENT OBJECT) ((VECTOR NATIVE-VECTOR) (START INTEGER) (END INTEGER) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&quickSortPickSplitElement)), NULL);
+    defineFunctionObject("QUICK-SORT-NATIVE-VECTOR", "(DEFUN QUICK-SORT-NATIVE-VECTOR ((VECTOR NATIVE-VECTOR) (START INTEGER) (END INTEGER) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&quickSortNativeVector)), NULL);
+    defineMethodObject("(DEFMETHOD INITIALIZE-HEAP ((SELF HEAP)))", ((cpp_method_code)(&Heap::initializeHeap)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD CLEAR ((SELF HEAP)) :DOCUMENTATION \"Clear `self' by setting its active length to zero.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::clear)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF HEAP)) :DOCUMENTATION \"Return the length of the currently filled portion of `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::length)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF HEAP)) :DOCUMENTATION \"Return TRUE if `self' is empty.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::emptyP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (HEAP-ROOT (LIKE (ANY-VALUE SELF))) ((SELF HEAP)) :DOCUMENTATION \"Return the root of `self' (NULL if `self' is empty).\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::heapRoot)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (FAST-HEAP-ROOT (LIKE (ANY-VALUE SELF))) ((SELF HEAP)) :DOCUMENTATION \"Return the root of `self' which is assumed to be non-empty.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NTH SELF 0)))", ((cpp_method_code)(&Heap::fastHeapRoot)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("HEAP-SIFT-UP", "(DEFUN HEAP-SIFT-UP ((HEAP NATIVE-VECTOR) (START INTEGER) (END INTEGER) (VALUE (LIKE (ANY-VALUE SELF))) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&heapSiftUp)), NULL);
+    defineFunctionObject("HEAP-SIFT-DOWN", "(DEFUN HEAP-SIFT-DOWN ((HEAP NATIVE-VECTOR) (START INTEGER) (END INTEGER) (VALUE (LIKE (ANY-VALUE SELF))) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&heapSiftDown)), NULL);
+    defineMethodObject("(DEFMETHOD INSERT ((SELF HEAP) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Insert `value' into `self' and restore the heap property.\nSignal an error if there is no more room in `self'.  Maintains `self' as\na Min-heap if `self's `predicate' has `<' semantics; otherwise as a Max-heap.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::insert)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD REPLACE-HEAP-ROOT ((SELF HEAP) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Replace the current root of `self' with `value' and restore\nthe heap property.  Signal an error if `self' is empty.  Maintains `self' as\na Min-heap if `self's `predicate' has `<' semantics; otherwise as a Max-heap.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::replaceHeapRoot)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD INSERT-IF-BETTER ((SELF HEAP) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Insert `value' into `self' and restore the heap property.\nIf `self' has available room, simply insert `value'.  If the heap is full, only\ninsert `value' if it is better than the current root (i.e., the minimum of `self'\nif `self's `predicate' has `<' semantics).  In that case, replace the root of\n`self' and restore the heap property.  This is useful to build and maintain a\nheap with some top-N elements (relative to `predicate') where the root (or\nminimum) of `self' is the currently weakest element at the end of the list.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::insertIfBetter)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD HEAPIFY ((SELF HEAP)) :DOCUMENTATION \"Restore the heap property of `self' according to its\n`predicate'.  Normally, this is not needed, since insert operations\npreserve the heap property.  However, this can be useful after bulk\ninsertion of values or if `predicate' has been changed.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::heapify)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (SORT (HEAP OF (LIKE (ANY-VALUE SELF)))) ((SELF HEAP) (PREDICATE FUNCTION-CODE)) :DOCUMENTATION \"Sort the heap `self' according to `predicate' (in\nascending order if `predicate' has `<' semantics).  If `predicate'\nis NULL simply use `self's internal predicate (the normal case).\nIf it is different from `self's internal predicate, heapify `self' first\naccording to the new predicate, store the new predicate in `self' and\nthen sort the heap.  Note that a sorted array automatically satisfies\nthe heap property.  This is slightly different than a regular heap\nsort due to the way HEAP's are maintained; however, the complexity is\nthe same.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::sort)), ((cpp_method_code)(NULL)));
     defineFunctionObject("INITIALIZE-STELLA-HASH-TABLE", "(DEFUN INITIALIZE-STELLA-HASH-TABLE ((SELF STELLA-HASH-TABLE)))", ((cpp_function_code)(&initializeStellaHashTable)), NULL);
     defineMethodObject("(DEFMETHOD INITIALIZE-HASH-TABLE ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Initialize the STELLA hash table `self'.  This is a\nno-op and primarily exists to shadow the standard initializer inherited\nfrom ABSTRACT-HASH-TABLE.  STELLA hash tables are initialized at the\nfirst insertion operation.\")", ((cpp_method_code)(&StellaHashTable::initializeHashTable)), ((cpp_method_code)(NULL)));
     defineFunctionObject("REHASH-STELLA-HASH-TABLE", "(DEFUN REHASH-STELLA-HASH-TABLE ((SELF STELLA-HASH-TABLE) (NEWSIZE INTEGER)))", ((cpp_function_code)(&rehashStellaHashTable)), NULL);
@@ -2575,6 +3778,36 @@ void helpStartupCollections2() {
     defineFunctionObject("STELLA-HASH-TABLE-LOOKUP", "(DEFUN (STELLA-HASH-TABLE-LOOKUP (LIKE (ANY-VALUE SELF))) ((SELF STELLA-HASH-TABLE) (KEY OBJECT)))", ((cpp_function_code)(&stellaHashTableLookup)), NULL);
     defineFunctionObject("STELLA-STRING-HASH-TABLE-LOOKUP", "(DEFUN (STELLA-STRING-HASH-TABLE-LOOKUP (LIKE (ANY-VALUE SELF))) ((SELF STELLA-HASH-TABLE) (KEY STRING)))", ((cpp_function_code)(&stellaStringHashTableLookup)), NULL);
     defineMethodObject("(DEFMETHOD (LOOKUP (LIKE (ANY-VALUE SELF))) ((SELF STELLA-HASH-TABLE) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Lookup the entry identified by `key' in `self' and\nreturn its value, or NULL if no such entry exists.    Uses an `eql?'\ntest by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::lookup)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD INSERT-AT ((SELF STELLA-HASH-TABLE) (KEY (LIKE (ANY-KEY SELF))) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Set the value of the entry identified by `key' in `self'\nto `value' or add a new entry if no entry with `key' exists yet.  Uses an\n`eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::insertAt)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD REMOVE-AT ((SELF STELLA-HASH-TABLE) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Remove the entry identified by `key' from `self'.  Uses an\n`eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::removeAt)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Return the number of entries in `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::length)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Return TRUE if `self' has zero entries.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::emptyP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Return TRUE if `self' has at least 1 entry.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::nonEmptyP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (COPY (LIKE SELF)) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Return a copy of the hash table `self'.  The bucket table\nand buckets are freshly allocated, however, the keys and values of entries\nare not copied themselves (similar to what we do for lists, etc.).\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::copy)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD CLEAR ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Remove all entries from `self'.  This will result in a\nre-initialization of the table upon the first insertion into `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::clear)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (CONSIFY (CONS OF CONS)) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Collect all entries of `self' into a cons list of\n`(<key> <value>)' pairs and return the result.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::consify)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (OBJECT-EQUAL? BOOLEAN) ((X STELLA-HASH-TABLE) (Y OBJECT)) :DOCUMENTATION \"Return TRUE if `x' and `y' represent the same set of key/value pairs.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::objectEqualP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Return an `equal?' hash code for `self'.  Note that this\nis O(N) in the number of entries of `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::equalHashCode)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (ALLOCATE-ITERATOR (STELLA-HASH-TABLE-ITERATOR OF (LIKE (ANY-KEY SELF)) (LIKE (ANY-VALUE SELF)))) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Allocate an iterator for `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::allocateIterator)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF STELLA-HASH-TABLE-ITERATOR)))", ((cpp_method_code)(&StellaHashTableIterator::nextP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (VALUE-SETTER (LIKE (ANY-VALUE SELF))) ((SELF STELLA-HASH-TABLE-ITERATOR) (VALUE (LIKE (ANY-VALUE SELF)))))", ((cpp_method_code)(&StellaHashTableIterator::valueSetter)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (KEY-SETTER (LIKE (ANY-KEY SELF))) ((SELF STELLA-HASH-TABLE-ITERATOR) (KEY (LIKE (ANY-KEY SELF)))))", ((cpp_method_code)(&StellaHashTableIterator::keySetter)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LOOKUP (LIKE (ANY-VALUE SELF))) ((SELF KEY-VALUE-MAP) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Lookup the entry identified by `key' in `self' and\nreturn its value, or NULL if no such entry exists.    Uses an `eql?'\ntest by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::lookup)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD INSERT-AT ((SELF KEY-VALUE-MAP) (KEY (LIKE (ANY-KEY SELF))) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Set the value of the entry identified by `key' in `self'\nto `value' or add a new entry if no entry with `key' exists yet.  Uses an\n`eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::insertAt)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD REMOVE-AT ((SELF KEY-VALUE-MAP) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Remove the entry identified by `key' from `self'.  Uses an\n`eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::removeAt)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return the number of entries in `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::length)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return TRUE if `self' has zero entries.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::emptyP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return TRUE if `self' has at least 1 entry.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::nonEmptyP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (COPY (LIKE SELF)) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return a copy of the map `self'.  All entries are freshly\nallocated, however, the keys and values of entries are not copied themselves\n (similar to what we do for lists, etc.).\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::copy)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD CLEAR ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Reset `self' to have zero entries.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::clear)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (ALLOCATE-ITERATOR (DICTIONARY-ITERATOR OF (LIKE (ANY-KEY SELF)) (LIKE (ANY-VALUE SELF)))) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Allocate an iterator for `self'.  The only modifying\noperations allowed during iteration are removal of the current element or\nchanging its value.  All other removal or insertion operations might lead\nto corruption or undefined results.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::allocateIterator)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (CONSIFY CONS) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Collect all entries of `self' into a cons list of\n`(<key> <value>)' pairs and return the result.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::consify)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (OBJECT-EQUAL? BOOLEAN) ((X KEY-VALUE-MAP) (Y OBJECT)) :DOCUMENTATION \"Return TRUE if `x' and `y' represent the same set of key/value pairs.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::objectEqualP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return an `equal?' hash code for `self'.  Note that this\nis O(N) in the number of entries of `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::equalHashCode)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("HASH-SET", "(DEFUN (HASH-SET HASH-SET) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return an `eql?' HASH-SET containing `values'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&hashSet)), NULL);
+    defineFunctionObject("COERCE-TO-HASH-SET", "(DEFUN (COERCE-TO-HASH-SET HASH-SET) ((SELF OBJECT) (EQUALTEST? BOOLEAN)) :DOCUMENTATION \"Coerce the collection `self' into a HASH-SET.  Use an\nequal test if `equalTest?' is TRUE (`equalTest?' will be ignored if `self'\nalready is a HASH-SET).\" :PUBLIC? TRUE)", ((cpp_function_code)(&coerceToHashSet)), NULL);
+    defineMethodObject("(DEFMETHOD (MEMBER? BOOLEAN) ((SELF HASH-SET) (OBJECT OBJECT)) :DOCUMENTATION \"Return TRUE iff `object' is a member of the set `self'.\nUses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::memberP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD INSERT ((SELF HASH-SET) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Add `value' to the set `self' unless it is already a member.\nUses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::insert)), ((cpp_method_code)(NULL)));
   }
 }
 
@@ -2589,60 +3822,14 @@ void startupCollections() {
       oKEY_VALUE_MAP_CROSSOVER_POINTo = oREMOVE_DUPLICATES_CROSSOVER_POINTo;
     }
     if (currentStartupTimePhaseP(5)) {
-      { Class* clasS = defineClassFromStringifiedSource("STELLA-HASH-TABLE", "(DEFCLASS STELLA-HASH-TABLE (ABSTRACT-HASH-TABLE) :PARAMETERS ((ANY-KEY :TYPE OBJECT) (ANY-VALUE :TYPE OBJECT)) :SLOTS ((THE-TABLE :TYPE (ARRAY () OF KV-CONS)) (SIZE :TYPE INTEGER) (INITIAL-SIZE :TYPE INTEGER :INITIALLY 50 :PUBLIC? TRUE :DOCUMENTATION \"If supplied, the initial hash table\nwill be sized to hold at least that many elements.\") (FREE-ELEMENTS :TYPE INTEGER) (EQUAL-TEST? :TYPE BOOLEAN :INITIALLY FALSE :PUBLIC? TRUE :DOCUMENTATION \"If true use `equal?' as the\nequality test and `equal-hash-code' as the hash function, otherwise,\nuse `eql?' and `hash-code' (the default).\")))");
-
-        clasS->classConstructorCode = ((cpp_function_code)(&newStellaHashTable));
-        clasS->classSlotAccessorCode = ((cpp_function_code)(&accessStellaHashTableSlotValue));
-      }
-      { Class* clasS = defineClassFromStringifiedSource("STELLA-HASH-TABLE-ITERATOR", "(DEFCLASS STELLA-HASH-TABLE-ITERATOR (DICTIONARY-ITERATOR) :DOCUMENTATION \"Iterator class for STELLA-HASH-TABLE's.  The only modifying\noperations allowed during iteration are removal of the current element or\nchanging its value.  All other removal or insertion operations might lead\nto corruption or undefined results.\" :SLOTS ((SIZE :TYPE INTEGER) (BUCKET-TABLE :TYPE (ARRAY () OF KV-CONS)) (BUCKET-INDEX :TYPE INTEGER :INITIALLY 0) (BUCKET-CURSOR :TYPE KV-CONS)))");
-
-        clasS->classConstructorCode = ((cpp_function_code)(&newStellaHashTableIterator));
-        clasS->classSlotAccessorCode = ((cpp_function_code)(&accessStellaHashTableIteratorSlotValue));
-      }
-      { Class* clasS = defineClassFromStringifiedSource("KEY-VALUE-MAP", "(DEFCLASS KEY-VALUE-MAP (DICTIONARY) :DOCUMENTATION \"Full-featured dictionary class that supports `eql?' or\n`equal?' equality tests, O(1) access operations even for large numbers\nof entries by using a hash table, light-weight KV-CONS representation for\nsmall tables and iteration even if the dictionary is represented by a\nhash table.\" :PUBLIC? TRUE :SLOTS ((THE-MAP :TYPE OBJECT) (EQUAL-TEST? :TYPE BOOLEAN :INITIALLY FALSE :PUBLIC? TRUE :DOCUMENTATION \"If true use `equal?' as the\nequality test (and `equal-hash-code' as the hash function), otherwise,\nuse `eql?' (and `hash-code') (the default).\") (INITIAL-SIZE :TYPE INTEGER :INITIALLY *KEY-VALUE-MAP-CROSSOVER-POINT* :PUBLIC? TRUE :DOCUMENTATION \"If supplied, the initial table\nwill be sized to hold at least that many elements.\") (CROSSOVER-POINT :TYPE INTEGER :INITIALLY *KEY-VALUE-MAP-CROSSOVER-POINT*)))");
-
-        clasS->classConstructorCode = ((cpp_function_code)(&newKeyValueMap));
-        clasS->classSlotAccessorCode = ((cpp_function_code)(&accessKeyValueMapSlotValue));
-      }
-      { Class* clasS = defineClassFromStringifiedSource("HASH-SET", "(DEFCLASS HASH-SET (KEY-VALUE-MAP SET-MIXIN) :DOCUMENTATION \"Full-featured set class that supports `eql?' or `equal?'\nequality tests, O(1) insert and `member?' operations & O(N) `intersection'\netc. operations even for large numbers of entries by using a hash table,\nlight-weight KV-CONS representation for small sets and iteration even if the\nset is represented by a hash table.  The only minor drawback right now is that\nthis wastes a value slot per entry, since we piggy-back off KEY-VALUE-MAP's,\nhowever, that wastes at most 25% space.\" :PUBLIC? TRUE)");
-
-        clasS->classConstructorCode = ((cpp_function_code)(&newHashSet));
-      }
+      helpStartupCollections2();
     }
     if (currentStartupTimePhaseP(6)) {
       finalizeClasses();
     }
     if (currentStartupTimePhaseP(7)) {
-      helpStartupCollections2();
-      defineMethodObject("(DEFMETHOD INSERT-AT ((SELF STELLA-HASH-TABLE) (KEY (LIKE (ANY-KEY SELF))) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Set the value of the entry identified by `key' in `self'\nto `value' or add a new entry if no entry with `key' exists yet.  Uses an\n`eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::insertAt)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD REMOVE-AT ((SELF STELLA-HASH-TABLE) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Remove the entry identified by `key' from `self'.  Uses an\n`eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::removeAt)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Return the number of entries in `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::length)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Return TRUE if `self' has zero entries.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::emptyP)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Return TRUE if `self' has at least 1 entry.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::nonEmptyP)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (COPY (LIKE SELF)) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Return a copy of the hash table `self'.  The bucket table\nand buckets are freshly allocated, however, the keys and values of entries\nare not copied themselves (similar to what we do for lists, etc.).\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::copy)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD CLEAR ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Remove all entries from `self'.  This will result in a\nre-initialization of the table upon the first insertion into `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::clear)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (CONSIFY (CONS OF CONS)) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Collect all entries of `self' into a cons list of\n`(<key> <value>)' pairs and return the result.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::consify)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (OBJECT-EQUAL? BOOLEAN) ((X STELLA-HASH-TABLE) (Y OBJECT)) :DOCUMENTATION \"Return TRUE if `x' and `y' represent the same set of key/value pairs.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::objectEqualP)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Return an `equal?' hash code for `self'.  Note that this\nis O(N) in the number of entries of `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::equalHashCode)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (ALLOCATE-ITERATOR (STELLA-HASH-TABLE-ITERATOR OF (LIKE (ANY-KEY SELF)) (LIKE (ANY-VALUE SELF)))) ((SELF STELLA-HASH-TABLE)) :DOCUMENTATION \"Allocate an iterator for `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&StellaHashTable::allocateIterator)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF STELLA-HASH-TABLE-ITERATOR)))", ((cpp_method_code)(&StellaHashTableIterator::nextP)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (VALUE-SETTER (LIKE (ANY-VALUE SELF))) ((SELF STELLA-HASH-TABLE-ITERATOR) (VALUE (LIKE (ANY-VALUE SELF)))))", ((cpp_method_code)(&StellaHashTableIterator::valueSetter)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (KEY-SETTER (LIKE (ANY-KEY SELF))) ((SELF STELLA-HASH-TABLE-ITERATOR) (KEY (LIKE (ANY-KEY SELF)))))", ((cpp_method_code)(&StellaHashTableIterator::keySetter)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (LOOKUP (LIKE (ANY-VALUE SELF))) ((SELF KEY-VALUE-MAP) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Lookup the entry identified by `key' in `self' and\nreturn its value, or NULL if no such entry exists.    Uses an `eql?'\ntest by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::lookup)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD INSERT-AT ((SELF KEY-VALUE-MAP) (KEY (LIKE (ANY-KEY SELF))) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Set the value of the entry identified by `key' in `self'\nto `value' or add a new entry if no entry with `key' exists yet.  Uses an\n`eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::insertAt)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD REMOVE-AT ((SELF KEY-VALUE-MAP) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Remove the entry identified by `key' from `self'.  Uses an\n`eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::removeAt)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return the number of entries in `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::length)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return TRUE if `self' has zero entries.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::emptyP)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return TRUE if `self' has at least 1 entry.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::nonEmptyP)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (COPY (LIKE SELF)) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return a copy of the map `self'.  All entries are freshly\nallocated, however, the keys and values of entries are not copied themselves\n (similar to what we do for lists, etc.).\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::copy)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD CLEAR ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Reset `self' to have zero entries.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::clear)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (ALLOCATE-ITERATOR (DICTIONARY-ITERATOR OF (LIKE (ANY-KEY SELF)) (LIKE (ANY-VALUE SELF)))) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Allocate an iterator for `self'.  The only modifying\noperations allowed during iteration are removal of the current element or\nchanging its value.  All other removal or insertion operations might lead\nto corruption or undefined results.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::allocateIterator)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (CONSIFY CONS) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Collect all entries of `self' into a cons list of\n`(<key> <value>)' pairs and return the result.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::consify)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (OBJECT-EQUAL? BOOLEAN) ((X KEY-VALUE-MAP) (Y OBJECT)) :DOCUMENTATION \"Return TRUE if `x' and `y' represent the same set of key/value pairs.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::objectEqualP)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return an `equal?' hash code for `self'.  Note that this\nis O(N) in the number of entries of `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::equalHashCode)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("HASH-SET", "(DEFUN (HASH-SET HASH-SET) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return an `eql?' HASH-SET containing `values'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&hashSet)), NULL);
-      defineMethodObject("(DEFMETHOD (MEMBER? BOOLEAN) ((SELF HASH-SET) (OBJECT OBJECT)) :DOCUMENTATION \"Return TRUE iff `object' is a member of the set `self'.\nUses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::memberP)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD INSERT ((SELF HASH-SET) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Add `value' to the set `self' unless it is already a member.\nUses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::insert)), ((cpp_method_code)(NULL)));
+      helpStartupCollections3();
+      helpStartupCollections4();
       defineMethodObject("(DEFMETHOD (REMOVE (LIKE SELF)) ((SELF HASH-SET) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Destructively remove `value' from the set `self' if it is a member and\nreturn `self'.  Uses an `eql?' test by default or `equal?' if `equal-test?' of\n`self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::remove)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (REMOVE-IF (LIKE SELF)) ((SELF HASH-SET) (TEST? FUNCTION-CODE)) :DOCUMENTATION \"Destructively remove all elements of the set `self' for which\n'test?' evaluates to TRUE.  `test?' takes a single argument of type OBJECT and\nreturns TRUE or FALSE.  Returns `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::removeIf)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (POP (LIKE (ANY-VALUE SELF))) ((SELF HASH-SET)) :DOCUMENTATION \"Remove and return an arbitrary element of the set `self'.\nReturn NULL if the set is empty.  Performance note: for large sets implemented\nvia hash tables it takes O(N) to empty out the set with repeated calls to `pop',\nsince the emptier the table gets, the longer it takes to find an element.\nTherefore, it is usually better to use iteration with embedded removals for\nsuch cases.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::pop)), ((cpp_method_code)(NULL)));
@@ -2657,6 +3844,16 @@ void startupCollections() {
       defineMethodObject("(DEFMETHOD (SUBTRACT HASH-SET) ((SELF HASH-SET) (OTHERSET HASH-SET)) :DOCUMENTATION \"Return the set difference of `self' and `otherSet' by destructively\nremoving elements from `self' that also occur in `otherSet'.  Uses an `eql?'\ntest by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::subtract)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (OBJECT-EQUAL? BOOLEAN) ((X HASH-SET) (Y OBJECT)) :DOCUMENTATION \"Return TRUE iff sets `x' and `y' are HASH-SET's with equivalent members.\nUses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\nThis is equivalent to calling `equivalent-sets?'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::objectEqualP)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF HASH-SET)) :DOCUMENTATION \"Return an `equal?' hash code for `self'.  Note that this\nis O(N) in the number of elements of `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::equalHashCode)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD INITIALIZE-DIMENSIONAL-ARRAY ((SELF DIMENSIONAL-ARRAY-MIXIN)) (SETF (THE-ARRAY SELF) (NEW (ARRAY () OF (LIKE (ANY-VALUE SELF))) :SIZE (LENGTH SELF))))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF DIMENSIONAL-ARRAY-MIXIN)) :DOCUMENTATION \"Return the total number of elements in `self'.\" :PUBLIC? TRUE (RETURN (DIM1 SELF)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD INITIALIZE-ARRAY ((SELF DIMENSIONAL-ARRAY-MIXIN) (INITIALVALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Initialize the elements of `self' with `initialValue'.\" :PUBLIC? TRUE (LET ((ARRAY (THE-ARRAY SELF))) (FOREACH I IN (INTERVAL 0 (1- (LENGTH SELF))) DO (SETF (AREF ARRAY I) INITIALVALUE))))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (1D-AREF (LIKE (ANY-VALUE SELF))) ((SELF DIMENSIONAL-ARRAY-MIXIN) (I INTEGER)) :DOCUMENTATION \"Return the element of `self' at position `[i]'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (AREF (THE-ARRAY SELF) I)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (1D-AREF-SETTER (LIKE (ANY-VALUE SELF))) ((SELF DIMENSIONAL-ARRAY-MIXIN) (VALUE (LIKE (ANY-VALUE SELF))) (I INTEGER)) :DOCUMENTATION \"Set the element of `self' at position `[i]' to `value'\nand return the result.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (SETF (AREF (THE-ARRAY SELF) I) VALUE)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (1D-AREF-ADDRESS INTEGER) ((SELF DIMENSIONAL-ARRAY-MIXIN) (I INTEGER)) :DOCUMENTATION \"Return the 1D address of the element at position `[i]'.\nThis is useful for fast element-wise iteration that doesn't need arithmetic.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN I))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF 2-DIMENSIONAL-ARRAY-MIXIN)) :DOCUMENTATION \"Return the total number of elements in `self'.\" :PUBLIC? TRUE (RETURN (* (DIM1 SELF) (DIM2 SELF))))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (2D-AREF (LIKE (ANY-VALUE SELF))) ((SELF 2-DIMENSIONAL-ARRAY-MIXIN) (I INTEGER) (J INTEGER)) :DOCUMENTATION \"Return the element of `self' at position `[i, j]'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (AREF (THE-ARRAY SELF) (+ (* I (DIM2 SELF)) J))))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (2D-AREF-SETTER (LIKE (ANY-VALUE SELF))) ((SELF 2-DIMENSIONAL-ARRAY-MIXIN) (VALUE (LIKE (ANY-VALUE SELF))) (I INTEGER) (J INTEGER)) :DOCUMENTATION \"Set the element of `self' at position `[i, j]' to `value'\nand return the result.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (SETF (AREF (THE-ARRAY SELF) (+ (* I (DIM2 SELF)) J)) VALUE)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (2D-AREF-ADDRESS INTEGER) ((SELF 2-DIMENSIONAL-ARRAY-MIXIN) (I INTEGER) (J INTEGER)) :DOCUMENTATION \"Return the 1D address of the element at position `[i, j]'.\nThis is useful for fast element-wise iteration that doesn't need arithmetic.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (+ (* I (DIM2 SELF)) J)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
       defineFunctionObject("STARTUP-COLLECTIONS", "(DEFUN STARTUP-COLLECTIONS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupCollections)), NULL);
       { MethodSlot* function = lookupFunction(SYM_COLLECTIONS_STELLA_STARTUP_COLLECTIONS);
 
@@ -2668,6 +3865,7 @@ void startupCollections() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       registerNativeName(SYM_COLLECTIONS_STELLA_VECTOR, KWD_COLLECTIONS_CPP, KWD_COLLECTIONS_FUNCTION);
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *USE-STELLA-HASH-TABLES?* BOOLEAN (VERBATIM :COMMON-LISP \"CL-USER::*use-stella-hash-tables?*\" :CPP \"\n#ifndef HAVE_SGI_HASH_MAPS\n  TRUE\n#else\n  FALSE\n#endif\n\" :OTHERWISE FALSE))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-HASH-TABLE-AVG-BUCKET-LENGTH* FLOAT 1.0)");
@@ -2687,6 +3885,14 @@ Keyword* KWD_COLLECTIONS_CPP = NULL;
 Keyword* KWD_COLLECTIONS_FUNCTION = NULL;
 
 Surrogate* SGT_COLLECTIONS_STELLA_VECTOR = NULL;
+
+Surrogate* SGT_COLLECTIONS_STELLA_VECTOR_SEQUENCE = NULL;
+
+Surrogate* SGT_COLLECTIONS_STELLA_HEAP = NULL;
+
+Symbol* SYM_COLLECTIONS_STELLA_PREDICATE = NULL;
+
+Symbol* SYM_COLLECTIONS_STELLA_FILL_POINTER = NULL;
 
 Surrogate* SGT_COLLECTIONS_STELLA_STELLA_HASH_TABLE = NULL;
 
@@ -2711,6 +3917,22 @@ Symbol* SYM_COLLECTIONS_STELLA_THE_MAP = NULL;
 Symbol* SYM_COLLECTIONS_STELLA_CROSSOVER_POINT = NULL;
 
 Surrogate* SGT_COLLECTIONS_STELLA_HASH_SET = NULL;
+
+Surrogate* SGT_COLLECTIONS_STELLA_CONS = NULL;
+
+Surrogate* SGT_COLLECTIONS_STELLA_LIST = NULL;
+
+Surrogate* SGT_COLLECTIONS_STELLA_1D_ARRAY = NULL;
+
+Symbol* SYM_COLLECTIONS_STELLA_OBJECT_ARRAY = NULL;
+
+Surrogate* SGT_COLLECTIONS_STELLA_1D_FLOAT_ARRAY = NULL;
+
+Symbol* SYM_COLLECTIONS_STELLA_FLOAT_ARRAY = NULL;
+
+Surrogate* SGT_COLLECTIONS_STELLA_2D_ARRAY = NULL;
+
+Surrogate* SGT_COLLECTIONS_STELLA_2D_FLOAT_ARRAY = NULL;
 
 Symbol* SYM_COLLECTIONS_STELLA_STARTUP_COLLECTIONS = NULL;
 

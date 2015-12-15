@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,37 +52,38 @@ import edu.isi.stella.*;
 public class _StartupStrategies {
   static void helpStartupStrategies1() {
     {
-      Logic.KWD_TERMINAL_FAILURE = ((Keyword)(Stella.internRigidSymbolWrtModule("TERMINAL-FAILURE", null, 2)));
-      Logic.SYM_LOGIC_PROOF_ADJUNCT = ((Symbol)(Stella.internRigidSymbolWrtModule("PROOF-ADJUNCT", null, 0)));
-      Logic.KWD_SELECT_PARALLEL_THREAD = ((Keyword)(Stella.internRigidSymbolWrtModule("SELECT-PARALLEL-THREAD", null, 2)));
-      Logic.KWD_TIME_OUT = ((Keyword)(Stella.internRigidSymbolWrtModule("TIME-OUT", null, 2)));
-      Logic.KWD_CONDITIONAL_ANTECEDENT = ((Keyword)(Stella.internRigidSymbolWrtModule("CONDITIONAL-ANTECEDENT", null, 2)));
-      Logic.KWD_DUMMY_JUSTIFICATION = ((Keyword)(Stella.internRigidSymbolWrtModule("DUMMY-JUSTIFICATION", null, 2)));
-      Logic.KWD_LOOKUP_GOAL_CACHES = ((Keyword)(Stella.internRigidSymbolWrtModule("LOOKUP-GOAL-CACHES", null, 2)));
-      Logic.KWD_LOOKUP_ASSERTIONS = ((Keyword)(Stella.internRigidSymbolWrtModule("LOOKUP-ASSERTIONS", null, 2)));
-      Logic.KWD_SCAN_PROPOSITIONS = ((Keyword)(Stella.internRigidSymbolWrtModule("SCAN-PROPOSITIONS", null, 2)));
-      Logic.KWD_SCAN_PARTIAL_PROPOSITIONS = ((Keyword)(Stella.internRigidSymbolWrtModule("SCAN-PARTIAL-PROPOSITIONS", null, 2)));
-      Logic.KWD_SCAN_COLLECTION = ((Keyword)(Stella.internRigidSymbolWrtModule("SCAN-COLLECTION", null, 2)));
-      Logic.KWD_SHALLOW_DISPROOF = ((Keyword)(Stella.internRigidSymbolWrtModule("SHALLOW-DISPROOF", null, 2)));
-      Logic.KWD_SCAN_FOR_VALUE_CLASH = ((Keyword)(Stella.internRigidSymbolWrtModule("SCAN-FOR-VALUE-CLASH", null, 2)));
-      Logic.KWD_ALL_SUBGOAL_STRATEGIES = ((Keyword)(Stella.internRigidSymbolWrtModule("ALL-SUBGOAL-STRATEGIES", null, 2)));
-      Logic.KWD_GOAL_COMPLEMENT = ((Keyword)(Stella.internRigidSymbolWrtModule("GOAL-COMPLEMENT", null, 2)));
-      Logic.KWD_FORWARD_GOALS = ((Keyword)(Stella.internRigidSymbolWrtModule("FORWARD-GOALS", null, 2)));
-      Logic.KWD_EQUIVALENCE = ((Keyword)(Stella.internRigidSymbolWrtModule("EQUIVALENCE", null, 2)));
-      Logic.KWD_UNIVERSAL_INTRODUCTION = ((Keyword)(Stella.internRigidSymbolWrtModule("UNIVERSAL-INTRODUCTION", null, 2)));
-      Logic.KWD_SUBSUMPTION_TEST = ((Keyword)(Stella.internRigidSymbolWrtModule("SUBSUMPTION-TEST", null, 2)));
-      Logic.SGT_LOGIC_WHYNOT_PARTIAL_MATCH = ((Surrogate)(Stella.internRigidSymbolWrtModule("WHYNOT-PARTIAL-MATCH", null, 1)));
-      Logic.KWD_DUPLICATE_ = ((Keyword)(Stella.internRigidSymbolWrtModule("DUPLICATE-", null, 2)));
-      Logic.KWD_FORWARD_RULE = ((Keyword)(Stella.internRigidSymbolWrtModule("FORWARD-RULE", null, 2)));
-      Logic.SGT_LOGIC_CONDITIONAL_ANTECEDENT_PROOF_ADJUNCT = ((Surrogate)(Stella.internRigidSymbolWrtModule("CONDITIONAL-ANTECEDENT-PROOF-ADJUNCT", null, 1)));
-      Logic.SYM_LOGIC_PROVABLE_RULE = ((Symbol)(Stella.internRigidSymbolWrtModule("PROVABLE-RULE", null, 0)));
-      Logic.SYM_STELLA_PHASE = ((Symbol)(Stella.internRigidSymbolWrtModule("PHASE", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.KWD_ORIGINAL_GOAL = ((Keyword)(Stella.internRigidSymbolWrtModule("ORIGINAL-GOAL", null, 2)));
-      Logic.SYM_LOGIC_CONTAINED_BY = ((Symbol)(Stella.internRigidSymbolWrtModule("CONTAINED-BY", null, 0)));
-      Logic.SGT_LOGIC_CLUSTERED_CONJUNCTION_PROOF_ADJUNCT = ((Surrogate)(Stella.internRigidSymbolWrtModule("CLUSTERED-CONJUNCTION-PROOF-ADJUNCT", null, 1)));
-      Logic.SYM_LOGIC_CLUSTER_FRAMES = ((Symbol)(Stella.internRigidSymbolWrtModule("CLUSTER-FRAMES", null, 0)));
-      Logic.KWD_CONSTANT_PROPOSITION = ((Keyword)(Stella.internRigidSymbolWrtModule("CONSTANT-PROPOSITION", null, 2)));
-      Logic.SYM_LOGIC_STARTUP_STRATEGIES = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-STRATEGIES", null, 0)));
+      Logic.KWD_TERMINAL_FAILURE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TERMINAL-FAILURE", null, 2)));
+      Logic.SYM_LOGIC_PROOF_ADJUNCT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PROOF-ADJUNCT", null, 0)));
+      Logic.KWD_SELECT_PARALLEL_THREAD = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SELECT-PARALLEL-THREAD", null, 2)));
+      Logic.KWD_TIME_OUT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TIME-OUT", null, 2)));
+      Logic.KWD_CONDITIONAL_ANTECEDENT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONDITIONAL-ANTECEDENT", null, 2)));
+      Logic.KWD_DUMMY_JUSTIFICATION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DUMMY-JUSTIFICATION", null, 2)));
+      Logic.KWD_LOOKUP_GOAL_CACHES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOKUP-GOAL-CACHES", null, 2)));
+      Logic.KWD_LOOKUP_ASSERTIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOKUP-ASSERTIONS", null, 2)));
+      Logic.KWD_SCAN_PROPOSITIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SCAN-PROPOSITIONS", null, 2)));
+      Logic.KWD_SCAN_PARTIAL_PROPOSITIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SCAN-PARTIAL-PROPOSITIONS", null, 2)));
+      Logic.KWD_SCAN_COLLECTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SCAN-COLLECTION", null, 2)));
+      Logic.KWD_SHALLOW_DISPROOF = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SHALLOW-DISPROOF", null, 2)));
+      Logic.KWD_SCAN_FOR_VALUE_CLASH = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SCAN-FOR-VALUE-CLASH", null, 2)));
+      Logic.KWD_ALL_SUBGOAL_STRATEGIES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ALL-SUBGOAL-STRATEGIES", null, 2)));
+      Logic.KWD_GOAL_COMPLEMENT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL-COMPLEMENT", null, 2)));
+      Logic.KWD_FORWARD_GOALS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FORWARD-GOALS", null, 2)));
+      Logic.KWD_EQUIVALENCE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("EQUIVALENCE", null, 2)));
+      Logic.KWD_UNIVERSAL_INTRODUCTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UNIVERSAL-INTRODUCTION", null, 2)));
+      Logic.KWD_SUBSUMPTION_TEST = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SUBSUMPTION-TEST", null, 2)));
+      Logic.KWD_DEBUG = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEBUG", null, 2)));
+      Logic.SGT_LOGIC_WHYNOT_PARTIAL_MATCH = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("WHYNOT-PARTIAL-MATCH", null, 1)));
+      Logic.KWD_DUPLICATE_ = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DUPLICATE-", null, 2)));
+      Logic.KWD_FORWARD_RULE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FORWARD-RULE", null, 2)));
+      Logic.SGT_LOGIC_CONDITIONAL_ANTECEDENT_PROOF_ADJUNCT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CONDITIONAL-ANTECEDENT-PROOF-ADJUNCT", null, 1)));
+      Logic.SYM_LOGIC_PROVABLE_RULE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PROVABLE-RULE", null, 0)));
+      Logic.SYM_STELLA_PHASE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PHASE", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.KWD_ORIGINAL_GOAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ORIGINAL-GOAL", null, 2)));
+      Logic.SYM_LOGIC_CONTAINED_BY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTAINED-BY", null, 0)));
+      Logic.SGT_LOGIC_CLUSTERED_CONJUNCTION_PROOF_ADJUNCT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CLUSTERED-CONJUNCTION-PROOF-ADJUNCT", null, 1)));
+      Logic.SYM_LOGIC_CLUSTER_FRAMES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLUSTER-FRAMES", null, 0)));
+      Logic.KWD_CONSTANT_PROPOSITION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONSTANT-PROPOSITION", null, 2)));
+      Logic.SYM_LOGIC_STARTUP_STRATEGIES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-STRATEGIES", null, 0)));
     }
   }
 
@@ -103,6 +104,7 @@ public class _StartupStrategies {
       Stella.defineFunctionObject("TRY-PARALLEL-THREAD-PROOF", "(DEFUN (TRY-PARALLEL-THREAD-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "tryParallelThreadProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
       Stella.defineFunctionObject("PUSH-NEXT-STRATEGY", "(DEFUN PUSH-NEXT-STRATEGY ((FRAME CONTROL-FRAME) (STRATEGY KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "pushNextStrategy", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("CREATE-SUBGOAL-FRAME", "(DEFUN (CREATE-SUBGOAL-FRAME CONTROL-FRAME) ((UPFRAME CONTROL-FRAME) (GOAL PROPOSITION) (STRATEGY KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "createSubgoalFrame", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
+      Stella.defineFunctionObject("SPECIALIST-APPLICABLE?", "(DEFUN (SPECIALIST-APPLICABLE? BOOLEAN) ((DESCRIPTION NAMED-DESCRIPTION) (PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.NamedDescription", "specialistApplicableP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.NamedDescription"), Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
       Stella.defineFunctionObject("CONTINUE-SPECIALIST-PROOF", "(DEFUN (CONTINUE-SPECIALIST-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continueSpecialistProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("LOOKUP-CACHED-PROOF", "(DEFUN (LOOKUP-CACHED-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "lookupCachedProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
       Stella.defineFunctionObject("SCAN-CACHED-GOALS", "(DEFUN (SCAN-CACHED-GOALS KEYWORD) ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "scanCachedGoals", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
@@ -128,7 +130,7 @@ public class _StartupStrategies {
       Stella.defineFunctionObject("CREATE-CONDITIONAL-ANTECEDENT-SUBFRAME", "(DEFUN (CREATE-CONDITIONAL-ANTECEDENT-SUBFRAME CONTROL-FRAME) ((FRAME CONTROL-FRAME) (GOAL PROPOSITION) (PROVABLERULE PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "createConditionalAntecedentSubframe", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
       Stella.defineFunctionObject("CONTINUE-CONDITIONAL-ANTECEDENT-PROOF", "(DEFUN (CONTINUE-CONDITIONAL-ANTECEDENT-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continueConditionalAntecedentProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("TRY-FULL-SUBQUERY-PROOF", "(DEFUN (TRY-FULL-SUBQUERY-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "tryFullSubqueryProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
-      Stella.defineFunctionObject("EXTRACT-COLLECTION-ARGUMENT", "(DEFUN (EXTRACT-COLLECTION-ARGUMENT NAMED-DESCRIPTION) ((PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "extractCollectionArgument", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
+      Stella.defineFunctionObject("EXTRACT-COLLECTION-ARGUMENT", "(DEFUN (EXTRACT-COLLECTION-ARGUMENT DESCRIPTION) ((PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "extractCollectionArgument", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
       Stella.defineFunctionObject("TRY-ISA-PROPOSITION-PROOF", "(DEFUN (TRY-ISA-PROPOSITION-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "tryIsaPropositionProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
       Stella.defineFunctionObject("TRY-SCAN-COLLECTION-PROOF", "(DEFUN (TRY-SCAN-COLLECTION-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "tryScanCollectionProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
       Stella.defineFunctionObject("INFERABLE-DESCRIPTION?", "(DEFUN (INFERABLE-DESCRIPTION? BOOLEAN) ((SELF OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "inferableDescriptionP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
@@ -142,12 +144,11 @@ public class _StartupStrategies {
       Stella.defineFunctionObject("CONTINUE-CLUSTERED-CONJUNCTION-PROOF", "(DEFUN (CONTINUE-CLUSTERED-CONJUNCTION-PROOF KEYWORD) ((ANDFRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continueClusteredConjunctionProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("PUSH-MONOTONIC-WORLD", "(DEFUN (PUSH-MONOTONIC-WORLD WORLD) ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "pushMonotonicWorld", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("TRY-DISJUNCTIVE-IMPLICATION-PROOF", "(DEFUN (TRY-DISJUNCTIVE-IMPLICATION-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "tryDisjunctiveImplicationProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
+      Stella.defineFunctionObject("RESUME-DISJUNCTIVE-IMPLICATION-PROOF", "(DEFUN (RESUME-DISJUNCTIVE-IMPLICATION-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "resumeDisjunctiveImplicationProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("CREATE-ANONYMOUS-INSTANCE", "(DEFUN (CREATE-ANONYMOUS-INSTANCE LOGIC-OBJECT) ((PREFIX STRING) (SKOLEM? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "createAnonymousInstance", new java.lang.Class [] {Native.find_java_class("java.lang.String"), java.lang.Boolean.TYPE}), null);
       Stella.defineFunctionObject("CREATE-HYPOTHESIZED-INSTANCE", "(DEFUN (CREATE-HYPOTHESIZED-INSTANCE LOGIC-OBJECT) ((PREFIX STRING)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "createHypothesizedInstance", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), null);
       Stella.defineFunctionObject("TRY-UNIVERSAL-INTRODUCTION-PROOF", "(DEFUN (TRY-UNIVERSAL-INTRODUCTION-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "tryUniversalIntroductionProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
       Stella.defineFunctionObject("TRY-REFUTATION-PROOF", "(DEFUN (TRY-REFUTATION-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "tryRefutationProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
-      Stella.defineFunctionObject("CONTINUE-FORALL-PROOF", "(DEFUN (CONTINUE-FORALL-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continueForallProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
-      Stella.defineFunctionObject("CONTINUE-EXISTS-PROOF", "(DEFUN (CONTINUE-EXISTS-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continueExistsProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
     }
   }
 
@@ -162,7 +163,7 @@ public class _StartupStrategies {
           _StartupStrategies.helpStartupStrategies1();
         }
         if (Stella.currentStartupTimePhaseP(4)) {
-          Logic.$PARALLEL_STRATEGIES$ = Stella.list(Stella_Object.cons(Logic.KWD_DISJUNCTIVE_IMPLICATION_INTRODUCTION, Stella_Object.cons(Logic.KWD_UNIVERSAL_INTRODUCTION, Stella_Object.cons(Logic.KWD_REFUTATION, Stella.NIL))));
+          Logic.$PARALLEL_STRATEGIES$ = List.list(Cons.cons(Logic.KWD_DISJUNCTIVE_IMPLICATION_INTRODUCTION, Cons.cons(Logic.KWD_UNIVERSAL_INTRODUCTION, Cons.cons(Logic.KWD_REFUTATION, Stella.NIL))));
           Logic.$PL_ANONYMOUS_MODULE$ = Stella.getStellaModule("PL-ANONYMOUS", true);
         }
         if (Stella.currentStartupTimePhaseP(5)) {
@@ -182,6 +183,8 @@ public class _StartupStrategies {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupStrategies.helpStartupStrategies2();
+          Stella.defineFunctionObject("CONTINUE-FORALL-PROOF", "(DEFUN (CONTINUE-FORALL-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continueForallProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
+          Stella.defineFunctionObject("CONTINUE-EXISTS-PROOF", "(DEFUN (CONTINUE-EXISTS-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continueExistsProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
           Stella.defineFunctionObject("CONTINUE-CONSTANT-PROOF", "(DEFUN (CONTINUE-CONSTANT-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continueConstantProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
           Stella.defineExternalSlotFromStringifiedSource("(DEFSLOT CONTROL-FRAME INFERENCE-CUTOFF-REASON :TYPE KEYWORD :ALLOCATION :DYNAMIC)");
           Stella.defineFunctionObject("REGISTER-INFERENCE-CUTOFF", "(DEFUN REGISTER-INFERENCE-CUTOFF ((FRAME CONTROL-FRAME) (REASON KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "registerInferenceCutoff", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
@@ -198,6 +201,7 @@ public class _StartupStrategies {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *PARALLEL-STRATEGIES* (LIST OF KEYWORD) (LIST :DISJUNCTIVE-IMPLICATION-INTRODUCTION :UNIVERSAL-INTRODUCTION :REFUTATION) :DOCUMENTATION \"List of strategies (keywords) that fork a parallel\ncontrol stack before executing.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *FAILED-GOAL-CUTOFFS* INTEGER 0)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SUCCEEDED-GOAL-CUTOFFS* INTEGER 0)");

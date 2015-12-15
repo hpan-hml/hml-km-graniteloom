@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -121,7 +121,7 @@ public class World extends Context {
   public static void finalizeWorld(World self) {
     { Context parentcontext = self.parentContext;
 
-      self.allSuperContexts = Stella_Object.cons(parentcontext, parentcontext.allSuperContexts);
+      self.allSuperContexts = Cons.cons(parentcontext, parentcontext.allSuperContexts);
       Stella.$CONTEXT_NUMBER_COUNTER$ = Stella.$CONTEXT_NUMBER_COUNTER$ + 2;
       self.contextNumber = Stella.$CONTEXT_NUMBER_COUNTER$;
     }
@@ -133,7 +133,7 @@ public class World extends Context {
       { Context parent = world.parentContext;
 
         if (parent != null) {
-          world.allSuperContexts = Stella_Object.cons(parent, parent.allSuperContexts);
+          world.allSuperContexts = Cons.cons(parent, parent.allSuperContexts);
         }
         else {
           world.allSuperContexts = Stella.NIL;
@@ -145,7 +145,7 @@ public class World extends Context {
   public Iterator parentContexts() {
     { World self = this;
 
-      return (((Cons)(Stella_Object.cons(self.parentContext, Stella.NIL))).allocateDestructiveListIterator());
+      return (((Cons)(Cons.cons(self.parentContext, Stella.NIL))).allocateDestructiveListIterator());
     }
   }
 

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,32 +52,32 @@ import edu.isi.stella.*;
 public class _StartupSpecialize {
   static void helpStartupSpecialize1() {
     {
-      Logic.SGT_LOGIC_ABSTRACT_PROPOSITIONS_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("ABSTRACT-PROPOSITIONS-ITERATOR", null, 1)));
-      Logic.SYM_LOGIC_PROPOSITION_CURSOR = ((Symbol)(Stella.internRigidSymbolWrtModule("PROPOSITION-CURSOR", null, 0)));
-      Logic.SYM_LOGIC_EQUIVALENTS_STACK = ((Symbol)(Stella.internRigidSymbolWrtModule("EQUIVALENTS-STACK", null, 0)));
-      Logic.SGT_LOGIC_TRUE_PROPOSITIONS_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("TRUE-PROPOSITIONS-ITERATOR", null, 1)));
-      Logic.SGT_LOGIC_SPECIALIZING_PROPOSITIONS_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("SPECIALIZING-PROPOSITIONS-ITERATOR", null, 1)));
-      Logic.SYM_LOGIC_SPECIALIZING_RELATIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("SPECIALIZING-RELATIONS", null, 0)));
-      Logic.SGT_LOGIC_F_TEST_PROPERTYp_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-TEST-PROPERTY?-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_PL_KERNEL_KB_COLLECTION = ((Surrogate)(Stella.internRigidSymbolWrtModule("COLLECTION", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_LOGIC_F_TEST_ISAp_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-TEST-ISA?-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_LOGIC_F_TEST_ISAp_MEMO_TABLE_001 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-TEST-ISA?-MEMO-TABLE-001", null, 1)));
-      Logic.SGT_LOGIC_F_ACCESS_BINARY_VALUE_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-ACCESS-BINARY-VALUE-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_LOGIC_TRANSITIVE_CLOSURE_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("TRANSITIVE-CLOSURE-ITERATOR", null, 1)));
-      Logic.SYM_LOGIC_ALLOCATE_ADJACENCY_ITERATOR_FUNCTION = ((Symbol)(Stella.internRigidSymbolWrtModule("ALLOCATE-ADJACENCY-ITERATOR-FUNCTION", null, 0)));
-      Logic.SYM_LOGIC_FILTERp = ((Symbol)(Stella.internRigidSymbolWrtModule("FILTER?", null, 0)));
-      Logic.SYM_LOGIC_ADJACENCY_ITERATOR_STACK = ((Symbol)(Stella.internRigidSymbolWrtModule("ADJACENCY-ITERATOR-STACK", null, 0)));
-      Logic.SYM_LOGIC_BEEN_THERE_LIST = ((Symbol)(Stella.internRigidSymbolWrtModule("BEEN-THERE-LIST", null, 0)));
-      Logic.SGT_LOGIC_SUPPORTED_CLOSURE_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("SUPPORTED-CLOSURE-ITERATOR", null, 1)));
-      Logic.SGT_LOGIC_DIRECTLY_LINKED_OBJECTS_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("DIRECTLY-LINKED-OBJECTS-ITERATOR", null, 1)));
-      Logic.SYM_LOGIC_INVERSEp = ((Symbol)(Stella.internRigidSymbolWrtModule("INVERSE?", null, 0)));
-      Logic.SYM_LOGIC_ROOT_TRUTH_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("ROOT-TRUTH-VALUE", null, 0)));
-      Logic.SGT_LOGIC_F_ALL_SUPERCOLLECTIONS_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-ALL-SUPERCOLLECTIONS-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_LOGIC_F_ALL_SUPPORTED_NAMED_SUBCOLLECTIONS_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-ALL-SUPPORTED-NAMED-SUBCOLLECTIONS-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_STELLA_NUMBER = ((Surrogate)(Stella.internRigidSymbolWrtModule("NUMBER", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.SGT_LOGIC_CLASHING_PROPOSITIONS_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("CLASHING-PROPOSITIONS-ITERATOR", null, 1)));
-      Logic.SYM_STELLA_TAXONOMY_NODE = ((Symbol)(Stella.internRigidSymbolWrtModule("TAXONOMY-NODE", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_STARTUP_SPECIALIZE = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-SPECIALIZE", null, 0)));
+      Logic.SGT_LOGIC_ABSTRACT_PROPOSITIONS_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ABSTRACT-PROPOSITIONS-ITERATOR", null, 1)));
+      Logic.SYM_LOGIC_PROPOSITION_CURSOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PROPOSITION-CURSOR", null, 0)));
+      Logic.SYM_LOGIC_EQUIVALENTS_STACK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EQUIVALENTS-STACK", null, 0)));
+      Logic.SGT_LOGIC_TRUE_PROPOSITIONS_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("TRUE-PROPOSITIONS-ITERATOR", null, 1)));
+      Logic.SGT_LOGIC_SPECIALIZING_PROPOSITIONS_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SPECIALIZING-PROPOSITIONS-ITERATOR", null, 1)));
+      Logic.SYM_LOGIC_SPECIALIZING_RELATIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SPECIALIZING-RELATIONS", null, 0)));
+      Logic.SGT_LOGIC_F_TEST_PROPERTYp_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-TEST-PROPERTY?-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_PL_KERNEL_KB_COLLECTION = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("COLLECTION", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_LOGIC_F_TEST_ISAp_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-TEST-ISA?-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_LOGIC_F_TEST_ISAp_MEMO_TABLE_001 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-TEST-ISA?-MEMO-TABLE-001", null, 1)));
+      Logic.SGT_LOGIC_F_ACCESS_BINARY_VALUE_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-ACCESS-BINARY-VALUE-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_LOGIC_TRANSITIVE_CLOSURE_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("TRANSITIVE-CLOSURE-ITERATOR", null, 1)));
+      Logic.SYM_LOGIC_ALLOCATE_ADJACENCY_ITERATOR_FUNCTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ALLOCATE-ADJACENCY-ITERATOR-FUNCTION", null, 0)));
+      Logic.SYM_LOGIC_FILTERp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FILTER?", null, 0)));
+      Logic.SYM_LOGIC_ADJACENCY_ITERATOR_STACK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ADJACENCY-ITERATOR-STACK", null, 0)));
+      Logic.SYM_LOGIC_BEEN_THERE_LIST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BEEN-THERE-LIST", null, 0)));
+      Logic.SGT_LOGIC_SUPPORTED_CLOSURE_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SUPPORTED-CLOSURE-ITERATOR", null, 1)));
+      Logic.SGT_LOGIC_DIRECTLY_LINKED_OBJECTS_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DIRECTLY-LINKED-OBJECTS-ITERATOR", null, 1)));
+      Logic.SYM_LOGIC_INVERSEp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INVERSE?", null, 0)));
+      Logic.SYM_LOGIC_ROOT_TRUTH_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ROOT-TRUTH-VALUE", null, 0)));
+      Logic.SGT_LOGIC_F_ALL_SUPERCOLLECTIONS_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-ALL-SUPERCOLLECTIONS-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_LOGIC_F_ALL_SUPPORTED_NAMED_SUBCOLLECTIONS_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-ALL-SUPPORTED-NAMED-SUBCOLLECTIONS-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_STELLA_NUMBER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NUMBER", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.SGT_LOGIC_CLASHING_PROPOSITIONS_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASHING-PROPOSITIONS-ITERATOR", null, 1)));
+      Logic.SYM_STELLA_TAXONOMY_NODE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TAXONOMY-NODE", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_STARTUP_SPECIALIZE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-SPECIALIZE", null, 0)));
     }
   }
 
@@ -215,6 +215,7 @@ public class _StartupSpecialize {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT EMPTY-PROPOSITIONS-ITERATOR (ITERATOR OF PROPOSITION) (NEW TRUE-PROPOSITIONS-ITERATOR) :DOCUMENTATION \"This iterator returns no values whenever its called.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *IMPLICATION-SUBSUMPTION-GRAPH* TAXONOMY-GRAPH NULL)");
           Logic.initializeImplicationSubsumptionGraph();

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -122,7 +122,7 @@ public class TaxonomyGraph extends StandardObject {
   public static void finalizeTaxonomyGraph(TaxonomyGraph graph) {
     if (graph.incrementalModeP &&
         ((graph.numberOfNodes > 0) &&
-         ((((double)(Stella.max(graph.numberOfForeignIntervalNodes, graph.addedLinks.length()))) / graph.numberOfNodes) < graph.renumberRatio))) {
+         ((((double)(Stella.integer_max(graph.numberOfForeignIntervalNodes, graph.addedLinks.length()))) / graph.numberOfNodes) < graph.renumberRatio))) {
       { Cons link = null;
         Cons iter000 = graph.addedLinks.theConsList;
 
@@ -199,10 +199,10 @@ public class TaxonomyGraph extends StandardObject {
         for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
           parent = ((TaxonomyNode)(iter001.value));
           if (parent == maxparent) {
-            parent.treeChildren = Stella_Object.cons(node, parent.treeChildren);
+            parent.treeChildren = Cons.cons(node, parent.treeChildren);
           }
           else {
-            graph.brokenLinks.push(Stella_Object.cons(parent, Stella_Object.cons(node, Stella.NIL)));
+            graph.brokenLinks.push(Cons.cons(parent, Cons.cons(node, Stella.NIL)));
           }
         }
       }
@@ -311,6 +311,11 @@ public class TaxonomyGraph extends StandardObject {
   }
 
   public static void incrementallyUnlinkTaxonomyNodes(TaxonomyGraph graph, TaxonomyNode parent, TaxonomyNode child) {
+    {
+      graph = graph;
+      parent = parent;
+      child = child;
+    }
     throw ((StellaException)(StellaException.newStellaException("incrementally-unlink-taxonomy-nodes: Rewrite me!").fillInStackTrace()));
   }
 
@@ -386,7 +391,7 @@ public class TaxonomyGraph extends StandardObject {
         child.initialInterval = interval;
         child.label = interval.upperBound;
         TaxonomyNode.addTaxonomyNodeInterval(child, interval);
-        parent.treeChildren = parent.treeChildren.concatenate(Stella_Object.cons(child, Stella.NIL), Stella.NIL);
+        parent.treeChildren = parent.treeChildren.concatenate(Cons.cons(child, Stella.NIL), Stella.NIL);
         TaxonomyNode.propagateForeignInterval(parent, interval);
       }
     }
@@ -405,7 +410,7 @@ public class TaxonomyGraph extends StandardObject {
       return;
     }
     if (graph.incrementalModeP) {
-      graph.addedLinks.push(Stella_Object.cons(parent, Stella_Object.cons(child, Stella.NIL)));
+      graph.addedLinks.push(Cons.cons(parent, Cons.cons(child, Stella.NIL)));
     }
     else {
       TaxonomyGraph.createTaxonomyLink(graph, parent, child);
@@ -414,8 +419,8 @@ public class TaxonomyGraph extends StandardObject {
 
   public static void createTaxonomyLink(TaxonomyGraph graph, TaxonomyNode parent, TaxonomyNode child) {
     TaxonomyGraph.removeTaxonomyRoot(graph, child);
-    child.parents = Stella_Object.cons(parent, child.parents);
-    parent.children = Stella_Object.cons(child, parent.children);
+    child.parents = Cons.cons(parent, child.parents);
+    parent.children = Cons.cons(child, parent.children);
   }
 
   /** Remove <code>node</code> from <code>graph</code> and disconnect incident links.

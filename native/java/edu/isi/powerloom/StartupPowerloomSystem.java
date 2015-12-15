@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -74,7 +74,7 @@ public class StartupPowerloomSystem {
           Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/POWERLOOM-CODE", Stella.$STARTUP_TIME_PHASE$ > 1));
           Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
           if (Stella.currentStartupTimePhaseP(2)) {
-            PowerLoom.SYM_POWERLOOM_CODE_STARTUP_POWERLOOM_SYSTEM = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-POWERLOOM-SYSTEM", null, 0)));
+            PowerLoom.SYM_POWERLOOM_CODE_STARTUP_POWERLOOM_SYSTEM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-POWERLOOM-SYSTEM", null, 0)));
           }
           if (Stella.currentStartupTimePhaseP(6)) {
             Stella.finalizeClasses();
@@ -91,6 +91,7 @@ public class StartupPowerloomSystem {
             Stella.cleanupUnfinalizedClasses();
           }
           if (Stella.currentStartupTimePhaseP(9)) {
+            Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/POWERLOOM-CODE")))));
             { int phase = Stella.NULL_INTEGER;
               int iter000 = 0;
               int upperBound001 = 9;

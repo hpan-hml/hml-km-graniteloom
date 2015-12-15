@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -50,6 +50,7 @@ import edu.isi.stella.javalib.StellaSpecialVariable;
 import edu.isi.stella.*;
 
 public class CheckTypesRecord extends StandardObject {
+    public Proposition proposition;
     public Stella_Object parentProposition;
     public Description parentDescription;
     public Module module;
@@ -61,12 +62,21 @@ public class CheckTypesRecord extends StandardObject {
       self.module = null;
       self.parentDescription = null;
       self.parentProposition = null;
+      self.proposition = null;
       return (self);
     }
   }
 
   public static Stella_Object accessCheckTypesRecordSlotValue(CheckTypesRecord self, Symbol slotname, Stella_Object value, boolean setvalueP) {
-    if (slotname == Logic.SYM_LOGIC_PARENT_PROPOSITION) {
+    if (slotname == Logic.SYM_LOGIC_PROPOSITION) {
+      if (setvalueP) {
+        self.proposition = ((Proposition)(value));
+      }
+      else {
+        value = self.proposition;
+      }
+    }
+    else if (slotname == Logic.SYM_LOGIC_PARENT_PROPOSITION) {
       if (setvalueP) {
         self.parentProposition = value;
       }

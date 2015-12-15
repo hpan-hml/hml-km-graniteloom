@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -63,10 +63,10 @@ public class StringHashTable extends AbstractHashTable {
     { Cons value = ((Cons)(ht.lookup(key)));
 
       if (value != null) {
-        ht.insertAt(key, Stella_Object.cons(renamed_Object, value));
+        ht.insertAt(key, Cons.cons(renamed_Object, value));
       }
       else {
-        ht.insertAt(key, Stella_Object.cons(renamed_Object, Stella.NIL));
+        ht.insertAt(key, Cons.cons(renamed_Object, Stella.NIL));
       }
     }
   }

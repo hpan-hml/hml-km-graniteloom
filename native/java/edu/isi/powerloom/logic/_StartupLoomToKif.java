@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,105 +52,105 @@ import edu.isi.stella.*;
 public class _StartupLoomToKif {
   static void helpStartupLoomToKif1() {
     {
-      Logic.SYM_STELLA_INVERSE = ((Symbol)(Stella.internRigidSymbolWrtModule("INVERSE", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_PL_KERNEL_KB_INVERSE = ((Symbol)(Stella.internRigidSymbolWrtModule("INVERSE", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.KWD_BINARY = ((Keyword)(Stella.internRigidSymbolWrtModule("BINARY", null, 2)));
-      Logic.KWD_UNARY = ((Keyword)(Stella.internRigidSymbolWrtModule("UNARY", null, 2)));
-      Logic.SYM_LOGIC_AT_LEAST = ((Symbol)(Stella.internRigidSymbolWrtModule("AT-LEAST", null, 0)));
-      Logic.SYM_LOGIC_AT_MOST = ((Symbol)(Stella.internRigidSymbolWrtModule("AT-MOST", null, 0)));
-      Logic.SYM_LOGIC_EXACTLY = ((Symbol)(Stella.internRigidSymbolWrtModule("EXACTLY", null, 0)));
-      Logic.SYM_STELLA_SOME = ((Symbol)(Stella.internRigidSymbolWrtModule("SOME", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_FILLED_BY = ((Symbol)(Stella.internRigidSymbolWrtModule("FILLED-BY", null, 0)));
-      Logic.SYM_LOGIC_FILLERS = ((Symbol)(Stella.internRigidSymbolWrtModule("FILLERS", null, 0)));
-      Logic.SYM_LOGIC_NOT_FILLED_BY = ((Symbol)(Stella.internRigidSymbolWrtModule("NOT-FILLED-BY", null, 0)));
-      Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND = ((Symbol)(Stella.internRigidSymbolWrtModule("RANGE-CARDINALITY-LOWER-BOUND", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND = ((Symbol)(Stella.internRigidSymbolWrtModule("RANGE-CARDINALITY-UPPER-BOUND", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY = ((Symbol)(Stella.internRigidSymbolWrtModule("RANGE-CARDINALITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_LOWER_BOUND = ((Symbol)(Stella.internRigidSymbolWrtModule("QUALIFIED-RANGE-CARDINALITY-LOWER-BOUND", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_UPPER_BOUND = ((Symbol)(Stella.internRigidSymbolWrtModule("QUALIFIED-RANGE-CARDINALITY-UPPER-BOUND", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY = ((Symbol)(Stella.internRigidSymbolWrtModule("QUALIFIED-RANGE-CARDINALITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.SYM_PL_KERNEL_KB_RANGE_TYPE = ((Symbol)(Stella.internRigidSymbolWrtModule("RANGE-TYPE", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.SYM_LOGIC_RELATES = ((Symbol)(Stella.internRigidSymbolWrtModule("RELATES", null, 0)));
-      Logic.SYM_LOGIC_THROUGH = ((Symbol)(Stella.internRigidSymbolWrtModule("THROUGH", null, 0)));
-      Logic.SYM_LOGIC_INTERVALii = ((Symbol)(Stella.internRigidSymbolWrtModule("INTERVAL++", null, 0)));
-      Logic.SYM_LOGIC_INTERVALi_ = ((Symbol)(Stella.internRigidSymbolWrtModule("INTERVAL+-", null, 0)));
-      Logic.SYM_LOGIC_INTERVAL_i = ((Symbol)(Stella.internRigidSymbolWrtModule("INTERVAL-+", null, 0)));
-      Logic.SYM_LOGIC_INTERVAL__ = ((Symbol)(Stella.internRigidSymbolWrtModule("INTERVAL--", null, 0)));
-      Logic.SYM_LOGIC_SAME_AS = ((Symbol)(Stella.internRigidSymbolWrtModule("SAME-AS", null, 0)));
-      Logic.SYM_LOGIC_lg = ((Symbol)(Stella.internRigidSymbolWrtModule("<>", null, 0)));
-      Logic.SYM_LOGIC_ONE_OF = ((Symbol)(Stella.internRigidSymbolWrtModule("ONE-OF", null, 0)));
-      Logic.SYM_LOGIC_THE_ORDERED_SET = ((Symbol)(Stella.internRigidSymbolWrtModule("THE-ORDERED-SET", null, 0)));
-      Logic.SYM_LOGIC_SATISFIES = ((Symbol)(Stella.internRigidSymbolWrtModule("SATISFIES", null, 0)));
-      Logic.SYM_LOGIC_DOMAIN = ((Symbol)(Stella.internRigidSymbolWrtModule("DOMAIN", null, 0)));
-      Logic.SYM_LOGIC_DOMAINS = ((Symbol)(Stella.internRigidSymbolWrtModule("DOMAINS", null, 0)));
-      Logic.SYM_LOGIC_RANGE = ((Symbol)(Stella.internRigidSymbolWrtModule("RANGE", null, 0)));
-      Logic.SYM_LOGIC_COMPOSE = ((Symbol)(Stella.internRigidSymbolWrtModule("COMPOSE", null, 0)));
-      Logic.SYM_LOGIC_SUPERRELATIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("SUPERRELATIONS", null, 0)));
-      Logic.SYM_LOGIC_SUPERCONCEPTS = ((Symbol)(Stella.internRigidSymbolWrtModule("SUPERCONCEPTS", null, 0)));
-      Logic.SYM_STELLA_RETRACT = ((Symbol)(Stella.internRigidSymbolWrtModule("RETRACT", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.KWD_3_VALUED_P = ((Keyword)(Stella.internRigidSymbolWrtModule("3-VALUED-P", null, 2)));
-      Logic.SYM_STELLA_ASK = ((Symbol)(Stella.internRigidSymbolWrtModule("ASK", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_STELLA_CONSIFY = ((Symbol)(Stella.internRigidSymbolWrtModule("CONSIFY", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_STELLA_RETRIEVE = ((Symbol)(Stella.internRigidSymbolWrtModule("RETRIEVE", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_EVAL_WHEN = ((Symbol)(Stella.internRigidSymbolWrtModule("EVAL-WHEN", null, 0)));
-      Logic.SYM_LOGIC_TELL = ((Symbol)(Stella.internRigidSymbolWrtModule("TELL", null, 0)));
-      Logic.SYM_LOGIC_FORGET = ((Symbol)(Stella.internRigidSymbolWrtModule("FORGET", null, 0)));
-      Logic.SYM_LOGIC_TELLM = ((Symbol)(Stella.internRigidSymbolWrtModule("TELLM", null, 0)));
-      Logic.SYM_LOGIC_FORGETM = ((Symbol)(Stella.internRigidSymbolWrtModule("FORGETM", null, 0)));
-      Logic.SYM_LOGIC_CREATEM = ((Symbol)(Stella.internRigidSymbolWrtModule("CREATEM", null, 0)));
-      Logic.SYM_LOGIC_DEFSET = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFSET", null, 0)));
-      Logic.SYM_LOGIC_DEFPROPERTY = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFPROPERTY", null, 0)));
-      Logic.SYM_LOGIC_DEFCONTEXT = ((Symbol)(Stella.internRigidSymbolWrtModule("DEFCONTEXT", null, 0)));
-      Logic.SYM_LOGIC_ADD_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("ADD-VALUE", null, 0)));
-      Logic.SYM_LOGIC_SET_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("SET-VALUE", null, 0)));
-      Logic.SYM_LOGIC_FADD_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("FADD-VALUE", null, 0)));
-      Logic.SYM_STELLA_CHANGE_CONTEXT = ((Symbol)(Stella.internRigidSymbolWrtModule("CHANGE-CONTEXT", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_IN_CONTEXT = ((Symbol)(Stella.internRigidSymbolWrtModule("IN-CONTEXT", null, 0)));
-      Logic.SYM_LOGIC_IN_KB = ((Symbol)(Stella.internRigidSymbolWrtModule("IN-KB", null, 0)));
-      Logic.SYM_STELLA_NIL = ((Symbol)(Stella.internRigidSymbolWrtModule("NIL", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_COVERING = ((Symbol)(Stella.internRigidSymbolWrtModule("COVERING", null, 0)));
-      Logic.KWD_SINGLE_VALUED = ((Keyword)(Stella.internRigidSymbolWrtModule("SINGLE-VALUED", null, 2)));
-      Logic.SYM_LOGIC_CLOSED = ((Symbol)(Stella.internRigidSymbolWrtModule("CLOSED", null, 0)));
-      Logic.KWD_COMMUTATIVE = ((Keyword)(Stella.internRigidSymbolWrtModule("COMMUTATIVE", null, 2)));
+      Logic.SYM_STELLA_INVERSE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INVERSE", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_PL_KERNEL_KB_INVERSE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INVERSE", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.KWD_BINARY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("BINARY", null, 2)));
+      Logic.KWD_UNARY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UNARY", null, 2)));
+      Logic.SYM_LOGIC_AT_LEAST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("AT-LEAST", null, 0)));
+      Logic.SYM_LOGIC_AT_MOST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("AT-MOST", null, 0)));
+      Logic.SYM_LOGIC_EXACTLY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EXACTLY", null, 0)));
+      Logic.SYM_STELLA_SOME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SOME", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_FILLED_BY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FILLED-BY", null, 0)));
+      Logic.SYM_LOGIC_FILLERS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FILLERS", null, 0)));
+      Logic.SYM_LOGIC_NOT_FILLED_BY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NOT-FILLED-BY", null, 0)));
+      Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_LOWER_BOUND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("QUALIFIED-RANGE-CARDINALITY-LOWER-BOUND", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_UPPER_BOUND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("QUALIFIED-RANGE-CARDINALITY-UPPER-BOUND", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.SYM_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("QUALIFIED-RANGE-CARDINALITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE-CARDINALITY-LOWER-BOUND", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE-CARDINALITY-UPPER-BOUND", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.SYM_PL_KERNEL_KB_RANGE_CARDINALITY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE-CARDINALITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.SYM_PL_KERNEL_KB_RANGE_TYPE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE-TYPE", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.SYM_LOGIC_RELATES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RELATES", null, 0)));
+      Logic.SYM_LOGIC_FOR_SOME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FOR-SOME", null, 0)));
+      Logic.SYM_LOGIC_THROUGH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THROUGH", null, 0)));
+      Logic.SYM_LOGIC_INTERVALii = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTERVAL++", null, 0)));
+      Logic.SYM_LOGIC_INTERVALi_ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTERVAL+-", null, 0)));
+      Logic.SYM_LOGIC_INTERVAL_i = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTERVAL-+", null, 0)));
+      Logic.SYM_LOGIC_INTERVAL__ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTERVAL--", null, 0)));
+      Logic.SYM_LOGIC_SAME_AS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SAME-AS", null, 0)));
+      Logic.SYM_LOGIC_lg = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("<>", null, 0)));
+      Logic.SYM_LOGIC_ONE_OF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ONE-OF", null, 0)));
+      Logic.SYM_LOGIC_THE_ORDERED_SET = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-ORDERED-SET", null, 0)));
+      Logic.SYM_LOGIC_SATISFIES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SATISFIES", null, 0)));
+      Logic.SYM_LOGIC_DOMAIN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DOMAIN", null, 0)));
+      Logic.SYM_LOGIC_DOMAINS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DOMAINS", null, 0)));
+      Logic.SYM_LOGIC_RANGE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE", null, 0)));
+      Logic.SYM_LOGIC_COMPOSE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COMPOSE", null, 0)));
+      Logic.SYM_LOGIC_SUPERRELATIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUPERRELATIONS", null, 0)));
+      Logic.SYM_LOGIC_SUPERCONCEPTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUPERCONCEPTS", null, 0)));
+      Logic.SYM_STELLA_RETRACT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RETRACT", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.KWD_3_VALUED_P = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("3-VALUED-P", null, 2)));
+      Logic.SYM_STELLA_ASK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ASK", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_STELLA_CONSIFY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CONSIFY", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_STELLA_RETRIEVE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RETRIEVE", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_EVAL_WHEN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EVAL-WHEN", null, 0)));
+      Logic.SYM_LOGIC_TELL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TELL", null, 0)));
+      Logic.SYM_LOGIC_FORGET = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FORGET", null, 0)));
+      Logic.SYM_LOGIC_TELLM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TELLM", null, 0)));
+      Logic.SYM_LOGIC_FORGETM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FORGETM", null, 0)));
+      Logic.SYM_LOGIC_CREATEM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CREATEM", null, 0)));
+      Logic.SYM_LOGIC_DEFSET = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFSET", null, 0)));
+      Logic.SYM_LOGIC_DEFPROPERTY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFPROPERTY", null, 0)));
+      Logic.SYM_LOGIC_DEFCONTEXT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFCONTEXT", null, 0)));
+      Logic.SYM_LOGIC_ADD_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ADD-VALUE", null, 0)));
+      Logic.SYM_LOGIC_SET_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SET-VALUE", null, 0)));
+      Logic.SYM_LOGIC_FADD_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FADD-VALUE", null, 0)));
+      Logic.SYM_STELLA_CHANGE_CONTEXT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CHANGE-CONTEXT", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_IN_CONTEXT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IN-CONTEXT", null, 0)));
+      Logic.SYM_LOGIC_IN_KB = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IN-KB", null, 0)));
+      Logic.SYM_STELLA_NIL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NIL", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.KWD_SINGLE_VALUED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SINGLE-VALUED", null, 2)));
+      Logic.SYM_PL_KERNEL_KB_CLOSED = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLOSED", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.KWD_COMMUTATIVE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("COMMUTATIVE", null, 2)));
     }
   }
 
   static void helpStartupLoomToKif2() {
     {
-      Logic.SYM_LOGIC_COMMUTATIVE = ((Symbol)(Stella.internRigidSymbolWrtModule("COMMUTATIVE", null, 0)));
-      Logic.KWD_SYMMETRIC = ((Keyword)(Stella.internRigidSymbolWrtModule("SYMMETRIC", null, 2)));
-      Logic.SYM_LOGIC_SYMMETRIC = ((Symbol)(Stella.internRigidSymbolWrtModule("SYMMETRIC", null, 0)));
-      Logic.KWD_CLOS_CLASS = ((Keyword)(Stella.internRigidSymbolWrtModule("CLOS-CLASS", null, 2)));
-      Logic.KWD_MULTIPLE_VALUED = ((Keyword)(Stella.internRigidSymbolWrtModule("MULTIPLE-VALUED", null, 2)));
-      Logic.KWD_HASH_ON_DOMAINS = ((Keyword)(Stella.internRigidSymbolWrtModule("HASH-ON-DOMAINS", null, 2)));
-      Logic.KWD_NON_EXPORTED = ((Keyword)(Stella.internRigidSymbolWrtModule("NON-EXPORTED", null, 2)));
-      Logic.KWD_PERFECT = ((Keyword)(Stella.internRigidSymbolWrtModule("PERFECT", null, 2)));
-      Logic.KWD_CLOSED_ON_CONSTANTS = ((Keyword)(Stella.internRigidSymbolWrtModule("CLOSED-ON-CONSTANTS", null, 2)));
-      Logic.KWD_BACKWARD_CHAINING = ((Keyword)(Stella.internRigidSymbolWrtModule("BACKWARD-CHAINING", null, 2)));
-      Logic.KWD_MONOTONIC = ((Keyword)(Stella.internRigidSymbolWrtModule("MONOTONIC", null, 2)));
-      Logic.KWD_TEMPORAL = ((Keyword)(Stella.internRigidSymbolWrtModule("TEMPORAL", null, 2)));
-      Logic.KWD_ATTRIBUTES = ((Keyword)(Stella.internRigidSymbolWrtModule("ATTRIBUTES", null, 2)));
-      Logic.KWD_CHARACTERISTICS = ((Keyword)(Stella.internRigidSymbolWrtModule("CHARACTERISTICS", null, 2)));
-      Logic.KWD_PARTITION = ((Keyword)(Stella.internRigidSymbolWrtModule("PARTITION", null, 2)));
-      Logic.KWD_PARTITIONS = ((Keyword)(Stella.internRigidSymbolWrtModule("PARTITIONS", null, 2)));
-      Logic.KWD_CONSTRAINTS = ((Keyword)(Stella.internRigidSymbolWrtModule("CONSTRAINTS", null, 2)));
-      Logic.KWD_EXHAUSTIVE_PARTITION = ((Keyword)(Stella.internRigidSymbolWrtModule("EXHAUSTIVE-PARTITION", null, 2)));
-      Logic.KWD_EXHAUSTIVE_PARTITIONS = ((Keyword)(Stella.internRigidSymbolWrtModule("EXHAUSTIVE-PARTITIONS", null, 2)));
-      Logic.KWD_IS_PRIMITIVE = ((Keyword)(Stella.internRigidSymbolWrtModule("IS-PRIMITIVE", null, 2)));
-      Logic.KWD_IS = ((Keyword)(Stella.internRigidSymbolWrtModule("IS", null, 2)));
-      Logic.KWD_DEFAULTS = ((Keyword)(Stella.internRigidSymbolWrtModule("DEFAULTS", null, 2)));
-      Logic.KWD_DOMAIN = ((Keyword)(Stella.internRigidSymbolWrtModule("DOMAIN", null, 2)));
-      Logic.KWD_DOMAINS = ((Keyword)(Stella.internRigidSymbolWrtModule("DOMAINS", null, 2)));
-      Logic.KWD_RANGE = ((Keyword)(Stella.internRigidSymbolWrtModule("RANGE", null, 2)));
-      Logic.KWD_ARITY = ((Keyword)(Stella.internRigidSymbolWrtModule("ARITY", null, 2)));
-      Logic.KWD_IN_PARTITION = ((Keyword)(Stella.internRigidSymbolWrtModule("IN-PARTITION", null, 2)));
-      Logic.KWD_ANNOTATIONS = ((Keyword)(Stella.internRigidSymbolWrtModule("ANNOTATIONS", null, 2)));
-      Logic.KWD_ROLES = ((Keyword)(Stella.internRigidSymbolWrtModule("ROLES", null, 2)));
-      Logic.KWD_NAME = ((Keyword)(Stella.internRigidSymbolWrtModule("NAME", null, 2)));
-      Logic.KWD_IDENTIFIER = ((Keyword)(Stella.internRigidSymbolWrtModule("IDENTIFIER", null, 2)));
-      Logic.KWD_llegg = ((Keyword)(Stella.internRigidSymbolWrtModule("<<=>>", null, 2)));
-      Logic.KWD_egg = ((Keyword)(Stella.internRigidSymbolWrtModule("=>>", null, 2)));
-      Logic.SYM_LOGIC_STARTUP_LOOM_TO_KIF = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-LOOM-TO-KIF", null, 0)));
+      Logic.SYM_PL_KERNEL_KB_COMMUTATIVE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COMMUTATIVE", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.KWD_SYMMETRIC = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SYMMETRIC", null, 2)));
+      Logic.SYM_PL_KERNEL_KB_SYMMETRIC = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SYMMETRIC", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.KWD_CLOS_CLASS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CLOS-CLASS", null, 2)));
+      Logic.KWD_MULTIPLE_VALUED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MULTIPLE-VALUED", null, 2)));
+      Logic.KWD_HASH_ON_DOMAINS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("HASH-ON-DOMAINS", null, 2)));
+      Logic.KWD_NON_EXPORTED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NON-EXPORTED", null, 2)));
+      Logic.KWD_PERFECT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PERFECT", null, 2)));
+      Logic.KWD_CLOSED_ON_CONSTANTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CLOSED-ON-CONSTANTS", null, 2)));
+      Logic.KWD_BACKWARD_CHAINING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("BACKWARD-CHAINING", null, 2)));
+      Logic.KWD_MONOTONIC = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MONOTONIC", null, 2)));
+      Logic.KWD_TEMPORAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TEMPORAL", null, 2)));
+      Logic.KWD_ATTRIBUTES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ATTRIBUTES", null, 2)));
+      Logic.KWD_CHARACTERISTICS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CHARACTERISTICS", null, 2)));
+      Logic.KWD_PARTITION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PARTITION", null, 2)));
+      Logic.KWD_PARTITIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PARTITIONS", null, 2)));
+      Logic.KWD_CONSTRAINTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONSTRAINTS", null, 2)));
+      Logic.KWD_EXHAUSTIVE_PARTITION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("EXHAUSTIVE-PARTITION", null, 2)));
+      Logic.KWD_EXHAUSTIVE_PARTITIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("EXHAUSTIVE-PARTITIONS", null, 2)));
+      Logic.KWD_IS_PRIMITIVE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IS-PRIMITIVE", null, 2)));
+      Logic.KWD_IS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IS", null, 2)));
+      Logic.KWD_DEFAULTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFAULTS", null, 2)));
+      Logic.KWD_DOMAIN = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DOMAIN", null, 2)));
+      Logic.KWD_DOMAINS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DOMAINS", null, 2)));
+      Logic.KWD_RANGE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE", null, 2)));
+      Logic.KWD_ARITY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ARITY", null, 2)));
+      Logic.KWD_IN_PARTITION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IN-PARTITION", null, 2)));
+      Logic.KWD_ANNOTATIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ANNOTATIONS", null, 2)));
+      Logic.KWD_ROLES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ROLES", null, 2)));
+      Logic.KWD_NAME = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NAME", null, 2)));
+      Logic.KWD_IDENTIFIER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IDENTIFIER", null, 2)));
+      Logic.KWD_llegg = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("<<=>>", null, 2)));
+      Logic.KWD_egg = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("=>>", null, 2)));
+      Logic.SYM_LOGIC_STARTUP_LOOM_TO_KIF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-LOOM-TO-KIF", null, 0)));
     }
   }
 
@@ -211,6 +211,9 @@ public class _StartupLoomToKif {
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
           Stella.cleanupUnfinalizedClasses();
+        }
+        if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
         }
 
       } finally {

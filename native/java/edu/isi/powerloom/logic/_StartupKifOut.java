@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,30 +52,30 @@ import edu.isi.stella.*;
 public class _StartupKifOut {
   static void helpStartupKifOut1() {
     {
-      Logic.KWD_SQL = ((Keyword)(Stella.internRigidSymbolWrtModule("SQL", null, 2)));
-      Logic.KWD_ORIGINAL = ((Keyword)(Stella.internRigidSymbolWrtModule("ORIGINAL", null, 2)));
-      Logic.KWD_UNESCAPED = ((Keyword)(Stella.internRigidSymbolWrtModule("UNESCAPED", null, 2)));
-      Logic.KWD_ESCAPED = ((Keyword)(Stella.internRigidSymbolWrtModule("ESCAPED", null, 2)));
-      Logic.KWD_COMPLEX_ESCAPED = ((Keyword)(Stella.internRigidSymbolWrtModule("COMPLEX-ESCAPED", null, 2)));
-      Logic.SGT_PL_KERNEL_KB_le = ((Surrogate)(Stella.internRigidSymbolWrtModule("<=", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_PL_KERNEL_KB_KAPPA = ((Surrogate)(Stella.internRigidSymbolWrtModule("KAPPA", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_PL_KERNEL_KB_eg = ((Surrogate)(Stella.internRigidSymbolWrtModule("=>", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_PL_KERNEL_KB_egg = ((Surrogate)(Stella.internRigidSymbolWrtModule("=>>", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_PL_KERNEL_KB_lle = ((Surrogate)(Stella.internRigidSymbolWrtModule("<<=", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_PL_KERNEL_KB_lt = ((Surrogate)(Stella.internRigidSymbolWrtModule("<~", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_PL_KERNEL_KB_tg = ((Surrogate)(Stella.internRigidSymbolWrtModule("~>", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_PL_KERNEL_KB_llt = ((Surrogate)(Stella.internRigidSymbolWrtModule("<<~", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_PL_KERNEL_KB_tgg = ((Surrogate)(Stella.internRigidSymbolWrtModule("~>>", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.KWD_TERSE = ((Keyword)(Stella.internRigidSymbolWrtModule("TERSE", null, 2)));
-      Logic.KWD_SOURCE = ((Keyword)(Stella.internRigidSymbolWrtModule("SOURCE", null, 2)));
-      Logic.KWD_SLOTS = ((Keyword)(Stella.internRigidSymbolWrtModule("SLOTS", null, 2)));
-      Logic.KWD_PUBLIC_SLOTS = ((Keyword)(Stella.internRigidSymbolWrtModule("PUBLIC-SLOTS", null, 2)));
-      Logic.KWD_METHODS = ((Keyword)(Stella.internRigidSymbolWrtModule("METHODS", null, 2)));
-      Logic.KWD_PUBLIC_METHODS = ((Keyword)(Stella.internRigidSymbolWrtModule("PUBLIC-METHODS", null, 2)));
-      Logic.SYM_LOGIC_PRESUME = ((Symbol)(Stella.internRigidSymbolWrtModule("PRESUME", null, 0)));
-      Logic.SYM_LOGIC_IN_DIALECT = ((Symbol)(Stella.internRigidSymbolWrtModule("IN-DIALECT", null, 0)));
-      Logic.SGT_STELLA_OUTPUT_STREAM = ((Surrogate)(Stella.internRigidSymbolWrtModule("OUTPUT-STREAM", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.SYM_LOGIC_STARTUP_KIF_OUT = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-KIF-OUT", null, 0)));
+      Logic.KWD_SQL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SQL", null, 2)));
+      Logic.KWD_ORIGINAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ORIGINAL", null, 2)));
+      Logic.KWD_UNESCAPED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UNESCAPED", null, 2)));
+      Logic.KWD_ESCAPED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ESCAPED", null, 2)));
+      Logic.KWD_COMPLEX_ESCAPED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("COMPLEX-ESCAPED", null, 2)));
+      Logic.SGT_PL_KERNEL_KB_le = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("<=", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_PL_KERNEL_KB_KAPPA = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("KAPPA", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_PL_KERNEL_KB_eg = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("=>", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_PL_KERNEL_KB_egg = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("=>>", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_PL_KERNEL_KB_lle = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("<<=", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_PL_KERNEL_KB_lt = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("<~", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_PL_KERNEL_KB_tg = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("~>", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_PL_KERNEL_KB_llt = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("<<~", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_PL_KERNEL_KB_tgg = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("~>>", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.KWD_TERSE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TERSE", null, 2)));
+      Logic.KWD_SOURCE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SOURCE", null, 2)));
+      Logic.KWD_SLOTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOTS", null, 2)));
+      Logic.KWD_PUBLIC_SLOTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PUBLIC-SLOTS", null, 2)));
+      Logic.KWD_METHODS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("METHODS", null, 2)));
+      Logic.KWD_PUBLIC_METHODS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PUBLIC-METHODS", null, 2)));
+      Logic.SYM_LOGIC_PRESUME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PRESUME", null, 0)));
+      Logic.SYM_LOGIC_IN_DIALECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IN-DIALECT", null, 0)));
+      Logic.SGT_STELLA_OUTPUT_STREAM = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("OUTPUT-STREAM", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.SYM_LOGIC_STARTUP_KIF_OUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-KIF-OUT", null, 0)));
     }
   }
 
@@ -132,7 +132,6 @@ public class _StartupKifOut {
       Stella.defineFunctionObject("CREATE-SKOLEM-MAPPING-TABLE", "(DEFUN (CREATE-SKOLEM-MAPPING-TABLE ENTITY-MAPPING) ((OLDVARS VARIABLES-VECTOR) (NEWVARS VARIABLES-VECTOR)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "createSkolemMappingTable", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Vector"), Native.find_java_class("edu.isi.stella.Vector")}), null);
       Stella.defineFunctionObject("PRINT-DESCRIPTIONS-AS-KIF-RULE", "(DEFUN PRINT-DESCRIPTIONS-AS-KIF-RULE ((HEAD DESCRIPTION) (TAIL DESCRIPTION) (RULE PROPOSITION) (REVERSEPOLARITY? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "printDescriptionsAsKifRule", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), java.lang.Boolean.TYPE}), null);
       Stella.defineFunctionObject("EXCLUDE-ORIGINATED-PROPOSITIONS", "(DEFUN EXCLUDE-ORIGINATED-PROPOSITIONS ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "excludeOriginatedPropositions", new java.lang.Class [] {}), null);
-      Stella.defineFunctionObject("FUNCTION-OUTPUT-SKOLEM?", "(DEFUN (FUNCTION-OUTPUT-SKOLEM? BOOLEAN) ((SELF OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "functionOutputSkolemP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("HIDDEN-RELATION?", "(DEFUN (HIDDEN-RELATION? BOOLEAN) ((RELATION-REF SURROGATE)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "hiddenRelationP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate")}), null);
       Stella.defineFunctionObject("EXCLUDED-PROPOSITION?", "(DEFUN (EXCLUDED-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "excludedPropositionP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
       Stella.defineFunctionObject("PRETTY-PRINT-NAMED-DESCRIPTION", "(DEFUN PRETTY-PRINT-NAMED-DESCRIPTION ((SELF NAMED-DESCRIPTION) (STREAM OUTPUT-STREAM)))", Native.find_java_method("edu.isi.powerloom.logic.NamedDescription", "prettyPrintNamedDescription", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.NamedDescription"), Native.find_java_class("edu.isi.stella.OutputStream")}), null);
@@ -153,7 +152,7 @@ public class _StartupKifOut {
       Stella.defineMethodObject("(DEFMETHOD CLEAR-OBJECT-STORE ((STORE OBJECT-STORE)))", Native.find_java_method("edu.isi.powerloom.logic.ObjectStore", "clearObjectStore", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("SAVE-OBJECT", "(DEFUN SAVE-OBJECT ((OBJECT OBJECT) (STORE OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "saveObject", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("DO-SAVE-MODULE", "(DEFUN DO-SAVE-MODULE ((MODULE MODULE) (STORE OBJECT)) :DOCUMENTATION \"Save `module' to the persistent store `store' which can\neither be an output stream or a persistent OBJECT-STORE.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "doSaveModule", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Module"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("SAVE-MODULE", "(DEFUN SAVE-MODULE ((NAME NAME) (FILE STRING)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Save all definitions and assertions of module `name' to `file'.\")", Native.find_java_method("edu.isi.powerloom.logic.Logic", "saveModule", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("java.lang.String")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "saveModuleEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
+      Stella.defineFunctionObject("SAVE-MODULE", "(DEFUN SAVE-MODULE ((NAME NAME) (FILE STRING)) :COMMAND? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Save all definitions and assertions of module `name' to `file'.\")", Native.find_java_method("edu.isi.powerloom.logic.Logic", "saveModule", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("java.lang.String")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "saveModuleEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
       Stella.defineFunctionObject("STARTUP-KIF-OUT", "(DEFUN STARTUP-KIF-OUT () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic._StartupKifOut", "startupKifOut", new java.lang.Class [] {}), null);
       { MethodSlot function = Symbol.lookupFunction(Logic.SYM_LOGIC_STARTUP_KIF_OUT);
 
@@ -186,6 +185,7 @@ public class _StartupKifOut {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRETTYPRINTLOGICALFORMS?* BOOLEAN FALSE :PUBLIC? TRUE :DOCUMENTATION \"Controls whether logical forms print on single lines\n(unformatted) or multi-line indented.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRETTYPRINTKIF?* BOOLEAN FALSE :PUBLIC? TRUE :DOCUMENTATION \"Controls whether KIF expressions print on single lines\n(unformatted) or multi-line indented.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTLOGICALFORMSTREAM* OUTPUT-STREAM NULL :PUBLIC? TRUE :DOCUMENTATION \"Eliminates necessity of passing stream argument\nthroughout 'print-logical-form' functions.\")");

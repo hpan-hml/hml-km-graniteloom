@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -1531,13 +1531,9 @@ Cons* javaTranslateCast(Cons* tree) {
   { Object* expression = tree->rest->value;
     Surrogate* type = typeSpecToBaseType(((StandardObject*)(tree->rest->rest->value)));
 
-    if (subtypeOfP(type, SGT_JAVA_TRANSLATE_STELLA_FLOAT) &&
-        isaP(expression, SGT_JAVA_TRANSLATE_STELLA_INTEGER_WRAPPER)) {
-      return (((Cons*)(javaTranslateATree(wrapFloat(((double)(((IntegerWrapper*)(expression))->wrapperValue)))))));
-    }
-    if (subtypeOfP(type, SGT_JAVA_TRANSLATE_STELLA_INTEGER) &&
-        isaP(expression, SGT_JAVA_TRANSLATE_STELLA_FLOAT_WRAPPER)) {
-      return (((Cons*)(javaTranslateATree(wrapInteger(((int)(((FloatWrapper*)(expression))->wrapperValue)))))));
+    if (subtypeOfP(type, SGT_JAVA_TRANSLATE_STELLA_NUMBER) &&
+        isaP(expression, SGT_JAVA_TRANSLATE_STELLA_NUMBER_WRAPPER)) {
+      return (((Cons*)(javaTranslateATree(coerceNumericConstant(((NumberWrapper*)(expression)), type)))));
     }
     tree->firstSetter(SYM_JAVA_TRANSLATE_STELLA_JAVA_CAST);
     tree->secondSetter(javaTranslateATree(tree->rest->value));
@@ -1873,6 +1869,7 @@ Cons* javaTranslateNewArray(Cons* tree) {
       Cons* dimensions = javaTranslateListOfTrees(tree->rest->rest->rest);
       StandardObject* elementtype = extractParameterType(arraytype, SYM_JAVA_TRANSLATE_STELLA_ANY_VALUE, dummy1);
 
+      initialelement = initialelement;
       return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_MAKE_ARRAY, javaTranslateTypeSpec(elementtype), dimensions->concatenate(NIL, 0)));
     }
   }
@@ -2785,7 +2782,7 @@ Cons* javaWrapMethodBodyWithVarargValueSetup(Cons* methodbody) {
 }
 
 StringWrapper* javaTranslateVariableLengthArgName(Symbol* namesymbol, int parameternumber) {
-  { Symbol* returnsymbol = internSymbol(stringConcatenate(namesymbol->symbolName, integerToString(parameternumber), 0));
+  { Symbol* returnsymbol = internSymbol(stringConcatenate(namesymbol->symbolName, integerToString(((long long int)(parameternumber))), 0));
     StringWrapper* translatedname = javaTranslateName(returnsymbol);
 
     return (translatedname);
@@ -2884,25 +2881,9 @@ Cons* javaTranslateFunctionCall(Cons* tree, MethodSlot* method) {
 
 Cons* javaTranslateDefinedOrNull(Surrogate* classtype, Object* object, boolean nullP) {
   { char* operatoR = (nullP ? (char*)"==" : (char*)"!=");
+    Object* nullvalue = (subtypeOfP(classtype, SGT_JAVA_TRANSLATE_STELLA_LITERAL) ? typeToWalkedNullValueTree(classtype, classtype) : SYM_JAVA_TRANSLATE_STELLA_NULL);
 
-    if (subtypeOfP(classtype, SGT_JAVA_TRANSLATE_STELLA_OBJECT)) {
-      return (javaTranslateOperatorCall(cons(wrapString(operatoR), NIL), cons(object, cons(SYM_JAVA_TRANSLATE_STELLA_NULL, NIL)), 2));
-    }
-    else if (subtypeOfP(classtype, SGT_JAVA_TRANSLATE_STELLA_INTEGER)) {
-      return (javaTranslateOperatorCall(cons(wrapString(operatoR), NIL), cons(object, cons(SYM_JAVA_TRANSLATE_STELLA_NULL_INTEGER, NIL)), 2));
-    }
-    else if (subtypeOfP(classtype, SGT_JAVA_TRANSLATE_STELLA_FLOAT)) {
-      return (javaTranslateOperatorCall(cons(wrapString(operatoR), NIL), cons(object, cons(SYM_JAVA_TRANSLATE_STELLA_NULL_FLOAT, NIL)), 2));
-    }
-    else if (subtypeOfP(classtype, SGT_JAVA_TRANSLATE_STELLA_SINGLE_FLOAT)) {
-      return (javaTranslateOperatorCall(cons(wrapString(operatoR), NIL), cons(object, cons(SYM_JAVA_TRANSLATE_STELLA_NULL_SINGLE_FLOAT, NIL)), 2));
-    }
-    else if (subtypeOfP(classtype, SGT_JAVA_TRANSLATE_STELLA_CHARACTER)) {
-      return (javaTranslateOperatorCall(cons(wrapString(operatoR), NIL), cons(object, cons(SYM_JAVA_TRANSLATE_STELLA_NULL_CHARACTER, NIL)), 2));
-    }
-    else {
-      return (javaTranslateOperatorCall(cons(wrapString(operatoR), NIL), cons(object, cons(SYM_JAVA_TRANSLATE_STELLA_NULL, NIL)), 2));
-    }
+    return (javaTranslateOperatorCall(cons(wrapString(operatoR), NIL), cons(object, cons(nullvalue, NIL)), 2));
   }
 }
 
@@ -3244,8 +3225,8 @@ void helpStartupJavaTranslate3() {
     SYM_JAVA_TRANSLATE_STELLA_JAVA_NAMED_STATEMENT = ((Symbol*)(internRigidSymbolWrtModule("JAVA_NAMED_STATEMENT", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_LOOP = ((Symbol*)(internRigidSymbolWrtModule("JAVA_LOOP", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_FOREACH = ((Symbol*)(internRigidSymbolWrtModule("JAVA_FOREACH", NULL, 0)));
-    SGT_JAVA_TRANSLATE_STELLA_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-WRAPPER", NULL, 1)));
-    SGT_JAVA_TRANSLATE_STELLA_FLOAT_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT-WRAPPER", NULL, 1)));
+    SGT_JAVA_TRANSLATE_STELLA_NUMBER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER", NULL, 1)));
+    SGT_JAVA_TRANSLATE_STELLA_NUMBER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER-WRAPPER", NULL, 1)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_CAST = ((Symbol*)(internRigidSymbolWrtModule("JAVA_CAST", NULL, 0)));
     KWD_JAVA_TRANSLATE_WRAP_FUNCTION = ((Keyword*)(internRigidSymbolWrtModule("WRAP-FUNCTION", NULL, 2)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_AREF = ((Symbol*)(internRigidSymbolWrtModule("JAVA_AREF", NULL, 0)));
@@ -3301,37 +3282,24 @@ void helpStartupJavaTranslate4() {
     SYM_JAVA_TRANSLATE_STELLA_NULL = ((Symbol*)(internRigidSymbolWrtModule("NULL", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_METHOD_VARIABLE_ARGUMENTSp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-VARIABLE-ARGUMENTS?", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_GET_SYM = ((Symbol*)(internRigidSymbolWrtModule("GET-SYM", NULL, 0)));
+    SGT_JAVA_TRANSLATE_STELLA_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-WRAPPER", NULL, 1)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_SYMBOL = ((Symbol*)(internRigidSymbolWrtModule("JAVA_SYMBOL", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_GET_KWD = ((Symbol*)(internRigidSymbolWrtModule("GET-KWD", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_GET_SGT = ((Symbol*)(internRigidSymbolWrtModule("GET-SGT", NULL, 0)));
-    SGT_JAVA_TRANSLATE_STELLA_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("OBJECT", NULL, 1)));
-    SYM_JAVA_TRANSLATE_STELLA_NULL_INTEGER = ((Symbol*)(internRigidSymbolWrtModule("NULL-INTEGER", NULL, 0)));
-    SYM_JAVA_TRANSLATE_STELLA_NULL_FLOAT = ((Symbol*)(internRigidSymbolWrtModule("NULL-FLOAT", NULL, 0)));
-    SYM_JAVA_TRANSLATE_STELLA_NULL_SINGLE_FLOAT = ((Symbol*)(internRigidSymbolWrtModule("NULL-SINGLE-FLOAT", NULL, 0)));
-    SYM_JAVA_TRANSLATE_STELLA_NULL_CHARACTER = ((Symbol*)(internRigidSymbolWrtModule("NULL-CHARACTER", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_DEFINEDp = ((Symbol*)(internRigidSymbolWrtModule("DEFINED?", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_NULLp = ((Symbol*)(internRigidSymbolWrtModule("NULL?", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_CONCATENATE = ((Symbol*)(internRigidSymbolWrtModule("CONCATENATE", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_NTH = ((Symbol*)(internRigidSymbolWrtModule("NTH", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_NTH_SETTER = ((Symbol*)(internRigidSymbolWrtModule("NTH-SETTER", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_AREF = ((Symbol*)(internRigidSymbolWrtModule("AREF", NULL, 0)));
-  }
-}
-
-void helpStartupJavaTranslate5() {
-  {
     SYM_JAVA_TRANSLATE_STELLA_AREF_SETTER = ((Symbol*)(internRigidSymbolWrtModule("AREF-SETTER", NULL, 0)));
     SGT_JAVA_TRANSLATE_STELLA_METHOD_SLOT = ((Surrogate*)(internRigidSymbolWrtModule("METHOD-SLOT", NULL, 1)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_UNARY_OP = ((Symbol*)(internRigidSymbolWrtModule("JAVA_UNARY_OP", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_BINARY_OP = ((Symbol*)(internRigidSymbolWrtModule("JAVA_BINARY_OP", NULL, 0)));
-    SYM_JAVA_TRANSLATE_STELLA_JAVA_TERNARY_OP = ((Symbol*)(internRigidSymbolWrtModule("JAVA_TERNARY_OP", NULL, 0)));
-    SGT_JAVA_TRANSLATE_STELLA_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("ARRAY", NULL, 1)));
-    SGT_JAVA_TRANSLATE_STELLA_NATIVE_VECTOR = ((Surrogate*)(internRigidSymbolWrtModule("NATIVE-VECTOR", NULL, 1)));
-    SYM_JAVA_TRANSLATE_STELLA_STARTUP_JAVA_TRANSLATE = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-JAVA-TRANSLATE", NULL, 0)));
   }
 }
 
-void helpStartupJavaTranslate6() {
+void helpStartupJavaTranslate5() {
   {
     oJAVA_TRUE_STRING_WRAPPERo = wrapString("true");
     oJAVA_FALSE_STRING_WRAPPERo = wrapString("false");
@@ -3344,7 +3312,7 @@ void helpStartupJavaTranslate6() {
   }
 }
 
-void helpStartupJavaTranslate7() {
+void helpStartupJavaTranslate6() {
   {
     defineFunctionObject("JAVA-YIELD-FLOTSAM-CLASS-NAME", "(DEFUN (JAVA-YIELD-FLOTSAM-CLASS-NAME STRING) ((MOD MODULE)))", ((cpp_function_code)(&javaYieldFlotsamClassName)), NULL);
     defineFunctionObject("JAVA-YIELD-NATIVE-CLASS-NAME", "(DEFUN (JAVA-YIELD-NATIVE-CLASS-NAME STRING) ())", ((cpp_function_code)(&javaYieldNativeClassName)), NULL);
@@ -3409,7 +3377,7 @@ void helpStartupJavaTranslate7() {
   }
 }
 
-void helpStartupJavaTranslate8() {
+void helpStartupJavaTranslate7() {
   {
     defineFunctionObject("JAVA-TRANSLATE-WITH-PROCESS-LOCK", "(DEFUN (JAVA-TRANSLATE-WITH-PROCESS-LOCK CONS) ((TREE CONS)))", ((cpp_function_code)(&javaTranslateWithProcessLock)), NULL);
     defineFunctionObject("JAVA-TRANSLATE-LOOP", "(DEFUN (JAVA-TRANSLATE-LOOP CONS) ((TREE CONS)))", ((cpp_function_code)(&javaTranslateLoop)), NULL);
@@ -3483,17 +3451,20 @@ void startupJavaTranslate() {
       helpStartupJavaTranslate2();
       helpStartupJavaTranslate3();
       helpStartupJavaTranslate4();
-      helpStartupJavaTranslate5();
+      SYM_JAVA_TRANSLATE_STELLA_JAVA_TERNARY_OP = ((Symbol*)(internRigidSymbolWrtModule("JAVA_TERNARY_OP", NULL, 0)));
+      SGT_JAVA_TRANSLATE_STELLA_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("ARRAY", NULL, 1)));
+      SGT_JAVA_TRANSLATE_STELLA_NATIVE_VECTOR = ((Surrogate*)(internRigidSymbolWrtModule("NATIVE-VECTOR", NULL, 1)));
+      SYM_JAVA_TRANSLATE_STELLA_STARTUP_JAVA_TRANSLATE = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-JAVA-TRANSLATE", NULL, 0)));
     }
     if (currentStartupTimePhaseP(4)) {
-      helpStartupJavaTranslate6();
+      helpStartupJavaTranslate5();
     }
     if (currentStartupTimePhaseP(6)) {
       finalizeClasses();
     }
     if (currentStartupTimePhaseP(7)) {
+      helpStartupJavaTranslate6();
       helpStartupJavaTranslate7();
-      helpStartupJavaTranslate8();
       defineFunctionObject("JAVA-CREATE-OVERLOADED-FUNCTION-NAME", "(DEFUN (JAVA-CREATE-OVERLOADED-FUNCTION-NAME SYMBOL) ((FUNCTIONNAME SYMBOL) (CLASSTYPE TYPE)))", ((cpp_function_code)(&javaCreateOverloadedFunctionName)), NULL);
       defineMethodObject("(DEFMETHOD (JAVA-TRANSLATE-METHOD-NAME STRING-WRAPPER) ((METHOD METHOD-SLOT)))", ((cpp_method_code)(&MethodSlot::javaTranslateMethodName)), ((cpp_method_code)(NULL)));
       defineFunctionObject("JAVA-DELETE-QUOTED-NULL-STATEMENTS", "(DEFUN (JAVA-DELETE-QUOTED-NULL-STATEMENTS CONS) ((TREES CONS)))", ((cpp_function_code)(&javaDeleteQuotedNullStatements)), NULL);
@@ -3522,6 +3493,7 @@ void startupJavaTranslate() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *JAVA-TRUE-STRING-WRAPPER* STRING-WRAPPER (WRAP-LITERAL \"true\") :PUBLIC? FALSE :DOCUMENTATION \"Wrapped true string, used to reduce consing.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *JAVA-FALSE-STRING-WRAPPER* STRING-WRAPPER (WRAP-LITERAL \"false\") :PUBLIC? FALSE :DOCUMENTATION \"Wrapped false string, used to reduce consing.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *VARARGSTATEMENTS* (CONS OF CONS) NIL :DOCUMENTATION \"A list of new vectors generated for variable-length argument \n             lists\")");
@@ -3885,9 +3857,9 @@ Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_LOOP = NULL;
 
 Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_FOREACH = NULL;
 
-Surrogate* SGT_JAVA_TRANSLATE_STELLA_INTEGER_WRAPPER = NULL;
+Surrogate* SGT_JAVA_TRANSLATE_STELLA_NUMBER = NULL;
 
-Surrogate* SGT_JAVA_TRANSLATE_STELLA_FLOAT_WRAPPER = NULL;
+Surrogate* SGT_JAVA_TRANSLATE_STELLA_NUMBER_WRAPPER = NULL;
 
 Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_CAST = NULL;
 
@@ -3989,21 +3961,13 @@ Symbol* SYM_JAVA_TRANSLATE_STELLA_METHOD_VARIABLE_ARGUMENTSp = NULL;
 
 Symbol* SYM_JAVA_TRANSLATE_STELLA_GET_SYM = NULL;
 
+Surrogate* SGT_JAVA_TRANSLATE_STELLA_INTEGER_WRAPPER = NULL;
+
 Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_SYMBOL = NULL;
 
 Symbol* SYM_JAVA_TRANSLATE_STELLA_GET_KWD = NULL;
 
 Symbol* SYM_JAVA_TRANSLATE_STELLA_GET_SGT = NULL;
-
-Surrogate* SGT_JAVA_TRANSLATE_STELLA_OBJECT = NULL;
-
-Symbol* SYM_JAVA_TRANSLATE_STELLA_NULL_INTEGER = NULL;
-
-Symbol* SYM_JAVA_TRANSLATE_STELLA_NULL_FLOAT = NULL;
-
-Symbol* SYM_JAVA_TRANSLATE_STELLA_NULL_SINGLE_FLOAT = NULL;
-
-Symbol* SYM_JAVA_TRANSLATE_STELLA_NULL_CHARACTER = NULL;
 
 Symbol* SYM_JAVA_TRANSLATE_STELLA_DEFINEDp = NULL;
 

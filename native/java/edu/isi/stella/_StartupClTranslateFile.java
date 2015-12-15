@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,13 +56,13 @@ public class _StartupClTranslateFile {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.KWD_LISP = ((Keyword)(Stella.internRigidSymbolWrtModule("LISP", null, 2)));
-          Stella.KWD_STELLA = ((Keyword)(Stella.internRigidSymbolWrtModule("STELLA", null, 2)));
-          Stella.KWD_TWO_PASSp = ((Keyword)(Stella.internRigidSymbolWrtModule("TWO-PASS?", null, 2)));
-          Stella.KWD_FORCE_TRANSLATIONp = ((Keyword)(Stella.internRigidSymbolWrtModule("FORCE-TRANSLATION?", null, 2)));
-          Stella.KWD_PRODUCTION_SETTINGSp = ((Keyword)(Stella.internRigidSymbolWrtModule("PRODUCTION-SETTINGS?", null, 2)));
-          Stella.KWD_LISP_BINARY = ((Keyword)(Stella.internRigidSymbolWrtModule("LISP-BINARY", null, 2)));
-          Stella.SYM_STELLA_STARTUP_CL_TRANSLATE_FILE = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-CL-TRANSLATE-FILE", null, 0)));
+          Stella.KWD_LISP = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LISP", null, 2)));
+          Stella.KWD_STELLA = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("STELLA", null, 2)));
+          Stella.KWD_TWO_PASSp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TWO-PASS?", null, 2)));
+          Stella.KWD_FORCE_TRANSLATIONp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FORCE-TRANSLATION?", null, 2)));
+          Stella.KWD_PRODUCTION_SETTINGSp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PRODUCTION-SETTINGS?", null, 2)));
+          Stella.KWD_LISP_BINARY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LISP-BINARY", null, 2)));
+          Stella.SYM_STELLA_STARTUP_CL_TRANSLATE_FILE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-CL-TRANSLATE-FILE", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -96,6 +96,9 @@ public class _StartupClTranslateFile {
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
           Stella.cleanupUnfinalizedClasses();
+        }
+        if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("STELLA")))));
         }
 
       } finally {

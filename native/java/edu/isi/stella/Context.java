@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -87,7 +87,7 @@ public abstract class Context extends Thing {
     if (root == null) {
       root = Stella.$ROOT_MODULE$;
     }
-    { List toplist = Stella.list(Stella_Object.cons(root, Stella.NIL));
+    { List toplist = List.list(Cons.cons(root, Stella.NIL));
 
       List.helpPrintContextTree(toplist, 0);
       toplist.free();
@@ -337,7 +337,7 @@ public abstract class Context extends Thing {
           child = ((Context)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(child, Stella.NIL);
+              collect000 = Cons.cons(child, Stella.NIL);
               if (subcontexts == Stella.NIL) {
                 subcontexts = collect000;
               }
@@ -348,7 +348,7 @@ public abstract class Context extends Thing {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(child, Stella.NIL);
+              collect000.rest = Cons.cons(child, Stella.NIL);
               collect000 = collect000.rest;
             }
           }

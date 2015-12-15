@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: goal-caches.ste,v 1.15 2006/05/11 07:05:12 hans Exp
+;;; Version: goal-caches.ste,v 1.19 2010/10/11 20:32:52 hans Exp
 
 ;;; Caching of backchaining goals.
 
@@ -102,10 +102,35 @@ and set of input bindings."
 (defun (yield-goal-bindings GOAL-BINDINGS) ((goal PROPOSITION))
   ;; Return a cons list representing the current bindings of the arguments
   ;;    of 'goal'.
+  ;; TO DO: make this handle external variables of descriptions (see below).
   (let ((result NIL))
     (foreach arg in (arguments goal)
              collect (argument-bound-to arg) into result)
     (return result) ))
+
+#|
+;;; Alternative that also takes external bindings of description arguments
+;;; into account, but we'd have to update various testing and matching
+;;; machinery that currently expects one binding per goal argument.
+
+(defun (yield-goal-bindings GOAL-BINDINGS) ((goal PROPOSITION))
+  ;; Return a cons list representing the current bindings of the arguments
+  ;;    of 'goal'.
+  (let ((value OBJECT NULL)
+        (result NIL))
+    (foreach arg in (arguments goal)
+        do (setq value (argument-bound-to arg))
+           (pushq result value)
+           (typecase value
+             (NAMED-DESCRIPTION NULL)
+             (DESCRIPTION
+              (let ((extVars (external-variables value)))
+                (when (defined? extVars)
+                  (foreach var in extVars
+                      do (pushq result (argument-bound-to var))))))
+             (otherwise NULL)))
+    (return (reverse result))))
+|#
 
 (defun (find-goal-cache-table GOAL-CACHE-TABLE) ((goal PROPOSITION))
   ;; Return a goal cache table for the class or slot associated with 'goal',
@@ -330,6 +355,7 @@ and set of input bindings."
 number of query clock ticks will be cached.")
 
 (defun (toggle-goal-caching STRING) ()
+  :command? TRUE
   (if *cache-succeeded-goals?*
     (progn
       (setq *cache-succeeded-goals?* FALSE)
@@ -363,6 +389,9 @@ and possibly open `proposition' relative to a set of variable `bindings'."
 (defun print-atomic-goal-cache
     ((self ATOMIC-GOAL-CACHE) (stream NATIVE-OUTPUT-STREAM))
   ;; Print `self' to `stream' (useful for debugging).
+  (when (null? (proposition self))
+    (print-native-stream stream "|GC|[NULL]")
+    (return))
   (print-native-stream
    stream
    "|GC|["
@@ -456,8 +485,9 @@ and possibly open `proposition' relative to a set of variable `bindings'."
     ;;    TO MAKE CACHED RESULTS AVAILABLE IN HYPOTHETICAL SUBCONTEXTS.
     (setq code (hash-code *context*))
     (when (reverse-polarity? frame)
-      ;; 48312004 = (hash-string "REVERSE-POLARITY" 0):
-      (setq code (logxor (rotate-hash-code code) 48312004)))
+      ;; 48312004 = (hash-string "REVERSE-POLARITY" 0), drop leading "4"
+      ;; to make this fit in 24 bits for some lisp systems:
+      (setq code (logxor (rotate-hash-code code) 8312004)))
     (setq code (logxor (rotate-hash-code code) (safe-hash-code operator)))
     ;; Use `goal-bindings' so we don't have to recompute `argument-bound-to'
     ;;    to dereference surrogates and the-like:
@@ -547,20 +577,26 @@ for some named description")
   ;; `success?' indicates whether `frame' failed or succeeded.
   ;; Creates a new cache entry or overwrites `cache' if it was supplied
   ;;    as non-NULL.
-  ;(when (defined? cache)
-  ;  (print "Collision: " (proposition frame) " " cache EOL))
-  (when (null? cache)
-    (setq cache (new ATOMIC-GOAL-CACHE)))
-  (let ((proposition (proposition frame)))
+  (let ((collision? (defined? cache))
+        (proposition (proposition frame)))
+    ;(when collision?
+    ;  (print "Collision: " proposition " " cache EOL))
+    (when (not collision?)
+      (setq cache (new ATOMIC-GOAL-CACHE)))
     (when success?
-      (when (defined? (next cache))
-        (setf (previous (next cache)) (previous cache))
-        (when (null? (previous cache))
-          (set-goal-cache-list (proposition (next cache)) (next cache))))
-      (when (defined? (previous cache))
-        (setf (next (previous cache)) (next cache)))
-      (setf (previous cache) NULL)
-      (setf (next cache) NULL)
+      (when collision?
+        ;; we are reusing a goal cache, so if it is part of a
+        ;; proposition cache list, we need to excise it from it:
+        (when (defined? (next cache))
+          ;; there are elements after it, reset their backpointer:
+          (setf (previous (next cache)) (previous cache)))
+        (if (null? (previous cache))
+            ;; it is the first element, pop the cache list:
+            (set-goal-cache-list (proposition cache) (next cache))
+          ;; there are elements before it, reset their next pointer:
+          (setf (next (previous cache)) (next cache)))
+        (setf (previous cache) NULL)
+        (setf (next cache) NULL))
       (let ((previousStart (get-goal-cache-list proposition)))
         (unless (eql? cache previousStart)
           (when (defined? previousStart)
@@ -708,6 +744,14 @@ for some named description")
   (ignore keepFrame?)
   (when (eql? (state frame) :ATOMIC-GOAL)
     (when (null? (goal-bindings frame)) (return))
+    (foreach binding in (goal-bindings frame)
+        where (defined? binding)
+        do (typecase binding
+             (DESCRIPTION
+              (when (defined? (external-variables binding))
+                ;; can't handle these yet, see `yield-goal-bindings'
+                (return)))
+             (otherwise NULL)))
     (when success?
       ;; Make sure we do this all the time regardless of `clockTicks':
       (setf (dont-cache-goal-failure? frame) TRUE))

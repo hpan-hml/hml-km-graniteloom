@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -65,7 +65,7 @@ public class StartupLogicSystem {
         Module.defineModuleFromStringifiedSource("/PL-KERNEL-KB/LOOM-API", "(:DOCUMENTATION \"Defines a Loom API for PowerLoom.\" :LISP-PACKAGE \"LOOM-API\" :INCLUDES \"PL-KERNEL\" :USES (\"LOGIC\" \"STELLA\") :SHADOW (NAMED?) :PROTECT-SURROGATES? TRUE)");
         Module.defineModuleFromStringifiedSource("/PL-KERNEL-KB/KIF-FRAME-ONTOLOGY", "(:DOCUMENTATION \"Defines KIF-compatible frame predicates following\nOntolingua conventions.\" :USES (\"LOGIC\" \"STELLA\"))");
         Module.defineModuleFromStringifiedSource("/PL-KERNEL-KB/CYC-FRAME-ONTOLOGY", "(:DOCUMENTATION \"Defines Cyc-compatible frame predicates.\" :USES (\"LOGIC\" \"STELLA\"))");
-        Module.defineModuleFromStringifiedSource("/PLI", "(:DOCUMENTATION \"Defines the PowerLoom API.\" :USES (\"LOGIC\" \"STELLA\") :SHADOW (GET-OBJECT GET-RELATION GET-MODULE CHANGE-MODULE CLEAR-MODULE LOAD LOAD-STREAM GET-RULES PRINT-RULES RUN-FORWARD-RULES SAVE-MODULE CREATE-OBJECT DESTROY-OBJECT REGISTER-SPECIALIST-FUNCTION ASSERT RETRACT CONCEIVE EVALUATE EVALUATE-STRING IS-TRUE IS-FALSE IS-UNKNOWN ASK RETRIEVE CREATE-ENUMERATED-SET RESET-POWERLOOM CLEAR-CACHES) :API? TRUE :LISP-PACKAGE \"PLI\" :CPP-PACKAGE \"pli\" :JAVA-PACKAGE \"edu.isi.powerloom\" :JAVA-CATCHALL-CLASS \"PLI\" :CODE-ONLY? TRUE)");
+        Module.defineModuleFromStringifiedSource("/PLI", "(:DOCUMENTATION \"Defines the PowerLoom API.\" :USES (\"LOGIC\" \"STELLA\") :SHADOW (GET-OBJECT GET-RELATION GET-MODULE CHANGE-MODULE CLEAR-MODULE LOAD LOAD-IN-MODULE LOAD-STREAM LOAD-STREAM-IN-MODULE GET-RULES PRINT-RULES RUN-FORWARD-RULES SAVE-MODULE CREATE-OBJECT DESTROY-OBJECT REGISTER-SPECIALIST-FUNCTION REGISTER-COMPUTATION-FUNCTION ASSERT RETRACT CONCEIVE EVALUATE EVALUATE-STRING IS-TRUE IS-FALSE IS-UNKNOWN ASK RETRIEVE CREATE-ENUMERATED-SET RESET-POWERLOOM CLEAR-CACHES) :API? TRUE :LISP-PACKAGE \"PLI\" :CPP-PACKAGE \"pli\" :JAVA-PACKAGE \"edu.isi.powerloom\" :JAVA-CATCHALL-CLASS \"PLI\" :CODE-ONLY? TRUE)");
       }
       { Object old$Module$000 = Stella.$MODULE$.get();
         Object old$Context$000 = Stella.$CONTEXT$.get();
@@ -74,7 +74,7 @@ public class StartupLogicSystem {
           Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/LOGIC", Stella.$STARTUP_TIME_PHASE$ > 1));
           Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
           if (Stella.currentStartupTimePhaseP(2)) {
-            Logic.SYM_LOGIC_STARTUP_LOGIC_SYSTEM = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-LOGIC-SYSTEM", null, 0)));
+            Logic.SYM_LOGIC_STARTUP_LOGIC_SYSTEM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-LOGIC-SYSTEM", null, 0)));
           }
           if (Stella.currentStartupTimePhaseP(6)) {
             Stella.finalizeClasses();
@@ -91,6 +91,7 @@ public class StartupLogicSystem {
             Stella.cleanupUnfinalizedClasses();
           }
           if (Stella.currentStartupTimePhaseP(9)) {
+            Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/LOGIC")))));
             { int phase = Stella.NULL_INTEGER;
               int iter064 = 0;
               int upperBound065 = 9;

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -52,25 +52,25 @@ import edu.isi.stella.*;
 public class _StartupManuals {
   static void helpStartupManuals1() {
     {
-      Utilities.SGT_STELLA_CONS = ((Surrogate)(Stella.internRigidSymbolWrtModule("CONS", Stella.getStellaModule("/STELLA", true), 1)));
-      Utilities.SGT_STELLA_TYPE_SPEC = ((Surrogate)(Stella.internRigidSymbolWrtModule("TYPE-SPEC", Stella.getStellaModule("/STELLA", true), 1)));
-      Utilities.SYM_STELLA_VARIABLE_TYPE_SPECIFIER = ((Symbol)(Stella.internRigidSymbolWrtModule("VARIABLE-TYPE-SPECIFIER", Stella.getStellaModule("/STELLA", true), 0)));
-      Utilities.SYM_STELLA_DOCUMENTATION = ((Symbol)(Stella.internRigidSymbolWrtModule("DOCUMENTATION", Stella.getStellaModule("/STELLA", true), 0)));
-      Utilities.SYM_STELLA_SLOT_TYPE_SPECIFIER = ((Symbol)(Stella.internRigidSymbolWrtModule("SLOT-TYPE-SPECIFIER", Stella.getStellaModule("/STELLA", true), 0)));
-      Utilities.SYM_STELLA_aREST = ((Symbol)(Stella.internRigidSymbolWrtModule("&REST", Stella.getStellaModule("/STELLA", true), 0)));
-      Utilities.SYM_STELLA_aBODY = ((Symbol)(Stella.internRigidSymbolWrtModule("&BODY", Stella.getStellaModule("/STELLA", true), 0)));
-      Utilities.SYM_STELLA_METHOD_MACROp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-MACRO?", Stella.getStellaModule("/STELLA", true), 0)));
-      Utilities.SYM_STELLA_METHOD_COMMANDp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-COMMAND?", Stella.getStellaModule("/STELLA", true), 0)));
-      Utilities.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-VARIABLE-ARGUMENTS?", Stella.getStellaModule("/STELLA", true), 0)));
-      Utilities.SYM_STELLA_METHOD_BODY_ARGUMENTp = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-BODY-ARGUMENT?", Stella.getStellaModule("/STELLA", true), 0)));
-      Utilities.KWD_INFIX_PARAMETER_LISTS = ((Keyword)(Stella.internRigidSymbolWrtModule("INFIX-PARAMETER-LISTS", null, 2)));
-      Utilities.KWD_TEXINFO = ((Keyword)(Stella.internRigidSymbolWrtModule("TEXINFO", null, 2)));
-      Utilities.SGT_STELLA_SLOT = ((Surrogate)(Stella.internRigidSymbolWrtModule("SLOT", Stella.getStellaModule("/STELLA", true), 1)));
-      Utilities.SGT_STELLA_GLOBAL_VARIABLE = ((Surrogate)(Stella.internRigidSymbolWrtModule("GLOBAL-VARIABLE", Stella.getStellaModule("/STELLA", true), 1)));
-      Utilities.SGT_STELLA_MODULE = ((Surrogate)(Stella.internRigidSymbolWrtModule("MODULE", Stella.getStellaModule("/STELLA", true), 1)));
-      Utilities.SYM_UTILITIES_MANUAL_DESCRIBE_OBJECT = ((Symbol)(Stella.internRigidSymbolWrtModule("MANUAL-DESCRIBE-OBJECT", null, 0)));
-      Utilities.SYM_UTILITIES_STARTUP_MANUALS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-MANUALS", null, 0)));
-      Utilities.SYM_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol)(Stella.internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.SGT_STELLA_CONS = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CONS", Stella.getStellaModule("/STELLA", true), 1)));
+      Utilities.SGT_STELLA_TYPE_SPEC = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("TYPE-SPEC", Stella.getStellaModule("/STELLA", true), 1)));
+      Utilities.SYM_STELLA_VARIABLE_TYPE_SPECIFIER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("VARIABLE-TYPE-SPECIFIER", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.SYM_STELLA_DOCUMENTATION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DOCUMENTATION", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.SYM_STELLA_SLOT_TYPE_SPECIFIER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOT-TYPE-SPECIFIER", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.SYM_STELLA_aREST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("&REST", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.SYM_STELLA_aBODY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("&BODY", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.SYM_STELLA_METHOD_MACROp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-MACRO?", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.SYM_STELLA_METHOD_COMMANDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-COMMAND?", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-VARIABLE-ARGUMENTS?", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.SYM_STELLA_METHOD_BODY_ARGUMENTp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-BODY-ARGUMENT?", Stella.getStellaModule("/STELLA", true), 0)));
+      Utilities.KWD_INFIX_PARAMETER_LISTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INFIX-PARAMETER-LISTS", null, 2)));
+      Utilities.KWD_TEXINFO = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TEXINFO", null, 2)));
+      Utilities.SGT_STELLA_SLOT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SLOT", Stella.getStellaModule("/STELLA", true), 1)));
+      Utilities.SGT_STELLA_GLOBAL_VARIABLE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("GLOBAL-VARIABLE", Stella.getStellaModule("/STELLA", true), 1)));
+      Utilities.SGT_STELLA_MODULE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("MODULE", Stella.getStellaModule("/STELLA", true), 1)));
+      Utilities.SYM_UTILITIES_MANUAL_DESCRIBE_OBJECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MANUAL-DESCRIBE-OBJECT", null, 0)));
+      Utilities.SYM_UTILITIES_STARTUP_MANUALS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-MANUALS", null, 0)));
+      Utilities.SYM_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", Stella.getStellaModule("/STELLA", true), 0)));
     }
   }
 
@@ -85,7 +85,8 @@ public class _StartupManuals {
           _StartupManuals.helpStartupManuals1();
         }
         if (Stella.currentStartupTimePhaseP(4)) {
-          Utilities.$TEXINFO_STYLE_FEATURES$ = Stella.list(Stella.NIL);
+          Utilities.$TEXINFO_STYLE_FEATURES$ = List.list(Stella.NIL);
+          Utilities.$TEXINFO_WORD_DELIMITERS$ = null;
           Utilities.$MANUAL_OUTPUT_LANGUAGE$.setDefaultValue(Utilities.KWD_TEXINFO);
           Utilities.$DOCUMENTED_OBJECTS_REGISTRY$ = HashTable.newHashTable();
           Utilities.$MANUAL_OUTPUT_STREAM$.setDefaultValue(null);
@@ -133,6 +134,7 @@ public class _StartupManuals {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("UTILITIES")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TEXINFO-STYLE-FEATURES* (LIST OF KEYWORD) (LIST) :DOCUMENTATION \"A list of features that can modulate some aspects of\nhow certain objects are described.  Currently understood features:\n:INFIX-PARAMETER-LISTS.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TEXINFO-WORD-DELIMITERS* STRING NULL)");
           { StringBuffer delimiters = new StringBuffer("     .:;,!?()[]{}\"");

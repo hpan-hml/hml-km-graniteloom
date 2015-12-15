@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -112,7 +112,7 @@ public class OutputStream extends Stream {
             if (!(Stella.stringEqlP(name, packageName) ||
                 importedPackages.memberP(StringWrapper.wrapString(name)))) {
               stream.nativeStream.println("import " + name + "*;");
-              importedPackages = Stella_Object.cons(StringWrapper.wrapString(name), importedPackages);
+              importedPackages = Cons.cons(StringWrapper.wrapString(name), importedPackages);
             }
           }
         }
@@ -125,7 +125,7 @@ public class OutputStream extends Stream {
             if (!(Stella.stringEqlP(name, packageName) ||
                 importedPackages.memberP(StringWrapper.wrapString(name)))) {
               stream.nativeStream.println("import " + name + "*;");
-              importedPackages = Stella_Object.cons(StringWrapper.wrapString(name), importedPackages);
+              importedPackages = Cons.cons(StringWrapper.wrapString(name), importedPackages);
             }
           }
         }
@@ -251,6 +251,12 @@ public class OutputStream extends Stream {
       }
       else if (Surrogate.subtypeOfIntegerP(testValue000)) {
         { IntegerWrapper value000 = ((IntegerWrapper)(value));
+
+          stream.nativeStream.print(Native.integerToString(((long)(value000.wrapperValue))));
+        }
+      }
+      else if (Surrogate.subtypeOfLongIntegerP(testValue000)) {
+        { LongIntegerWrapper value000 = ((LongIntegerWrapper)(value));
 
           stream.nativeStream.print(Native.integerToString(value000.wrapperValue));
         }
@@ -655,7 +661,7 @@ public class OutputStream extends Stream {
 
   public static void clOutputEnsurePackageDefinition(OutputStream stream, String renamed_Package) {
     {
-      stream.nativeStream.println("(CL:EVAL-WHEN (CL:COMPILE CL:LOAD CL:EVAL)");
+      stream.nativeStream.println("(CL:EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)");
       stream.nativeStream.println("  (CL:UNLESS (CL:FIND-PACKAGE \"" + renamed_Package + "\")");
       stream.nativeStream.println("     (CL:DEFPACKAGE \"" + renamed_Package + "\" (:USE))))");
     }

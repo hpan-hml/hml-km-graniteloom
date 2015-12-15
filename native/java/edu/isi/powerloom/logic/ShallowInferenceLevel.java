@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -66,7 +66,7 @@ public class ShallowInferenceLevel extends SubsumptionInferenceLevel {
     { ShallowInferenceLevel level = this;
 
       { NamedDescription description = Logic.getDescription(relation);
-        Cons valuetypes = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_TYPE, Stella.consList(Stella_Object.cons(description, Stella_Object.cons(self, Stella.NIL))));
+        Cons valuetypes = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_TYPE, Cons.consList(Cons.cons(description, Cons.cons(self, Stella.NIL))));
 
         if (Logic.testClosedSlotP(relation) ||
             Logic.testFunctionSlotP(relation)) {
@@ -84,7 +84,7 @@ public class ShallowInferenceLevel extends SubsumptionInferenceLevel {
                   for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                     d = ((NamedDescription)(iter001.value));
                     if (!possibletypes.memberP(d)) {
-                      possibletypes = Stella_Object.cons(d, possibletypes);
+                      possibletypes = Cons.cons(d, possibletypes);
                     }
                   }
                 }
@@ -116,7 +116,7 @@ public class ShallowInferenceLevel extends SubsumptionInferenceLevel {
                     }
                   }
                   if (testValue000) {
-                    valuetypes = Stella_Object.cons(d, valuetypes);
+                    valuetypes = Cons.cons(d, valuetypes);
                   }
                 }
               }
@@ -132,7 +132,7 @@ public class ShallowInferenceLevel extends SubsumptionInferenceLevel {
     { ShallowInferenceLevel level = this;
 
       { NamedDescription description = Logic.getDescription(relation);
-        Stella_Object maxcardinality = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_MAX_CARDINALITY, Stella.consList(Stella_Object.cons(description, Stella_Object.cons(self, Stella.NIL)))).value;
+        Stella_Object maxcardinality = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_MAX_CARDINALITY, Cons.consList(Cons.cons(description, Cons.cons(self, Stella.NIL)))).value;
         int fillercount = Stella.NULL_INTEGER;
 
         if (Logic.testClosedSlotP(relation)) {
@@ -148,7 +148,7 @@ public class ShallowInferenceLevel extends SubsumptionInferenceLevel {
           return (((IntegerWrapper)(maxcardinality)).wrapperValue);
         }
         else {
-          return (Stella.min(((IntegerWrapper)(maxcardinality)).wrapperValue, fillercount));
+          return (Stella.integer_min(fillercount, ((IntegerWrapper)(maxcardinality)).wrapperValue));
         }
       }
     }
@@ -158,13 +158,13 @@ public class ShallowInferenceLevel extends SubsumptionInferenceLevel {
     { ShallowInferenceLevel level = this;
 
       { NamedDescription description = Logic.getDescription(relation);
-        Stella_Object mincardinality = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_MIN_CARDINALITY, Stella.consList(Stella_Object.cons(description, Stella_Object.cons(self, Stella.NIL)))).value;
+        Stella_Object mincardinality = Logic.allRelationValues(Logic.SGT_PL_KERNEL_KB_RANGE_MIN_CARDINALITY, Cons.consList(Cons.cons(description, Cons.cons(self, Stella.NIL)))).value;
         int fillercount = LogicObject.allSlotValues(self, relation).length();
 
         if (mincardinality == null) {
           mincardinality = IntegerWrapper.wrapInteger(0);
         }
-        return (Stella.max(((IntegerWrapper)(mincardinality)).wrapperValue, fillercount));
+        return (Stella.integer_max(fillercount, ((IntegerWrapper)(mincardinality)).wrapperValue));
       }
     }
   }

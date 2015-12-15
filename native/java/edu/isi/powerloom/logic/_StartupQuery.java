@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,209 +52,219 @@ import edu.isi.stella.*;
 public class _StartupQuery {
   static void helpStartupQuery1() {
     {
-      Logic.SGT_LOGIC_INFERENCE_LEVEL = ((Surrogate)(Stella.internRigidSymbolWrtModule("INFERENCE-LEVEL", null, 1)));
-      Logic.SYM_STELLA_KEYWORD = ((Symbol)(Stella.internRigidSymbolWrtModule("KEYWORD", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SGT_LOGIC_NORMAL_INFERENCE_LEVEL = ((Surrogate)(Stella.internRigidSymbolWrtModule("NORMAL-INFERENCE-LEVEL", null, 1)));
-      Logic.SGT_LOGIC_BACKTRACKING_INFERENCE_LEVEL = ((Surrogate)(Stella.internRigidSymbolWrtModule("BACKTRACKING-INFERENCE-LEVEL", null, 1)));
-      Logic.SGT_LOGIC_SUBSUMPTION_INFERENCE_LEVEL = ((Surrogate)(Stella.internRigidSymbolWrtModule("SUBSUMPTION-INFERENCE-LEVEL", null, 1)));
-      Logic.SGT_LOGIC_SHALLOW_INFERENCE_LEVEL = ((Surrogate)(Stella.internRigidSymbolWrtModule("SHALLOW-INFERENCE-LEVEL", null, 1)));
-      Logic.SGT_LOGIC_ASSERTION_INFERENCE_LEVEL = ((Surrogate)(Stella.internRigidSymbolWrtModule("ASSERTION-INFERENCE-LEVEL", null, 1)));
-      Logic.SGT_LOGIC_REFUTATION_INFERENCE_LEVEL = ((Surrogate)(Stella.internRigidSymbolWrtModule("REFUTATION-INFERENCE-LEVEL", null, 1)));
-      Logic.KWD_NORMAL = ((Keyword)(Stella.internRigidSymbolWrtModule("NORMAL", null, 2)));
-      Logic.KWD_BACKTRACKING = ((Keyword)(Stella.internRigidSymbolWrtModule("BACKTRACKING", null, 2)));
-      Logic.KWD_SUBSUMPTION = ((Keyword)(Stella.internRigidSymbolWrtModule("SUBSUMPTION", null, 2)));
-      Logic.KWD_SHALLOW = ((Keyword)(Stella.internRigidSymbolWrtModule("SHALLOW", null, 2)));
-      Logic.KWD_ASSERTION = ((Keyword)(Stella.internRigidSymbolWrtModule("ASSERTION", null, 2)));
-      Logic.KWD_REFUTATION = ((Keyword)(Stella.internRigidSymbolWrtModule("REFUTATION", null, 2)));
-      Logic.SYM_LOGIC_INFERENCE_LEVEL = ((Symbol)(Stella.internRigidSymbolWrtModule("INFERENCE-LEVEL", null, 0)));
-      Logic.KWD_LOOKUP = ((Keyword)(Stella.internRigidSymbolWrtModule("LOOKUP", null, 2)));
-      Logic.KWD_DUPLICATE_GOALS = ((Keyword)(Stella.internRigidSymbolWrtModule("DUPLICATE-GOALS", null, 2)));
-      Logic.KWD_TRACE_SUBGOALS = ((Keyword)(Stella.internRigidSymbolWrtModule("TRACE-SUBGOALS", null, 2)));
-      Logic.KWD_STRATEGIES = ((Keyword)(Stella.internRigidSymbolWrtModule("STRATEGIES", null, 2)));
-      Logic.SYM_LOGIC_COST_ESTIMATE = ((Symbol)(Stella.internRigidSymbolWrtModule("COST-ESTIMATE", null, 0)));
-      Logic.SGT_LOGIC_QUERY_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("QUERY-ITERATOR", null, 1)));
-      Logic.SYM_LOGIC_RESIDUE_GOALS = ((Symbol)(Stella.internRigidSymbolWrtModule("RESIDUE-GOALS", null, 0)));
-      Logic.SYM_LOGIC_BEST_GOAL_SEQUENCE = ((Symbol)(Stella.internRigidSymbolWrtModule("BEST-GOAL-SEQUENCE", null, 0)));
-      Logic.SYM_LOGIC_EXHAUSTEDp = ((Symbol)(Stella.internRigidSymbolWrtModule("EXHAUSTED?", null, 0)));
-      Logic.SYM_STELLA_OPTIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("OPTIONS", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_SOLUTIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("SOLUTIONS", null, 0)));
-      Logic.SYM_LOGIC_QUERY_CONTEXT = ((Symbol)(Stella.internRigidSymbolWrtModule("QUERY-CONTEXT", null, 0)));
-      Logic.SYM_LOGIC_BASE_CONTROL_FRAME = ((Symbol)(Stella.internRigidSymbolWrtModule("BASE-CONTROL-FRAME", null, 0)));
-      Logic.SYM_LOGIC_CURRENT_CONTROL_FRAME = ((Symbol)(Stella.internRigidSymbolWrtModule("CURRENT-CONTROL-FRAME", null, 0)));
-      Logic.SYM_LOGIC_CURRENT_PATTERN_RECORD = ((Symbol)(Stella.internRigidSymbolWrtModule("CURRENT-PATTERN-RECORD", null, 0)));
-      Logic.SYM_LOGIC_CURRENT_PARALLEL_THREAD = ((Symbol)(Stella.internRigidSymbolWrtModule("CURRENT-PARALLEL-THREAD", null, 0)));
-      Logic.SYM_LOGIC_CONTROL_FRAME_PRIORITY_QUEUE = ((Symbol)(Stella.internRigidSymbolWrtModule("CONTROL-FRAME-PRIORITY-QUEUE", null, 0)));
-      Logic.SYM_LOGIC_AUGMENTED_GOAL_CACHEp = ((Symbol)(Stella.internRigidSymbolWrtModule("AUGMENTED-GOAL-CACHE?", null, 0)));
-      Logic.SYM_LOGIC_ACTIVE_GOAL_CACHES = ((Symbol)(Stella.internRigidSymbolWrtModule("ACTIVE-GOAL-CACHES", null, 0)));
-      Logic.SYM_LOGIC_TRIGGERED_DEPTH_CUTOFFp = ((Symbol)(Stella.internRigidSymbolWrtModule("TRIGGERED-DEPTH-CUTOFF?", null, 0)));
-      Logic.SYM_LOGIC_FAILED_TO_FIND_DUPLICATE_SUBGOALp = ((Symbol)(Stella.internRigidSymbolWrtModule("FAILED-TO-FIND-DUPLICATE-SUBGOAL?", null, 0)));
-      Logic.SYM_LOGIC_FOUND_AT_LEAST_ONE_SOLUTIONp = ((Symbol)(Stella.internRigidSymbolWrtModule("FOUND-AT-LEAST-ONE-SOLUTION?", null, 0)));
-      Logic.SYM_LOGIC_PARTIAL_MATCH_STRATEGY = ((Symbol)(Stella.internRigidSymbolWrtModule("PARTIAL-MATCH-STRATEGY", null, 0)));
-      Logic.SYM_LOGIC_MAXIMUM_DEPTH = ((Symbol)(Stella.internRigidSymbolWrtModule("MAXIMUM-DEPTH", null, 0)));
-      Logic.SYM_LOGIC_ALLOTTED_TIME = ((Symbol)(Stella.internRigidSymbolWrtModule("ALLOTTED-TIME", null, 0)));
-      Logic.SYM_LOGIC_TIMEOUTp = ((Symbol)(Stella.internRigidSymbolWrtModule("TIMEOUT?", null, 0)));
-      Logic.SYM_LOGIC_NEGATED_QUERY = ((Symbol)(Stella.internRigidSymbolWrtModule("NEGATED-QUERY", null, 0)));
-      Logic.SYM_LOGIC_LATEST_PARTIAL_SCORE = ((Symbol)(Stella.internRigidSymbolWrtModule("LATEST-PARTIAL-SCORE", null, 0)));
-      Logic.SYM_LOGIC_AUXILIARY_QUERY = ((Symbol)(Stella.internRigidSymbolWrtModule("AUXILIARY-QUERY", null, 0)));
-      Logic.SYM_LOGIC_LATEST_POSITIVE_SCORE = ((Symbol)(Stella.internRigidSymbolWrtModule("LATEST-POSITIVE-SCORE", null, 0)));
-      Logic.SYM_LOGIC_GOAL_BINDINGS = ((Symbol)(Stella.internRigidSymbolWrtModule("GOAL-BINDINGS", null, 0)));
-      Logic.SGT_LOGIC_CONTROL_FRAME = ((Surrogate)(Stella.internRigidSymbolWrtModule("CONTROL-FRAME", null, 1)));
-      Logic.SYM_LOGIC_REVERSE_POLARITYp = ((Symbol)(Stella.internRigidSymbolWrtModule("REVERSE-POLARITY?", null, 0)));
-      Logic.SYM_LOGIC_PATTERN_RECORD = ((Symbol)(Stella.internRigidSymbolWrtModule("PATTERN-RECORD", null, 0)));
-      Logic.SYM_LOGIC_INHERITED_PATTERN_RECORD = ((Symbol)(Stella.internRigidSymbolWrtModule("INHERITED-PATTERN-RECORD", null, 0)));
-      Logic.SYM_LOGIC_CHOICE_POINT_UNBINDING_OFFSET = ((Symbol)(Stella.internRigidSymbolWrtModule("CHOICE-POINT-UNBINDING-OFFSET", null, 0)));
-      Logic.SYM_LOGIC_CURRENT_STRATEGY = ((Symbol)(Stella.internRigidSymbolWrtModule("CURRENT-STRATEGY", null, 0)));
-      Logic.SYM_LOGIC_NEXT_STRATEGIES = ((Symbol)(Stella.internRigidSymbolWrtModule("NEXT-STRATEGIES", null, 0)));
-      Logic.SYM_LOGIC_JUSTIFICATIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("JUSTIFICATIONS", null, 0)));
-      Logic.SYM_LOGIC_CACHED_GOAL_RESULTp = ((Symbol)(Stella.internRigidSymbolWrtModule("CACHED-GOAL-RESULT?", null, 0)));
-      Logic.SYM_LOGIC_DONT_CACHE_GOAL_FAILUREp = ((Symbol)(Stella.internRigidSymbolWrtModule("DONT-CACHE-GOAL-FAILURE?", null, 0)));
-      Logic.SGT_LOGIC_PARALLEL_THREAD = ((Surrogate)(Stella.internRigidSymbolWrtModule("PARALLEL-THREAD", null, 1)));
-      Logic.SYM_LOGIC_TOP_CONTROL_FRAME = ((Symbol)(Stella.internRigidSymbolWrtModule("TOP-CONTROL-FRAME", null, 0)));
-      Logic.SYM_LOGIC_HYPOTHETICAL_WORLD = ((Symbol)(Stella.internRigidSymbolWrtModule("HYPOTHETICAL-WORLD", null, 0)));
-      Logic.SYM_LOGIC_VARIABLE_BINDINGS = ((Symbol)(Stella.internRigidSymbolWrtModule("VARIABLE-BINDINGS", null, 0)));
+      Logic.SGT_LOGIC_INFERENCE_LEVEL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("INFERENCE-LEVEL", null, 1)));
+      Logic.SYM_STELLA_KEYWORD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("KEYWORD", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SGT_LOGIC_NORMAL_INFERENCE_LEVEL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NORMAL-INFERENCE-LEVEL", null, 1)));
+      Logic.SGT_LOGIC_BACKTRACKING_INFERENCE_LEVEL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("BACKTRACKING-INFERENCE-LEVEL", null, 1)));
+      Logic.SGT_LOGIC_SUBSUMPTION_INFERENCE_LEVEL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SUBSUMPTION-INFERENCE-LEVEL", null, 1)));
+      Logic.SGT_LOGIC_SHALLOW_INFERENCE_LEVEL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SHALLOW-INFERENCE-LEVEL", null, 1)));
+      Logic.SGT_LOGIC_ASSERTION_INFERENCE_LEVEL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ASSERTION-INFERENCE-LEVEL", null, 1)));
+      Logic.SGT_LOGIC_REFUTATION_INFERENCE_LEVEL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("REFUTATION-INFERENCE-LEVEL", null, 1)));
+      Logic.KWD_NORMAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NORMAL", null, 2)));
+      Logic.KWD_BACKTRACKING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("BACKTRACKING", null, 2)));
+      Logic.KWD_SUBSUMPTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SUBSUMPTION", null, 2)));
+      Logic.KWD_ASSERTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ASSERTION", null, 2)));
+      Logic.KWD_REFUTATION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("REFUTATION", null, 2)));
+      Logic.SYM_LOGIC_INFERENCE_LEVEL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INFERENCE-LEVEL", null, 0)));
+      Logic.KWD_LOOKUP = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOKUP", null, 2)));
+      Logic.KWD_DUPLICATE_GOALS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DUPLICATE-GOALS", null, 2)));
+      Logic.KWD_TRACE_SUBGOALS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TRACE-SUBGOALS", null, 2)));
+      Logic.KWD_STRATEGIES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("STRATEGIES", null, 2)));
+      Logic.SYM_LOGIC_COST_ESTIMATE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COST-ESTIMATE", null, 0)));
+      Logic.SGT_LOGIC_QUERY_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("QUERY-ITERATOR", null, 1)));
+      Logic.SYM_LOGIC_RESIDUE_GOALS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RESIDUE-GOALS", null, 0)));
+      Logic.SYM_LOGIC_BEST_GOAL_SEQUENCE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BEST-GOAL-SEQUENCE", null, 0)));
+      Logic.SYM_LOGIC_EXHAUSTEDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EXHAUSTED?", null, 0)));
+      Logic.SYM_STELLA_OPTIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OPTIONS", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_SOLUTIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SOLUTIONS", null, 0)));
+      Logic.SYM_LOGIC_QUERY_CONTEXT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("QUERY-CONTEXT", null, 0)));
+      Logic.SYM_LOGIC_BASE_CONTROL_FRAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BASE-CONTROL-FRAME", null, 0)));
+      Logic.SYM_LOGIC_CURRENT_CONTROL_FRAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CURRENT-CONTROL-FRAME", null, 0)));
+      Logic.SYM_LOGIC_CURRENT_PATTERN_RECORD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CURRENT-PATTERN-RECORD", null, 0)));
+      Logic.SYM_LOGIC_CURRENT_PARALLEL_THREAD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CURRENT-PARALLEL-THREAD", null, 0)));
+      Logic.SYM_LOGIC_CONTROL_FRAME_PRIORITY_QUEUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTROL-FRAME-PRIORITY-QUEUE", null, 0)));
+      Logic.SYM_LOGIC_AUGMENTED_GOAL_CACHEp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("AUGMENTED-GOAL-CACHE?", null, 0)));
+      Logic.SYM_LOGIC_ACTIVE_GOAL_CACHES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ACTIVE-GOAL-CACHES", null, 0)));
+      Logic.SYM_LOGIC_TRIGGERED_DEPTH_CUTOFFp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TRIGGERED-DEPTH-CUTOFF?", null, 0)));
+      Logic.SYM_LOGIC_FAILED_TO_FIND_DUPLICATE_SUBGOALp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FAILED-TO-FIND-DUPLICATE-SUBGOAL?", null, 0)));
+      Logic.SYM_LOGIC_FOUND_AT_LEAST_ONE_SOLUTIONp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FOUND-AT-LEAST-ONE-SOLUTION?", null, 0)));
+      Logic.SYM_LOGIC_PARTIAL_MATCH_STRATEGY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PARTIAL-MATCH-STRATEGY", null, 0)));
+      Logic.SYM_LOGIC_MAXIMUM_DEPTH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MAXIMUM-DEPTH", null, 0)));
+      Logic.SYM_LOGIC_ALLOTTED_TIME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ALLOTTED-TIME", null, 0)));
+      Logic.SYM_LOGIC_TIMEOUTp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TIMEOUT?", null, 0)));
+      Logic.SYM_LOGIC_DEPTH_CUTOFFSp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEPTH-CUTOFFS?", null, 0)));
+      Logic.SYM_LOGIC_NEGATED_QUERY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NEGATED-QUERY", null, 0)));
+      Logic.SYM_LOGIC_LATEST_PARTIAL_SCORE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LATEST-PARTIAL-SCORE", null, 0)));
+      Logic.SYM_LOGIC_AUXILIARY_QUERY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("AUXILIARY-QUERY", null, 0)));
+      Logic.SYM_LOGIC_LATEST_POSITIVE_SCORE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LATEST-POSITIVE-SCORE", null, 0)));
+      Logic.SYM_LOGIC_GOAL_BINDINGS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL-BINDINGS", null, 0)));
+      Logic.SGT_LOGIC_CONTROL_FRAME = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTROL-FRAME", null, 1)));
+      Logic.SYM_LOGIC_REVERSE_POLARITYp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("REVERSE-POLARITY?", null, 0)));
+      Logic.SYM_LOGIC_PATTERN_RECORD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PATTERN-RECORD", null, 0)));
+      Logic.SYM_LOGIC_INHERITED_PATTERN_RECORD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INHERITED-PATTERN-RECORD", null, 0)));
+      Logic.SYM_LOGIC_CHOICE_POINT_UNBINDING_OFFSET = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CHOICE-POINT-UNBINDING-OFFSET", null, 0)));
+      Logic.SYM_LOGIC_CURRENT_STRATEGY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CURRENT-STRATEGY", null, 0)));
+      Logic.SYM_LOGIC_NEXT_STRATEGIES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NEXT-STRATEGIES", null, 0)));
+      Logic.SYM_LOGIC_JUSTIFICATIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JUSTIFICATIONS", null, 0)));
+      Logic.SYM_LOGIC_CACHED_GOAL_RESULTp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CACHED-GOAL-RESULT?", null, 0)));
+      Logic.SYM_LOGIC_DONT_CACHE_GOAL_FAILUREp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DONT-CACHE-GOAL-FAILURE?", null, 0)));
+      Logic.SGT_LOGIC_PARALLEL_THREAD = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PARALLEL-THREAD", null, 1)));
+      Logic.SYM_LOGIC_TOP_CONTROL_FRAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TOP-CONTROL-FRAME", null, 0)));
+      Logic.SYM_LOGIC_HYPOTHETICAL_WORLD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("HYPOTHETICAL-WORLD", null, 0)));
+      Logic.SYM_LOGIC_VARIABLE_BINDINGS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("VARIABLE-BINDINGS", null, 0)));
     }
   }
 
   static void helpStartupQuery2() {
     {
-      Logic.SYM_LOGIC_UNBINDING_STACK = ((Symbol)(Stella.internRigidSymbolWrtModule("UNBINDING-STACK", null, 0)));
-      Logic.SYM_LOGIC_TOP_UNBINDING_STACK_OFFSET = ((Symbol)(Stella.internRigidSymbolWrtModule("TOP-UNBINDING-STACK-OFFSET", null, 0)));
-      Logic.SYM_LOGIC_PRIORITY = ((Symbol)(Stella.internRigidSymbolWrtModule("PRIORITY", null, 0)));
-      Logic.SYM_LOGIC_STATUS = ((Symbol)(Stella.internRigidSymbolWrtModule("STATUS", null, 0)));
-      Logic.SGT_LOGIC_PARALLEL_CONTROL_FRAME = ((Surrogate)(Stella.internRigidSymbolWrtModule("PARALLEL-CONTROL-FRAME", null, 1)));
-      Logic.SYM_LOGIC_CHILD_THREADS = ((Symbol)(Stella.internRigidSymbolWrtModule("CHILD-THREADS", null, 0)));
-      Logic.SYM_LOGIC_UNBOUND_VARIABLESp = ((Symbol)(Stella.internRigidSymbolWrtModule("UNBOUND-VARIABLES?", null, 0)));
-      Logic.SYM_LOGIC_CURRENT_CHILD_THREAD = ((Symbol)(Stella.internRigidSymbolWrtModule("CURRENT-CHILD-THREAD", null, 0)));
-      Logic.SYM_LOGIC_SAVED_PARENT_CONTEXT = ((Symbol)(Stella.internRigidSymbolWrtModule("SAVED-PARENT-CONTEXT", null, 0)));
-      Logic.SYM_LOGIC_SAVED_PARENT_PARALLEL_THREAD = ((Symbol)(Stella.internRigidSymbolWrtModule("SAVED-PARENT-PARALLEL-THREAD", null, 0)));
-      Logic.SGT_LOGIC_CONTROL_FRAME_PRIORITY_QUEUE = ((Surrogate)(Stella.internRigidSymbolWrtModule("CONTROL-FRAME-PRIORITY-QUEUE", null, 1)));
-      Logic.SYM_LOGIC_QUEUE = ((Symbol)(Stella.internRigidSymbolWrtModule("QUEUE", null, 0)));
-      Logic.KWD_UPCLASSIFY = ((Keyword)(Stella.internRigidSymbolWrtModule("UPCLASSIFY", null, 2)));
-      Logic.KWD_DOWNCLASSIFY = ((Keyword)(Stella.internRigidSymbolWrtModule("DOWNCLASSIFY", null, 2)));
-      Logic.KWD_PARTIAL_MATCH = ((Keyword)(Stella.internRigidSymbolWrtModule("PARTIAL-MATCH", null, 2)));
-      Logic.SGT_LOGIC_PROOF_ADJUNCT = ((Surrogate)(Stella.internRigidSymbolWrtModule("PROOF-ADJUNCT", null, 1)));
-      Logic.SGT_LOGIC_PATTERN_RECORD = ((Surrogate)(Stella.internRigidSymbolWrtModule("PATTERN-RECORD", null, 1)));
-      Logic.SYM_LOGIC_CONTROL_FRAME = ((Symbol)(Stella.internRigidSymbolWrtModule("CONTROL-FRAME", null, 0)));
-      Logic.SYM_LOGIC_EXTERNAL_ARGUMENTS = ((Symbol)(Stella.internRigidSymbolWrtModule("EXTERNAL-ARGUMENTS", null, 0)));
-      Logic.SYM_STELLA_BOOLEAN_VECTOR = ((Symbol)(Stella.internRigidSymbolWrtModule("BOOLEAN-VECTOR", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_OPTIMAL_PATTERN = ((Symbol)(Stella.internRigidSymbolWrtModule("OPTIMAL-PATTERN", null, 0)));
-      Logic.SYM_LOGIC_COLLECTION_LIST = ((Symbol)(Stella.internRigidSymbolWrtModule("COLLECTION-LIST", null, 0)));
-      Logic.SGT_LOGIC_BOOLEAN_VECTOR_INDEX_NODE = ((Surrogate)(Stella.internRigidSymbolWrtModule("BOOLEAN-VECTOR-INDEX-NODE", null, 1)));
-      Logic.SYM_LOGIC_TRUE_LINK = ((Symbol)(Stella.internRigidSymbolWrtModule("TRUE-LINK", null, 0)));
-      Logic.SYM_LOGIC_FALSE_LINK = ((Symbol)(Stella.internRigidSymbolWrtModule("FALSE-LINK", null, 0)));
-      Logic.SYM_LOGIC_THE_VECTOR = ((Symbol)(Stella.internRigidSymbolWrtModule("THE-VECTOR", null, 0)));
-      Logic.KWD_CONTAINED_BY = ((Keyword)(Stella.internRigidSymbolWrtModule("CONTAINED-BY", null, 2)));
-      Logic.KWD_PARENT = ((Keyword)(Stella.internRigidSymbolWrtModule("PARENT", null, 2)));
-      Logic.SYM_LOGIC_CACHED_BINDINGS_ITERATOR = ((Symbol)(Stella.internRigidSymbolWrtModule("CACHED-BINDINGS-ITERATOR", null, 0)));
-      Logic.KWD_POPPED = ((Keyword)(Stella.internRigidSymbolWrtModule("POPPED", null, 2)));
-      Logic.KWD_LOCAL = ((Keyword)(Stella.internRigidSymbolWrtModule("LOCAL", null, 2)));
-      Logic.KWD_QUERY_STACKS = ((Keyword)(Stella.internRigidSymbolWrtModule("QUERY-STACKS", null, 2)));
-      Logic.KWD_NONE = ((Keyword)(Stella.internRigidSymbolWrtModule("NONE", null, 2)));
-      Logic.KWD_SHALLOW_DISJOINT = ((Keyword)(Stella.internRigidSymbolWrtModule("SHALLOW-DISJOINT", null, 2)));
-      Logic.KWD_DISJOINT = ((Keyword)(Stella.internRigidSymbolWrtModule("DISJOINT", null, 2)));
-      Logic.KWD_FLAT = ((Keyword)(Stella.internRigidSymbolWrtModule("FLAT", null, 2)));
-      Logic.KWD_ITERATIVE_FORALL = ((Keyword)(Stella.internRigidSymbolWrtModule("ITERATIVE-FORALL", null, 2)));
-      Logic.KWD_STATE_MACHINE = ((Keyword)(Stella.internRigidSymbolWrtModule("STATE-MACHINE", null, 2)));
-      Logic.KWD_PARALLEL_STRATEGIES = ((Keyword)(Stella.internRigidSymbolWrtModule("PARALLEL-STRATEGIES", null, 2)));
-      Logic.KWD_STRATEGY = ((Keyword)(Stella.internRigidSymbolWrtModule("STRATEGY", null, 2)));
-      Logic.KWD_SPECIALIST = ((Keyword)(Stella.internRigidSymbolWrtModule("SPECIALIST", null, 2)));
-      Logic.KWD_ATOMIC_GOAL = ((Keyword)(Stella.internRigidSymbolWrtModule("ATOMIC-GOAL", null, 2)));
-      Logic.SYM_LOGIC_ANTECEDENTS_RULE = ((Symbol)(Stella.internRigidSymbolWrtModule("ANTECEDENTS-RULE", null, 0)));
-      Logic.KWD_FULL_SUBQUERY = ((Keyword)(Stella.internRigidSymbolWrtModule("FULL-SUBQUERY", null, 2)));
-      Logic.KWD_ANTECEDENTS = ((Keyword)(Stella.internRigidSymbolWrtModule("ANTECEDENTS", null, 2)));
-      Logic.SYM_STELLA_ITERATOR = ((Symbol)(Stella.internRigidSymbolWrtModule("ITERATOR", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.KWD_FAILURE = ((Keyword)(Stella.internRigidSymbolWrtModule("FAILURE", null, 2)));
-      Logic.KWD_FINAL_SUCCESS = ((Keyword)(Stella.internRigidSymbolWrtModule("FINAL-SUCCESS", null, 2)));
-      Logic.SGT_LOGIC_NN_PARTIAL_MATCH = ((Surrogate)(Stella.internRigidSymbolWrtModule("NN-PARTIAL-MATCH", null, 1)));
-      Logic.SYM_LOGIC_MATCH_SCORE = ((Symbol)(Stella.internRigidSymbolWrtModule("MATCH-SCORE", null, 0)));
-      Logic.SYM_LOGIC_BACK = ((Symbol)(Stella.internRigidSymbolWrtModule("BACK", null, 0)));
-      Logic.SYM_LOGIC_GOAL_CACHE = ((Symbol)(Stella.internRigidSymbolWrtModule("GOAL-CACHE", null, 0)));
-      Logic.SYM_LOGIC_DEBUG_FRAME_ID_INTERNAL = ((Symbol)(Stella.internRigidSymbolWrtModule("DEBUG-FRAME-ID-INTERNAL", null, 0)));
-      Logic.KWD_MOVE_DOWN = ((Keyword)(Stella.internRigidSymbolWrtModule("MOVE-DOWN", null, 2)));
-      Logic.KWD_CONTINUING_SUCCESS = ((Keyword)(Stella.internRigidSymbolWrtModule("CONTINUING-SUCCESS", null, 2)));
-      Logic.KWD_MOVE_IN_PLACE = ((Keyword)(Stella.internRigidSymbolWrtModule("MOVE-IN-PLACE", null, 2)));
-      Logic.KWD_TIMEOUT = ((Keyword)(Stella.internRigidSymbolWrtModule("TIMEOUT", null, 2)));
-      Logic.KWD_SCAN_CACHED_BINDINGS = ((Keyword)(Stella.internRigidSymbolWrtModule("SCAN-CACHED-BINDINGS", null, 2)));
-      Logic.KWD_CLUSTERED_CONJUNCTION = ((Keyword)(Stella.internRigidSymbolWrtModule("CLUSTERED-CONJUNCTION", null, 2)));
-      Logic.KWD_DISJUNCTIVE_IMPLICATION_INTRODUCTION = ((Keyword)(Stella.internRigidSymbolWrtModule("DISJUNCTIVE-IMPLICATION-INTRODUCTION", null, 2)));
+      Logic.SYM_LOGIC_UNBINDING_STACK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNBINDING-STACK", null, 0)));
+      Logic.SYM_LOGIC_TOP_UNBINDING_STACK_OFFSET = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TOP-UNBINDING-STACK-OFFSET", null, 0)));
+      Logic.SYM_LOGIC_PRIORITY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PRIORITY", null, 0)));
+      Logic.SYM_LOGIC_STATUS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STATUS", null, 0)));
+      Logic.SGT_LOGIC_PARALLEL_CONTROL_FRAME = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PARALLEL-CONTROL-FRAME", null, 1)));
+      Logic.SYM_LOGIC_CHILD_THREADS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CHILD-THREADS", null, 0)));
+      Logic.SYM_LOGIC_UNBOUND_VARIABLESp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UNBOUND-VARIABLES?", null, 0)));
+      Logic.SYM_LOGIC_CURRENT_CHILD_THREAD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CURRENT-CHILD-THREAD", null, 0)));
+      Logic.SYM_LOGIC_SAVED_PARENT_CONTEXT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SAVED-PARENT-CONTEXT", null, 0)));
+      Logic.SYM_LOGIC_SAVED_PARENT_PARALLEL_THREAD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SAVED-PARENT-PARALLEL-THREAD", null, 0)));
+      Logic.SGT_LOGIC_CONTROL_FRAME_PRIORITY_QUEUE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTROL-FRAME-PRIORITY-QUEUE", null, 1)));
+      Logic.SYM_LOGIC_QUEUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("QUEUE", null, 0)));
+      Logic.KWD_UPCLASSIFY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UPCLASSIFY", null, 2)));
+      Logic.KWD_DOWNCLASSIFY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DOWNCLASSIFY", null, 2)));
+      Logic.KWD_PARTIAL_MATCH = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PARTIAL-MATCH", null, 2)));
+      Logic.SGT_LOGIC_PROOF_ADJUNCT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PROOF-ADJUNCT", null, 1)));
+      Logic.SGT_LOGIC_PATTERN_RECORD = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PATTERN-RECORD", null, 1)));
+      Logic.SYM_LOGIC_CONTROL_FRAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTROL-FRAME", null, 0)));
+      Logic.SYM_LOGIC_EXTERNAL_ARGUMENTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EXTERNAL-ARGUMENTS", null, 0)));
+      Logic.SYM_STELLA_BOOLEAN_VECTOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BOOLEAN-VECTOR", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_OPTIMAL_PATTERN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OPTIMAL-PATTERN", null, 0)));
+      Logic.SYM_LOGIC_COLLECTION_LIST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COLLECTION-LIST", null, 0)));
+      Logic.SGT_LOGIC_BOOLEAN_VECTOR_INDEX_NODE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("BOOLEAN-VECTOR-INDEX-NODE", null, 1)));
+      Logic.SYM_LOGIC_TRUE_LINK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TRUE-LINK", null, 0)));
+      Logic.SYM_LOGIC_FALSE_LINK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FALSE-LINK", null, 0)));
+      Logic.SYM_LOGIC_THE_VECTOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-VECTOR", null, 0)));
+      Logic.KWD_CONTAINED_BY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTAINED-BY", null, 2)));
+      Logic.KWD_PARENT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PARENT", null, 2)));
+      Logic.SYM_LOGIC_CACHED_BINDINGS_ITERATOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CACHED-BINDINGS-ITERATOR", null, 0)));
+      Logic.KWD_POPPED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("POPPED", null, 2)));
+      Logic.KWD_LOCAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LOCAL", null, 2)));
+      Logic.KWD_QUERY_STACKS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("QUERY-STACKS", null, 2)));
+      Logic.KWD_NONE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NONE", null, 2)));
+      Logic.KWD_SHALLOW_DISJOINT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SHALLOW-DISJOINT", null, 2)));
+      Logic.KWD_DISJOINT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DISJOINT", null, 2)));
+      Logic.KWD_FLAT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FLAT", null, 2)));
+      Logic.KWD_ITERATIVE_FORALL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ITERATIVE-FORALL", null, 2)));
+      Logic.KWD_STATE_MACHINE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("STATE-MACHINE", null, 2)));
+      Logic.KWD_PARALLEL_STRATEGIES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PARALLEL-STRATEGIES", null, 2)));
+      Logic.KWD_STRATEGY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("STRATEGY", null, 2)));
+      Logic.KWD_SPECIALIST = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SPECIALIST", null, 2)));
+      Logic.KWD_ATOMIC_GOAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ATOMIC-GOAL", null, 2)));
+      Logic.SYM_LOGIC_ANTECEDENTS_RULE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ANTECEDENTS-RULE", null, 0)));
+      Logic.KWD_FULL_SUBQUERY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FULL-SUBQUERY", null, 2)));
+      Logic.KWD_ANTECEDENTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ANTECEDENTS", null, 2)));
+      Logic.SYM_STELLA_ITERATOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ITERATOR", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.KWD_FAILURE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FAILURE", null, 2)));
+      Logic.KWD_FINAL_SUCCESS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FINAL-SUCCESS", null, 2)));
+      Logic.SGT_LOGIC_NN_PARTIAL_MATCH = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NN-PARTIAL-MATCH", null, 1)));
+      Logic.SYM_LOGIC_MATCH_SCORE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MATCH-SCORE", null, 0)));
+      Logic.SYM_LOGIC_BACK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BACK", null, 0)));
+      Logic.SYM_LOGIC_GOAL_CACHE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL-CACHE", null, 0)));
+      Logic.SYM_LOGIC_DEBUG_FRAME_ID_INTERNAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEBUG-FRAME-ID-INTERNAL", null, 0)));
+      Logic.KWD_MOVE_DOWN = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MOVE-DOWN", null, 2)));
+      Logic.KWD_CONTINUING_SUCCESS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTINUING-SUCCESS", null, 2)));
+      Logic.KWD_MOVE_IN_PLACE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MOVE-IN-PLACE", null, 2)));
+      Logic.KWD_TIMEOUT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TIMEOUT", null, 2)));
+      Logic.KWD_SCAN_CACHED_BINDINGS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SCAN-CACHED-BINDINGS", null, 2)));
+      Logic.KWD_CLUSTERED_CONJUNCTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CLUSTERED-CONJUNCTION", null, 2)));
+      Logic.KWD_DISJUNCTIVE_IMPLICATION_INTRODUCTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DISJUNCTIVE-IMPLICATION-INTRODUCTION", null, 2)));
     }
   }
 
   static void helpStartupQuery3() {
     {
-      Logic.KWD_DUPLICATE_GOALS_WITH_CACHING = ((Keyword)(Stella.internRigidSymbolWrtModule("DUPLICATE-GOALS-WITH-CACHING", null, 2)));
-      Logic.KWD_MANUFACTURE_SKOLEM = ((Keyword)(Stella.internRigidSymbolWrtModule("MANUFACTURE-SKOLEM", null, 2)));
-      Logic.SYM_LOGIC_CACHED_SINGLE_VALUEDp = ((Symbol)(Stella.internRigidSymbolWrtModule("CACHED-SINGLE-VALUED?", null, 0)));
-      Logic.KWD_FAILED_OVERLAY = ((Keyword)(Stella.internRigidSymbolWrtModule("FAILED-OVERLAY", null, 2)));
-      Logic.SGT_PL_KERNEL_KB_DISJOINT = ((Surrogate)(Stella.internRigidSymbolWrtModule("DISJOINT", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SYM_LOGIC_pD1 = ((Symbol)(Stella.internRigidSymbolWrtModule("?D1", null, 0)));
-      Logic.SYM_LOGIC_pD2 = ((Symbol)(Stella.internRigidSymbolWrtModule("?D2", null, 0)));
-      Logic.SYM_LOGIC_DISJOINT = ((Symbol)(Stella.internRigidSymbolWrtModule("DISJOINT", null, 0)));
-      Logic.SYM_LOGIC_F_DISJOINT_TERMSp_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-DISJOINT-TERMS?-QUERY-000", null, 0)));
-      Logic.SYM_PL_KERNEL_KB_CLASS = ((Symbol)(Stella.internRigidSymbolWrtModule("CLASS", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.SYM_LOGIC_REFUTATION_DISJOINT = ((Symbol)(Stella.internRigidSymbolWrtModule("REFUTATION-DISJOINT", null, 0)));
-      Logic.SYM_LOGIC_F_EXPENSIVE_DISJOINT_TERMSp_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-EXPENSIVE-DISJOINT-TERMS?-QUERY-000", null, 0)));
-      Logic.SGT_PL_KERNEL_KB_COLLECTIONOF = ((Surrogate)(Stella.internRigidSymbolWrtModule("COLLECTIONOF", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_LOGIC_DESCRIPTION_EXTENSION_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("DESCRIPTION-EXTENSION-ITERATOR", null, 1)));
-      Logic.SYM_LOGIC_ROOT_DESCRIPTION = ((Symbol)(Stella.internRigidSymbolWrtModule("ROOT-DESCRIPTION", null, 0)));
-      Logic.SYM_LOGIC_SUBCOLLECTIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("SUBCOLLECTIONS", null, 0)));
-      Logic.SYM_LOGIC_EXTENSION_ITERATOR = ((Symbol)(Stella.internRigidSymbolWrtModule("EXTENSION-ITERATOR", null, 0)));
-      Logic.SYM_LOGIC_REFERENCE_PROPOSITION = ((Symbol)(Stella.internRigidSymbolWrtModule("REFERENCE-PROPOSITION", null, 0)));
-      Logic.SYM_LOGIC_ALREADY_GENERATED_LIST = ((Symbol)(Stella.internRigidSymbolWrtModule("ALREADY-GENERATED-LIST", null, 0)));
-      Logic.SYM_LOGIC_ALREADY_GENERATED_TABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("ALREADY-GENERATED-TABLE", null, 0)));
-      Logic.SYM_LOGIC_REMOVING_DUPLICATESp = ((Symbol)(Stella.internRigidSymbolWrtModule("REMOVING-DUPLICATES?", null, 0)));
-      Logic.KWD_GOAL_CACHES = ((Keyword)(Stella.internRigidSymbolWrtModule("GOAL-CACHES", null, 2)));
-      Logic.KWD_DEPTH_VIOLATION = ((Keyword)(Stella.internRigidSymbolWrtModule("DEPTH-VIOLATION", null, 2)));
-      Logic.KWD_DEPTH_CUTOFF = ((Keyword)(Stella.internRigidSymbolWrtModule("DEPTH-CUTOFF", null, 2)));
-      Logic.KWD_TECHNICAL = ((Keyword)(Stella.internRigidSymbolWrtModule("TECHNICAL", null, 2)));
-      Logic.KWD_LAY = ((Keyword)(Stella.internRigidSymbolWrtModule("LAY", null, 2)));
-      Logic.SGT_LOGIC_QUERY_SOLUTION_TABLE = ((Surrogate)(Stella.internRigidSymbolWrtModule("QUERY-SOLUTION-TABLE", null, 1)));
-      Logic.SYM_STELLA_THE_MAP = ((Symbol)(Stella.internRigidSymbolWrtModule("THE-MAP", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_STELLA_FIRST = ((Symbol)(Stella.internRigidSymbolWrtModule("FIRST", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_STELLA_LAST = ((Symbol)(Stella.internRigidSymbolWrtModule("LAST", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SGT_LOGIC_QUERY_SOLUTION = ((Surrogate)(Stella.internRigidSymbolWrtModule("QUERY-SOLUTION", null, 1)));
-      Logic.SYM_LOGIC_BINDINGS = ((Symbol)(Stella.internRigidSymbolWrtModule("BINDINGS", null, 0)));
-      Logic.SYM_LOGIC_BEST_JUSTIFICATION = ((Symbol)(Stella.internRigidSymbolWrtModule("BEST-JUSTIFICATION", null, 0)));
-      Logic.SYM_LOGIC_ALL_JUSTIFICATIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("ALL-JUSTIFICATIONS", null, 0)));
-      Logic.SYM_STELLA_NEXT = ((Symbol)(Stella.internRigidSymbolWrtModule("NEXT", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SGT_LOGIC_QUERY_SOLUTION_TABLE_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("QUERY-SOLUTION-TABLE-ITERATOR", null, 1)));
-      Logic.SYM_STELLA_THE_TABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("THE-TABLE", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_STELLA_CURSOR = ((Symbol)(Stella.internRigidSymbolWrtModule("CURSOR", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.KWD_TRACE_SOLUTIONS = ((Keyword)(Stella.internRigidSymbolWrtModule("TRACE-SOLUTIONS", null, 2)));
-      Logic.SYM_LOGIC_ATOMIC_SINGLETONSp = ((Symbol)(Stella.internRigidSymbolWrtModule("ATOMIC-SINGLETONS?", null, 0)));
-      Logic.KWD_DONT_OPTIMIZEp = ((Keyword)(Stella.internRigidSymbolWrtModule("DONT-OPTIMIZE?", null, 2)));
-      Logic.SYM_LOGIC_INITIAL_BINDINGS = ((Symbol)(Stella.internRigidSymbolWrtModule("INITIAL-BINDINGS", null, 0)));
-      Logic.KWD_ITERATIVE_DEEPENINGp = ((Keyword)(Stella.internRigidSymbolWrtModule("ITERATIVE-DEEPENING?", null, 2)));
-      Logic.SYM_LOGIC_ITERATIVE_DEEPENINGp = ((Symbol)(Stella.internRigidSymbolWrtModule("ITERATIVE-DEEPENING?", null, 0)));
-      Logic.KWD_MATCH_MODE = ((Keyword)(Stella.internRigidSymbolWrtModule("MATCH-MODE", null, 2)));
-      Logic.KWD_DEFERRED_OPTIONS = ((Keyword)(Stella.internRigidSymbolWrtModule("DEFERRED-OPTIONS", null, 2)));
-      Logic.KWD_HOW_MANY = ((Keyword)(Stella.internRigidSymbolWrtModule("HOW-MANY", null, 2)));
-      Logic.KWD_SORT_BY = ((Keyword)(Stella.internRigidSymbolWrtModule("SORT-BY", null, 2)));
-      Logic.KWD_SCORE = ((Keyword)(Stella.internRigidSymbolWrtModule("SCORE", null, 2)));
-      Logic.KWD_MOVEOUT = ((Keyword)(Stella.internRigidSymbolWrtModule("MOVEOUT", null, 2)));
-      Logic.KWD_MAXIMUM_DEPTH = ((Keyword)(Stella.internRigidSymbolWrtModule("MAXIMUM-DEPTH", null, 2)));
-      Logic.KWD_INFERENCE_LEVEL = ((Keyword)(Stella.internRigidSymbolWrtModule("INFERENCE-LEVEL", null, 2)));
-      Logic.KWD_THREE_VALUEDp = ((Keyword)(Stella.internRigidSymbolWrtModule("THREE-VALUED?", null, 2)));
-      Logic.KWD_MINIMUM_SCORE = ((Keyword)(Stella.internRigidSymbolWrtModule("MINIMUM-SCORE", null, 2)));
-      Logic.KWD_MAXIMIZE_SCOREp = ((Keyword)(Stella.internRigidSymbolWrtModule("MAXIMIZE-SCORE?", null, 2)));
-      Logic.KWD_MAXIMUM_UNKNOWNS = ((Keyword)(Stella.internRigidSymbolWrtModule("MAXIMUM-UNKNOWNS", null, 2)));
-      Logic.SGT_STELLA_PROPERTY_LIST = ((Surrogate)(Stella.internRigidSymbolWrtModule("PROPERTY-LIST", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.KWD_DYNAMIC = ((Keyword)(Stella.internRigidSymbolWrtModule("DYNAMIC", null, 2)));
-      Logic.KWD_DYNAMIC_WITH_CLUSTERING = ((Keyword)(Stella.internRigidSymbolWrtModule("DYNAMIC-WITH-CLUSTERING", null, 2)));
-      Logic.SGT_PL_KERNEL_KB_CONCEPT_PROTOTYPE = ((Surrogate)(Stella.internRigidSymbolWrtModule("CONCEPT-PROTOTYPE", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.KWD_DUPLICATE_GOALS_WITH_CACHING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DUPLICATE-GOALS-WITH-CACHING", null, 2)));
+      Logic.KWD_MANUFACTURE_SKOLEM = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MANUFACTURE-SKOLEM", null, 2)));
+      Logic.SYM_LOGIC_CACHED_SINGLE_VALUEDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CACHED-SINGLE-VALUED?", null, 0)));
+      Logic.KWD_FAILED_OVERLAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FAILED-OVERLAY", null, 2)));
+      Logic.SGT_PL_KERNEL_KB_PARTITION_MEMBERSHIP = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PARTITION-MEMBERSHIP", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_PL_KERNEL_KB_DISJOINT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DISJOINT", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SYM_LOGIC_pD1 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?D1", null, 0)));
+      Logic.SYM_LOGIC_pD2 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?D2", null, 0)));
+      Logic.SYM_LOGIC_DISJOINT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DISJOINT", null, 0)));
+      Logic.SYM_LOGIC_F_DISJOINT_TERMSp_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-DISJOINT-TERMS?-QUERY-000", null, 0)));
+      Logic.SGT_LOGIC_F_DISJOINT_TERMSp_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-DISJOINT-TERMS?-MEMO-TABLE-000", null, 1)));
+      Logic.SYM_LOGIC_F_DISJOINT_TERMSp_QUERY_001 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-DISJOINT-TERMS?-QUERY-001", null, 0)));
+      Logic.SYM_PL_KERNEL_KB_CLASS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASS", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.SYM_LOGIC_REFUTATION_DISJOINT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("REFUTATION-DISJOINT", null, 0)));
+      Logic.SYM_LOGIC_F_EXPENSIVE_DISJOINT_TERMSp_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-EXPENSIVE-DISJOINT-TERMS?-QUERY-000", null, 0)));
+      Logic.SGT_PL_KERNEL_KB_COLLECTIONOF = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("COLLECTIONOF", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_LOGIC_DESCRIPTION_EXTENSION_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DESCRIPTION-EXTENSION-ITERATOR", null, 1)));
+      Logic.SYM_LOGIC_ROOT_DESCRIPTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ROOT-DESCRIPTION", null, 0)));
+      Logic.SYM_LOGIC_SUBCOLLECTIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUBCOLLECTIONS", null, 0)));
+      Logic.SYM_LOGIC_EXTENSION_ITERATOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EXTENSION-ITERATOR", null, 0)));
+      Logic.SYM_LOGIC_REFERENCE_PROPOSITION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("REFERENCE-PROPOSITION", null, 0)));
+      Logic.SYM_LOGIC_ALREADY_GENERATED_LIST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ALREADY-GENERATED-LIST", null, 0)));
+      Logic.SYM_LOGIC_ALREADY_GENERATED_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ALREADY-GENERATED-TABLE", null, 0)));
+      Logic.SYM_LOGIC_REMOVING_DUPLICATESp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("REMOVING-DUPLICATES?", null, 0)));
+      Logic.KWD_GOAL_CACHES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL-CACHES", null, 2)));
+      Logic.KWD_DEPTH_VIOLATION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEPTH-VIOLATION", null, 2)));
+      Logic.KWD_DEPTH_CUTOFF = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEPTH-CUTOFF", null, 2)));
+      Logic.KWD_TECHNICAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TECHNICAL", null, 2)));
+      Logic.KWD_LAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LAY", null, 2)));
+      Logic.SGT_LOGIC_QUERY_SOLUTION_TABLE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("QUERY-SOLUTION-TABLE", null, 1)));
+      Logic.SYM_STELLA_THE_MAP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-MAP", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_STELLA_FIRST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FIRST", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_STELLA_LAST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LAST", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SGT_LOGIC_QUERY_SOLUTION = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("QUERY-SOLUTION", null, 1)));
+      Logic.SYM_LOGIC_BINDINGS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BINDINGS", null, 0)));
+      Logic.SYM_LOGIC_BEST_JUSTIFICATION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BEST-JUSTIFICATION", null, 0)));
+      Logic.SYM_LOGIC_ALL_JUSTIFICATIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ALL-JUSTIFICATIONS", null, 0)));
+      Logic.SYM_STELLA_NEXT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NEXT", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SGT_LOGIC_QUERY_SOLUTION_TABLE_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("QUERY-SOLUTION-TABLE-ITERATOR", null, 1)));
+      Logic.SYM_STELLA_THE_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-TABLE", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_STELLA_CURSOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CURSOR", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.KWD_TRACE_SOLUTIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TRACE-SOLUTIONS", null, 2)));
+      Logic.SYM_LOGIC_ATOMIC_SINGLETONSp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ATOMIC-SINGLETONS?", null, 0)));
+      Logic.KWD_DONT_OPTIMIZEp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DONT-OPTIMIZE?", null, 2)));
+      Logic.SYM_LOGIC_INITIAL_BINDINGS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INITIAL-BINDINGS", null, 0)));
+      Logic.KWD_ITERATIVE_DEEPENINGp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ITERATIVE-DEEPENING?", null, 2)));
+      Logic.SYM_LOGIC_ITERATIVE_DEEPENINGp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ITERATIVE-DEEPENING?", null, 0)));
+      Logic.KWD_MATCH_MODE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MATCH-MODE", null, 2)));
+      Logic.KWD_DEFERRED_OPTIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFERRED-OPTIONS", null, 2)));
+      Logic.KWD_HOW_MANY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("HOW-MANY", null, 2)));
+      Logic.KWD_SORT_BY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SORT-BY", null, 2)));
+      Logic.KWD_SCORE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SCORE", null, 2)));
+      Logic.KWD_CHECK_VARIABLESp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CHECK-VARIABLES?", null, 2)));
+      Logic.KWD_MOVEOUT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MOVEOUT", null, 2)));
+      Logic.KWD_MAXIMUM_DEPTH = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MAXIMUM-DEPTH", null, 2)));
+      Logic.KWD_THREE_VALUEDp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("THREE-VALUED?", null, 2)));
+      Logic.KWD_ATOMIC_SINGLETONSp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ATOMIC-SINGLETONS?", null, 2)));
+      Logic.KWD_ALL_PROOFSp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ALL-PROOFS?", null, 2)));
+      Logic.KWD_VALUES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("VALUES", null, 2)));
+      Logic.KWD_VALUES_DESCENDING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("VALUES-DESCENDING", null, 2)));
     }
   }
 
   static void helpStartupQuery4() {
     {
-      Logic.SYM_LOGIC_pC = ((Symbol)(Stella.internRigidSymbolWrtModule("?C", null, 0)));
-      Logic.SYM_LOGIC_pP = ((Symbol)(Stella.internRigidSymbolWrtModule("?P", null, 0)));
-      Logic.SYM_PL_KERNEL_KB_CONCEPT_PROTOTYPE = ((Symbol)(Stella.internRigidSymbolWrtModule("CONCEPT-PROTOTYPE", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.SYM_LOGIC_F_GET_PROTOTYPE_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("F-GET-PROTOTYPE-QUERY-000", null, 0)));
-      Logic.SGT_STELLA_VECTOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("VECTOR", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.KWD_UPDATE_FROM_QUERY = ((Keyword)(Stella.internRigidSymbolWrtModule("UPDATE-FROM-QUERY", null, 2)));
-      Logic.KWD_MODULE = ((Keyword)(Stella.internRigidSymbolWrtModule("MODULE", null, 2)));
-      Logic.SYM_LOGIC_STARTUP_QUERY = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-QUERY", null, 0)));
+      Logic.KWD_VALUES_ASCENDING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("VALUES-ASCENDING", null, 2)));
+      Logic.KWD_MINIMUM_SCORE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MINIMUM-SCORE", null, 2)));
+      Logic.KWD_MAXIMIZE_SCOREp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MAXIMIZE-SCORE?", null, 2)));
+      Logic.KWD_MAXIMUM_UNKNOWNS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MAXIMUM-UNKNOWNS", null, 2)));
+      Logic.SGT_STELLA_PROPERTY_LIST = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PROPERTY-LIST", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.KWD_DYNAMIC = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DYNAMIC", null, 2)));
+      Logic.KWD_DYNAMIC_WITH_CLUSTERING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DYNAMIC-WITH-CLUSTERING", null, 2)));
+      Logic.SGT_PL_KERNEL_KB_CONCEPT_PROTOTYPE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CONCEPT-PROTOTYPE", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SYM_LOGIC_pC = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?C", null, 0)));
+      Logic.SYM_LOGIC_pP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?P", null, 0)));
+      Logic.SYM_PL_KERNEL_KB_CONCEPT_PROTOTYPE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CONCEPT-PROTOTYPE", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.SYM_LOGIC_F_GET_PROTOTYPE_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("F-GET-PROTOTYPE-QUERY-000", null, 0)));
+      Logic.SGT_STELLA_VECTOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("VECTOR", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.KWD_UPDATE_FROM_QUERY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UPDATE-FROM-QUERY", null, 2)));
+      Logic.KWD_ASSERT_FROM_QUERY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ASSERT-FROM-QUERY", null, 2)));
+      Logic.KWD_MODULE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MODULE", null, 2)));
+      Logic.KWD_RECORD_JUSTIFICATIONSp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RECORD-JUSTIFICATIONS?", null, 2)));
+      Logic.SYM_LOGIC_STARTUP_QUERY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-QUERY", null, 0)));
     }
   }
 
@@ -295,11 +305,13 @@ public class _StartupQuery {
       Logic.$MAXIMUM_BACKTRACKING_DEPTH$ = Logic.$DEFAULT_MAXIMUM_DEPTH$;
       Logic.$TYPE_CHECK_STRATEGY$.setDefaultValue(Logic.KWD_LOOKUP);
       Logic.$DUPLICATE_SUBGOAL_STRATEGY$ = Logic.KWD_DUPLICATE_GOALS;
+      Logic.$DUPLICATE_GOAL_SEARCH_DEPTH$ = Stella.NULL_INTEGER;
+      Logic.$DUPLICATE_RULE_SEARCH_DEPTH$ = Stella.NULL_INTEGER;
       Logic.$GENERATE_ALL_PROOFSp$.setDefaultValue(new Boolean(false));
       Logic.$QUERYITERATOR$.setDefaultValue(null);
       { PropertyList self036 = PropertyList.newPropertyList();
 
-        self036.thePlist = Stella.list$(Stella_Object.cons(Logic.KWD_UPCLASSIFY, Stella_Object.cons(CharacterWrapper.wrapCharacter('u'), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.KWD_DOWNCLASSIFY, Stella_Object.cons(CharacterWrapper.wrapCharacter('d'), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.KWD_PROPAGATE, Stella_Object.cons(CharacterWrapper.wrapCharacter('f'), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.KWD_PARTIAL_MATCH, Stella_Object.cons(CharacterWrapper.wrapCharacter('p'), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Stella.NIL))));
+        self036.thePlist = Cons.list$(Cons.cons(Logic.KWD_UPCLASSIFY, Cons.cons(CharacterWrapper.wrapCharacter('u'), Cons.cons(Cons.list$(Cons.cons(Logic.KWD_DOWNCLASSIFY, Cons.cons(CharacterWrapper.wrapCharacter('d'), Cons.cons(Cons.list$(Cons.cons(Logic.KWD_PROPAGATE, Cons.cons(CharacterWrapper.wrapCharacter('f'), Cons.cons(Cons.list$(Cons.cons(Logic.KWD_PARTIAL_MATCH, Cons.cons(CharacterWrapper.wrapCharacter('p'), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Stella.NIL))));
         Logic.$THINKING_DOT_TABLE$ = self036;
       }
       { BooleanVectorIndexNode self037 = BooleanVectorIndexNode.newBooleanVectorIndexNode();
@@ -309,7 +321,7 @@ public class _StartupQuery {
       }
       Logic.$PRINTINFRAME$.setDefaultValue(null);
       Logic.$REVERSEPOLARITYp$.setDefaultValue(new Boolean(false));
-      Logic.$QUERY_CACHE$ = HashTable.newHashTable();
+      Logic.$INLINE_QUERY_CACHE$ = KeyValueMap.newKeyValueMap();
     }
   }
 
@@ -345,7 +357,7 @@ public class _StartupQuery {
         renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.powerloom.logic.RefutationInferenceLevel", "newRefutationInferenceLevel", new java.lang.Class [] {});
       }
       Stella.defineStellaTypeFromStringifiedSource("(DEFTYPE COST-ESTIMATE FLOAT \"Type used by the query optimizer to compute estimates of the cost of\nexecuting a query.\")");
-      { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("QUERY-ITERATOR", "(DEFCLASS QUERY-ITERATOR (ITERATOR DYNAMIC-SLOTS-MIXIN) :PUBLIC? TRUE :DOCUMENTATION \"A query iterator points to a query environment\nrepresenting the initial or intermediate state of a query.  The iterator's\n'value' is a vector representing a satisfying set bindings of the query's\noutput variables.  Each call to the iterator writes a new set of bindings\ninto the vector.\" :PARAMETERS ((ANY-VALUE :TYPE QUERY-SOLUTION)) :PUBLIC-SLOTS ((EXTERNAL-VARIABLES :TYPE VARIABLES-VECTOR) (INITIAL-BINDINGS :TYPE ARGUMENTS-VECTOR :ALLOCATION :DYNAMIC :DOCUMENTATION \"Supports cached queries; conceivably, this could be static.\") (EXHAUSTED? :TYPE BOOLEAN) (AUXILIARY-QUERY :TYPE QUERY-ITERATOR :ALLOCATION :DYNAMIC) (NEGATED-QUERY :RENAMES AUXILIARY-QUERY) (OPTIONS :TYPE PROPERTY-LIST :INITIALLY (NEW PROPERTY-LIST)) (SOLUTIONS :TYPE QUERY-SOLUTION-TABLE :INITIALLY (NEW QUERY-SOLUTION-TABLE) :DOCUMENTATION \"Each element holds a solution record with a\nvector of bindings of the free external variables of the query plus all\nthe appropriate truth-value and justification support.\") (ATOMIC-SINGLETONS? :TYPE BOOLEAN :ALLOCATION :DYNAMIC :DOCUMENTATION \"If TRUE, then singleton result tuples are\nconsified (and printed) as atoms instead of singleton lists.\") (QUERY-CONTEXT :TYPE CONTEXT) (BASE-CONTROL-FRAME :TYPE CONTROL-FRAME) (CURRENT-CONTROL-FRAME :TYPE CONTROL-FRAME) (CURRENT-PATTERN-RECORD :TYPE PATTERN-RECORD) (CURRENT-PARALLEL-THREAD :TYPE PARALLEL-THREAD) (CONTROL-FRAME-PRIORITY-QUEUE :TYPE CONTROL-FRAME-PRIORITY-QUEUE) (AUGMENTED-GOAL-CACHE? :TYPE BOOLEAN) (ACTIVE-GOAL-CACHES :TYPE (LIST OF GOAL-CACHE) :ALLOCATION :EMBEDDED) (TRIGGERED-DEPTH-CUTOFF? :TYPE BOOLEAN) (FAILED-TO-FIND-DUPLICATE-SUBGOAL? :TYPE BOOLEAN) (FOUND-AT-LEAST-ONE-SOLUTION? :TYPE BOOLEAN) (TIMESTAMP :TYPE TIMESTAMP) (PARTIAL-MATCH-STRATEGY :TYPE PARTIAL-MATCH-FRAME) (LATEST-POSITIVE-SCORE :TYPE PARTIAL-MATCH-SCORE :ALLOCATION :DYNAMIC) (LATEST-PARTIAL-SCORE :TYPE PARTIAL-MATCH-SCORE :RENAMES LATEST-POSITIVE-SCORE) (OPTIMIZER-GOAL-RECORDS :TYPE (EXTENSIBLE-VECTOR OF GOAL-RECORD) :ALLOCATION :DYNAMIC) (RESIDUE-GOALS :TYPE (LIST OF PROPOSITION) :ALLOCATION :DYNAMIC) (BEST-GOAL-SEQUENCE :TYPE (LIST OF PROPOSITION) :ALLOCATION :DYNAMIC) (BEST-COST :TYPE COST-ESTIMATE :ALLOCATION :DYNAMIC) (INFERENCE-LEVEL :TYPE INFERENCE-LEVEL) (ITERATIVE-DEEPENING? :TYPE BOOLEAN :ALLOCATION :DYNAMIC) (CURRENT-DEPTH-CUTOFF :TYPE INTEGER) (MAXIMUM-DEPTH :TYPE INTEGER) (ALLOTTED-TIME :TYPE FLOAT :DOCUMENTATION \"If defined, timeout after that many seconds.\") (ALLOTTED-CLOCK-TICKS :TYPE INTEGER :DOCUMENTATION \"If defined, timeout after that many :DOWN moves.\") (CURRENT-CLOCK-TICKS :TYPE INTEGER :INITIALLY 0) (TIMEOUT? :TYPE BOOLEAN :DOCUMENTATION \"Set to TRUE if query times out.\")) :PRINT-FORM (PRINT-QUERY-ITERATOR SELF STREAM))");
+      { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("QUERY-ITERATOR", "(DEFCLASS QUERY-ITERATOR (ITERATOR DYNAMIC-SLOTS-MIXIN) :PUBLIC? TRUE :DOCUMENTATION \"A query iterator points to a query environment\nrepresenting the initial or intermediate state of a query.  The iterator's\n'value' is a vector representing a satisfying set bindings of the query's\noutput variables.  Each call to the iterator writes a new set of bindings\ninto the vector.\" :PARAMETERS ((ANY-VALUE :TYPE QUERY-SOLUTION)) :PUBLIC-SLOTS ((EXTERNAL-VARIABLES :TYPE VARIABLES-VECTOR) (INITIAL-BINDINGS :TYPE ARGUMENTS-VECTOR :ALLOCATION :DYNAMIC :DOCUMENTATION \"Supports cached queries; conceivably, this could be static.\") (EXHAUSTED? :TYPE BOOLEAN) (AUXILIARY-QUERY :TYPE QUERY-ITERATOR :ALLOCATION :DYNAMIC) (NEGATED-QUERY :RENAMES AUXILIARY-QUERY) (OPTIONS :TYPE PROPERTY-LIST :INITIALLY (NEW PROPERTY-LIST)) (SOLUTIONS :TYPE QUERY-SOLUTION-TABLE :INITIALLY (NEW QUERY-SOLUTION-TABLE) :DOCUMENTATION \"Each element holds a solution record with a\nvector of bindings of the free external variables of the query plus all\nthe appropriate truth-value and justification support.\") (ATOMIC-SINGLETONS? :TYPE BOOLEAN :ALLOCATION :DYNAMIC :DOCUMENTATION \"If TRUE, then singleton result tuples are\nconsified (and printed) as atoms instead of singleton lists.\") (QUERY-CONTEXT :TYPE CONTEXT) (BASE-CONTROL-FRAME :TYPE CONTROL-FRAME) (CURRENT-CONTROL-FRAME :TYPE CONTROL-FRAME) (CURRENT-PATTERN-RECORD :TYPE PATTERN-RECORD) (CURRENT-PARALLEL-THREAD :TYPE PARALLEL-THREAD) (CONTROL-FRAME-PRIORITY-QUEUE :TYPE CONTROL-FRAME-PRIORITY-QUEUE) (AUGMENTED-GOAL-CACHE? :TYPE BOOLEAN) (ACTIVE-GOAL-CACHES :TYPE (LIST OF GOAL-CACHE) :ALLOCATION :EMBEDDED) (TRIGGERED-DEPTH-CUTOFF? :TYPE BOOLEAN) (FAILED-TO-FIND-DUPLICATE-SUBGOAL? :TYPE BOOLEAN) (FOUND-AT-LEAST-ONE-SOLUTION? :TYPE BOOLEAN) (TIMESTAMP :TYPE TIMESTAMP) (PARTIAL-MATCH-STRATEGY :TYPE PARTIAL-MATCH-FRAME) (LATEST-POSITIVE-SCORE :TYPE PARTIAL-MATCH-SCORE :ALLOCATION :DYNAMIC) (LATEST-PARTIAL-SCORE :TYPE PARTIAL-MATCH-SCORE :RENAMES LATEST-POSITIVE-SCORE) (OPTIMIZER-GOAL-RECORDS :TYPE (EXTENSIBLE-VECTOR OF GOAL-RECORD) :ALLOCATION :DYNAMIC) (RESIDUE-GOALS :TYPE (LIST OF PROPOSITION) :ALLOCATION :DYNAMIC) (BEST-GOAL-SEQUENCE :TYPE (LIST OF PROPOSITION) :ALLOCATION :DYNAMIC) (BEST-COST :TYPE COST-ESTIMATE :ALLOCATION :DYNAMIC) (INFERENCE-LEVEL :TYPE INFERENCE-LEVEL) (ITERATIVE-DEEPENING? :TYPE BOOLEAN :ALLOCATION :DYNAMIC) (CURRENT-DEPTH-CUTOFF :TYPE INTEGER) (MAXIMUM-DEPTH :TYPE INTEGER) (ALLOTTED-TIME :TYPE FLOAT :DOCUMENTATION \"If defined, timeout after that many seconds.\") (ALLOTTED-CLOCK-TICKS :TYPE INTEGER :DOCUMENTATION \"If defined, timeout after that many :DOWN moves.\") (CURRENT-CLOCK-TICKS :TYPE INTEGER :INITIALLY 0) (TIMEOUT? :TYPE BOOLEAN :DOCUMENTATION \"Set to TRUE if query times out.\") (DEPTH-CUTOFFS? :TYPE BOOLEAN :DOCUMENTATION \"Set to TRUE if one or more depth cutoffs occurred.\")) :PRINT-FORM (PRINT-QUERY-ITERATOR SELF STREAM))");
 
         renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "newQueryIterator", new java.lang.Class [] {});
         renamed_Class.classSlotAccessorCode = Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "accessQueryIteratorSlotValue", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE});
@@ -444,6 +456,7 @@ public class _StartupQuery {
       Stella.defineFunctionObject("BOUND-TO-IN-RECORD", "(DEFUN (BOUND-TO-IN-RECORD OBJECT) ((SELF PATTERN-VARIABLE) (RECORD PATTERN-RECORD)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (NTH (VARIABLE-BINDINGS RECORD) (BOUND-TO-OFFSET SELF))))", Native.find_java_method("edu.isi.powerloom.logic.PatternVariable", "boundToInRecord", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.PatternVariable"), Native.find_java_class("edu.isi.powerloom.logic.PatternRecord")}), null);
       Stella.defineFunctionObject("CONTAINS-OPERATOR?", "(DEFUN (CONTAINS-OPERATOR? BOOLEAN) ((PROPOSITION PROPOSITION) (OPERATOR SURROGATE)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "containsOperatorP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Surrogate")}), null);
       Stella.defineFunctionObject("ARGUMENT-BOUND-TO", "(DEFUN (ARGUMENT-BOUND-TO OBJECT) ((SELF OBJECT)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "argumentBoundTo", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("SAFE-ARGUMENT-BOUND-TO", "(DEFUN (SAFE-ARGUMENT-BOUND-TO OBJECT) ((SELF OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "safeArgumentBoundTo", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("HELP-UNIFY-ATTRIBUTES?", "(DEFUN (HELP-UNIFY-ATTRIBUTES? BOOLEAN) ((VALUE1 OBJECT) (VALUE2 OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "helpUnifyAttributesP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("FAILS-UNIFICATION-TYPE-CHECK?", "(DEFUN (FAILS-UNIFICATION-TYPE-CHECK? BOOLEAN) ((V1 PATTERN-VARIABLE) (I2 OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.PatternVariable", "failsUnificationTypeCheckP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.PatternVariable"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("FAILS-ANTECEDENT-TYPE-CHECK?", "(DEFUN (FAILS-ANTECEDENT-TYPE-CHECK? BOOLEAN) ((V1 PATTERN-VARIABLE) (I2 OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.PatternVariable", "failsAntecedentTypeCheckP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.PatternVariable"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
@@ -469,12 +482,12 @@ public class _StartupQuery {
       Stella.defineMethodObject("(DEFMETHOD (CONTINUE-PARTIAL-OR-PROOF KEYWORD) ((SELF CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continuePartialOrProof", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Keyword")}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("OLD-INTERPRET-FAIL-SCORE", "(DEFUN (OLD-INTERPRET-FAIL-SCORE KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "oldInterpretFailScore", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineMethodObject("(DEFMETHOD (CONTINUE-PARTIAL-NOT-PROOF KEYWORD) ((SELF CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continuePartialNotProof", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Keyword")}), ((java.lang.reflect.Method)(null)));
-      Stella.defineFunctionObject("OLD-INTERPRET-GOAL-SCORES", "(DEFUN (OLD-INTERPRET-GOAL-SCORES KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "oldInterpretGoalScores", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
     }
   }
 
   static void helpStartupQuery8() {
     {
+      Stella.defineFunctionObject("OLD-INTERPRET-GOAL-SCORES", "(DEFUN (OLD-INTERPRET-GOAL-SCORES KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "oldInterpretGoalScores", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("ATTACH-SUPPORT", "(DEFUN ATTACH-SUPPORT ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "attachSupport", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineMethodObject("(DEFMETHOD (CONTINUE-PARTIAL-STRATEGIES-PROOFS KEYWORD) ((SELF CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continuePartialStrategiesProofs", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Keyword")}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("OPERATIVE-PATTERN-RECORD", "(DEFUN (OPERATIVE-PATTERN-RECORD PATTERN-RECORD) ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "operativePatternRecord", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
@@ -506,7 +519,7 @@ public class _StartupQuery {
       Stella.defineFunctionObject("COPY-PATTERN-ARGUMENTS", "(DEFUN (COPY-PATTERN-ARGUMENTS ARGUMENTS-VECTOR) ((ARGUMENTS OBJECT-VECTOR) (DESCRIPTION DESCRIPTION)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "copyPatternArguments", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Vector"), Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
       Stella.defineFunctionObject("COMPUTE-EXTERNAL-BINDINGS", "(DEFUN (COMPUTE-EXTERNAL-BINDINGS CONS) ((EXTERNALARGUMENTS ARGUMENTS-VECTOR)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "computeExternalBindings", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Vector")}), null);
       Stella.defineFunctionObject("INSTANTIATE-EXTERNAL-BINDINGS", "(DEFUN (INSTANTIATE-EXTERNAL-BINDINGS OBJECT) ((SELF OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "instantiateExternalBindings", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("INSTANTIATE-EXTERNAL-VARIABLES", "(DEFUN (INSTANTIATE-EXTERNAL-VARIABLES DESCRIPTION) ((SELF DESCRIPTION) (BINDINGS ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "instantiateExternalVariables", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
+      Stella.defineFunctionObject("INSTANTIATE-EXTERNAL-VARIABLES", "(DEFUN (INSTANTIATE-EXTERNAL-VARIABLES DESCRIPTION) ((SELF DESCRIPTION) (BINDINGS ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "instantiateExternalVariables", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.KeyValueMap")}), null);
       Stella.defineFunctionObject("CHECK-FOR-SINGLE-VALUED-GOAL?", "(DEFUN (CHECK-FOR-SINGLE-VALUED-GOAL? BOOLEAN) ((PATTERN DESCRIPTION) (IOBINDINGS CONS)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "checkForSingleValuedGoalP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("OVERLAY-WITH-PATTERN-FRAME?", "(DEFUN (OVERLAY-WITH-PATTERN-FRAME? BOOLEAN) ((FRAME CONTROL-FRAME) (DESCRIPTION DESCRIPTION) (IOARGUMENTS ARGUMENTS-VECTOR)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "overlayWithPatternFrameP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.Vector")}), null);
       Stella.defineFunctionObject("TRANSFER-PATTERN-QUERY-BINDINGS?", "(DEFUN (TRANSFER-PATTERN-QUERY-BINDINGS? BOOLEAN) ((FRAME CONTROL-FRAME) (FUTUREBINDINGS? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "transferPatternQueryBindingsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), java.lang.Boolean.TYPE}), null);
@@ -534,17 +547,19 @@ public class _StartupQuery {
       Stella.defineMethodObject("(DEFMETHOD (POP (LIKE (ANY-VALUE SELF))) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Remove and return the first solution of `self' or NULL\nif the table is empty.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "pop", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Return the number of entries in `self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "length", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Return TRUE if `self' has zero entries.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "emptyP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-      Stella.defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Return TRUE if `self' has at least 1 entry.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "nonEmptyP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
     }
   }
 
   static void helpStartupQuery9() {
     {
+      Stella.defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Return TRUE if `self' has at least 1 entry.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "nonEmptyP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (NTH (LIKE (ANY-VALUE SELF))) ((SELF QUERY-SOLUTION-TABLE) (POSITION INTEGER)) :DOCUMENTATION \"Return the nth solution in `self', or NULL if it is empty.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "nth", new java.lang.Class [] {java.lang.Integer.TYPE}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD CLEAR ((SELF QUERY-SOLUTION-TABLE)))", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "clear", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (CONSIFY CONS) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Collect all solutions of `self' into a cons list and return the result.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "consify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (SORT (LIKE SELF)) ((SELF QUERY-SOLUTION-TABLE) (PREDICATE FUNCTION-CODE)) :DOCUMENTATION \"Perform a stable, destructive sort of `self' according to\n`predicate', and return the result.  If `predicate' has a '<' semantics, the\nresult will be in ascending order.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "sort", new java.lang.Class [] {Native.find_java_class("java.lang.reflect.Method")}), ((java.lang.reflect.Method)(null)));
-      Stella.defineMethodObject("(DEFMETHOD (ALLOCATE-ITERATOR DICTIONARY-ITERATOR) ((SELF QUERY-SOLUTION-TABLE)))", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "allocateIterator", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+      Stella.defineFunctionObject("QUERY-SOLUTION-LESS-THAN?", "(DEFUN (QUERY-SOLUTION-LESS-THAN? BOOLEAN) ((X QUERY-SOLUTION) (Y QUERY-SOLUTION)))", Native.find_java_method("edu.isi.powerloom.logic.QuerySolution", "querySolutionLessThanP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QuerySolution"), Native.find_java_class("edu.isi.powerloom.logic.QuerySolution")}), null);
+      Stella.defineFunctionObject("QUERY-SOLUTION-GREATER-THAN?", "(DEFUN (QUERY-SOLUTION-GREATER-THAN? BOOLEAN) ((X QUERY-SOLUTION) (Y QUERY-SOLUTION)))", Native.find_java_method("edu.isi.powerloom.logic.QuerySolution", "querySolutionGreaterThanP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QuerySolution"), Native.find_java_class("edu.isi.powerloom.logic.QuerySolution")}), null);
+      Stella.defineMethodObject("(DEFMETHOD (ALLOCATE-ITERATOR (DICTIONARY-ITERATOR OF (LIKE (ANY-KEY SELF)) (LIKE (ANY-VALUE SELF)))) ((SELF QUERY-SOLUTION-TABLE)))", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "allocateIterator", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF QUERY-SOLUTION-TABLE-ITERATOR)))", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTableIterator", "nextP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("PRINT-CONTROL-FRAME", "(DEFUN PRINT-CONTROL-FRAME ((SELF CONTROL-FRAME) (STREAM NATIVE-OUTPUT-STREAM)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "printControlFrame", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("java.io.PrintStream")}), null);
       Stella.defineFunctionObject("PRINT-GOAL-STACK", "(DEFUN PRINT-GOAL-STACK ((FRAME CONTROL-FRAME) (VERBOSE? BOOLEAN)) :DOCUMENTATION \"Print stack of goals.  Assumes that query has been interrupted\nwith a full stack of control frames.\")", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "printGoalStack", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), java.lang.Boolean.TYPE}), null);
@@ -579,7 +594,6 @@ public class _StartupQuery {
       Stella.defineFunctionObject("LOOKUP-HOW-MANY-SOLUTIONS", "(DEFUN (LOOKUP-HOW-MANY-SOLUTIONS INTEGER) ((QUERYOROPTIONS OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "lookupHowManySolutions", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("RUN-YES-OR-NO-QUERY?", "(DEFUN (RUN-YES-OR-NO-QUERY? THREE-VALUED-BOOLEAN) ((QUERY QUERY-ITERATOR)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "runYesOrNoQueryP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator")}), null);
       Stella.defineFunctionObject("COERCE-TO-TREE", "(DEFUN (COERCE-TO-TREE OBJECT) ((SELF OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "coerceToTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("COERCE-TO-STRING", "(DEFUN (COERCE-TO-STRING STRING) ((SELF OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "coerceToString", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("CREATE-ASK-QUERY", "(DEFUN (CREATE-ASK-QUERY QUERY-ITERATOR) ((QUERY OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "createAskQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("CALL-ASK", "(DEFUN (CALL-ASK TRUTH-VALUE) ((QUERY OBJECT)) :DOCUMENTATION \"Callable version of `ask' (which see).  Accepts queries\nspecified by a query iterator, or specified as a CONS-list of arguments as they\nwould be supplied to `ask'.  Raises LOGIC-EXCEPTIONs in case of illegal\nqueries and logical expressions.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "callAsk", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("ASK", "(DEFUN (ASK TRUTH-VALUE) (|&REST| (|PROPOSITION&OPTIONS| PARSE-TREE)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Perform inference to determine whether the proposition specified in\n`proposition&options' is true.  Return the truth-value found.  `ask'\nwill spend most of its effort to determine whether the proposition\nis true and only a little effort via shallow inference strategies to\ndetermine whether it is false.  To find out whether a proposition is\nfalse with full inference effort `ask' its negation.\n\nKIF example: `(ask (happy Fred))' will return TRUE if Fred was indeed\nfound to be happy.  Note, that for this query to run, the logic\nconstant `Fred' and the relation `happy' must already be defined (see\n`assert').  Use `(set/unset-feature goal-trace)' to en/disable goal\ntracing of the inference engine.\n\nThe `ask' command supports the following options: `:TIMEOUT' is an\ninteger or floating point time limit, specified in seconds.  For\nexample, the command `(ask (nervous Fred) :timeout 2.0)' will cease\ninference after two seconds if a proof has not been found by then.\nIf the `:DONT-OPTIMIZE?' is given as TRUE, it tells PowerLoom to\nnot optimize the order of clauses in the query before evaluating it.\nThis is useful for cases where a specific evaluation order of the\nclauses is required (or the optimizer doesn't do the right thing).\nIf `:THREE-VALUED?' is given as TRUE, PowerLoom will try to prove\nthe negation of the query with full effort in case the given query\nreturned UNKNOWN.  By default, PowerLoom uses full effort to prove\nthe query as stated and only a little opportunistic effort to see\nwhether it is actually false.\")", Native.find_java_method("edu.isi.powerloom.logic.Logic", "ask", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "askEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
@@ -591,15 +605,39 @@ public class _StartupQuery {
       Stella.defineMethodObject("(DEFMETHOD (CONSIFY CONS) ((SELF QUERY-ITERATOR)) :DOCUMENTATION \"Generate all solutions for the query self, and collect them into a cons list\nof result tuples.  If `:SINGLETONS? TRUE', collect a list of atoms rather than a\nlist of lists for tuples of arity=1.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "consify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("CONSIFY-QUERY", "(DEFUN (CONSIFY-QUERY CONS) ((SELF QUERY-ITERATOR)) :GLOBALLY-INLINE? TRUE (RETURN (CONSIFY SELF)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "consifyQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator")}), null);
       Stella.defineMethodObject("(DEFMETHOD (LISTIFY LIST) ((SELF QUERY-ITERATOR)) :DOCUMENTATION \"Just like `QUERY-ITERATOR.consify' but return a LIST instead.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "listify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-      Stella.defineFunctionObject("FLUSH-INLINE-QUERY-CACHES", "(DEFUN FLUSH-INLINE-QUERY-CACHES ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "flushInlineQueryCaches", new java.lang.Class [] {}), null);
+      Stella.defineFunctionObject("CLEAR-INLINE-QUERY-CACHES", "(DEFUN CLEAR-INLINE-QUERY-CACHES ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "clearInlineQueryCaches", new java.lang.Class [] {}), null);
+      Stella.defineFunctionObject("FIND-CACHED-QUERY", "(DEFUN (FIND-CACHED-QUERY QUERY-ITERATOR) ((QUERYID SYMBOL)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "findCachedQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Symbol")}), null);
+      Stella.defineFunctionObject("FREE-CACHED-QUERY", "(DEFUN FREE-CACHED-QUERY ((QUERY QUERY-ITERATOR) (QUERYID SYMBOL)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "freeCachedQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("edu.isi.stella.Symbol")}), null);
       Stella.defineFunctionObject("MAKE-CACHED-QUERY", "(DEFUN (MAKE-CACHED-QUERY QUERY-ITERATOR) ((VARIABLES CONS) (QUERYBODY CONS) (INPUTBINDINGS CONS) (OPTIONS OBJECT) (CACHEID SYMBOL)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "makeCachedQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Symbol")}), null);
-      Stella.defineFunctionObject("APPLY-CACHED-RETRIEVE", "(DEFUN (APPLY-CACHED-RETRIEVE CONS CONS) ((VARIABLES CONS) (QUERYBODY CONS) (INPUTBINDINGS CONS) (OPTIONS OBJECT) (CACHEID SYMBOL)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "applyCachedRetrieve", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("[Ljava.lang.Object;")}), null);
+      Stella.defineFunctionObject("APPLY-CACHED-RETRIEVE", "(DEFUN (APPLY-CACHED-RETRIEVE CONS CONS CONS) ((VARIABLES CONS) (QUERYBODY CONS) (INPUTBINDINGS CONS) (OPTIONS OBJECT) (CACHEID SYMBOL)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "applyCachedRetrieve", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("APPLY-CACHED-ASK", "(DEFUN (APPLY-CACHED-ASK BOOLEAN TRUTH-VALUE) ((INPUTVARIABLES CONS) (QUERYBODY CONS) (INPUTBINDINGS CONS) (OPTIONS OBJECT) (CACHEID SYMBOL)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "applyCachedAsk", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("GET-PROTOTYPE", "(DEFUN (GET-PROTOTYPE LOGIC-OBJECT) ((DESCRIPTION DESCRIPTION)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Description", "getPrototype", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
+    }
+  }
+
+  static void helpStartupQuery10() {
+    {
       Stella.defineFunctionObject("UNARY-DESCRIPTION-SPECIALIZES-DESCRIPTION?", "(DEFUN (UNARY-DESCRIPTION-SPECIALIZES-DESCRIPTION? TRUTH-VALUE) ((SUB DESCRIPTION) (SUPER DESCRIPTION)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "unaryDescriptionSpecializesDescriptionP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
       Stella.defineFunctionObject("DESCRIPTION-SPECIALIZES-DESCRIPTION?", "(DEFUN (DESCRIPTION-SPECIALIZES-DESCRIPTION? TRUTH-VALUE) ((SUB DESCRIPTION) (SUPER DESCRIPTION)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Description", "descriptionSpecializesDescriptionP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
       Stella.defineFunctionObject("VECTOR-SATISFIES-DESCRIPTION?", "(DEFUN (VECTOR-SATISFIES-DESCRIPTION? TRUTH-VALUE) ((VECTOR VECTOR) (DESCRIPTION DESCRIPTION)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "vectorSatisfiesDescriptionP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Vector"), Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
       Stella.defineFunctionObject("INSTANCE-SATISFIES-DESCRIPTION?", "(DEFUN (INSTANCE-SATISFIES-DESCRIPTION? TRUTH-VALUE) ((INSTANCE OBJECT) (DESCRIPTION DESCRIPTION)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "instanceSatisfiesDescriptionP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
+      Stella.defineFunctionObject("COERCE-TO-DESCRIPTION", "(DEFUN (COERCE-TO-DESCRIPTION DESCRIPTION) ((SELF OBJECT) (ORIGINAL OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "coerceToDescription", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("SPECIALIZES?", "(DEFUN (SPECIALIZES? TRUTH-VALUE) ((SUBOBJECT OBJECT) (SUPEROBJECT OBJECT)) :DOCUMENTATION \"Try to prove if the description associated with `subObject'\nspecializes the description for `superObject' and return the result truth\nvalue of the query.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "specializesP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("COERCE-TO-INSTANCE", "(DEFUN (COERCE-TO-INSTANCE LOGIC-OBJECT) ((SELF OBJECT) (ORIGINAL OBJECT)) :DOCUMENTATION \"Return the logic instance referred to by 'self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "coerceToInstance", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("COERCE-TO-INSTANCE-OR-LITERAL", "(DEFUN (COERCE-TO-INSTANCE-OR-LITERAL OBJECT) ((SELF OBJECT) (ORIGINAL OBJECT)) :DOCUMENTATION \"Return the logic instance referred to by `self', or `self' if it is a\nliteral (e.g., string or number) that can't be coerced.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "coerceToInstanceOrLiteral", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("COERCE-TO-VECTOR", "(DEFUN (COERCE-TO-VECTOR VECTOR) ((SELF OBJECT)) :DOCUMENTATION \"Return a vector containing the elements in `self'.\nCoerce each element of `self' to be a logic object or literal.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "coerceToVector", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("SATISFIES?", "(DEFUN (SATISFIES? TRUTH-VALUE) ((INSTANCEORTUPLE OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Try to prove whether `instanceOrTuple' satisfies the\ndefinition of the relation `relationRef' and return the result truth value\nof the query.  `instanceOrTuple' can be a single object, the name or surrogate\nof an object, or a collection (a list or vector) of objects.  `relationRef'\ncan be a relation, description, surrogate or relation name.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "satisfiesP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("APPLY-KAPPA?", "(DEFUN (APPLY-KAPPA? BOOLEAN) ((DESCRIPTION DESCRIPTION) (VECTOR VECTOR)) :PUBLIC? TRUE :DOCUMENTATION \"Apply (inherit) the description 'description'\nto members of the vector 'vector'.  Return TRUE if no clash was detected.\nConstraint propagation happens only if it is enabled prior to calling\n'apply-kappa?'.\")", Native.find_java_method("edu.isi.powerloom.logic.Description", "applyKappaP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.Vector")}), null);
+      Stella.defineFunctionObject("UPDATE-PROPOSITIONS-FROM-QUERY", "(DEFUN (UPDATE-PROPOSITIONS-FROM-QUERY (CONS OF PROPOSITION)) ((QUERY QUERY-ITERATOR) (DESCRIPTION DESCRIPTION) (MODULE MODULE) (UPDATEMODE KEYWORD) (RECORDJUSTIFICATIONS? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "updatePropositionsFromQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.Module"), Native.find_java_class("edu.isi.stella.Keyword"), java.lang.Boolean.TYPE}), null);
+      Stella.defineFunctionObject("GET-QUERY-ITERATOR-FROM-COMMAND", "(DEFUN (GET-QUERY-ITERATOR-FROM-COMMAND QUERY-ITERATOR) ((QUERY CONS)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "getQueryIteratorFromCommand", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
+      Stella.defineFunctionObject("ASSERT-FROM-QUERY", "(DEFUN (ASSERT-FROM-QUERY (CONS OF PROPOSITION)) ((QUERY CONS) |&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Evaluate `query', instantiate the query proposition for each generated\nsolution and assert the resulting propositions.  The accepted syntax\nis as follows:\n	 \n (assert-from-query <query-command>\n                    [:relation <relation-name>]\n                    [:pattern <description-term>]\n                    [:module <module-name>]\n                    [:record-justifications? TRUE|FALSE])\n	\n<query-command> has to be a strict or partial retrieval command. If a\n:relation option is supplied, <relation-name> is used as the relation\nof the resulting propositions.  In this case the bindings of each\nsolution will become arguments to the specified relation in the order\nof `query's output variables (the arities have to match).  The\n:pattern option is a generalization of this mechanism that specifies\nan arbitrary proposition pattern to be instantiated by the query's\nsolution.  In this case <description-term> has to be a SETOFALL or\nKAPPA expression whose IO-variables will be bound in sequence to the\nbindings of a query solution to generate the resulting proposition.\nFinally, if a :module option is specified, the assertions will be\ngenerated in that module.  Note that for this to work the relations\nreferenced in the query proposition or pattern have to be visible in\nthe module.  Also, instances will not be copied to the target module,\ntherefore, the resulting propositions might reference external\nout-of-module objects in case they are not visible there.  If\n:record-justifications? is TRUE, justifications will be recorded\nfor the query and the resulting justifications will be linked to\nthe asserted propositions.  Here are some examples:\n	 \n (assert-from-query (retrieve all (foo ?x ?y)))\n (assert-from-query (retrieve all (?y ?x)\n                             (exists ?z\n                               (and (foo ?x ?z)\n                                    (foo ?z ?y))))\n                    :relation bar :module other)\n (assert-from-query\n   (retrieve all (and (relation ?x) (symmetric ?x)))\n   :pattern (kappa (?pred)\n              (forall (?x ?y)\n                (=> (holds ?pred ?x ?y)\n                    (holds ?pred ?y ?x))))))\n	\n\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "assertFromQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "assertFromQueryEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
+      Stella.defineFunctionObject("RETRACT-FROM-QUERY", "(DEFUN (RETRACT-FROM-QUERY (CONS OF PROPOSITION)) ((QUERY CONS) |&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Evaluate `query' which has to be a strict or partial retrieval\ncommand, instantiate the query proposition for each generated solution\nand retract the resulting propositions.  See `assert-from-query' for\navailable command options.\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "retractFromQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "retractFromQueryEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
+      Stella.defineFunctionObject("DISPLAY-SETTINGS", "(DEFUN (DISPLAY-SETTINGS STRING) ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "displaySettings", new java.lang.Class [] {}), null);
+      Stella.defineFunctionObject("STARTUP-QUERY", "(DEFUN STARTUP-QUERY () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic._StartupQuery", "startupQuery", new java.lang.Class [] {}), null);
+      { MethodSlot function = Symbol.lookupFunction(Logic.SYM_LOGIC_STARTUP_QUERY);
+
+        KeyValueList.setDynamicSlotValue(function.dynamicSlots, Logic.SYM_STELLA_METHOD_STARTUP_CLASSNAME, StringWrapper.wrapString("_StartupQuery"), Stella.NULL_STRING_WRAPPER);
+      }
     }
   }
 
@@ -629,29 +667,14 @@ public class _StartupQuery {
           _StartupQuery.helpStartupQuery7();
           _StartupQuery.helpStartupQuery8();
           _StartupQuery.helpStartupQuery9();
-          Stella.defineFunctionObject("COERCE-TO-DESCRIPTION", "(DEFUN (COERCE-TO-DESCRIPTION DESCRIPTION) ((SELF OBJECT) (ORIGINAL OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "coerceToDescription", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-          Stella.defineFunctionObject("SPECIALIZES?", "(DEFUN (SPECIALIZES? TRUTH-VALUE) ((SUBOBJECT OBJECT) (SUPEROBJECT OBJECT)) :DOCUMENTATION \"Try to prove if the description associated with `subObject'\nspecializes the description for `superObject' and return the result truth\nvalue of the query.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "specializesP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-          Stella.defineFunctionObject("COERCE-TO-INSTANCE", "(DEFUN (COERCE-TO-INSTANCE LOGIC-OBJECT) ((SELF OBJECT) (ORIGINAL OBJECT)) :DOCUMENTATION \"Return the logic instance referred to by 'self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "coerceToInstance", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-          Stella.defineFunctionObject("COERCE-TO-INSTANCE-OR-LITERAL", "(DEFUN (COERCE-TO-INSTANCE-OR-LITERAL OBJECT) ((SELF OBJECT) (ORIGINAL OBJECT)) :DOCUMENTATION \"Return the logic instance referred to by `self', or `self' if it is a\nliteral (e.g., string or number) that can't be coerced.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "coerceToInstanceOrLiteral", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-          Stella.defineFunctionObject("COERCE-TO-VECTOR", "(DEFUN (COERCE-TO-VECTOR VECTOR) ((SELF OBJECT)) :DOCUMENTATION \"Return a vector containing the elements in `self'.\nCoerce each element of `self' to be a logic object or literal.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "coerceToVector", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-          Stella.defineFunctionObject("SATISFIES?", "(DEFUN (SATISFIES? TRUTH-VALUE) ((INSTANCEORTUPLE OBJECT) (RELATIONREF OBJECT)) :DOCUMENTATION \"Try to prove whether `instanceOrTuple' satisfies the\ndefinition of the relation `relationRef' and return the result truth value\nof the query.  `instanceOrTuple' can be a single object, the name or surrogate\nof an object, or a collection (a list or vector) of objects.  `relationRef'\ncan be a relation, description, surrogate or relation name.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "satisfiesP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-          Stella.defineFunctionObject("APPLY-KAPPA?", "(DEFUN (APPLY-KAPPA? BOOLEAN) ((DESCRIPTION DESCRIPTION) (VECTOR VECTOR)) :PUBLIC? TRUE :DOCUMENTATION \"Apply (inherit) the description 'description'\nto members of the vector 'vector'.  Return TRUE if no clash was detected.\nConstraint propagation happens only if it is enabled prior to calling\n'apply-kappa?'.\")", Native.find_java_method("edu.isi.powerloom.logic.Description", "applyKappaP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.Vector")}), null);
-          Stella.defineFunctionObject("UPDATE-PROPOSITIONS-FROM-QUERY", "(DEFUN (UPDATE-PROPOSITIONS-FROM-QUERY (CONS OF PROPOSITION)) ((QUERY QUERY-ITERATOR) (DESCRIPTION DESCRIPTION) (MODULE MODULE) (UPDATEMODE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "updatePropositionsFromQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.Module"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
-          Stella.defineFunctionObject("GET-QUERY-ITERATOR-FROM-COMMAND", "(DEFUN (GET-QUERY-ITERATOR-FROM-COMMAND QUERY-ITERATOR) ((QUERY CONS)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "getQueryIteratorFromCommand", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
-          Stella.defineFunctionObject("ASSERT-FROM-QUERY", "(DEFUN (ASSERT-FROM-QUERY (CONS OF PROPOSITION)) ((QUERY CONS) |&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Evaluate `query', instantiate the query proposition for each generated\nsolution and assert the resulting propositions.  The accepted syntax\nis as follows:\n	 \n (assert-from-query <query-command>\n                    [:relation <relation-name>]\n                    [:pattern <description-term>]\n                    [:module <module-name>])\n	\n<query-command> has to be a strict or partial retrieval command. If a\n:relation option is supplied, <relation-name> is used as the relation\nof the resulting propositions.  In this case the bindings of each\nsolution will become arguments to the specified relation in the order\nof `query's output variables (the arities have to match).  The\n:pattern option is a generalization of this mechanism that specifies\nan arbitrary proposition pattern to be instantiated by the query's\nsolution.  In this case <description-term> has to be a SETOFALL or\nKAPPA expression whose IO-variables will be bound in sequence to the\nbindings of a query solution to generate the resulting proposition.\nFinally, if a :module option is specified, the assertions will be\ngenerated in that module.  Note that for this to work the relations\nreferenced in the query proposition or pattern have to be visible in\nthe module.  Also, instances will not be copied to the target module,\ntherefore, the resulting propositions might reference external\nout-of-module objects in case they are not visible there.\nHere are some examples:\n	 \n (assert-from-query (retrieve all (foo ?x ?y)))\n (assert-from-query (retrieve all (?y ?x)\n                             (exists ?z\n                               (and (foo ?x ?z)\n                                    (foo ?z ?y))))\n                    :relation bar :module other)\n (assert-from-query\n   (retrieve all (and (relation ?x) (symmetric ?x)))\n   :pattern (kappa (?pred)\n              (forall (?x ?y)\n                (=> (holds ?pred ?x ?y)\n                    (holds ?pred ?y ?x))))))\n	\n\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "assertFromQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "assertFromQueryEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
-          Stella.defineFunctionObject("RETRACT-FROM-QUERY", "(DEFUN (RETRACT-FROM-QUERY (CONS OF PROPOSITION)) ((QUERY CONS) |&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Evaluate `query' which has to be a strict or partial retrieval\ncommand, instantiate the query proposition for each generated solution\nand retract the resulting propositions.  See `assert-from-query' for\navailable command options.\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "retractFromQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "retractFromQueryEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
-          Stella.defineFunctionObject("DISPLAY-SETTINGS", "(DEFUN (DISPLAY-SETTINGS STRING) ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "displaySettings", new java.lang.Class [] {}), null);
-          Stella.defineFunctionObject("STARTUP-QUERY", "(DEFUN STARTUP-QUERY () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic._StartupQuery", "startupQuery", new java.lang.Class [] {}), null);
-          { MethodSlot function = Symbol.lookupFunction(Logic.SYM_LOGIC_STARTUP_QUERY);
-
-            KeyValueList.setDynamicSlotValue(function.dynamicSlots, Logic.SYM_STELLA_METHOD_STARTUP_CLASSNAME, StringWrapper.wrapString("_StartupQuery"), Stella.NULL_STRING_WRAPPER);
-          }
+          _StartupQuery.helpStartupQuery10();
         }
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NORMAL-INFERENCE NORMAL-INFERENCE-LEVEL (NEW NORMAL-INFERENCE-LEVEL :KEYWORD :NORMAL))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL BACKTRACKING-INFERENCE BACKTRACKING-INFERENCE-LEVEL (NEW BACKTRACKING-INFERENCE-LEVEL :KEYWORD :BACKTRACKING))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL SUBSUMPTION-INFERENCE SUBSUMPTION-INFERENCE-LEVEL (NEW SUBSUMPTION-INFERENCE-LEVEL :KEYWORD :SUBSUMPTION))");
@@ -678,13 +701,17 @@ public class _StartupQuery {
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTINFRAME* CONTROL-FRAME NULL :DOCUMENTATION \"If set, controls diagnostic printing by making\nvariable bindings appear relative to the frame '*printInFrame*'.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CONTROL-FRAME-ID-COUNTER* INTEGER -1 :DOCUMENTATION \"Generates unique IDs for control frames.  Used only for debugging.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *REVERSEPOLARITY?* BOOLEAN FALSE :PUBLIC? TRUE :DOCUMENTATION \"Signals atomic proposition provers that polarity is negative.\")");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TRACE-DISJOINTNESS-SUBGOALS?* BOOLEAN FALSE :DOCUMENTATION \"If true and goal tracing is on, subgoals of disjointness\nqueries will also be traced.\" :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DUPLICATEINSTANCESCACHECROSSOVERPOINT* INTEGER 20 :DOCUMENTATION \"Point where a cache of generated instances in a \ndescription extension iterator is switched from a list to a hash table\")");
           Logic.defineExplanationPhrase(Logic.KWD_DEPTH_CUTOFF, Logic.KWD_TECHNICAL, "because of an inference depth cutoff", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_DEPTH_CUTOFF, Logic.KWD_LAY, "because the maximum inference search depth was exceeded", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_TIMEOUT, Logic.KWD_TECHNICAL, "because of an inference timeout", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_TIMEOUT, Logic.KWD_LAY, "because the allotted inference CPU time was exceeded", Stella.NIL);
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MOST-RECENT-QUERY* QUERY-ITERATOR NULL)");
-          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *QUERY-CACHE* (HASH-TABLE OF SYMBOL QUERY-ITERATOR) (NEW HASH-TABLE) :DOCUMENTATION \"Caches in-line queries, so that they\ndon't have to be reparsed and reoptimized each time they\nare invoked.\")");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *INLINE-QUERY-CACHE* (KEY-VALUE-MAP OF SYMBOL (LIST OF QUERY-ITERATOR)) (NEW KEY-VALUE-MAP) :DOCUMENTATION \"Caches queries used in-line by code, so that they don't have to\nbe reparsed and reoptimized each time they are invoked.\" :THREAD-LOCAL? TRUE)");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAX-CACHED-QUERIES-PER-ID* INTEGER 10)");
+          Logic.defineExplanationPhrase(Logic.KWD_ASSERT_FROM_QUERY, Logic.KWD_TECHNICAL, "because it was asserted from a query", Stella.NIL);
+          Logic.defineExplanationPhrase(Logic.KWD_ASSERT_FROM_QUERY, Logic.KWD_LAY, "because it was asserted from a query", Stella.NIL);
         }
 
       } finally {

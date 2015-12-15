@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -51,6 +51,22 @@ public class KvCons extends StandardObject {
     public Stella_Object key;
     public Stella_Object value;
     public KvCons rest;
+
+  /** Create, fill-in, and return a new KV-CONS.
+   * @param key
+   * @param value
+   * @param rest
+   * @return KvCons
+   */
+  public static KvCons kvCons(Stella_Object key, Stella_Object value, KvCons rest) {
+    { KvCons newkvc = KvCons.newKvCons();
+
+      newkvc.key = key;
+      newkvc.value = value;
+      newkvc.rest = rest;
+      return (newkvc);
+    }
+  }
 
   public static KvCons newKvCons() {
     { KvCons self = null;
@@ -94,13 +110,13 @@ public class KvCons extends StandardObject {
           return;
         }
         else if (((Context)(kvcons.key)).contextNumber < contextnumber) {
-          kvcons.rest = Stella_Object.kvCons(kvcons.key, kvcons.value, kvcons.rest);
+          kvcons.rest = KvCons.kvCons(kvcons.key, kvcons.value, kvcons.rest);
           kvcons.key = target;
           kvcons.value = newvalue;
           return;
         }
         else if (kvcons.rest == null) {
-          kvcons.rest = Stella_Object.kvCons(target, newvalue, null);
+          kvcons.rest = KvCons.kvCons(target, newvalue, null);
           return;
         }
         else {
@@ -144,9 +160,10 @@ public class KvCons extends StandardObject {
   }
 
   public int length() {
-    { KvCons cursor = this;
+    { KvCons self = this;
 
-      { int length = 0;
+      { KvCons cursor = self;
+        int length = 0;
 
         while (cursor != null) {
           length = length + 1;
@@ -158,15 +175,18 @@ public class KvCons extends StandardObject {
   }
 
   public Stella_Object lookup(Stella_Object key) {
-    { KvCons cursor = this;
+    { KvCons self = this;
 
-      while (cursor != null) {
-        if (Stella_Object.eqlP(cursor.key, key)) {
-          return (cursor.value);
+      { KvCons cursor = self;
+
+        while (cursor != null) {
+          if (Stella_Object.eqlP(cursor.key, key)) {
+            return (cursor.value);
+          }
+          cursor = cursor.rest;
         }
-        cursor = cursor.rest;
+        return (null);
       }
-      return (null);
     }
   }
 

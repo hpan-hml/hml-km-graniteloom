@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -86,6 +86,7 @@ extern DECLARE_STELLA_SPECIAL(oTARGETTYPEo, StandardObject* );
 extern DECLARE_STELLA_SPECIAL(oLOCALGENSYMTABLEo, KeyValueList* );
 extern DECLARE_STELLA_SPECIAL(oTRANSLATIONERRORSo, int );
 extern DECLARE_STELLA_SPECIAL(oTRANSLATIONWARNINGSo, int );
+extern DECLARE_STELLA_SPECIAL(oTRANSLATIONNOTESo, int );
 extern OutputStream* oFUNCTION_CALL_LOG_STREAMo;
 extern boolean oLOG_FUNCTION_CALLSpo;
 extern int oLOG_BREAK_POINT_COUNTERo;
@@ -161,6 +162,7 @@ Object* incrementallyTranslate(Object* tree);
 void resetTranslationErrors();
 void signalTranslationError();
 void signalTranslationWarning();
+void signalTranslationNote();
 boolean ignoreTranslationErrorsP();
 boolean translationErrorsP();
 void summarizeTranslationErrors();
@@ -223,6 +225,7 @@ Object* walkStatement(Object* tree, boolean warnonatomP);
 Cons* eliminateVrletStatement(Cons* tree);
 Cons* sysTree(Object* tree, StandardObject* typespec, StandardObject*& _Return1);
 StandardObject* walkedExpressionType(Object* tree);
+Object* walkedExpressionExpression(Object* tree);
 boolean needIdenticalMethodSignaturesP();
 StandardObject* computeMostGeneralReturnType(MethodSlot* method, StandardObject* returntype);
 StandardObject* computeRealSlotType(StorageSlot* slot, StandardObject* firstargtype, StandardObject* returntype);
@@ -347,7 +350,7 @@ Symbol* variableArgumentsName(MethodSlot* method);
 StandardObject* yieldListifiedVariableArgumentsType(MethodSlot* method);
 Cons* yieldListifiedVariableArguments(Cons* walkedargs, StandardObject* targettype, boolean wrapargsP);
 Object* finishWalkingArgumentListTree(Slot* self, Cons* tree, StandardObject* firstargtype, StandardObject*& _Return1);
-Cons* walkVariableArguments(Cons* arguments, MethodSlot* method);
+Cons* walkVariableArguments(Cons* arguments, MethodSlot* method, StandardObject* firstargtype);
 Cons* quoteArguments(MethodSlot* method, Cons* arguments);
 StandardObject* walkFirstArgumentToFunction(MethodSlot* fnslot, Cons* tree);
 Object* walkCallSlotTree(Cons* tree, StandardObject*& _Return1);
@@ -356,7 +359,7 @@ boolean methodInlinableP(MethodSlot* method);
 boolean mostSpecificMethodP(MethodSlot* method);
 boolean helpMostSpecificMethodP(Class* clasS, MethodSlot* method);
 Object* inlinableMethodBody(MethodSlot* method);
-Object* walkInlineMethodCall(MethodSlot* method, Cons* walkedargs);
+Object* walkInlineMethodCall(MethodSlot* method, Cons* walkedargs, StandardObject* firstargtype);
 Cons* yieldVerbatimInlineCallTree(MethodSlot* method, Cons* walkedargs);
 boolean inlineVariableReferenceP(Symbol* self);
 Cons* walkInlineVariableReference(Symbol* self, StandardObject*& _Return1);
@@ -419,6 +422,7 @@ Cons* extractRequiredArgumentValues(StandardObject* classtype, PropertyList* slo
 void preprocessArrayArguments(ParametricTypeSpecifier* arraytype, PropertyList* slotsandvalues);
 void evaluateArrayArgumentValue(ParametricTypeSpecifier* arraytype, List* requiredvalues, Slot* slot, Object* valueref);
 Cons* yieldNewArgumentsTree(Cons* keywordsandvalues, StandardObject* classtype, Symbol* selfvariable, Cons*& _Return1);
+Surrogate* getCurrentSelfType();
 Cons* walkNewTree(Cons* tree, StandardObject*& _Return1);
 Cons* walkMakeTree(Cons* tree, StandardObject*& _Return1);
 Cons* walkFuncallTree(Cons* tree, StandardObject*& _Return1);
@@ -445,6 +449,8 @@ Object* tryToEvaluate(Object* tree);
 Object* evaluateConsTree(Cons* tree, StandardObject*& _Return1);
 Object* evaluateArgumentTree(Object* tree, boolean evaluateP, StandardObject*& _Return1);
 Object* evaluateAtomicTree(Object* tree, StandardObject*& _Return1);
+Object* makeEvaluatableBquoteTree(Object* tree);
+Object* evaluateBquoteTree(Cons* tree, StandardObject*& _Return1);
 Object* coerceEvaluatedTree(Object* tree, Object* sourcetree, StandardObject* sourcetype, StandardObject* targettype, boolean evaluateP, StandardObject*& _Return1);
 void helpStartupWalk1();
 void helpStartupWalk2();
@@ -564,6 +570,8 @@ extern Symbol* SYM_WALK_STELLA_ILLEGAL_EXPRESSION_FLAGGED_BY_THE_TRANSLATOR;
 extern Symbol* SYM_WALK_STELLA_BAD_SYS;
 extern Surrogate* SGT_WALK_STELLA_INTEGER_WRAPPER;
 extern Surrogate* SGT_WALK_STELLA_INTEGER;
+extern Surrogate* SGT_WALK_STELLA_LONG_INTEGER_WRAPPER;
+extern Surrogate* SGT_WALK_STELLA_LONG_INTEGER;
 extern Surrogate* SGT_WALK_STELLA_FLOAT_WRAPPER;
 extern Surrogate* SGT_WALK_STELLA_FLOAT;
 extern Surrogate* SGT_WALK_STELLA_NUMBER_WRAPPER;
@@ -605,7 +613,6 @@ extern Surrogate* SGT_WALK_STELLA_SINGLE_FLOAT;
 extern Symbol* SYM_WALK_STELLA_IDENTITY;
 extern Surrogate* SGT_WALK_STELLA_DOUBLE_FLOAT;
 extern Surrogate* SGT_WALK_STELLA_SHORT_INTEGER;
-extern Surrogate* SGT_WALK_STELLA_LONG_INTEGER;
 extern Surrogate* SGT_WALK_STELLA_UNSIGNED_SHORT_INTEGER;
 extern Surrogate* SGT_WALK_STELLA_UNSIGNED_LONG_INTEGER;
 extern Symbol* SYM_WALK_STELLA_VRLET;
@@ -729,6 +736,8 @@ extern Symbol* SYM_WALK_STELLA_BOOLEANp;
 extern Symbol* SYM_WALK_STELLA_SUBTYPE_OF_BOOLEANp;
 extern Symbol* SYM_WALK_STELLA_INTEGERp;
 extern Symbol* SYM_WALK_STELLA_SUBTYPE_OF_INTEGERp;
+extern Symbol* SYM_WALK_STELLA_LONG_INTEGERp;
+extern Symbol* SYM_WALK_STELLA_SUBTYPE_OF_LONG_INTEGERp;
 extern Symbol* SYM_WALK_STELLA_FLOATp;
 extern Symbol* SYM_WALK_STELLA_SUBTYPE_OF_FLOATp;
 extern Symbol* SYM_WALK_STELLA_STRINGp;
@@ -776,6 +785,7 @@ extern Surrogate* SGT_WALK_STELLA_PROCESS_LOCK_OBJECT;
 extern Surrogate* SGT_WALK_STELLA_STANDARD_OBJECT;
 extern Symbol* SYM_WALK_STELLA_EQL_TO_BOOLEANp;
 extern Symbol* SYM_WALK_STELLA_EQL_TO_INTEGERp;
+extern Symbol* SYM_WALK_STELLA_EQL_TO_LONG_INTEGERp;
 extern Symbol* SYM_WALK_STELLA_EQL_TO_FLOATp;
 extern Symbol* SYM_WALK_STELLA_EQL_TO_STRINGp;
 extern Symbol* SYM_WALK_STELLA_GET_QUOTED_TREE;
@@ -805,11 +815,11 @@ extern Keyword* KWD_WALK_INLINE_REFERENCES;
 extern Symbol* SYM_WALK_STELLA_INLINE_CALL;
 extern Symbol* SYM_WALK_STELLA_METHOD_INHERITS_THROUGH;
 extern Keyword* KWD_WALK_FUNCTION;
+extern Keyword* KWD_WALK_METHODS;
 extern Symbol* SYM_WALK_STELLA_FORWARD_DECLARATIONp;
 extern Symbol* SYM_WALK_STELLA_METHOD_NATIVEp;
 extern Symbol* SYM_WALK_STELLA_METHOD_COMMANDp;
 extern Symbol* SYM_WALK_STELLA_MAIN;
-extern Keyword* KWD_WALK_METHODS;
 extern Keyword* KWD_WALK_CLASS;
 extern Keyword* KWD_WALK_EMBEDDED;
 extern Symbol* SYM_WALK_STELLA_CLASS_CONSTRUCTOR_CODE;
@@ -871,7 +881,9 @@ extern Symbol* SYM_WALK_STELLA_NTH;
 extern Symbol* SYM_WALK_STELLA_ARGUMENTS;
 extern Symbol* SYM_WALK_STELLA_RESULT;
 extern Symbol* SYM_WALK_STELLA_METHOD_EVALUATE_ARGUMENTSp;
+extern Symbol* SYM_WALK_STELLA_APPEND;
 extern Symbol* SYM_WALK_STELLA_EVALUATOR_WRAPPER_CODE;
+extern Symbol* SYM_WALK_STELLA_LISTo;
 extern Symbol* SYM_WALK_STELLA_STARTUP_WALK;
 
 

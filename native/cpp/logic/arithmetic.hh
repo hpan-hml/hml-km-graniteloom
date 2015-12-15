@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -116,9 +116,11 @@ boolean satisfiesIntervalBoundsP(Object* object, Object* value);
 Keyword* lessSpecialistHelper(ControlFrame* frame, Surrogate* relation, Object* xarg, Object* yarg);
 Keyword* inequalitySpecialist(ControlFrame* frame, Keyword* lastmove);
 void inequalityEvaluator(Proposition* self);
-Object* concatenateConstraint(IntegerWrapper* missingArgument, StringWrapper* x1, StringWrapper* x2, StringWrapper* x3);
+StringWrapper* stringConcatenateComputation(Object* x, Cons* yargs);
 Keyword* subsequenceSpecialist(ControlFrame* frame, Keyword* lastmove);
+IntegerWrapper* stringMatchComputationHelper(Object* pattern, Object* x, Object* start, Object* end, boolean ignoreCaseP);
 IntegerWrapper* stringMatchComputation(Object* pattern, Object* x, Object* start, Object* end);
+IntegerWrapper* stringMatchIgnoreCaseComputation(Object* pattern, Object* x, Object* start, Object* end);
 IntegerWrapper* lengthComputation(Object* x);
 void helpStartupArithmetic1();
 void startupArithmetic();
@@ -152,6 +154,7 @@ extern Keyword* KWD_ARITHMETIC_TERMINAL_FAILURE;
 extern Surrogate* SGT_ARITHMETIC_STELLA_INTEGER_WRAPPER;
 extern Keyword* KWD_ARITHMETIC_FINAL_SUCCESS;
 extern Keyword* KWD_ARITHMETIC_FAILURE;
+extern Keyword* KWD_ARITHMETIC_ORIGINAL;
 extern Symbol* SYM_ARITHMETIC_STELLA_ITERATOR;
 extern Keyword* KWD_ARITHMETIC_CONTINUING_SUCCESS;
 extern Symbol* SYM_ARITHMETIC_PL_KERNEL_KB_STARTUP_ARITHMETIC;

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -66,14 +66,20 @@ public class NormalInferenceLevel extends InferenceLevel {
   public Cons levellizedAllSlotValueTypes(LogicObject self, Surrogate relation) {
     { NormalInferenceLevel level = this;
 
-      return (Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pOBJECT, Stella_Object.cons(Logic.SYM_LOGIC_pTYPE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_RANGE_TYPE, Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pOBJECT, Stella_Object.cons(Logic.SYM_LOGIC_pTYPE, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_BOUND_VARIABLES, Stella_Object.cons(Logic.SYM_LOGIC_pTYPE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_CONCEPT, Stella_Object.cons(Logic.SYM_LOGIC_pTYPE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(self, Stella_Object.cons(null, Stella.NIL)))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_SLOT_VALUE_TYPES_QUERY_000, new Object[1]));
+      if (!(Logic.$LEVELLIZED_BACKCHAINING_ENABLEDp$)) {
+        return (Logic.SUBSUMPTION_INFERENCE.levellizedAllSlotValueTypes(self, relation));
+      }
+      return (Logic.applyCachedRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pOBJECT, Cons.cons(Logic.SYM_LOGIC_pTYPE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_RANGE_TYPE, Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pOBJECT, Cons.cons(Logic.SYM_LOGIC_pTYPE, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_BOUND_VARIABLES, Cons.cons(Logic.SYM_LOGIC_pTYPE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_CONCEPT, Cons.cons(Logic.SYM_LOGIC_pTYPE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.consList(Cons.cons(relation, Cons.cons(self, Cons.cons(null, Stella.NIL)))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_SLOT_VALUE_TYPES_QUERY_000, new Object[2]));
     }
   }
 
   public int levellizedGetSlotMaximumCardinality(LogicObject self, Surrogate relation) {
     { NormalInferenceLevel level = this;
 
-      { Cons n = Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pOBJECT, Stella_Object.cons(Logic.SYM_LOGIC_pN, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_RANGE_MAX_CARDINALITY, Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pOBJECT, Stella_Object.cons(Logic.SYM_LOGIC_pN, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(self, Stella_Object.cons(null, Stella.NIL)))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MAXIMUM_CARDINALITY_QUERY_000, new Object[1]);
+      if (!(Logic.$LEVELLIZED_BACKCHAINING_ENABLEDp$)) {
+        return (Logic.SUBSUMPTION_INFERENCE.levellizedGetSlotMaximumCardinality(self, relation));
+      }
+      { Cons n = Logic.applyCachedRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pOBJECT, Cons.cons(Logic.SYM_LOGIC_pN, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_RANGE_MAX_CARDINALITY, Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pOBJECT, Cons.cons(Logic.SYM_LOGIC_pN, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.consList(Cons.cons(relation, Cons.cons(self, Cons.cons(null, Stella.NIL)))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MAXIMUM_CARDINALITY_QUERY_000, new Object[2]);
 
         if (n == Stella.NIL) {
           return (Stella.NULL_INTEGER);
@@ -88,7 +94,10 @@ public class NormalInferenceLevel extends InferenceLevel {
   public int levellizedGetSlotMinimumCardinality(LogicObject self, Surrogate relation) {
     { NormalInferenceLevel level = this;
 
-      { Cons n = Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pOBJECT, Stella_Object.cons(Logic.SYM_LOGIC_pN, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_RANGE_MIN_CARDINALITY, Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pOBJECT, Stella_Object.cons(Logic.SYM_LOGIC_pN, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(self, Stella_Object.cons(null, Stella.NIL)))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MINIMUM_CARDINALITY_QUERY_000, new Object[1]);
+      if (!(Logic.$LEVELLIZED_BACKCHAINING_ENABLEDp$)) {
+        return (Logic.SUBSUMPTION_INFERENCE.levellizedGetSlotMinimumCardinality(self, relation));
+      }
+      { Cons n = Logic.applyCachedRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pOBJECT, Cons.cons(Logic.SYM_LOGIC_pN, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_RANGE_MIN_CARDINALITY, Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pOBJECT, Cons.cons(Logic.SYM_LOGIC_pN, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.consList(Cons.cons(relation, Cons.cons(self, Cons.cons(null, Stella.NIL)))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MINIMUM_CARDINALITY_QUERY_000, new Object[2]);
 
         if (n == Stella.NIL) {
           return (0);
@@ -103,24 +112,27 @@ public class NormalInferenceLevel extends InferenceLevel {
   public boolean levellizedTestRelationOnArgumentsP(Surrogate relation, Cons arguments) {
     { NormalInferenceLevel level = this;
 
+      if (!(Logic.$LEVELLIZED_BACKCHAINING_ENABLEDp$)) {
+        return (Logic.SUBSUMPTION_INFERENCE.levellizedTestRelationOnArgumentsP(relation, arguments));
+      }
       switch (arguments.length()) {
         case 1: 
           { Stella_Object arg1 = arguments.value;
 
-            return (Logic.applyCachedAsk(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(arg1, Stella.NIL))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_000, new Object[1]));
+            return (Logic.applyCachedAsk(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.consList(Cons.cons(relation, Cons.cons(arg1, Stella.NIL))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_000, new Object[1]));
           }
         case 2: 
           { Stella_Object arg1 = arguments.value;
             Stella_Object arg2 = arguments.rest.value;
 
-            return (Logic.applyCachedAsk(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(arg1, Stella_Object.cons(arg2, Stella.NIL)))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_001, new Object[1]));
+            return (Logic.applyCachedAsk(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(relation, Cons.cons(arg1, Cons.cons(arg2, Stella.NIL)))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_001, new Object[1]));
           }
         case 3: 
           { Stella_Object arg1 = arguments.value;
             Stella_Object arg2 = arguments.rest.value;
             Stella_Object arg3 = arguments.rest.rest.value;
 
-            return (Logic.applyCachedAsk(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(arg1, Stella_Object.cons(arg2, Stella_Object.cons(arg3, Stella.NIL))))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_002, new Object[1]));
+            return (Logic.applyCachedAsk(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(relation, Cons.cons(arg1, Cons.cons(arg2, Cons.cons(arg3, Stella.NIL))))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_002, new Object[1]));
           }
         case 4: 
           { Stella_Object arg1 = arguments.value;
@@ -128,10 +140,10 @@ public class NormalInferenceLevel extends InferenceLevel {
             Stella_Object arg3 = arguments.rest.rest.value;
             Stella_Object arg4 = arguments.fourth();
 
-            return (Logic.applyCachedAsk(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pW, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Logic.SYM_LOGIC_pZ, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pW, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Logic.SYM_LOGIC_pZ, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(arg1, Stella_Object.cons(arg2, Stella_Object.cons(arg3, Stella_Object.cons(arg4, Stella.NIL)))))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_003, new Object[1]));
+            return (Logic.applyCachedAsk(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pW, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Logic.SYM_LOGIC_pZ, Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pW, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Logic.SYM_LOGIC_pZ, Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.consList(Cons.cons(relation, Cons.cons(arg1, Cons.cons(arg2, Cons.cons(arg3, Cons.cons(arg4, Stella.NIL)))))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_003, new Object[1]));
           }
         default:
-          return (TruthValue.trueTruthValueP(Logic.callAsk(Stella_Object.cons(Stella_Object.cons(Stella.internSymbolInModule(relation.symbolName, ((Module)(relation.homeContext)), false), arguments.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL))));
+          return (TruthValue.trueTruthValueP(Logic.callAsk(Cons.cons(Cons.cons(Symbol.internSymbolInModule(relation.symbolName, ((Module)(relation.homeContext)), false), arguments.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL))));
       }
     }
   }
@@ -139,29 +151,32 @@ public class NormalInferenceLevel extends InferenceLevel {
   public Cons levellizedAllRelationValues(Surrogate relation, Cons nminusonearguments) {
     { NormalInferenceLevel level = this;
 
+      if (!(Logic.$LEVELLIZED_BACKCHAINING_ENABLEDp$)) {
+        return (Logic.SUBSUMPTION_INFERENCE.levellizedAllRelationValues(relation, nminusonearguments));
+      }
       switch (nminusonearguments.length()) {
         case 0: 
-          return (Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(null, Stella.NIL))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_000, new Object[1]));
+          return (Logic.applyCachedRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.consList(Cons.cons(relation, Cons.cons(null, Stella.NIL))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_000, new Object[2]));
         case 1: 
           { Stella_Object arg1 = nminusonearguments.value;
 
-            return (Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(arg1, Stella_Object.cons(null, Stella.NIL)))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_001, new Object[1]));
+            return (Logic.applyCachedRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(relation, Cons.cons(arg1, Cons.cons(null, Stella.NIL)))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_001, new Object[2]));
           }
         case 2: 
           { Stella_Object arg1 = nminusonearguments.value;
             Stella_Object arg2 = nminusonearguments.rest.value;
 
-            return (Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Logic.SYM_LOGIC_pZ, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Logic.SYM_LOGIC_pZ, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(arg1, Stella_Object.cons(arg2, Stella_Object.cons(null, Stella.NIL))))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_002, new Object[1]));
+            return (Logic.applyCachedRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Logic.SYM_LOGIC_pZ, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Logic.SYM_LOGIC_pZ, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.consList(Cons.cons(relation, Cons.cons(arg1, Cons.cons(arg2, Cons.cons(null, Stella.NIL))))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_002, new Object[2]));
           }
         case 3: 
           { Stella_Object arg1 = nminusonearguments.value;
             Stella_Object arg2 = nminusonearguments.rest.value;
             Stella_Object arg3 = nminusonearguments.rest.rest.value;
 
-            return (Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pW, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Logic.SYM_LOGIC_pZ, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pRELATION, Stella_Object.cons(Logic.SYM_LOGIC_pW, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Logic.SYM_LOGIC_pY, Stella_Object.cons(Logic.SYM_LOGIC_pZ, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella.consList(Stella_Object.cons(relation, Stella_Object.cons(arg1, Stella_Object.cons(arg2, Stella_Object.cons(arg3, Stella_Object.cons(null, Stella.NIL)))))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_003, new Object[1]));
+            return (Logic.applyCachedRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pW, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Logic.SYM_LOGIC_pZ, Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_pRELATION, Cons.cons(Logic.SYM_LOGIC_pW, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Logic.SYM_LOGIC_pY, Cons.cons(Logic.SYM_LOGIC_pZ, Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.consList(Cons.cons(relation, Cons.cons(arg1, Cons.cons(arg2, Cons.cons(arg3, Cons.cons(null, Stella.NIL)))))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_003, new Object[2]));
           }
         default:
-          return (Logic.callRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_ALL, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella_Object.cons(Stella.internSymbolInModule(relation.symbolName, ((Module)(relation.homeContext)), false), nminusonearguments.concatenate(Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella.NIL), Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))))).consify());
+          return (Logic.callRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_ALL, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Cons.cons(Symbol.internSymbolInModule(relation.symbolName, ((Module)(relation.homeContext)), false), nminusonearguments.concatenate(Cons.cons(Logic.SYM_LOGIC_pX, Stella.NIL), Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))))).consify());
       }
     }
   }
@@ -169,14 +184,20 @@ public class NormalInferenceLevel extends InferenceLevel {
   public Cons levellizedAllClassInstances(Surrogate type) {
     { NormalInferenceLevel level = this;
 
-      return (Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pCONCEPT, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pCONCEPT, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.consList(Stella_Object.cons(type, Stella_Object.cons(null, Stella.NIL))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_CLASS_INSTANCES_QUERY_000, new Object[1]));
+      if (!(Logic.$LEVELLIZED_BACKCHAINING_ENABLEDp$)) {
+        return (Logic.SUBSUMPTION_INFERENCE.levellizedAllClassInstances(type));
+      }
+      return (Logic.applyCachedRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pCONCEPT, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_pCONCEPT, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.consList(Cons.cons(type, Cons.cons(null, Stella.NIL))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_CLASS_INSTANCES_QUERY_000, new Object[2]));
     }
   }
 
   public boolean levellizedTestTypeOnInstanceP(Stella_Object self, Surrogate type) {
     { NormalInferenceLevel level = this;
 
-      return (Logic.applyCachedAsk(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pCONCEPT, Stella_Object.cons(Logic.SYM_LOGIC_pINSTANCE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pCONCEPT, Stella_Object.cons(Logic.SYM_LOGIC_pINSTANCE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.consList(Stella_Object.cons(type, Stella_Object.cons(self, Stella.NIL))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_TYPE_ON_INSTANCEp_QUERY_000, new Object[1]));
+      if (!(Logic.$LEVELLIZED_BACKCHAINING_ENABLEDp$)) {
+        return (Logic.SUBSUMPTION_INFERENCE.levellizedTestTypeOnInstanceP(self, type));
+      }
+      return (Logic.applyCachedAsk(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pCONCEPT, Cons.cons(Logic.SYM_LOGIC_pINSTANCE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(Logic.SYM_LOGIC_pCONCEPT, Cons.cons(Logic.SYM_LOGIC_pINSTANCE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.consList(Cons.cons(type, Cons.cons(self, Stella.NIL))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_TYPE_ON_INSTANCEp_QUERY_000, new Object[1]));
     }
   }
 

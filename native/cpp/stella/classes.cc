@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -478,55 +478,6 @@ void ActiveObject::free() {
 
     unmake(self);
   }
-}
-
-BooleanWrapper* coerceToBoolean(Object* object) {
-  if ((object == SYM_CLASSES_STELLA_TRUE) ||
-      (object == KWD_CLASSES_TRUE)) {
-    return (TRUE_WRAPPER);
-  }
-  else if ((object == SYM_CLASSES_STELLA_FALSE) ||
-      (object == KWD_CLASSES_FALSE)) {
-    return (FALSE_WRAPPER);
-  }
-  { Surrogate* testValue000 = safePrimaryType(object);
-
-    if (subtypeOfSymbolP(testValue000)) {
-      { Object* object000 = object;
-        Symbol* object = ((Symbol*)(object000));
-
-        if (stringEqualP(object->symbolName, "TRUE")) {
-          return (TRUE_WRAPPER);
-        }
-        else if (stringEqualP(object->symbolName, "FALSE")) {
-          return (FALSE_WRAPPER);
-        }
-      }
-    }
-    else if (subtypeOfKeywordP(testValue000)) {
-      { Object* object001 = object;
-        Keyword* object = ((Keyword*)(object001));
-
-        if (stringEqualP(object->symbolName, "TRUE")) {
-          return (TRUE_WRAPPER);
-        }
-        else if (stringEqualP(object->symbolName, "FALSE")) {
-          return (FALSE_WRAPPER);
-        }
-      }
-    }
-    else if (subtypeOfBooleanP(testValue000)) {
-      { Object* object002 = object;
-        BooleanWrapper* object = ((BooleanWrapper*)(object002));
-
-        return (object);
-      }
-    }
-    else {
-    }
-  }
-  std::cout << "Don't know how to coerce " << "`" << object << "'" << " of type " << "`" << ((((boolean)(object)) ? object->primaryType() : SGT_CLASSES_STELLA_UNKNOWN)) << "'" << std::endl << "   into a boolean." << std::endl;
-  return (NULL);
 }
 
 Class* defineStellaClass(Surrogate* name, List* supers, List* slots, KeywordKeyValueList* options) {
@@ -1881,6 +1832,7 @@ void finalizeClassSlots(Class* clasS) {
 
 void unfinalizeClassSlots(Class* clasS) {
   if (!clasS->classSlotsFinalizedP) {
+    clearSlotAndMethodCache(clasS);
     return;
   }
   { Surrogate* subtype = NULL;
@@ -2203,12 +2155,12 @@ StandardObject* twoArgumentLeastCommonSupertype(StandardObject* type1, StandardO
             parameter = ((Symbol*)(iter000->value));
             ptype1 = extractParameterType(type1, parameter, parameterexistsP);
             if ((!parameterexistsP) ||
-                unknownTypeP(((Surrogate*)(ptype1)))) {
+                unknownTypeP(typeSpecToBaseType(ptype1))) {
               return (supertype);
             }
             ptype2 = extractParameterType(type2, parameter, parameterexistsP);
             if ((!parameterexistsP) ||
-                unknownTypeP(((Surrogate*)(ptype2)))) {
+                unknownTypeP(typeSpecToBaseType(ptype2))) {
               return (supertype);
             }
             sptype = twoArgumentLeastCommonSupertype(ptype1, ptype2);
@@ -2317,7 +2269,7 @@ int oSYMBOL_SLOT_OFFSET_COUNTERo = 0;
 int oSLOT_CACHE_SIZEo = 20;
 
 void initializeSlotAndMethodCache(Class* clasS) {
-  clasS->classSlotAndMethodCache = newVector(oSLOT_CACHE_SIZEo + 1);
+  clasS->classSlotAndMethodCache = stella::newVector(oSLOT_CACHE_SIZEo + 1);
 }
 
 void registerSlotName(Slot* slot) {
@@ -2579,7 +2531,7 @@ void resizeSlotCaches(int size) {
 
     for (c, iter000; iter000->nextP(); ) {
       c = ((Class*)(iter000->value));
-      c->classSlotAndMethodCache = newVector(size);
+      c->classSlotAndMethodCache = stella::newVector(size);
       { Slot* s = NULL;
         Cons* iter001 = c->localSlots()->theConsList;
 
@@ -3614,11 +3566,6 @@ void helpStartupClasses1() {
     SGT_CLASSES_STELLA_CLASS = ((Surrogate*)(internRigidSymbolWrtModule("CLASS", NULL, 1)));
     SGT_CLASSES_STELLA_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("OBJECT", NULL, 1)));
     KWD_CLASSES_PUBLICp = ((Keyword*)(internRigidSymbolWrtModule("PUBLIC?", NULL, 2)));
-    SYM_CLASSES_STELLA_TRUE = ((Symbol*)(internRigidSymbolWrtModule("TRUE", NULL, 0)));
-    KWD_CLASSES_TRUE = ((Keyword*)(internRigidSymbolWrtModule("TRUE", NULL, 2)));
-    SYM_CLASSES_STELLA_FALSE = ((Symbol*)(internRigidSymbolWrtModule("FALSE", NULL, 0)));
-    KWD_CLASSES_FALSE = ((Keyword*)(internRigidSymbolWrtModule("FALSE", NULL, 2)));
-    SGT_CLASSES_STELLA_UNKNOWN = ((Surrogate*)(internRigidSymbolWrtModule("UNKNOWN", NULL, 1)));
     KWD_CLASSES_PARAMETERS = ((Keyword*)(internRigidSymbolWrtModule("PARAMETERS", NULL, 2)));
     SYM_CLASSES_STELLA_SLOT_TYPE_SPECIFIER = ((Symbol*)(internRigidSymbolWrtModule("SLOT-TYPE-SPECIFIER", NULL, 0)));
     KWD_CLASSES_REQUIREDp = ((Keyword*)(internRigidSymbolWrtModule("REQUIRED?", NULL, 2)));
@@ -3671,16 +3618,16 @@ void helpStartupClasses1() {
     KWD_CLASSES_EXTENSION = ((Keyword*)(internRigidSymbolWrtModule("EXTENSION", NULL, 2)));
     SYM_CLASSES_STELLA_CLASS_EXTENSION_NAME = ((Symbol*)(internRigidSymbolWrtModule("CLASS-EXTENSION-NAME", NULL, 0)));
     KWD_CLASSES_CREATOR = ((Keyword*)(internRigidSymbolWrtModule("CREATOR", NULL, 2)));
-  }
-}
-
-void helpStartupClasses2() {
-  {
     SYM_CLASSES_STELLA_CLASS_CREATOR = ((Symbol*)(internRigidSymbolWrtModule("CLASS-CREATOR", NULL, 0)));
     KWD_CLASSES_INITIALIZER = ((Keyword*)(internRigidSymbolWrtModule("INITIALIZER", NULL, 2)));
     SYM_CLASSES_STELLA_CLASS_INITIALIZER = ((Symbol*)(internRigidSymbolWrtModule("CLASS-INITIALIZER", NULL, 0)));
     KWD_CLASSES_TERMINATOR = ((Keyword*)(internRigidSymbolWrtModule("TERMINATOR", NULL, 2)));
     SYM_CLASSES_STELLA_CLASS_TERMINATOR = ((Symbol*)(internRigidSymbolWrtModule("CLASS-TERMINATOR", NULL, 0)));
+  }
+}
+
+void helpStartupClasses2() {
+  {
     KWD_CLASSES_DESTRUCTOR = ((Keyword*)(internRigidSymbolWrtModule("DESTRUCTOR", NULL, 2)));
     SYM_CLASSES_STELLA_CLASS_DESTRUCTOR = ((Symbol*)(internRigidSymbolWrtModule("CLASS-DESTRUCTOR", NULL, 0)));
     KWD_CLASSES_INITIAL_VALUE = ((Keyword*)(internRigidSymbolWrtModule("INITIAL-VALUE", NULL, 2)));
@@ -3708,6 +3655,7 @@ void helpStartupClasses2() {
     KWD_CLASSES_TYPE = ((Keyword*)(internRigidSymbolWrtModule("TYPE", NULL, 2)));
     SYM_CLASSES_STELLA_TYPE = ((Symbol*)(internRigidSymbolWrtModule("TYPE", NULL, 0)));
     KWD_CLASSES_AUXILIARYp = ((Keyword*)(internRigidSymbolWrtModule("AUXILIARY?", NULL, 2)));
+    SYM_CLASSES_STELLA_TRUE = ((Symbol*)(internRigidSymbolWrtModule("TRUE", NULL, 0)));
     SYM_CLASSES_STELLA_RETURN = ((Symbol*)(internRigidSymbolWrtModule("RETURN", NULL, 0)));
     SYM_CLASSES_STELLA_CLASS_EXTENSION = ((Symbol*)(internRigidSymbolWrtModule("CLASS-EXTENSION", NULL, 0)));
     SYM_CLASSES_STELLA_BADp = ((Symbol*)(internRigidSymbolWrtModule("BAD?", NULL, 0)));
@@ -3715,6 +3663,7 @@ void helpStartupClasses2() {
     SGT_CLASSES_STELLA_ACTIVE_SET = ((Surrogate*)(internRigidSymbolWrtModule("ACTIVE-SET", NULL, 1)));
     SGT_CLASSES_STELLA_LIST = ((Surrogate*)(internRigidSymbolWrtModule("LIST", NULL, 1)));
     SGT_CLASSES_STELLA_ACTIVE_LIST = ((Surrogate*)(internRigidSymbolWrtModule("ACTIVE-LIST", NULL, 1)));
+    SGT_CLASSES_STELLA_UNKNOWN = ((Surrogate*)(internRigidSymbolWrtModule("UNKNOWN", NULL, 1)));
     SGT_CLASSES_STELLA_COLLECTION = ((Surrogate*)(internRigidSymbolWrtModule("COLLECTION", NULL, 1)));
     SGT_CLASSES_STELLA_SET_MIXIN = ((Surrogate*)(internRigidSymbolWrtModule("SET-MIXIN", NULL, 1)));
     SYM_CLASSES_STELLA_INVERSE = ((Symbol*)(internRigidSymbolWrtModule("INVERSE", NULL, 0)));
@@ -3730,6 +3679,7 @@ void helpStartupClasses2() {
     SGT_CLASSES_STELLA_ALL_CLASS_SLOTS_ITERATOR = ((Surrogate*)(internRigidSymbolWrtModule("ALL-CLASS-SLOTS-ITERATOR", NULL, 1)));
     SYM_CLASSES_STELLA_ITERATOR_CONS_LIST = ((Symbol*)(internRigidSymbolWrtModule("ITERATOR-CONS-LIST", NULL, 0)));
     SYM_CLASSES_STELLA_ITERATOR_OBJECT = ((Symbol*)(internRigidSymbolWrtModule("ITERATOR-OBJECT", NULL, 0)));
+    SYM_CLASSES_STELLA_FALSE = ((Symbol*)(internRigidSymbolWrtModule("FALSE", NULL, 0)));
     SGT_CLASSES_STELLA_GENERALIZED_SYMBOL = ((Surrogate*)(internRigidSymbolWrtModule("GENERALIZED-SYMBOL", NULL, 1)));
     SYM_CLASSES_STELLA_ANY = ((Symbol*)(internRigidSymbolWrtModule("ANY", NULL, 0)));
     SGT_CLASSES_STELLA_ANY = ((Surrogate*)(internRigidSymbolWrtModule("ANY", NULL, 1)));
@@ -3759,7 +3709,6 @@ void helpStartupClasses3() {
     defineFunctionObject("CREATE-OBJECT", "(DEFUN (CREATE-OBJECT OBJECT) ((TYPE TYPE) |&REST| (INITIAL-VALUE-PAIRS OBJECT)) :DOCUMENTATION \"Funcallable version of the `new' operator.\nReturn an instance of the class named by `type'.  If `initial-value-pairs'\nis supplied, it has to be a key/value list similar to what's accepted by `new'\nand the named slots will be initialized with the supplied values.  Similar to\n`new', all required arguments for `type' must be included.  Since all the\nslot initialization, etc. is handled dynamically at run time, `create-object'\nis much slower than `new'; therefore, it should only be used if `type' cannot\nbe known at translation time.\" :PUBLIC? TRUE)", ((cpp_function_code)(&createObject)), NULL);
     defineMethodObject("(DEFMETHOD FREE ((SELF OBJECT)) :DOCUMENTATION \"Default method.  Deallocate storage for `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Object::free)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD FREE ((SELF ACTIVE-OBJECT)) :DOCUMENTATION \"Remove all pointers between `self' and other objects,\nand then deallocate the storage for self.\")", ((cpp_method_code)(&ActiveObject::free)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("COERCE-TO-BOOLEAN", "(DEFUN (COERCE-TO-BOOLEAN BOOLEAN-WRAPPER) ((OBJECT OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&coerceToBoolean)), NULL);
     defineFunctionObject("DEFINE-STELLA-CLASS", "(DEFUN (DEFINE-STELLA-CLASS CLASS) ((NAME TYPE) (SUPERS (LIST OF TYPE)) (SLOTS (LIST OF SLOT)) (OPTIONS KEYWORD-KEY-VALUE-LIST)) :DOCUMENTATION \"Return a Stella class with name `name'.\nCaution:  If the class already exists, the Stella class object gets\nredefined, but the native C++ class is not redefined.\" :PUBLIC? TRUE)", ((cpp_function_code)(&defineStellaClass)), NULL);
     defineFunctionObject("DEFINE-STELLA-SLOT", "(DEFUN (DEFINE-STELLA-SLOT SLOT) ((NAME SYMBOL) (OWNER TYPE) (BASETYPE TYPE) (TYPESPECIFIER CONS) (OPTIONS KEYWORD-KEY-VALUE-LIST)))", ((cpp_function_code)(&defineStellaSlot)), NULL);
     defineFunctionObject("INCORPORATE-CLASS-OPTIONS", "(DEFUN INCORPORATE-CLASS-OPTIONS ((CLASS CLASS) (OPTIONS KEYWORD-KEY-VALUE-LIST)))", ((cpp_function_code)(&incorporateClassOptions)), NULL);
@@ -3801,12 +3750,12 @@ void helpStartupClasses3() {
     defineMethodObject("(DEFMETHOD HELP-FINALIZE-LOCAL-SLOT ((SELF STORAGE-SLOT)))", ((cpp_method_code)(&StorageSlot::helpFinalizeLocalSlot)), ((cpp_method_code)(NULL)));
     defineFunctionObject("FINALIZE-LOCAL-SLOT", "(DEFUN FINALIZE-LOCAL-SLOT ((SELF SLOT)))", ((cpp_function_code)(&finalizeLocalSlot)), NULL);
     defineMethodObject("(DEFMETHOD UNFINALIZE-LOCAL-SLOT ((SELF SLOT)))", ((cpp_method_code)(&Slot::unfinalizeLocalSlot)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD UNFINALIZE-LOCAL-SLOT ((SELF STORAGE-SLOT)))", ((cpp_method_code)(&StorageSlot::unfinalizeLocalSlot)), ((cpp_method_code)(NULL)));
   }
 }
 
 void helpStartupClasses4() {
   {
-    defineMethodObject("(DEFMETHOD UNFINALIZE-LOCAL-SLOT ((SELF STORAGE-SLOT)))", ((cpp_method_code)(&StorageSlot::unfinalizeLocalSlot)), ((cpp_method_code)(NULL)));
     defineFunctionObject("FINALIZE-CLASS-SLOTS", "(DEFUN FINALIZE-CLASS-SLOTS ((CLASS CLASS)))", ((cpp_function_code)(&finalizeClassSlots)), NULL);
     defineFunctionObject("UNFINALIZE-CLASS-SLOTS", "(DEFUN UNFINALIZE-CLASS-SLOTS ((CLASS CLASS)))", ((cpp_function_code)(&unfinalizeClassSlots)), NULL);
     defineFunctionObject("HELP-UNFINALIZE-CLASS-SLOTS", "(DEFUN HELP-UNFINALIZE-CLASS-SLOTS ((CLASS CLASS)))", ((cpp_function_code)(&helpUnfinalizeClassSlots)), NULL);
@@ -3866,6 +3815,7 @@ void helpStartupClasses4() {
     defineFunctionObject("NAME-TO-STRING", "(DEFUN (NAME-TO-STRING STRING) ((NAME OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the string represented by `name'.  Return `null'\nif `name' is undefined or does not represent a string.\")", ((cpp_function_code)(&nameToString)), NULL);
     defineFunctionObject("PRINT-UNBOUND-SURROGATES", "(DEFUN PRINT-UNBOUND-SURROGATES (|&REST| (ARGS OBJECT)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Print all unbound surrogates visible from the module named by the first\nargument (a symbol or string).  Look at all modules if no module name or\n`null' was supplied.  If the second argument is `true', only consider\nsurrogates interned in the specified module.\")", ((cpp_function_code)(&printUnboundSurrogates)), ((cpp_function_code)(&printUnboundSurrogatesEvaluatorWrapper)));
     defineFunctionObject("COERCE-TO-SYMBOL", "(DEFUN (COERCE-TO-SYMBOL GENERALIZED-SYMBOL) ((NAME NAME)) :PUBLIC? TRUE :DOCUMENTATION \"Return the (generalized) symbol represented by `name'.\nReturn `null' if `name' is undefined or does not represent a string.\")", ((cpp_function_code)(&coerceToSymbol)), NULL);
+    defineFunctionObject("PRINT-UNDEFINED-SUPER-CLASSES", "(DEFUN PRINT-UNDEFINED-SUPER-CLASSES ((CLASS NAME)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Print all undefined or bad (indirect) super classes of `class'.\")", ((cpp_function_code)(&printUndefinedSuperClasses)), NULL);
   }
 }
 
@@ -3896,7 +3846,6 @@ void startupClasses() {
     if (currentStartupTimePhaseP(7)) {
       helpStartupClasses3();
       helpStartupClasses4();
-      defineFunctionObject("PRINT-UNDEFINED-SUPER-CLASSES", "(DEFUN PRINT-UNDEFINED-SUPER-CLASSES ((CLASS NAME)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Print all undefined or bad (indirect) super classes of `class'.\")", ((cpp_function_code)(&printUndefinedSuperClasses)), NULL);
       defineFunctionObject("COLLECT-BAD-SUPER-CLASSES", "(DEFUN (COLLECT-BAD-SUPER-CLASSES (LIST OF TYPE)) ((TYPE TYPE) (BADONES (LIST OF TYPE))) :PUBLIC? TRUE)", ((cpp_function_code)(&collectBadSuperClasses)), NULL);
       defineFunctionObject("ROOT-CLASS?", "(DEFUN (ROOT-CLASS? BOOLEAN) ((CLASS CLASS)))", ((cpp_function_code)(&rootClassP)), NULL);
       defineFunctionObject("CREATE-CLASS-TAXONOMY", "(DEFUN CREATE-CLASS-TAXONOMY ())", ((cpp_function_code)(&createClassTaxonomy)), NULL);
@@ -3922,6 +3871,7 @@ void startupClasses() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *WARNIFREDEFINE?* BOOLEAN TRUE :DOCUMENTATION \"If set, warn about each redefinition.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *UNFINALIZED-CLASSES* (LIST OF CLASS) (NEW LIST) :DOCUMENTATION \"List of classes whose class or slot inheritance is\ncurrently unfinalized.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *NEWLY-UNFINALIZED-CLASSES?* BOOLEAN FALSE :DOCUMENTATION \"Set to `true' by `remember-unfinalized-class'; set\nto `false' by `cleanup-unfinalized-classes'.  Minimizes the time that\n`finalize-classes' spends searching for classes to finalize.\")");
@@ -3938,16 +3888,6 @@ Surrogate* SGT_CLASSES_STELLA_CLASS = NULL;
 Surrogate* SGT_CLASSES_STELLA_OBJECT = NULL;
 
 Keyword* KWD_CLASSES_PUBLICp = NULL;
-
-Symbol* SYM_CLASSES_STELLA_TRUE = NULL;
-
-Keyword* KWD_CLASSES_TRUE = NULL;
-
-Symbol* SYM_CLASSES_STELLA_FALSE = NULL;
-
-Keyword* KWD_CLASSES_FALSE = NULL;
-
-Surrogate* SGT_CLASSES_STELLA_UNKNOWN = NULL;
 
 Keyword* KWD_CLASSES_PARAMETERS = NULL;
 
@@ -4117,6 +4057,8 @@ Symbol* SYM_CLASSES_STELLA_TYPE = NULL;
 
 Keyword* KWD_CLASSES_AUXILIARYp = NULL;
 
+Symbol* SYM_CLASSES_STELLA_TRUE = NULL;
+
 Symbol* SYM_CLASSES_STELLA_RETURN = NULL;
 
 Symbol* SYM_CLASSES_STELLA_CLASS_EXTENSION = NULL;
@@ -4130,6 +4072,8 @@ Surrogate* SGT_CLASSES_STELLA_ACTIVE_SET = NULL;
 Surrogate* SGT_CLASSES_STELLA_LIST = NULL;
 
 Surrogate* SGT_CLASSES_STELLA_ACTIVE_LIST = NULL;
+
+Surrogate* SGT_CLASSES_STELLA_UNKNOWN = NULL;
 
 Surrogate* SGT_CLASSES_STELLA_COLLECTION = NULL;
 
@@ -4160,6 +4104,8 @@ Surrogate* SGT_CLASSES_STELLA_ALL_CLASS_SLOTS_ITERATOR = NULL;
 Symbol* SYM_CLASSES_STELLA_ITERATOR_CONS_LIST = NULL;
 
 Symbol* SYM_CLASSES_STELLA_ITERATOR_OBJECT = NULL;
+
+Symbol* SYM_CLASSES_STELLA_FALSE = NULL;
 
 Surrogate* SGT_CLASSES_STELLA_GENERALIZED_SYMBOL = NULL;
 

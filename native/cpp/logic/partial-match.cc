@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -2086,8 +2086,7 @@ double IncrementalPartialMatch::computePartialTruth(QueryIterator* query) {
           highestscore = latestscore;
           partialmatchframe->dynamicCutoff = highestscore + epsilon;
           if ((!maximizescoreP) ||
-              (!((baseframe->truthValue == UNKNOWN_TRUTH_VALUE) ||
-              (!((boolean)(baseframe->truthValue)))))) {
+              knownTruthValueP(baseframe->truthValue)) {
             break;
           }
         }
@@ -2570,6 +2569,7 @@ void startupPartialMatch() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *PARTIAL-MATCH-MODE* KEYWORD :BASIC)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *GREEDY-NETWORK-PRUNING* BOOLEAN TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *RULE-COMBINATION* KEYWORD :MAX)");

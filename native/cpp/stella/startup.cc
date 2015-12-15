@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -49,17 +49,17 @@ namespace stella {
 
 int oSTELLA_MAJOR_VERSION_NUMBERo = 3;
 
-int oSTELLA_MINOR_VERSION_NUMBERo = 4;
+int oSTELLA_MINOR_VERSION_NUMBERo = 5;
 
 char* oSTELLA_RELEASE_STATEo = "";
 
-int oSTELLA_PATCH_LEVELo = 0;
+int oSTELLA_PATCH_LEVELo = 20;
 
 char* oSTELLA_VERSION_STRINGo = NULL;
 
 char* stellaVersionString() {
   // Return a string identifying the current version of STELLA.
-  return (stringConcatenate("STELLA ", integerToString(oSTELLA_MAJOR_VERSION_NUMBERo), 5, ".", integerToString(oSTELLA_MINOR_VERSION_NUMBERo), ".", integerToString(oSTELLA_PATCH_LEVELo), oSTELLA_RELEASE_STATEo));
+  return (stringConcatenate("STELLA ", integerToString(((long long int)(oSTELLA_MAJOR_VERSION_NUMBERo))), 5, ".", integerToString(((long long int)(oSTELLA_MINOR_VERSION_NUMBERo))), ".", integerToString(((long long int)(oSTELLA_PATCH_LEVELo))), oSTELLA_RELEASE_STATEo));
 }
 
 char* stellaInformation() {
@@ -257,36 +257,8 @@ void startup(boolean verboseP) {
 }
 
 void interpretCommandLineArguments(int count, char** arguments) {
-  // Interpret any STELLA-relevant command line `arguments'.
-  { int cursor = 0;
-
-    while (cursor < count) {
-      { char* testValue000 = arguments[cursor];
-
-        if (stringEqlP(testValue000, "-e") ||
-            (stringEqlP(testValue000, "-eval") ||
-             stringEqlP(testValue000, "--eval"))) {
-          cursor = cursor + 1;
-          if (cursor == count) {
-            *(STANDARD_ERROR->nativeStream) << "ERROR: Missing argument to -eval option" << std::endl;
-          }
-          else {
-            try {
-              evaluate(readSExpressionFromString(arguments[cursor]));
-            }
-            catch (std::exception& _e) {
-              std::exception* e = &_e;
-
-              *(STANDARD_ERROR->nativeStream) << "ERROR during processing of --eval option:" << std::endl << "   " << exceptionMessage(e);
-            }
-          }
-        }
-        else {
-        }
-      }
-      cursor = cursor + 1;
-    }
-  }
+  // Old name for `process-command-line-arguments' (which see).
+  processCommandLineArguments(count, arguments, KWD_STARTUP_WARN);
 }
 
 Cons* consifyCommandLineArguments(int count, char** arguments) {
@@ -329,9 +301,9 @@ int main(int count, char** arguments) {
   // Main STELLA entry point.
   { boolean testingP = count == 1;
 
-    std::cout << "Welcome to " << stellaVersionString() << std::endl;
     startup(testingP);
     startupStellaSystem();
+    std::cout << "Welcome to " << stellaVersionString() << std::endl;
     interpretCommandLineArguments(count, arguments);
     if (testingP) {
       std::cout << "Bye!" << std::endl;
@@ -355,6 +327,7 @@ void startupStartup() {
       KWD_STARTUP_METHODS = ((Keyword*)(internRigidSymbolWrtModule("METHODS", NULL, 2)));
       KWD_STARTUP_FINALIZE_METHODS = ((Keyword*)(internRigidSymbolWrtModule("FINALIZE-METHODS", NULL, 2)));
       KWD_STARTUP_FINAL = ((Keyword*)(internRigidSymbolWrtModule("FINAL", NULL, 2)));
+      KWD_STARTUP_WARN = ((Keyword*)(internRigidSymbolWrtModule("WARN", NULL, 2)));
       SYM_STARTUP_STELLA_STARTUP_STARTUP = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-STARTUP", NULL, 0)));
       SYM_STARTUP_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
     }
@@ -375,7 +348,7 @@ void startupStartup() {
       defineFunctionObject("STARTUP-JAVA-TRANSLATOR", "(DEFUN STARTUP-JAVA-TRANSLATOR ())", ((cpp_function_code)(&startupJavaTranslator)), NULL);
       defineFunctionObject("STARTUP-IDL-TRANSLATOR", "(DEFUN STARTUP-IDL-TRANSLATOR ())", ((cpp_function_code)(&startupIdlTranslator)), NULL);
       defineFunctionObject("STARTUP", "(DEFUN STARTUP ((VERBOSE? BOOLEAN)) :PUBLIC? TRUE)", ((cpp_function_code)(&startup)), NULL);
-      defineFunctionObject("INTERPRET-COMMAND-LINE-ARGUMENTS", "(DEFUN INTERPRET-COMMAND-LINE-ARGUMENTS ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :DOCUMENTATION \"Interpret any STELLA-relevant command line `arguments'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&interpretCommandLineArguments)), NULL);
+      defineFunctionObject("INTERPRET-COMMAND-LINE-ARGUMENTS", "(DEFUN INTERPRET-COMMAND-LINE-ARGUMENTS ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :DOCUMENTATION \"Old name for `process-command-line-arguments' (which see).\" :PUBLIC? TRUE)", ((cpp_function_code)(&interpretCommandLineArguments)), NULL);
       defineFunctionObject("CONSIFY-COMMAND-LINE-ARGUMENTS", "(DEFUN (CONSIFY-COMMAND-LINE-ARGUMENTS (CONS OF STRING-WRAPPER)) ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :DOCUMENTATION \"Convert `count' command line `arguments' into a CONS list.\" :PUBLIC? TRUE)", ((cpp_function_code)(&consifyCommandLineArguments)), NULL);
       defineFunctionObject("MAIN", "(DEFUN (MAIN INTEGER) ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :PUBLIC? TRUE :DOCUMENTATION \"Main STELLA entry point.\")", NULL, NULL);
       defineFunctionObject("STARTUP-STARTUP", "(DEFUN STARTUP-STARTUP () :PUBLIC? TRUE)", ((cpp_function_code)(&startupStartup)), NULL);
@@ -389,10 +362,11 @@ void startupStartup() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-MAJOR-VERSION-NUMBER* INTEGER 3 :PUBLIC? TRUE)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-MINOR-VERSION-NUMBER* INTEGER 4 :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-MINOR-VERSION-NUMBER* INTEGER 5 :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-RELEASE-STATE* STRING \"\" :PUBLIC? TRUE)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-PATCH-LEVEL* INTEGER 0 :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-PATCH-LEVEL* INTEGER 20 :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-VERSION-STRING* STRING (STELLA-VERSION-STRING) :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STARTUP-TIME-PHASES* (LIST OF KEYWORD) (CAST (LIST :EARLY-INITS :MODULES :SYMBOLS :QUOTED-CONSTANTS :GLOBALS :CLASSES :FINALIZE-CLASSES :METHODS :FINALIZE-METHODS :FINAL) (LIST OF KEYWORD)) :DOCUMENTATION \"List of phases that can be legally used as an optional\nphase argument to a `startup-time-progn' form.  The corresponding code\nwill be executed during the execution of a startup-time-code function only\nif the position of the keyword in the list corresponds to the current value of\n`*STARTUP-TIME-PHASE*', or if phasing of startup-time code is disabled.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STARTUP-TIME-PHASE* INTEGER 999 :PUBLIC? TRUE :DOCUMENTATION \"The current phase during 'phased startup'.\nThe value has to correspond to the position of one of the keywords\nin `*STARTUP-TIME-PHASES*'.  999 means no phasing at all.\")");
@@ -419,6 +393,8 @@ Keyword* KWD_STARTUP_METHODS = NULL;
 Keyword* KWD_STARTUP_FINALIZE_METHODS = NULL;
 
 Keyword* KWD_STARTUP_FINAL = NULL;
+
+Keyword* KWD_STARTUP_WARN = NULL;
 
 Symbol* SYM_STARTUP_STELLA_STARTUP_STARTUP = NULL;
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,90 +50,87 @@ import edu.isi.stella.javalib.*;
 public class _StartupJavaTranslate {
   static void helpStartupJavaTranslate1() {
     {
-      Stella.SYM_STELLA_JAVA_GLOBAL = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_GLOBAL", null, 0)));
-      Stella.SYM_STELLA_JAVA_TYPE = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_TYPE", null, 0)));
-      Stella.SYM_STELLA_JAVA_MAKE = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_MAKE", null, 0)));
-      Stella.SYM_STELLA_JAVA_IDENT = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_IDENT", null, 0)));
-      Stella.SYM_STELLA_JAVA_ACTUALS = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_ACTUALS", null, 0)));
-      Stella.SYM_STELLA_JAVA_STATEMENTS = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_STATEMENTS", null, 0)));
-      Stella.SYM_STELLA_JAVA_BLOCK = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_BLOCK", null, 0)));
-      Stella.SYM_STELLA_JAVA_COMMENT = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_COMMENT", null, 0)));
-      Stella.SYM_STELLA_JAVA_FUNCTION = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_FUNCTION", null, 0)));
-      Stella.SYM_STELLA_JAVA_METHOD = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_METHOD", null, 0)));
-      Stella.SGT_STELLA_BYTE = ((Surrogate)(Stella.internRigidSymbolWrtModule("BYTE", null, 1)));
-      Stella.SGT_STELLA_OCTET = ((Surrogate)(Stella.internRigidSymbolWrtModule("OCTET", null, 1)));
-      Stella.SGT_STELLA_THIRY_TWO_BIT_VECTOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("THIRY-TWO-BIT-VECTOR", null, 1)));
-      Stella.SGT_STELLA_DOUBLE = ((Surrogate)(Stella.internRigidSymbolWrtModule("DOUBLE", null, 1)));
-      Stella.SYM_STELLA_ABSTRACT = ((Symbol)(Stella.internRigidSymbolWrtModule("ABSTRACT", null, 0)));
-      Stella.SYM_STELLA_BYTE = ((Symbol)(Stella.internRigidSymbolWrtModule("BYTE", null, 0)));
-      Stella.SYM_STELLA_EXTENDS = ((Symbol)(Stella.internRigidSymbolWrtModule("EXTENDS", null, 0)));
-      Stella.SYM_STELLA_FINAL = ((Symbol)(Stella.internRigidSymbolWrtModule("FINAL", null, 0)));
-      Stella.SYM_STELLA_FINALLY = ((Symbol)(Stella.internRigidSymbolWrtModule("FINALLY", null, 0)));
-      Stella.SYM_STELLA_IMPLEMENTS = ((Symbol)(Stella.internRigidSymbolWrtModule("IMPLEMENTS", null, 0)));
-      Stella.SYM_STELLA_IMPORT = ((Symbol)(Stella.internRigidSymbolWrtModule("IMPORT", null, 0)));
-      Stella.SYM_STELLA_INSTANCEOF = ((Symbol)(Stella.internRigidSymbolWrtModule("INSTANCEOF", null, 0)));
-      Stella.SYM_STELLA_INTERFACE = ((Symbol)(Stella.internRigidSymbolWrtModule("INTERFACE", null, 0)));
-      Stella.SYM_STELLA_NATIVE = ((Symbol)(Stella.internRigidSymbolWrtModule("NATIVE", null, 0)));
-      Stella.SYM_STELLA_PACKAGE = ((Symbol)(Stella.internRigidSymbolWrtModule("PACKAGE", null, 0)));
-      Stella.SYM_STELLA_SUPER = ((Symbol)(Stella.internRigidSymbolWrtModule("SUPER", null, 0)));
-      Stella.SYM_STELLA_SYNCHRONIZED = ((Symbol)(Stella.internRigidSymbolWrtModule("SYNCHRONIZED", null, 0)));
-      Stella.SYM_STELLA_THROWS = ((Symbol)(Stella.internRigidSymbolWrtModule("THROWS", null, 0)));
-      Stella.SYM_STELLA_TRANSIENT = ((Symbol)(Stella.internRigidSymbolWrtModule("TRANSIENT", null, 0)));
-      Stella.SYM_STELLA_JAVA_METHOD_CALL = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_METHOD_CALL", null, 0)));
-      Stella.SYM_STELLA_JAVA_UNWIND_PROTECT = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_UNWIND_PROTECT", null, 0)));
-      Stella.SYM_STELLA_JAVA_VERBATIM = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_VERBATIM", null, 0)));
-      Stella.SYM_STELLA_JAVA_SIGNAL = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_SIGNAL", null, 0)));
-      Stella.SYM_STELLA_FILL_IN_STACK_TRACE = ((Symbol)(Stella.internRigidSymbolWrtModule("FILL-IN-STACK-TRACE", null, 0)));
-      Stella.SYM_STELLA_JAVA_HANDLER_CASE = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_HANDLER_CASE", null, 0)));
-      Stella.SYM_STELLA_JAVA_CATCH = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_CATCH", null, 0)));
-      Stella.SYM_STELLA_JAVA_FUNCTION_CALL = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_FUNCTION_CALL", null, 0)));
-      Stella.SYM_STELLA_JAVA_ASSIGN = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_ASSIGN", null, 0)));
-      Stella.SYM_STELLA_JAVA_SLOT_VALUE_SETTER = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_SLOT_VALUE_SETTER", null, 0)));
-      Stella.SYM_STELLA_JAVA_SLOT_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_SLOT_VALUE", null, 0)));
-      Stella.SYM_STELLA_JAVA_PROGN = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_PROGN", null, 0)));
-      Stella.SYM_STELLA_JAVA_WITH_PROCESS_LOCK = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_WITH_PROCESS_LOCK", null, 0)));
-      Stella.SYM_STELLA_JAVA_NAMED_STATEMENT = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_NAMED_STATEMENT", null, 0)));
-      Stella.SYM_STELLA_JAVA_LOOP = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_LOOP", null, 0)));
-      Stella.SYM_STELLA_JAVA_FOREACH = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_FOREACH", null, 0)));
-      Stella.SYM_STELLA_JAVA_CAST = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_CAST", null, 0)));
-      Stella.SYM_STELLA_JAVA_AREF = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_AREF", null, 0)));
-      Stella.SYM_STELLA_MV_returnarray = ((Symbol)(Stella.internRigidSymbolWrtModule("MV_returnarray", null, 0)));
-      Stella.SYM_STELLA_JAVA_RETURN = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_RETURN", null, 0)));
-      Stella.SYM_STELLA_JAVA_BREAK = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_BREAK", null, 0)));
-      Stella.SYM_STELLA_JAVA_CONTINUE = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_CONTINUE", null, 0)));
-      Stella.SYM_STELLA_JAVA_IF = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_IF", null, 0)));
-      Stella.SYM_STELLA_JAVA_CASE = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_CASE", null, 0)));
-      Stella.SYM_STELLA_JAVA_COND = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_COND", null, 0)));
-      Stella.SYM_STELLA_JAVA_WHILE = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_WHILE", null, 0)));
-      Stella.SYM_STELLA_JAVA_WHEN = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_WHEN", null, 0)));
-      Stella.SYM_STELLA_JAVA_UNLESS = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_UNLESS", null, 0)));
-      Stella.SYM_STELLA_JAVA_MAKE_ARRAY = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_MAKE_ARRAY", null, 0)));
-      Stella.SGT_STELLA_NATIVE_OBJECT_POINTER = ((Surrogate)(Stella.internRigidSymbolWrtModule("NATIVE-OBJECT-POINTER", null, 1)));
-      Stella.SYM_STELLA_caller_MV_returnarray = ((Symbol)(Stella.internRigidSymbolWrtModule("caller_MV_returnarray", null, 0)));
+      Stella.SYM_STELLA_JAVA_GLOBAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_GLOBAL", null, 0)));
+      Stella.SYM_STELLA_JAVA_TYPE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_TYPE", null, 0)));
+      Stella.SYM_STELLA_JAVA_MAKE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_MAKE", null, 0)));
+      Stella.SYM_STELLA_JAVA_IDENT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_IDENT", null, 0)));
+      Stella.SYM_STELLA_JAVA_ACTUALS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_ACTUALS", null, 0)));
+      Stella.SYM_STELLA_JAVA_STATEMENTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_STATEMENTS", null, 0)));
+      Stella.SYM_STELLA_JAVA_BLOCK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_BLOCK", null, 0)));
+      Stella.SYM_STELLA_JAVA_COMMENT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_COMMENT", null, 0)));
+      Stella.SYM_STELLA_JAVA_FUNCTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_FUNCTION", null, 0)));
+      Stella.SYM_STELLA_JAVA_METHOD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_METHOD", null, 0)));
+      Stella.SGT_STELLA_THIRY_TWO_BIT_VECTOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("THIRY-TWO-BIT-VECTOR", null, 1)));
+      Stella.SGT_STELLA_DOUBLE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DOUBLE", null, 1)));
+      Stella.SYM_STELLA_ABSTRACT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ABSTRACT", null, 0)));
+      Stella.SYM_STELLA_BYTE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BYTE", null, 0)));
+      Stella.SYM_STELLA_EXTENDS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EXTENDS", null, 0)));
+      Stella.SYM_STELLA_FINAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FINAL", null, 0)));
+      Stella.SYM_STELLA_FINALLY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FINALLY", null, 0)));
+      Stella.SYM_STELLA_IMPLEMENTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IMPLEMENTS", null, 0)));
+      Stella.SYM_STELLA_IMPORT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IMPORT", null, 0)));
+      Stella.SYM_STELLA_INSTANCEOF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INSTANCEOF", null, 0)));
+      Stella.SYM_STELLA_INTERFACE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTERFACE", null, 0)));
+      Stella.SYM_STELLA_NATIVE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NATIVE", null, 0)));
+      Stella.SYM_STELLA_PACKAGE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PACKAGE", null, 0)));
+      Stella.SYM_STELLA_SUPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUPER", null, 0)));
+      Stella.SYM_STELLA_SYNCHRONIZED = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SYNCHRONIZED", null, 0)));
+      Stella.SYM_STELLA_THROWS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THROWS", null, 0)));
+      Stella.SYM_STELLA_TRANSIENT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TRANSIENT", null, 0)));
+      Stella.SYM_STELLA_JAVA_METHOD_CALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_METHOD_CALL", null, 0)));
+      Stella.SYM_STELLA_JAVA_UNWIND_PROTECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_UNWIND_PROTECT", null, 0)));
+      Stella.SYM_STELLA_JAVA_VERBATIM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_VERBATIM", null, 0)));
+      Stella.SYM_STELLA_JAVA_SIGNAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_SIGNAL", null, 0)));
+      Stella.SYM_STELLA_FILL_IN_STACK_TRACE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FILL-IN-STACK-TRACE", null, 0)));
+      Stella.SYM_STELLA_JAVA_HANDLER_CASE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_HANDLER_CASE", null, 0)));
+      Stella.SYM_STELLA_JAVA_CATCH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_CATCH", null, 0)));
+      Stella.SYM_STELLA_JAVA_FUNCTION_CALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_FUNCTION_CALL", null, 0)));
+      Stella.SYM_STELLA_JAVA_ASSIGN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_ASSIGN", null, 0)));
+      Stella.SYM_STELLA_JAVA_SLOT_VALUE_SETTER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_SLOT_VALUE_SETTER", null, 0)));
+      Stella.SYM_STELLA_JAVA_SLOT_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_SLOT_VALUE", null, 0)));
+      Stella.SYM_STELLA_JAVA_PROGN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_PROGN", null, 0)));
+      Stella.SYM_STELLA_JAVA_WITH_PROCESS_LOCK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_WITH_PROCESS_LOCK", null, 0)));
+      Stella.SYM_STELLA_JAVA_NAMED_STATEMENT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_NAMED_STATEMENT", null, 0)));
+      Stella.SYM_STELLA_JAVA_LOOP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_LOOP", null, 0)));
+      Stella.SYM_STELLA_JAVA_FOREACH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_FOREACH", null, 0)));
+      Stella.SYM_STELLA_JAVA_CAST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_CAST", null, 0)));
+      Stella.SYM_STELLA_JAVA_AREF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_AREF", null, 0)));
+      Stella.SYM_STELLA_MV_returnarray = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MV_returnarray", null, 0)));
+      Stella.SYM_STELLA_JAVA_RETURN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_RETURN", null, 0)));
+      Stella.SYM_STELLA_JAVA_BREAK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_BREAK", null, 0)));
+      Stella.SYM_STELLA_JAVA_CONTINUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_CONTINUE", null, 0)));
+      Stella.SYM_STELLA_JAVA_IF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_IF", null, 0)));
+      Stella.SYM_STELLA_JAVA_CASE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_CASE", null, 0)));
+      Stella.SYM_STELLA_JAVA_COND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_COND", null, 0)));
+      Stella.SYM_STELLA_JAVA_WHILE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_WHILE", null, 0)));
+      Stella.SYM_STELLA_JAVA_WHEN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_WHEN", null, 0)));
+      Stella.SYM_STELLA_JAVA_UNLESS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_UNLESS", null, 0)));
+      Stella.SYM_STELLA_JAVA_MAKE_ARRAY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_MAKE_ARRAY", null, 0)));
+      Stella.SGT_STELLA_NATIVE_OBJECT_POINTER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NATIVE-OBJECT-POINTER", null, 1)));
+      Stella.SYM_STELLA_caller_MV_returnarray = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("caller_MV_returnarray", null, 0)));
+      Stella.SYM_STELLA_JAVA_FUNCTION_SIGNATURE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_FUNCTION_SIGNATURE", null, 0)));
+      Stella.SYM_STELLA_JAVA_FUNCALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_FUNCALL", null, 0)));
     }
   }
 
   static void helpStartupJavaTranslate2() {
     {
-      Stella.SYM_STELLA_JAVA_FUNCTION_SIGNATURE = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_FUNCTION_SIGNATURE", null, 0)));
-      Stella.SYM_STELLA_JAVA_FUNCALL = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_FUNCALL", null, 0)));
-      Stella.SYM_STELLA_JAVA_METHOD_CODE_CALL = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_METHOD_CODE_CALL", null, 0)));
-      Stella.SGT_STELLA_THIRTY_TWO_BIT_VECTOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("THIRTY-TWO-BIT-VECTOR", null, 1)));
-      Stella.SGT_STELLA_TICKTOCK = ((Surrogate)(Stella.internRigidSymbolWrtModule("TICKTOCK", null, 1)));
-      Stella.SGT_STELLA_NATIVE_DATE_TIME = ((Surrogate)(Stella.internRigidSymbolWrtModule("NATIVE-DATE-TIME", null, 1)));
-      Stella.SYM_STELLA_JAVA_ANONYMOUS_ARRAY = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_ANONYMOUS_ARRAY", null, 0)));
-      Stella.SYM_STELLA_JAVA_PRINT_STREAM = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_PRINT_STREAM", null, 0)));
-      Stella.SYM_STELLA_JAVA_STANDARD_ERROR = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_STANDARD_ERROR", null, 0)));
-      Stella.SYM_STELLA_JAVA_STANDARD_OUT = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_STANDARD_OUT", null, 0)));
-      Stella.SYM_STELLA_JAVA_PRINT_NATIVE_STREAM = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_PRINT_NATIVE_STREAM", null, 0)));
-      Stella.SYM_STELLA_JAVA_EOL = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_EOL", null, 0)));
-      Stella.SYM_STELLA_JAVA_LITERAL = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_LITERAL", null, 0)));
-      Stella.SYM_STELLA_JAVA_SYMBOL = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_SYMBOL", null, 0)));
-      Stella.SYM_STELLA_NULL_SINGLE_FLOAT = ((Symbol)(Stella.internRigidSymbolWrtModule("NULL-SINGLE-FLOAT", null, 0)));
-      Stella.SYM_STELLA_JAVA_UNARY_OP = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_UNARY_OP", null, 0)));
-      Stella.SYM_STELLA_JAVA_BINARY_OP = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_BINARY_OP", null, 0)));
-      Stella.SYM_STELLA_JAVA_TERNARY_OP = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_TERNARY_OP", null, 0)));
-      Stella.SYM_STELLA_STARTUP_JAVA_TRANSLATE = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-JAVA-TRANSLATE", null, 0)));
+      Stella.SYM_STELLA_JAVA_METHOD_CODE_CALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_METHOD_CODE_CALL", null, 0)));
+      Stella.SGT_STELLA_THIRTY_TWO_BIT_VECTOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("THIRTY-TWO-BIT-VECTOR", null, 1)));
+      Stella.SGT_STELLA_TICKTOCK = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("TICKTOCK", null, 1)));
+      Stella.SGT_STELLA_NATIVE_DATE_TIME = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NATIVE-DATE-TIME", null, 1)));
+      Stella.SYM_STELLA_JAVA_ANONYMOUS_ARRAY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_ANONYMOUS_ARRAY", null, 0)));
+      Stella.SYM_STELLA_JAVA_PRINT_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_PRINT_STREAM", null, 0)));
+      Stella.SYM_STELLA_JAVA_STANDARD_ERROR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_STANDARD_ERROR", null, 0)));
+      Stella.SYM_STELLA_JAVA_STANDARD_OUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_STANDARD_OUT", null, 0)));
+      Stella.SYM_STELLA_JAVA_PRINT_NATIVE_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_PRINT_NATIVE_STREAM", null, 0)));
+      Stella.SYM_STELLA_JAVA_EOL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_EOL", null, 0)));
+      Stella.SYM_STELLA_JAVA_LITERAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_LITERAL", null, 0)));
+      Stella.SYM_STELLA_JAVA_SYMBOL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_SYMBOL", null, 0)));
+      Stella.SYM_STELLA_JAVA_UNARY_OP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_UNARY_OP", null, 0)));
+      Stella.SYM_STELLA_JAVA_BINARY_OP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_BINARY_OP", null, 0)));
+      Stella.SYM_STELLA_JAVA_TERNARY_OP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_TERNARY_OP", null, 0)));
+      Stella.SYM_STELLA_STARTUP_JAVA_TRANSLATE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-JAVA-TRANSLATE", null, 0)));
     }
   }
 
@@ -144,12 +141,12 @@ public class _StartupJavaTranslate {
       Stella.$VARARGSTATEMENTS$.setDefaultValue(Stella.NIL);
       Stella.$VARARGDECLS$.setDefaultValue(Stella.NIL);
       Stella.$CURRENTVARARGINDEX$.setDefaultValue(new Integer(1));
-      Stella.$JAVA_OPERATOR_TABLE$ = ((KeyValueList)(Surrogate.dictionary(Stella.SGT_STELLA_KEY_VALUE_LIST, Stella_Object.cons(Stella.SYM_STELLA_ii, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("++"), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA___, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("--"), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_i, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("+"), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA__, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("-"), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_$, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("*"), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_s, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("/"), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_EQp, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("=="), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_g, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString(">"), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_ge, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString(">="), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_eg, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString(">="), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_l, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("<"), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_el, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("<="), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_le, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("<="), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_AND, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("&&"), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_OR, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("||"), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_NOT, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("!"), Stella.NIL), Stella_Object.cons(Stella.SYM_STELLA_CHOOSE, Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("?"), Stella_Object.cons(StringWrapper.wrapString(":"), Stella.NIL)), Stella.NIL)))))))))))))))))))))))))))))))))))));
+      Stella.$JAVA_OPERATOR_TABLE$ = ((KeyValueList)(AbstractDictionary.dictionary(Stella.SGT_STELLA_KEY_VALUE_LIST, Cons.cons(Stella.SYM_STELLA_ii, Cons.cons(Cons.cons(StringWrapper.wrapString("++"), Stella.NIL), Cons.cons(Stella.SYM_STELLA___, Cons.cons(Cons.cons(StringWrapper.wrapString("--"), Stella.NIL), Cons.cons(Stella.SYM_STELLA_i, Cons.cons(Cons.cons(StringWrapper.wrapString("+"), Stella.NIL), Cons.cons(Stella.SYM_STELLA__, Cons.cons(Cons.cons(StringWrapper.wrapString("-"), Stella.NIL), Cons.cons(Stella.SYM_STELLA_$, Cons.cons(Cons.cons(StringWrapper.wrapString("*"), Stella.NIL), Cons.cons(Stella.SYM_STELLA_s, Cons.cons(Cons.cons(StringWrapper.wrapString("/"), Stella.NIL), Cons.cons(Stella.SYM_STELLA_EQp, Cons.cons(Cons.cons(StringWrapper.wrapString("=="), Stella.NIL), Cons.cons(Stella.SYM_STELLA_g, Cons.cons(Cons.cons(StringWrapper.wrapString(">"), Stella.NIL), Cons.cons(Stella.SYM_STELLA_ge, Cons.cons(Cons.cons(StringWrapper.wrapString(">="), Stella.NIL), Cons.cons(Stella.SYM_STELLA_eg, Cons.cons(Cons.cons(StringWrapper.wrapString(">="), Stella.NIL), Cons.cons(Stella.SYM_STELLA_l, Cons.cons(Cons.cons(StringWrapper.wrapString("<"), Stella.NIL), Cons.cons(Stella.SYM_STELLA_el, Cons.cons(Cons.cons(StringWrapper.wrapString("<="), Stella.NIL), Cons.cons(Stella.SYM_STELLA_le, Cons.cons(Cons.cons(StringWrapper.wrapString("<="), Stella.NIL), Cons.cons(Stella.SYM_STELLA_AND, Cons.cons(Cons.cons(StringWrapper.wrapString("&&"), Stella.NIL), Cons.cons(Stella.SYM_STELLA_OR, Cons.cons(Cons.cons(StringWrapper.wrapString("||"), Stella.NIL), Cons.cons(Stella.SYM_STELLA_NOT, Cons.cons(Cons.cons(StringWrapper.wrapString("!"), Stella.NIL), Cons.cons(Stella.SYM_STELLA_CHOOSE, Cons.cons(Cons.cons(StringWrapper.wrapString("?"), Cons.cons(StringWrapper.wrapString(":"), Stella.NIL)), Stella.NIL)))))))))))))))))))))))))))))))))))));
       Stella.$JAVA_CHARACTER_SUBSTITUTION_TABLE$ = Stella.javaCreateCharacterSubstitutionTable();
       Stella.$JAVA_RESERVED_WORD_TABLE$ = Stella.javaCreateReservedWordTable();
       Stella.$JAVA_LOOP_NAME$.setDefaultValue(null);
       Stella.$JAVA_LOOP_NAME_USEDp$.setDefaultValue(new Boolean(false));
-      Stella.$JAVA_PRIMITIVE_ARRAY_TYPE_NAMES$ = ((KeyValueList)(Surrogate.dictionary(Stella.SGT_STELLA_KEY_VALUE_LIST, Stella_Object.cons(StringWrapper.wrapString("byte"), Stella_Object.cons(StringWrapper.wrapString("B"), Stella_Object.cons(StringWrapper.wrapString("char"), Stella_Object.cons(StringWrapper.wrapString("C"), Stella_Object.cons(StringWrapper.wrapString("double"), Stella_Object.cons(StringWrapper.wrapString("D"), Stella_Object.cons(StringWrapper.wrapString("float"), Stella_Object.cons(StringWrapper.wrapString("F"), Stella_Object.cons(StringWrapper.wrapString("int"), Stella_Object.cons(StringWrapper.wrapString("I"), Stella_Object.cons(StringWrapper.wrapString("long"), Stella_Object.cons(StringWrapper.wrapString("J"), Stella_Object.cons(StringWrapper.wrapString("short"), Stella_Object.cons(StringWrapper.wrapString("S"), Stella_Object.cons(StringWrapper.wrapString("boolean"), Stella_Object.cons(StringWrapper.wrapString("Z"), Stella.NIL)))))))))))))))))));
+      Stella.$JAVA_PRIMITIVE_ARRAY_TYPE_NAMES$ = ((KeyValueList)(AbstractDictionary.dictionary(Stella.SGT_STELLA_KEY_VALUE_LIST, Cons.cons(StringWrapper.wrapString("byte"), Cons.cons(StringWrapper.wrapString("B"), Cons.cons(StringWrapper.wrapString("char"), Cons.cons(StringWrapper.wrapString("C"), Cons.cons(StringWrapper.wrapString("double"), Cons.cons(StringWrapper.wrapString("D"), Cons.cons(StringWrapper.wrapString("float"), Cons.cons(StringWrapper.wrapString("F"), Cons.cons(StringWrapper.wrapString("int"), Cons.cons(StringWrapper.wrapString("I"), Cons.cons(StringWrapper.wrapString("long"), Cons.cons(StringWrapper.wrapString("J"), Cons.cons(StringWrapper.wrapString("short"), Cons.cons(StringWrapper.wrapString("S"), Cons.cons(StringWrapper.wrapString("boolean"), Cons.cons(StringWrapper.wrapString("Z"), Stella.NIL)))))))))))))))))));
     }
   }
 
@@ -331,6 +328,7 @@ public class _StartupJavaTranslate {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *JAVA-TRUE-STRING-WRAPPER* STRING-WRAPPER (WRAP-LITERAL \"true\") :PUBLIC? FALSE :DOCUMENTATION \"Wrapped true string, used to reduce consing.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *JAVA-FALSE-STRING-WRAPPER* STRING-WRAPPER (WRAP-LITERAL \"false\") :PUBLIC? FALSE :DOCUMENTATION \"Wrapped false string, used to reduce consing.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *VARARGSTATEMENTS* (CONS OF CONS) NIL :DOCUMENTATION \"A list of new vectors generated for variable-length argument \n             lists\")");

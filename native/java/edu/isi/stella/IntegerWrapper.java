@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -104,7 +104,8 @@ public class IntegerWrapper extends NumberWrapper {
     { IntegerWrapper x = this;
 
       return ((y != null) &&
-          ((y.primaryType() == Stella.SGT_STELLA_INTEGER_WRAPPER) &&
+          (((y.primaryType() == Stella.SGT_STELLA_INTEGER_WRAPPER) ||
+          Stella_Object.isaP(y, Stella.SGT_STELLA_INTEGER_WRAPPER)) &&
            (x.wrapperValue == ((IntegerWrapper)(y)).wrapperValue)));
     }
   }
@@ -166,7 +167,7 @@ public class IntegerWrapper extends NumberWrapper {
       return (null);
     }
     body = Cons.formatMessageArguments(body, false);
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WHEN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_NOT, Stella_Object.cons(test, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_PRINT_STREAM, Stella_Object.cons(Stella.KWD_ERROR, Stella_Object.cons(StringWrapper.wrapString("Safety violation: "), Stella_Object.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NOT, Cons.cons(test, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PRINT_STREAM, Cons.cons(Stella.KWD_ERROR, Cons.cons(StringWrapper.wrapString("Safety violation: "), Cons.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))));
   }
 
   public void printObject(java.io.PrintStream stream) {

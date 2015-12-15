@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -70,7 +70,6 @@ extern Symbol* SYM_DYNAMIC_SLOTS_STELLA_QUOTE;
 extern Symbol* SYM_DYNAMIC_SLOTS_STELLA_NULL;
 extern Symbol* SYM_DYNAMIC_SLOTS_STELLA_SET_DYNAMIC_SLOT_VALUE;
 extern Symbol* SYM_DYNAMIC_SLOTS_STELLA_BQUOTE;
-extern Keyword* KWD_DYNAMIC_SLOTS_WRAP_FUNCTION;
 extern Symbol* SYM_DYNAMIC_SLOTS_STELLA_STARTUP_DYNAMIC_SLOTS;
 extern Symbol* SYM_DYNAMIC_SLOTS_STELLA_METHOD_STARTUP_CLASSNAME;
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -52,6 +52,75 @@ import edu.isi.stella.javalib.*;
  */
 public class Surrogate extends GeneralizedSymbol {
     public Stella_Object surrogateValue;
+
+  /** Look for a symbol named <code>name</code> in <code>module</code> (if <code>localP</code> do
+   * not consider inherited modules).  If none exists, intern it locally in
+   * <code>module</code>.  Return the existing or newly-created symbol.
+   * @param name
+   * @param module
+   * @param localP
+   * @return Surrogate
+   */
+  public static Surrogate internSurrogateInModule(String name, Module module, boolean localP) {
+    if (module == null) {
+      module = ((Module)(Stella.$MODULE$.get()));
+    }
+    if (localP) {
+      return (((Surrogate)(GeneralizedSymbol.internRigidSymbolLocally(name, module, Stella.SURROGATE_SYM))));
+    }
+    else {
+      return (((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule(name, module, Stella.SURROGATE_SYM))));
+    }
+  }
+
+  /** Return a newly-created or existing surrogate with name <code>name</code>.
+   * @param name
+   * @return Surrogate
+   */
+  public static Surrogate internSurrogate(String name) {
+    if (((Module)(Stella.$MODULE$.get())).caseSensitiveP) {
+      return (((Surrogate)(GeneralizedSymbol.internRigidSymbolCaseSensitively(name, Stella.SURROGATE_SYM, false))));
+    }
+    else {
+      return (((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule(Native.stringUpcase(name), ((Module)(Stella.$MODULE$.get())), Stella.SURROGATE_SYM))));
+    }
+  }
+
+  /** Return the first surrogate with <code>name</code> visible from <code>module</code>.
+   * If <code>localP</code> only consider surrogates directly interned in <code>module</code>.
+   * If <code>module</code> is <code>null</code>, use <code>$MODULE$</code> instead.
+   * @param name
+   * @param module
+   * @param localP
+   * @return Surrogate
+   */
+  public static Surrogate lookupSurrogateInModule(String name, Module module, boolean localP) {
+    if (module == null) {
+      module = ((Module)(Stella.$MODULE$.get()));
+    }
+    if (localP) {
+      return (((Surrogate)(GeneralizedSymbol.lookupRigidSymbolLocally(name, module, Stella.SURROGATE_SYM))));
+    }
+    else {
+      return (((Surrogate)(Stella.lookupRigidSymbolWrtModule(name, module, Stella.SURROGATE_SYM))));
+    }
+  }
+
+  /** Return the first surrogate with <code>name</code> visible from the current module.
+   * @param name
+   * @return Surrogate
+   */
+  public static Surrogate lookupSurrogate(String name) {
+    return (((Surrogate)(Stella.lookupRigidSymbolWrtModule(name, ((Module)(Stella.$MODULE$.get())), Stella.SURROGATE_SYM))));
+  }
+
+  public static Surrogate getSgtFromOffset(int offset) {
+    return (((Surrogate)(GeneralizedSymbol.getGeneralizedSymbolFromOffset(Stella.$SURROGATE_ARRAY$, offset))));
+  }
+
+  public static Surrogate getSgt(int offset) {
+    return (((Surrogate)((Stella.$FIXED_SURROGATE_ARRAY$.theArray)[offset])));
+  }
 
   public static Surrogate newSurrogate(String symbolName) {
     { Surrogate self = null;
@@ -89,25 +158,9 @@ public class Surrogate extends GeneralizedSymbol {
 
   public static Cons javaTranslateDefinedOrNull(Surrogate classtype, Stella_Object renamed_Object, boolean nullP) {
     { String operator = (nullP ? "==" : "!=");
+      Stella_Object nullvalue = (Surrogate.subtypeOfP(classtype, Stella.SGT_STELLA_LITERAL) ? StandardObject.typeToWalkedNullValueTree(classtype, classtype) : Stella.SYM_STELLA_NULL);
 
-      if (Surrogate.subtypeOfP(classtype, Stella.SGT_STELLA_OBJECT)) {
-        return (Cons.javaTranslateOperatorCall(Stella_Object.cons(StringWrapper.wrapString(operator), Stella.NIL), Stella_Object.cons(renamed_Object, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), 2));
-      }
-      else if (Surrogate.subtypeOfP(classtype, Stella.SGT_STELLA_INTEGER)) {
-        return (Cons.javaTranslateOperatorCall(Stella_Object.cons(StringWrapper.wrapString(operator), Stella.NIL), Stella_Object.cons(renamed_Object, Stella_Object.cons(Stella.SYM_STELLA_NULL_INTEGER, Stella.NIL)), 2));
-      }
-      else if (Surrogate.subtypeOfP(classtype, Stella.SGT_STELLA_FLOAT)) {
-        return (Cons.javaTranslateOperatorCall(Stella_Object.cons(StringWrapper.wrapString(operator), Stella.NIL), Stella_Object.cons(renamed_Object, Stella_Object.cons(Stella.SYM_STELLA_NULL_FLOAT, Stella.NIL)), 2));
-      }
-      else if (Surrogate.subtypeOfP(classtype, Stella.SGT_STELLA_SINGLE_FLOAT)) {
-        return (Cons.javaTranslateOperatorCall(Stella_Object.cons(StringWrapper.wrapString(operator), Stella.NIL), Stella_Object.cons(renamed_Object, Stella_Object.cons(Stella.SYM_STELLA_NULL_SINGLE_FLOAT, Stella.NIL)), 2));
-      }
-      else if (Surrogate.subtypeOfP(classtype, Stella.SGT_STELLA_CHARACTER)) {
-        return (Cons.javaTranslateOperatorCall(Stella_Object.cons(StringWrapper.wrapString(operator), Stella.NIL), Stella_Object.cons(renamed_Object, Stella_Object.cons(Stella.SYM_STELLA_NULL_CHARACTER, Stella.NIL)), 2));
-      }
-      else {
-        return (Cons.javaTranslateOperatorCall(Stella_Object.cons(StringWrapper.wrapString(operator), Stella.NIL), Stella_Object.cons(renamed_Object, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), 2));
-      }
+      return (Cons.javaTranslateOperatorCall(Cons.cons(StringWrapper.wrapString(operator), Stella.NIL), Cons.cons(renamed_Object, Cons.cons(nullvalue, Stella.NIL)), 2));
     }
   }
 
@@ -131,16 +184,16 @@ public class Surrogate extends GeneralizedSymbol {
 
       if (Stella.optimizeBooleanTestsP() &&
           Surrogate.subtypeOfP(argumenttype, Stella.SGT_STELLA_OBJECT)) {
-        argument = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CAST, Stella_Object.cons(argument, Stella_Object.cons(Stella_Object.cons(Stella.SGT_STELLA_BOOLEAN, Stella.NIL), Stella.NIL))));
+        argument = Cons.list$(Cons.cons(Stella.SYM_STELLA_CAST, Cons.cons(argument, Cons.cons(Cons.cons(Stella.SGT_STELLA_BOOLEAN, Stella.NIL), Stella.NIL))));
         if (nullP) {
-          return (Cons.cppTranslateOperatorCall(Symbol.cppLookupOperatorTable(Stella.SYM_STELLA_NOT), Stella_Object.cons(argument, Stella.NIL), 1));
+          return (Cons.cppTranslateOperatorCall(Symbol.cppLookupOperatorTable(Stella.SYM_STELLA_NOT), Cons.cons(argument, Stella.NIL), 1));
         }
         else {
           return (((Cons)(Stella_Object.cppTranslateATree(argument))));
         }
       }
       else {
-        return (Cons.cppTranslateOperatorCall(Symbol.cppLookupOperatorTable((nullP ? Stella.SYM_STELLA_EQp : Stella.SYM_STELLA_xe)), Stella_Object.cons(argument, Stella_Object.cons(nullvalue, Stella.NIL)), 2));
+        return (Cons.cppTranslateOperatorCall(Symbol.cppLookupOperatorTable((nullP ? Stella.SYM_STELLA_EQp : Stella.SYM_STELLA_xe)), Cons.cons(argument, Cons.cons(nullvalue, Stella.NIL)), 2));
       }
     }
   }
@@ -157,7 +210,7 @@ public class Surrogate extends GeneralizedSymbol {
     { Surrogate tree = this;
 
       if (Stella.useHardcodedSymbolsP()) {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_SYMBOL, Stella_Object.cons(tree, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_SYMBOL, Cons.cons(tree, Cons.cons(Stella.NIL, Stella.NIL)))));
       }
       else {
         return (GeneralizedSymbol.yieldSymbolConstantName(tree).cppTranslateAtomicTree());
@@ -210,7 +263,7 @@ public class Surrogate extends GeneralizedSymbol {
       if (Stella.useHardcodedSymbolsP()) {
         { IntegerWrapper offset = IntegerWrapper.wrapInteger(tree.symbolId);
 
-          return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_GET_SGT, Stella_Object.cons(offset, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_GET_SGT, Cons.cons(offset, Cons.cons(Stella.NIL, Stella.NIL)))));
         }
       }
       else {
@@ -350,11 +403,11 @@ public class Surrogate extends GeneralizedSymbol {
       for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
         entry = ((Cons)(iter000.value));
         if (entry.value == casekey) {
-          return (Stella_Object.cons(entry.rest.rest.value, Stella_Object.cons(Stella_Object.copyConsTree(testexpression), Stella.NIL)));
+          return (Cons.cons(entry.rest.rest.value, Cons.cons(Stella_Object.copyConsTree(testexpression), Stella.NIL)));
         }
       }
     }
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SUBTYPE_OFp, Stella_Object.cons(Stella_Object.copyConsTree(testexpression), Stella_Object.cons(Stella_Object.cons(casekey, Stella.NIL), Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_SUBTYPE_OFp, Cons.cons(Stella_Object.copyConsTree(testexpression), Cons.cons(Cons.cons(casekey, Stella.NIL), Stella.NIL)))));
   }
 
   public static Cons yieldIsaPCaseTest(Surrogate casekey, Stella_Object testexpression) {
@@ -364,11 +417,11 @@ public class Surrogate extends GeneralizedSymbol {
       for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
         entry = ((Cons)(iter000.value));
         if (entry.value == casekey) {
-          return (Stella_Object.cons(entry.rest.value, Stella_Object.cons(Stella_Object.copyConsTree(testexpression), Stella.NIL)));
+          return (Cons.cons(entry.rest.value, Cons.cons(Stella_Object.copyConsTree(testexpression), Stella.NIL)));
         }
       }
     }
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ISAp, Stella_Object.cons(Stella_Object.copyConsTree(testexpression), Stella_Object.cons(Stella_Object.cons(casekey, Stella.NIL), Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_ISAp, Cons.cons(Stella_Object.copyConsTree(testexpression), Cons.cons(Cons.cons(casekey, Stella.NIL), Stella.NIL)))));
   }
 
   public Stella_Object walkAtomicTree(Object [] MV_returnarray) {
@@ -733,7 +786,7 @@ public class Surrogate extends GeneralizedSymbol {
       Slot slot = null;
 
       if (dotposition != Stella.NULL_INTEGER) {
-        type = Stella.lookupSurrogateInModule(Native.string_subsequence(slotrefname, 0, dotposition), slotrefmodule, false);
+        type = Surrogate.lookupSurrogateInModule(Native.string_subsequence(slotrefname, 0, dotposition), slotrefmodule, false);
       }
       else {
         type = Stella.SGT_STELLA_ANY;
@@ -744,7 +797,7 @@ public class Surrogate extends GeneralizedSymbol {
       }
       if ((type != null) &&
           Stella_Object.stellaClassP(type.surrogateValue)) {
-        slotname = Stella.lookupSymbolInModule(Native.string_subsequence(slotrefname, dotposition + 1, Stella.NULL_INTEGER), slotrefmodule, false);
+        slotname = Symbol.lookupSymbolInModule(Native.string_subsequence(slotrefname, dotposition + 1, Stella.NULL_INTEGER), slotrefmodule, false);
         if (slotname != null) {
           slot = Symbol.lookupFunction(slotname);
           if (slot == null) {
@@ -1043,7 +1096,7 @@ public class Surrogate extends GeneralizedSymbol {
           }
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(s, Stella.NIL);
+              collect000 = Cons.cons(s, Stella.NIL);
               if (into000.theConsList == Stella.NIL) {
                 into000.theConsList = collect000;
               }
@@ -1054,7 +1107,7 @@ public class Surrogate extends GeneralizedSymbol {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(s, Stella.NIL);
+              collect000.rest = Cons.cons(s, Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -1181,7 +1234,7 @@ public class Surrogate extends GeneralizedSymbol {
                 }
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(slotvalue, Stella.NIL);
+                    collect000 = Cons.cons(slotvalue, Stella.NIL);
                     if (requiredslotvalues == Stella.NIL) {
                       requiredslotvalues = collect000;
                     }
@@ -1192,7 +1245,7 @@ public class Surrogate extends GeneralizedSymbol {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(slotvalue, Stella.NIL);
+                    collect000.rest = Cons.cons(slotvalue, Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -1211,7 +1264,7 @@ public class Surrogate extends GeneralizedSymbol {
                 if (Surrogate.subtypeOfKeywordP(Stella_Object.safePrimaryType(slotname))) {
                   { Keyword slotname000 = ((Keyword)(slotname));
 
-                    slot = Stella_Class.lookupSlot(renamed_Class, GeneralizedSymbol.internDerivedSymbol(type, slotname000.symbolName));
+                    slot = Stella_Class.lookupSlot(renamed_Class, Symbol.internDerivedSymbol(type, slotname000.symbolName));
                     if (!Stella_Object.storageSlotP(slot)) {
                       { OutputStringStream stream004 = OutputStringStream.newOutputStringStream();
 
@@ -1296,7 +1349,7 @@ public class Surrogate extends GeneralizedSymbol {
   }
 
   public static void printSurrogate(Surrogate self, java.io.PrintStream stream) {
-    { boolean visibleP = self == Stella.lookupSurrogateInModule(self.symbolName, ((Module)(Stella.$MODULE$.get())), false);
+    { boolean visibleP = self == Surrogate.lookupSurrogateInModule(self.symbolName, ((Module)(Stella.$MODULE$.get())), false);
       Module module = ((Module)(self.homeContext));
 
       if (!visibleP) {
@@ -1323,13 +1376,16 @@ public class Surrogate extends GeneralizedSymbol {
    * @return boolean
    */
   public static boolean visibleSurrogateP(Surrogate self) {
-    return (self == Stella.lookupSurrogateInModule(self.symbolName, ((Module)(Stella.$MODULE$.get())), false));
+    return (self == Surrogate.lookupSurrogateInModule(self.symbolName, ((Module)(Stella.$MODULE$.get())), false));
   }
 
-  public String localPrintName() {
+  public String localPrintName(boolean readableP) {
     { Surrogate self = this;
 
-      return ("@" + self.symbolName);
+      { String localName = (readableP ? Stella.readableSymbolName(self.symbolName, ((Module)(Stella.$MODULE$.get())).caseSensitiveP) : self.symbolName);
+
+        return ("@" + localName);
+      }
     }
   }
 
@@ -1348,7 +1404,7 @@ public class Surrogate extends GeneralizedSymbol {
    * @return Symbol
    */
   public static Symbol symbolize(Surrogate surrogate) {
-    return (Stella.internSymbolInModule(surrogate.symbolName, ((Module)(surrogate.homeContext)), false));
+    return (Symbol.internSymbolInModule(surrogate.symbolName, ((Module)(surrogate.homeContext)), false));
   }
 
   /** Convert <code>type</code> into a symbol with the same name and module.
@@ -1356,11 +1412,11 @@ public class Surrogate extends GeneralizedSymbol {
    * @return Symbol
    */
   public static Symbol typeToSymbol(Surrogate type) {
-    return (Stella.internSymbolInModule(type.symbolName, ((Module)(type.homeContext)), true));
+    return (Symbol.internSymbolInModule(type.symbolName, ((Module)(type.homeContext)), true));
   }
 
   public static Symbol surrogateToSymbol(Surrogate self) {
-    return (Stella.internSymbolInModule(self.symbolName, ((Module)(Stella.$MODULE$.get())), false));
+    return (Symbol.internSymbolInModule(self.symbolName, ((Module)(Stella.$MODULE$.get())), false));
   }
 
   /** Remove <code>self</code> from its home module and the surrogate table.
@@ -1370,7 +1426,7 @@ public class Surrogate extends GeneralizedSymbol {
     { ExtensibleSymbolArray surrogatearray = Stella.selectSymbolArray(Stella.SURROGATE_SYM);
       StringToIntegerHashTable offsettable = ((((Module)(self.homeContext)) != null) ? Module.selectSymbolOffsetTable(((Module)(self.homeContext)), Stella.SURROGATE_SYM) : ((StringToIntegerHashTable)(null)));
       int surrogateid = self.symbolId;
-      Surrogate realsurrogate = Stella.getSgtFromOffset(surrogateid);
+      Surrogate realsurrogate = Surrogate.getSgtFromOffset(surrogateid);
 
       if (self == realsurrogate) {
         ExtensibleSymbolArray.freeSymbolOffset(surrogatearray, surrogateid);
@@ -1394,7 +1450,7 @@ public class Surrogate extends GeneralizedSymbol {
    */
   public static Surrogate safeImportSurrogate(Surrogate surrogate, Module module) {
     { String name = surrogate.symbolName;
-      Surrogate modulesurrogate = Stella.lookupSurrogateInModule(name, module, false);
+      Surrogate modulesurrogate = Surrogate.lookupSurrogateInModule(name, module, false);
 
       if (modulesurrogate != null) {
         return (modulesurrogate);
@@ -1415,7 +1471,7 @@ public class Surrogate extends GeneralizedSymbol {
    */
   public static Surrogate importSurrogate(Surrogate surrogate, Module module) {
     { String name = surrogate.symbolName;
-      Surrogate modulesurrogate = Stella.lookupSurrogateInModule(name, module, true);
+      Surrogate modulesurrogate = Surrogate.lookupSurrogateInModule(name, module, true);
 
       if (!(modulesurrogate == surrogate)) {
         if (modulesurrogate != null) {
@@ -1430,127 +1486,6 @@ public class Surrogate extends GeneralizedSymbol {
         }
       }
       return (surrogate);
-    }
-  }
-
-  /** Return a dictionary of <code>collectiontype</code> containing <code>values</code>, in order.
-   * Currently supported <code>collectiontype</code>s are @HASH-TABLE, @STELLA-HASH-TABLE,
-   * @KEY-VALUE-LIST, @KEY-VALUE-MAP and @PROPERTY-LIST.
-   * @param collectiontype
-   * @param alternatingkeysandvalues
-   * @return AbstractDictionary
-   */
-  public static AbstractDictionary dictionary(Surrogate collectiontype, Cons alternatingkeysandvalues) {
-    { AbstractDictionary dictionary = ((AbstractDictionary)(Surrogate.createObject(collectiontype, Stella.NIL)));
-      Stella_Object key = null;
-      Stella_Object value = null;
-      Cons copy = Stella.NIL;
-      Cons cursor = null;
-
-      { Stella_Object item = null;
-        Cons iter000 = alternatingkeysandvalues;
-        Cons collect000 = null;
-
-        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-          item = iter000.value;
-          if (collect000 == null) {
-            {
-              collect000 = Stella_Object.cons(item, Stella.NIL);
-              if (copy == Stella.NIL) {
-                copy = collect000;
-              }
-              else {
-                Cons.addConsToEndOfConsList(copy, collect000);
-              }
-            }
-          }
-          else {
-            {
-              collect000.rest = Stella_Object.cons(item, Stella.NIL);
-              collect000 = collect000.rest;
-            }
-          }
-        }
-      }
-      cursor = copy;
-      while (!(cursor == Stella.NIL)) {
-        key = cursor.value;
-        value = cursor.rest.value;
-        { Surrogate testValue000 = Stella_Object.safePrimaryType(dictionary);
-
-          if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_HASH_TABLE)) {
-            { HashTable dictionary000 = ((HashTable)(dictionary));
-
-              dictionary000.insertAt(key, value);
-            }
-          }
-          else if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_STELLA_HASH_TABLE)) {
-            { StellaHashTable dictionary000 = ((StellaHashTable)(dictionary));
-
-              dictionary000.insertAt(key, value);
-            }
-          }
-          else if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_KEY_VALUE_LIST)) {
-            { KeyValueList dictionary000 = ((KeyValueList)(dictionary));
-
-              dictionary000.insertAt(key, value);
-            }
-          }
-          else if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_KEY_VALUE_MAP)) {
-            { KeyValueMap dictionary000 = ((KeyValueMap)(dictionary));
-
-              dictionary000.insertAt(key, value);
-            }
-          }
-          else if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_PROPERTY_LIST)) {
-            { PropertyList dictionary000 = ((PropertyList)(dictionary));
-
-              dictionary000.insertAt(key, value);
-            }
-          }
-          else {
-            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-              stream000.nativeStream.print("dictionary: Can't create dictionaries of type `" + collectiontype + "'");
-              throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-            }
-          }
-        }
-        cursor = cursor.rest.rest;
-      }
-      return (dictionary);
-    }
-  }
-
-  /** Return a sequence containing <code>values</code>, in order.
-   * @param collectiontype
-   * @param values
-   * @return Sequence
-   */
-  public static Sequence sequence(Surrogate collectiontype, Cons values) {
-    { Sequence sequence = ((Sequence)(Surrogate.createObject(collectiontype, Stella.NIL)));
-
-      { Stella_Object i = null;
-        Cons iter000 = values;
-
-        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-          i = iter000.value;
-          if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(sequence), Stella.SGT_STELLA_LIST)) {
-            { List sequence000 = ((List)(sequence));
-
-              sequence000.insertLast(i);
-            }
-          }
-          else {
-            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-              stream000.nativeStream.print("sequence: Don't know how to `insert-last' into a `" + collectiontype + "'");
-              throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-            }
-          }
-        }
-      }
-      return (sequence);
     }
   }
 
@@ -1655,10 +1590,11 @@ public class Surrogate extends GeneralizedSymbol {
     else {
       return (Surrogate.subtypeOfBooleanP(type) ||
           (Surrogate.subtypeOfIntegerP(type) ||
-           (Surrogate.subtypeOfFloatP(type) ||
-            (Surrogate.subtypeOfStringP(type) ||
-             (Surrogate.subtypeOfCharacterP(type) ||
-              Surrogate.bootstrapSubtypeOfP(type, Stella.SGT_STELLA_WRAPPER))))));
+           (Surrogate.subtypeOfLongIntegerP(type) ||
+            (Surrogate.subtypeOfFloatP(type) ||
+             (Surrogate.subtypeOfStringP(type) ||
+              (Surrogate.subtypeOfCharacterP(type) ||
+               Surrogate.bootstrapSubtypeOfP(type, Stella.SGT_STELLA_WRAPPER)))))));
     }
   }
 
@@ -1696,6 +1632,15 @@ public class Surrogate extends GeneralizedSymbol {
     }
     else {
       return (Surrogate.bootstrapSubtypeOfP(type, Stella.SGT_STELLA_FLOAT_WRAPPER));
+    }
+  }
+
+  public static boolean subtypeOfLongIntegerP(Surrogate type) {
+    if (Stella.$CLASS_HIERARCHY_BOOTEDp$) {
+      return (Stella_Class.subclassOfP(((Stella_Class)(type.surrogateValue)), ((Stella_Class)(Stella.SGT_STELLA_LONG_INTEGER_WRAPPER.surrogateValue))));
+    }
+    else {
+      return (Surrogate.bootstrapSubtypeOfP(type, Stella.SGT_STELLA_LONG_INTEGER_WRAPPER));
     }
   }
 

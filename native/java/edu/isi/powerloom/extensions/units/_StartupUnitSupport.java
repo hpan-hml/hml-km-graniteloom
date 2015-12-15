@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -60,26 +60,26 @@ public class _StartupUnitSupport {
         Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/UNIT-SUPPORT", Stella.$STARTUP_TIME_PHASE$ > 1));
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Units.SGT_UNIT_SUPPORT_DIM_NUMBER_LOGIC_WRAPPER = ((Surrogate)(Stella.internRigidSymbolWrtModule("DIM-NUMBER-LOGIC-WRAPPER", null, 1)));
-          Units.SYM_STELLA_WRAPPER_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("WRAPPER-VALUE", Stella.getStellaModule("/STELLA", true), 0)));
-          Units.SGT_UNIT_KB_UNITS = ((Surrogate)(Stella.internRigidSymbolWrtModule("UNITS", Stella.getStellaModule("/UNIT-KB", true), 1)));
-          Units.SGT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER = ((Surrogate)(Stella.internRigidSymbolWrtModule("DATE-TIME-LOGIC-WRAPPER", Stella.getStellaModule("/TIMEPOINT-SUPPORT", true), 1)));
-          Units.SGT_STELLA_CALENDAR_DATE = ((Surrogate)(Stella.internRigidSymbolWrtModule("CALENDAR-DATE", Stella.getStellaModule("/STELLA", true), 1)));
-          Units.SGT_STELLA_TIME_DURATION = ((Surrogate)(Stella.internRigidSymbolWrtModule("TIME-DURATION", Stella.getStellaModule("/STELLA", true), 1)));
-          Units.SGT_LOGIC_PATTERN_VARIABLE = ((Surrogate)(Stella.internRigidSymbolWrtModule("PATTERN-VARIABLE", Stella.getStellaModule("/LOGIC", true), 1)));
-          Units.SGT_LOGIC_SKOLEM = ((Surrogate)(Stella.internRigidSymbolWrtModule("SKOLEM", Stella.getStellaModule("/LOGIC", true), 1)));
-          Units.SGT_STELLA_CS_VALUE = ((Surrogate)(Stella.internRigidSymbolWrtModule("CS-VALUE", Stella.getStellaModule("/STELLA", true), 1)));
-          Units.KWD_FINAL_SUCCESS = ((Keyword)(Stella.internRigidSymbolWrtModule("FINAL-SUCCESS", null, 2)));
-          Units.KWD_TERMINAL_FAILURE = ((Keyword)(Stella.internRigidSymbolWrtModule("TERMINAL-FAILURE", null, 2)));
-          Units.KWD_FAILURE = ((Keyword)(Stella.internRigidSymbolWrtModule("FAILURE", null, 2)));
-          Units.SYM_STELLA_ITERATOR = ((Symbol)(Stella.internRigidSymbolWrtModule("ITERATOR", Stella.getStellaModule("/STELLA", true), 0)));
-          Units.KWD_CONTINUING_SUCCESS = ((Keyword)(Stella.internRigidSymbolWrtModule("CONTINUING-SUCCESS", null, 2)));
-          Units.SGT_STELLA_INTEGER_WRAPPER = ((Surrogate)(Stella.internRigidSymbolWrtModule("INTEGER-WRAPPER", Stella.getStellaModule("/STELLA", true), 1)));
-          Units.SGT_UNIT_KB_NUMERATOR_MEASURES = ((Surrogate)(Stella.internRigidSymbolWrtModule("NUMERATOR-MEASURES", Stella.getStellaModule("/UNIT-KB", true), 1)));
-          Units.SGT_UNIT_KB_DENOMINATOR_MEASURES = ((Surrogate)(Stella.internRigidSymbolWrtModule("DENOMINATOR-MEASURES", Stella.getStellaModule("/UNIT-KB", true), 1)));
-          Units.SGT_LOGIC_LOGIC_OBJECT = ((Surrogate)(Stella.internRigidSymbolWrtModule("LOGIC-OBJECT", Stella.getStellaModule("/LOGIC", true), 1)));
-          Units.SGT_STELLA_NUMBER_WRAPPER = ((Surrogate)(Stella.internRigidSymbolWrtModule("NUMBER-WRAPPER", Stella.getStellaModule("/STELLA", true), 1)));
-          Units.SYM_UNIT_SUPPORT_STARTUP_UNIT_SUPPORT = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-UNIT-SUPPORT", null, 0)));
+          Units.SGT_UNIT_SUPPORT_DIM_NUMBER_LOGIC_WRAPPER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DIM-NUMBER-LOGIC-WRAPPER", null, 1)));
+          Units.SYM_STELLA_WRAPPER_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAPPER-VALUE", Stella.getStellaModule("/STELLA", true), 0)));
+          Units.SGT_UNIT_KB_UNITS = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("UNITS", Stella.getStellaModule("/UNIT-KB", true), 1)));
+          Units.SGT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DATE-TIME-LOGIC-WRAPPER", Stella.getStellaModule("/TIMEPOINT-SUPPORT", true), 1)));
+          Units.SGT_STELLA_CALENDAR_DATE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CALENDAR-DATE", Stella.getStellaModule("/STELLA", true), 1)));
+          Units.SGT_STELLA_TIME_DURATION = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("TIME-DURATION", Stella.getStellaModule("/STELLA", true), 1)));
+          Units.SGT_LOGIC_PATTERN_VARIABLE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PATTERN-VARIABLE", Stella.getStellaModule("/LOGIC", true), 1)));
+          Units.SGT_LOGIC_SKOLEM = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SKOLEM", Stella.getStellaModule("/LOGIC", true), 1)));
+          Units.SGT_STELLA_CS_VALUE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CS-VALUE", Stella.getStellaModule("/STELLA", true), 1)));
+          Units.KWD_FINAL_SUCCESS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FINAL-SUCCESS", null, 2)));
+          Units.KWD_TERMINAL_FAILURE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TERMINAL-FAILURE", null, 2)));
+          Units.KWD_FAILURE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FAILURE", null, 2)));
+          Units.SYM_STELLA_ITERATOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ITERATOR", Stella.getStellaModule("/STELLA", true), 0)));
+          Units.KWD_CONTINUING_SUCCESS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTINUING-SUCCESS", null, 2)));
+          Units.SGT_STELLA_INTEGER_WRAPPER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("INTEGER-WRAPPER", Stella.getStellaModule("/STELLA", true), 1)));
+          Units.SGT_UNIT_KB_NUMERATOR_MEASURES = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NUMERATOR-MEASURES", Stella.getStellaModule("/UNIT-KB", true), 1)));
+          Units.SGT_UNIT_KB_DENOMINATOR_MEASURES = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DENOMINATOR-MEASURES", Stella.getStellaModule("/UNIT-KB", true), 1)));
+          Units.SGT_LOGIC_LOGIC_OBJECT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("LOGIC-OBJECT", Stella.getStellaModule("/LOGIC", true), 1)));
+          Units.SGT_STELLA_NUMBER_WRAPPER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NUMBER-WRAPPER", Stella.getStellaModule("/STELLA", true), 1)));
+          Units.SYM_UNIT_SUPPORT_STARTUP_UNIT_SUPPORT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-UNIT-SUPPORT", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Units.$DIM_NUMBER_HASH_TABLE$ = StellaHashTable.newStellaHashTable();
@@ -135,6 +135,7 @@ public class _StartupUnitSupport {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("UNIT-SUPPORT")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DIM-NUMBER-HASH-TABLE* (STELLA-HASH-TABLE OF DIM-NUMBER DIM-NUMBER-LOGIC-WRAPPER) (NEW STELLA-HASH-TABLE) :DOCUMENTATION \"Table for interning dim number logic wrappers\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MEASURE-INSTANCE-TABLE* (HASH-TABLE OF MEASURE LOGIC-OBJECT) (NEW HASH-TABLE) :DOCUMENTATION \"Mapping table from measure objects to their PowerLoom representation.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *INSTANCE-MEASURE-TABLE* (HASH-TABLE OF LOGIC-OBJECT MEASURE) (NEW HASH-TABLE) :DOCUMENTATION \"Mapping table from PowerLoom representations of measures to measure objects\")");

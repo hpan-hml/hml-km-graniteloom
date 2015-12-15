@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -112,13 +112,13 @@ public class DecisionTree extends StandardObject {
 
   public static void extractPathsFromTree(DecisionTree tree, Cons antecedentStack, List antecedent) {
     if (tree.feature == null) {
-      antecedent.push(Stella_Object.cons((tree.truthValue ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), antecedentStack));
+      antecedent.push(Cons.cons((tree.truthValue ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), antecedentStack));
       return;
     }
     { Cons prop = Proposition.propositionToCons(tree.proposition);
 
-      DecisionTree.extractPathsFromTree(tree.trueBranch, Stella_Object.cons(prop, antecedentStack), antecedent);
-      DecisionTree.extractPathsFromTree(tree.falseBranch, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FAIL, Stella_Object.cons(prop, Stella_Object.cons(Stella.NIL, Stella.NIL)))), antecedentStack), antecedent);
+      DecisionTree.extractPathsFromTree(tree.trueBranch, Cons.cons(prop, antecedentStack), antecedent);
+      DecisionTree.extractPathsFromTree(tree.falseBranch, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_FAIL, Cons.cons(prop, Cons.cons(Stella.NIL, Stella.NIL)))), antecedentStack), antecedent);
     }
   }
 
@@ -134,7 +134,7 @@ public class DecisionTree extends StandardObject {
           prop = ((Proposition)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Proposition.propositionToCons(prop), Stella.NIL);
+              collect000 = Cons.cons(Proposition.propositionToCons(prop), Stella.NIL);
               if (consProps == Stella.NIL) {
                 consProps = collect000;
               }
@@ -145,7 +145,7 @@ public class DecisionTree extends StandardObject {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Proposition.propositionToCons(prop), Stella.NIL);
+              collect000.rest = Cons.cons(Proposition.propositionToCons(prop), Stella.NIL);
               collect000 = collect000.rest;
             }
           }

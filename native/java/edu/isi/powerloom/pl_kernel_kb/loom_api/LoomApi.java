@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -112,7 +112,7 @@ public class LoomApi {
 
   public static Symbol SYM_LOOM_API_pCOVERED = null;
 
-  public static Symbol SYM_LOOM_API_COVERING = null;
+  public static Symbol SYM_PL_KERNEL_KB_COVERING = null;
 
   public static Symbol SYM_LOOM_API_F_COVERINGp_QUERY_000 = null;
 
@@ -165,13 +165,13 @@ public class LoomApi {
           (relation == null)) {
         return (null);
       }
-      role = ((LoomRole)(Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_pI, Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(LoomApi.SYM_LOOM_API_pROLE, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_LOOM_ROLE_OF, Stella_Object.cons(LoomApi.SYM_LOOM_API_pI, Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(LoomApi.SYM_LOOM_API_pROLE, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella.consList(Stella_Object.cons(instance, Stella_Object.cons(relation, Stella_Object.cons(null, Stella.NIL)))), Stella.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_FIND_OR_CREATE_LOOM_ROLE_QUERY_000, new Object[1]).value));
+      role = ((LoomRole)(Logic.applyCachedRetrieve(Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_pI, Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(LoomApi.SYM_LOOM_API_pROLE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_LOOM_ROLE_OF, Cons.cons(LoomApi.SYM_LOOM_API_pI, Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(LoomApi.SYM_LOOM_API_pROLE, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.consList(Cons.cons(instance, Cons.cons(relation, Cons.cons(null, Stella.NIL)))), Cons.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_FIND_OR_CREATE_LOOM_ROLE_QUERY_000, new Object[2]).value));
       if ((role != null) ||
           (!createP)) {
         return (role);
       }
       role = ((LoomRole)(Logic.createLogicInstance(null, LoomApi.SGT_LOOM_API_LOOM_ROLE)));
-      Logic.assertTuple(LoomApi.SGT_LOOM_API_LOOM_ROLE_OF, Stella.consList(Stella_Object.cons(instance, Stella_Object.cons(relation, Stella_Object.cons(role, Stella.NIL)))));
+      Logic.assertTuple(LoomApi.SGT_LOOM_API_LOOM_ROLE_OF, Cons.consList(Cons.cons(instance, Cons.cons(relation, Cons.cons(role, Stella.NIL)))));
       return (role);
     }
   }
@@ -192,7 +192,7 @@ public class LoomApi {
       if (inferrolesP) {
         LoomApi.getRelationInducedRoles(instance);
       }
-      return (Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_pI, Stella_Object.cons(LoomApi.SYM_LOOM_API_pROLE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EXISTS, Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_LOOM_ROLE_OF, Stella_Object.cons(LoomApi.SYM_LOOM_API_pI, Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(LoomApi.SYM_LOOM_API_pROLE, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(instance, Stella_Object.cons(null, Stella.NIL))), Stella.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_GET_LOOM_ROLES_QUERY_000, new Object[1]));
+      return (Logic.applyCachedRetrieve(Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_pI, Cons.cons(LoomApi.SYM_LOOM_API_pROLE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_LOOM_ROLE_OF, Cons.cons(LoomApi.SYM_LOOM_API_pI, Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(LoomApi.SYM_LOOM_API_pROLE, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(instance, Cons.cons(null, Stella.NIL))), Cons.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_GET_LOOM_ROLES_QUERY_000, new Object[2]));
     }
   }
 
@@ -204,13 +204,13 @@ public class LoomApi {
       if (instance == null) {
         return (null);
       }
-      relations = Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(LoomApi.SYM_LOOM_API_pI, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_OR, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EXISTS, Stella_Object.cons(Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_pFR, Stella_Object.cons(LoomApi.SYM_LOOM_API_pV, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_FRAME_PREDICATE, Stella_Object.cons(LoomApi.SYM_LOOM_API_pFR, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_HOLDS, Stella_Object.cons(LoomApi.SYM_LOOM_API_pFR, Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(LoomApi.SYM_LOOM_API_pI, Stella_Object.cons(LoomApi.SYM_LOOM_API_pV, Stella_Object.cons(Stella.NIL, Stella.NIL))))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_NOT, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_e, Stella_Object.cons(LoomApi.SYM_LOOM_API_pFR, Stella_Object.cons(LoomApi.SYM_PL_KERNEL_KB_RANGE_MAX_CARDINALITY, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_e, Stella_Object.cons(LoomApi.SYM_LOOM_API_pV, Stella_Object.cons(IntegerWrapper.wrapInteger(0), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EXISTS, Stella_Object.cons(Stella_Object.cons(Logic.SYM_LOGIC_pC, Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_INSTANCE_OF, Stella_Object.cons(LoomApi.SYM_LOOM_API_pI, Stella_Object.cons(Logic.SYM_LOGIC_pC, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_DOMAIN, Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(Logic.SYM_LOGIC_pC, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(null, Stella_Object.cons(instance, Stella.NIL))), Stella.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_GET_RELATION_INDUCED_ROLES_QUERY_000, new Object[1]);
+      relations = Logic.applyCachedRetrieve(Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(LoomApi.SYM_LOOM_API_pI, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(Logic.SYM_STELLA_OR, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_pFR, Cons.cons(LoomApi.SYM_LOOM_API_pV, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_FRAME_PREDICATE, Cons.cons(LoomApi.SYM_LOOM_API_pFR, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_HOLDS, Cons.cons(LoomApi.SYM_LOOM_API_pFR, Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(LoomApi.SYM_LOOM_API_pI, Cons.cons(LoomApi.SYM_LOOM_API_pV, Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_e, Cons.cons(LoomApi.SYM_LOOM_API_pFR, Cons.cons(LoomApi.SYM_PL_KERNEL_KB_RANGE_MAX_CARDINALITY, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_e, Cons.cons(LoomApi.SYM_LOOM_API_pV, Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(Cons.cons(Logic.SYM_LOGIC_pC, Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_INSTANCE_OF, Cons.cons(LoomApi.SYM_LOOM_API_pI, Cons.cons(Logic.SYM_LOGIC_pC, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_DOMAIN, Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(Logic.SYM_LOGIC_pC, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(null, Cons.cons(instance, Stella.NIL))), Cons.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_GET_RELATION_INDUCED_ROLES_QUERY_000, new Object[2]);
       { Stella_Object r = null;
         Cons iter000 = relations;
 
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           r = iter000.value;
-          roles = Stella_Object.cons(LoomApi.findOrCreateLoomRole(instance, r, true), roles);
+          roles = Cons.cons(LoomApi.findOrCreateLoomRole(instance, r, true), roles);
         }
       }
       return (roles);
@@ -237,17 +237,17 @@ public class LoomApi {
           p = ((Proposition)(iter000.value));
           if ((p.arguments.length() == 2) &&
               Stella_Object.eqlP((p.arguments.theArray)[0], instance)) {
-            { Symbol relation = Surrogate.surrogateToSymbol(((Surrogate)(p.operator)));
+            { Symbol relation = Symbol.internSymbolInModule(((Surrogate)(p.operator)).symbolName, ((Module)(((Surrogate)(p.operator)).homeContext)), true);
               Stella_Object filler = Logic.valueOf((p.arguments.theArray)[1]);
 
               if (filler != null) {
                 { Cons bucket = ((Cons)(table.lookup(relation)));
 
                   if (bucket == null) {
-                    table.insertAt(relation, Stella.consList(Stella_Object.cons(filler, Stella.NIL)));
+                    table.insertAt(relation, Cons.consList(Cons.cons(filler, Stella.NIL)));
                   }
                   else {
-                    table.insertAt(relation, Stella_Object.cons(filler, bucket));
+                    table.insertAt(relation, Cons.cons(filler, bucket));
                   }
                 }
               }
@@ -264,7 +264,7 @@ public class LoomApi {
           for (;iter001 != null; iter001 = iter001.rest) {
             key = iter001.key;
             value = iter001.value;
-            result = Stella_Object.cons(Stella_Object.cons(key, ((Cons)(value)).concatenate(Stella.NIL, Stella.NIL)), result);
+            result = Cons.cons(Cons.cons(key, ((Cons)(value)).concatenate(Stella.NIL, Stella.NIL)), result);
           }
         }
         return (result);
@@ -313,7 +313,7 @@ public class LoomApi {
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           cxt = ((Context)(iter000.value));
           if (Stella_Object.isaP(cxt, Logic.SGT_STELLA_MODULE)) {
-            children = Stella_Object.cons(cxt, children);
+            children = Cons.cons(cxt, children);
           }
         }
       }
@@ -353,9 +353,9 @@ public class LoomApi {
       while (iter000.nextP()) {
         mdl = ((Module)(iter000.value));
         if (mdl.clearableP() &&
-            (!Stella.consList(Stella_Object.cons(Logic.$PL_KERNEL_MODULE$, Stella.NIL)).memberP(mdl))) {
+            (!Cons.consList(Cons.cons(Logic.$PL_KERNEL_MODULE$, Stella.NIL)).memberP(mdl))) {
           System.out.println("Clearing: " + mdl);
-          Stella.callClearModule(Stella_Object.cons(mdl, Stella.NIL));
+          Stella.callClearModule(Cons.cons(mdl, Stella.NIL));
         }
       }
     }
@@ -372,10 +372,10 @@ public class LoomApi {
           return (Logic.allNamedTerms(context, false).consify());
         }
         else if (values == LoomApi.KWD_CONCEPTS) {
-          return (Logic.applyCachedRetrieve(Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella.NIL), Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_CLASS, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.consList(Stella_Object.cons(null, Stella.NIL)), Stella.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_LIST_CONTEXT_QUERY_000, new Object[1]));
+          return (Logic.applyCachedRetrieve(Cons.cons(Logic.SYM_LOGIC_pX, Stella.NIL), Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_CLASS, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.consList(Cons.cons(null, Stella.NIL)), Cons.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_LIST_CONTEXT_QUERY_000, new Object[2]));
         }
         else if (values == LoomApi.KWD_RELATIONS) {
-          return (Logic.applyCachedRetrieve(Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella.NIL), Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_RELATION, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_FAIL, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_CLASS, Stella_Object.cons(Logic.SYM_LOGIC_pX, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(null, Stella.NIL)), Stella.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_LIST_CONTEXT_QUERY_001, new Object[1]));
+          return (Logic.applyCachedRetrieve(Cons.cons(Logic.SYM_LOGIC_pX, Stella.NIL), Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_RELATION, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_FAIL, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_CLASS, Cons.cons(Logic.SYM_LOGIC_pX, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(null, Stella.NIL)), Cons.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_LIST_CONTEXT_QUERY_001, new Object[2]));
         }
         else if (values == LoomApi.KWD_INSTANCES) {
           return (Logic.allInstances(context, false).consify());
@@ -546,7 +546,7 @@ public class LoomApi {
 
             if ((instance000 != null) &&
                 (instance000.surrogateValueInverse != null)) {
-              return (Surrogate.surrogateToSymbol(instance000.surrogateValueInverse));
+              return (Symbol.internSymbolInModule(instance000.surrogateValueInverse.symbolName, ((Module)(instance000.surrogateValueInverse.homeContext)), true));
             }
           }
         }
@@ -555,7 +555,7 @@ public class LoomApi {
 
             if ((instance000 != null) &&
                 (instance000.surrogateValueInverse != null)) {
-              return (Surrogate.surrogateToSymbol(instance000.surrogateValueInverse));
+              return (Symbol.internSymbolInModule(instance000.surrogateValueInverse.symbolName, ((Module)(instance000.surrogateValueInverse.homeContext)), true));
             }
           }
         }
@@ -592,7 +592,7 @@ public class LoomApi {
           if (Description.namedDescriptionP(((Description)(e)))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(((Description)(e)).descriptionName(), Stella.NIL);
+                collect000 = Cons.cons(((Description)(e)).descriptionName(), Stella.NIL);
                 if (equivalentnames == Stella.NIL) {
                   equivalentnames = collect000;
                 }
@@ -603,7 +603,7 @@ public class LoomApi {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(((Description)(e)).descriptionName(), Stella.NIL);
+                collect000.rest = Cons.cons(((Description)(e)).descriptionName(), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -775,7 +775,7 @@ public class LoomApi {
 
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             d = ((LogicObject)(iter000.value));
-            result = Stella_Object.cons(d, result);
+            result = Cons.cons(d, result);
           }
         }
       }
@@ -785,7 +785,7 @@ public class LoomApi {
 
           for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
             d = ((NamedDescription)(iter001.value));
-            result = Stella_Object.cons(d, result);
+            result = Cons.cons(d, result);
           }
         }
       }
@@ -795,7 +795,7 @@ public class LoomApi {
 
           for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
             d = ((NamedDescription)(iter002.value));
-            result = Stella_Object.cons(d, result);
+            result = Cons.cons(d, result);
           }
         }
       }
@@ -819,7 +819,7 @@ public class LoomApi {
           ((relation != null) &&
            ((LoomApi.relationArity(relation) == 2) &&
             (value != null)))) {
-        Logic.updateTuple(LoomApi.getInstanceSurrogate(relation), Stella.consList(Stella_Object.cons(instance, Stella_Object.cons(value, Stella.NIL))), (assertP ? Logic.KWD_ASSERT_TRUE : Logic.KWD_RETRACT_TRUE));
+        Logic.updateTuple(LoomApi.getInstanceSurrogate(relation), Cons.consList(Cons.cons(instance, Cons.cons(value, Stella.NIL))), (assertP ? Logic.KWD_ASSERT_TRUE : Logic.KWD_RETRACT_TRUE));
       }
     }
   }
@@ -963,7 +963,7 @@ public class LoomApi {
                   }
                 }
                 if (!(instanceOfSubP)) {
-                  directinstances = Stella_Object.cons(i, directinstances);
+                  directinstances = Cons.cons(i, directinstances);
                 }
               }
             }
@@ -1022,7 +1022,7 @@ public class LoomApi {
 
             for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
               renamed_Super = ((NamedDescription)(iter000.value));
-              result = Stella_Object.cons(renamed_Super, result);
+              result = Cons.cons(renamed_Super, result);
             }
           }
         }
@@ -1032,7 +1032,7 @@ public class LoomApi {
 
             for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
               renamed_Super = ((NamedDescription)(iter001.value));
-              result = Stella_Object.cons(renamed_Super, result);
+              result = Cons.cons(renamed_Super, result);
             }
           }
         }
@@ -1059,7 +1059,7 @@ public class LoomApi {
 
             for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
               sub = ((NamedDescription)(iter000.value));
-              result = Stella_Object.cons(sub, result);
+              result = Cons.cons(sub, result);
             }
           }
         }
@@ -1069,7 +1069,7 @@ public class LoomApi {
 
             for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
               sub = ((NamedDescription)(iter001.value));
-              result = Stella_Object.cons(sub, result);
+              result = Cons.cons(sub, result);
             }
           }
         }
@@ -1096,7 +1096,7 @@ public class LoomApi {
           r = iter000.value;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Logic.getRelation(r), Stella.NIL);
+              collect000 = Cons.cons(Logic.getRelation(r), Stella.NIL);
               if (relations == Stella.NIL) {
                 relations = collect000;
               }
@@ -1107,7 +1107,7 @@ public class LoomApi {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Logic.getRelation(r), Stella.NIL);
+              collect000.rest = Cons.cons(Logic.getRelation(r), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -1182,7 +1182,7 @@ public class LoomApi {
           r = ((NamedDescription)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Logic.getRelation(r), Stella.NIL);
+              collect000 = Cons.cons(Logic.getRelation(r), Stella.NIL);
               if (relations == Stella.NIL) {
                 relations = collect000;
               }
@@ -1193,7 +1193,7 @@ public class LoomApi {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Logic.getRelation(r), Stella.NIL);
+              collect000.rest = Cons.cons(Logic.getRelation(r), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -1216,7 +1216,7 @@ public class LoomApi {
             v = ((Symbol)(iter001.value));
             if (collect001 == null) {
               {
-                collect001 = Stella_Object.cons(v, Stella.NIL);
+                collect001 = Cons.cons(v, Stella.NIL);
                 if (variables == Stella.NIL) {
                   variables = collect001;
                 }
@@ -1227,7 +1227,7 @@ public class LoomApi {
             }
             else {
               {
-                collect001.rest = Stella_Object.cons(v, Stella.NIL);
+                collect001.rest = Cons.cons(v, Stella.NIL);
                 collect001 = collect001.rest;
               }
             }
@@ -1239,14 +1239,14 @@ public class LoomApi {
           for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
             r = ((Description)(iter002.value));
             if (LoomApi.namedP(r)) {
-              clauses = Stella_Object.cons(Stella_Object.cons(Surrogate.surrogateToSymbol(r.surrogateValueInverse), Cons.copyConsList(variables).concatenate(Stella.NIL, Stella.NIL)), clauses);
+              clauses = Cons.cons(Cons.cons(Symbol.internSymbolInModule(r.surrogateValueInverse.symbolName, ((Module)(r.surrogateValueInverse.homeContext)), true), Cons.copyConsList(variables).concatenate(Stella.NIL, Stella.NIL)), clauses);
             }
             else {
-              clauses = Stella_Object.cons(((Cons)(LogicObject.generateExpression(r, true))).rest.rest.value, clauses);
+              clauses = Cons.cons(((Cons)(LogicObject.generateExpression(r, true))).rest.rest.value, clauses);
             }
           }
         }
-        conjunctiondescription = ((LogicObject)(Logic.conceiveTerm(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_KAPPA, Stella_Object.cons(Stella_Object.cons(variables, Stella.NIL), Stella_Object.cons(Stella_Object.cons(Logic.SYM_STELLA_AND, clauses.concatenate(Stella.NIL, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL))))))));
+        conjunctiondescription = ((LogicObject)(Logic.conceiveTerm(Cons.list$(Cons.cons(Logic.SYM_LOGIC_KAPPA, Cons.cons(Cons.cons(variables, Stella.NIL), Cons.cons(Cons.cons(Logic.SYM_STELLA_AND, clauses.concatenate(Stella.NIL, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL))))))));
       }
       { Cons supers = null;
         Cons subs = null;
@@ -1282,7 +1282,7 @@ public class LoomApi {
       if (relation == null) {
         return (null);
       }
-      return (((NamedDescription)(Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_pD, Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_DOMAIN, Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(LoomApi.SYM_LOOM_API_pD, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(null, Stella_Object.cons(relation, Stella.NIL))), Stella.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_GET_DOMAIN_QUERY_000, new Object[1]).value)));
+      return (((NamedDescription)(Logic.applyCachedRetrieve(Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_pD, Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_DOMAIN, Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(LoomApi.SYM_LOOM_API_pD, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(null, Cons.cons(relation, Stella.NIL))), Cons.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_GET_DOMAIN_QUERY_000, new Object[2]).value)));
     }
   }
 
@@ -1296,7 +1296,7 @@ public class LoomApi {
       if (relation == null) {
         return (null);
       }
-      return (((NamedDescription)(Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_pD, Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_RANGE, Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(LoomApi.SYM_LOOM_API_pD, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(null, Stella_Object.cons(relation, Stella.NIL))), Stella.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_GET_RANGE_QUERY_000, new Object[1]).value)));
+      return (((NamedDescription)(Logic.applyCachedRetrieve(Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_pD, Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_RANGE, Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(LoomApi.SYM_LOOM_API_pD, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(null, Cons.cons(relation, Stella.NIL))), Cons.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_GET_RANGE_QUERY_000, new Object[2]).value)));
     }
   }
 
@@ -1395,12 +1395,12 @@ public class LoomApi {
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             c = ((LogicObject)(iter000.value));
             { Stella_Object mdc = null;
-              Cons iter001 = Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pC, Stella_Object.cons(Logic.SYM_LOGIC_pMDC, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_MEMBER_OF, Stella_Object.cons(Logic.SYM_LOGIC_pC, Stella_Object.cons(Logic.SYM_LOGIC_pMDC, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(LoomApi.SYM_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION, Stella_Object.cons(Logic.SYM_LOGIC_pMDC, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(c, Stella_Object.cons(null, Stella.NIL))), Stella.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_GET_PARTITIONS_QUERY_000, new Object[1]);
+              Cons iter001 = Logic.applyCachedRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pC, Cons.cons(Logic.SYM_LOGIC_pMDC, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_MEMBER_OF, Cons.cons(Logic.SYM_LOGIC_pC, Cons.cons(Logic.SYM_LOGIC_pMDC, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(LoomApi.SYM_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION, Cons.cons(Logic.SYM_LOGIC_pMDC, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(c, Cons.cons(null, Stella.NIL))), Cons.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_GET_PARTITIONS_QUERY_000, new Object[2]);
 
               for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
                 mdc = iter001.value;
                 if (!partitions.memberP(mdc)) {
-                  partitions = Stella_Object.cons(mdc, partitions);
+                  partitions = Cons.cons(mdc, partitions);
                 }
               }
             }
@@ -1440,7 +1440,7 @@ public class LoomApi {
           (!Logic.testPropertyP(mdc, Logic.SGT_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION))) {
         return (false);
       }
-      { ConsIterator c = Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pMDC, Stella_Object.cons(LoomApi.SYM_LOOM_API_pCOVERED, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_COVERING, Stella_Object.cons(Logic.SYM_LOGIC_pMDC, Stella_Object.cons(LoomApi.SYM_LOOM_API_pCOVERED, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(mdc, Stella_Object.cons(coveredclass, Stella.NIL))), Stella.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_COVERINGp_QUERY_000, new Object[1]).allocateIterator();
+      { ConsIterator c = Logic.applyCachedRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pMDC, Cons.cons(LoomApi.SYM_LOOM_API_pCOVERED, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(LoomApi.SYM_PL_KERNEL_KB_COVERING, Cons.cons(Logic.SYM_LOGIC_pMDC, Cons.cons(LoomApi.SYM_LOOM_API_pCOVERED, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(mdc, Cons.cons(coveredclass, Stella.NIL))), Cons.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_COVERINGp_QUERY_000, new Object[2]).allocateIterator();
 
         while (c.nextP()) {
           return (true);

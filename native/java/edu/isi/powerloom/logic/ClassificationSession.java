@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -65,7 +65,7 @@ public class ClassificationSession extends StandardObject {
       self.lastCacheTableValue = null;
       self.lastCacheTableKey = null;
       self.everythingClassifiedP = false;
-      self.introductionTimestampStack = Stella.list(Stella_Object.cons(IntegerWrapper.wrapInteger(0), Stella.NIL));
+      self.introductionTimestampStack = List.list(Cons.cons(IntegerWrapper.wrapInteger(0), Stella.NIL));
       self.classificationTimeclock = 0;
       self.classificationCacheTable = HashTable.newHashTable();
       self.classificationWorld = null;

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -1309,26 +1309,31 @@ Keyword* uValueMeasureSpecialist(ControlFrame* frame, Keyword* lastmove) {
         }
       }
       else {
-        { Measure* measure = ((DimNumber*)(((DimNumberLogicWrapper*)(mainargvalue))->wrapperValue))->getMeasure();
-          LogicObject* measureInstance = (((boolean)(measure)) ? ((LogicObject*)(oMEASURE_INSTANCE_TABLEo->lookup(measure))) : ((LogicObject*)(NULL)));
+        if (isaP(mainargvalue, SGT_UNIT_SUPPORT_UNIT_SUPPORT_DIM_NUMBER_LOGIC_WRAPPER)) {
+          { Measure* measure = ((DimNumber*)(((DimNumberLogicWrapper*)(mainargvalue))->wrapperValue))->getMeasure();
+            LogicObject* measureInstance = (((boolean)(measure)) ? ((LogicObject*)(oMEASURE_INSTANCE_TABLEo->lookup(measure))) : ((LogicObject*)(NULL)));
 
-          if (((boolean)(measureInstance))) {
-            if (measureargvalue == measureInstance) {
-              {
-                setFrameTruthValue(frame, TRUE_TRUTH_VALUE);
-                return (KWD_UNIT_SUPPORT_FINAL_SUCCESS);
+            if (((boolean)(measureInstance))) {
+              if (measureargvalue == measureInstance) {
+                {
+                  setFrameTruthValue(frame, TRUE_TRUTH_VALUE);
+                  return (KWD_UNIT_SUPPORT_FINAL_SUCCESS);
+                }
+              }
+              else {
+                {
+                  setFrameTruthValue(frame, FALSE_TRUTH_VALUE);
+                  return (KWD_UNIT_SUPPORT_TERMINAL_FAILURE);
+                }
               }
             }
             else {
-              {
-                setFrameTruthValue(frame, FALSE_TRUTH_VALUE);
-                return (KWD_UNIT_SUPPORT_TERMINAL_FAILURE);
-              }
+              return (KWD_UNIT_SUPPORT_TERMINAL_FAILURE);
             }
           }
-          else {
-            return (KWD_UNIT_SUPPORT_TERMINAL_FAILURE);
-          }
+        }
+        else {
+          return (KWD_UNIT_SUPPORT_TERMINAL_FAILURE);
         }
       }
     }
@@ -1719,6 +1724,7 @@ void startupUnitSupport() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("UNIT-SUPPORT")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DIM-NUMBER-HASH-TABLE* (STELLA-HASH-TABLE OF DIM-NUMBER DIM-NUMBER-LOGIC-WRAPPER) (NEW STELLA-HASH-TABLE) :DOCUMENTATION \"Table for interning dim number logic wrappers\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MEASURE-INSTANCE-TABLE* (HASH-TABLE OF MEASURE LOGIC-OBJECT) (NEW HASH-TABLE) :DOCUMENTATION \"Mapping table from measure objects to their PowerLoom representation.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *INSTANCE-MEASURE-TABLE* (HASH-TABLE OF LOGIC-OBJECT MEASURE) (NEW HASH-TABLE) :DOCUMENTATION \"Mapping table from PowerLoom representations of measures to measure objects\")");

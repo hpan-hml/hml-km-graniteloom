@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -336,6 +336,7 @@ Class* helpDefineClassFromParseTree(Cons* parsetree, char* stringifiedsource) {
                 if (!consP(slotdef)) {
                   { 
                     BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+                    signalTranslationNote();
                     if (!(suppressWarningsP())) {
                       printErrorContext(">> NOTE: ", STANDARD_OUTPUT);
                       std::cout << std::endl << " " << "Illegal slot definition:" << std::endl << "   " << "`" << deUglifyParseTree(slotdef) << "'" << std::endl << "." << std::endl;
@@ -383,6 +384,7 @@ Class* helpDefineClassFromParseTree(Cons* parsetree, char* stringifiedsource) {
                 if (!consP(methoddef)) {
                   { 
                     BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+                    signalTranslationNote();
                     if (!(suppressWarningsP())) {
                       printErrorContext(">> NOTE: ", STANDARD_OUTPUT);
                       std::cout << std::endl << " " << "Illegal inline method definition:" << std::endl << "   " << "`" << deUglifyParseTree(methoddef) << "'" << std::endl << "." << std::endl;
@@ -1057,7 +1059,7 @@ MethodSlot* getMethodWithIdenticalSignature(Symbol* name, Cons* parameterstree, 
     if (consP(parameterstree->value)) {
       parameterstree = ((Cons*)(parameterstree->value));
       if (symbolP(parameterstree->last())) {
-        existingslot = lookupSlot(typeToClass(typify(((Symbol*)(parameterstree->last())))), name);
+        existingslot = lookupSlot(typeSpecToClass(parameterstree->last()->yieldTypeSpecifier()), name);
         if (((boolean)(existingslot))) {
           if (subtypeOfMethodSlotP(safePrimaryType(existingslot))) {
             { Slot* existingslot000 = existingslot;
@@ -1514,6 +1516,7 @@ void startupStellaIn() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *REDEFINE-IDENTICAL-CLASSES?* BOOLEAN FALSE :DOCUMENTATION \"If `true', always redefine classes, even if an\n                  identical class exists\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *UNSUPPORTED-EXTERNAL-SLOT-OPTIONS* (LIST OF KEYWORD) (LIST :ALLOCATION :INITIALLY :CONTEXT-SENSITIVE? :HARDWIRED?))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEFAULT-OPTION-HANDLER* METHOD-SLOT NULL)");

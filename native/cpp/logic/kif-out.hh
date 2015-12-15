@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -95,10 +95,9 @@ void printKifStellaCollection(Collection* self);
 void printKifDescription(Description* self);
 void printKifDescriptionProposition(Description* self, boolean invertP);
 Surrogate* chooseImplicationOperator(Proposition* rule, boolean forwardP);
-KeyValueList* createSkolemMappingTable(Vector* oldvars, Vector* newvars);
+KeyValueMap* createSkolemMappingTable(Vector* oldvars, Vector* newvars);
 void printDescriptionsAsKifRule(Description* head, Description* tail, Proposition* rule, boolean reversepolarityP);
 void excludeOriginatedPropositions();
-boolean functionOutputSkolemP(Object* self);
 boolean hiddenRelationP(Surrogate* relationRef);
 boolean excludedPropositionP(Proposition* proposition);
 void prettyPrintNamedDescription(NamedDescription* self, OutputStream* stream);
@@ -147,6 +146,7 @@ extern Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_OR;
 extern Keyword* KWD_KIF_OUT_NOT;
 extern Keyword* KWD_KIF_OUT_EQUIVALENT;
 extern Keyword* KWD_KIF_OUT_PREDICATE;
+extern Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_FORK;
 extern Keyword* KWD_KIF_OUT_FUNCTION;
 extern Keyword* KWD_KIF_OUT_IMPLIES;
 extern Keyword* KWD_KIF_OUT_FORALL;
@@ -154,6 +154,7 @@ extern Keyword* KWD_KIF_OUT_EXISTS;
 extern Keyword* KWD_KIF_OUT_CONSTANT;
 extern Keyword* KWD_KIF_OUT_CONTAINED_BY;
 extern Keyword* KWD_KIF_OUT_DELETED;
+extern Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_SUBSET_OF;
 extern Symbol* SYM_KIF_OUT_LOGIC_FORWARD_ONLYp;
 extern Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_le;
 extern Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_FORALL;

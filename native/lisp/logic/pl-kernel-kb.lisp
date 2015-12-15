@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -77,8 +77,7 @@
    (CL:LET* ((*WARNIFREDEFINE?* CL:NIL))
     (CL:DECLARE (CL:SPECIAL *WARNIFREDEFINE?*))
     (CL:LET*
-     ((*MODULE* (GET-STELLA-MODULE "PL-KERNEL-KB" CL:T))
-      (*CONTEXT* *MODULE*))
+     ((*MODULE* (GET-STELLA-MODULE "PL-KERNEL-KB" CL:T)) (*CONTEXT* *MODULE*))
      (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
      (CL:LET* ((SELF-000 (NEW-NAMED-DESCRIPTION)))
       (CL:SETF (%SURROGATE-VALUE-INVERSE SELF-000)
@@ -87,45 +86,40 @@
        (LIST |/PL-KERNEL-KB/SGT-PL-KERNEL-KB-PL-KERNEL-KB-CONCEPT|))
       (CL:SETQ DUMMYCONCEPT SELF-000))
      (CL:SETF
-      (%SURROGATE-VALUE
-       |/PL-KERNEL-KB/SGT-PL-KERNEL-KB-PL-KERNEL-KB-CONCEPT|)
+      (%SURROGATE-VALUE |/PL-KERNEL-KB/SGT-PL-KERNEL-KB-PL-KERNEL-KB-CONCEPT|)
       DUMMYCONCEPT)
      (GET-DESCRIPTION-EXTENSION DUMMYCONCEPT CL:T)
      (UPDATE-ISA-PROPOSITION DUMMYCONCEPT
       |/PL-KERNEL-KB/SGT-PL-KERNEL-KB-PL-KERNEL-KB-CONCEPT|
       |/PL-KERNEL-KB/KWD-PL-KERNEL-KB-ASSERT-TRUE|)
      (CL:SETF
-      (%SURROGATE-VALUE
-       |/PL-KERNEL-KB/SGT-PL-KERNEL-KB-PL-KERNEL-KB-CLASS|)
+      (%SURROGATE-VALUE |/PL-KERNEL-KB/SGT-PL-KERNEL-KB-PL-KERNEL-KB-CLASS|)
       DUMMYCONCEPT)
      (%EVALUATE (%%VALUE KERNELKBDEFINITIONS))
      (CL:SETF
-      (%SURROGATE-VALUE
-       |/PL-KERNEL-KB/SGT-PL-KERNEL-KB-PL-KERNEL-KB-CLASS|)
+      (%SURROGATE-VALUE |/PL-KERNEL-KB/SGT-PL-KERNEL-KB-PL-KERNEL-KB-CLASS|)
       (%SURROGATE-VALUE
        |/PL-KERNEL-KB/SGT-PL-KERNEL-KB-PL-KERNEL-KB-CONCEPT|))
-     (CL:LET*
-      ((DEFINITION NULL) (ITER-000 (%%REST KERNELKBDEFINITIONS)))
+     (CL:LET* ((DEFINITION NULL) (ITER-000 (%%REST KERNELKBDEFINITIONS)))
       (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
        (CL:SETQ DEFINITION (%%VALUE ITER-000)) (%EVALUATE DEFINITION)
        (CL:SETQ ITER-000 (%%REST ITER-000))))
      (FINALIZE-OBJECTS)
      (CL:LET* ((MDL NULL) (ITER-001 (ALL-MODULES)))
-      (CL:LOOP WHILE (NEXT? ITER-001) DO
-       (CL:SETQ MDL (%VALUE ITER-001)) (INTRODUCE-MODULE MDL)))
+      (CL:LOOP WHILE (NEXT? ITER-001) DO (CL:SETQ MDL (%VALUE ITER-001))
+       (INTRODUCE-MODULE MDL)))
      (CL:LET*
       ((THING
         (GET-DESCRIPTION
-         (GET-STELLA-CLASS
-          |/PL-KERNEL-KB/SYM-PL-KERNEL-KB-STELLA-THING| CL:T))))
+         (GET-STELLA-CLASS |/PL-KERNEL-KB/SYM-PL-KERNEL-KB-STELLA-THING|
+          CL:T))))
       (EVALUATE-STRING "(ASSERT (DOCUMENTATION THING  
            \"The class of all things.  `Thing' is the top-most concept
 in the concept hierarchy.\"))"))))))
 
 (CL:DEFUN |/PL-KERNEL-KB/STARTUP-PL-KERNEL-KB| ()
   (CL:LET*
-   ((*MODULE*
-     (GET-STELLA-MODULE "/PL-KERNEL-KB" (> *STARTUP-TIME-PHASE* 1)))
+   ((*MODULE* (GET-STELLA-MODULE "/PL-KERNEL-KB" (> *STARTUP-TIME-PHASE* 1)))
     (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
@@ -141,8 +135,7 @@ in the concept hierarchy.\"))"))))))
     (CL:SETQ
      |/PL-KERNEL-KB/SYM-PL-KERNEL-KB-PL-KERNEL-KB-STARTUP-PL-KERNEL-KB|
      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-PL-KERNEL-KB" NULL 0))
-    (CL:SETQ
-     |/PL-KERNEL-KB/SYM-PL-KERNEL-KB-STELLA-METHOD-STARTUP-CLASSNAME|
+    (CL:SETQ |/PL-KERNEL-KB/SYM-PL-KERNEL-KB-STELLA-METHOD-STARTUP-CLASSNAME|
      (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME"
       (GET-STELLA-MODULE "/STELLA" CL:T) 0)))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
@@ -163,6 +156,7 @@ in the concept hierarchy.\"))"))))))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 8) (FINALIZE-SLOTS)
     (CLEANUP-UNFINALIZED-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 9)
+    (%IN-MODULE (COPY-CONS-TREE (WRAP-STRING "PL-KERNEL")))
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
      "(DEFGLOBAL *PL-KERNEL-KB-DEFINITIONS* CONS NULL)")
     (CL:SETQ |/PL-KERNEL-KB/*PL-KERNEL-KB-DEFINITIONS*|
@@ -240,17 +234,26 @@ unknown, the function is applied to that proposition.\" :AXIOMS (SINGLE-VALUED G
 to ?r  Each time a proposition with predicate ?r becomes
 false, the function is applied to that proposition.\" :AXIOMS (SINGLE-VALUED GOES-FALSE-DEMON)) (DEFRELATION SYNONYM (?TERM ?SYNONYM) :PHRASE \"?synonym is a synonym for ?term\" :DOCUMENTATION \"Assert that `?synonym' is a synonym of `?term'.  This
 causes all references to `?synonym' to be interpreted as references
-to `?term'.  Retraction eliminates a synonym relation.\") (ASSERT (AND (GOES-TRUE-DEMON SYNONYM ASSERT-SYNONYM-DEMON) (GOES-UNKNOWN-DEMON SYNONYM RETRACT-SYNONYM-DEMON))) (DEFFUNCTION COLLECTIONOF (?M) :-> (?C COLLECTION) :DOCUMENTATION \"Abstract function existing to subsume 'SETOF'
+to `?term'.  Retraction eliminates a synonym relation.\") (ASSERT (AND (GOES-TRUE-DEMON SYNONYM ASSERT-SYNONYM-DEMON) (GOES-UNKNOWN-DEMON SYNONYM RETRACT-SYNONYM-DEMON))) (DEFCONCEPT SKOLEM-FUNCTION (?X FUNCTION) :DOCUMENTATION \"Skolem function meta class to annotate user-defined skolem
+functions.  Using this is generally not necessary given the generic `skolem-fn'
+definitiont below.\" :=>> (TOTAL ?X)) (DEFFUNCTION SKOLEM-FN (?ID ?ARGS ?SK) :DOCUMENTATION \"A generic skolem function that can be instantiated into
+a unique skolem function term by providing an appropriately unique ?id.
+?args are the universally quantfied arguments relative to which we postulate
+the existence of ?sk.  For example, to represent the rule `every person
+has a mother' we could write:
+  (=> (and (person ?x) (skolem-fn $skfn ?x ?m)) (mother ?x ?m)).
+Note the use of the automatic instance `$skfn' to uniquely identify this
+skolem function term.  Any other unique ID could have been used as well.\" :VARIABLE-ARITY TRUE :TOTAL TRUE) (DEFFUNCTION COLLECTIONOF (?M) :-> (?C COLLECTION) :DOCUMENTATION \"Abstract function existing to subsume 'SETOF'
 and 'LISTOF'.\" :AXIOMS (VARIABLE-ARITY COLLECTIONOF)) (DEFFUNCTION SETOF (?M) :-> (?C SET) :DOCUMENTATION \"Term-forming function that defines an enumerated set
 consisting of all function arguments.  `setof' is like `listof' except
-that it removes duplicate values.\" :AXIOMS (AND (SUBSET-OF SETOF COLLECTIONOF) (VARIABLE-ARITY SETOF) (TOTAL SETOF))) (DEFFUNCTION LISTOF (?M) :-> (?C LIST) :DOCUMENTATION \"Term-forming function that defines an ordered list
+that it removes duplicate values.\" :SUBSET-OF COLLECTIONOF :VARIABLE-ARITY TRUE :TOTAL TRUE :CLOSED TRUE) (DEFFUNCTION LISTOF (?M) :-> (?C LIST) :DOCUMENTATION \"Term-forming function that defines an ordered list
 consisting of all function arguments.  Within logical expressions
 `listof' is most commonly used in conjunction with the `member-of'
 predicate.  For example the query
 	 
   (retrieve ?x (member-of ?x (listof a b c)))
 	
-returns the constants `a', `b', and `c' on successive iterations.\" :AXIOMS (AND (SUBSET-OF LISTOF COLLECTIONOF) (VARIABLE-ARITY LISTOF) (TOTAL LISTOF))) (DEFRELATION HOLDS ((?RELATION RELATION) ?ARGUMENTS) :DOCUMENTATION \"True if the tuple '?arguments' is a member of the
+returns the constants `a', `b', and `c' on successive iterations.\" :SUBSET-OF COLLECTIONOF :VARIABLE-ARITY TRUE :TOTAL TRUE :CLOSED TRUE) (DEFRELATION HOLDS ((?RELATION RELATION) ?ARGUMENTS) :DOCUMENTATION \"True if the tuple '?arguments' is a member of the
 relation '?relation'.  `holds' is a variable arity predicate that takes
 a relation as its first argument, and zero or more additional arguments.
 It returns values equivalent to a subgoal that has the first argument
@@ -267,7 +270,7 @@ relation bindings.  For example, the query
 retrieves all constants for which there is some binary relation that
 relates `Fred' to that relation.\" :AXIOMS (AND (VARIABLE-ARITY HOLDS) (RELATION-SPECIALIST HOLDS HOLDS-SPECIALIST))) (DEFFUNCTION VALUE ((?FUNCTION FUNCTION) ?ARGUMENTS) :-> ?VALUE :DOCUMENTATION \"True if applying '?function' to '?arguments'
 yields the value '?value'.  The `value' predicate is the analog
-of `holds', except that it applies to functions instead of relations.\" :AXIOMS (AND (VARIABLE-ARITY VALUE) (RELATION-SPECIALIST VALUE VALUE-SPECIALIST))) (DEFRELATION IST ((?CONTEXT CONTEXT) (?P PROPOSITION)) :DOCUMENTATION \"True if proposition '?p' is true in context '?context'.
+of `holds', except that it applies to functions instead of relations.\" :AXIOMS (AND (VARIABLE-ARITY VALUE))) (DEFRELATION IST ((?CONTEXT CONTEXT) (?P PROPOSITION)) :DOCUMENTATION \"True if proposition '?p' is true in context '?context'.
 The `IST' (is true) relation allows one to evaluate a query or rule in more
 than one context.  A common use of `IST' is in defining 'lifting axioms'
 that import knowledge from one context to another.  For example, below is
@@ -280,7 +283,7 @@ a rule that accesses a `patient-record' relation in a module called
            (exists (?1 ?2 ?3 ?4)
               (ist Medical-Kb (patient-record ?ssn ?1 ?2 ?age ?3 ?4)))))
 	
-\" :AXIOMS (AND (RELATION-SPECIALIST IST IST-SPECIALIST) (HANDLES-REVERSE-POLARITY IST-SPECIALIST))) (DEFRELATION CUT (?ARGUMENTS) :DOCUMENTATION \"Prolog-like CUT.  Succeeds the first time and
+\" :AXIOMS (AND (RELATION-SPECIALIST IST IST-SPECIALIST) (HANDLES-REVERSE-POLARITY IST-SPECIALIST))) (DEFFUNCTION PROPOSITION-RELATION ((?P PROPOSITION) (?OP RELATION)) :DOCUMENTATION \"Return the predicate operator ?op of ?p.\" :COMPUTED TRUE :RELATION-SPECIALIST COMPUTATION-SPECIALIST :RELATION-COMPUTATION PROPOSITION-RELATION-COMPUTATION) (DEFFUNCTION PROPOSITION-ARGUMENT ((?P PROPOSITION) (?I INTEGER) ?ARG) :DOCUMENTATION \"Return the ?i-th ?arg of ?p (zero-based).\" :COMPUTED TRUE :RELATION-SPECIALIST COMPUTATION-SPECIALIST :RELATION-COMPUTATION PROPOSITION-ARGUMENT-COMPUTATION) (DEFFUNCTION PROPOSITION-ARGUMENTS ((?P PROPOSITION) (?ARGS LIST)) :DOCUMENTATION \"Return all arguments of ?p as a list ?args.\" :COMPUTED TRUE :RELATION-SPECIALIST COMPUTATION-SPECIALIST :RELATION-COMPUTATION PROPOSITION-ARGUMENTS-COMPUTATION) (DEFFUNCTION PROPOSITION-ARITY ((?P PROPOSITION) (?ARITY INTEGER)) :DOCUMENTATION \"Return the number of arguments in ?p.\" :COMPUTED TRUE :RELATION-SPECIALIST COMPUTATION-SPECIALIST :RELATION-COMPUTATION PROPOSITION-ARITY-COMPUTATION) (DEFRELATION CUT (?ARGUMENTS) :DOCUMENTATION \"Prolog-like CUT.  Succeeds the first time and
 then fails.  Side-effect:  Locally disables query optimization.\" :AXIOMS (AND (VARIABLE-ARITY CUT) (RELATION-SPECIALIST CUT CUT-SPECIALIST))) (DEFRELATION BOUND-VARIABLES (?ARGUMENTS) :DOCUMENTATION \"True if all arguments are bound.  The `bound-variables'
 predicate is used as a performance enhancer, to prevent other predicates
 from backchaining excessively while searching for bindings of certain of
@@ -290,8 +293,8 @@ Because evaluation of the `bound-variables' predicate evaluation of
 predicates being 'guarded', using this predicate has the side-effect
 of locally disabling query optimization.  (See `collect-into-set' for
 an example that uses `bound-variables'.\" :AXIOMS (AND (VARIABLE-ARITY BOUND-VARIABLES) (HANDLES-REVERSE-POLARITY BOUND-VARIABLES-SPECIALIST) (RELATION-SPECIALIST BOUND-VARIABLES BOUND-VARIABLES-SPECIALIST))) (DEFRELATION FORK ((?TEST PROPOSITION) (?THEN PROPOSITION) (?ELSE PROPOSITION)) :DOCUMENTATION \"Fail-based conditional.  If ?test succeeds, evaluates
-?then; otherwise evaluates ?else.\" :AXIOMS (RELATION-SPECIALIST FORK FORK-SPECIALIST)) (DEFRELATION QUERY ((?PROP PROPOSITION) ?OPTIONS) :DOCUMENTATION \"EXPERIMENTAL search-control relation that allows one to prove
-or retrieve bindings for ?prop with modified search control ?options.  The list
+?then; otherwise evaluates ?else.\" :AXIOMS (RELATION-SPECIALIST FORK FORK-SPECIALIST)) (DEFRELATION QUERY ((?PROP PROPOSITION) ?OPTIONS) :DOCUMENTATION \"Search-control relation that allows one to prove or
+retrieve bindings for ?prop with modified search control ?options.  The list
 of accepted ?options is currently the same as are legal for a top-level `ask'
 or `retrieve' query.  The special option value :INHERIT inherits the option
 value from the parent or top-level query.  The option pair :INHERIT :ALL
@@ -302,11 +305,17 @@ The default is 1 which is again the same as for `retrieve' but different from
 how normal subgoals behave (those behave in a lazy all solutions mode).
 The reason for this is that for partial match subqueries, solutions need to be
 generated eagerly, therefore, a default of generating all solutions is not
-desirable.\" :VARIABLE-ARITY TRUE :RELATION-SPECIALIST QUERY-SPECIALIST) (DEFRELATION HIDDEN-RELATION ((?R RELATION)) :DOCUMENTATION \"Indicates that ?r is used like an internal data
+desirable.\" :VARIABLE-ARITY TRUE :RELATION-SPECIALIST QUERY-SPECIALIST) (DEFRELATION ASSERTION-QUERY ((?PROP PROPOSITION)) :DOCUMENTATION \"Query ?prop with :inference-level set to :assertion.
+Equivalent to `(query ?prop :inference-level :assertion)' but more efficient.\" :RELATION-SPECIALIST LEVELED-QUERY-SPECIALIST) (DEFRELATION SHALLOW-QUERY ((?PROP PROPOSITION)) :DOCUMENTATION \"Query ?prop with :inference-level set to :shallow.
+Equivalent to `(query ?prop :inference-level :shallow)' but more efficient.\" :RELATION-SPECIALIST LEVELED-QUERY-SPECIALIST) (DEFRELATION SUBSUMPTION-QUERY ((?PROP PROPOSITION)) :DOCUMENTATION \"Query ?prop with :inference-level set to :subsumption.
+Equivalent to `(query ?prop :inference-level :subsumption)' but more efficient.\" :RELATION-SPECIALIST LEVELED-QUERY-SPECIALIST) (DEFRELATION BACKTRACKING-QUERY ((?PROP PROPOSITION)) :DOCUMENTATION \"Query ?prop with :inference-level set to :backtracking.
+Equivalent to `(query ?prop :inference-level :backtracking)' but more efficient.\" :RELATION-SPECIALIST LEVELED-QUERY-SPECIALIST) (DEFRELATION NORMAL-QUERY ((?PROP PROPOSITION)) :DOCUMENTATION \"Query ?prop with :inference-level set to :normal.
+Equivalent to `(query ?prop :inference-level :normal)' but more efficient.\" :RELATION-SPECIALIST LEVELED-QUERY-SPECIALIST) (DEFRELATION REFUTATION-QUERY ((?PROP PROPOSITION)) :DOCUMENTATION \"Query ?prop with :inference-level set to :refutation.
+Equivalent to `(query ?prop :inference-level :refutation)' but more efficient.\" :RELATION-SPECIALIST LEVELED-QUERY-SPECIALIST) (DEFRELATION HIDDEN-RELATION ((?R RELATION)) :DOCUMENTATION \"Indicates that ?r is used like an internal data
 structure; not for user consumption.\") (DEFFUNCTION OBSERVED-CARDINALITY-OF ((?R RELATION)) :-> (?CARD INTEGER) :DOCUMENTATION \"Used by PowerLoom to record the sizes of class
 and relation extensions.  Only filled if the relation extension was
 directly accessed by some query.\" :AXIOMS (HIDDEN-RELATION OBSERVED-CARDINALITY-OF)) (DEFRELATION POLYMORPHIC ((?R RELATION)) :DOCUMENTATION \"True if ?r' supports polymorphism.\") (DEFRELATION INSTANCE-OF ((?X THING) (?C COLLECTION)) :DOCUMENTATION \"True if ?x is an instance of ?c.  Can
-be used to generate concept values of ?c, given an instance ?x.\" :AXIOMS (RELATION-SPECIALIST INSTANCE-OF INSTANCE-OF-SPECIALIST)) (DEFRELATION TYPE-OF ((?C COLLECTION) (?X THING)) :DOCUMENTATION \"True if ?x is a member of the concept ?c.\" :<<=>> (INSTANCE-OF ?X ?C) :AXIOMS (INVERSE INSTANCE-OF TYPE-OF)) (DEFRELATION SUBSET-OF ((?SUB COLLECTION) (?SUPER COLLECTION)) :DOCUMENTATION \"True if ?sub is a subset of ?super.  For performance
+be used to generate concept values of ?c, given an instance ?x.\" :AXIOMS (RELATION-SPECIALIST INSTANCE-OF INSTANCE-OF-SPECIALIST)) (DEFRELATION TYPE-OF ((?C COLLECTION) (?X THING)) :DOCUMENTATION \"True if ?x is a member of the concept ?c.\" :INVERSE INSTANCE-OF) (DEFRELATION SUBSET-OF ((?SUB COLLECTION) (?SUPER COLLECTION)) :DOCUMENTATION \"True if ?sub is a subset of ?super.  For performance
 reasons, the `subset-of' predicate refuses to search for bindings if
 both of its variables are unbound.  Implementation note: `subset-of' 
 is treated specially internally to PowerLoom, and hence Powerloom does not
@@ -331,7 +340,7 @@ To prove `(not (happy Fred))', PowerLoom can use a negation-as-failure
 proof strategy which returns TRUE if `Fred' cannot be proved to be happy.
 Also, if the relation `children' is closed, then a value for the expression
 `(range-max-cardinality children Fred)' can be inferred merely by
-counting the number of fillers of the `children' role on `Fred'.\" :AXIOMS (AND (HANDLES-REVERSE-POLARITY CLOSED-SPECIALIST) (RELATION-SPECIALIST CLOSED CLOSED-SPECIALIST))) (DEFRELATION EMPTY ((?C COLLECTION)) :DOCUMENTATION \"The collection ?c is empty if it has no members.  Note
+counting the number of fillers of the `children' role on `Fred'.\" :RELATION-SPECIALIST CLOSED-SPECIALIST :AXIOMS (HANDLES-REVERSE-POLARITY CLOSED-SPECIALIST)) (DEFRELATION EMPTY ((?C COLLECTION)) :DOCUMENTATION \"The collection ?c is empty if it has no members.  Note
 that for collections possessing open-world semantics, (e.g., most concepts)
 the fact that the collection has no known members does not necessarily
 imply that it is empty.\" :AXIOMS (AND (RELATION-SPECIALIST EMPTY EMPTY-SPECIALIST) (COMPUTED EMPTY))) (DEFRELATION SINGLE-VALUED ((?C RELATION)) :DOCUMENTATION \"The relation ?c is single-valued if the value of its
@@ -345,9 +354,9 @@ a set of known fillers of ?r applied to ?i.  IMPORTANT: this also collects
 intensional fillers such as skolems that might be identical extensionally.\" :<<= (AND (BOUND-VARIABLES ?R ?I) (COLLECT-INTO-SET (SETOFALL ?V (HOLDS ?R ?I ?V)) ?MEMBERS)) :AXIOMS (COMPUTED FILLERS)) (DEFFUNCTION CARDINALITY ((?C SET)) :-> (?CARD INTEGER) :DOCUMENTATION \"Function that returns the cardinality of a set.\" :<<= (AND (CLOSED ?C) (LENGTH-OF-LIST (COLLECT-INTO-SET ?C) ?CARD))) (DEFCONCEPT FRAME-PREDICATE ((?C RELATION)) :DOCUMENTATION \"A frame predicate is a second-order relation that
 is used to describe constraints on the set of fillers for a binary
 relation applied to an instance.  Examples of frame predicates are
-`range-cardinality', `range-type', and `numeric-minimum'.  Frame predicates
-are typically used to capture the kinds of relations manipulated
-by description logic systems such as USC/ISI's Loom system.\") (DEFRELATION RANGE-TYPE ((?R RELATION) ?I (?TYPE COLLECTION)) :DOCUMENTATION \"Relation that specifies a type/range of the relation ?r applied to ?i.
+`range-cardinality', `range-type', and `numeric-inclusive-minimum'.
+Frame predicates are typically used to capture the kinds of relations
+manipulated by description logics such as USC/ISI's Loom and W3C's OWL.\") (DEFRELATION RANGE-TYPE ((?R RELATION) ?I (?TYPE COLLECTION)) :DOCUMENTATION \"Relation that specifies a type/range of the relation ?r applied to ?i.
 Multiple range types may be asserted for a single pair <?r,?i>.  Technically,
 a retrieval of types for a given pair should include all supertypes
 (superconcepts) of any type that is produced, but for utility's sake,
@@ -378,7 +387,7 @@ compute a tight bound.\" :<=> (AND (RANGE-MIN-CARDINALITY ?R ?I ?CARD) (RANGE-MA
 cardinality of the set of fillers of the relation ?r applied to ?i.
 (see the discussion for `range-cardinality-lower-bound').\" :<<= (OR (AND (SINGLE-VALUED ?R) (EXISTS ?V (HOLDS ?R ?I ?V)) (= ?MINCARD 1)) (MAXIMUM-VALUE (COLLECT-INTO-SET (SETOFALL ?M (OR (>= (CARDINALITY (THE-ROLESET ?R ?I)) ?M) (= ?M 0) (LENGTH-OF-LIST (FILLERS ?R ?I) ?M) (EXISTS ?SUBR (AND (SUBSET-OF ?SUBR ?R) (>= (CARDINALITY (THE-ROLESET ?SUBR ?I)) ?M)))))) ?MINCARD)) :AXIOMS (AND (FRAME-PREDICATE RANGE-MIN-CARDINALITY))) (DEFFUNCTION RANGE-MAX-CARDINALITY ((?R RELATION) ?I) :-> (?MAXCARD INTEGER) :DOCUMENTATION \"Returns the strictest computable upper bound on the
 cardinality of the set of fillers of the relation ?r applied to ?i.
-(see the discussion for `range-cardinality-lower-bound').\" :<<= (OR (AND (SINGLE-VALUED ?R) (EXISTS ?V (HOLDS ?R ?I ?V)) (= ?MAXCARD 1)) (MINIMUM-VALUE (COLLECT-INTO-SET (SETOFALL ?M (OR (=< (CARDINALITY (THE-ROLESET ?R ?I)) ?M) (AND (SINGLE-VALUED ?R) (= ?M 1)) (AND (EMPTY (THE-ROLESET ?R ?I)) (= ?M 0)) (AND (CLOSED ?R) (RANGE-MIN-CARDINALITY ?R ?I ?M)) (EXISTS ?SUPERR (AND (SUBSET-OF ?R ?SUPERR) (=< (CARDINALITY (THE-ROLESET ?SUPERR ?I)) ?M)))))) ?MAXCARD)) :AXIOMS (AND (FRAME-PREDICATE RANGE-MAX-CARDINALITY) (=> (EXISTS (?MIN) (AND (RANGE-MIN-CARDINALITY ?R ?I ?MIN) (> ?MIN ?MAX))) (NOT (RANGE-MAX-CARDINALITY ?R ?I ?MAX))))) (DEFFUNCTION QUALIFIED-RANGE-MIN-CARDINALITY ((?R RELATION) ?I (?Q COLLECTION)) :-> (?CARD INTEGER) :DOCUMENTATION \"Function that returns the minimum cardinality of the set of
+(see the discussion for `range-cardinality-lower-bound').\" :<<= (OR (AND (SINGLE-VALUED ?R) (EXISTS ?V (HOLDS ?R ?I ?V)) (= ?MAXCARD 1)) (MINIMUM-VALUE (COLLECT-INTO-SET (SETOFALL ?M (OR (=< (CARDINALITY (THE-ROLESET ?R ?I)) ?M) (AND (SINGLE-VALUED ?R) (= ?M 1)) (AND (EMPTY (THE-ROLESET ?R ?I)) (= ?M 0)) (AND (CLOSED ?R) (RANGE-MIN-CARDINALITY ?R ?I ?M)) (EXISTS ?SUPERR (AND (SUBSET-OF ?R ?SUPERR) (=< (CARDINALITY (THE-ROLESET ?SUPERR ?I)) ?M)))))) ?MAXCARD)) :AXIOMS (AND (FRAME-PREDICATE RANGE-MAX-CARDINALITY) (=> (EXISTS (?MIN) (AND (RANGE-MIN-CARDINALITY ?R ?I ?MIN) (> ?MIN ?MAX))) (NOT (RANGE-MAX-CARDINALITY ?R ?I ?MAX))))) (DEFRELATION QUALIFIED-RANGE-CARDINALITY-LOWER-BOUND ((?R RELATION) ?I (?Q COLLECTION) (?LB INTEGER)) :DOCUMENTATION \"Lower bound on range cardinality for qualified cardinality restrictions.  Like `range-cardinality-lower-bound'.  NOT IMPLEMENTED YET!\") (DEFRELATION QUALIFIED-RANGE-CARDINALITY-UPPER-BOUND ((?R RELATION) ?I (?Q COLLECTION) (?UB INTEGER)) :DOCUMENTATION \"Upper bound on range cardinality for qualified cardinality restrictions.  Like `range-cardinality-upper-bound'.  NOT IMPLEMENTED YET!\") (DEFFUNCTION QUALIFIED-RANGE-MIN-CARDINALITY ((?R RELATION) ?I (?Q COLLECTION)) :-> (?CARD INTEGER) :DOCUMENTATION \"Function that returns the minimum cardinality of the set of
 fillers of type ?q of the relation ?r applied to ?i.  NOT YET IMPLEMENTED.\" :AXIOMS (AND (FRAME-PREDICATE QUALIFIED-RANGE-MIN-CARDINALITY) (COMPUTED QUALIFIED-RANGE-MIN-CARDINALITY))) (DEFFUNCTION QUALIFIED-RANGE-MAX-CARDINALITY ((?R RELATION) ?I (?Q COLLECTION)) :-> (?CARD INTEGER) :DOCUMENTATION \"Function that returns the maximum cardinality of the set of
 fillers of type ?q of the relation ?r applied to ?i.  NOT YET IMPLEMENTED.\" :AXIOMS (AND (FRAME-PREDICATE QUALIFIED-RANGE-MAX-CARDINALITY) (COMPUTED QUALIFIED-RANGE-MAX-CARDINALITY))) (DEFFUNCTION QUALIFIED-RANGE-CARDINALITY ((?R RELATION) ?I (?Q COLLECTION)) :-> (?CARD INTEGER) :DOCUMENTATION \"Function that returns the cardinality of the set of
 fillers of type ?q of the relation ?r applied to ?i.  The cardinality function
@@ -387,10 +396,10 @@ returns a value only when the relations `qualified-range-min-cardinality' and
 best lower and upper bounds on the cardinality are equal.  Each of
 these bounding functions employs a variety of rules to try and
 compute a tight bound.  NOT YET IMPLEMENTED.\" :AXIOMS (AND (FRAME-PREDICATE QUALIFIED-RANGE-CARDINALITY) (COMPUTED QUALIFIED-RANGE-CARDINALITY))) (DEFFUNCTION NUMERIC-INTERVAL ((?X NUMERIC-SET)) :-> (?INTERVAL INTEGER-INTERVAL) :DOCUMENTATION \"Function that returns an interval representing
-the range of allowable numeric values for its members.\" :=>> (SCALAR-INTERVAL ?INTERVAL)) (DEFRELATION NUMERIC-MINIMUM ((?R RELATION) ?I (?N NUMBER)) :DOCUMENTATION \"Relation that specifies a lower bound '?n' on any numeric
+the range of allowable numeric values for its members.\" :=>> (SCALAR-INTERVAL ?INTERVAL)) (DEFFUNCTION INTERVAL-CACHE-OF (?X) :-> (?B INTERVAL-CACHE) :DOCUMENTATION \"Binds an instance ?x of type NUMBER or QUANTITY to a 
+structure that records its tightest lower and upper bounds.\" :AXIOMS (HIDDEN-RELATION INTERVAL-CACHE-OF)) (DEFRELATION NUMERIC-MINIMUM ((?R RELATION) ?I (?N NUMBER)) :DOCUMENTATION \"Relation that specifies a lower bound '?n' on any numeric
 value that can belong to the set of fillers of the relation ?r applied to ?i.\" :<<=>> (>= (INTERVAL-LOWER-BOUND (NUMERIC-INTERVAL (THE-ROLESET ?R ?I))) ?N) :AXIOMS (FRAME-PREDICATE NUMERIC-MINIMUM)) (DEFRELATION NUMERIC-MAXIMUM ((?R RELATION) ?I (?N NUMBER)) :DOCUMENTATION \"Relation that specifies an upper bound '?n' on any numeric
-value that can belong to the set of fillers of the relation ?r applied to ?i.\" :<<=>> (=< (INTERVAL-UPPER-BOUND (NUMERIC-INTERVAL (THE-ROLESET ?R ?I))) ?N) :AXIOMS (FRAME-PREDICATE NUMERIC-MAXIMUM)) (DEFFUNCTION INTERVAL-CACHE-OF (?X) :-> (?B INTERVAL-CACHE) :DOCUMENTATION \"Binds an instance ?x of type NUMBER or QUANTITY to a 
-structure that records its tightest lower and upper bounds.\" :AXIOMS (HIDDEN-RELATION INTERVAL-CACHE-OF)) (DEFRELATION DIRECT-SUBRELATION ((?R RELATION) (?SUB RELATION)) :DOCUMENTATION \"True iff ?sub is a direct subrelation of ?r; written
+value that can belong to the set of fillers of the relation ?r applied to ?i.\" :<<=>> (=< (INTERVAL-UPPER-BOUND (NUMERIC-INTERVAL (THE-ROLESET ?R ?I))) ?N) :AXIOMS (FRAME-PREDICATE NUMERIC-MAXIMUM)) (DEFRELATION DIRECT-SUBRELATION ((?R RELATION) (?SUB RELATION)) :DOCUMENTATION \"True iff ?sub is a direct subrelation of ?r; written
 in set notation, ?sub < ?r, and there is no ?s such that ?sub < ?s < ?r.
 This relation will generate bindings for at most one unbound argument.\" :AXIOMS (RELATION-SPECIALIST DIRECT-SUBRELATION RELATION-HIERARCHY-SPECIALIST)) (DEFRELATION DIRECT-SUPERRELATION ((?R RELATION) (?SUPER RELATION)) :DOCUMENTATION \"True iff ?super is a direct superrelation of ?r;
 in set notation, ?super > ?r, and there is no ?s such that ?super > ?s > ?r.
@@ -407,12 +416,13 @@ one unbound argument.\" :AXIOMS (AND (INVERSE PROPER-SUPERRELATION PROPER-SUBREL
 argument.\" :AXIOMS (RELATION-SPECIALIST EQUIVALENT-RELATION RELATION-HIERARCHY-SPECIALIST)) (DEFFUNCTION UNION-OF ((?S1 COLLECTION) (?S2 COLLECTION)) :-> (?UNION SET) :DOCUMENTATION \"True if the union of the collections ?s1 and ?s2
 equals ?union.\") (DEFFUNCTION + ((?X NUMBER) (?Y NUMBER)) :-> (?Z NUMBER) :DOCUMENTATION \"Function that adds two numbers.\") (ASSERT (AND (COMPUTED +) (RELATION-CONSTRAINT + PLUS-CONSTRAINT) (RELATION-SPECIALIST + CONSTRAINT-SPECIALIST))) (DEFFUNCTION - ((?X NUMBER) (?Y NUMBER)) :-> (?Z NUMBER) :DOCUMENTATION \"Function that subtracts two numbers.\") (ASSERT (AND (COMPUTED -) (RELATION-CONSTRAINT - MINUS-CONSTRAINT) (RELATION-SPECIALIST - CONSTRAINT-SPECIALIST))) (DEFFUNCTION * ((?X NUMBER) (?Y NUMBER)) :-> (?Z NUMBER) :DOCUMENTATION \"Function that multiplies two numbers.\") (ASSERT (AND (COMPUTED *) (RELATION-CONSTRAINT * TIMES-CONSTRAINT) (RELATION-SPECIALIST * CONSTRAINT-SPECIALIST))) (DEFFUNCTION / ((?X NUMBER) (?Y NUMBER)) :-> (?Z NUMBER) :DOCUMENTATION \"Function that divides two numbers.\") (ASSERT (AND (COMPUTED /) (RELATION-CONSTRAINT / DIVIDE-CONSTRAINT) (RELATION-SPECIALIST / CONSTRAINT-SPECIALIST))) (DEFFUNCTION SQRT ((?X NUMBER)) :-> (?Y NUMBER) :DOCUMENTATION \"Function that returns the positive square root:
 ?y = sqrt(?x).  For positive and negative roots see relation SQUARE-ROOT\" :AXIOMS (AND (COMPUTED SQRT) (RELATION-CONSTRAINT SQRT SQRT-CONSTRAINT) (RELATION-SPECIALIST SQRT CONSTRAINT-SPECIALIST))) (DEFRELATION SQUARE-ROOT ((?X NUMBER) (?Y NUMBER)) :DOCUMENTATION \"Relation that returns the positive and negative square roots:
-?y = sqrt(?x).  For positive roots only see function SQRT.\" :AXIOMS (AND (COMPUTED SQUARE-ROOT) (RELATION-SPECIALIST SQUARE-ROOT SQUARE-ROOT-SPECIALIST))) (DEFRELATION ABSOLUTE-VALUE ((?X NUMBER) (?Y NUMBER)) :DOCUMENTATION \"Relation that computes ?y = abs(?x).  If ?x is unbound,
-then both positive and negative values of ?y will be returned.\" :AXIOMS (AND (COMPUTED ABSOLUTE-VALUE) (RELATION-SPECIALIST ABSOLUTE-VALUE ABSOLUTE-VALUE-SPECIALIST))) (DEFRELATION NEGATE ((?X NUMBER) (?Y NUMBER)) :DOCUMENTATION \"Relation that computes ?y = - ?x.\" :AXIOMS (AND (COMPUTED NEGATE) (RELATION-CONSTRAINT NEGATE NEGATE-CONSTRAINT) (RELATION-SPECIALIST NEGATE CONSTRAINT-SPECIALIST))) (ASSERT (HANDLES-REVERSE-POLARITY INEQUALITY-SPECIALIST)) (DEFRELATION INEQUALITY (?X ?Y) :DOCUMENTATION \"Abstract superrelation of inequality relations.\" :<<= (=< ?X ?Y) :<<= (>= ?X ?Y) :AXIOMS (ABSTRACT INEQUALITY)) (DEFRELATION < (?X ?Y) :DOCUMENTATION \"True if ?x < ?y.\" :<<= (EXISTS ?Z (AND (< ?X ?Z) (=< ?Z ?Y))) :<<= (EXISTS ?Z (AND (=< ?X ?Z) (< ?Z ?Y)))) (ASSERT (AND (COMPUTED <) (RELATION-SPECIALIST < INEQUALITY-SPECIALIST) (RELATION-EVALUATOR < INEQUALITY-EVALUATOR))) (DEFRELATION =< (?X ?Y) :DOCUMENTATION \"True if ?x <= ?y.\" :<<= (EXISTS ?Z (AND (=< ?X ?Z) (=< ?Z ?Y))) :<<= (< ?X ?Y)) (ASSERT (AND (COMPUTED =<) (RELATION-SPECIALIST =< INEQUALITY-SPECIALIST) (RELATION-EVALUATOR =< INEQUALITY-EVALUATOR))) (DEFRELATION > (?X ?Y) :DOCUMENTATION \"True if ?x > ?y.\" :<<=>> (< ?Y ?X)) (ASSERT (AND (COMPUTED >) (RELATION-SPECIALIST > INEQUALITY-SPECIALIST) (RELATION-EVALUATOR > INEQUALITY-EVALUATOR))) (DEFRELATION >= (?X ?Y) :DOCUMENTATION \"True if ?x >= ?y.\" :<<=>> (=< ?Y ?X) :<<= (> ?X ?Y)) (ASSERT (AND (COMPUTED >=) (RELATION-SPECIALIST >= INEQUALITY-SPECIALIST) (RELATION-EVALUATOR >= INEQUALITY-EVALUATOR))) (DEFFUNCTION COLLECT-INTO-SET ((?C COLLECTION)) :-> (?L SET) :DOCUMENTATION \"Infer as many members of ?c as possible and
+?y = sqrt(?x).  For positive roots only see function SQRT.\" :AXIOMS (AND (COMPUTED SQUARE-ROOT) (RELATION-SPECIALIST SQUARE-ROOT SQUARE-ROOT-SPECIALIST))) (DEFFUNCTION ABSOLUTE-VALUE ((?X NUMBER) (?Y NUMBER)) :DOCUMENTATION \"Relation that computes ?y = abs(?x).  If ?x is unbound,
+then ?x will get both positive and negative values of the 
+magnitude of ?y.\" :AXIOMS (AND (COMPUTED ABSOLUTE-VALUE) (RELATION-SPECIALIST ABSOLUTE-VALUE ABSOLUTE-VALUE-SPECIALIST))) (DEFFUNCTION NEGATE ((?X NUMBER) (?Y NUMBER)) :DOCUMENTATION \"Relation that computes ?y = - ?x.\" :AXIOMS (AND (COMPUTED NEGATE) (RELATION-CONSTRAINT NEGATE NEGATE-CONSTRAINT) (RELATION-SPECIALIST NEGATE CONSTRAINT-SPECIALIST))) (ASSERT (HANDLES-REVERSE-POLARITY INEQUALITY-SPECIALIST)) (DEFRELATION INEQUALITY (?X ?Y) :DOCUMENTATION \"Abstract superrelation of inequality relations.\" :<<= (=< ?X ?Y) :<<= (>= ?X ?Y) :AXIOMS (ABSTRACT INEQUALITY)) (DEFRELATION < (?X ?Y) :DOCUMENTATION \"True if ?x < ?y.\" :<<= (EXISTS ?Z (AND (< ?X ?Z) (=< ?Z ?Y))) :<<= (EXISTS ?Z (AND (=< ?X ?Z) (< ?Z ?Y)))) (ASSERT (AND (COMPUTED <) (RELATION-SPECIALIST < INEQUALITY-SPECIALIST) (RELATION-EVALUATOR < INEQUALITY-EVALUATOR))) (DEFRELATION =< (?X ?Y) :DOCUMENTATION \"True if ?x <= ?y.\" :<<= (EXISTS ?Z (AND (=< ?X ?Z) (=< ?Z ?Y))) :<<= (< ?X ?Y)) (ASSERT (AND (COMPUTED =<) (RELATION-SPECIALIST =< INEQUALITY-SPECIALIST) (RELATION-EVALUATOR =< INEQUALITY-EVALUATOR))) (DEFRELATION > (?X ?Y) :DOCUMENTATION \"True if ?x > ?y.\" :<<=>> (< ?Y ?X)) (ASSERT (AND (COMPUTED >) (RELATION-SPECIALIST > INEQUALITY-SPECIALIST) (RELATION-EVALUATOR > INEQUALITY-EVALUATOR))) (DEFRELATION >= (?X ?Y) :DOCUMENTATION \"True if ?x >= ?y.\" :<<=>> (=< ?Y ?X) :<<= (> ?X ?Y)) (ASSERT (AND (COMPUTED >=) (RELATION-SPECIALIST >= INEQUALITY-SPECIALIST) (RELATION-EVALUATOR >= INEQUALITY-EVALUATOR))) (DEFFUNCTION COLLECT-INTO-SET ((?C COLLECTION)) :-> (?L SET) :DOCUMENTATION \"Infer as many members of ?c as possible and
 collect them into a set ?l.  For example, here is a rule
 used to compute bindings for the `fillers' predicate:
 	 
-  (<= (fillers ?r ?i ?v)
+  (<= (fillers ?r ?i ?members)
       (and (bound-variables ?r ?i)
            (collect-into-set (setofall ?v (holds ?r ?i ?v)) ?members)))
 	
@@ -421,28 +431,64 @@ evaluates to a unary relation satisfied for each filler of the relation
 in `?r' applied to the instance in `?i'.  `collect-into-set' causes
 the extension of this (dynamically-defined) unary relation to be
 computed.  Note the use of `bound-variables' to screen out unbound
-variables before they are passed to the `setofall' predicate.\" :AXIOMS (RELATION-SPECIALIST COLLECT-INTO-SET COLLECT-INTO-SET-SPECIALIST)) (DEFRELATION LENGTH-OF-LIST ((?L COLLECTION) (?LENGTH INTEGER)) :DOCUMENTATION \"Computes the length of the list or set ?l.\" :AXIOMS (AND (COMPUTED LENGTH-OF-LIST) (RELATION-SPECIALIST LENGTH-OF-LIST LENGTH-OF-LIST-SPECIALIST) (SINGLE-VALUED LENGTH-OF-LIST))) (DEFRELATION MINIMUM-VALUE ((?L COLLECTION) (?MIN NUMBER)) :DOCUMENTATION \"Binds ?min to the minimum of the numbers in the list ?l.\" :AXIOMS (AND (RELATION-SPECIALIST MINIMUM-VALUE MINIMUM-OF-NUMBERS-SPECIALIST) (SINGLE-VALUED MINIMUM-VALUE))) (DEFRELATION MAXIMUM-VALUE ((?L COLLECTION) (?MAX NUMBER)) :DOCUMENTATION \"Binds ?max to the maximum of the numbers in the list ?l.\" :AXIOMS (AND (RELATION-SPECIALIST MAXIMUM-VALUE MAXIMUM-OF-NUMBERS-SPECIALIST) (SINGLE-VALUED MAXIMUM-VALUE))) (DEFRELATION SUM ((?L COLLECTION) (?SUM NUMBER)) :DOCUMENTATION \"Binds ?sum to the sum of the numbers in the list ?l.\" :AXIOMS (AND (RELATION-SPECIALIST SUM SUM-OF-NUMBERS-SPECIALIST) (SINGLE-VALUED SUM))) (DEFFUNCTION PROJECT-COLUMN ((?I INTEGER) (?C COLLECTION)) :-> (?L LIST) :DOCUMENTATION \"Project elements in column ?i (zero-based) of the tuples
-of ?c and collect them into a list ?l. \" :AXIOMS (RELATION-SPECIALIST PROJECT-COLUMN PROJECT-COLUMN-SPECIALIST)) (DEFRELATION MEAN-VALUE ((?L COLLECTION) (?MEAN NUMBER)) :DOCUMENTATION \"Binds ?mean to the mean of the numbers in ?l.\" :AXIOMS (AND (COMPUTED MEAN-VALUE) (RELATION-SPECIALIST MEAN-VALUE MEAN-OF-NUMBERS-SPECIALIST) (SINGLE-VALUED MEAN-VALUE))) (DEFRELATION MEDIAN-VALUE ((?L COLLECTION) (?MEDIAN NUMBER)) :DOCUMENTATION \"Binds ?median to the median of the numbers in ?l.\" :AXIOMS (AND (COMPUTED MEDIAN-VALUE) (RELATION-SPECIALIST MEDIAN-VALUE MEDIAN-OF-NUMBERS-SPECIALIST) (SINGLE-VALUED MEDIAN-VALUE))) (DEFRELATION STANDARD-DEVIATION ((?L COLLECTION) (?SD NUMBER)) :DOCUMENTATION \"Binds ?sd to the standard deviation of the numbers in ?l.\" :AXIOMS (AND (COMPUTED STANDARD-DEVIATION) (RELATION-SPECIALIST STANDARD-DEVIATION STANDARD-DEVIATION-SPECIALIST) (SINGLE-VALUED STANDARD-DEVIATION))) (DEFRELATION VARIANCE ((?L COLLECTION) (?VARIANCE NUMBER)) :DOCUMENTATION \"Binds ?variance to the variance of the numbers in ?l.\" :AXIOMS (AND (COMPUTED VARIANCE) (RELATION-SPECIALIST VARIANCE VARIANCE-SPECIALIST) (SINGLE-VALUED VARIANCE))) (DEFFUNCTION STRING-CONCATENATE ((?X1 STRING) (?X2 STRING)) :-> (?X3 STRING) :DOCUMENTATION \"Concatenate strings ?x1 and ?x2 and bind ?x3 to the result.\" :AXIOMS (AND (COMPUTED STRING-CONCATENATE) (RELATION-CONSTRAINT STRING-CONCATENATE CONCATENATE-CONSTRAINT) (RELATION-SPECIALIST STRING-CONCATENATE CONSTRAINT-SPECIALIST))) (DEFFUNCTION SUBSTRING ((?S STRING) (?START INTEGER) (?END INTEGER)) :-> (?SUB STRING) :DOCUMENTATION \"Generate the substring of ?s starting at position ?start
-(zero-based), ending just before position ?end and bind ?sub to the result.
+variables before they are passed to the `setofall' term.\" :RELATION-SPECIALIST COLLECT-MEMBERS-SPECIALIST) (DEFFUNCTION COLLECT-INTO-LIST ((?C COLLECTION)) :-> (?L LIST) :DOCUMENTATION \"Infer as many members of ?c as possible and
+collect them into a list ?l.  This is similar to `collect-into-set'
+but collects members in the order they are encountered.  If a member
+is derived multiple times, all occurrences are kept.  This is
+useful, for example, to collect and then sum up number-valued
+attributes of objects.\" :RELATION-SPECIALIST COLLECT-MEMBERS-SPECIALIST) (DEFFUNCTION COLLECT-INTO-ORDERED-SET ((?C COLLECTION)) :-> (?L LIST) :DOCUMENTATION \"This is similar to `collect-into-list', but if a
+member is derived multiple times, only the first occurrence is kept
+- hence, the name, even though ordered sets are represented as lists.\" :RELATION-SPECIALIST COLLECT-MEMBERS-SPECIALIST) (DEFFUNCTION COLLECT-INTO-ASCENDING-SET ((?C COLLECTION) (?SORTBY RELATION) (?ORDEREDSET LIST)) :DOCUMENTATION \"Collect elements of ?c into an ascending ?orderedSet where the position of each
+element is determined by the value computed for it by the ?sortBy relation.  Ordering is done via
+sorting (as opposed to using a comparison relation) similar to the :sort-by option to the `retrieve'
+command.  If ?sortBy is not single-valued, the position of an element is determined by its largest
+?sortBy value.  Note that, similar to other `collect-into-...' functions, ?c can be a named concept,
+a `setofall' or an enumerated collection, and ?sortBy can be a named relation or a `kappa'.\" :<<= (COLLECT-INTO-ORDERED-SET (SETOFALL (?ELEMENT) (EXISTS ?VALUE (QUERY (AND (FAIL (BOUND-VARIABLES ?VALUE)) (MEMBER-OF ?ELEMENT ?C) (HOLDS ?SORTBY ?ELEMENT ?VALUE)) :HOW-MANY :ALL :SORT-BY :VALUES-ASCENDING))) ?ORDEREDSET) :COMPUTED TRUE) (DEFFUNCTION COLLECT-INTO-DESCENDING-SET ((?C COLLECTION) (?SORTBY RELATION) (?ORDEREDSET LIST)) :DOCUMENTATION \"Collect elements of ?c into a descending ?orderedSet where the position of each
+element is determined by the value computed for it by the ?sortBy relation.  Ordering is done via
+sorting (as opposed to using a comparison relation) similar to the :sort-by option to the `retrieve'
+command.  If ?sortBy is not single-valued, the position of an element is determined by its largest
+?sortBy value.  Note that, similar to other `collect-into-...' functions, ?c can be a named concept,
+a `setofall' or an enumerated collection, and ?sortBy can be a named relation or a `kappa'.\" :<<= (COLLECT-INTO-ORDERED-SET (SETOFALL (?ELEMENT) (EXISTS ?VALUE (QUERY (AND (FAIL (BOUND-VARIABLES ?VALUE)) (MEMBER-OF ?ELEMENT ?C) (HOLDS ?SORTBY ?ELEMENT ?VALUE)) :HOW-MANY :ALL :SORT-BY :VALUES-DESCENDING))) ?ORDEREDSET) :COMPUTED TRUE) (DEFRELATION MINIMUM-ELEMENT ((?C COLLECTION) (?SORTBY RELATION) ?ELEMENT) :DOCUMENTATION \"Find those ?element(s) of ?c with the minimum ?sortBy value, for example,
+`(retrieve (minimum-element relation arity ?x))' (see also `collect-into-ascending-set').\" :<<= (EXISTS (?ORDEREDSET ?FIRSTELEMENT ?MINVALUE) (AND (COLLECT-INTO-ASCENDING-SET ?C ?SORTBY ?ORDEREDSET) (NTH-ELEMENT ?ORDEREDSET 0 ?FIRSTELEMENT) (FORK (SINGLE-VALUED ?SORTBY) (HOLDS ?SORTBY ?FIRSTELEMENT ?MINVALUE) (AND (QUERY (HOLDS ?SORTBY ?FIRSTELEMENT ?MINVALUE) :HOW-MANY :ALL :SORT-BY :VALUES-ASCENDING) (CUT))) (MEMBER-OF ?ELEMENT ?ORDEREDSET) (HOLDS ?SORTBY ?ELEMENT ?MINVALUE))) :COMPUTED TRUE) (DEFRELATION MAXIMUM-ELEMENT ((?C COLLECTION) (?SORTBY RELATION) ?ELEMENT) :DOCUMENTATION \"Find those ?element(s) of ?c with the maximum ?sortBy value, for example,
+`(retrieve (maximum-element relation arity ?x))' (see also `collect-into-descending-set').\" :<<= (EXISTS (?ORDEREDSET ?FIRSTELEMENT ?MAXVALUE) (AND (COLLECT-INTO-DESCENDING-SET ?C ?SORTBY ?ORDEREDSET) (NTH-ELEMENT ?ORDEREDSET 0 ?FIRSTELEMENT) (FORK (SINGLE-VALUED ?SORTBY) (HOLDS ?SORTBY ?FIRSTELEMENT ?MAXVALUE) (AND (QUERY (HOLDS ?SORTBY ?FIRSTELEMENT ?MAXVALUE) :HOW-MANY :ALL :SORT-BY :VALUES-DESCENDING) (CUT))) (MEMBER-OF ?ELEMENT ?ORDEREDSET) (HOLDS ?SORTBY ?ELEMENT ?MAXVALUE))) :COMPUTED TRUE) (DEFRELATION LENGTH-OF-LIST ((?L COLLECTION) (?LENGTH INTEGER)) :DOCUMENTATION \"Computes the length of the list or set ?l.\" :AXIOMS (AND (COMPUTED LENGTH-OF-LIST) (RELATION-SPECIALIST LENGTH-OF-LIST LENGTH-OF-LIST-SPECIALIST) (SINGLE-VALUED LENGTH-OF-LIST))) (DEFFUNCTION NTH-ELEMENT ((?L COLLECTION) (?N INTEGER) (?E THING)) :DOCUMENTATION \"Return the ?n-th element ?e of ?l (zero-based).
+Count from end of the list if ?n is negative.  If ?n is unbound
+and ?e is bound, this computes the position of ?e.  If both are
+unbound, collection elements and their respective positions will
+be enumerated.\" :RELATION-SPECIALIST NTH-ELEMENT-SPECIALIST) (DEFFUNCTION FIRST-ELEMENT ((?L COLLECTION) (?E THING)) :DOCUMENTATION \"Return the first element ?e of ?l.\" :COMPUTED TRUE :<=> (NTH-ELEMENT ?L 0 ?E)) (DEFFUNCTION SECOND-ELEMENT ((?L COLLECTION) (?E THING)) :DOCUMENTATION \"Return the second element ?e of ?l.\" :COMPUTED TRUE :<=> (NTH-ELEMENT ?L 1 ?E)) (DEFFUNCTION THIRD-ELEMENT ((?L COLLECTION) (?E THING)) :DOCUMENTATION \"Return the third element ?e of ?l.\" :COMPUTED TRUE :<=> (NTH-ELEMENT ?L 2 ?E)) (DEFFUNCTION FOURTH-ELEMENT ((?L COLLECTION) (?E THING)) :DOCUMENTATION \"Return the fourth element ?e of ?l.\" :COMPUTED TRUE :<=> (NTH-ELEMENT ?L 3 ?E)) (DEFFUNCTION FIFTH-ELEMENT ((?L COLLECTION) (?E THING)) :DOCUMENTATION \"Return the fifth element ?e of ?l.\" :COMPUTED TRUE :<=> (NTH-ELEMENT ?L 4 ?E)) (DEFFUNCTION NTH-HEAD ((?L LIST) (?N INTEGER) (?H LIST)) :DOCUMENTATION \"Return the ?n head elements ?h of ?l.
+Count from end of the list if ?n is negative.\" :COMPUTED TRUE :RELATION-SPECIALIST COMPUTATION-SPECIALIST :RELATION-COMPUTATION NTH-HEAD-COMPUTATION) (DEFFUNCTION NTH-REST ((?L LIST) (?N INTEGER) (?R LIST)) :DOCUMENTATION \"Return the ?n-th rest ?r of ?l (zero-based).
+Count from end of the list if ?n is negative.\" :COMPUTED TRUE :RELATION-SPECIALIST COMPUTATION-SPECIALIST :RELATION-COMPUTATION NTH-REST-COMPUTATION) (DEFFUNCTION INSERT-ELEMENT ((?L LIST) (?N INTEGER) (?E THING) (?R LIST)) :DOCUMENTATION \"Add ?e at position ?n (zero-based) to ?l to construct ?r
+ (shifts the remaining elements right).  Count from end of the list and shift
+left if ?n is  negative such that -1 inserts at the end of the list, -2 second
+to last, etc.\" :COMPUTED TRUE :RELATION-SPECIALIST COMPUTATION-SPECIALIST :RELATION-COMPUTATION INSERT-ELEMENT-COMPUTATION) (DEFFUNCTION LIST-CONCATENATE ((?X COLLECTION) (?Y COLLECTION) (?R LIST)) :DOCUMENTATION \"Concatenate lists ?x and ?y into ?r.  If ?x and/or ?y
+are not lists but sets or more general collections, the order of the
+elements in the result list ?r will be arbitrary.\" :<<= (COLLECT-INTO-LIST (SETOFALL ?E (OR (MEMBER-OF ?E ?X) (MEMBER-OF ?E ?Y))) ?R) :COMPUTED TRUE) (DEFRELATION MINIMUM-VALUE ((?L COLLECTION) (?MIN NUMBER)) :DOCUMENTATION \"Binds ?min to the minimum of the numbers in the list ?l.\" :AXIOMS (AND (RELATION-SPECIALIST MINIMUM-VALUE MINIMUM-OF-NUMBERS-SPECIALIST) (SINGLE-VALUED MINIMUM-VALUE))) (DEFRELATION MAXIMUM-VALUE ((?L COLLECTION) (?MAX NUMBER)) :DOCUMENTATION \"Binds ?max to the maximum of the numbers in the list ?l.\" :AXIOMS (AND (RELATION-SPECIALIST MAXIMUM-VALUE MAXIMUM-OF-NUMBERS-SPECIALIST) (SINGLE-VALUED MAXIMUM-VALUE))) (DEFRELATION SUM ((?L COLLECTION) (?SUM NUMBER)) :DOCUMENTATION \"Binds ?sum to the sum of the numbers in the list ?l.\" :AXIOMS (AND (RELATION-SPECIALIST SUM SUM-OF-NUMBERS-SPECIALIST) (SINGLE-VALUED SUM))) (DEFFUNCTION PROJECT-COLUMN ((?I INTEGER) (?C COLLECTION)) :-> (?L LIST) :DOCUMENTATION \"Project elements in column ?i (zero-based) of the tuples
+of ?c and collect them into a list ?l. \" :AXIOMS (RELATION-SPECIALIST PROJECT-COLUMN PROJECT-COLUMN-SPECIALIST)) (DEFRELATION MEAN-VALUE ((?L COLLECTION) (?MEAN NUMBER)) :DOCUMENTATION \"Binds ?mean to the mean of the numbers in ?l.\" :AXIOMS (AND (COMPUTED MEAN-VALUE) (RELATION-SPECIALIST MEAN-VALUE MEAN-OF-NUMBERS-SPECIALIST) (SINGLE-VALUED MEAN-VALUE))) (DEFRELATION MEDIAN-VALUE ((?L COLLECTION) (?MEDIAN NUMBER)) :DOCUMENTATION \"Binds ?median to the median of the numbers in ?l.\" :AXIOMS (AND (COMPUTED MEDIAN-VALUE) (RELATION-SPECIALIST MEDIAN-VALUE MEDIAN-OF-NUMBERS-SPECIALIST) (SINGLE-VALUED MEDIAN-VALUE))) (DEFRELATION STANDARD-DEVIATION ((?L COLLECTION) (?SD NUMBER)) :DOCUMENTATION \"Binds ?sd to the standard deviation of the numbers in ?l.\" :AXIOMS (AND (COMPUTED STANDARD-DEVIATION) (RELATION-SPECIALIST STANDARD-DEVIATION STANDARD-DEVIATION-SPECIALIST) (SINGLE-VALUED STANDARD-DEVIATION))) (DEFRELATION VARIANCE ((?L COLLECTION) (?VARIANCE NUMBER)) :DOCUMENTATION \"Binds ?variance to the variance of the numbers in ?l.\" :AXIOMS (AND (COMPUTED VARIANCE) (RELATION-SPECIALIST VARIANCE VARIANCE-SPECIALIST) (SINGLE-VALUED VARIANCE))) (DEFFUNCTION STRING-CONCATENATE ((?X THING) (?Y THING)) :-> (?Z STRING) :DOCUMENTATION \"Concatenate ?x and zero or more strings ?y (variable arity)
+and bind ?z to the result.  Coerces any type argument to a string if necessary.\" :VARIABLE-ARITY TRUE :COMPUTED TRUE :RELATION-SPECIALIST COMPUTATION-SPECIALIST :RELATION-COMPUTATION STRING-CONCATENATE-COMPUTATION) (DEFFUNCTION SUBSTRING ((?S STRING) (?START INTEGER) (?END INTEGER)) :-> (?SUB STRING) :DOCUMENTATION \"Generate the substring of ?s starting at position ?start (zero-based),
+ending just before position ?end and bind ?sub to the result.
 This is the PowerLoom equivalent to the STELLA method `subsequence'.  In
 addition, this function can be used to locate substrings in strings by
 supplying values for ?s and ?sub and allowing ?start and ?end to be
 bound by the function specialist.  In other words,
       (retrieve all (?start ?end) (substring \\\"foo\\\" ?start ?end \\\"o\\\"))
  ==>  ?start = 1, ?end = 2,
-      ?start = 2, ?end = 3.\" :AXIOMS (AND (COMPUTED SUBSTRING) (RELATION-SPECIALIST SUBSTRING SUBSEQUENCE-SPECIALIST))) (DEFFUNCTION STRING-MATCH ((?PATTERN STRING) (?OBJECT THING) (?START INTEGER) (?END INTEGER)) :-> (?MATCH-POSITION INTEGER) :DOCUMENTATION \"Match ?pattern against ?object between ?start and ?end
-(zero-based), and return the position of the first match or fail if no
-match exists.  Supplying -1 for ?end indicates the end of ?object.  ?object
-can be a named logic object or a string.  ?pattern will eventually allow
-support regular expressions, currently it only handles string literals.
-Apart from doing to-string coercion on ?object this is somewhat redundant,
-since `substring' can generate ?start/?end pairs if its string and
-substring arguments are bound.\" :AXIOMS (AND (COMPUTED STRING-MATCH) (RELATION-COMPUTATION STRING-MATCH STRING-MATCH-COMPUTATION) (RELATION-SPECIALIST STRING-MATCH COMPUTATION-SPECIALIST))) (DEFFUNCTION LENGTH ((?X THING)) :-> (?Z INTEGER) :DOCUMENTATION \"Function that returns the length of a string or a logical list.
+      ?start = 2, ?end = 3.\" :AXIOMS (AND (COMPUTED SUBSTRING) (RELATION-SPECIALIST SUBSTRING SUBSEQUENCE-SPECIALIST))) (DEFFUNCTION STRING-MATCH ((?PATTERN STRING) (?OBJECT THING) (?START INTEGER) (?END INTEGER)) :-> (?MATCH-POSITION INTEGER) :DOCUMENTATION \"Match ?pattern against ?object between ?start and ?end (zero-based),
+and return the position of the first match or fail if no match exists.
+Supplying -1 for ?end indicates the end of ?object.  ?object can be a
+named logic object or a string.  ?pattern will eventually allow
+support regular expressions, currently it only handles string
+literals.  Apart from doing to-string coercion on ?object this is
+somewhat redundant, since `substring' can generate ?start/?end pairs
+if its string and substring arguments are bound.\" :AXIOMS (AND (COMPUTED STRING-MATCH) (RELATION-COMPUTATION STRING-MATCH STRING-MATCH-COMPUTATION) (RELATION-SPECIALIST STRING-MATCH COMPUTATION-SPECIALIST))) (DEFFUNCTION STRING-MATCH-IGNORE-CASE ((?PATTERN STRING) (?OBJECT THING) (?START INTEGER) (?END INTEGER)) :-> (?MATCH-POSITION INTEGER) :DOCUMENTATION \"Match ?pattern against ?object between ?start and ?end (zero-based),
+and return the position of the first match or fail if no match exists.
+Supplying -1 for ?end indicates the end of ?object.  ?object can be a
+named logic object or a string.  This match compares the strings
+ignoring differences in letter case.\" :AXIOMS (AND (COMPUTED STRING-MATCH-IGNORE-CASE) (RELATION-COMPUTATION STRING-MATCH-IGNORE-CASE STRING-MATCH-IGNORE-CASE-COMPUTATION) (RELATION-SPECIALIST STRING-MATCH-IGNORE-CASE COMPUTATION-SPECIALIST))) (DEFFUNCTION LENGTH ((?X THING)) :-> (?Z INTEGER) :DOCUMENTATION \"Function that returns the length of a string or a logical list.
 NOT YET IMPLEMENTED FOR LISTS.\" :AXIOMS (AND (COMPUTED LENGTH) (RELATION-COMPUTATION LENGTH LENGTH-COMPUTATION) (RELATION-SPECIALIST LENGTH COMPUTATION-SPECIALIST))) (ASSERT (COMPUTED-PROCEDURE COMPUTATION-SPECIALIST)) (ASSERT (HANDLES-REVERSE-POLARITY COMPUTATION-SPECIALIST)) (ASSERT (COMPUTED-PROCEDURE CONSTRAINT-SPECIALIST)) (ASSERT (HANDLES-REVERSE-POLARITY CONSTRAINT-SPECIALIST)) (DEFFUNCTION OBJECT-NAME (?X) :-> (?C STRING) :DOCUMENTATION \"The name of the object ?X as a string.  This is just the
-name, with module prefixes NOT included.\" :AXIOMS (AND (COMPUTED OBJECT-NAME) (RELATION-COMPUTATION OBJECT-NAME OBJECT-NAME-COMPUTATION) (RELATION-SPECIALIST OBJECT-NAME COMPUTATION-SPECIALIST))) (DEFFUNCTION NAME-TO-OBJECT ((?N STRING)) :-> ?O :DOCUMENTATION \"Find or create the PowerLoom logic object ?o named by
+name, with module prefixes NOT included.\" :AXIOMS (AND (COMPUTED OBJECT-NAME) (RELATION-COMPUTATION OBJECT-NAME OBJECT-NAME-COMPUTATION) (RELATION-SPECIALIST OBJECT-NAME COMPUTATION-SPECIALIST))) (DEFFUNCTION NAME-TO-OBJECT (?N) :-> ?O :DOCUMENTATION \"Find or create the PowerLoom logic object ?o named by
 the name ?n in the current module.  We are interpreting the name ?n literally
 here, i.e., it is not a print name as assumed by PLI functions and an object
-with exactly that name will be looked up or created.  We are intentionally
+with exactly that name will be looked up or created.  If ?n is not a string,
+this will coerce it to a string first.  We are intentionally
 using a separate function here (instead of folding this into `object-name'),
 since we might want to be able to look for an object with a certain name
 but not create one if it doesn't exist.\" :AXIOMS (AND (COMPUTED NAME-TO-OBJECT) (RELATION-COMPUTATION NAME-TO-OBJECT NAME-TO-OBJECT-COMPUTATION) (RELATION-SPECIALIST NAME-TO-OBJECT COMPUTATION-SPECIALIST))) (DEFFUNCTION ARITY ((?R RELATION)) :-> (?ARITY INTEGER) :DOCUMENTATION \"The number of arguments/domains of the relation '?r'.\") (ASSERT (AND (COMPUTED ARITY) (RELATION-SPECIALIST ARITY ARITY-SPECIALIST) (HANDLES-REVERSE-POLARITY ARITY-SPECIALIST))) (DEFRELATION VARIABLE-ARITY ((?R RELATION)) :DOCUMENTATION \"Asserts that the relation ?r can take a variable
@@ -461,12 +507,12 @@ inferential connectivity between the two relations.\" :=>> (BINARY-RELATION ?INV
 denote the same object.\") (DEFRELATION DIFFERENT (?X ?Y) :DOCUMENTATION \"True if no two arguments are the same.  This is equivalent to
 `(duplicate-free (list-of ?x ?y ...))' but without the need to generate a
 collection object.  The main use for this is to state and test pairwise
-inequalities between N entities without having to generate O(N**2) statements.\" :VARIABLE-ARITY TRUE :COMPUTED TRUE :RELATION-SPECIALIST DIFFERENT-SPECIALIST) (DEFRELATION ORDERED ((?C COLLECTION)) :DOCUMENTATION \"?c is ordered if the ordering of its
+inequalities between N entities without having to generate O(N**2) statements.\" :VARIABLE-ARITY TRUE :COMPUTED TRUE :RELATION-SPECIALIST DIFFERENT-SPECIALIST :AXIOMS (HANDLES-REVERSE-POLARITY DIFFERENT-SPECIALIST)) (DEFRELATION ORDERED ((?C COLLECTION)) :DOCUMENTATION \"?c is ordered if the ordering of its
 members is significant.  Lists are ordered, while sets are not.\") (DEFRELATION COMMUTATIVE ((?R RELATION)) :DOCUMENTATION \"A relation ?r is commutative if its truth value is
-invariant with any permutation of its arguments.\" :=>> (=> (BINARY-RELATION ?R) (SYMMETRIC ?R))) (DEFRELATION REFLEXIVE ((?R RELATION)) :DOCUMENTATION \"A binary relation ?r is reflexive if it is always true when
-both of its arguments are identical.\" :=>> (BINARY-RELATION ?R) :<=> (NOT (IRREFLEXIVE ?R)) :<= (AND (BINARY-RELATION ?R) (FORALL ?X (HOLDS ?R ?X ?X))) :=> (RELATION-SPECIALIST ?R REFLEXIVE-RELATION-SPECIALIST) :AXIOMS (HANDLES-REVERSE-POLARITY REFLEXIVE-RELATION-SPECIALIST)) (DEFRELATION IRREFLEXIVE ((?R RELATION)) :DOCUMENTATION \"A binary relation ?r is irreflexive if it is false when both
-of its arguments are identical.\" :=>> (BINARY-RELATION ?R) :<=> (NOT (REFLEXIVE ?R)) :<= (AND (BINARY-RELATION ?R) (FORALL ?X (NOT (HOLDS ?R ?X ?X)))) :=> (RELATION-SPECIALIST ?R IRREFLEXIVE-RELATION-SPECIALIST) :AXIOMS (HANDLES-REVERSE-POLARITY IRREFLEXIVE-RELATION-SPECIALIST)) (DEFRELATION SYMMETRIC ((?R RELATION)) :DOCUMENTATION \"A binary relation ?r is symmetric if it is commutative.\" :=>> (BINARY-RELATION ?R) :=>> (COMMUTATIVE ?R) :=>> (FORALL (?X ?Y) (<<= (HOLDS ?R ?X ?Y) (HOLDS ?R ?Y ?X))) :<=> (NOT (ANTISYMMETRIC ?R))) (DEFRELATION ANTISYMMETRIC ((?R RELATION)) :DOCUMENTATION \"A binary relation ?r is antisymmetric if whenever (?r ?x ?y)
-is true (?r ?y ?x) is false unless ?x equals ?y.\" :=>> (BINARY-RELATION ?R) :<=> (NOT (SYMMETRIC ?R)) :=> (FORALL (?X ?Y) (=> (AND (HOLDS ?R ?X ?Y) (NOT (= ?X ?Y))) (NOT (?R ?Y ?X))))) (DEFRELATION TRANSITIVE ((?R RELATION)) :DOCUMENTATION \"A binary relation ?r is transitive if (?r ?x ?y)
+invariant with any permutation of its arguments.\" :AXIOMS (=>> (AND (COMMUTATIVE ?R) (= (ARITY ?R) 2)) (SYMMETRIC ?R))) (DEFRELATION REFLEXIVE ((?R RELATION)) :DOCUMENTATION \"A binary relation ?r is reflexive if it is always true when
+both of its arguments are identical.\" :=>> (BINARY-RELATION ?R) :=> (NOT (IRREFLEXIVE ?R)) :<= (AND (BINARY-RELATION ?R) (FORALL ?X (HOLDS ?R ?X ?X))) :=> (RELATION-SPECIALIST ?R REFLEXIVE-RELATION-SPECIALIST) :AXIOMS (HANDLES-REVERSE-POLARITY REFLEXIVE-RELATION-SPECIALIST)) (DEFRELATION IRREFLEXIVE ((?R RELATION)) :DOCUMENTATION \"A binary relation ?r is irreflexive if it is false when both
+of its arguments are identical.\" :=>> (BINARY-RELATION ?R) :=> (NOT (REFLEXIVE ?R)) :<= (AND (BINARY-RELATION ?R) (FORALL ?X (NOT (HOLDS ?R ?X ?X)))) :=> (RELATION-SPECIALIST ?R IRREFLEXIVE-RELATION-SPECIALIST) :AXIOMS (HANDLES-REVERSE-POLARITY IRREFLEXIVE-RELATION-SPECIALIST)) (DEFRELATION SYMMETRIC ((?R RELATION)) :DOCUMENTATION \"A binary relation ?r is symmetric if it is commutative.\" :=>> (BINARY-RELATION ?R) :=>> (COMMUTATIVE ?R) :=>> (FORALL (?X ?Y) (<<= (HOLDS ?R ?X ?Y) (HOLDS ?R ?Y ?X))) :=> (NOT (ANTISYMMETRIC ?R))) (DEFRELATION ANTISYMMETRIC ((?R RELATION)) :DOCUMENTATION \"A binary relation ?r is antisymmetric if whenever (?r ?x ?y)
+is true (?r ?y ?x) is false unless ?x equals ?y.\" :=>> (BINARY-RELATION ?R) :=> (NOT (SYMMETRIC ?R)) :=> (FORALL (?X ?Y) (=> (AND (HOLDS ?R ?X ?Y) (NOT (= ?X ?Y))) (NOT (?R ?Y ?X))))) (DEFRELATION TRANSITIVE ((?R RELATION)) :DOCUMENTATION \"A binary relation ?r is transitive if (?r ?x ?y)
 and (?r ?y ?z) implies that (?r ?x ?z).  Note that functions cannot
 be transitive, since their single-valuedness would not allow multiple
 different values such as (?r ?x ?y) and (?r ?x ?z) due to the Unique
@@ -489,7 +535,7 @@ when we execute the same retrieve:
 \") (DEFRELATION ABSTRACT ((?R RELATION)) :DOCUMENTATION \"True if there are no direct assertions made
 to the relation ?r.\") (DEFFUNCTION CONCEPT-PROTOTYPE ((?C CONCEPT)) :-> ?I :DOCUMENTATION \"Function that, given a concept, returns a prototypical
 instance that inherits all constraints that apply to any concept member,
-and has no additional constraints.\" :AXIOMS (AND (RELATION-SPECIALIST CONCEPT-PROTOTYPE CONCEPT-PROTOTYPE-SPECIALIST) (TOTAL CONCEPT-PROTOTYPE)) :SYNONYM CLASS-PROTOTYPE) (DEFRULE \"'Instance-of' chained with 'subset-of' rule\" (<= (INSTANCE-OF ?X ?C2) (AND (BOUND-VARIABLES ?C2) (INSTANCE-OF ?X ?C1) (SUBSET-OF ?C1 ?C2)))) (DEFRULE \"'Not instance-of' rule\" (<= (NOT (INSTANCE-OF ?X ?C)) (AND (COLLECTION ?C) (CLOSED ?C) (FAIL (INSTANCE-OF ?X ?C))))) (DEFRULE \"Forward 'instance-of' rule\" (=> (INSTANCE-OF ?X ?C) (AND (CONCEPT ?C) (HOLDS ?C ?X))) :FORWARD? TRUE) (DEFCONCEPT USER-THING (?X) :DOCUMENTATION \"The class of user-defined things.\") (DEFRELATION CASE-MATCH ((?X THING) (?Y THING))) (DEFRULE CASE-MATCH-RULE (FORALL ((?X THING) (?Y THING)) (=> (= ?X ?Y) (CASE-MATCH ?X ?Y)))) (DEFRELATION SOFT-EQ ((?X THING) (?Y THING))) (DEFRULE SOFT-EQ-RULE (FORALL ((?X THING) (?Y THING)) (=> (= ?X ?Y) (SOFT-EQ ?X ?Y)))) (DEFFUNCTION CONTEXT-OF (?X) :-> (?C CONTEXT) :AXIOMS (AND (COMPUTED CONTEXT-OF) (RELATION-COMPUTATION CONTEXT-OF CONTEXT-OF-COMPUTATION) (RELATION-SPECIALIST CONTEXT-OF COMPUTATION-SPECIALIST))) (DEFRELATION DISJOINT ((?C1 COLLECTION) (?C2 COLLECTION)) :DOCUMENTATION \"True if the intersection of ?c1 and ?c2 is empty.\" :IRREFLEXIVE TRUE :<<= (CHEAP-DISJOINT ?C1 ?C2)) (DEFRELATION MUTUALLY-DISJOINT-COLLECTION ((?S SET)) :DOCUMENTATION \"True if the members of ?s are pair-wise disjoint.  Used
+and has no additional constraints.\" :RELATION-SPECIALIST CONCEPT-PROTOTYPE-SPECIALIST :TOTAL TRUE :CLOSED TRUE :SYNONYM CLASS-PROTOTYPE) (DEFRULE \"'Instance-of' chained with 'subset-of' rule\" (<= (INSTANCE-OF ?X ?C2) (AND (BOUND-VARIABLES ?C2) (INSTANCE-OF ?X ?C1) (SUBSET-OF ?C1 ?C2)))) (DEFRULE \"'Not instance-of' rule\" (<= (NOT (INSTANCE-OF ?X ?C)) (AND (COLLECTION ?C) (CLOSED ?C) (FAIL (INSTANCE-OF ?X ?C))))) (DEFRULE \"Forward 'instance-of' rule\" (=> (INSTANCE-OF ?X ?C) (AND (CONCEPT ?C) (HOLDS ?C ?X))) :FORWARD? TRUE) (DEFCONCEPT USER-THING (?X) :DOCUMENTATION \"The class of user-defined things.\") (DEFRELATION CASE-MATCH ((?X THING) (?Y THING))) (DEFRULE CASE-MATCH-RULE (FORALL ((?X THING) (?Y THING)) (=> (= ?X ?Y) (CASE-MATCH ?X ?Y)))) (DEFRELATION SOFT-EQ ((?X THING) (?Y THING))) (DEFRULE SOFT-EQ-RULE (FORALL ((?X THING) (?Y THING)) (=> (= ?X ?Y) (SOFT-EQ ?X ?Y)))) (DEFFUNCTION CONTEXT-OF (?X) :-> (?C CONTEXT) :AXIOMS (AND (COMPUTED CONTEXT-OF) (RELATION-COMPUTATION CONTEXT-OF CONTEXT-OF-COMPUTATION) (RELATION-SPECIALIST CONTEXT-OF COMPUTATION-SPECIALIST))) (DEFRELATION DISJOINT ((?C1 COLLECTION) (?C2 COLLECTION)) :DOCUMENTATION \"True if the intersection of ?c1 and ?c2 is empty.\" :IRREFLEXIVE TRUE :<<= (CHEAP-DISJOINT ?C1 ?C2)) (DEFRELATION MUTUALLY-DISJOINT-COLLECTION ((?S SET)) :DOCUMENTATION \"True if the members of ?s are pair-wise disjoint.  Used
 most often to expresse disjointness constraints between concepts.  For
 example
 	 

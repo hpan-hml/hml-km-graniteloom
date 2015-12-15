@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -118,8 +118,7 @@ public class IncrementalPartialMatch extends PartialMatchFrame {
               highestscore = latestscore;
               partialmatchframe.dynamicCutoff = highestscore + epsilon;
               if ((!maximizescoreP) ||
-                  (!((baseframe.truthValue == Logic.UNKNOWN_TRUTH_VALUE) ||
-                  (baseframe.truthValue == null)))) {
+                  TruthValue.knownTruthValueP(baseframe.truthValue)) {
                 break loop000;
               }
             }
@@ -639,8 +638,8 @@ public class IncrementalPartialMatch extends PartialMatchFrame {
       if (weight == Stella.NULL_FLOAT) {
         weight = 1.0;
       }
-      self.argumentScores = Stella_Object.cons(FloatWrapper.wrapFloat(score), self.argumentScores);
-      self.argumentWeights = Stella_Object.cons(FloatWrapper.wrapFloat(weight), self.argumentWeights);
+      self.argumentScores = Cons.cons(FloatWrapper.wrapFloat(score), self.argumentScores);
+      self.argumentWeights = Cons.cons(FloatWrapper.wrapFloat(weight), self.argumentWeights);
       self.accumulatedScore = self.accumulatedScore + (score * weight);
       self.accumulatedWeight = self.accumulatedWeight + weight;
     }

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -71,6 +71,7 @@ public class StellaHashTable extends AbstractHashTable {
       self.freeElements = Stella.NULL_INTEGER;
       self.initialSize = 50;
       self.size = Stella.NULL_INTEGER;
+      self.theTable = null;
       self.initializeHashTable();
       return (self);
     }
@@ -173,7 +174,7 @@ public class StellaHashTable extends AbstractHashTable {
             value = iter000.value;
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Stella_Object.cons(key, Stella_Object.cons(value, Stella.NIL)), Stella.NIL);
+                collect000 = Cons.cons(Cons.cons(key, Cons.cons(value, Stella.NIL)), Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect000;
                 }
@@ -184,7 +185,7 @@ public class StellaHashTable extends AbstractHashTable {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Stella_Object.cons(key, Stella_Object.cons(value, Stella.NIL)), Stella.NIL);
+                collect000.rest = Cons.cons(Cons.cons(key, Cons.cons(value, Stella.NIL)), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -558,7 +559,7 @@ public class StellaHashTable extends AbstractHashTable {
       }
       self.theTable = newtable;
       self.size = newsize;
-      self.freeElements = Stella.max(self.freeElements + Native.floor((newsize - size) * Stella.$STELLA_HASH_TABLE_AVG_BUCKET_LENGTH$), 0);
+      self.freeElements = Stella.integer_max(self.freeElements + Native.floor((newsize - size) * Stella.$STELLA_HASH_TABLE_AVG_BUCKET_LENGTH$), 0);
     }
   }
 

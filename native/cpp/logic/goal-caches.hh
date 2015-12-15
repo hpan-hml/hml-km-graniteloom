@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -116,6 +116,7 @@ Keyword* continueCachedBindingsProof(ControlFrame* frame, Keyword* lastmove);
 boolean topLevelQueryContextP(Context* self);
 boolean cacheQueryResultsP();
 char* toggleGoalCaching();
+StringWrapper* toggleGoalCachingEvaluatorWrapper(Cons* arguments);
 AtomicGoalCache* newAtomicGoalCache();
 Object* accessAtomicGoalCacheSlotValue(AtomicGoalCache* self, Symbol* slotname, Object* value, boolean setvalueP);
 void printAtomicGoalCache(AtomicGoalCache* self, std::ostream* stream);
@@ -181,6 +182,8 @@ extern Symbol* SYM_GOAL_CACHES_LOGIC_GOAL_CACHE_LIST;
 extern Keyword* KWD_GOAL_CACHES_GOAL_INSTANTIATES_CACHE;
 extern Keyword* KWD_GOAL_CACHES_CACHE_INSTANTIATES_GOAL;
 extern Keyword* KWD_GOAL_CACHES_ATOMIC_GOAL;
+extern Surrogate* SGT_GOAL_CACHES_LOGIC_DESCRIPTION;
+extern Symbol* SYM_GOAL_CACHES_LOGIC_EXTERNAL_VARIABLES;
 extern Surrogate* SGT_GOAL_CACHES_PL_KERNEL_KB_FRAME_PREDICATE;
 extern Keyword* KWD_GOAL_CACHES_EXECUTE_QUERY;
 extern Symbol* SYM_GOAL_CACHES_LOGIC_CHECK_FOR_CACHED_GOALSp;

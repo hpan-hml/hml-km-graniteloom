@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -87,6 +87,7 @@ void resetPowerloom();
 void clearCaches();
 Environment* newEnvironment();
 Object* accessEnvironmentSlotValue(Environment* self, Symbol* slotname, Object* value, boolean setvalueP);
+boolean testEnvironmentLevelP(Environment* env, char* level);
 PlIterator* newPlIterator();
 Object* accessPlIteratorSlotValue(PlIterator* self, Symbol* slotname, Object* value, boolean setvalueP);
 PlIterator* consToPlIterator(Cons* self);
@@ -147,6 +148,7 @@ PlIterator* getDirectConceptInstances(LogicObject* concept, Module* module, Envi
 PlIterator* sGetDirectConceptInstances(char* conceptName, char* moduleName, Environment* environment);
 PlIterator* getConceptInstancesMatchingValue(LogicObject* concept, LogicObject* relation, Object* value, Module* module, Environment* environment);
 Object* getConceptInstanceMatchingValue(LogicObject* concept, LogicObject* relation, Object* value, Module* module, Environment* environment);
+Cons* helpGetTypes(LogicObject* object, Module* module, Environment* environment);
 PlIterator* getTypes(LogicObject* object, Module* module, Environment* environment);
 PlIterator* getDirectTypes(LogicObject* object, Module* module, Environment* environment);
 PlIterator* getRelationExtension(LogicObject* relation, Module* module, Environment* environment);
@@ -178,9 +180,11 @@ LogicObject* createFunction(char* name, int arity, Module* module, Environment* 
 LogicObject* sCreateFunction(char* name, int arity, char* moduleName, Environment* environment);
 void registerSpecialistFunction(char* name, cpp_function_code functionReference, Module* module, Environment* environment);
 void sRegisterSpecialistFunction(char* name, char* nativeName, char* moduleName, Environment* environment);
+void registerComputationFunction(char* name, cpp_function_code functionReference, int arity, Module* module, Environment* environment);
+void sRegisterComputationFunction(char* name, char* nativeName, int arity, char* moduleName, Environment* environment);
 LogicObject* createEnumeratedList(Cons* members, Module* module, Environment* environment);
 LogicObject* createEnumeratedSet(Cons* members, Module* module, Environment* environment);
-void destroyObject(LogicObject* object);
+void destroyObject(Object* object);
 void sDestroyObject(char* objectName, char* moduleName, Environment* environment);
 Proposition* assertUnaryProposition(LogicObject* relation, Object* arg, Module* module, Environment* environment);
 Proposition* assertBinaryProposition(LogicObject* relation, Object* arg, Object* value, Module* module, Environment* environment);
@@ -207,8 +211,11 @@ LogicObject* sGetRange(char* relationName, char* moduleName, Environment* enviro
 LogicObject* getNthDomain(LogicObject* relation, int n);
 LogicObject* sGetNthDomain(char* relationName, int n, char* moduleName, Environment* environment);
 void load(char* filename, Environment* environment);
+void loadInModule(char* filename, Module* module, Environment* environment);
 void loadStream(InputStream* stream, Environment* environment);
+void loadStreamInModule(InputStream* stream, Module* module, Environment* environment);
 void loadNativeStream(std::istream* stream, Environment* environment);
+void loadNativeStreamInModule(std::istream* stream, Module* module, Environment* environment);
 void saveModule(Module* module, char* filename, char* ifexists, Environment* environment);
 void sSaveModule(char* moduleName, char* filename, char* ifexists, Environment* environment);
 LogicObject* getPredicate(Proposition* prop);
@@ -232,6 +239,7 @@ boolean isEnumeratedList(Object* obj);
 boolean isTrue(TruthValue* tv);
 boolean isFalse(TruthValue* tv);
 boolean isUnknown(TruthValue* tv);
+boolean isKnown(TruthValue* tv);
 boolean isInconsistent(TruthValue* tv);
 boolean isStrict(TruthValue* tv);
 boolean isDefault(TruthValue* tv);
@@ -273,7 +281,6 @@ extern Symbol* SYM_PLI_LOGIC_FAIL;
 extern Symbol* SYM_PLI_STELLA_EXISTS;
 extern Symbol* SYM_PLI_LOGIC_pY;
 extern Symbol* SYM_PLI_PLI_PROPER_SUBRELATION;
-extern Keyword* KWD_PLI_ISA;
 extern Symbol* SYM_PLI_STELLA_TRUE;
 extern Symbol* SYM_PLI_STELLA_FALSE;
 extern Keyword* KWD_PLI_CASE_SENSITIVEp;
@@ -282,7 +289,8 @@ extern Keyword* KWD_PLI_ERROR;
 extern Keyword* KWD_PLI_RETRACT_TRUE;
 extern Keyword* KWD_PLI_ASSERT_TRUE;
 extern Surrogate* SGT_PLI_LOGIC_PROPOSITION;
-extern Symbol* SYM_PLI_LOGIC_DESCRIPTION;
+extern Surrogate* SGT_PLI_PL_KERNEL_KB_NTH_DOMAIN;
+extern Keyword* KWD_PLI_MODULE;
 extern Surrogate* SGT_PLI_STELLA_INTEGER_WRAPPER;
 extern Surrogate* SGT_PLI_STELLA_FLOAT_WRAPPER;
 extern Surrogate* SGT_PLI_STELLA_NUMBER_WRAPPER;

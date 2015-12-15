@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -280,6 +280,9 @@ char* lookupExplanationPhrase(Keyword* phrasekey, Cons* modifiers, Keyword* audi
 
     if (!((boolean)(vocabulary))) {
       vocabulary = ((HashTable*)(oEXPLANATION_VOCABULARIESo->lookup(KWD_EXPLANATIONS_TECHNICAL)));
+    }
+    if (!((boolean)(phrasekey))) {
+      phrasekey = KWD_EXPLANATIONS_UNKNOWN_RULE;
     }
     entry = ((Cons*)(vocabulary->lookup(phrasekey)));
     if (!((boolean)(entry))) {
@@ -685,7 +688,7 @@ void printExplanationHeader(Justification* self, OutputStream* stream, KeyValueL
 
 void printExplanationText(Justification* self, OutputStream* stream, KeyValueList* mapping) {
   { char* introduction = "";
-    char* inference = "";
+    char* inference = NULL;
     char* amplification = "";
     Cons* modifiers = NIL;
     Cons* modifiersI = cons(KWD_EXPLANATIONS_AMPLIFICATION, NIL);
@@ -728,6 +731,9 @@ void printExplanationText(Justification* self, OutputStream* stream, KeyValueLis
           (!stringEqlP(amplification, inference))) {
         *(stream->nativeStream) << " " << amplification;
       }
+      if (self->inferenceDirection() == KWD_EXPLANATIONS_FORWARD) {
+        *(stream->nativeStream) << " [Forward]";
+      }
       *(stream->nativeStream) << std::endl;
     }
     else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
@@ -737,10 +743,17 @@ void printExplanationText(Justification* self, OutputStream* stream, KeyValueLis
           (!stringEqlP(amplification, inference))) {
         *(stream->nativeStream) << " " << amplification;
       }
+      if (self->inferenceDirection() == KWD_EXPLANATIONS_FORWARD) {
+        *(stream->nativeStream) << " [Forward]";
+      }
       *(stream->nativeStream) << std::endl;
     }
     else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_XML) {
-      *(stream->nativeStream) << "<method>" << inference << "</method>" << std::endl;
+      *(stream->nativeStream) << "<method";
+      if (self->inferenceDirection() == KWD_EXPLANATIONS_FORWARD) {
+        *(stream->nativeStream) << " direction='forward'";
+      }
+      *(stream->nativeStream) << ">" << inference << "</method>" << std::endl;
     }
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
@@ -843,13 +856,16 @@ char* makeRuleOriginExplanationPhrase(Justification* self) {
   }
 }
 
-KeyValueList* getExplanationSubstitution(Justification* self) {
-  { Justification* rulejustification = ((Justification*)(self->antecedents->value));
-    Proposition* rule = rulejustification->proposition;
-    Justification* antecedentjustification = ((Justification*)(self->antecedents->rest->value));
-    KeyValueList* antecedentsubstitution = antecedentjustification->substitution;
+KeyValueMap* getExplanationSubstitution(Justification* self) {
+  { Justification* ruleJustification = ((Justification*)(self->antecedents->value));
+    Proposition* rule = ruleJustification->proposition;
+    Justification* antecedentJustification = ((Justification*)(self->antecedents->rest->value));
+    KeyValueMap* antecedentSubstitution = antecedentJustification->substitution;
 
-    return (antecedentsubstitution);
+    if (isaP(self, SGT_EXPLANATIONS_LOGIC_FORWARD_JUSTIFICATION)) {
+      antecedentSubstitution = self->substitution;
+    }
+    return (antecedentSubstitution);
   }
 }
 
@@ -956,7 +972,7 @@ void printExplanationSubstitution(Justification* self, OutputStream* stream, Key
   mapping = mapping;
   if ((self->inferenceRule == KWD_EXPLANATIONS_MODUS_PONENS) ||
       (self->inferenceRule == KWD_EXPLANATIONS_MODUS_TOLLENS)) {
-    { KeyValueList* substitution = getExplanationSubstitution(self);
+    { KeyValueMap* substitution = getExplanationSubstitution(self);
       int nofvars = NULL_INTEGER;
 
       if (((boolean)(substitution))) {
@@ -985,17 +1001,16 @@ void printExplanationSubstitution(Justification* self, OutputStream* stream, Key
         }
         { Object* var = NULL;
           Object* value = NULL;
-          KvCons* iter000 = substitution->theKvList;
+          DictionaryIterator* iter000 = ((DictionaryIterator*)(substitution->allocateIterator()));
           int i = NULL_INTEGER;
           int iter001 = 1;
           int upperBound000 = nofvars;
           boolean unboundedP000 = upperBound000 == NULL_INTEGER;
 
           for  (var, value, iter000, i, iter001, upperBound000, unboundedP000; 
-                ((boolean)(iter000)) &&
+                iter000->nextP() &&
                     (unboundedP000 ||
                      (iter001 <= upperBound000)); 
-                iter000 = iter000->rest,
                 iter001 = iter001 + 1) {
             var = iter000->key;
             value = iter000->value;
@@ -1056,10 +1071,10 @@ void printExplanationAntecedents(Justification* self, OutputStream* stream, KeyV
         info = explanationInfo(antecedent, mapping);
         if (!((boolean)(info))) {
           info = registerJustification(antecedent, mapping);
-          info->label = stringConcatenate(label, ".", 1, integerToString(newantecedentsindex = newantecedentsindex + 1));
+          info->label = stringConcatenate(label, ".", 1, integerToString(((long long int)(newantecedentsindex = newantecedentsindex + 1))));
           info->depth = depth + 1;
         }
-        maxlabellength = stella::max(maxlabellength, strlen((info->label)));
+        maxlabellength = stella::integerMax(maxlabellength, strlen((info->label)));
         if (!havemarkedantecedentP) {
           havemarkedantecedentP = markAsExplicitAssertionP(antecedent) ||
               markAsFailedGoalP(antecedent);
@@ -1521,11 +1536,13 @@ void helpStartupExplanations1() {
     KWD_EXPLANATIONS_PRIMITIVE_STRATEGY = ((Keyword*)(internRigidSymbolWrtModule("PRIMITIVE-STRATEGY", NULL, 2)));
     KWD_EXPLANATIONS_SCAN_PROPOSITIONS = ((Keyword*)(internRigidSymbolWrtModule("SCAN-PROPOSITIONS", NULL, 2)));
     SYM_EXPLANATIONS_LOGIC_MASTER_PROPOSITION = ((Symbol*)(internRigidSymbolWrtModule("MASTER-PROPOSITION", NULL, 0)));
+    KWD_EXPLANATIONS_FORWARD = ((Keyword*)(internRigidSymbolWrtModule("FORWARD", NULL, 2)));
     KWD_EXPLANATIONS_SCAN_COLLECTION = ((Keyword*)(internRigidSymbolWrtModule("SCAN-COLLECTION", NULL, 2)));
     KWD_EXPLANATIONS_LOOKUP_ASSERTIONS = ((Keyword*)(internRigidSymbolWrtModule("LOOKUP-ASSERTIONS", NULL, 2)));
     KWD_EXPLANATIONS_EQUIVALENCE = ((Keyword*)(internRigidSymbolWrtModule("EQUIVALENCE", NULL, 2)));
     SYM_EXPLANATIONS_LOGIC_COMPLEMENT_DESCRIPTION = ((Symbol*)(internRigidSymbolWrtModule("COMPLEMENT-DESCRIPTION", NULL, 0)));
     SGT_EXPLANATIONS_LOGIC_NAMED_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("NAMED-DESCRIPTION", NULL, 1)));
+    SGT_EXPLANATIONS_LOGIC_FORWARD_JUSTIFICATION = ((Surrogate*)(internRigidSymbolWrtModule("FORWARD-JUSTIFICATION", NULL, 1)));
     SGT_EXPLANATIONS_LOGIC_ALTERNATIVE_BINDINGS_SET = ((Surrogate*)(internRigidSymbolWrtModule("ALTERNATIVE-BINDINGS-SET", NULL, 1)));
     KWD_EXPLANATIONS_MODUS_PONENS = ((Keyword*)(internRigidSymbolWrtModule("MODUS-PONENS", NULL, 2)));
     KWD_EXPLANATIONS_MODUS_TOLLENS = ((Keyword*)(internRigidSymbolWrtModule("MODUS-TOLLENS", NULL, 2)));
@@ -1648,6 +1665,7 @@ void startupExplanations() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *EXPLANATION-FORMAT* KEYWORD :ASCII :DOCUMENTATION \"Keyword to control the explanation format.\nValid values are :ASCII, :HTML and :XML\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *EXPLANATION-STYLE* KEYWORD :BRIEF :DOCUMENTATION \"Keywords that controls how detailed explanations will be.\nValid values are :VERBOSE and :BRIEF.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *EXPLANATION-AUDIENCE* KEYWORD :TECHNICAL :DOCUMENTATION \"Keywords that controls the language for justifications.\nValid values are :TECHNICAL and :LAY\" :PUBLIC? TRUE)");
@@ -1751,6 +1769,8 @@ Keyword* KWD_EXPLANATIONS_SCAN_PROPOSITIONS = NULL;
 
 Symbol* SYM_EXPLANATIONS_LOGIC_MASTER_PROPOSITION = NULL;
 
+Keyword* KWD_EXPLANATIONS_FORWARD = NULL;
+
 Keyword* KWD_EXPLANATIONS_SCAN_COLLECTION = NULL;
 
 Keyword* KWD_EXPLANATIONS_LOOKUP_ASSERTIONS = NULL;
@@ -1760,6 +1780,8 @@ Keyword* KWD_EXPLANATIONS_EQUIVALENCE = NULL;
 Symbol* SYM_EXPLANATIONS_LOGIC_COMPLEMENT_DESCRIPTION = NULL;
 
 Surrogate* SGT_EXPLANATIONS_LOGIC_NAMED_DESCRIPTION = NULL;
+
+Surrogate* SGT_EXPLANATIONS_LOGIC_FORWARD_JUSTIFICATION = NULL;
 
 Surrogate* SGT_EXPLANATIONS_LOGIC_ALTERNATIVE_BINDINGS_SET = NULL;
 

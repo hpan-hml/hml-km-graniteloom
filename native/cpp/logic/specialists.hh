@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -74,9 +74,27 @@ public:
   virtual boolean nextP();
 };
 
+class ForkProofAdjunct : public ProofAdjunct {
+public:
+  Justification* conditionJustification;
+  ControlFrame* downFrame;
+public:
+  virtual Surrogate* primaryType();
+};
+
+class SavedInferenceLevelProofAdjunct : public ProofAdjunct {
+public:
+  InferenceLevel* savedInferenceLevel;
+  InferenceLevel* inferenceLevel;
+  ControlFrame* downFrame;
+public:
+  virtual Surrogate* primaryType();
+};
+
 class SavedContextProofAdjunct : public ProofAdjunct {
 public:
   Context* savedContext;
+  ControlFrame* downFrame;
 public:
   virtual Surrogate* primaryType();
 };
@@ -100,6 +118,8 @@ boolean nullWrapperP(Object* self);
 Keyword* nativeSlotReaderSpecialist(ControlFrame* frame, Keyword* lastmove);
 SubstringPositionIterator* newSubstringPositionIterator(char* superString, char* subString);
 Object* accessSubstringPositionIteratorSlotValue(SubstringPositionIterator* self, Symbol* slotname, Object* value, boolean setvalueP);
+boolean computationInputBoundP(Object* value);
+Object* computeRelationValue(Proposition* proposition, cpp_function_code code, boolean errorP);
 
 } // end of namespace logic
 
@@ -109,6 +129,22 @@ namespace pl_kernel_kb {
   using namespace logic;
 
 Keyword* computationSpecialist(ControlFrame* frame, Keyword* lastmove);
+
+} // end of namespace pl_kernel_kb
+
+
+namespace logic {
+  using namespace stella;
+
+Object* computeSimpleRelationConstraint(Proposition* proposition, cpp_function_code code, boolean errorP, int& _Return1);
+
+} // end of namespace logic
+
+
+namespace pl_kernel_kb {
+  using namespace stella;
+  using namespace logic;
+
 Keyword* constraintSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* squareRootSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* absoluteValueSpecialist(ControlFrame* frame, Keyword* lastmove);
@@ -149,8 +185,29 @@ namespace pl_kernel_kb {
 
 Keyword* subsetOfSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* holdsSpecialist(ControlFrame* frame, Keyword* lastmove);
+Object* propositionRelationComputation(Proposition* p);
+Object* propositionArgumentComputation(Proposition* p, IntegerWrapper* i);
+Skolem* propositionArgumentsComputation(Proposition* p);
+IntegerWrapper* propositionArityComputation(Proposition* p);
 Keyword* cutSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* boundVariablesSpecialist(ControlFrame* frame, Keyword* lastmove);
+
+} // end of namespace pl_kernel_kb
+
+
+namespace logic {
+  using namespace stella;
+
+ForkProofAdjunct* newForkProofAdjunct();
+Object* accessForkProofAdjunctSlotValue(ForkProofAdjunct* self, Symbol* slotname, Object* value, boolean setvalueP);
+
+} // end of namespace logic
+
+
+namespace pl_kernel_kb {
+  using namespace stella;
+  using namespace logic;
+
 Keyword* forkSpecialist(ControlFrame* frame, Keyword* lastmove);
 
 } // end of namespace pl_kernel_kb
@@ -170,6 +227,25 @@ namespace pl_kernel_kb {
   using namespace logic;
 
 Keyword* querySpecialist(ControlFrame* frame, Keyword* lastmove);
+
+} // end of namespace pl_kernel_kb
+
+
+namespace logic {
+  using namespace stella;
+
+SavedInferenceLevelProofAdjunct* newSavedInferenceLevelProofAdjunct();
+Object* accessSavedInferenceLevelProofAdjunctSlotValue(SavedInferenceLevelProofAdjunct* self, Symbol* slotname, Object* value, boolean setvalueP);
+InferenceLevel* leveledQueryRelationToInferenceLevel(Surrogate* relation);
+
+} // end of namespace logic
+
+
+namespace pl_kernel_kb {
+  using namespace stella;
+  using namespace logic;
+
+Keyword* leveledQuerySpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* conceptPrototypeSpecialist(ControlFrame* frame, Keyword* lastmove);
 
 } // end of namespace pl_kernel_kb
@@ -223,6 +299,7 @@ boolean singleValuedGoalP(Proposition* proposition, Cons* iovariables, Cons* bou
 boolean helpSingleValuedGoalP(Proposition* proposition, Cons* iovariables, Cons* boundvariables, boolean recursiveP);
 void helpCollectSinglyBoundVariables(Proposition* proposition, List* boundvariables, boolean recursiveP);
 void createCollectDescriptionExtensionFrame(ControlFrame* frame, Description* description);
+boolean collectDescriptionExtensionFrameP(ControlFrame* frame);
 
 } // end of namespace logic
 
@@ -231,8 +308,12 @@ namespace pl_kernel_kb {
   using namespace stella;
   using namespace logic;
 
-Keyword* collectIntoSetSpecialist(ControlFrame* frame, Keyword* lastmove);
+Keyword* collectMembersSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* lengthOfListSpecialist(ControlFrame* frame, Keyword* lastmove);
+Keyword* nthElementSpecialist(ControlFrame* frame, Keyword* lastmove);
+Skolem* nthHeadComputation(Skolem* list, IntegerWrapper* narg);
+Skolem* nthRestComputation(Skolem* list, IntegerWrapper* narg);
+Skolem* insertElementComputation(Skolem* list, IntegerWrapper* narg, Object* element);
 Keyword* minimumOfNumbersSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* maximumOfNumbersSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* sumOfNumbersSpecialist(ControlFrame* frame, Keyword* lastmove);
@@ -369,7 +450,7 @@ Keyword* rangeTypeSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* reflexiveRelationSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* irreflexiveRelationSpecialist(ControlFrame* frame, Keyword* lastmove);
 StringWrapper* objectNameComputation(Object* objectarg);
-Object* nameToObjectComputation(StringWrapper* namearg);
+Object* nameToObjectComputation(Object* namearg);
 IntegerWrapper* arityComputation(Object* descriptionarg);
 Keyword* aritySpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* relationHierarchySpecialist(ControlFrame* frame, Keyword* lastmove);
@@ -422,9 +503,15 @@ cpp_function_code lookupNativeSpecialist(char* nativeName);
 void registerSpecialistFunction(char* name, cpp_function_code code);
 void registerSpecialistFunctionName(char* stellaName, char* nativeName);
 void registerSpecialistFunctionNameEvaluatorWrapper(Cons* arguments);
+cpp_function_code lookupNativeComputation(char* nativeName, int arity);
+void registerComputationFunction(char* name, cpp_function_code code, int arity);
+void registerComputationFunctionName(char* stellaName, char* nativeName, int arity);
+void registerComputationFunctionNameEvaluatorWrapper(Cons* arguments);
 void helpStartupSpecialists1();
 void helpStartupSpecialists2();
 void helpStartupSpecialists3();
+void helpStartupSpecialists4();
+void helpStartupSpecialists5();
 void startupSpecialists();
 
 // Auxiliary global declarations:
@@ -450,8 +537,9 @@ extern Symbol* SYM_SPECIALISTS_LOGIC_SUPER_STRING;
 extern Symbol* SYM_SPECIALISTS_LOGIC_SUB_STRING;
 extern Symbol* SYM_SPECIALISTS_STELLA_START;
 extern Symbol* SYM_SPECIALISTS_LOGIC_SUB_LENGTH;
-extern Surrogate* SGT_SPECIALISTS_LOGIC_PATTERN_VARIABLE;
 extern Surrogate* SGT_SPECIALISTS_LOGIC_SKOLEM;
+extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_TOTAL;
+extern Keyword* KWD_SPECIALISTS_ERROR;
 extern Symbol* SYM_SPECIALISTS_STELLA_ITERATOR;
 extern Surrogate* SGT_SPECIALISTS_STELLA_NUMBER_WRAPPER;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_COLLECTIONOF;
@@ -476,6 +564,16 @@ extern Keyword* KWD_SPECIALISTS_PREDICATE;
 extern Keyword* KWD_SPECIALISTS_ISA;
 extern Keyword* KWD_SPECIALISTS_AND;
 extern Symbol* SYM_SPECIALISTS_STELLA_ARGUMENTS;
+extern Surrogate* SGT_SPECIALISTS_LOGIC_FORK_PROOF_ADJUNCT;
+extern Symbol* SYM_SPECIALISTS_LOGIC_CONDITION_JUSTIFICATION;
+extern Symbol* SYM_SPECIALISTS_LOGIC_DOWN_FRAME;
+extern Symbol* SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT;
+extern Keyword* KWD_SPECIALISTS_FAIL_INTRODUCTION;
+extern Keyword* KWD_SPECIALISTS_FORK_ELSE;
+extern Keyword* KWD_SPECIALISTS_FORK_THEN;
+extern Symbol* SYM_SPECIALISTS_LOGIC_JUSTIFICATION;
+extern Keyword* KWD_SPECIALISTS_TECHNICAL;
+extern Keyword* KWD_SPECIALISTS_LAY;
 extern Surrogate* SGT_SPECIALISTS_LOGIC_PROPOSITION;
 extern Keyword* KWD_SPECIALISTS_HOW_MANY;
 extern Keyword* KWD_SPECIALISTS_INHERIT;
@@ -483,24 +581,39 @@ extern Keyword* KWD_SPECIALISTS_ALL;
 extern Keyword* KWD_SPECIALISTS_CURRENT;
 extern Symbol* SYM_SPECIALISTS_LOGIC_QUERY_SPECIALIST_IO_VARIABLES;
 extern Keyword* KWD_SPECIALISTS_MATCH_MODE;
+extern Keyword* KWD_SPECIALISTS_DESCRIPTION;
+extern Keyword* KWD_SPECIALISTS_SORT_BY;
 extern Keyword* KWD_SPECIALISTS_GOAL_TREE;
-extern Symbol* SYM_SPECIALISTS_LOGIC_JUSTIFICATION;
+extern Surrogate* SGT_SPECIALISTS_LOGIC_SAVED_INFERENCE_LEVEL_PROOF_ADJUNCT;
+extern Symbol* SYM_SPECIALISTS_LOGIC_SAVED_INFERENCE_LEVEL;
+extern Symbol* SYM_SPECIALISTS_LOGIC_INFERENCE_LEVEL;
+extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_ASSERTION_QUERY;
+extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_SHALLOW_QUERY;
+extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_SUBSUMPTION_QUERY;
+extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_BACKTRACKING_QUERY;
+extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_NORMAL_QUERY;
+extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_REFUTATION_QUERY;
+extern Keyword* KWD_SPECIALISTS_LEVELED_QUERY;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_CONCEPT_PROTOTYPE;
 extern Symbol* SYM_SPECIALISTS_LOGIC_HYPOTHESIZED_INSTANCEp;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_CLOSED;
 extern Symbol* SYM_SPECIALISTS_LOGIC_MONOTONICp;
 extern Surrogate* SGT_SPECIALISTS_LOGIC_F_CLOSED_TERMp_MEMO_TABLE_000;
 extern Symbol* SYM_SPECIALISTS_LOGIC_EQUIVALENT_VALUE;
+extern Surrogate* SGT_SPECIALISTS_LOGIC_PATTERN_VARIABLE;
 extern Surrogate* SGT_SPECIALISTS_LOGIC_F_CLOSED_PROPOSITIONp_MEMO_TABLE_000;
 extern Keyword* KWD_SPECIALISTS_OR;
 extern Keyword* KWD_SPECIALISTS_NOT;
 extern Keyword* KWD_SPECIALISTS_FORALL;
 extern Keyword* KWD_SPECIALISTS_EXISTS;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_MEMBER_OF;
-extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_TOTAL;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_SINGLE_VALUED;
 extern Surrogate* SGT_SPECIALISTS_LOGIC_F_SINGLE_VALUED_TERMp_MEMO_TABLE_000;
 extern Keyword* KWD_SPECIALISTS_EQUIVALENT;
+extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_COLLECT_INTO_LIST;
+extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_COLLECT_INTO_ORDERED_SET;
+extern Symbol* SYM_SPECIALISTS_LOGIC_INFERENCE_CUTOFF_REASON;
+extern Keyword* KWD_SPECIALISTS_COLLECT_MEMBERS;
 extern Symbol* SYM_SPECIALISTS_LOGIC_pSUPER;
 extern Symbol* SYM_SPECIALISTS_LOGIC_pMDC;
 extern Symbol* SYM_SPECIALISTS_STELLA_AND;
@@ -516,11 +629,8 @@ extern Keyword* KWD_SPECIALISTS_ASSERT_FALSE;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_EMPTY;
 extern Surrogate* SGT_SPECIALISTS_LOGIC_SAVED_CONTEXT_PROOF_ADJUNCT;
 extern Symbol* SYM_SPECIALISTS_LOGIC_SAVED_CONTEXT;
-extern Symbol* SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT;
 extern Surrogate* SGT_SPECIALISTS_STELLA_CONTEXT;
 extern Keyword* KWD_SPECIALISTS_IST_INTRODUCTION;
-extern Keyword* KWD_SPECIALISTS_TECHNICAL;
-extern Keyword* KWD_SPECIALISTS_LAY;
 extern Keyword* KWD_SPECIALISTS_PARTIAL;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_THE_ROLESET;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_CARDINALITY;

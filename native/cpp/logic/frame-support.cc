@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -500,6 +500,41 @@ Cons* allAssertedTypes(Object* self) {
   }
 }
 
+Cons* allTaxonomicTypes(Object* self) {
+  // Return a set of all of the types that are
+  // satisfied by 'self', using only assertions and upward
+  // taxonomic reasoning.
+  { MemoizationTable* memoTable000 = NULL;
+    Cons* memoizedEntry000 = NULL;
+    Object* memoizedValue000 = NULL;
+
+    if (oMEMOIZATION_ENABLEDpo) {
+      memoTable000 = ((MemoizationTable*)(SGT_FRAME_SUPPORT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000->surrogateValue));
+      if (!((boolean)(memoTable000))) {
+        initializeMemoizationTable(SGT_FRAME_SUPPORT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:KB-UPDATE))");
+        memoTable000 = ((MemoizationTable*)(SGT_FRAME_SUPPORT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000->surrogateValue));
+      }
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, NULL, 2);
+      memoizedValue000 = memoizedEntry000->value;
+    }
+    if (((boolean)(memoizedValue000))) {
+      if (memoizedValue000 == MEMOIZED_NULL_VALUE) {
+        memoizedValue000 = NULL;
+      }
+    }
+    else {
+      memoizedValue000 = helpAllTypes(self, false);
+      if (oMEMOIZATION_ENABLEDpo) {
+        memoizedEntry000->value = ((!((boolean)(memoizedValue000))) ? MEMOIZED_NULL_VALUE : memoizedValue000);
+      }
+    }
+    { Cons* value000 = ((Cons*)(memoizedValue000));
+
+      return (value000);
+    }
+  }
+}
+
 Cons* allTypes(Object* self) {
   // Return a set of all of the types that are
   // satisfied by 'self'.
@@ -522,7 +557,7 @@ Cons* allTypes(Object* self) {
       }
     }
     else {
-      memoizedValue000 = helpAllTypes(self);
+      memoizedValue000 = helpAllTypes(self, true);
       if (oMEMOIZATION_ENABLEDpo) {
         memoizedEntry000->value = ((!((boolean)(memoizedValue000))) ? MEMOIZED_NULL_VALUE : memoizedValue000);
       }
@@ -534,37 +569,66 @@ Cons* allTypes(Object* self) {
   }
 }
 
-Cons* helpAllTypes(Object* self) {
+Cons* helpAllTypes(Object* self, boolean doSubtypesP) {
   { Cons* assertedtypes = allAssertedTypes(self);
-    Cons* types = copyConsList(assertedtypes);
 
-    { NamedDescription* d = NULL;
-      Cons* iter000 = assertedtypes;
+    { List* self000 = newList();
 
-      for (d, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-        d = ((NamedDescription*)(iter000->value));
-        { LogicObject* c = NULL;
-          Iterator* iter001 = allSupercollections(d);
+      self000->theConsList = copyConsList(assertedtypes);
+      { List* types = self000;
 
-          for (c, iter001; iter001->nextP(); ) {
-            c = ((LogicObject*)(iter001->value));
-            if (isaP(c, SGT_FRAME_SUPPORT_LOGIC_NAMED_DESCRIPTION)) {
-              if (!types->memberP(c)) {
-                types = cons(c, types);
+        { NamedDescription* d = NULL;
+          Cons* iter000 = assertedtypes;
+
+          for (d, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+            d = ((NamedDescription*)(iter000->value));
+            { LogicObject* c = NULL;
+              Iterator* iter001 = allSupercollections(d);
+
+              for (c, iter001; iter001->nextP(); ) {
+                c = ((LogicObject*)(iter001->value));
+                if (isaP(c, SGT_FRAME_SUPPORT_LOGIC_NAMED_DESCRIPTION)) {
+                  if (!types->memberP(c)) {
+                    types->push(c);
+                  }
+                }
               }
+            }
+            if (doSubtypesP) {
+              helpAllSubtypes(d, self, types);
             }
           }
         }
+        return (((Cons*)(types->theConsList)));
       }
     }
-    return (types);
+  }
+}
+
+void helpAllSubtypes(Description* super, Object* self, List* types) {
+  { LogicObject* c = NULL;
+    Iterator* iter000 = allDirectSubcollections(super, true);
+
+    for (c, iter000; iter000->nextP(); ) {
+      c = ((LogicObject*)(iter000->value));
+      if (isaP(c, SGT_FRAME_SUPPORT_LOGIC_NAMED_DESCRIPTION)) {
+        if ((!types->memberP(c)) &&
+            testTypeOnInstanceP(self, ((NamedDescription*)(c))->surrogateValueInverse)) {
+          types->insertNew(c);
+          helpAllSubtypes(((Description*)(c)), self, types);
+        }
+      }
+      else {
+        helpAllSubtypes(((Description*)(c)), self, types);
+      }
+    }
   }
 }
 
 Cons* allDirectTypes(Object* self) {
   // Return a set of most specific types that are
   // satisfied by 'self'.
-  return (mostSpecificNamedDescriptions(allAssertedTypes(self)));
+  return (mostSpecificNamedDescriptions(allTypes(self)));
 }
 
 boolean testTypeOnInstanceP(Object* self, Surrogate* type) {
@@ -993,7 +1057,7 @@ int ShallowInferenceLevel::levellizedGetSlotMinimumCardinality(LogicObject* self
       if (!((boolean)(mincardinality))) {
         mincardinality = wrapInteger(0);
       }
-      return (stella::max(((IntegerWrapper*)(mincardinality))->wrapperValue, fillercount));
+      return (stella::integerMax(fillercount, ((IntegerWrapper*)(mincardinality))->wrapperValue));
     }
   }
 }
@@ -1011,7 +1075,7 @@ int SubsumptionInferenceLevel::levellizedGetSlotMinimumCardinality(LogicObject* 
           { Object* submincardinality = allRelationValues(SGT_FRAME_SUPPORT_PL_KERNEL_KB_RANGE_MIN_CARDINALITY, consList(2, subdescription, self))->value;
 
             if (((boolean)(submincardinality))) {
-              mincardinality = stella::max(mincardinality, ((IntegerWrapper*)(submincardinality))->wrapperValue);
+              mincardinality = stella::integerMax(mincardinality, ((IntegerWrapper*)(submincardinality))->wrapperValue);
             }
           }
         }
@@ -1058,7 +1122,7 @@ int ShallowInferenceLevel::levellizedGetSlotMaximumCardinality(LogicObject* self
         return (((IntegerWrapper*)(maxcardinality))->wrapperValue);
       }
       else {
-        return (stella::min(((IntegerWrapper*)(maxcardinality))->wrapperValue, fillercount));
+        return (stella::integerMin(fillercount, ((IntegerWrapper*)(maxcardinality))->wrapperValue));
       }
     }
   }
@@ -1078,7 +1142,7 @@ int SubsumptionInferenceLevel::levellizedGetSlotMaximumCardinality(LogicObject* 
 
             if (((boolean)(supermaxcardinality))) {
               if (maxcardinality != NULL_INTEGER) {
-                maxcardinality = stella::min(maxcardinality, ((IntegerWrapper*)(supermaxcardinality))->wrapperValue);
+                maxcardinality = stella::integerMin(maxcardinality, ((IntegerWrapper*)(supermaxcardinality))->wrapperValue);
               }
               else {
                 maxcardinality = ((IntegerWrapper*)(supermaxcardinality))->wrapperValue;
@@ -1197,10 +1261,17 @@ Cons* SubsumptionInferenceLevel::levellizedAllSlotValueTypes(LogicObject* self, 
   }
 }
 
+// KLUDGE: until we know how to handle recursive subgoals
+// across recursive query invocations, this allows us to disable chaining.
+boolean oLEVELLIZED_BACKCHAINING_ENABLEDpo = false;
+
 boolean NormalInferenceLevel::levellizedTestTypeOnInstanceP(Object* self, Surrogate* type) {
   { NormalInferenceLevel* level = this;
     TruthValue* dummy1;
 
+    if (!(oLEVELLIZED_BACKCHAINING_ENABLEDpo)) {
+      return (SUBSUMPTION_INFERENCE->levellizedTestTypeOnInstanceP(self, type));
+    }
     return (applyCachedAsk(listO(3, SYM_FRAME_SUPPORT_LOGIC_pCONCEPT, SYM_FRAME_SUPPORT_LOGIC_pINSTANCE, NIL), listO(3, SYM_FRAME_SUPPORT_LOGIC_pCONCEPT, SYM_FRAME_SUPPORT_LOGIC_pINSTANCE, NIL), consList(2, type, self), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_TYPE_ON_INSTANCEp_QUERY_000, dummy1));
   }
 }
@@ -1208,8 +1279,12 @@ boolean NormalInferenceLevel::levellizedTestTypeOnInstanceP(Object* self, Surrog
 Cons* NormalInferenceLevel::levellizedAllClassInstances(Surrogate* type) {
   { NormalInferenceLevel* level = this;
     Cons* dummy1;
+    Cons* dummy2;
 
-    return (applyCachedRetrieve(listO(3, SYM_FRAME_SUPPORT_LOGIC_pCONCEPT, SYM_FRAME_SUPPORT_LOGIC_pX, NIL), listO(3, SYM_FRAME_SUPPORT_LOGIC_pCONCEPT, SYM_FRAME_SUPPORT_LOGIC_pX, NIL), consList(2, type, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_CLASS_INSTANCES_QUERY_000, dummy1));
+    if (!(oLEVELLIZED_BACKCHAINING_ENABLEDpo)) {
+      return (SUBSUMPTION_INFERENCE->levellizedAllClassInstances(type));
+    }
+    return (applyCachedRetrieve(listO(3, SYM_FRAME_SUPPORT_LOGIC_pCONCEPT, SYM_FRAME_SUPPORT_LOGIC_pX, NIL), listO(3, SYM_FRAME_SUPPORT_LOGIC_pCONCEPT, SYM_FRAME_SUPPORT_LOGIC_pX, NIL), consList(2, type, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_CLASS_INSTANCES_QUERY_000, dummy1, dummy2));
   }
 }
 
@@ -1219,21 +1294,28 @@ Cons* NormalInferenceLevel::levellizedAllRelationValues(Surrogate* relation, Con
     Cons* dummy2;
     Cons* dummy3;
     Cons* dummy4;
+    Cons* dummy5;
+    Cons* dummy6;
+    Cons* dummy7;
+    Cons* dummy8;
 
+    if (!(oLEVELLIZED_BACKCHAINING_ENABLEDpo)) {
+      return (SUBSUMPTION_INFERENCE->levellizedAllRelationValues(relation, nminusonearguments));
+    }
     switch (nminusonearguments->length()) {
       case 0: 
-        return (applyCachedRetrieve(listO(3, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, NIL), listO(3, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, NIL), consList(2, relation, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_000, dummy1));
+        return (applyCachedRetrieve(listO(3, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, NIL), listO(3, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, NIL), consList(2, relation, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_000, dummy1, dummy2));
       case 1: 
         { Object* arg1 = nminusonearguments->value;
 
-          return (applyCachedRetrieve(listO(4, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, NIL), listO(4, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, NIL), consList(3, relation, arg1, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_001, dummy2));
+          return (applyCachedRetrieve(listO(4, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, NIL), listO(4, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, NIL), consList(3, relation, arg1, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_001, dummy3, dummy4));
         }
       break;
       case 2: 
         { Object* arg1 = nminusonearguments->value;
           Object* arg2 = nminusonearguments->rest->value;
 
-          return (applyCachedRetrieve(listO(5, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, SYM_FRAME_SUPPORT_LOGIC_pZ, NIL), listO(5, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, SYM_FRAME_SUPPORT_LOGIC_pZ, NIL), consList(4, relation, arg1, arg2, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_002, dummy3));
+          return (applyCachedRetrieve(listO(5, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, SYM_FRAME_SUPPORT_LOGIC_pZ, NIL), listO(5, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, SYM_FRAME_SUPPORT_LOGIC_pZ, NIL), consList(4, relation, arg1, arg2, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_002, dummy5, dummy6));
         }
       break;
       case 3: 
@@ -1241,7 +1323,7 @@ Cons* NormalInferenceLevel::levellizedAllRelationValues(Surrogate* relation, Con
           Object* arg2 = nminusonearguments->rest->value;
           Object* arg3 = nminusonearguments->rest->rest->value;
 
-          return (applyCachedRetrieve(listO(6, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pW, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, SYM_FRAME_SUPPORT_LOGIC_pZ, NIL), listO(6, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pW, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, SYM_FRAME_SUPPORT_LOGIC_pZ, NIL), consList(5, relation, arg1, arg2, arg3, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_003, dummy4));
+          return (applyCachedRetrieve(listO(6, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pW, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, SYM_FRAME_SUPPORT_LOGIC_pZ, NIL), listO(6, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pW, SYM_FRAME_SUPPORT_LOGIC_pX, SYM_FRAME_SUPPORT_LOGIC_pY, SYM_FRAME_SUPPORT_LOGIC_pZ, NIL), consList(5, relation, arg1, arg2, arg3, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_003, dummy7, dummy8));
         }
       break;
       default:
@@ -1257,6 +1339,9 @@ boolean NormalInferenceLevel::levellizedTestRelationOnArgumentsP(Surrogate* rela
     TruthValue* dummy3;
     TruthValue* dummy4;
 
+    if (!(oLEVELLIZED_BACKCHAINING_ENABLEDpo)) {
+      return (SUBSUMPTION_INFERENCE->levellizedTestRelationOnArgumentsP(relation, arguments));
+    }
     switch (arguments->length()) {
       case 1: 
         { Object* arg1 = arguments->value;
@@ -1297,8 +1382,12 @@ boolean NormalInferenceLevel::levellizedTestRelationOnArgumentsP(Surrogate* rela
 int NormalInferenceLevel::levellizedGetSlotMinimumCardinality(LogicObject* self, Surrogate* relation) {
   { NormalInferenceLevel* level = this;
     Cons* dummy1;
+    Cons* dummy2;
 
-    { Cons* n = applyCachedRetrieve(listO(4, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pN, NIL), listO(5, SYM_FRAME_SUPPORT_LOGIC_RANGE_MIN_CARDINALITY, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pN, NIL), consList(3, relation, self, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MINIMUM_CARDINALITY_QUERY_000, dummy1);
+    if (!(oLEVELLIZED_BACKCHAINING_ENABLEDpo)) {
+      return (SUBSUMPTION_INFERENCE->levellizedGetSlotMinimumCardinality(self, relation));
+    }
+    { Cons* n = applyCachedRetrieve(listO(4, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pN, NIL), listO(5, SYM_FRAME_SUPPORT_LOGIC_RANGE_MIN_CARDINALITY, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pN, NIL), consList(3, relation, self, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MINIMUM_CARDINALITY_QUERY_000, dummy1, dummy2);
 
       if (n == NIL) {
         return (0);
@@ -1313,8 +1402,12 @@ int NormalInferenceLevel::levellizedGetSlotMinimumCardinality(LogicObject* self,
 int NormalInferenceLevel::levellizedGetSlotMaximumCardinality(LogicObject* self, Surrogate* relation) {
   { NormalInferenceLevel* level = this;
     Cons* dummy1;
+    Cons* dummy2;
 
-    { Cons* n = applyCachedRetrieve(listO(4, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pN, NIL), listO(5, SYM_FRAME_SUPPORT_LOGIC_RANGE_MAX_CARDINALITY, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pN, NIL), consList(3, relation, self, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MAXIMUM_CARDINALITY_QUERY_000, dummy1);
+    if (!(oLEVELLIZED_BACKCHAINING_ENABLEDpo)) {
+      return (SUBSUMPTION_INFERENCE->levellizedGetSlotMaximumCardinality(self, relation));
+    }
+    { Cons* n = applyCachedRetrieve(listO(4, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pN, NIL), listO(5, SYM_FRAME_SUPPORT_LOGIC_RANGE_MAX_CARDINALITY, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pN, NIL), consList(3, relation, self, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MAXIMUM_CARDINALITY_QUERY_000, dummy1, dummy2);
 
       if (n == NIL) {
         return (NULL_INTEGER);
@@ -1329,8 +1422,12 @@ int NormalInferenceLevel::levellizedGetSlotMaximumCardinality(LogicObject* self,
 Cons* NormalInferenceLevel::levellizedAllSlotValueTypes(LogicObject* self, Surrogate* relation) {
   { NormalInferenceLevel* level = this;
     Cons* dummy1;
+    Cons* dummy2;
 
-    return (applyCachedRetrieve(listO(4, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pTYPE, NIL), listO(5, SYM_FRAME_SUPPORT_STELLA_AND, listO(5, SYM_FRAME_SUPPORT_LOGIC_RANGE_TYPE, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pTYPE, NIL), listO(3, SYM_FRAME_SUPPORT_LOGIC_BOUND_VARIABLES, SYM_FRAME_SUPPORT_LOGIC_pTYPE, NIL), listO(3, SYM_FRAME_SUPPORT_LOGIC_CONCEPT, SYM_FRAME_SUPPORT_LOGIC_pTYPE, NIL), NIL), consList(3, relation, self, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_SLOT_VALUE_TYPES_QUERY_000, dummy1));
+    if (!(oLEVELLIZED_BACKCHAINING_ENABLEDpo)) {
+      return (SUBSUMPTION_INFERENCE->levellizedAllSlotValueTypes(self, relation));
+    }
+    return (applyCachedRetrieve(listO(4, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pTYPE, NIL), listO(5, SYM_FRAME_SUPPORT_STELLA_AND, listO(5, SYM_FRAME_SUPPORT_LOGIC_RANGE_TYPE, SYM_FRAME_SUPPORT_LOGIC_pRELATION, SYM_FRAME_SUPPORT_LOGIC_pOBJECT, SYM_FRAME_SUPPORT_LOGIC_pTYPE, NIL), listO(3, SYM_FRAME_SUPPORT_LOGIC_BOUND_VARIABLES, SYM_FRAME_SUPPORT_LOGIC_pTYPE, NIL), listO(3, SYM_FRAME_SUPPORT_LOGIC_CONCEPT, SYM_FRAME_SUPPORT_LOGIC_pTYPE, NIL), NIL), consList(3, relation, self, NULL), consList(0), SYM_FRAME_SUPPORT_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_SLOT_VALUE_TYPES_QUERY_000, dummy1, dummy2));
   }
 }
 
@@ -1350,6 +1447,7 @@ void helpStartupFrameSupport1() {
     SGT_FRAME_SUPPORT_STELLA_LITERAL = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL", getStellaModule("/STELLA", true), 1)));
     SGT_FRAME_SUPPORT_PL_KERNEL_KB_SCALAR = ((Surrogate*)(internRigidSymbolWrtModule("SCALAR", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_FRAME_SUPPORT_LOGIC_NAMED_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("NAMED-DESCRIPTION", NULL, 1)));
+    SGT_FRAME_SUPPORT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-ALL-TAXONOMIC-TYPES-MEMO-TABLE-000", NULL, 1)));
     SGT_FRAME_SUPPORT_LOGIC_F_ALL_TYPES_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-ALL-TYPES-MEMO-TABLE-000", NULL, 1)));
     KWD_FRAME_SUPPORT_ISA = ((Keyword*)(internRigidSymbolWrtModule("ISA", NULL, 2)));
     SGT_FRAME_SUPPORT_LOGIC_F_ALL_EQUIVALENT_RELATIONS_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-ALL-EQUIVALENT-RELATIONS-MEMO-TABLE-000", NULL, 1)));
@@ -1414,8 +1512,10 @@ void helpStartupFrameSupport2() {
     defineFunctionObject("RELATION-ARITY-OK?", "(DEFUN (RELATION-ARITY-OK? BOOLEAN) ((RELATIONREF SURROGATE) (ARITY INTEGER)))", ((cpp_function_code)(&relationArityOkP)), NULL);
     defineFunctionObject("FILTER-OUT-UNNAMED-DESCRIPTIONS", "(DEFUN (FILTER-OUT-UNNAMED-DESCRIPTIONS (CONS OF NAMED-DESCRIPTION)) ((DESCRIPTIONS (CONS OF LOGIC-OBJECT))))", ((cpp_function_code)(&filterOutUnnamedDescriptions)), NULL);
     defineFunctionObject("ALL-ASSERTED-TYPES", "(DEFUN (ALL-ASSERTED-TYPES (CONS OF NAMED-DESCRIPTION)) ((SELF OBJECT)) :DOCUMENTATION \"Return a set of all of the types that are\nasserted to be satisfied by 'self'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allAssertedTypes)), NULL);
+    defineFunctionObject("ALL-TAXONOMIC-TYPES", "(DEFUN (ALL-TAXONOMIC-TYPES (CONS OF NAMED-DESCRIPTION)) ((SELF OBJECT)) :DOCUMENTATION \"Return a set of all of the types that are\nsatisfied by 'self', using only assertions and upward\ntaxonomic reasoning.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allTaxonomicTypes)), NULL);
     defineFunctionObject("ALL-TYPES", "(DEFUN (ALL-TYPES (CONS OF NAMED-DESCRIPTION)) ((SELF OBJECT)) :DOCUMENTATION \"Return a set of all of the types that are\nsatisfied by 'self'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allTypes)), NULL);
-    defineFunctionObject("HELP-ALL-TYPES", "(DEFUN (HELP-ALL-TYPES (CONS OF NAMED-DESCRIPTION)) ((SELF OBJECT)))", ((cpp_function_code)(&helpAllTypes)), NULL);
+    defineFunctionObject("HELP-ALL-TYPES", "(DEFUN (HELP-ALL-TYPES (CONS OF NAMED-DESCRIPTION)) ((SELF OBJECT) (DO-SUBTYPES? BOOLEAN)))", ((cpp_function_code)(&helpAllTypes)), NULL);
+    defineFunctionObject("HELP-ALL-SUBTYPES", "(DEFUN HELP-ALL-SUBTYPES ((SUPER DESCRIPTION) (SELF OBJECT) (TYPES LIST)))", ((cpp_function_code)(&helpAllSubtypes)), NULL);
     defineFunctionObject("ALL-DIRECT-TYPES", "(DEFUN (ALL-DIRECT-TYPES (CONS OF LOGIC-OBJECT)) ((SELF OBJECT)) :DOCUMENTATION \"Return a set of most specific types that are\nsatisfied by 'self'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allDirectTypes)), NULL);
     defineFunctionObject("TEST-TYPE-ON-INSTANCE?", "(DEFUN (TEST-TYPE-ON-INSTANCE? BOOLEAN) ((SELF OBJECT) (TYPE SURROGATE)) :DOCUMENTATION \"Return TRUE if 'self' satisfies 'type'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&testTypeOnInstanceP)), NULL);
     defineMethodObject("(DEFMETHOD (LEVELLIZED-TEST-TYPE-ON-INSTANCE? BOOLEAN) ((LEVEL SUBSUMPTION-INFERENCE-LEVEL) (SELF OBJECT) (TYPE SURROGATE)))", ((cpp_method_code)(&SubsumptionInferenceLevel::levellizedTestTypeOnInstanceP)), ((cpp_method_code)(NULL)));
@@ -1455,8 +1555,6 @@ void helpStartupFrameSupport2() {
     defineMethodObject("(DEFMETHOD (LEVELLIZED-ALL-CLASS-INSTANCES CONS) ((LEVEL NORMAL-INFERENCE-LEVEL) (TYPE SURROGATE)))", ((cpp_method_code)(&NormalInferenceLevel::levellizedAllClassInstances)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (LEVELLIZED-ALL-RELATION-VALUES CONS) ((LEVEL NORMAL-INFERENCE-LEVEL) (RELATION SURROGATE) (NMINUSONEARGUMENTS CONS)))", ((cpp_method_code)(&NormalInferenceLevel::levellizedAllRelationValues)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (LEVELLIZED-TEST-RELATION-ON-ARGUMENTS? BOOLEAN) ((LEVEL NORMAL-INFERENCE-LEVEL) (RELATION SURROGATE) (ARGUMENTS CONS)))", ((cpp_method_code)(&NormalInferenceLevel::levellizedTestRelationOnArgumentsP)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (LEVELLIZED-GET-SLOT-MINIMUM-CARDINALITY INTEGER) ((LEVEL NORMAL-INFERENCE-LEVEL) (SELF LOGIC-OBJECT) (RELATION SURROGATE)))", ((cpp_method_code)(&NormalInferenceLevel::levellizedGetSlotMinimumCardinality)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (LEVELLIZED-GET-SLOT-MAXIMUM-CARDINALITY INTEGER) ((LEVEL NORMAL-INFERENCE-LEVEL) (SELF LOGIC-OBJECT) (RELATION SURROGATE)))", ((cpp_method_code)(&NormalInferenceLevel::levellizedGetSlotMaximumCardinality)), ((cpp_method_code)(NULL)));
   }
 }
 
@@ -1472,6 +1570,8 @@ void startupFrameSupport() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupFrameSupport2();
+      defineMethodObject("(DEFMETHOD (LEVELLIZED-GET-SLOT-MINIMUM-CARDINALITY INTEGER) ((LEVEL NORMAL-INFERENCE-LEVEL) (SELF LOGIC-OBJECT) (RELATION SURROGATE)))", ((cpp_method_code)(&NormalInferenceLevel::levellizedGetSlotMinimumCardinality)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (LEVELLIZED-GET-SLOT-MAXIMUM-CARDINALITY INTEGER) ((LEVEL NORMAL-INFERENCE-LEVEL) (SELF LOGIC-OBJECT) (RELATION SURROGATE)))", ((cpp_method_code)(&NormalInferenceLevel::levellizedGetSlotMaximumCardinality)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (LEVELLIZED-ALL-SLOT-VALUE-TYPES (CONS OF NAMED-DESCRIPTION)) ((LEVEL NORMAL-INFERENCE-LEVEL) (SELF LOGIC-OBJECT) (RELATION SURROGATE)))", ((cpp_method_code)(&NormalInferenceLevel::levellizedAllSlotValueTypes)), ((cpp_method_code)(NULL)));
       defineFunctionObject("STARTUP-FRAME-SUPPORT", "(DEFUN STARTUP-FRAME-SUPPORT () :PUBLIC? TRUE)", ((cpp_function_code)(&startupFrameSupport)), NULL);
       { MethodSlot* function = lookupFunction(SYM_FRAME_SUPPORT_LOGIC_STARTUP_FRAME_SUPPORT);
@@ -1482,6 +1582,10 @@ void startupFrameSupport() {
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
+    }
+    if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LEVELLIZED-BACKCHAINING-ENABLED?* BOOLEAN FALSE :DOCUMENTATION \"KLUDGE: until we know how to handle recursive subgoals\nacross recursive query invocations, this allows us to disable chaining.\")");
     }
   }
 }
@@ -1513,6 +1617,8 @@ Surrogate* SGT_FRAME_SUPPORT_STELLA_LITERAL = NULL;
 Surrogate* SGT_FRAME_SUPPORT_PL_KERNEL_KB_SCALAR = NULL;
 
 Surrogate* SGT_FRAME_SUPPORT_LOGIC_NAMED_DESCRIPTION = NULL;
+
+Surrogate* SGT_FRAME_SUPPORT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000 = NULL;
 
 Surrogate* SGT_FRAME_SUPPORT_LOGIC_F_ALL_TYPES_MEMO_TABLE_000 = NULL;
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -368,6 +368,13 @@ void IntegerWrapper::javaOutputLiteral() {
   { IntegerWrapper* inT = this;
 
     *(oCURRENT_STREAMo.get()->nativeStream) << inT->wrapperValue;
+  }
+}
+
+void LongIntegerWrapper::javaOutputLiteral() {
+  { LongIntegerWrapper* inT = this;
+
+    *(oCURRENT_STREAMo.get()->nativeStream) << inT->wrapperValue << "l";
   }
 }
 
@@ -2021,6 +2028,7 @@ void helpStartupJavaOutput3() {
     defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((STRING MUTABLE-STRING-WRAPPER)))", ((cpp_method_code)(&MutableStringWrapper::javaOutputLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((CHARACTER CHARACTER-WRAPPER)))", ((cpp_method_code)(&CharacterWrapper::javaOutputLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((INT INTEGER-WRAPPER)))", ((cpp_method_code)(&IntegerWrapper::javaOutputLiteral)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((INT LONG-INTEGER-WRAPPER)))", ((cpp_method_code)(&LongIntegerWrapper::javaOutputLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((FLOAT FLOAT-WRAPPER)))", ((cpp_method_code)(&FloatWrapper::javaOutputLiteral)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((BOOLEAN BOOLEAN-WRAPPER)))", ((cpp_method_code)(&BooleanWrapper::javaOutputLiteral)), ((cpp_method_code)(NULL)));
     defineFunctionObject("JAVA-OUTPUT-MAKE-ARRAY", "(DEFUN JAVA-OUTPUT-MAKE-ARRAY ((STATEMENT CONS)))", ((cpp_function_code)(&javaOutputMakeArray)), NULL);
@@ -2066,7 +2074,6 @@ void helpStartupJavaOutput3() {
     defineFunctionObject("JAVA-OUTPUT-RETURN", "(DEFUN JAVA-OUTPUT-RETURN ((RETURNSTATEMENT CONS)))", ((cpp_function_code)(&javaOutputReturn)), NULL);
     defineFunctionObject("JAVA-OUTPUT-THROW", "(DEFUN JAVA-OUTPUT-THROW ((TREE CONS)))", ((cpp_function_code)(&javaOutputThrow)), NULL);
     defineFunctionObject("JAVA-OUTPUT-CATCH", "(DEFUN JAVA-OUTPUT-CATCH ((TREE CONS)))", ((cpp_function_code)(&javaOutputCatch)), NULL);
-    defineFunctionObject("JAVA-OUTPUT-UNWIND-PROTECT", "(DEFUN JAVA-OUTPUT-UNWIND-PROTECT ((TREE CONS)))", ((cpp_function_code)(&javaOutputUnwindProtect)), NULL);
   }
 }
 
@@ -2087,6 +2094,7 @@ void startupJavaOutput() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupJavaOutput3();
+      defineFunctionObject("JAVA-OUTPUT-UNWIND-PROTECT", "(DEFUN JAVA-OUTPUT-UNWIND-PROTECT ((TREE CONS)))", ((cpp_function_code)(&javaOutputUnwindProtect)), NULL);
       defineFunctionObject("JAVA-OUTPUT-HANDLER-CASE", "(DEFUN JAVA-OUTPUT-HANDLER-CASE ((TREE CONS)))", ((cpp_function_code)(&javaOutputHandlerCase)), NULL);
       defineFunctionObject("JAVA-OUTPUT-SIGNAL", "(DEFUN JAVA-OUTPUT-SIGNAL ((TREE CONS)))", ((cpp_function_code)(&javaOutputSignal)), NULL);
       defineFunctionObject("JAVA-OUTPUT-GLOBAL-DEFINITION", "(DEFUN JAVA-OUTPUT-GLOBAL-DEFINITION ((GLOBAL CONS)))", ((cpp_function_code)(&javaOutputGlobalDefinition)), NULL);
@@ -2136,6 +2144,7 @@ void startupJavaOutput() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *JAVA-INDENT-CHARS* INTEGER 0)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *JAVA-STELLA-PACKAGE-MAPPING* (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER) (NEW (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER)))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *JAVA-SEMICOLON-STATEMENTS* (CONS OF SYMBOL) (BQUOTE (JAVA_ASSIGN JAVA_UNARY_OP JAVA_BINARY_OP JAVA_TERNARY_OP JAVA_CAST JAVA_FUNCALL JAVA_FUNCTION_CALL JAVA_FUNCTION_POINTER JAVA_MAKE JAVA_METHOD_CALL JAVA_METHOD_CODE_CALL JAVA_METHOD_POINTER JAVA_METHOD_SETTER_CALL JAVA_NEW JAVA_PRINT_NATIVE_STREAM JAVA_PRINT_STREAM JAVA_RETURN JAVA_SIGNAL JAVA_SLOT_VALUE_SETTER JAVA_THROW JAVA_VERBATIM)))");

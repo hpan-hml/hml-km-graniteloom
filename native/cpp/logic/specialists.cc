@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -407,6 +407,132 @@ int SubstringPositionIterator::length() {
   }
 }
 
+boolean computationInputBoundP(Object* value) {
+  if (!((boolean)(value))) {
+    return (false);
+  }
+  if (subtypeOfP(safePrimaryType(value), SGT_SPECIALISTS_LOGIC_SKOLEM)) {
+    { Object* value000 = value;
+      Skolem* value = ((Skolem*)(value000));
+
+      if (logicalCollectionP(value)) {
+        return (true);
+      }
+      { Proposition* prop = value->definingProposition;
+
+        return (((boolean)(prop)) &&
+            testPropertyP(getDescription(((Surrogate*)(prop->operatoR))), SGT_SPECIALISTS_PL_KERNEL_KB_TOTAL));
+      }
+    }
+  }
+  else {
+    return (true);
+  }
+}
+
+Object* computeRelationValue(Proposition* proposition, cpp_function_code code, boolean errorP) {
+  { Vector* arguments = proposition->arguments;
+    NamedDescription* description = getDescription(((Surrogate*)(proposition->operatoR)));
+    boolean functionP = functionDescriptionP(description);
+    cpp_function_code computationcode = ((code != NULL) ? code : lookupComputation(description));
+    Cons* argtypes = description->ioVariableTypes->theConsList;
+    Iterator* argtypesiter = NULL;
+    Surrogate* argtype = NULL;
+    Object* value = NULL;
+    Cons* boundarguments = NIL;
+    boolean variablearityP = variableArityP(description);
+
+    if (variablearityP) {
+      argtypesiter = (functionP ? allDomainTypes(description) : allArgumentTypes(description));
+    }
+    { Object* arg = NULL;
+      Vector* vector000 = arguments;
+      int index000 = 0;
+      int length000 = vector000->length();
+      int i = NULL_INTEGER;
+      int iter000 = (functionP ? 2 : 1);
+      int upperBound000 = arguments->length();
+      Cons* collect000 = NULL;
+
+      for  (arg, vector000, index000, length000, i, iter000, upperBound000, collect000; 
+            (index000 < length000) &&
+                (iter000 <= upperBound000); 
+            index000 = index000 + 1,
+            iter000 = iter000 + 1) {
+        arg = (vector000->theArray)[index000];
+        i = iter000;
+        i = i;
+        if (((boolean)(argtypesiter))) {
+          { Object* temp000 = argtypesiter->pop();
+
+            argtype = (((boolean)(temp000)) ? ((Surrogate*)(temp000)) : argtype);
+          }
+        }
+        else {
+          { Surrogate* head000 = ((Surrogate*)(argtypes->value));
+
+            argtypes = argtypes->rest;
+            argtype = head000;
+          }
+        }
+        value = safeArgumentBoundTo(arg);
+        if (!(computationInputBoundP(value))) {
+          return (NULL);
+        }
+        if (!checkStrictTypeP(value, argtype, true)) {
+          if (errorP) {
+            { OutputStringStream* stream000 = newOutputStringStream();
+
+              { 
+                BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+                *(stream000->nativeStream) << "ERROR: " << "compute-relation-value: incorrect argument type for " << "`" << value << "'" << " in " << "`" << proposition << "'" << "; should be " << "`" << argtype << "'" << "." << std::endl;
+                helpSignalPropositionError(stream000, KWD_SPECIALISTS_ERROR);
+              }
+              throw *newPropositionError(stream000->theStringReader());
+            }
+          }
+          else {
+            return (NULL);
+          }
+        }
+        if (!((boolean)(collect000))) {
+          {
+            collect000 = cons(value, NIL);
+            if (boundarguments == NIL) {
+              boundarguments = collect000;
+            }
+            else {
+              addConsToEndOfConsList(boundarguments, collect000);
+            }
+          }
+        }
+        else {
+          {
+            collect000->rest = cons(value, NIL);
+            collect000 = collect000->rest;
+          }
+        }
+      }
+    }
+    if (variablearityP) {
+      { int nfixed = argtypes->length() - ((functionP ? 2 : 1));
+
+        if (nfixed == 0) {
+          boundarguments = cons(boundarguments, NIL);
+        }
+        else if (boundarguments->length() >= nfixed) {
+          boundarguments->nthRestSetter(cons(boundarguments->nthRest(nfixed), NIL), nfixed);
+        }
+        else {
+          return (NULL);
+        }
+      }
+    }
+    value = apply(computationcode, boundarguments);
+    return (value);
+  }
+}
+
 
 } // end of namespace logic
 
@@ -417,158 +543,103 @@ namespace pl_kernel_kb {
 
 Keyword* computationSpecialist(ControlFrame* frame, Keyword* lastmove) {
   { Proposition* proposition = frame->proposition;
-    Vector* arguments = proposition->arguments;
-    NamedDescription* description = getDescription(((Surrogate*)(proposition->operatoR)));
-    cpp_function_code computationcode = lookupComputation(description);
-    Object* value = NULL;
-    Cons* boundarguments = NIL;
-    boolean successP = false;
+    Object* value = computeRelationValue(proposition, NULL, false);
+    BooleanWrapper* successP = NULL;
 
-    lastmove = lastmove;
-    if (functionDescriptionP(description)) {
-      { Object* arg = NULL;
-        Vector* vector000 = arguments;
-        int index000 = 0;
-        int length000 = vector000->length();
-        Object* domain = NULL;
-        Iterator* iter000 = allDomainTypes(description);
-        Cons* collect000 = NULL;
-
-        for  (arg, vector000, index000, length000, domain, iter000, collect000; 
-              (index000 < length000) &&
-                  iter000->nextP(); 
-              index000 = index000 + 1) {
-          arg = (vector000->theArray)[index000];
-          domain = iter000->value;
-          value = argumentBoundTo(arg);
-          if ((!((boolean)(value))) ||
-              (skolemP(value) ||
-               (!checkStrictTypeP(arg, ((Surrogate*)(domain)), true)))) {
-            return (KWD_SPECIALISTS_FAILURE);
-          }
-          if (!((boolean)(collect000))) {
-            {
-              collect000 = cons(value, NIL);
-              if (boundarguments == NIL) {
-                boundarguments = collect000;
-              }
-              else {
-                addConsToEndOfConsList(boundarguments, collect000);
-              }
-            }
-          }
-          else {
-            {
-              collect000->rest = cons(value, NIL);
-              collect000 = collect000->rest;
-            }
-          }
-        }
-      }
-      value = apply(computationcode, boundarguments);
-      if (!((boolean)(value))) {
-        return (KWD_SPECIALISTS_FAILURE);
-      }
-      { Object* lastarg = (proposition->arguments->theArray)[(proposition->arguments->length() - 1)];
-
-        successP = (isaP(lastarg, SGT_SPECIALISTS_LOGIC_PATTERN_VARIABLE) ? bindVariableToValueP(((PatternVariable*)(lastarg)), value, true) : eqlP(valueOf(lastarg), value));
-      }
+    if (!((boolean)(value))) {
+      return (KWD_SPECIALISTS_FAILURE);
+    }
+    if (functionDescriptionP(getDescription(((Surrogate*)(proposition->operatoR))))) {
+      successP = (bindArgumentToValueP((proposition->arguments->theArray)[(proposition->arguments->length() - 1)], value, true) ? TRUE_WRAPPER : FALSE_WRAPPER);
     }
     else {
-      { Object* arg = NULL;
-        Vector* vector001 = arguments;
-        int index001 = 0;
-        int length001 = vector001->length();
-        Object* domain = NULL;
-        Iterator* iter001 = allArgumentTypes(description);
-        Cons* collect001 = NULL;
-
-        for  (arg, vector001, index001, length001, domain, iter001, collect001; 
-              (index001 < length001) &&
-                  iter001->nextP(); 
-              index001 = index001 + 1) {
-          arg = (vector001->theArray)[index001];
-          domain = iter001->value;
-          value = argumentBoundTo(arg);
-          if ((!((boolean)(value))) ||
-              (skolemP(value) ||
-               (!checkStrictTypeP(arg, ((Surrogate*)(domain)), true)))) {
-            return (KWD_SPECIALISTS_FAILURE);
-          }
-          if (!((boolean)(collect001))) {
-            {
-              collect001 = cons(value, NIL);
-              if (boundarguments == NIL) {
-                boundarguments = collect001;
-              }
-              else {
-                addConsToEndOfConsList(boundarguments, collect001);
-              }
-            }
-          }
-          else {
-            {
-              collect001->rest = cons(value, NIL);
-              collect001 = collect001->rest;
-            }
-          }
-        }
-      }
-      successP = coerceWrappedBooleanToBoolean(((BooleanWrapper*)(apply(computationcode, boundarguments))));
+      successP = ((BooleanWrapper*)(value));
     }
-    return (selectTestResult(successP, true, frame));
+    return (selectTestResult(coerceWrappedBooleanToBoolean(successP), true, frame));
   }
 }
 
-Keyword* constraintSpecialist(ControlFrame* frame, Keyword* lastmove) {
-  { Proposition* proposition = frame->proposition;
+
+} // end of namespace pl_kernel_kb
+
+
+namespace logic {
+  using namespace stella;
+
+Object* computeSimpleRelationConstraint(Proposition* proposition, cpp_function_code code, boolean errorP, int& _Return1) {
+  { Vector* arguments = proposition->arguments;
     NamedDescription* description = getDescription(((Surrogate*)(proposition->operatoR)));
-    cpp_function_code computationcode = lookupConstraint(description);
+    cpp_function_code constraintcode = ((code != NULL) ? code : lookupConstraint(description));
+    Cons* argtypes = description->ioVariableTypes->theConsList;
+    Iterator* argtypesiter = NULL;
+    Surrogate* argtype = NULL;
     Object* value = NULL;
     int nullcount = 0;
     int variableindex = -1;
-    Cons* argumentvalues = NIL;
+    Cons* boundarguments = NIL;
 
-    lastmove = lastmove;
+    if (variableArityP(description)) {
+      argtypesiter = allArgumentTypes(description);
+    }
     { Object* arg = NULL;
-      Vector* vector000 = proposition->arguments;
+      Vector* vector000 = arguments;
       int index000 = 0;
       int length000 = vector000->length();
-      Object* domain = NULL;
-      Iterator* iter000 = allArgumentTypes(description);
       int i = NULL_INTEGER;
-      int iter001 = 0;
+      int iter000 = 0;
       Cons* collect000 = NULL;
 
-      for  (arg, vector000, index000, length000, domain, iter000, i, iter001, collect000; 
-            (index000 < length000) &&
-                iter000->nextP(); 
+      for  (arg, vector000, index000, length000, i, iter000, collect000; 
+            index000 < length000; 
             index000 = index000 + 1,
-            iter001 = iter001 + 1) {
+            iter000 = iter000 + 1) {
         arg = (vector000->theArray)[index000];
-        domain = iter000->value;
-        i = iter001;
-        value = argumentBoundTo(arg);
-        if ((!((boolean)(value))) &&
-            isaP(arg, SGT_SPECIALISTS_LOGIC_PATTERN_VARIABLE)) {
+        i = iter000;
+        if (((boolean)(argtypesiter))) {
+          { Object* temp000 = argtypesiter->pop();
+
+            argtype = (((boolean)(temp000)) ? ((Surrogate*)(temp000)) : argtype);
+          }
+        }
+        else {
+          { Surrogate* head000 = ((Surrogate*)(argtypes->value));
+
+            argtypes = argtypes->rest;
+            argtype = head000;
+          }
+        }
+        value = safeArgumentBoundTo(arg);
+        if ((!((boolean)(value))) ||
+            skolemP(value)) {
+          value = NULL;
           nullcount = nullcount + 1;
           variableindex = i;
         }
-        else if (((boolean)(value)) &&
-            isaP(value, SGT_SPECIALISTS_LOGIC_SKOLEM)) {
-          return (KWD_SPECIALISTS_FAILURE);
-        }
-        else if (!checkStrictTypeP(value, ((Surrogate*)(domain)), true)) {
-          return (KWD_SPECIALISTS_FAILURE);
+        else if (!checkStrictTypeP(value, argtype, true)) {
+          if (errorP) {
+            { OutputStringStream* stream000 = newOutputStringStream();
+
+              { 
+                BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+                *(stream000->nativeStream) << "ERROR: " << "compute-relation-value: incorrect argument type for " << "`" << value << "'" << " in " << "`" << proposition << "'" << "; should be " << "`" << argtype << "'" << "." << std::endl;
+                helpSignalPropositionError(stream000, KWD_SPECIALISTS_ERROR);
+              }
+              throw *newPropositionError(stream000->theStringReader());
+            }
+          }
+          else {
+            _Return1 = -1;
+            return (NULL);
+          }
         }
         if (!((boolean)(collect000))) {
           {
             collect000 = cons(value, NIL);
-            if (argumentvalues == NIL) {
-              argumentvalues = collect000;
+            if (boundarguments == NIL) {
+              boundarguments = collect000;
             }
             else {
-              addConsToEndOfConsList(argumentvalues, collect000);
+              addConsToEndOfConsList(boundarguments, collect000);
             }
           }
         }
@@ -582,19 +653,47 @@ Keyword* constraintSpecialist(ControlFrame* frame, Keyword* lastmove) {
     }
     switch (nullcount) {
       case 0: 
-        value = apply(computationcode, cons(wrapInteger(variableindex), argumentvalues));
-        return (selectTestResult(((BooleanWrapper*)(value)) == TRUE_WRAPPER, true, frame));
+        value = apply(constraintcode, cons(wrapInteger(variableindex), boundarguments));
+      break;
       case 1: 
         if (oREVERSEPOLARITYpo.get()) {
-          return (KWD_SPECIALISTS_FAILURE);
+          _Return1 = -1;
+          return (NULL);
         }
-        value = apply(computationcode, cons(wrapInteger(variableindex), argumentvalues));
-        if (!((boolean)(value))) {
-          return (KWD_SPECIALISTS_FAILURE);
-        }
-        return (selectTestResult(bindVariableToValueP(((PatternVariable*)((proposition->arguments->theArray)[variableindex])), value, true), true, frame));
+        value = apply(constraintcode, cons(wrapInteger(variableindex), boundarguments));
+      break;
       default:
-        return (KWD_SPECIALISTS_FAILURE);
+        _Return1 = -1;
+        return (NULL);
+      break;
+    }
+    _Return1 = variableindex;
+    return (value);
+  }
+}
+
+
+} // end of namespace logic
+
+
+namespace pl_kernel_kb {
+  using namespace stella;
+  using namespace logic;
+
+Keyword* constraintSpecialist(ControlFrame* frame, Keyword* lastmove) {
+  lastmove = lastmove;
+  { Object* value = NULL;
+    int variableindex = NULL_INTEGER;
+
+    value = computeSimpleRelationConstraint(frame->proposition, NULL, false, variableindex);
+    if (!((boolean)(value))) {
+      return (KWD_SPECIALISTS_FAILURE);
+    }
+    switch (variableindex) {
+      case -1: 
+        return (selectTestResult(((BooleanWrapper*)(value)) == TRUE_WRAPPER, true, frame));
+      default:
+        return (selectTestResult(bindArgumentToValueP((frame->proposition->arguments->theArray)[variableindex], value, true), true, frame));
     }
   }
 }
@@ -1218,6 +1317,7 @@ Keyword* holdsSpecialist(ControlFrame* frame, Keyword* lastmove) {
         int backlinkedargposition = -1;
         boolean nomatchesP = false;
 
+        nomatchesP = nomatchesP;
         if (!((boolean)(iterator))) {
           backlinkedarg = selectArgumentWithBacklinks(holdsproposition, nomatchesP);
           if (((boolean)(backlinkedarg))) {
@@ -1258,7 +1358,9 @@ Keyword* holdsSpecialist(ControlFrame* frame, Keyword* lastmove) {
                       ((prop->kind == KWD_SPECIALISTS_PREDICATE) ||
                        (prop->kind == KWD_SPECIALISTS_ISA))) &&
                       ((prop->arguments->length() == holdsarity) &&
-                       (trueP(prop) &&
+                       (((!prop->deletedP()) &&
+                      ((oREVERSEPOLARITYpo.get() ? falseP(prop) : (trueP(prop) ||
+                      functionWithDefinedValueP(prop))))) &&
                         (prop->arguments->position(backlinkedarg, 0) == backlinkedargposition)))) {
                     if (!((boolean)(collect000))) {
                       {
@@ -1335,6 +1437,43 @@ Keyword* holdsSpecialist(ControlFrame* frame, Keyword* lastmove) {
   }
 }
 
+Object* propositionRelationComputation(Proposition* p) {
+  { GeneralizedSymbol* operatoR = p->operatoR;
+
+    if (subtypeOfSurrogateP(safePrimaryType(operatoR))) {
+      { GeneralizedSymbol* operator000 = operatoR;
+        Surrogate* operatoR = ((Surrogate*)(operator000));
+
+        return (operatoR->surrogateValue);
+      }
+    }
+    else {
+      return (NULL);
+    }
+  }
+}
+
+Object* propositionArgumentComputation(Proposition* p, IntegerWrapper* i) {
+  { Vector* arguments = p->arguments;
+
+    if ((i->wrapperValue >= 0) &&
+        (i->wrapperValue < arguments->length())) {
+      return ((arguments->theArray)[(i->wrapperValue)]);
+    }
+    else {
+      return (NULL);
+    }
+  }
+}
+
+Skolem* propositionArgumentsComputation(Proposition* p) {
+  return (createLogicalList(p->arguments->listify()));
+}
+
+IntegerWrapper* propositionArityComputation(Proposition* p) {
+  return (wrapInteger(p->arguments->length()));
+}
+
 Keyword* cutSpecialist(ControlFrame* frame, Keyword* lastmove) {
   lastmove = lastmove;
   if (!((boolean)(((Iterator*)(dynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_STELLA_ITERATOR, NULL)))))) {
@@ -1401,31 +1540,126 @@ Keyword* boundVariablesSpecialist(ControlFrame* frame, Keyword* lastmove) {
   }
 }
 
-Keyword* forkSpecialist(ControlFrame* frame, Keyword* lastmove) {
-  if (lastmove == KWD_SPECIALISTS_DOWN) {
-    return (KWD_SPECIALISTS_MOVE_DOWN);
+
+} // end of namespace pl_kernel_kb
+
+
+namespace logic {
+  using namespace stella;
+
+ForkProofAdjunct* newForkProofAdjunct() {
+  { ForkProofAdjunct* self = NULL;
+
+    self = new ForkProofAdjunct();
+    self->downFrame = NULL;
+    self->conditionJustification = NULL;
+    return (self);
   }
-  else if (lastmove == KWD_SPECIALISTS_UP_TRUE) {
-    if (frame->argumentCursor > 0) {
-      return (KWD_SPECIALISTS_CONTINUING_SUCCESS);
-    }
-    frame->down = NULL;
-    frame->argumentCursor = 1;
-    return (KWD_SPECIALISTS_MOVE_DOWN);
+}
+
+Surrogate* ForkProofAdjunct::primaryType() {
+  { ForkProofAdjunct* self = this;
+
+    return (SGT_SPECIALISTS_LOGIC_FORK_PROOF_ADJUNCT);
   }
-  else if (lastmove == KWD_SPECIALISTS_UP_FAIL) {
-    if (frame->argumentCursor > 0) {
-      return (KWD_SPECIALISTS_FAILURE);
+}
+
+Object* accessForkProofAdjunctSlotValue(ForkProofAdjunct* self, Symbol* slotname, Object* value, boolean setvalueP) {
+  if (slotname == SYM_SPECIALISTS_LOGIC_CONDITION_JUSTIFICATION) {
+    if (setvalueP) {
+      self->conditionJustification = ((Justification*)(value));
     }
-    frame->down = NULL;
-    frame->argumentCursor = 2;
-    return (KWD_SPECIALISTS_MOVE_DOWN);
+    else {
+      value = self->conditionJustification;
+    }
+  }
+  else if (slotname == SYM_SPECIALISTS_LOGIC_DOWN_FRAME) {
+    if (setvalueP) {
+      self->downFrame = ((ControlFrame*)(value));
+    }
+    else {
+      value = self->downFrame;
+    }
   }
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << lastmove << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << slotname << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
+    }
+  }
+  return (value);
+}
+
+
+} // end of namespace logic
+
+
+namespace pl_kernel_kb {
+  using namespace stella;
+  using namespace logic;
+
+Keyword* forkSpecialist(ControlFrame* frame, Keyword* lastmove) {
+  { boolean recordjustificationsP = oRECORD_JUSTIFICATIONSpo.get();
+    ForkProofAdjunct* adjunct = ((ForkProofAdjunct*)(((ProofAdjunct*)(dynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT, NULL)))));
+
+    if (lastmove == KWD_SPECIALISTS_DOWN) {
+      if (recordjustificationsP) {
+        if (!((boolean)(adjunct))) {
+          adjunct = newForkProofAdjunct();
+          setDynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT, adjunct, NULL);
+        }
+        frame->down = adjunct->downFrame;
+      }
+      return (KWD_SPECIALISTS_MOVE_DOWN);
+    }
+    else if (lastmove == KWD_SPECIALISTS_UP_TRUE) {
+      if (frame->argumentCursor > 0) {
+        if (recordjustificationsP) {
+          adjunct->downFrame = frame->down;
+          propagateFrameTruthValue(frame->result, frame);
+          { Justification* self001 = newJustification();
+
+            self001->inferenceRule = ((adjunct->conditionJustification->inferenceRule == KWD_SPECIALISTS_FAIL_INTRODUCTION) ? KWD_SPECIALISTS_FORK_ELSE : KWD_SPECIALISTS_FORK_THEN);
+            self001->antecedents = cons(adjunct->conditionJustification, cons(((Justification*)(dynamicSlotValue(frame->result->dynamicSlots, SYM_SPECIALISTS_LOGIC_JUSTIFICATION, NULL))), NIL));
+            recordGoalJustification(frame, self001);
+          }
+        }
+        if (((boolean)(frame->down))) {
+          if (recordjustificationsP) {
+            frame->down = NULL;
+          }
+          return (KWD_SPECIALISTS_CONTINUING_SUCCESS);
+        }
+        else {
+          return (KWD_SPECIALISTS_FINAL_SUCCESS);
+        }
+      }
+      if (recordjustificationsP) {
+        adjunct->conditionJustification = ((Justification*)(dynamicSlotValue(frame->result->dynamicSlots, SYM_SPECIALISTS_LOGIC_JUSTIFICATION, NULL)));
+      }
+      frame->down = NULL;
+      frame->argumentCursor = 1;
+      return (KWD_SPECIALISTS_MOVE_DOWN);
+    }
+    else if (lastmove == KWD_SPECIALISTS_UP_FAIL) {
+      if (frame->argumentCursor > 0) {
+        return (KWD_SPECIALISTS_FAILURE);
+      }
+      if (recordjustificationsP) {
+        recordFailJustification(frame->result, KWD_SPECIALISTS_UP_FAIL);
+        adjunct->conditionJustification = ((Justification*)(dynamicSlotValue(frame->result->dynamicSlots, SYM_SPECIALISTS_LOGIC_JUSTIFICATION, NULL)));
+      }
+      frame->down = NULL;
+      frame->argumentCursor = 2;
+      return (KWD_SPECIALISTS_MOVE_DOWN);
+    }
+    else {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "`" << lastmove << "'" << " is not a valid case option";
+        throw *newStellaException(stream000->theStringReader());
+      }
     }
   }
 }
@@ -1566,14 +1800,21 @@ QueryIterator* createQuerySpecialistIterator(ControlFrame* frame, boolean& _Retu
       }
       collectFreeVariables(proposition, iovariables, list(0), list(0));
       setDynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_LOGIC_QUERY_SPECIALIST_IO_VARIABLES, iovariables, NULL);
-      { Description* self001 = newDescription();
+      { 
+        BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_SPECIALISTS_DESCRIPTION);
+        { Description* self001 = newDescription();
 
-        self001->ioVariables = ((Vector*)(copyListToArgumentsVector(iovariables)));
-        self001->proposition = proposition;
-        subquerydescription = self001;
+          self001->ioVariables = ((Vector*)(copyListToArgumentsVector(iovariables)));
+          self001->proposition = proposition;
+          subquerydescription = self001;
+        }
+        { Description* temp000 = findDuplicateDescription(subquerydescription);
+
+          subquerydescription = (((boolean)(temp000)) ? temp000 : subquerydescription);
+        }
       }
       computeInternalVariables(subquerydescription);
-      iovariablebindings = newVector(iovariables->length());
+      iovariablebindings = stella::newVector(iovariables->length());
       truefalsequeryP = true;
       { Object* var = NULL;
         Cons* iter000 = iovariables->theConsList;
@@ -1612,6 +1853,7 @@ Keyword* querySpecialist(ControlFrame* frame, Keyword* lastmove) {
   { QueryIterator* subqueryiterator = ((QueryIterator*)(((Iterator*)(dynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_STELLA_ITERATOR, NULL)))));
     boolean truefalsequeryP = false;
     boolean partialqueryP = false;
+    boolean sortedqueryP = false;
     boolean successP = false;
     ControlFrame* result = NULL;
 
@@ -1632,16 +1874,23 @@ Keyword* querySpecialist(ControlFrame* frame, Keyword* lastmove) {
           callRetrievePartial(subqueryiterator);
         }
       }
+      else if ((!truefalsequeryP) &&
+          ((boolean)(lookupQueryOption(subqueryiterator, KWD_SPECIALISTS_SORT_BY)))) {
+        sortedqueryP = true;
+        callRetrieve(subqueryiterator);
+      }
     }
     else {
       partialqueryP = ((boolean)(subqueryiterator->partialMatchStrategy));
+      sortedqueryP = ((boolean)(lookupQueryOption(subqueryiterator, KWD_SPECIALISTS_SORT_BY)));
     }
     if (((boolean)(oTRACED_KEYWORDSo)) &&
         oTRACED_KEYWORDSo->membP(KWD_SPECIALISTS_GOAL_TREE)) {
       std::cout << std::endl;
     }
     for (;;) {
-      if (partialqueryP) {
+      if (partialqueryP ||
+          sortedqueryP) {
         successP = subqueryiterator->querySucceededP();
         if (successP) {
           { QuerySolution* solution = subqueryiterator->solutions->pop();
@@ -1654,7 +1903,9 @@ Keyword* querySpecialist(ControlFrame* frame, Keyword* lastmove) {
             if (oRECORD_JUSTIFICATIONSpo.get()) {
               setDynamicSlotValue(result->dynamicSlots, SYM_SPECIALISTS_LOGIC_JUSTIFICATION, solution->justification, NULL);
             }
-            result->partialMatchFrame->positiveScore = solution->matchScore;
+            if (partialqueryP) {
+              result->partialMatchFrame->positiveScore = solution->matchScore;
+            }
           }
         }
       }
@@ -1746,6 +1997,173 @@ Keyword* querySpecialist(ControlFrame* frame, Keyword* lastmove) {
 namespace logic {
   using namespace stella;
 
+SavedInferenceLevelProofAdjunct* newSavedInferenceLevelProofAdjunct() {
+  { SavedInferenceLevelProofAdjunct* self = NULL;
+
+    self = new SavedInferenceLevelProofAdjunct();
+    self->downFrame = NULL;
+    self->inferenceLevel = NULL;
+    self->savedInferenceLevel = NULL;
+    return (self);
+  }
+}
+
+Surrogate* SavedInferenceLevelProofAdjunct::primaryType() {
+  { SavedInferenceLevelProofAdjunct* self = this;
+
+    return (SGT_SPECIALISTS_LOGIC_SAVED_INFERENCE_LEVEL_PROOF_ADJUNCT);
+  }
+}
+
+Object* accessSavedInferenceLevelProofAdjunctSlotValue(SavedInferenceLevelProofAdjunct* self, Symbol* slotname, Object* value, boolean setvalueP) {
+  if (slotname == SYM_SPECIALISTS_LOGIC_SAVED_INFERENCE_LEVEL) {
+    if (setvalueP) {
+      self->savedInferenceLevel = ((InferenceLevel*)(value));
+    }
+    else {
+      value = self->savedInferenceLevel;
+    }
+  }
+  else if (slotname == SYM_SPECIALISTS_LOGIC_INFERENCE_LEVEL) {
+    if (setvalueP) {
+      self->inferenceLevel = ((InferenceLevel*)(value));
+    }
+    else {
+      value = self->inferenceLevel;
+    }
+  }
+  else if (slotname == SYM_SPECIALISTS_LOGIC_DOWN_FRAME) {
+    if (setvalueP) {
+      self->downFrame = ((ControlFrame*)(value));
+    }
+    else {
+      value = self->downFrame;
+    }
+  }
+  else {
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "`" << slotname << "'" << " is not a valid case option";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
+  return (value);
+}
+
+InferenceLevel* leveledQueryRelationToInferenceLevel(Surrogate* relation) {
+  if (relation == SGT_SPECIALISTS_PL_KERNEL_KB_ASSERTION_QUERY) {
+    return (ASSERTION_INFERENCE);
+  }
+  else if (relation == SGT_SPECIALISTS_PL_KERNEL_KB_SHALLOW_QUERY) {
+    return (SHALLOW_INFERENCE);
+  }
+  else if (relation == SGT_SPECIALISTS_PL_KERNEL_KB_SUBSUMPTION_QUERY) {
+    return (SUBSUMPTION_INFERENCE);
+  }
+  else if (relation == SGT_SPECIALISTS_PL_KERNEL_KB_BACKTRACKING_QUERY) {
+    return (BACKTRACKING_INFERENCE);
+  }
+  else if (relation == SGT_SPECIALISTS_PL_KERNEL_KB_NORMAL_QUERY) {
+    return (NORMAL_INFERENCE);
+  }
+  else if (relation == SGT_SPECIALISTS_PL_KERNEL_KB_REFUTATION_QUERY) {
+    return (REFUTATION_INFERENCE);
+  }
+  else {
+    return (getInferenceLevel(((StringWrapper*)(splitString(relation->symbolName, '-')->value))->keywordify()));
+  }
+}
+
+
+} // end of namespace logic
+
+
+namespace pl_kernel_kb {
+  using namespace stella;
+  using namespace logic;
+
+Keyword* leveledQuerySpecialist(ControlFrame* frame, Keyword* lastmove) {
+  { Proposition* proposition = frame->proposition;
+    SavedInferenceLevelProofAdjunct* adjunct = ((SavedInferenceLevelProofAdjunct*)(((ProofAdjunct*)(dynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT, NULL)))));
+
+    if (lastmove == KWD_SPECIALISTS_DOWN) {
+      if (!((boolean)(adjunct))) {
+        { Object* argpropvalue = argumentBoundTo((proposition->arguments->theArray)[0]);
+
+          if ((!((boolean)(argpropvalue))) ||
+              (!isaP(argpropvalue, SGT_SPECIALISTS_LOGIC_PROPOSITION))) {
+            return (KWD_SPECIALISTS_TERMINAL_FAILURE);
+          }
+          { SavedInferenceLevelProofAdjunct* self000 = newSavedInferenceLevelProofAdjunct();
+
+            self000->savedInferenceLevel = currentInferenceLevel();
+            self000->inferenceLevel = leveledQueryRelationToInferenceLevel(((Surrogate*)(proposition->operatoR)));
+            self000->downFrame = createDownFrame(frame, ((Proposition*)(argpropvalue)));
+            adjunct = self000;
+          }
+          setDynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT, adjunct, NULL);
+        }
+      }
+      frame->down = adjunct->downFrame;
+      callSetInferenceLevel(adjunct->inferenceLevel->keyword, NULL);
+      oINFERENCELEVELo.set(((NormalInferenceLevel*)(adjunct->inferenceLevel)));
+      return (KWD_SPECIALISTS_MOVE_DOWN);
+    }
+    else if (lastmove == KWD_SPECIALISTS_UP_TRUE) {
+      propagateFrameTruthValue(frame->result, frame);
+      if (((boolean)(oQUERYITERATORo.get())) &&
+          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+        frame->result->partialMatchFrame->propagateFramePartialTruth(frame);
+      }
+      if (oRECORD_JUSTIFICATIONSpo.get()) {
+        { Justification* self001 = newJustification();
+
+          self001->inferenceRule = KWD_SPECIALISTS_LEVELED_QUERY;
+          self001->antecedents = cons(((Justification*)(dynamicSlotValue(frame->result->dynamicSlots, SYM_SPECIALISTS_LOGIC_JUSTIFICATION, NULL))), NIL);
+          recordGoalJustification(frame, self001);
+        }
+      }
+      callSetInferenceLevel(adjunct->savedInferenceLevel->keyword, NULL);
+      oINFERENCELEVELo.set(((NormalInferenceLevel*)(adjunct->savedInferenceLevel)));
+      if (((boolean)(frame->down))) {
+        adjunct->downFrame = frame->down;
+        frame->down = NULL;
+        return (KWD_SPECIALISTS_CONTINUING_SUCCESS);
+      }
+      else {
+        return (KWD_SPECIALISTS_FINAL_SUCCESS);
+      }
+    }
+    else if (lastmove == KWD_SPECIALISTS_UP_FAIL) {
+      propagateFrameTruthValue(frame->result, frame);
+      if (((boolean)(oQUERYITERATORo.get())) &&
+          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+        frame->result->partialMatchFrame->propagateFramePartialTruth(frame);
+      }
+      if (oRECORD_JUSTIFICATIONSpo.get()) {
+        recordPrimitiveJustification(frame, KWD_SPECIALISTS_UP_FAIL);
+      }
+      callSetInferenceLevel(adjunct->savedInferenceLevel->keyword, NULL);
+      oINFERENCELEVELo.set(((NormalInferenceLevel*)(adjunct->savedInferenceLevel)));
+      return (KWD_SPECIALISTS_FAILURE);
+    }
+    else {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "`" << lastmove << "'" << " is not a valid case option";
+        throw *newStellaException(stream000->theStringReader());
+      }
+    }
+  }
+}
+
+
+} // end of namespace pl_kernel_kb
+
+
+namespace logic {
+  using namespace stella;
+
 int oPROTOTYPE_ID_COUNTERo = 0;
 
 
@@ -1758,7 +2176,7 @@ namespace pl_kernel_kb {
 
 Keyword* conceptPrototypeSpecialist(ControlFrame* frame, Keyword* lastmove) {
   { Proposition* proposition = frame->proposition;
-    Description* clasS = ((Description*)(argumentBoundTo((proposition->arguments->theArray)[0])));
+    Object* clasS = argumentBoundTo((proposition->arguments->theArray)[0]);
     Object* prototypeargument = (proposition->arguments->theArray)[1];
     LogicObject* prototype = NULL;
 
@@ -1769,15 +2187,19 @@ Keyword* conceptPrototypeSpecialist(ControlFrame* frame, Keyword* lastmove) {
     }
     prototype = ((LogicObject*)(accessBinaryValue(clasS, SGT_SPECIALISTS_PL_KERNEL_KB_CONCEPT_PROTOTYPE)));
     if (!((boolean)(prototype))) {
-      { 
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, clasS->homeContext);
-        BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
-        prototype = createHypothesizedInstance((isaP(clasS, SGT_SPECIALISTS_LOGIC_NAMED_DESCRIPTION) ? stringConcatenate("proto-", clasS->descriptionName()->symbolName, 0) : (char*)"prototype"));
+      { Proposition* equivalence = NULL;
+
         { 
-          BIND_STELLA_SPECIAL(oINVISIBLEASSERTIONpo, boolean, true);
-          assertMemberOfProposition(prototype, clasS);
-          assertBinaryValue(SGT_SPECIALISTS_PL_KERNEL_KB_CONCEPT_PROTOTYPE, clasS, prototype);
+          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, ((Description*)(clasS))->homeContext);
+          BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+          prototype = createHypothesizedInstance((isaP(clasS, SGT_SPECIALISTS_LOGIC_NAMED_DESCRIPTION) ? stringConcatenate("proto-", objectNameString(clasS), 0) : (char*)"prototype"));
+          { 
+            BIND_STELLA_SPECIAL(oINVISIBLEASSERTIONpo, boolean, true);
+            assertMemberOfProposition(prototype, clasS);
+            equivalence = assertBinaryValue(SGT_SPECIALISTS_PL_KERNEL_KB_CONCEPT_PROTOTYPE, clasS, prototype);
+          }
         }
+        equivalence->reactToInferenceUpdate();
       }
     }
     return (selectProofResult(bindArgumentToValueP(prototypeargument, prototype, true), false, true));
@@ -1905,7 +2327,9 @@ boolean helpClosedTermP(Object* self, Cons* activeterms) {
       { Object* self001 = self;
         Description* self = ((Description*)(self001));
 
-        return (helpClosedPropositionP(self->proposition, activeterms));
+        return ((testPropertyP(self, SGT_SPECIALISTS_PL_KERNEL_KB_CLOSED) &&
+            (!((BooleanWrapper*)(dynamicSlotValue(oCONTEXTo.get()->dynamicSlots, SYM_SPECIALISTS_LOGIC_MONOTONICp, FALSE_WRAPPER)))->wrapperValue)) ||
+            helpClosedPropositionP(self->proposition, activeterms));
       }
     }
     else if (subtypeOfSurrogateP(testValue000)) {
@@ -1919,7 +2343,7 @@ boolean helpClosedTermP(Object* self, Cons* activeterms) {
       { Object* self003 = self;
         PatternVariable* self = ((PatternVariable*)(self003));
 
-        return (true);
+        return (false);
       }
     }
     else if (subtypeOfP(testValue000, SGT_SPECIALISTS_LOGIC_SKOLEM)) {
@@ -2037,15 +2461,37 @@ boolean helpClosedPropositionP(Proposition* self, Cons* activeterms) {
         ((testValue000 == KWD_SPECIALISTS_FUNCTION) ||
          (testValue000 == KWD_SPECIALISTS_ISA))) {
       if (((Surrogate*)(self->operatoR)) == SGT_SPECIALISTS_PL_KERNEL_KB_MEMBER_OF) {
-        return (helpClosedTermP((self->arguments->theArray)[1], activeterms));
+        { Object* collectionarg = (self->arguments->theArray)[1];
+          Object* collectionvalue = safeArgumentBoundTo(collectionarg);
+
+          if (((boolean)(collectionvalue))) {
+            return (helpClosedTermP(collectionvalue, activeterms));
+          }
+          else {
+            { boolean foundP000 = false;
+
+              { Proposition* prop = NULL;
+                Iterator* iter000 = unfilteredDependentPropositions(collectionarg, NULL)->allocateIterator();
+
+                for (prop, iter000; iter000->nextP(); ) {
+                  prop = ((Proposition*)(iter000->value));
+                  if (eqlP(collectionarg, prop->arguments->last()) &&
+                      collectionofPropositionP(prop)) {
+                    foundP000 = true;
+                    break;
+                  }
+                }
+              }
+              { boolean value001 = foundP000;
+
+                return (value001);
+              }
+            }
+          }
+        }
       }
       else {
-        { NamedDescription* description = getDescription(((Surrogate*)(self->operatoR)));
-
-          return (helpClosedTermP(description, activeterms) ||
-              (singleValuedTermP(description) &&
-               testPropertyP(description, SGT_SPECIALISTS_PL_KERNEL_KB_TOTAL)));
-        }
+        return (helpClosedTermP(getDescription(((Surrogate*)(self->operatoR))), activeterms));
       }
     }
     else if (testValue000 == KWD_SPECIALISTS_FAIL) {
@@ -2334,6 +2780,11 @@ void createCollectDescriptionExtensionFrame(ControlFrame* frame, Description* de
   }
 }
 
+boolean collectDescriptionExtensionFrameP(ControlFrame* frame) {
+  return (((boolean)(frame->patternRecord)) &&
+      ((boolean)(frame->patternRecord->collectionList)));
+}
+
 
 } // end of namespace logic
 
@@ -2342,60 +2793,71 @@ namespace pl_kernel_kb {
   using namespace stella;
   using namespace logic;
 
-Keyword* collectIntoSetSpecialist(ControlFrame* frame, Keyword* lastmove) {
+Keyword* collectMembersSpecialist(ControlFrame* frame, Keyword* lastmove) {
   { Proposition* proposition = frame->proposition;
     Object* collectionarg = (proposition->arguments->theArray)[0];
     Object* collectionvalue = argumentBoundTo(collectionarg);
     Object* listarg = (proposition->arguments->theArray)[1];
+    boolean listP = false;
+    boolean uniqueP = true;
+    stella::List* members = NULL;
+    Object* result = NULL;
 
     lastmove = lastmove;
     if (!((boolean)(collectionvalue))) {
       return (KWD_SPECIALISTS_TERMINAL_FAILURE);
     }
-    if (!((boolean)(((Iterator*)(dynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_STELLA_ITERATOR, NULL)))))) {
-      if (enumeratedSetP(collectionvalue) &&
-          (((LogicObject*)(collectionvalue))->variableValueInverse_reader() == NIL)) {
-        bindArgumentToValueP(listarg, collectionvalue, true);
-        return (KWD_SPECIALISTS_FINAL_SUCCESS);
-      }
-      { Surrogate* testValue000 = safePrimaryType(collectionvalue);
+    { GeneralizedSymbol* testValue000 = proposition->operatoR;
 
-        if (subtypeOfP(testValue000, SGT_SPECIALISTS_STELLA_COLLECTION)) {
+      if (testValue000 == SGT_SPECIALISTS_PL_KERNEL_KB_COLLECT_INTO_LIST) {
+        listP = true;
+        uniqueP = false;
+      }
+      else if (testValue000 == SGT_SPECIALISTS_PL_KERNEL_KB_COLLECT_INTO_ORDERED_SET) {
+        listP = true;
+      }
+      else {
+      }
+    }
+    if ((!((boolean)(((Iterator*)(dynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_STELLA_ITERATOR, NULL)))))) &&
+        (((enumeratedSetP(collectionvalue) &&
+        (!listP)) ||
+        (enumeratedListP(collectionvalue) &&
+         (!uniqueP))) &&
+         (((LogicObject*)(collectionvalue))->variableValueInverse_reader() == NIL))) {
+      result = collectionvalue;
+    }
+    else if (!((boolean)(((Iterator*)(dynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_STELLA_ITERATOR, NULL)))))) {
+      { Surrogate* testValue001 = safePrimaryType(collectionvalue);
+
+        if (subtypeOfP(testValue001, SGT_SPECIALISTS_STELLA_COLLECTION)) {
           { Object* collectionvalue000 = collectionvalue;
             stella::Collection* collectionvalue = ((stella::Collection*)(collectionvalue000));
 
-            { stella::List* members = assertedCollectionMembers(collectionvalue, false);
-
-              if (!((boolean)(members))) {
-                return (KWD_SPECIALISTS_TERMINAL_FAILURE);
-              }
-              bindArgumentToValueP(listarg, createEnumeratedSet(members), true);
-              return (KWD_SPECIALISTS_FINAL_SUCCESS);
+            members = assertedCollectionMembers(collectionvalue, false);
+            if (!((boolean)(members))) {
+              return (KWD_SPECIALISTS_TERMINAL_FAILURE);
             }
           }
         }
-        else if (subtypeOfP(testValue000, SGT_SPECIALISTS_LOGIC_SKOLEM)) {
+        else if (subtypeOfP(testValue001, SGT_SPECIALISTS_LOGIC_SKOLEM)) {
           { Object* collectionvalue001 = collectionvalue;
             Skolem* collectionvalue = ((Skolem*)(collectionvalue001));
 
-            { stella::List* members = assertedCollectionMembers(collectionvalue, false);
-
-              if (!((boolean)(members))) {
-                return (KWD_SPECIALISTS_TERMINAL_FAILURE);
-              }
-              bindArgumentToValueP(listarg, createEnumeratedSet(members), true);
-              return (KWD_SPECIALISTS_FINAL_SUCCESS);
+            members = assertedCollectionMembers(collectionvalue, false);
+            if (!((boolean)(members))) {
+              return (KWD_SPECIALISTS_TERMINAL_FAILURE);
             }
           }
         }
-        else if (subtypeOfP(testValue000, SGT_SPECIALISTS_LOGIC_DESCRIPTION)) {
+        else if (subtypeOfP(testValue001, SGT_SPECIALISTS_LOGIC_DESCRIPTION)) {
           { Object* collectionvalue002 = collectionvalue;
             Description* collectionvalue = ((Description*)(collectionvalue002));
 
-            { boolean testValue001 = false;
+            { boolean testValue002 = false;
 
-              testValue001 = ((boolean)(((Vector*)(dynamicSlotValue(collectionvalue->dynamicSlots, SYM_SPECIALISTS_LOGIC_EXTERNAL_VARIABLES, NULL)))));
-              if (testValue001) {
+              testValue002 = ((boolean)(((Vector*)(dynamicSlotValue(collectionvalue->dynamicSlots, SYM_SPECIALISTS_LOGIC_EXTERNAL_VARIABLES, NULL)))));
+              if (testValue002) {
                 { boolean foundP000 = false;
 
                   { PatternVariable* v = NULL;
@@ -2413,29 +2875,24 @@ Keyword* collectIntoSetSpecialist(ControlFrame* frame, Keyword* lastmove) {
                       }
                     }
                   }
-                  testValue001 = foundP000;
+                  testValue002 = foundP000;
                 }
               }
-              if (testValue001) {
+              if (testValue002) {
                 return (KWD_SPECIALISTS_TERMINAL_FAILURE);
               }
             }
             if (inferableP(collectionvalue)) {
-              {
-                createCollectDescriptionExtensionFrame(frame, collectionvalue);
-                setDynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_STELLA_ITERATOR, EMPTY_PROPOSITIONS_ITERATOR, NULL);
-                return (KWD_SPECIALISTS_MOVE_DOWN);
-              }
+              createCollectDescriptionExtensionFrame(frame, collectionvalue);
+              setDynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_STELLA_ITERATOR, EMPTY_PROPOSITIONS_ITERATOR, NULL);
+              return (KWD_SPECIALISTS_MOVE_DOWN);
             }
             else {
-              { stella::List* members = assertedCollectionMembers(collectionvalue, false);
-
-                if (!((boolean)(members))) {
-                  return (KWD_SPECIALISTS_TERMINAL_FAILURE);
-                }
-                bindArgumentToValueP(listarg, createEnumeratedSet(members), true);
-                return (KWD_SPECIALISTS_FINAL_SUCCESS);
+              members = assertedCollectionMembers(collectionvalue, false);
+              if (!((boolean)(members))) {
+                return (KWD_SPECIALISTS_TERMINAL_FAILURE);
               }
+              uniqueP = false;
             }
           }
         }
@@ -2444,15 +2901,43 @@ Keyword* collectIntoSetSpecialist(ControlFrame* frame, Keyword* lastmove) {
         }
       }
     }
-    if (!((boolean)(frame->down))) {
-      return (KWD_SPECIALISTS_FAILURE);
-    }
-    { stella::List* list = frame->down->patternRecord->collectionList;
+    else {
+      if (!((boolean)(frame->down))) {
+        return (KWD_SPECIALISTS_FAILURE);
+      }
+      { ControlFrame* patternframe = frame->down;
 
-      popFramesUpTo(frame->down);
-      list->removeDuplicates();
-      bindArgumentToValueP(listarg, createEnumeratedSet(list), true);
-      return (KWD_SPECIALISTS_FINAL_SUCCESS);
+        members = patternframe->patternRecord->collectionList->reverse();
+        popFramesUpTo(patternframe);
+        if (((boolean)(((Keyword*)(dynamicSlotValue(patternframe->dynamicSlots, SYM_SPECIALISTS_LOGIC_INFERENCE_CUTOFF_REASON, NULL)))))) {
+          return (KWD_SPECIALISTS_FAILURE);
+        }
+      }
+    }
+    if (!((boolean)(result))) {
+      if (uniqueP) {
+        members = (consP(members->first()) ? members->removeDuplicatesEqual() : ((stella::List*)(members->removeDuplicates())));
+      }
+      result = (listP ? createLogicalList(members) : createEnumeratedSet(members));
+    }
+    { Keyword* success = selectTestResult(bindArgumentToValueP(listarg, result, true), true, frame);
+
+      if (oRECORD_JUSTIFICATIONSpo.get() &&
+          (!(success == KWD_SPECIALISTS_TERMINAL_FAILURE))) {
+        { Justification* self000 = newJustification();
+
+          self000->inferenceRule = KWD_SPECIALISTS_COLLECT_MEMBERS;
+          { Justification* justification = self000;
+            Justification* antecedents = (((boolean)(frame->result)) ? ((Justification*)(dynamicSlotValue(frame->result->dynamicSlots, SYM_SPECIALISTS_LOGIC_JUSTIFICATION, NULL))) : ((Justification*)(NULL)));
+
+            if (((boolean)(antecedents))) {
+              justification->antecedents = cons(antecedents, NIL);
+            }
+            recordGoalJustification(frame, justification);
+          }
+        }
+      }
+      return (success);
     }
   }
 }
@@ -2478,6 +2963,219 @@ Keyword* lengthOfListSpecialist(ControlFrame* frame, Keyword* lastmove) {
       len = ((stella::List*)(listvalue))->length();
       return (selectTestResult(bindArgumentToValueP(lengtharg, wrapInteger(len), true), true, frame));
     }
+  }
+}
+
+Keyword* nthElementSpecialist(ControlFrame* frame, Keyword* lastmove) {
+  { Proposition* proposition = frame->proposition;
+    Object* collectionarg = (proposition->arguments->theArray)[0];
+    Object* collection = argumentBoundTo(collectionarg);
+    Object* narg = (proposition->arguments->theArray)[1];
+    Object* n = argumentBoundTo(narg);
+    Object* elementarg = (proposition->arguments->theArray)[2];
+    Object* element = argumentBoundTo(elementarg);
+
+    lastmove = lastmove;
+    if (logicalCollectionP(collection)) {
+      { int then = NULL_INTEGER;
+        Vector* arguments = ((Skolem*)(collection))->definingProposition->arguments;
+        int nargs = arguments->length() - 1;
+
+        if (integerP(n)) {
+          then = unwrapInteger(((IntegerWrapper*)(n)));
+          if (then < 0) {
+            then = nargs + then;
+          }
+          if ((then >= 0) &&
+              (then < nargs)) {
+            return (selectTestResult(bindArgumentToValueP(elementarg, (arguments->theArray)[then], true), true, frame));
+          }
+        }
+        else if ((!((boolean)(n))) &&
+            ((boolean)(element))) {
+          { Object* arg = NULL;
+            Vector* vector000 = arguments;
+            int index000 = 0;
+            int length000 = vector000->length();
+            int i = NULL_INTEGER;
+            int iter000 = 0;
+            int upperBound000 = nargs - 1;
+
+            for  (arg, vector000, index000, length000, i, iter000, upperBound000; 
+                  (index000 < length000) &&
+                      (iter000 <= upperBound000); 
+                  index000 = index000 + 1,
+                  iter000 = iter000 + 1) {
+              arg = (vector000->theArray)[index000];
+              i = iter000;
+              if (eqlP(argumentBoundTo(arg), element)) {
+                return (selectTestResult(bindArgumentToValueP(narg, wrapInteger(i), true), true, frame));
+              }
+            }
+          }
+        }
+        else if ((!((boolean)(n))) &&
+            (!((boolean)(element)))) {
+          { AllPurposeIterator* iterator = ((AllPurposeIterator*)(((Iterator*)(dynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_STELLA_ITERATOR, NULL)))));
+
+            if (!((boolean)(iterator))) {
+              iterator = ((AllPurposeIterator*)(((Iterator*)(arguments->allocateIterator()))));
+              setDynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_STELLA_ITERATOR, iterator, NULL);
+            }
+            then = iterator->iteratorInteger;
+            if ((then < nargs) &&
+                iterator->nextP()) {
+              element = iterator->value;
+              if (bindArgumentToValueP(narg, wrapInteger(then), true) &&
+                  bindArgumentToValueP(elementarg, element, true)) {
+                return (KWD_SPECIALISTS_CONTINUING_SUCCESS);
+              }
+            }
+          }
+        }
+      }
+    }
+    return (KWD_SPECIALISTS_TERMINAL_FAILURE);
+  }
+}
+
+Skolem* nthHeadComputation(Skolem* list, IntegerWrapper* narg) {
+  if (!(enumeratedListP(list))) {
+    return (NULL);
+  }
+  { int n = narg->wrapperValue;
+    Vector* elements = list->definingProposition->arguments;
+    int nelements = elements->length() - 1;
+    stella::List* headelements = stella::newList();
+
+    if (n < 0) {
+      n = nelements + n;
+    }
+    if ((n < 0) ||
+        (n > nelements)) {
+      return (NULL);
+    }
+    { int i = NULL_INTEGER;
+      int iter000 = 0;
+      int upperBound000 = n - 1;
+      Cons* collect000 = NULL;
+
+      for  (i, iter000, upperBound000, collect000; 
+            iter000 <= upperBound000; 
+            iter000 = iter000 + 1) {
+        i = iter000;
+        if (!((boolean)(collect000))) {
+          {
+            collect000 = cons((elements->theArray)[i], NIL);
+            if (headelements->theConsList == NIL) {
+              headelements->theConsList = collect000;
+            }
+            else {
+              addConsToEndOfConsList(headelements->theConsList, collect000);
+            }
+          }
+        }
+        else {
+          {
+            collect000->rest = cons((elements->theArray)[i], NIL);
+            collect000 = collect000->rest;
+          }
+        }
+      }
+    }
+    return (createLogicalList(headelements));
+  }
+}
+
+Skolem* nthRestComputation(Skolem* list, IntegerWrapper* narg) {
+  if (!(enumeratedListP(list))) {
+    return (NULL);
+  }
+  { int n = narg->wrapperValue;
+    Vector* elements = list->definingProposition->arguments;
+    int nelements = elements->length() - 1;
+    stella::List* restelements = stella::newList();
+
+    if (n < 0) {
+      n = nelements + n;
+    }
+    if ((n < 0) ||
+        (n > nelements)) {
+      return (NULL);
+    }
+    { int i = NULL_INTEGER;
+      int iter000 = n;
+      int upperBound000 = nelements - 1;
+      Cons* collect000 = NULL;
+
+      for  (i, iter000, upperBound000, collect000; 
+            iter000 <= upperBound000; 
+            iter000 = iter000 + 1) {
+        i = iter000;
+        if (!((boolean)(collect000))) {
+          {
+            collect000 = cons((elements->theArray)[i], NIL);
+            if (restelements->theConsList == NIL) {
+              restelements->theConsList = collect000;
+            }
+            else {
+              addConsToEndOfConsList(restelements->theConsList, collect000);
+            }
+          }
+        }
+        else {
+          {
+            collect000->rest = cons((elements->theArray)[i], NIL);
+            collect000 = collect000->rest;
+          }
+        }
+      }
+    }
+    return (createLogicalList(restelements));
+  }
+}
+
+Skolem* insertElementComputation(Skolem* list, IntegerWrapper* narg, Object* element) {
+  if (!(enumeratedListP(list))) {
+    return (NULL);
+  }
+  { int n = narg->wrapperValue;
+    Vector* elements = list->definingProposition->arguments;
+    int nelements = elements->length() - 1;
+    stella::List* newelements = stella::newList();
+
+    if (n < 0) {
+      n = nelements + n + 1;
+    }
+    if ((n < 0) ||
+        (n > nelements)) {
+      return (NULL);
+    }
+    { Object* elt = NULL;
+      Vector* vector000 = elements;
+      int index000 = 0;
+      int length000 = vector000->length();
+      int i = NULL_INTEGER;
+      int iter000 = 0;
+      int upperBound000 = nelements - 1;
+
+      for  (elt, vector000, index000, length000, i, iter000, upperBound000; 
+            (index000 < length000) &&
+                (iter000 <= upperBound000); 
+            index000 = index000 + 1,
+            iter000 = iter000 + 1) {
+        elt = (vector000->theArray)[index000];
+        i = iter000;
+        if (i == n) {
+          newelements->push(element);
+        }
+        newelements->push(elt);
+      }
+    }
+    if (n == nelements) {
+      newelements->push(element);
+    }
+    return (createLogicalList(newelements->reverse()));
   }
 }
 
@@ -2606,7 +3304,7 @@ Keyword* sumOfNumbersSpecialist(ControlFrame* frame, Keyword* lastmove) {
     Object* listarg = (proposition->arguments->theArray)[0];
     Object* listskolem = argumentBoundTo(listarg);
     Object* sumarg = (proposition->arguments->theArray)[1];
-    NumberWrapper* sum = NULL;
+    NumberWrapper* sum = wrapInteger(0);
 
     lastmove = lastmove;
     if (((boolean)(listskolem)) &&
@@ -2616,29 +3314,18 @@ Keyword* sumOfNumbersSpecialist(ControlFrame* frame, Keyword* lastmove) {
     }
     { stella::List* listvalue = assertedCollectionMembers(listskolem, true);
 
-      if (listvalue->emptyP()) {
-        return (KWD_SPECIALISTS_TERMINAL_FAILURE);
-      }
       { Object* v = NULL;
         Cons* iter000 = listvalue->theConsList;
 
         for (v, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
           v = iter000->value;
           if (isaP(v, SGT_SPECIALISTS_STELLA_NUMBER_WRAPPER)) {
-            if (!((boolean)(sum))) {
-              sum = ((NumberWrapper*)(v));
-            }
-            else {
-              sum = plusComputation(((NumberWrapper*)(v)), sum);
-            }
+            sum = plusComputation(((NumberWrapper*)(v)), sum);
           }
           else {
-            return (KWD_SPECIALISTS_FAILURE);
+            return (KWD_SPECIALISTS_TERMINAL_FAILURE);
           }
         }
-      }
-      if (!((boolean)(sum))) {
-        return (KWD_SPECIALISTS_TERMINAL_FAILURE);
       }
       return (selectTestResult(bindArgumentToValueP(sumarg, sum, true), true, frame));
     }
@@ -2693,7 +3380,7 @@ Keyword* meanOfNumbersSpecialist(ControlFrame* frame, Keyword* lastmove) {
 Keyword* medianOfNumbersSpecialist(ControlFrame* frame, Keyword* lastmove) {
   { Proposition* proposition = frame->proposition;
     Object* listarg = (proposition->arguments->theArray)[0];
-    stella::List* sortlist = newList();
+    stella::List* sortlist = stella::newList();
     Object* listskolem = argumentBoundTo(listarg);
     Object* medianarg = (proposition->arguments->theArray)[1];
     int numbercount = 0;
@@ -2839,9 +3526,10 @@ namespace logic {
 
 void helpDerivePartitionMemberships(LogicObject* self, LogicObject* super, List* tuples) {
   { Cons* dummy1;
+    Cons* dummy2;
 
     { Object* mc = NULL;
-      Cons* iter000 = applyCachedRetrieve(listO(3, SYM_SPECIALISTS_LOGIC_pSUPER, SYM_SPECIALISTS_LOGIC_pMDC, NIL), listO(4, SYM_SPECIALISTS_STELLA_AND, listO(4, SYM_SPECIALISTS_LOGIC_MEMBER_OF, SYM_SPECIALISTS_LOGIC_pSUPER, SYM_SPECIALISTS_LOGIC_pMDC, NIL), listO(3, SYM_SPECIALISTS_LOGIC_MUTUALLY_DISJOINT_COLLECTION, SYM_SPECIALISTS_LOGIC_pMDC, NIL), NIL), consList(2, super, NULL), consList(0), SYM_SPECIALISTS_LOGIC_F_HELP_DERIVE_PARTITION_MEMBERSHIPS_QUERY_000, dummy1);
+      Cons* iter000 = applyCachedRetrieve(listO(3, SYM_SPECIALISTS_LOGIC_pSUPER, SYM_SPECIALISTS_LOGIC_pMDC, NIL), listO(4, SYM_SPECIALISTS_STELLA_AND, listO(4, SYM_SPECIALISTS_LOGIC_MEMBER_OF, SYM_SPECIALISTS_LOGIC_pSUPER, SYM_SPECIALISTS_LOGIC_pMDC, NIL), listO(3, SYM_SPECIALISTS_LOGIC_MUTUALLY_DISJOINT_COLLECTION, SYM_SPECIALISTS_LOGIC_pMDC, NIL), NIL), consList(2, super, NULL), consList(0), SYM_SPECIALISTS_LOGIC_F_HELP_DERIVE_PARTITION_MEMBERSHIPS_QUERY_000, dummy1, dummy2);
 
       for (mc, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         mc = iter000->value;
@@ -2937,13 +3625,15 @@ Keyword* hasPartitionMembershipSpecialist(ControlFrame* frame, Keyword* lastmove
 
 Keyword* refutationDisjointSpecialist(ControlFrame* frame, Keyword* lastmove) {
   { Proposition* proposition = frame->proposition;
-    Description* class1 = ((Description*)(argumentBoundTo((proposition->arguments->theArray)[0])));
-    Description* class2 = ((Description*)(argumentBoundTo((proposition->arguments->theArray)[1])));
+    Object* arg1 = argumentBoundTo((proposition->arguments->theArray)[0]);
+    Object* arg2 = argumentBoundTo((proposition->arguments->theArray)[1]);
 
     lastmove = lastmove;
-    if ((!((boolean)(class1))) ||
-        ((!((boolean)(class2))) ||
-         (proposition->arguments->length() > 2))) {
+    if ((!((boolean)(arg1))) ||
+        ((!((boolean)(arg2))) ||
+         ((!isaP(arg1, SGT_SPECIALISTS_LOGIC_DESCRIPTION)) ||
+          ((!isaP(arg2, SGT_SPECIALISTS_LOGIC_DESCRIPTION)) ||
+           (proposition->arguments->length() > 2))))) {
       return (KWD_SPECIALISTS_TERMINAL_FAILURE);
     }
     pushMonotonicWorld();
@@ -2952,7 +3642,7 @@ Keyword* refutationDisjointSpecialist(ControlFrame* frame, Keyword* lastmove) {
       { LogicObject* skolem = createHypothesizedInstance("refutation-disjoint");
 
         { Description* c = NULL;
-          Cons* iter000 = ((Cons*)(consList(2, class1, class2)));
+          Cons* iter000 = ((Cons*)(consList(2, arg1, arg2)));
 
           for (c, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
             c = ((Description*)(iter000->value));
@@ -3097,6 +3787,7 @@ SavedContextProofAdjunct* newSavedContextProofAdjunct() {
   { SavedContextProofAdjunct* self = NULL;
 
     self = new SavedContextProofAdjunct();
+    self->downFrame = NULL;
     self->savedContext = NULL;
     return (self);
   }
@@ -3116,6 +3807,14 @@ Object* accessSavedContextProofAdjunctSlotValue(SavedContextProofAdjunct* self, 
     }
     else {
       value = self->savedContext;
+    }
+  }
+  else if (slotname == SYM_SPECIALISTS_LOGIC_DOWN_FRAME) {
+    if (setvalueP) {
+      self->downFrame = ((ControlFrame*)(value));
+    }
+    else {
+      value = self->downFrame;
     }
   }
   else {
@@ -3139,22 +3838,28 @@ namespace pl_kernel_kb {
 Keyword* istSpecialist(ControlFrame* frame, Keyword* lastmove) {
   { Proposition* proposition = frame->proposition;
     Object* contextvalue = argumentBoundTo((proposition->arguments->theArray)[0]);
-    Object* propositionvalue = argumentBoundTo((proposition->arguments->theArray)[1]);
     SavedContextProofAdjunct* adjunct = ((SavedContextProofAdjunct*)(((ProofAdjunct*)(dynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT, NULL)))));
 
     if (lastmove == KWD_SPECIALISTS_DOWN) {
-      if ((!((boolean)(contextvalue))) ||
-          ((!((boolean)(propositionvalue))) ||
-           (!isaP(contextvalue, SGT_SPECIALISTS_STELLA_CONTEXT)))) {
-        return (KWD_SPECIALISTS_TERMINAL_FAILURE);
-      }
-      { SavedContextProofAdjunct* self000 = newSavedContextProofAdjunct();
+      if (!((boolean)(adjunct))) {
+        { Object* propositionvalue = argumentBoundTo((proposition->arguments->theArray)[1]);
 
-        self000->savedContext = oCONTEXTo.get();
-        setDynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT, self000, NULL);
+          if ((!((boolean)(contextvalue))) ||
+              ((!((boolean)(propositionvalue))) ||
+               (!isaP(contextvalue, SGT_SPECIALISTS_STELLA_CONTEXT)))) {
+            return (KWD_SPECIALISTS_TERMINAL_FAILURE);
+          }
+          { SavedContextProofAdjunct* self000 = newSavedContextProofAdjunct();
+
+            self000->savedContext = oCONTEXTo.get();
+            self000->downFrame = createDownFrame(frame, ((Proposition*)(propositionvalue)));
+            adjunct = self000;
+          }
+          setDynamicSlotValue(frame->dynamicSlots, SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT, adjunct, NULL);
+        }
       }
-      ((Context*)(contextvalue))->changeContext();
-      frame->argumentCursor = 1;
+      frame->down = adjunct->downFrame;
+      bestInferenceCache(((Context*)(contextvalue)))->changeContext();
       return (KWD_SPECIALISTS_MOVE_DOWN);
     }
     else if (lastmove == KWD_SPECIALISTS_UP_TRUE) {
@@ -3173,6 +3878,8 @@ Keyword* istSpecialist(ControlFrame* frame, Keyword* lastmove) {
       }
       adjunct->savedContext->changeContext();
       if (((boolean)(frame->down))) {
+        adjunct->downFrame = frame->down;
+        frame->down = NULL;
         return (KWD_SPECIALISTS_CONTINUING_SUCCESS);
       }
       else {
@@ -3297,7 +4004,7 @@ int computeMinimumCardinality(NamedDescription* relation, Object* instance) {
             mincards = cons(wrapInteger(computeStoredBoundOnRoleset(subr, instance, KWD_SPECIALISTS_LOWER)), mincards);
           }
         }
-        { IntegerWrapper* maxmin = ((IntegerWrapper*)(mincards->value));
+        { int maxmin = ((IntegerWrapper*)(mincards->value))->wrapperValue;
 
           { IntegerWrapper* lb = NULL;
             Cons* iter001 = mincards->rest;
@@ -3305,11 +4012,11 @@ int computeMinimumCardinality(NamedDescription* relation, Object* instance) {
             for (lb, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
               lb = ((IntegerWrapper*)(iter001->value));
               if (((boolean)(lb))) {
-                maxmin = wrapInteger(stella::max(lb->wrapperValue, maxmin->wrapperValue));
+                maxmin = stella::integerMax(maxmin, lb->wrapperValue);
               }
             }
           }
-          return (maxmin->wrapperValue);
+          return (maxmin);
         }
       }
     }
@@ -3454,7 +4161,7 @@ int computeMaximumCardinality(NamedDescription* relation, Object* instance) {
             maxcards = cons(wrapInteger(computeStoredBoundOnRoleset(superr, instance, KWD_SPECIALISTS_UPPER)), maxcards);
           }
         }
-        { IntegerWrapper* minmax = ((IntegerWrapper*)(maxcards->value));
+        { int minmax = ((IntegerWrapper*)(maxcards->value))->wrapperValue;
 
           { IntegerWrapper* ub = NULL;
             Cons* iter001 = maxcards->rest;
@@ -3462,11 +4169,11 @@ int computeMaximumCardinality(NamedDescription* relation, Object* instance) {
             for (ub, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
               ub = ((IntegerWrapper*)(iter001->value));
               if (((boolean)(ub))) {
-                minmax = wrapInteger(stella::min(ub->wrapperValue, minmax->wrapperValue));
+                minmax = stella::integerMin(minmax, ub->wrapperValue);
               }
             }
           }
-          return (minmax->wrapperValue);
+          return (minmax);
         }
       }
     }
@@ -3561,18 +4268,18 @@ boolean testRangeTypeP(NamedDescription* relation, Object* instance, NamedDescri
       }
     }
     { Skolem* roleset = getRolesetOf(relation, instance);
+      boolean closedP = closedTermP(relation) ||
+          closedTermP(roleset);
 
-      { boolean testValue000 = false;
+      if (((boolean)(roleset))) {
+        { boolean testValue000 = false;
 
-        testValue000 = ((boolean)(roleset));
-        if (testValue000) {
           if (collectionImpliesCollectionP(roleset, valuetype)) {
             testValue000 = true;
           }
           else {
             {
-              testValue000 = closedTermP(relation) ||
-                  closedTermP(roleset);
+              testValue000 = closedP;
               if (testValue000) {
                 { boolean alwaysP000 = true;
 
@@ -3592,17 +4299,43 @@ boolean testRangeTypeP(NamedDescription* relation, Object* instance, NamedDescri
               }
             }
           }
+          if (testValue000) {
+            return (true);
+          }
         }
-        if (testValue000) {
-          return (true);
+      }
+      else {
+        { boolean testValue001 = false;
+
+          testValue001 = closedP;
+          if (testValue001) {
+            { boolean alwaysP001 = true;
+
+              { Object* filler = NULL;
+                Cons* iter001 = allSlotValues(((LogicObject*)(instance)), relationref);
+
+                for (filler, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+                  filler = iter001->value;
+                  if (!testTypeOnInstanceP(filler, valuesurrogate)) {
+                    alwaysP001 = false;
+                    break;
+                  }
+                }
+              }
+              testValue001 = alwaysP001;
+            }
+          }
+          if (testValue001) {
+            return (true);
+          }
         }
       }
     }
     { NamedDescription* superr = NULL;
-      Cons* iter001 = allSuperrelations(relation, false);
+      Cons* iter002 = allSuperrelations(relation, false);
 
-      for (superr, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
-        superr = ((NamedDescription*)(iter001->value));
+      for (superr, iter002; !(iter002 == NIL); iter002 = iter002->rest) {
+        superr = ((NamedDescription*)(iter002->value));
         { Skolem* superroleset = getRolesetOf(superr, instance);
 
           if (((boolean)(superroleset)) &&
@@ -3703,15 +4436,27 @@ StringWrapper* objectNameComputation(Object* objectarg) {
   }
 }
 
-Object* nameToObjectComputation(StringWrapper* namearg) {
+Object* nameToObjectComputation(Object* namearg) {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
-    { Object* temp000 = getInstance(namearg);
+    if (!stringP(namearg)) {
+      { Object* instance = getInstance(namearg);
 
-      { Object* value000 = (((boolean)(temp000)) ? temp000 : createLogicInstance(internSurrogateInModule(namearg->wrapperValue, oMODULEo.get(), true), NULL));
+        if (((boolean)(instance))) {
+          return (instance);
+        }
+      }
+    }
+    { char* nameargstring = pli::objectToString(namearg);
+      Surrogate* instancename = lookupSurrogate(nameargstring);
 
-        return (value000);
+      { Object* temp000 = getInstance(instancename);
+
+        { Object* value000 = (((boolean)(temp000)) ? temp000 : createLogicInstance(internSurrogateInModule(nameargstring, oMODULEo.get(), true), NULL));
+
+          return (value000);
+        }
       }
     }
   }
@@ -4356,7 +5101,8 @@ namespace logic {
 
 cpp_function_code lookupNativeSpecialist(char* nativeName) {
   // Returns the native funtion code for `native-name' if it exists
-  // and the underlying programming languages supports such lookups.
+  // and the underlying programming languages supports such lookups.  Uses the signature
+  // of a specialist function.
   { cpp_function_code code = NULL;
 
     { OutputStringStream* stream000 = newOutputStringStream();
@@ -4396,6 +5142,68 @@ void registerSpecialistFunctionNameEvaluatorWrapper(Cons* arguments) {
   registerSpecialistFunctionName(((StringWrapper*)(arguments->value))->wrapperValue, ((StringWrapper*)(arguments->rest->value))->wrapperValue);
 }
 
+cpp_function_code lookupNativeComputation(char* nativeName, int arity) {
+  // Returns the native funtion code for `native-name' if it exists
+  // and the underlying programming languages supports such lookups.  It is looked up
+  // using the signature of a computation function supported by the computation specialist.
+  { cpp_function_code code = NULL;
+
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "Not implemented in " << "`" << runningInLanguage() << "'";
+      throw *newStellaException(stream000->theStringReader());
+    }
+    if (code == NULL) {
+      { OutputStringStream* stream001 = newOutputStringStream();
+
+        *(stream001->nativeStream) << "Couldn't locate native function for " << "`" << nativeName << "'";
+        throw *newStellaException(stream001->theStringReader());
+      }
+    }
+    return (code);
+  }
+}
+
+void registerComputationFunction(char* name, cpp_function_code code, int arity) {
+  // Creates a registration entry for `name' as a computation which
+  // executes `code'.  Essentially just builds the Stella meta-information
+  // tructure needed to funcall `name' as a computation function by the
+  // computation specialist.  The function definition in `code' needs to
+  // accept ARITY Stella OBJECTs as arguments and return a Stella OBJECT 
+  // suitable for PowerLoom use.  (These are generally LOGIC-OBJECTs and the
+  // literal wrappers FLOAT-WRAPPER, INTEGER-WRAPPER and STRING-WRAPPER.)
+  { char* definitionString = "(DEFUN (";
+
+    definitionString = stringConcatenate(definitionString, name, 1, " OBJECT) (");
+    { int i = NULL_INTEGER;
+      int iter000 = 1;
+      int upperBound000 = arity;
+      boolean unboundedP000 = upperBound000 == NULL_INTEGER;
+
+      for  (i, iter000, upperBound000, unboundedP000; 
+            unboundedP000 ||
+                (iter000 <= upperBound000); 
+            iter000 = iter000 + 1) {
+        i = iter000;
+        definitionString = stringConcatenate(definitionString, "(X", 2, integerToString(((long long int)(i))), " OBJECT) ");
+      }
+    }
+    definitionString = stringConcatenate(definitionString, "))", 0);
+    defineFunctionObject(stringConcatenate(" ", name, 0), definitionString, code, NULL);
+  }
+}
+
+void registerComputationFunctionName(char* stellaName, char* nativeName, int arity) {
+  // registers a computation function `stella-name' based on the `native-name'
+  // for the particular programming language in question.  Use of this command makes
+  // the resulting code or knowledge bases non-portable to other target languages.
+  registerComputationFunction(stellaName, lookupNativeComputation(nativeName, arity), arity);
+}
+
+void registerComputationFunctionNameEvaluatorWrapper(Cons* arguments) {
+  registerComputationFunctionName(((StringWrapper*)(arguments->value))->wrapperValue, ((StringWrapper*)(arguments->rest->value))->wrapperValue, ((IntegerWrapper*)(arguments->rest->rest->value))->wrapperValue);
+}
+
 void helpStartupSpecialists1() {
   {
     SGT_SPECIALISTS_LOGIC_COMPUTED_PROCEDURE = ((Surrogate*)(internRigidSymbolWrtModule("COMPUTED-PROCEDURE", NULL, 1)));
@@ -4420,8 +5228,9 @@ void helpStartupSpecialists1() {
     SYM_SPECIALISTS_LOGIC_SUB_STRING = ((Symbol*)(internRigidSymbolWrtModule("SUB-STRING", NULL, 0)));
     SYM_SPECIALISTS_STELLA_START = ((Symbol*)(internRigidSymbolWrtModule("START", getStellaModule("/STELLA", true), 0)));
     SYM_SPECIALISTS_LOGIC_SUB_LENGTH = ((Symbol*)(internRigidSymbolWrtModule("SUB-LENGTH", NULL, 0)));
-    SGT_SPECIALISTS_LOGIC_PATTERN_VARIABLE = ((Surrogate*)(internRigidSymbolWrtModule("PATTERN-VARIABLE", NULL, 1)));
     SGT_SPECIALISTS_LOGIC_SKOLEM = ((Surrogate*)(internRigidSymbolWrtModule("SKOLEM", NULL, 1)));
+    SGT_SPECIALISTS_PL_KERNEL_KB_TOTAL = ((Surrogate*)(internRigidSymbolWrtModule("TOTAL", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    KWD_SPECIALISTS_ERROR = ((Keyword*)(internRigidSymbolWrtModule("ERROR", NULL, 2)));
     SYM_SPECIALISTS_STELLA_ITERATOR = ((Symbol*)(internRigidSymbolWrtModule("ITERATOR", getStellaModule("/STELLA", true), 0)));
     SGT_SPECIALISTS_STELLA_NUMBER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER-WRAPPER", getStellaModule("/STELLA", true), 1)));
     SGT_SPECIALISTS_PL_KERNEL_KB_COLLECTIONOF = ((Surrogate*)(internRigidSymbolWrtModule("COLLECTIONOF", getStellaModule("/PL-KERNEL-KB", true), 1)));
@@ -4446,36 +5255,61 @@ void helpStartupSpecialists1() {
     KWD_SPECIALISTS_ISA = ((Keyword*)(internRigidSymbolWrtModule("ISA", NULL, 2)));
     KWD_SPECIALISTS_AND = ((Keyword*)(internRigidSymbolWrtModule("AND", NULL, 2)));
     SYM_SPECIALISTS_STELLA_ARGUMENTS = ((Symbol*)(internRigidSymbolWrtModule("ARGUMENTS", getStellaModule("/STELLA", true), 0)));
+    SGT_SPECIALISTS_LOGIC_FORK_PROOF_ADJUNCT = ((Surrogate*)(internRigidSymbolWrtModule("FORK-PROOF-ADJUNCT", NULL, 1)));
+    SYM_SPECIALISTS_LOGIC_CONDITION_JUSTIFICATION = ((Symbol*)(internRigidSymbolWrtModule("CONDITION-JUSTIFICATION", NULL, 0)));
+    SYM_SPECIALISTS_LOGIC_DOWN_FRAME = ((Symbol*)(internRigidSymbolWrtModule("DOWN-FRAME", NULL, 0)));
+    SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT = ((Symbol*)(internRigidSymbolWrtModule("PROOF-ADJUNCT", NULL, 0)));
+    KWD_SPECIALISTS_FAIL_INTRODUCTION = ((Keyword*)(internRigidSymbolWrtModule("FAIL-INTRODUCTION", NULL, 2)));
+    KWD_SPECIALISTS_FORK_ELSE = ((Keyword*)(internRigidSymbolWrtModule("FORK-ELSE", NULL, 2)));
+    KWD_SPECIALISTS_FORK_THEN = ((Keyword*)(internRigidSymbolWrtModule("FORK-THEN", NULL, 2)));
+    SYM_SPECIALISTS_LOGIC_JUSTIFICATION = ((Symbol*)(internRigidSymbolWrtModule("JUSTIFICATION", NULL, 0)));
+    KWD_SPECIALISTS_TECHNICAL = ((Keyword*)(internRigidSymbolWrtModule("TECHNICAL", NULL, 2)));
+    KWD_SPECIALISTS_LAY = ((Keyword*)(internRigidSymbolWrtModule("LAY", NULL, 2)));
     SGT_SPECIALISTS_LOGIC_PROPOSITION = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 1)));
+  }
+}
+
+void helpStartupSpecialists2() {
+  {
     KWD_SPECIALISTS_HOW_MANY = ((Keyword*)(internRigidSymbolWrtModule("HOW-MANY", NULL, 2)));
     KWD_SPECIALISTS_INHERIT = ((Keyword*)(internRigidSymbolWrtModule("INHERIT", NULL, 2)));
     KWD_SPECIALISTS_ALL = ((Keyword*)(internRigidSymbolWrtModule("ALL", NULL, 2)));
     KWD_SPECIALISTS_CURRENT = ((Keyword*)(internRigidSymbolWrtModule("CURRENT", NULL, 2)));
     SYM_SPECIALISTS_LOGIC_QUERY_SPECIALIST_IO_VARIABLES = ((Symbol*)(internRigidSymbolWrtModule("QUERY-SPECIALIST-IO-VARIABLES", NULL, 0)));
     KWD_SPECIALISTS_MATCH_MODE = ((Keyword*)(internRigidSymbolWrtModule("MATCH-MODE", NULL, 2)));
+    KWD_SPECIALISTS_DESCRIPTION = ((Keyword*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 2)));
+    KWD_SPECIALISTS_SORT_BY = ((Keyword*)(internRigidSymbolWrtModule("SORT-BY", NULL, 2)));
     KWD_SPECIALISTS_GOAL_TREE = ((Keyword*)(internRigidSymbolWrtModule("GOAL-TREE", NULL, 2)));
-    SYM_SPECIALISTS_LOGIC_JUSTIFICATION = ((Symbol*)(internRigidSymbolWrtModule("JUSTIFICATION", NULL, 0)));
+    SGT_SPECIALISTS_LOGIC_SAVED_INFERENCE_LEVEL_PROOF_ADJUNCT = ((Surrogate*)(internRigidSymbolWrtModule("SAVED-INFERENCE-LEVEL-PROOF-ADJUNCT", NULL, 1)));
+    SYM_SPECIALISTS_LOGIC_SAVED_INFERENCE_LEVEL = ((Symbol*)(internRigidSymbolWrtModule("SAVED-INFERENCE-LEVEL", NULL, 0)));
+    SYM_SPECIALISTS_LOGIC_INFERENCE_LEVEL = ((Symbol*)(internRigidSymbolWrtModule("INFERENCE-LEVEL", NULL, 0)));
+    SGT_SPECIALISTS_PL_KERNEL_KB_ASSERTION_QUERY = ((Surrogate*)(internRigidSymbolWrtModule("ASSERTION-QUERY", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    SGT_SPECIALISTS_PL_KERNEL_KB_SHALLOW_QUERY = ((Surrogate*)(internRigidSymbolWrtModule("SHALLOW-QUERY", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    SGT_SPECIALISTS_PL_KERNEL_KB_SUBSUMPTION_QUERY = ((Surrogate*)(internRigidSymbolWrtModule("SUBSUMPTION-QUERY", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    SGT_SPECIALISTS_PL_KERNEL_KB_BACKTRACKING_QUERY = ((Surrogate*)(internRigidSymbolWrtModule("BACKTRACKING-QUERY", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    SGT_SPECIALISTS_PL_KERNEL_KB_NORMAL_QUERY = ((Surrogate*)(internRigidSymbolWrtModule("NORMAL-QUERY", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    SGT_SPECIALISTS_PL_KERNEL_KB_REFUTATION_QUERY = ((Surrogate*)(internRigidSymbolWrtModule("REFUTATION-QUERY", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    KWD_SPECIALISTS_LEVELED_QUERY = ((Keyword*)(internRigidSymbolWrtModule("LEVELED-QUERY", NULL, 2)));
     SGT_SPECIALISTS_PL_KERNEL_KB_CONCEPT_PROTOTYPE = ((Surrogate*)(internRigidSymbolWrtModule("CONCEPT-PROTOTYPE", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SYM_SPECIALISTS_LOGIC_HYPOTHESIZED_INSTANCEp = ((Symbol*)(internRigidSymbolWrtModule("HYPOTHESIZED-INSTANCE?", NULL, 0)));
     SGT_SPECIALISTS_PL_KERNEL_KB_CLOSED = ((Surrogate*)(internRigidSymbolWrtModule("CLOSED", getStellaModule("/PL-KERNEL-KB", true), 1)));
-  }
-}
-
-void helpStartupSpecialists2() {
-  {
     SYM_SPECIALISTS_LOGIC_MONOTONICp = ((Symbol*)(internRigidSymbolWrtModule("MONOTONIC?", NULL, 0)));
     SGT_SPECIALISTS_LOGIC_F_CLOSED_TERMp_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-CLOSED-TERM?-MEMO-TABLE-000", NULL, 1)));
     SYM_SPECIALISTS_LOGIC_EQUIVALENT_VALUE = ((Symbol*)(internRigidSymbolWrtModule("EQUIVALENT-VALUE", NULL, 0)));
+    SGT_SPECIALISTS_LOGIC_PATTERN_VARIABLE = ((Surrogate*)(internRigidSymbolWrtModule("PATTERN-VARIABLE", NULL, 1)));
     SGT_SPECIALISTS_LOGIC_F_CLOSED_PROPOSITIONp_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-CLOSED-PROPOSITION?-MEMO-TABLE-000", NULL, 1)));
     KWD_SPECIALISTS_OR = ((Keyword*)(internRigidSymbolWrtModule("OR", NULL, 2)));
     KWD_SPECIALISTS_NOT = ((Keyword*)(internRigidSymbolWrtModule("NOT", NULL, 2)));
     KWD_SPECIALISTS_FORALL = ((Keyword*)(internRigidSymbolWrtModule("FORALL", NULL, 2)));
     KWD_SPECIALISTS_EXISTS = ((Keyword*)(internRigidSymbolWrtModule("EXISTS", NULL, 2)));
     SGT_SPECIALISTS_PL_KERNEL_KB_MEMBER_OF = ((Surrogate*)(internRigidSymbolWrtModule("MEMBER-OF", getStellaModule("/PL-KERNEL-KB", true), 1)));
-    SGT_SPECIALISTS_PL_KERNEL_KB_TOTAL = ((Surrogate*)(internRigidSymbolWrtModule("TOTAL", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_SPECIALISTS_PL_KERNEL_KB_SINGLE_VALUED = ((Surrogate*)(internRigidSymbolWrtModule("SINGLE-VALUED", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_SPECIALISTS_LOGIC_F_SINGLE_VALUED_TERMp_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-SINGLE-VALUED-TERM?-MEMO-TABLE-000", NULL, 1)));
     KWD_SPECIALISTS_EQUIVALENT = ((Keyword*)(internRigidSymbolWrtModule("EQUIVALENT", NULL, 2)));
+    SGT_SPECIALISTS_PL_KERNEL_KB_COLLECT_INTO_LIST = ((Surrogate*)(internRigidSymbolWrtModule("COLLECT-INTO-LIST", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    SGT_SPECIALISTS_PL_KERNEL_KB_COLLECT_INTO_ORDERED_SET = ((Surrogate*)(internRigidSymbolWrtModule("COLLECT-INTO-ORDERED-SET", getStellaModule("/PL-KERNEL-KB", true), 1)));
+    SYM_SPECIALISTS_LOGIC_INFERENCE_CUTOFF_REASON = ((Symbol*)(internRigidSymbolWrtModule("INFERENCE-CUTOFF-REASON", NULL, 0)));
+    KWD_SPECIALISTS_COLLECT_MEMBERS = ((Keyword*)(internRigidSymbolWrtModule("COLLECT-MEMBERS", NULL, 2)));
     SYM_SPECIALISTS_LOGIC_pSUPER = ((Symbol*)(internRigidSymbolWrtModule("?SUPER", NULL, 0)));
     SYM_SPECIALISTS_LOGIC_pMDC = ((Symbol*)(internRigidSymbolWrtModule("?MDC", NULL, 0)));
     SYM_SPECIALISTS_STELLA_AND = ((Symbol*)(internRigidSymbolWrtModule("AND", getStellaModule("/STELLA", true), 0)));
@@ -4491,15 +5325,17 @@ void helpStartupSpecialists2() {
     SGT_SPECIALISTS_PL_KERNEL_KB_EMPTY = ((Surrogate*)(internRigidSymbolWrtModule("EMPTY", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_SPECIALISTS_LOGIC_SAVED_CONTEXT_PROOF_ADJUNCT = ((Surrogate*)(internRigidSymbolWrtModule("SAVED-CONTEXT-PROOF-ADJUNCT", NULL, 1)));
     SYM_SPECIALISTS_LOGIC_SAVED_CONTEXT = ((Symbol*)(internRigidSymbolWrtModule("SAVED-CONTEXT", NULL, 0)));
-    SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT = ((Symbol*)(internRigidSymbolWrtModule("PROOF-ADJUNCT", NULL, 0)));
     SGT_SPECIALISTS_STELLA_CONTEXT = ((Surrogate*)(internRigidSymbolWrtModule("CONTEXT", getStellaModule("/STELLA", true), 1)));
     KWD_SPECIALISTS_IST_INTRODUCTION = ((Keyword*)(internRigidSymbolWrtModule("IST-INTRODUCTION", NULL, 2)));
-    KWD_SPECIALISTS_TECHNICAL = ((Keyword*)(internRigidSymbolWrtModule("TECHNICAL", NULL, 2)));
-    KWD_SPECIALISTS_LAY = ((Keyword*)(internRigidSymbolWrtModule("LAY", NULL, 2)));
     KWD_SPECIALISTS_PARTIAL = ((Keyword*)(internRigidSymbolWrtModule("PARTIAL", NULL, 2)));
     SGT_SPECIALISTS_PL_KERNEL_KB_THE_ROLESET = ((Surrogate*)(internRigidSymbolWrtModule("THE-ROLESET", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_SPECIALISTS_PL_KERNEL_KB_CARDINALITY = ((Surrogate*)(internRigidSymbolWrtModule("CARDINALITY", getStellaModule("/PL-KERNEL-KB", true), 1)));
     KWD_SPECIALISTS_LOWER = ((Keyword*)(internRigidSymbolWrtModule("LOWER", NULL, 2)));
+  }
+}
+
+void helpStartupSpecialists3() {
+  {
     KWD_SPECIALISTS_UPPER = ((Keyword*)(internRigidSymbolWrtModule("UPPER", NULL, 2)));
     SGT_SPECIALISTS_STELLA_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-WRAPPER", getStellaModule("/STELLA", true), 1)));
     SGT_SPECIALISTS_STELLA_SURROGATE = ((Surrogate*)(internRigidSymbolWrtModule("SURROGATE", getStellaModule("/STELLA", true), 1)));
@@ -4519,7 +5355,7 @@ void helpStartupSpecialists2() {
   }
 }
 
-void helpStartupSpecialists3() {
+void helpStartupSpecialists4() {
   {
     defineFunctionObject("FUNCTION-CODE-FROM-PROCEDURE", "(DEFUN (FUNCTION-CODE-FROM-PROCEDURE FUNCTION-CODE) ((P OBJECT)))", ((cpp_function_code)(&functionCodeFromProcedure)), NULL);
     defineFunctionObject("LOOKUP-SPECIALIST", "(DEFUN (LOOKUP-SPECIALIST FUNCTION-CODE) ((DESCRIPTION NAMED-DESCRIPTION)))", ((cpp_function_code)(&lookupSpecialist)), NULL);
@@ -4532,7 +5368,10 @@ void helpStartupSpecialists3() {
     defineFunctionObject("NATIVE-SLOT-READER-SPECIALIST", "(DEFUN (NATIVE-SLOT-READER-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&nativeSlotReaderSpecialist)), NULL);
     defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((IT SUBSTRING-POSITION-ITERATOR)))", ((cpp_method_code)(&SubstringPositionIterator::nextP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((IT SUBSTRING-POSITION-ITERATOR)))", ((cpp_method_code)(&SubstringPositionIterator::length)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("COMPUTATION-INPUT-BOUND?", "(DEFUN (COMPUTATION-INPUT-BOUND? BOOLEAN) ((VALUE OBJECT)))", ((cpp_function_code)(&computationInputBoundP)), NULL);
+    defineFunctionObject("COMPUTE-RELATION-VALUE", "(DEFUN (COMPUTE-RELATION-VALUE OBJECT) ((PROPOSITION PROPOSITION) (CODE FUNCTION-CODE) (ERROR? BOOLEAN)))", ((cpp_function_code)(&computeRelationValue)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/COMPUTATION-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/COMPUTATION-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::computationSpecialist)), NULL);
+    defineFunctionObject("COMPUTE-SIMPLE-RELATION-CONSTRAINT", "(DEFUN (COMPUTE-SIMPLE-RELATION-CONSTRAINT OBJECT INTEGER) ((PROPOSITION PROPOSITION) (CODE FUNCTION-CODE) (ERROR? BOOLEAN)))", ((cpp_function_code)(&computeSimpleRelationConstraint)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/CONSTRAINT-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/CONSTRAINT-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::constraintSpecialist)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/SQUARE-ROOT-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/SQUARE-ROOT-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::squareRootSpecialist)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/ABSOLUTE-VALUE-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/ABSOLUTE-VALUE-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::absoluteValueSpecialist)), NULL);
@@ -4543,6 +5382,10 @@ void helpStartupSpecialists3() {
     defineFunctionObject("TEST-DISJOINT-TERMS?", "(DEFUN (TEST-DISJOINT-TERMS? BOOLEAN) ((TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&testDisjointTermsP)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/SUBSET-OF-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/SUBSET-OF-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::subsetOfSpecialist)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/HOLDS-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/HOLDS-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::holdsSpecialist)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/PROPOSITION-RELATION-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/PROPOSITION-RELATION-COMPUTATION OBJECT) ((P PROPOSITION)))", ((cpp_function_code)(&pl_kernel_kb::propositionRelationComputation)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/PROPOSITION-ARGUMENT-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/PROPOSITION-ARGUMENT-COMPUTATION OBJECT) ((P PROPOSITION) (I INTEGER-WRAPPER)))", ((cpp_function_code)(&pl_kernel_kb::propositionArgumentComputation)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/PROPOSITION-ARGUMENTS-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/PROPOSITION-ARGUMENTS-COMPUTATION SKOLEM) ((P PROPOSITION)))", ((cpp_function_code)(&pl_kernel_kb::propositionArgumentsComputation)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/PROPOSITION-ARITY-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/PROPOSITION-ARITY-COMPUTATION INTEGER-WRAPPER) ((P PROPOSITION)))", ((cpp_function_code)(&pl_kernel_kb::propositionArityComputation)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/CUT-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/CUT-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::cutSpecialist)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/BOUND-VARIABLES-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/BOUND-VARIABLES-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::boundVariablesSpecialist)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/FORK-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/FORK-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::forkSpecialist)), NULL);
@@ -4550,6 +5393,8 @@ void helpStartupSpecialists3() {
     defineExternalSlotFromStringifiedSource("(DEFSLOT CONTROL-FRAME QUERY-SPECIALIST-IO-VARIABLES :TYPE LIST :ALLOCATION :DYNAMIC)");
     defineFunctionObject("CREATE-QUERY-SPECIALIST-ITERATOR", "(DEFUN (CREATE-QUERY-SPECIALIST-ITERATOR QUERY-ITERATOR BOOLEAN BOOLEAN) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&createQuerySpecialistIterator)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/QUERY-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/QUERY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::querySpecialist)), NULL);
+    defineFunctionObject("LEVELED-QUERY-RELATION-TO-INFERENCE-LEVEL", "(DEFUN (LEVELED-QUERY-RELATION-TO-INFERENCE-LEVEL INFERENCE-LEVEL) ((RELATION SURROGATE)))", ((cpp_function_code)(&leveledQueryRelationToInferenceLevel)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/LEVELED-QUERY-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/LEVELED-QUERY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::leveledQuerySpecialist)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/CONCEPT-PROTOTYPE-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/CONCEPT-PROTOTYPE-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::conceptPrototypeSpecialist)), NULL);
     defineFunctionObject("CONCEPT-PROTOTYPE-OF", "(DEFUN (CONCEPT-PROTOTYPE-OF NAMED-DESCRIPTION) ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&conceptPrototypeOf)), NULL);
     defineFunctionObject("CONCEPT-PROTOTYPE?", "(DEFUN (CONCEPT-PROTOTYPE? BOOLEAN) ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&conceptPrototypeP)), NULL);
@@ -4566,8 +5411,18 @@ void helpStartupSpecialists3() {
     defineFunctionObject("HELP-SINGLE-VALUED-GOAL?", "(DEFUN (HELP-SINGLE-VALUED-GOAL? BOOLEAN) ((PROPOSITION PROPOSITION) (IOVARIABLES (CONS OF PATTERN-VARIABLE)) (BOUNDVARIABLES (CONS OF PATTERN-VARIABLE)) (RECURSIVE? BOOLEAN)) :PUBLIC? TRUE)", ((cpp_function_code)(&helpSingleValuedGoalP)), NULL);
     defineFunctionObject("HELP-COLLECT-SINGLY-BOUND-VARIABLES", "(DEFUN HELP-COLLECT-SINGLY-BOUND-VARIABLES ((PROPOSITION PROPOSITION) (BOUNDVARIABLES (LIST OF PATTERN-VARIABLE)) (RECURSIVE? BOOLEAN)))", ((cpp_function_code)(&helpCollectSinglyBoundVariables)), NULL);
     defineFunctionObject("CREATE-COLLECT-DESCRIPTION-EXTENSION-FRAME", "(DEFUN CREATE-COLLECT-DESCRIPTION-EXTENSION-FRAME ((FRAME CONTROL-FRAME) (DESCRIPTION DESCRIPTION)))", ((cpp_function_code)(&createCollectDescriptionExtensionFrame)), NULL);
-    defineFunctionObject(" /PL-KERNEL-KB/COLLECT-INTO-SET-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/COLLECT-INTO-SET-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::collectIntoSetSpecialist)), NULL);
+    defineFunctionObject("COLLECT-DESCRIPTION-EXTENSION-FRAME?", "(DEFUN (COLLECT-DESCRIPTION-EXTENSION-FRAME? BOOLEAN) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&collectDescriptionExtensionFrameP)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/COLLECT-MEMBERS-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/COLLECT-MEMBERS-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::collectMembersSpecialist)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/LENGTH-OF-LIST-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/LENGTH-OF-LIST-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::lengthOfListSpecialist)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/NTH-ELEMENT-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/NTH-ELEMENT-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::nthElementSpecialist)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/NTH-HEAD-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/NTH-HEAD-COMPUTATION SKOLEM) ((LIST SKOLEM) (NARG INTEGER-WRAPPER)))", ((cpp_function_code)(&pl_kernel_kb::nthHeadComputation)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/NTH-REST-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/NTH-REST-COMPUTATION SKOLEM) ((LIST SKOLEM) (NARG INTEGER-WRAPPER)))", ((cpp_function_code)(&pl_kernel_kb::nthRestComputation)), NULL);
+  }
+}
+
+void helpStartupSpecialists5() {
+  {
+    defineFunctionObject(" /PL-KERNEL-KB/INSERT-ELEMENT-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/INSERT-ELEMENT-COMPUTATION SKOLEM) ((LIST SKOLEM) (NARG INTEGER-WRAPPER) (ELEMENT OBJECT)))", ((cpp_function_code)(&pl_kernel_kb::insertElementComputation)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/MINIMUM-OF-NUMBERS-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/MINIMUM-OF-NUMBERS-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::minimumOfNumbersSpecialist)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/MAXIMUM-OF-NUMBERS-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/MAXIMUM-OF-NUMBERS-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::maximumOfNumbersSpecialist)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/SUM-OF-NUMBERS-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/SUM-OF-NUMBERS-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::sumOfNumbersSpecialist)), NULL);
@@ -4581,6 +5436,45 @@ void helpStartupSpecialists3() {
     defineFunctionObject(" /PL-KERNEL-KB/HAS-PARTITION-MEMBERSHIP-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/HAS-PARTITION-MEMBERSHIP-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::hasPartitionMembershipSpecialist)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/REFUTATION-DISJOINT-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/REFUTATION-DISJOINT-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::refutationDisjointSpecialist)), NULL);
     defineFunctionObject(" /PL-KERNEL-KB/EMPTY-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/EMPTY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::emptySpecialist)), NULL);
+    defineFunctionObject("EMPTY-TERM?", "(DEFUN (EMPTY-TERM? BOOLEAN) ((SELF OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&emptyTermP)), NULL);
+    defineFunctionObject("CHEAP-EMPTY-TERM?", "(DEFUN (CHEAP-EMPTY-TERM? BOOLEAN) ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&cheapEmptyTermP)), NULL);
+    defineFunctionObject("EXPENSIVE-EMPTY-TERM?", "(DEFUN (EXPENSIVE-EMPTY-TERM? BOOLEAN) ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&expensiveEmptyTermP)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/CONTEXT-OF-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/CONTEXT-OF-COMPUTATION CONTEXT) ((INSTANCE OBJECT)))", ((cpp_function_code)(&pl_kernel_kb::contextOfComputation)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/IST-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/IST-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::istSpecialist)), NULL);
+    defineFunctionObject("GET-ROLESET-OF", "(DEFUN (GET-ROLESET-OF SKOLEM) ((RELATION NAMED-DESCRIPTION) (INSTANCE OBJECT)))", ((cpp_function_code)(&getRolesetOf)), NULL);
+    defineFunctionObject("COMPUTE-STORED-BOUND-ON-ROLESET", "(DEFUN (COMPUTE-STORED-BOUND-ON-ROLESET INTEGER) ((RELATION NAMED-DESCRIPTION) (INSTANCE OBJECT) (LOWERORUPPER KEYWORD)))", ((cpp_function_code)(&computeStoredBoundOnRoleset)), NULL);
+    defineFunctionObject("COMPUTE-MINIMUM-CARDINALITY", "(DEFUN (COMPUTE-MINIMUM-CARDINALITY INTEGER) ((RELATION NAMED-DESCRIPTION) (INSTANCE OBJECT)))", ((cpp_function_code)(&computeMinimumCardinality)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/RANGE-MIN-CARDINALITY-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/RANGE-MIN-CARDINALITY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::rangeMinCardinalitySpecialist)), NULL);
+    defineFunctionObject("COMPUTE-MAXIMUM-CARDINALITY", "(DEFUN (COMPUTE-MAXIMUM-CARDINALITY INTEGER) ((RELATION NAMED-DESCRIPTION) (INSTANCE OBJECT)))", ((cpp_function_code)(&computeMaximumCardinality)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/RANGE-MAX-CARDINALITY-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/RANGE-MAX-CARDINALITY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::rangeMaxCardinalitySpecialist)), NULL);
+    defineFunctionObject("TEST-RANGE-TYPE?", "(DEFUN (TEST-RANGE-TYPE? BOOLEAN) ((RELATION NAMED-DESCRIPTION) (INSTANCE OBJECT) (VALUETYPE NAMED-DESCRIPTION)))", ((cpp_function_code)(&testRangeTypeP)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/RANGE-TYPE-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/RANGE-TYPE-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::rangeTypeSpecialist)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/REFLEXIVE-RELATION-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/REFLEXIVE-RELATION-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::reflexiveRelationSpecialist)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/IRREFLEXIVE-RELATION-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/IRREFLEXIVE-RELATION-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::irreflexiveRelationSpecialist)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/OBJECT-NAME-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/OBJECT-NAME-COMPUTATION STRING-WRAPPER) ((OBJECTARG OBJECT)))", ((cpp_function_code)(&pl_kernel_kb::objectNameComputation)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/NAME-TO-OBJECT-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/NAME-TO-OBJECT-COMPUTATION OBJECT) ((NAMEARG OBJECT)))", ((cpp_function_code)(&pl_kernel_kb::nameToObjectComputation)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/ARITY-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/ARITY-COMPUTATION INTEGER-WRAPPER) ((DESCRIPTIONARG OBJECT)))", ((cpp_function_code)(&pl_kernel_kb::arityComputation)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/ARITY-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/ARITY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::aritySpecialist)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/RELATION-HIERARCHY-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/RELATION-HIERARCHY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::relationHierarchySpecialist)), NULL);
+    defineFunctionObject("HELP-PROJECT-NTH-COLUMN", "(DEFUN (HELP-PROJECT-NTH-COLUMN LIST) ((N INTEGER) (TUPLELIST LIST)))", ((cpp_function_code)(&helpProjectNthColumn)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/PROJECT-COLUMN-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/PROJECT-COLUMN-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::projectColumnSpecialist)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/ASSERT-SYNONYM-DEMON", "(DEFUN /PL-KERNEL-KB/ASSERT-SYNONYM-DEMON ((SELF PROPOSITION)))", ((cpp_function_code)(&pl_kernel_kb::assertSynonymDemon)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/RETRACT-SYNONYM-DEMON", "(DEFUN /PL-KERNEL-KB/RETRACT-SYNONYM-DEMON ((SELF PROPOSITION)))", ((cpp_function_code)(&pl_kernel_kb::retractSynonymDemon)), NULL);
+    defineFunctionObject("GET-SYNONYMS", "(DEFUN (GET-SYNONYMS (CONS OF LOGIC-OBJECT)) ((TERM OBJECT)))", ((cpp_function_code)(&getSynonyms)), NULL);
+    defineFunctionObject("SYNONYM-SURROGATE?", "(DEFUN (SYNONYM-SURROGATE? BOOLEAN) ((NAME SURROGATE)))", ((cpp_function_code)(&synonymSurrogateP)), NULL);
+    defineFunctionObject("TRANSFER-SYNONYMS", "(DEFUN TRANSFER-SYNONYMS ((OLDOBJECT OBJECT) (NEWOBJECT OBJECT)))", ((cpp_function_code)(&transferSynonyms)), NULL);
+    defineFunctionObject(" /PL-KERNEL-KB/DIFFERENT-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/DIFFERENT-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::differentSpecialist)), NULL);
+    defineFunctionObject("LOOKUP-NATIVE-SPECIALIST", "(DEFUN (LOOKUP-NATIVE-SPECIALIST FUNCTION-CODE) ((NATIVE-NAME STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Returns the native funtion code for `native-name' if it exists\nand the underlying programming languages supports such lookups.  Uses the signature\nof a specialist function.\")", ((cpp_function_code)(&lookupNativeSpecialist)), NULL);
+    defineFunctionObject("REGISTER-SPECIALIST-FUNCTION", "(DEFUN REGISTER-SPECIALIST-FUNCTION ((NAME STRING) (CODE FUNCTION-CODE)) :DOCUMENTATION \"Creates a registration entry for `name' as a specialist which\nexecutes `code'.  Essentially just builds the Stella meta-information\ntructure needed to funcall `name' as a specialist.  The function definition\nin `code' needs to accept a CONTROL-FRAME and KEYWORD as arguments and\nreturn a KEYWORD.  Side effects on elements of the proposition in the\ncontrol frame can be used to bind and thus return values.\" :PUBLIC? TRUE)", ((cpp_function_code)(&registerSpecialistFunction)), NULL);
+    defineFunctionObject("REGISTER-SPECIALIST-FUNCTION-NAME", "(DEFUN REGISTER-SPECIALIST-FUNCTION-NAME ((STELLA-NAME STRING) (NATIVE-NAME STRING)) :PUBLIC? TRUE :COMMAND? TRUE :DOCUMENTATION \"registers a specialist function `stella-name' based on the `native-name'\nfor the particular programming language in question.  Use of this command makes\nthe resulting code or knowledge bases non-portable to other target languages.\")", ((cpp_function_code)(&registerSpecialistFunctionName)), ((cpp_function_code)(&registerSpecialistFunctionNameEvaluatorWrapper)));
+    defineFunctionObject("LOOKUP-NATIVE-COMPUTATION", "(DEFUN (LOOKUP-NATIVE-COMPUTATION FUNCTION-CODE) ((NATIVE-NAME STRING) (ARITY INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Returns the native funtion code for `native-name' if it exists\nand the underlying programming languages supports such lookups.  It is looked up\nusing the signature of a computation function supported by the computation specialist.\")", ((cpp_function_code)(&lookupNativeComputation)), NULL);
+    defineFunctionObject("REGISTER-COMPUTATION-FUNCTION", "(DEFUN REGISTER-COMPUTATION-FUNCTION ((NAME STRING) (CODE FUNCTION-CODE) (ARITY INTEGER)) :DOCUMENTATION \"Creates a registration entry for `name' as a computation which\nexecutes `code'.  Essentially just builds the Stella meta-information\ntructure needed to funcall `name' as a computation function by the\ncomputation specialist.  The function definition in `code' needs to\naccept ARITY Stella OBJECTs as arguments and return a Stella OBJECT \nsuitable for PowerLoom use.  (These are generally LOGIC-OBJECTs and the\nliteral wrappers FLOAT-WRAPPER, INTEGER-WRAPPER and STRING-WRAPPER.)\" :PUBLIC? TRUE)", ((cpp_function_code)(&registerComputationFunction)), NULL);
+    defineFunctionObject("REGISTER-COMPUTATION-FUNCTION-NAME", "(DEFUN REGISTER-COMPUTATION-FUNCTION-NAME ((STELLA-NAME STRING) (NATIVE-NAME STRING) (ARITY INTEGER)) :PUBLIC? TRUE :COMMAND? TRUE :DOCUMENTATION \"registers a computation function `stella-name' based on the `native-name'\nfor the particular programming language in question.  Use of this command makes\nthe resulting code or knowledge bases non-portable to other target languages.\")", ((cpp_function_code)(&registerComputationFunctionName)), ((cpp_function_code)(&registerComputationFunctionNameEvaluatorWrapper)));
+    defineFunctionObject("STARTUP-SPECIALISTS", "(DEFUN STARTUP-SPECIALISTS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupSpecialists)), NULL);
+    { MethodSlot* function = lookupFunction(SYM_SPECIALISTS_LOGIC_STARTUP_SPECIALISTS);
+
+      setDynamicSlotValue(function->dynamicSlots, SYM_SPECIALISTS_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupSpecialists"), NULL_STRING_WRAPPER);
+    }
   }
 }
 
@@ -4591,6 +5485,7 @@ void startupSpecialists() {
     if (currentStartupTimePhaseP(2)) {
       helpStartupSpecialists1();
       helpStartupSpecialists2();
+      helpStartupSpecialists3();
     }
     if (currentStartupTimePhaseP(5)) {
       { Class* clasS = defineClassFromStringifiedSource("COMPUTED-PROCEDURE", "(DEFCLASS COMPUTED-PROCEDURE (THING) :PUBLIC? TRUE :DOCUMENTATION \"Each instance denotes a programming language \nfunction that computes some procedure.  The slot 'procedure-name'\nprovides the name of the procedure.  The slot 'procedure-code'\npoints directly to the procedure itself.  Both slots are optional;\nif neither is supplied, the procedure will be invoked by extracting\nits name from the name of the instance.\" :PUBLIC-SLOTS ((PROCEDURE-NAME :TYPE SYMBOL) (PROCEDURE-CODE :TYPE FUNCTION-CODE)))");
@@ -4603,7 +5498,17 @@ void startupSpecialists() {
         clasS->classConstructorCode = ((cpp_function_code)(&newSubstringPositionIterator));
         clasS->classSlotAccessorCode = ((cpp_function_code)(&accessSubstringPositionIteratorSlotValue));
       }
-      { Class* clasS = defineClassFromStringifiedSource("SAVED-CONTEXT-PROOF-ADJUNCT", "(DEFCLASS SAVED-CONTEXT-PROOF-ADJUNCT (PROOF-ADJUNCT) :SLOTS ((SAVED-CONTEXT :TYPE CONTEXT)))");
+      { Class* clasS = defineClassFromStringifiedSource("FORK-PROOF-ADJUNCT", "(DEFCLASS FORK-PROOF-ADJUNCT (PROOF-ADJUNCT) :SLOTS ((CONDITION-JUSTIFICATION :TYPE JUSTIFICATION) (DOWN-FRAME :TYPE CONTROL-FRAME)))");
+
+        clasS->classConstructorCode = ((cpp_function_code)(&newForkProofAdjunct));
+        clasS->classSlotAccessorCode = ((cpp_function_code)(&accessForkProofAdjunctSlotValue));
+      }
+      { Class* clasS = defineClassFromStringifiedSource("SAVED-INFERENCE-LEVEL-PROOF-ADJUNCT", "(DEFCLASS SAVED-INFERENCE-LEVEL-PROOF-ADJUNCT (PROOF-ADJUNCT) :SLOTS ((SAVED-INFERENCE-LEVEL :TYPE INFERENCE-LEVEL) (INFERENCE-LEVEL :TYPE INFERENCE-LEVEL) (DOWN-FRAME :TYPE CONTROL-FRAME)))");
+
+        clasS->classConstructorCode = ((cpp_function_code)(&newSavedInferenceLevelProofAdjunct));
+        clasS->classSlotAccessorCode = ((cpp_function_code)(&accessSavedInferenceLevelProofAdjunctSlotValue));
+      }
+      { Class* clasS = defineClassFromStringifiedSource("SAVED-CONTEXT-PROOF-ADJUNCT", "(DEFCLASS SAVED-CONTEXT-PROOF-ADJUNCT (PROOF-ADJUNCT) :SLOTS ((SAVED-CONTEXT :TYPE CONTEXT) (DOWN-FRAME :TYPE CONTROL-FRAME)))");
 
         clasS->classConstructorCode = ((cpp_function_code)(&newSavedContextProofAdjunct));
         clasS->classSlotAccessorCode = ((cpp_function_code)(&accessSavedContextProofAdjunctSlotValue));
@@ -4613,50 +5518,22 @@ void startupSpecialists() {
       finalizeClasses();
     }
     if (currentStartupTimePhaseP(7)) {
-      helpStartupSpecialists3();
-      defineFunctionObject("EMPTY-TERM?", "(DEFUN (EMPTY-TERM? BOOLEAN) ((SELF OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&emptyTermP)), NULL);
-      defineFunctionObject("CHEAP-EMPTY-TERM?", "(DEFUN (CHEAP-EMPTY-TERM? BOOLEAN) ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&cheapEmptyTermP)), NULL);
-      defineFunctionObject("EXPENSIVE-EMPTY-TERM?", "(DEFUN (EXPENSIVE-EMPTY-TERM? BOOLEAN) ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&expensiveEmptyTermP)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/CONTEXT-OF-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/CONTEXT-OF-COMPUTATION CONTEXT) ((INSTANCE OBJECT)))", ((cpp_function_code)(&pl_kernel_kb::contextOfComputation)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/IST-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/IST-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::istSpecialist)), NULL);
-      defineFunctionObject("GET-ROLESET-OF", "(DEFUN (GET-ROLESET-OF SKOLEM) ((RELATION NAMED-DESCRIPTION) (INSTANCE OBJECT)))", ((cpp_function_code)(&getRolesetOf)), NULL);
-      defineFunctionObject("COMPUTE-STORED-BOUND-ON-ROLESET", "(DEFUN (COMPUTE-STORED-BOUND-ON-ROLESET INTEGER) ((RELATION NAMED-DESCRIPTION) (INSTANCE OBJECT) (LOWERORUPPER KEYWORD)))", ((cpp_function_code)(&computeStoredBoundOnRoleset)), NULL);
-      defineFunctionObject("COMPUTE-MINIMUM-CARDINALITY", "(DEFUN (COMPUTE-MINIMUM-CARDINALITY INTEGER) ((RELATION NAMED-DESCRIPTION) (INSTANCE OBJECT)))", ((cpp_function_code)(&computeMinimumCardinality)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/RANGE-MIN-CARDINALITY-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/RANGE-MIN-CARDINALITY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::rangeMinCardinalitySpecialist)), NULL);
-      defineFunctionObject("COMPUTE-MAXIMUM-CARDINALITY", "(DEFUN (COMPUTE-MAXIMUM-CARDINALITY INTEGER) ((RELATION NAMED-DESCRIPTION) (INSTANCE OBJECT)))", ((cpp_function_code)(&computeMaximumCardinality)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/RANGE-MAX-CARDINALITY-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/RANGE-MAX-CARDINALITY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::rangeMaxCardinalitySpecialist)), NULL);
-      defineFunctionObject("TEST-RANGE-TYPE?", "(DEFUN (TEST-RANGE-TYPE? BOOLEAN) ((RELATION NAMED-DESCRIPTION) (INSTANCE OBJECT) (VALUETYPE NAMED-DESCRIPTION)))", ((cpp_function_code)(&testRangeTypeP)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/RANGE-TYPE-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/RANGE-TYPE-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::rangeTypeSpecialist)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/REFLEXIVE-RELATION-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/REFLEXIVE-RELATION-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::reflexiveRelationSpecialist)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/IRREFLEXIVE-RELATION-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/IRREFLEXIVE-RELATION-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::irreflexiveRelationSpecialist)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/OBJECT-NAME-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/OBJECT-NAME-COMPUTATION STRING-WRAPPER) ((OBJECTARG OBJECT)))", ((cpp_function_code)(&pl_kernel_kb::objectNameComputation)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/NAME-TO-OBJECT-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/NAME-TO-OBJECT-COMPUTATION OBJECT) ((NAMEARG STRING-WRAPPER)))", ((cpp_function_code)(&pl_kernel_kb::nameToObjectComputation)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/ARITY-COMPUTATION", "(DEFUN (/PL-KERNEL-KB/ARITY-COMPUTATION INTEGER-WRAPPER) ((DESCRIPTIONARG OBJECT)))", ((cpp_function_code)(&pl_kernel_kb::arityComputation)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/ARITY-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/ARITY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::aritySpecialist)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/RELATION-HIERARCHY-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/RELATION-HIERARCHY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::relationHierarchySpecialist)), NULL);
-      defineFunctionObject("HELP-PROJECT-NTH-COLUMN", "(DEFUN (HELP-PROJECT-NTH-COLUMN LIST) ((N INTEGER) (TUPLELIST LIST)))", ((cpp_function_code)(&helpProjectNthColumn)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/PROJECT-COLUMN-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/PROJECT-COLUMN-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::projectColumnSpecialist)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/ASSERT-SYNONYM-DEMON", "(DEFUN /PL-KERNEL-KB/ASSERT-SYNONYM-DEMON ((SELF PROPOSITION)))", ((cpp_function_code)(&pl_kernel_kb::assertSynonymDemon)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/RETRACT-SYNONYM-DEMON", "(DEFUN /PL-KERNEL-KB/RETRACT-SYNONYM-DEMON ((SELF PROPOSITION)))", ((cpp_function_code)(&pl_kernel_kb::retractSynonymDemon)), NULL);
-      defineFunctionObject("GET-SYNONYMS", "(DEFUN (GET-SYNONYMS (CONS OF LOGIC-OBJECT)) ((TERM OBJECT)))", ((cpp_function_code)(&getSynonyms)), NULL);
-      defineFunctionObject("SYNONYM-SURROGATE?", "(DEFUN (SYNONYM-SURROGATE? BOOLEAN) ((NAME SURROGATE)))", ((cpp_function_code)(&synonymSurrogateP)), NULL);
-      defineFunctionObject("TRANSFER-SYNONYMS", "(DEFUN TRANSFER-SYNONYMS ((OLDOBJECT OBJECT) (NEWOBJECT OBJECT)))", ((cpp_function_code)(&transferSynonyms)), NULL);
-      defineFunctionObject(" /PL-KERNEL-KB/DIFFERENT-SPECIALIST", "(DEFUN (/PL-KERNEL-KB/DIFFERENT-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&pl_kernel_kb::differentSpecialist)), NULL);
-      defineFunctionObject("LOOKUP-NATIVE-SPECIALIST", "(DEFUN (LOOKUP-NATIVE-SPECIALIST FUNCTION-CODE) ((NATIVE-NAME STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Returns the native funtion code for `native-name' if it exists\nand the underlying programming languages supports such lookups.\")", ((cpp_function_code)(&lookupNativeSpecialist)), NULL);
-      defineFunctionObject("REGISTER-SPECIALIST-FUNCTION", "(DEFUN REGISTER-SPECIALIST-FUNCTION ((NAME STRING) (CODE FUNCTION-CODE)) :DOCUMENTATION \"Creates a registration entry for `name' as a specialist which\nexecutes `code'.  Essentially just builds the Stella meta-information\ntructure needed to funcall `name' as a specialist.  The function definition\nin `code' needs to accept a CONTROL-FRAME and KEYWORD as arguments and\nreturn a KEYWORD.  Side effects on elements of the proposition in the\ncontrol frame can be used to bind and thus return values.\" :PUBLIC? TRUE)", ((cpp_function_code)(&registerSpecialistFunction)), NULL);
-      defineFunctionObject("REGISTER-SPECIALIST-FUNCTION-NAME", "(DEFUN REGISTER-SPECIALIST-FUNCTION-NAME ((STELLA-NAME STRING) (NATIVE-NAME STRING)) :PUBLIC? TRUE :COMMAND? TRUE :DOCUMENTATION \"registers a specialist function `stella-name' based on the `native-name'\nfor the particular programming language in question.  Use of this command makes\nthe resulting code or knowledge bases non-portable to other target languages.\")", ((cpp_function_code)(&registerSpecialistFunctionName)), ((cpp_function_code)(&registerSpecialistFunctionNameEvaluatorWrapper)));
-      defineFunctionObject("STARTUP-SPECIALISTS", "(DEFUN STARTUP-SPECIALISTS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupSpecialists)), NULL);
-      { MethodSlot* function = lookupFunction(SYM_SPECIALISTS_LOGIC_STARTUP_SPECIALISTS);
-
-        setDynamicSlotValue(function->dynamicSlots, SYM_SPECIALISTS_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupSpecialists"), NULL_STRING_WRAPPER);
-      }
+      helpStartupSpecialists4();
+      helpStartupSpecialists5();
     }
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
+      defineExplanationPhrase(KWD_SPECIALISTS_FORK_THEN, KWD_SPECIALISTS_TECHNICAL, "by FORK-introduction of its THEN argument", 0);
+      defineExplanationPhrase(KWD_SPECIALISTS_FORK_THEN, KWD_SPECIALISTS_LAY, "since the condition and THEN-clause of a FORK-proposition succeeded", 0);
+      defineExplanationPhrase(KWD_SPECIALISTS_FORK_ELSE, KWD_SPECIALISTS_TECHNICAL, "by FORK-introduction of its ELSE argument", 0);
+      defineExplanationPhrase(KWD_SPECIALISTS_FORK_ELSE, KWD_SPECIALISTS_LAY, "since the condition and ELSE-clause of a FORK-proposition succeeded", 0);
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *PROTOTYPE-ID-COUNTER* INTEGER 0)");
+      defineExplanationPhrase(KWD_SPECIALISTS_COLLECT_MEMBERS, KWD_SPECIALISTS_TECHNICAL, "since it was proven by the COLLECT-MEMBERS specialist", 0);
+      defineExplanationPhrase(KWD_SPECIALISTS_COLLECT_MEMBERS, KWD_SPECIALISTS_LAY, "because of a specialized COLLECT-MEMBERS reasoning procedure", 0);
       defineExplanationPhrase(KWD_SPECIALISTS_IST_INTRODUCTION, KWD_SPECIALISTS_TECHNICAL, "by IST-Introduction", 0);
       defineExplanationPhrase(KWD_SPECIALISTS_IST_INTRODUCTION, KWD_SPECIALISTS_LAY, "because its argument is true", 0);
       defineExplanationPhrase(KWD_SPECIALISTS_IST_INTRODUCTION, KWD_SPECIALISTS_LAY, "because its argument is partly true", 1, KWD_SPECIALISTS_PARTIAL);
@@ -4709,9 +5586,11 @@ Symbol* SYM_SPECIALISTS_STELLA_START = NULL;
 
 Symbol* SYM_SPECIALISTS_LOGIC_SUB_LENGTH = NULL;
 
-Surrogate* SGT_SPECIALISTS_LOGIC_PATTERN_VARIABLE = NULL;
-
 Surrogate* SGT_SPECIALISTS_LOGIC_SKOLEM = NULL;
+
+Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_TOTAL = NULL;
+
+Keyword* KWD_SPECIALISTS_ERROR = NULL;
 
 Symbol* SYM_SPECIALISTS_STELLA_ITERATOR = NULL;
 
@@ -4761,6 +5640,26 @@ Keyword* KWD_SPECIALISTS_AND = NULL;
 
 Symbol* SYM_SPECIALISTS_STELLA_ARGUMENTS = NULL;
 
+Surrogate* SGT_SPECIALISTS_LOGIC_FORK_PROOF_ADJUNCT = NULL;
+
+Symbol* SYM_SPECIALISTS_LOGIC_CONDITION_JUSTIFICATION = NULL;
+
+Symbol* SYM_SPECIALISTS_LOGIC_DOWN_FRAME = NULL;
+
+Symbol* SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT = NULL;
+
+Keyword* KWD_SPECIALISTS_FAIL_INTRODUCTION = NULL;
+
+Keyword* KWD_SPECIALISTS_FORK_ELSE = NULL;
+
+Keyword* KWD_SPECIALISTS_FORK_THEN = NULL;
+
+Symbol* SYM_SPECIALISTS_LOGIC_JUSTIFICATION = NULL;
+
+Keyword* KWD_SPECIALISTS_TECHNICAL = NULL;
+
+Keyword* KWD_SPECIALISTS_LAY = NULL;
+
 Surrogate* SGT_SPECIALISTS_LOGIC_PROPOSITION = NULL;
 
 Keyword* KWD_SPECIALISTS_HOW_MANY = NULL;
@@ -4775,9 +5674,31 @@ Symbol* SYM_SPECIALISTS_LOGIC_QUERY_SPECIALIST_IO_VARIABLES = NULL;
 
 Keyword* KWD_SPECIALISTS_MATCH_MODE = NULL;
 
+Keyword* KWD_SPECIALISTS_DESCRIPTION = NULL;
+
+Keyword* KWD_SPECIALISTS_SORT_BY = NULL;
+
 Keyword* KWD_SPECIALISTS_GOAL_TREE = NULL;
 
-Symbol* SYM_SPECIALISTS_LOGIC_JUSTIFICATION = NULL;
+Surrogate* SGT_SPECIALISTS_LOGIC_SAVED_INFERENCE_LEVEL_PROOF_ADJUNCT = NULL;
+
+Symbol* SYM_SPECIALISTS_LOGIC_SAVED_INFERENCE_LEVEL = NULL;
+
+Symbol* SYM_SPECIALISTS_LOGIC_INFERENCE_LEVEL = NULL;
+
+Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_ASSERTION_QUERY = NULL;
+
+Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_SHALLOW_QUERY = NULL;
+
+Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_SUBSUMPTION_QUERY = NULL;
+
+Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_BACKTRACKING_QUERY = NULL;
+
+Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_NORMAL_QUERY = NULL;
+
+Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_REFUTATION_QUERY = NULL;
+
+Keyword* KWD_SPECIALISTS_LEVELED_QUERY = NULL;
 
 Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_CONCEPT_PROTOTYPE = NULL;
 
@@ -4791,6 +5712,8 @@ Surrogate* SGT_SPECIALISTS_LOGIC_F_CLOSED_TERMp_MEMO_TABLE_000 = NULL;
 
 Symbol* SYM_SPECIALISTS_LOGIC_EQUIVALENT_VALUE = NULL;
 
+Surrogate* SGT_SPECIALISTS_LOGIC_PATTERN_VARIABLE = NULL;
+
 Surrogate* SGT_SPECIALISTS_LOGIC_F_CLOSED_PROPOSITIONp_MEMO_TABLE_000 = NULL;
 
 Keyword* KWD_SPECIALISTS_OR = NULL;
@@ -4803,13 +5726,19 @@ Keyword* KWD_SPECIALISTS_EXISTS = NULL;
 
 Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_MEMBER_OF = NULL;
 
-Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_TOTAL = NULL;
-
 Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_SINGLE_VALUED = NULL;
 
 Surrogate* SGT_SPECIALISTS_LOGIC_F_SINGLE_VALUED_TERMp_MEMO_TABLE_000 = NULL;
 
 Keyword* KWD_SPECIALISTS_EQUIVALENT = NULL;
+
+Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_COLLECT_INTO_LIST = NULL;
+
+Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_COLLECT_INTO_ORDERED_SET = NULL;
+
+Symbol* SYM_SPECIALISTS_LOGIC_INFERENCE_CUTOFF_REASON = NULL;
+
+Keyword* KWD_SPECIALISTS_COLLECT_MEMBERS = NULL;
 
 Symbol* SYM_SPECIALISTS_LOGIC_pSUPER = NULL;
 
@@ -4841,15 +5770,9 @@ Surrogate* SGT_SPECIALISTS_LOGIC_SAVED_CONTEXT_PROOF_ADJUNCT = NULL;
 
 Symbol* SYM_SPECIALISTS_LOGIC_SAVED_CONTEXT = NULL;
 
-Symbol* SYM_SPECIALISTS_LOGIC_PROOF_ADJUNCT = NULL;
-
 Surrogate* SGT_SPECIALISTS_STELLA_CONTEXT = NULL;
 
 Keyword* KWD_SPECIALISTS_IST_INTRODUCTION = NULL;
-
-Keyword* KWD_SPECIALISTS_TECHNICAL = NULL;
-
-Keyword* KWD_SPECIALISTS_LAY = NULL;
 
 Keyword* KWD_SPECIALISTS_PARTIAL = NULL;
 

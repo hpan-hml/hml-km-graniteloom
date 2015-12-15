@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -78,6 +78,9 @@ public:
   TokenizerToken* tokenList;
 public:
   virtual int getSavedState(TokenizerTable* table);
+  virtual void reset();
+  virtual void clear();
+  virtual int bufferedInputLength();
   virtual Surrogate* primaryType();
 };
 
@@ -111,6 +114,8 @@ extern Cons* oSTELLA_TOKENIZER_TABLE_DEFINITIONo;
 extern TokenizerTable* oSTELLA_TOKENIZER_TABLEo;
 extern Vector* oSTELLA_LOGICAL_STATE_NAMESo;
 extern PropertyList* oSTELLA_LOGICAL_STATE_NAMES_TABLEo;
+extern int oGET_TOKEN_INTEGER_CHECKPOINTo;
+extern long long int oGET_TOKEN_LONG_INTEGER_CHECKPOINTo;
 extern int oSTELLA_TOKENIZER_WHITE_SPACE_STATEo;
 extern Cons* oREAD_LINE_TOKENIZER_TABLE_DEFINITIONo;
 extern Cons* oREAD_LINE2_TOKENIZER_TABLE_DEFINITIONo;
@@ -168,6 +173,12 @@ Object* getNextStellaToken(Cons* options);
 Object* getStellaTokenType();
 Object* getQualifiedSymbolSeparatorPosition(Cons* escapemode);
 int getQualifiedSymbolSeparatorPositionInternal(char* buffer, int tokenstart, int tokenend, int size, Keyword* escapemode);
+Object* getTokenInteger();
+int getTokenIntegerInternal(char* buffer, int start, int end, int size);
+Object* getTokenLongInteger();
+long long int getTokenLongIntegerInternal(char* buffer, int start, int end, int size);
+Object* getTokenFloat();
+double getTokenFloatInternal(char* buffer, int start, int end, int size);
 StellaToken* newStellaToken();
 Object* accessStellaTokenSlotValue(StellaToken* self, Symbol* slotname, Object* value, boolean setvalueP);
 StellaToken* tokenizeSExpression(InputStream* stream, StellaToken* tokenlist);
@@ -176,6 +187,8 @@ boolean qualifiedStellaNameP(char* name);
 Object* stellaTokenListToSExpression(StellaToken* tokenlist);
 void expandQuoteMacroToken(StellaToken* quotedlist);
 char stringToCharacter(char* name);
+Vector* createTokenizeStringTable(char* punctuationchars, char* quotechars, char* escapechars);
+Cons* tokenizeString(char* string, char* punctuationchars, char* quotechars, char* escapechars);
 Object* readSExpression(InputStream* stream, boolean& _Return1);
 boolean eatNextCharacterIfWhitespace(InputStream* stream);
 boolean consumeWhitespace(InputStream* stream);
@@ -372,6 +385,12 @@ extern Symbol* SYM_READ_STELLA_KEYWORD;
 extern Keyword* KWD_READ_NONE;
 extern Symbol* SYM_READ_STELLA_GET_QUALIFIED_SYMBOL_SEPARATOR_POSITION_INTERNAL;
 extern Keyword* KWD_READ_FULLY_ESCAPED;
+extern Symbol* SYM_READ_STELLA_GET_TOKEN_INTEGER;
+extern Symbol* SYM_READ_STELLA_GET_TOKEN_INTEGER_INTERNAL;
+extern Symbol* SYM_READ_STELLA_GET_TOKEN_LONG_INTEGER;
+extern Symbol* SYM_READ_STELLA_GET_TOKEN_LONG_INTEGER_INTERNAL;
+extern Symbol* SYM_READ_STELLA_GET_TOKEN_FLOAT;
+extern Symbol* SYM_READ_STELLA_GET_TOKEN_FLOAT_INTERNAL;
 extern Surrogate* SGT_READ_STELLA_STELLA_TOKEN;
 extern Symbol* SYM_READ_STELLA_LOGICAL_TOKEN_TYPE;
 extern Symbol* SYM_READ_STELLA_MODULE;
@@ -381,6 +400,11 @@ extern Keyword* KWD_READ_PARTIAL;
 extern Keyword* KWD_READ_ESCAPED;
 extern Symbol* SYM_READ_STELLA_a;
 extern Symbol* SYM_READ_STELLA_aa;
+extern Keyword* KWD_READ_TEXT;
+extern Keyword* KWD_READ_PUNCTUATION;
+extern Keyword* KWD_READ_QUOTE;
+extern Keyword* KWD_READ_ESCAPE;
+extern Surrogate* SGT_READ_STELLA_F_TOKENIZE_STRING_MEMO_TABLE_000;
 extern Keyword* KWD_READ_INITIAL_LINEFEED;
 extern Keyword* KWD_READ_INITIAL_RETURN;
 extern Keyword* KWD_READ_LINEFEED;

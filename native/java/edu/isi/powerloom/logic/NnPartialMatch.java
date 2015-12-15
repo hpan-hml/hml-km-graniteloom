@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -135,7 +135,7 @@ public class NnPartialMatch extends PartialMatchFrame {
                           prop = (vector000.theArray)[index000];
                           if (collect000 == null) {
                             {
-                              collect000 = Stella_Object.cons(FloatWrapper.wrapFloat(((FloatWrapper)(KeyValueList.dynamicSlotValue(((Proposition)(prop)).dynamicSlots, Logic.SYM_LOGIC_MATCH_SCORE, Stella.NULL_FLOAT_WRAPPER))).wrapperValue), Stella.NIL);
+                              collect000 = Cons.cons(FloatWrapper.wrapFloat(((FloatWrapper)(KeyValueList.dynamicSlotValue(((Proposition)(prop)).dynamicSlots, Logic.SYM_LOGIC_MATCH_SCORE, Stella.NULL_FLOAT_WRAPPER))).wrapperValue), Stella.NIL);
                               if (propscores.theConsList == Stella.NIL) {
                                 propscores.theConsList = collect000;
                               }
@@ -146,7 +146,7 @@ public class NnPartialMatch extends PartialMatchFrame {
                           }
                           else {
                             {
-                              collect000.rest = Stella_Object.cons(FloatWrapper.wrapFloat(((FloatWrapper)(KeyValueList.dynamicSlotValue(((Proposition)(prop)).dynamicSlots, Logic.SYM_LOGIC_MATCH_SCORE, Stella.NULL_FLOAT_WRAPPER))).wrapperValue), Stella.NIL);
+                              collect000.rest = Cons.cons(FloatWrapper.wrapFloat(((FloatWrapper)(KeyValueList.dynamicSlotValue(((Proposition)(prop)).dynamicSlots, Logic.SYM_LOGIC_MATCH_SCORE, Stella.NULL_FLOAT_WRAPPER))).wrapperValue), Stella.NIL);
                               collect000 = collect000.rest;
                             }
                           }
@@ -337,8 +337,8 @@ public class NnPartialMatch extends PartialMatchFrame {
       if (weight == Stella.NULL_FLOAT) {
         weight = 1.0;
       }
-      self.argumentScores = Stella_Object.cons(FloatWrapper.wrapFloat(score), self.argumentScores);
-      self.argumentWeights = Stella_Object.cons(FloatWrapper.wrapFloat(weight), self.argumentWeights);
+      self.argumentScores = Cons.cons(FloatWrapper.wrapFloat(score), self.argumentScores);
+      self.argumentWeights = Cons.cons(FloatWrapper.wrapFloat(weight), self.argumentWeights);
       self.accumulatedScore = self.accumulatedScore + (score * weight);
       if (score > self.maximumScore) {
         self.maximumScore = score;
@@ -350,7 +350,7 @@ public class NnPartialMatch extends PartialMatchFrame {
           { Proposition r = ((Proposition)(((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null))).value));
             Proposition ante = ((Description)((r.arguments.theArray)[0])).proposition;
 
-            self.rules = Stella_Object.cons(r, self.rules);
+            self.rules = Cons.cons(r, self.rules);
             KeyValueList.setDynamicSlotValue(ante.dynamicSlots, Logic.SYM_LOGIC_MATCH_SCORE, FloatWrapper.wrapFloat(score), Stella.NULL_FLOAT_WRAPPER);
           }
         }

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -114,11 +114,11 @@ int oMAX_TOKENIZER_STATESo = 64;
 int oMAX_TOKENIZER_CHARACTERSo = 256;
 
 TokenizerTable* parseTokenizerDefinition(Cons* definition) {
-  { Vector* transitiontable = newVector(oMAX_TOKENIZER_STATESo);
+  { Vector* transitiontable = stella::newVector(oMAX_TOKENIZER_STATESo);
     char* transitions = makeString(oMAX_TOKENIZER_CHARACTERSo, NULL_CHARACTER);
-    Vector* uniquestatenames = newVector(oMAX_TOKENIZER_STATESo);
-    Vector* statenames = newVector(oMAX_TOKENIZER_STATESo);
-    Vector* legaleofstates = newVector(oMAX_TOKENIZER_STATESo);
+    Vector* uniquestatenames = stella::newVector(oMAX_TOKENIZER_STATESo);
+    Vector* statenames = stella::newVector(oMAX_TOKENIZER_STATESo);
+    Vector* legaleofstates = stella::newVector(oMAX_TOKENIZER_STATESo);
     GeneralizedSymbol* fromstatename = NULL;
     int fromstateid = NULL_INTEGER;
     GeneralizedSymbol* tostatename = NULL;
@@ -299,8 +299,8 @@ TokenizerTable* parseTokenizerDefinition(Cons* definition) {
       }
     }
     table->transitions = transitions;
-    table->uniqueStateNames = newVector(freestateid);
-    table->stateNames = newVector(freestateid);
+    table->uniqueStateNames = stella::newVector(freestateid);
+    table->stateNames = stella::newVector(freestateid);
     { int i = NULL_INTEGER;
       int iter008 = 0;
       int upperBound004 = freestateid - 1;
@@ -313,7 +313,7 @@ TokenizerTable* parseTokenizerDefinition(Cons* definition) {
         (table->stateNames->theArray)[i] = (((GeneralizedSymbol*)((statenames->theArray)[i])));
       }
     }
-    table->legalEofStates = newVector(freestateid);
+    table->legalEofStates = stella::newVector(freestateid);
     { int i = NULL_INTEGER;
       int iter009 = 0;
       int upperBound005 = freestateid - 1;
@@ -686,7 +686,7 @@ TokenizerTable* unstringifyTokenizerTable(char* table) {
     end = stringPosition(table, separator, start);
     line = stringSubsequence(table, start, end);
     start = end + 1;
-    count = stringToInteger(line);
+    count = ((int)(stringToInteger(line)));
     end = stringPosition(table, separator, start);
     line = stringSubsequence(table, start, end);
     start = end + 1;
@@ -706,8 +706,8 @@ TokenizerTable* unstringifyTokenizerTable(char* table) {
     end = stringPosition(table, separator, start);
     line = stringSubsequence(table, start, end);
     start = end + 1;
-    count = stringToInteger(line);
-    result->uniqueStateNames = newVector(count);
+    count = ((int)(stringToInteger(line)));
+    result->uniqueStateNames = stella::newVector(count);
     { int i = NULL_INTEGER;
       int iter001 = 0;
       int upperBound001 = count - 1;
@@ -725,8 +725,8 @@ TokenizerTable* unstringifyTokenizerTable(char* table) {
     end = stringPosition(table, separator, start);
     line = stringSubsequence(table, start, end);
     start = end + 1;
-    count = stringToInteger(line);
-    result->stateNames = newVector(count);
+    count = ((int)(stringToInteger(line)));
+    result->stateNames = stella::newVector(count);
     { int i = NULL_INTEGER;
       int iter002 = 0;
       int upperBound002 = count - 1;
@@ -744,11 +744,11 @@ TokenizerTable* unstringifyTokenizerTable(char* table) {
     end = stringPosition(table, separator, start);
     line = stringSubsequence(table, start, end);
     start = end + 1;
-    count = stringToInteger(line);
+    count = ((int)(stringToInteger(line)));
     end = stringPosition(table, separator, start);
     line = stringSubsequence(table, start, end);
     start = end + 1;
-    result->legalEofStates = newVector(count);
+    result->legalEofStates = stella::newVector(count);
     { int i = NULL_INTEGER;
       int iter003 = 0;
       int upperBound003 = count - 1;
@@ -779,7 +779,7 @@ TokenizerTable* unstringifyTokenizerTable(char* table) {
 }
 
 char* makeTokenizerByteArray(int size) {
-  return (new (GC) char[size]);
+  return (new (PointerFreeGC) char[size]);
 }
 
 char* stringToTokenizerByteArray(char* string) {
@@ -825,7 +825,7 @@ int tokenizerByteArrayReadSequence(char* buffer, InputStream* stream, int start,
         cursor = 0;
       }
     }
-    { int readSize = stella::min(end - start, internalEnd - cursor);
+    { int readSize = stella::integerMin(end - start, internalEnd - cursor);
       int originalStart = start;
       char* internalBuffer = state->buffer;
 
@@ -892,7 +892,7 @@ void ensureTokenizerBufferSize(TokenizerStreamState* state, int currenttokenstar
       newsize = newsize * 2;
     }
     if (newsize > size) {
-      newbuffer = new (GC) char[newsize];
+      newbuffer = new (PointerFreeGC) char[newsize];
       if (currenttokenstart < 0) {
         state->cursor = 0;
         state->end = newsize;
@@ -1202,7 +1202,7 @@ TokenizerStreamState* newTokenizerStreamState() {
     self->end = oTOKENIZER_INITIAL_BUFFER_SIZEo;
     self->cursor = oTOKENIZER_INITIAL_BUFFER_SIZEo;
     self->bufferSize = oTOKENIZER_INITIAL_BUFFER_SIZEo;
-    self->buffer = new (GC) char[oTOKENIZER_INITIAL_BUFFER_SIZEo];
+    self->buffer = new (PointerFreeGC) char[oTOKENIZER_INITIAL_BUFFER_SIZEo];
     return (self);
   }
 }
@@ -1279,6 +1279,38 @@ Object* accessTokenizerStreamStateSlotValue(TokenizerStreamState* self, Symbol* 
     }
   }
   return (value);
+}
+
+int TokenizerStreamState::bufferedInputLength() {
+  { TokenizerStreamState* state = this;
+
+    { int cursor = state->cursor;
+      int end = state->end;
+
+      if (end >= cursor) {
+        return (end - cursor);
+      }
+      else {
+        return ((state->bufferSize - cursor) + end);
+      }
+    }
+  }
+}
+
+void TokenizerStreamState::clear() {
+  { TokenizerStreamState* state = this;
+
+    state->cursor = 0;
+    state->end = 0;
+  }
+}
+
+void TokenizerStreamState::reset() {
+  { TokenizerStreamState* state = this;
+
+    state->state = 1;
+    state->stateDictionary = NULL;
+  }
 }
 
 int TokenizerStreamState::getSavedState(TokenizerTable* table) {
@@ -1492,7 +1524,7 @@ Object* getNextToken(Cons* options) {
     else {
       savestreamstatetree = cons(listO(3, SYM_READ_STELLA_WHEN, savestreamstateP, savestreamstatetree->concatenate(NIL, 0)), NIL);
     }
-    return (listO(4, SYM_READ_STELLA_PROGN, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(3, SYM_READ_STELLA_LOOP, (withTokenizerStringInputP() ? listO(5, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(5, SYM_READ_STELLA_COND, listO(3, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_TRUE, NIL), NIL), listO(4, listO(4, SYM_READ_STELLA_NTH, listO(3, SYM_READ_STELLA_LEGAL_EOF_STATES, SYM_READ_STELLA_TOK_TABLE_, NIL), SYM_READ_STELLA_TOK_STATE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_TRUE, NIL), NIL), NIL), listO(4, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), NIL), cons(SYM_READ_STELLA_BREAK, NIL), NIL) : listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_CHECKPOINT_, NIL), listO(4, SYM_READ_STELLA_COND, listO(10, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETF, listO(3, SYM_READ_STELLA_CURSOR, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), SYM_READ_STELLA_TOK_CURSOR_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, listO(5, SYM_READ_STELLA_READ_INTO_TOKENIZER_BUFFER, SYM_READ_STELLA_TOK_INPUTSTREAM_, SYM_READ_STELLA_TOK_STREAMSTATE_, SYM_READ_STELLA_TOK_TOKENSTART_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_BUFFER_, listO(3, SYM_READ_STELLA_BUFFER, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_SIZE_, listO(3, SYM_READ_STELLA_BUFFER_SIZE, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CURSOR_, listO(4, SYM_READ_STELLA_MOD, listO(3, SYM_READ_STELLA_CURSOR, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), SYM_READ_STELLA_TOK_SIZE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_END_, listO(3, SYM_READ_STELLA_END, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(5, SYM_READ_STELLA_WHEN, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, listO(5, SYM_READ_STELLA_COND, cons(listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), listO(4, listO(4, SYM_READ_STELLA_NTH, listO(3, SYM_READ_STELLA_LEGAL_EOF_STATES, SYM_READ_STELLA_TOK_TABLE_, NIL), SYM_READ_STELLA_TOK_STATE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_UNLESS, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_FALSE, NIL), NIL), NIL), listO(5, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_FALSE, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), NIL), cons(SYM_READ_STELLA_BREAK, NIL), NIL), listO(5, SYM_READ_STELLA_IF, listO(4, SYM_READ_STELLA_ge, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_SIZE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_END_, NIL), NIL), NIL), listO(4, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CURSOR_, wrapInteger(0), NIL), NIL), NIL), NIL)), listO(3, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, listO(3, SYM_READ_STELLA_CHARACTER_CODE, listO(4, SYM_READ_STELLA_NTH, SYM_READ_STELLA_TOK_TRANSITIONS_, listO(4, SYM_READ_STELLA_LOGOR, listO(4, SYM_READ_STELLA_SHIFT_LEFT, SYM_READ_STELLA_TOK_STATE_, wrapInteger(8), NIL), listO(3, SYM_READ_STELLA_CHARACTER_CODE, listO(4, SYM_READ_STELLA_BYTE_ARRAY_NTH, SYM_READ_STELLA_TOK_BUFFER_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), NIL), NIL), NIL), NIL), listO(5, SYM_READ_STELLA_COND, listO(4, listO(4, SYM_READ_STELLA_e, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(128), NIL), wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, SYM_READ_STELLA_TOK_NEXTSTATE_, NIL), listO(3, SYM_READ_STELLA_ii, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(5, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(64), NIL), wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_TOKENSTART_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(63), NIL), NIL), listO(3, SYM_READ_STELLA_ii, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(3, SYM_READ_STELLA_OTHERWISE, cons(SYM_READ_STELLA_BREAK, NIL), NIL), NIL), (((!withTokenizerStringInputP()) ? cons(listO(4, SYM_READ_STELLA_WHEN, listO(3, SYM_READ_STELLA_DEFINEDp, SYM_READ_STELLA_TOK_ECHOSTREAM_, NIL), listO(4, SYM_READ_STELLA_PRINT_STREAM, SYM_READ_STELLA_TOK_ECHOSTREAM_, listO(4, SYM_READ_STELLA_BYTE_ARRAY_NTH, SYM_READ_STELLA_TOK_BUFFER_, listO(3, SYM_READ_STELLA_1_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), NIL), NIL), NIL) : NIL))->concatenate(NIL, 0))), savestreamstatetree->concatenate(NIL, 0)));
+    return (listO(4, SYM_READ_STELLA_PROGN, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(3, SYM_READ_STELLA_LOOP, (withTokenizerStringInputP() ? listO(5, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(5, SYM_READ_STELLA_COND, listO(3, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_TRUE, NIL), NIL), listO(4, listO(4, SYM_READ_STELLA_NTH, listO(3, SYM_READ_STELLA_LEGAL_EOF_STATES, SYM_READ_STELLA_TOK_TABLE_, NIL), SYM_READ_STELLA_TOK_STATE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_TRUE, NIL), NIL), NIL), listO(4, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), NIL), cons(SYM_READ_STELLA_BREAK, NIL), NIL) : listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_CHECKPOINT_, NIL), listO(4, SYM_READ_STELLA_COND, listO(10, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETF, listO(3, SYM_READ_STELLA_CURSOR, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), SYM_READ_STELLA_TOK_CURSOR_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, listO(5, SYM_READ_STELLA_READ_INTO_TOKENIZER_BUFFER, SYM_READ_STELLA_TOK_INPUTSTREAM_, SYM_READ_STELLA_TOK_STREAMSTATE_, SYM_READ_STELLA_TOK_TOKENSTART_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_BUFFER_, listO(3, SYM_READ_STELLA_BUFFER, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_SIZE_, listO(3, SYM_READ_STELLA_BUFFER_SIZE, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CURSOR_, listO(4, SYM_READ_STELLA_MOD, listO(3, SYM_READ_STELLA_CURSOR, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), SYM_READ_STELLA_TOK_SIZE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_END_, listO(3, SYM_READ_STELLA_END, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(6, SYM_READ_STELLA_WHEN, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_CURSOR_, NIL), listO(5, SYM_READ_STELLA_COND, cons(listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), listO(4, listO(4, SYM_READ_STELLA_NTH, listO(3, SYM_READ_STELLA_LEGAL_EOF_STATES, SYM_READ_STELLA_TOK_TABLE_, NIL), SYM_READ_STELLA_TOK_STATE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_UNLESS, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_FALSE, NIL), NIL), NIL), listO(5, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_FALSE, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), NIL), cons(SYM_READ_STELLA_BREAK, NIL), NIL), listO(5, SYM_READ_STELLA_IF, listO(4, SYM_READ_STELLA_ge, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_SIZE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_END_, NIL), NIL), NIL), listO(4, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CURSOR_, wrapInteger(0), NIL), NIL), NIL), NIL)), listO(3, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, listO(3, SYM_READ_STELLA_CHARACTER_CODE, listO(4, SYM_READ_STELLA_NTH, SYM_READ_STELLA_TOK_TRANSITIONS_, listO(4, SYM_READ_STELLA_LOGOR, listO(4, SYM_READ_STELLA_SHIFT_LEFT, SYM_READ_STELLA_TOK_STATE_, wrapInteger(8), NIL), listO(3, SYM_READ_STELLA_CHARACTER_CODE, listO(4, SYM_READ_STELLA_BYTE_ARRAY_NTH, SYM_READ_STELLA_TOK_BUFFER_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), NIL), NIL), NIL), NIL), listO(5, SYM_READ_STELLA_COND, listO(4, listO(4, SYM_READ_STELLA_e, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(128), NIL), wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, SYM_READ_STELLA_TOK_NEXTSTATE_, NIL), listO(3, SYM_READ_STELLA_ii, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(5, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(64), NIL), wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_TOKENSTART_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(63), NIL), NIL), listO(3, SYM_READ_STELLA_ii, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(3, SYM_READ_STELLA_OTHERWISE, cons(SYM_READ_STELLA_BREAK, NIL), NIL), NIL), (((!withTokenizerStringInputP()) ? cons(listO(4, SYM_READ_STELLA_WHEN, listO(3, SYM_READ_STELLA_DEFINEDp, SYM_READ_STELLA_TOK_ECHOSTREAM_, NIL), listO(4, SYM_READ_STELLA_PRINT_STREAM, SYM_READ_STELLA_TOK_ECHOSTREAM_, listO(4, SYM_READ_STELLA_BYTE_ARRAY_NTH, SYM_READ_STELLA_TOK_BUFFER_, listO(3, SYM_READ_STELLA_1_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), NIL), NIL), NIL) : NIL))->concatenate(NIL, 0))), savestreamstatetree->concatenate(NIL, 0)));
   }
 }
 
@@ -1615,9 +1647,10 @@ boolean StreamTokenizer::nextP() {
               tok_endoftokensP_ = readIntoTokenizerBuffer(tok_inputstream_, tok_streamstate_, tok_tokenstart_);
               tok_buffer_ = tok_streamstate_->buffer;
               tok_size_ = tok_streamstate_->bufferSize;
-              tok_cursor_ = mod(tok_streamstate_->cursor, tok_size_);
+              tok_cursor_ = integerMod(tok_streamstate_->cursor, tok_size_);
               tok_end_ = tok_streamstate_->end;
               if (tok_endoftokensP_) {
+                tok_checkpoint_ = tok_cursor_;
                 if (tok_nextstate_ == -1) {
                 }
                 else if (coerceWrappedBooleanToBoolean(((BooleanWrapper*)((tok_table_->legalEofStates->theArray)[tok_state_])))) {
@@ -1774,6 +1807,195 @@ int getQualifiedSymbolSeparatorPositionInternal(char* buffer, int tokenstart, in
   }
 }
 
+Object* getTokenInteger() {
+  // User-level macro to access the most recently parsed token as an integer.
+  // This assumes correct signed integer syntax and only checks for overflows.
+  if (!insideWithTokenizerP()) {
+    { 
+      BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+      signalTranslationError();
+      if (!(suppressWarningsP())) {
+        printErrorContext(">> ERROR: ", STANDARD_ERROR);
+        *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Encountered `get-token-integer' outside of `with-tokenizer' macro." << "." << std::endl;
+      }
+    }
+    return (cons(SYM_READ_STELLA_GET_TOKEN_INTEGER, NIL));
+  }
+  return (listO(6, SYM_READ_STELLA_GET_TOKEN_INTEGER_INTERNAL, SYM_READ_STELLA_TOK_BUFFER_, SYM_READ_STELLA_TOK_TOKENSTART_, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_SIZE_, NIL));
+}
+
+int oGET_TOKEN_INTEGER_CHECKPOINTo = NULL_INTEGER;
+
+int getTokenIntegerInternal(char* buffer, int start, int end, int size) {
+  { long long int result = getTokenLongIntegerInternal(buffer, start, end, size);
+
+    if ((result > MOST_POSITIVE_INTEGER) ||
+        (result < MOST_NEGATIVE_INTEGER)) {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "get-token-integer: integer overflow: " << "`" << result << "'";
+        throw *newStellaException(stream000->theStringReader());
+      }
+    }
+    return (((int)(result)));
+  }
+}
+
+Object* getTokenLongInteger() {
+  // User-level macro to access the most recently parsed token as a long integer.
+  // This assumes correct signed long-integer syntax and only checks for overflows.
+  if (!insideWithTokenizerP()) {
+    { 
+      BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+      signalTranslationError();
+      if (!(suppressWarningsP())) {
+        printErrorContext(">> ERROR: ", STANDARD_ERROR);
+        *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Encountered `get-token-long-integer' outside of `with-tokenizer' macro." << "." << std::endl;
+      }
+    }
+    return (cons(SYM_READ_STELLA_GET_TOKEN_LONG_INTEGER, NIL));
+  }
+  return (listO(6, SYM_READ_STELLA_GET_TOKEN_LONG_INTEGER_INTERNAL, SYM_READ_STELLA_TOK_BUFFER_, SYM_READ_STELLA_TOK_TOKENSTART_, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_SIZE_, NIL));
+}
+
+long long int oGET_TOKEN_LONG_INTEGER_CHECKPOINTo = NULL_LONG_INTEGER;
+
+long long int getTokenLongIntegerInternal(char* buffer, int start, int end, int size) {
+  { int length = end - start;
+    int auxend = end;
+    long long int result = 0l;
+    boolean negativeP = false;
+    int digit = 0;
+
+    if (length < 0) {
+      length = length + size;
+      auxend = size;
+    }
+    switch (buffer[start]) {
+      case '+': 
+        start = start + 1;
+      break;
+      case '-': 
+        start = start + 1;
+        negativeP = true;
+      break;
+      default:
+      break;
+    }
+    for (;;) {
+      while (start < auxend) {
+        digit = (int)(unsigned char) (buffer[start]) - (int)(unsigned char) '0';
+        if ((result >= oGET_TOKEN_LONG_INTEGER_CHECKPOINTo) &&
+            (((MOST_POSITIVE_LONG_INTEGER - digit) / (10l)) < result)) {
+          throw *newStellaException("get-token-long-integer: long-integer overflow");
+        }
+        result = (result * 10) + digit;
+        start = start + 1;
+      }
+      if (auxend == end) {
+        break;
+      }
+      start = 0;
+      auxend = end;
+    }
+    if (negativeP) {
+      return (0 - result);
+    }
+    else {
+      return (result);
+    }
+  }
+}
+
+Object* getTokenFloat() {
+  // User-level macro to access the most recently parsed token as a float.
+  // This assumes correct signed float syntax and only checks for overflows.
+  // The main benefit for this is that it doesn't generate strings and wrappers.
+  // Float parsing and conversion is generally hairy and we are probably not
+  // covering all special cases here; but we are fast :-)
+  if (!insideWithTokenizerP()) {
+    { 
+      BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+      signalTranslationError();
+      if (!(suppressWarningsP())) {
+        printErrorContext(">> ERROR: ", STANDARD_ERROR);
+        *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Encountered `get-token-float' outside of `with-tokenizer' macro." << "." << std::endl;
+      }
+    }
+    return (cons(SYM_READ_STELLA_GET_TOKEN_FLOAT, NIL));
+  }
+  return (listO(6, SYM_READ_STELLA_GET_TOKEN_FLOAT_INTERNAL, SYM_READ_STELLA_TOK_BUFFER_, SYM_READ_STELLA_TOK_TOKENSTART_, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_SIZE_, NIL));
+}
+
+double getTokenFloatInternal(char* buffer, int start, int end, int size) {
+  { int length = end - start;
+    int auxend = end;
+    long long int mantissa = 0l;
+    int exponent = 0;
+    double mantissasign = 1.0;
+    double exponentsign = 1.0;
+    boolean exponentP = false;
+    boolean decimalsP = false;
+    int decimals = 0;
+    char ch = NULL_CHARACTER;
+    int digit = 0;
+    double result = 0.0;
+
+    if (length < 0) {
+      length = length + size;
+      auxend = size;
+    }
+    for (;;) {
+      while (start < auxend) {
+        ch = buffer[start];
+        switch (ch) {
+          case '-': 
+            if (exponentP) {
+              exponentsign = -1.0;
+            }
+            else {
+              mantissasign = -1.0;
+            }
+          break;
+          case '+': 
+          break;
+          case '.': 
+            decimalsP = true;
+          break;
+          case 'e': 
+          case 'E': 
+            exponentP = true;
+          break;
+          default:
+            digit = (int)(unsigned char) ch - (int)(unsigned char) '0';
+            if (exponentP) {
+              exponent = (exponent * 10) + digit;
+            }
+            else {
+              if (decimalsP) {
+                decimals = decimals + 1;
+              }
+              mantissa = (mantissa * 10) + digit;
+            }
+          break;
+        }
+        start = start + 1;
+      }
+      if (auxend == end) {
+        break;
+      }
+      start = 0;
+      auxend = end;
+    }
+    result = ((double)(mantissa));
+    exponent = ((int)((exponent * exponentsign) - decimals));
+    if (!(exponent == 0)) {
+      result = result * ::pow((10.0),(((double)(exponent))));
+    }
+    return (result * mantissasign);
+  }
+}
+
 StellaToken* newStellaToken() {
   { StellaToken* self = NULL;
 
@@ -1883,9 +2105,10 @@ StellaToken* tokenizeSExpression(InputStream* stream, StellaToken* tokenlist) {
                     tok_endoftokensP_ = readIntoTokenizerBuffer(tok_inputstream_, tok_streamstate_, tok_tokenstart_);
                     tok_buffer_ = tok_streamstate_->buffer;
                     tok_size_ = tok_streamstate_->bufferSize;
-                    tok_cursor_ = mod(tok_streamstate_->cursor, tok_size_);
+                    tok_cursor_ = integerMod(tok_streamstate_->cursor, tok_size_);
                     tok_end_ = tok_streamstate_->end;
                     if (tok_endoftokensP_) {
+                      tok_checkpoint_ = tok_cursor_;
                       if (tok_nextstate_ == -1) {
                       }
                       else if (coerceWrappedBooleanToBoolean(((BooleanWrapper*)((tok_table_->legalEofStates->theArray)[tok_state_])))) {
@@ -2230,7 +2453,6 @@ char* parseStellaName(char* name, boolean enablecaseconversionP, char*& _Return1
     int separatorpos = 0;
     boolean upcaseP = enablecaseconversionP &&
         (!oMODULEo.get()->caseSensitiveP);
-    GeneralizedSymbol* result = NULL;
 
     { TokenizerTable* tok_table_ = oSTELLA_TOKENIZER_TABLEo;
       char* tok_transitions_ = tok_table_->transitions;
@@ -2397,18 +2619,41 @@ char* parseStellaName(char* name, boolean enablecaseconversionP, char*& _Return1
             }
           }
         }
-        else if (tok_stellalogicalstatename_ == KWD_READ_ERROR) {
-          { OutputStringStream* stream003 = newOutputStringStream();
+        else if (tok_stellalogicalstatename_ == KWD_READ_QUALIFIED_NAME) {
+          { char* token = getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, true);
+            int length = strlen(token);
 
-            *(stream003->nativeStream) << "Illegal read syntax: " << "`" << getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false) << "'";
-            throw *newReadException(stream003->theStringReader());
+            if ((length >= 1) &&
+                ((token[(length - 1)] == '/') &&
+                 ((length == 1) ||
+                  (token[(length - 2)] == '/')))) {
+              symbolname = "/";
+              tok_stellalogicalstatename_ = KWD_READ_SYMBOL;
+              if (length > 1) {
+                modulename = stringSubsequence(token, 0, length - 2);
+              }
+            }
+            else {
+              { OutputStringStream* stream003 = newOutputStringStream();
+
+                *(stream003->nativeStream) << "Illegal symbol syntax: " << "`" << getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false) << "'" << " in state " << "`" << ((GeneralizedSymbol*)(tok_statenames_[tok_state_])) << "'";
+                throw *newReadException(stream003->theStringReader());
+              }
+            }
+          }
+        }
+        else if (tok_stellalogicalstatename_ == KWD_READ_ERROR) {
+          { OutputStringStream* stream004 = newOutputStringStream();
+
+            *(stream004->nativeStream) << "Illegal read syntax: " << "`" << getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false) << "'";
+            throw *newReadException(stream004->theStringReader());
           }
         }
         else {
-          { OutputStringStream* stream004 = newOutputStringStream();
+          { OutputStringStream* stream005 = newOutputStringStream();
 
-            *(stream004->nativeStream) << "Illegal symbol syntax: " << "`" << getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false) << "'" << " in state " << "`" << ((GeneralizedSymbol*)(tok_statenames_[tok_state_])) << "'";
-            throw *newReadException(stream004->theStringReader());
+            *(stream005->nativeStream) << "Illegal symbol syntax: " << "`" << getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false) << "'" << " in state " << "`" << ((GeneralizedSymbol*)(tok_statenames_[tok_state_])) << "'";
+            throw *newReadException(stream005->theStringReader());
           }
         }
         symboltype = tok_stellalogicalstatename_;
@@ -2458,10 +2703,10 @@ char* parseStellaName(char* name, boolean enablecaseconversionP, char*& _Return1
           return (symbolname);
         }
         else {
-          { OutputStringStream* stream005 = newOutputStringStream();
+          { OutputStringStream* stream006 = newOutputStringStream();
 
-            *(stream005->nativeStream) << "Garbage found after " << "`" << result->symbolName << "'";
-            throw *newReadException(stream005->theStringReader());
+            *(stream006->nativeStream) << "Garbage found after " << "`" << name << "'";
+            throw *newReadException(stream006->theStringReader());
           }
         }
       }
@@ -2583,10 +2828,7 @@ Object* stellaTokenListToSExpression(StellaToken* tokenlist) {
         else {
           { Cons* parenttree = parsedtreestack;
 
-            { Cons* head000 = ((Cons*)(parsedtreestack->value));
-
-              parsedtreestack = parsedtreestack->rest;
-            }
+            parsedtreestack = parsedtreestack->rest;
             parenttree->rest = ((Cons*)(parenttree->value));
             parenttree->firstSetter(parsedtree->reverse());
             parsedtree = parenttree;
@@ -2625,15 +2867,14 @@ Object* stellaTokenListToSExpression(StellaToken* tokenlist) {
         ((StringWrapper*)(parsedtoken))->wrapperValue = tokenlist->content;
       }
       else if (tokentype == KWD_READ_INTEGER) {
-        parsedtoken = new IntegerWrapper();
-        ((IntegerWrapper*)(parsedtoken))->wrapperValue = stringToInteger(tokenlist->content);
+        parsedtoken = wrapIntegerValue(stringToInteger(tokenlist->content));
       }
       else if (tokentype == KWD_READ_FLOAT) {
-        parsedtoken = new FloatWrapper();
+        parsedtoken = new (PointerFreeGC)FloatWrapper;
         ((FloatWrapper*)(parsedtoken))->wrapperValue = stringToFloat(tokenlist->content);
       }
       else if (tokentype == KWD_READ_CHARACTER) {
-        parsedtoken = new CharacterWrapper();
+        parsedtoken = new (PointerFreeGC)CharacterWrapper;
         ((CharacterWrapper*)(parsedtoken))->wrapperValue = stringToCharacter(tokenlist->content);
       }
       else if (tokentype == KWD_READ_COMMA) {
@@ -2768,7 +3009,7 @@ char stringToCharacter(char* name) {
         chaR = '\f';
       }
       else if (stringEqlP(name, "NULL")) {
-        chaR = ' ';
+        chaR = '\0';
       }
       else {
         { OutputStringStream* stream000 = newOutputStringStream();
@@ -2779,6 +3020,255 @@ char stringToCharacter(char* name) {
       }
     }
     return (chaR);
+  }
+}
+
+Vector* createTokenizeStringTable(char* punctuationchars, char* quotechars, char* escapechars) {
+  { Vector* chartypetable = stella::newVector(256);
+
+    { int i = NULL_INTEGER;
+      int iter000 = 0;
+      int upperBound000 = chartypetable->length() - 1;
+
+      for  (i, iter000, upperBound000; 
+            iter000 <= upperBound000; 
+            iter000 = iter000 + 1) {
+        i = iter000;
+        if (oCHARACTER_TYPE_TABLEo[(int)(unsigned char) ((char) i)] == KWD_READ_WHITE_SPACE) {
+          (chartypetable->theArray)[i] = KWD_READ_WHITE_SPACE;
+        }
+        else {
+          (chartypetable->theArray)[i] = KWD_READ_TEXT;
+        }
+      }
+    }
+    { char ch = NULL_CHARACTER;
+      char* vector000 = punctuationchars;
+      int index000 = 0;
+      int length000 = strlen(vector000);
+
+      for  (ch, vector000, index000, length000; 
+            index000 < length000; 
+            index000 = index000 + 1) {
+        ch = vector000[index000];
+        (chartypetable->theArray)[((int)(unsigned char) ch)] = KWD_READ_PUNCTUATION;
+      }
+    }
+    { char ch = NULL_CHARACTER;
+      char* vector001 = quotechars;
+      int index001 = 0;
+      int length001 = strlen(vector001);
+
+      for  (ch, vector001, index001, length001; 
+            index001 < length001; 
+            index001 = index001 + 1) {
+        ch = vector001[index001];
+        (chartypetable->theArray)[((int)(unsigned char) ch)] = KWD_READ_QUOTE;
+      }
+    }
+    { char ch = NULL_CHARACTER;
+      char* vector002 = escapechars;
+      int index002 = 0;
+      int length002 = strlen(vector002);
+
+      for  (ch, vector002, index002, length002; 
+            index002 < length002; 
+            index002 = index002 + 1) {
+        ch = vector002[index002];
+        (chartypetable->theArray)[((int)(unsigned char) ch)] = KWD_READ_ESCAPE;
+      }
+    }
+    return (chartypetable);
+  }
+}
+
+Cons* tokenizeString(char* string, char* punctuationchars, char* quotechars, char* escapechars) {
+  // Simple tokenizer that is somewhere between Java's StringTokenizer
+  // and StreamTokenizer in functionality.  It doens't specially support number
+  // tokens nor comment strings/sequences even though this could be added at
+  // the expense of some extra complexity.
+  // Returns a list of (<token-string> <token-type>) pairs, where the token
+  // type is one of :TEXT, :PUNCTUATION or :QUOTE, i.e., all white space
+  // is ignored and escape characters are handled and removed.  For example:
+  // 	 
+  //   (tokenize-string "for(i='fo^'o'; i>0; i++)" "()=<>+-;" "'" "^")
+  //   =>
+  //   (("for" :TEXT) ("(" :PUNCTUATION) ("i" :TEXT)
+  //    ("=" :PUNCTUATION) ("'" :QUOTE) ("fo'o" :TEXT)
+  //    ("'" :QUOTE) (";" :PUNCTUATION) ("i" :TEXT)
+  //    (">" :PUNCTUATION) ("0" :TEXT) (";" :PUNCTUATION)
+  //    ("i" :TEXT) ("++)" :PUNCTUATION))
+  // 	
+  // NOTE: this aggregates multiple punctuation characters that immediately
+  // follow each other into a single token which is (generally) useful to pickup
+  // multi-character operators such as ++, >=, etc.  It's still easy to pick them
+  // apart in a post-processing step if necessary (e.g., for the `++)' case above),
+  // so we leave this for now as a feature.
+  { MemoizationTable* memoTable000 = NULL;
+    Cons* memoizedEntry000 = NULL;
+    Object* memoizedValue000 = NULL;
+
+    if (oMEMOIZATION_ENABLEDpo) {
+      memoTable000 = ((MemoizationTable*)(SGT_READ_STELLA_F_TOKENIZE_STRING_MEMO_TABLE_000->surrogateValue));
+      if (!((boolean)(memoTable000))) {
+        initializeMemoizationTable(SGT_READ_STELLA_F_TOKENIZE_STRING_MEMO_TABLE_000, "(:MAX-VALUES 10)");
+        memoTable000 = ((MemoizationTable*)(SGT_READ_STELLA_F_TOKENIZE_STRING_MEMO_TABLE_000->surrogateValue));
+      }
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), wrapString(punctuationchars), wrapString(quotechars), wrapString(escapechars), MEMOIZED_NULL_VALUE, 0);
+      memoizedValue000 = memoizedEntry000->value;
+    }
+    if (((boolean)(memoizedValue000))) {
+      if (memoizedValue000 == MEMOIZED_NULL_VALUE) {
+        memoizedValue000 = NULL;
+      }
+    }
+    else {
+      memoizedValue000 = createTokenizeStringTable(punctuationchars, quotechars, escapechars);
+      if (oMEMOIZATION_ENABLEDpo) {
+        memoizedEntry000->value = ((!((boolean)(memoizedValue000))) ? MEMOIZED_NULL_VALUE : memoizedValue000);
+      }
+    }
+    { Vector* chartypetable = ((Vector*)(memoizedValue000));
+      int i = 0;
+      char ch = NULL_CHARACTER;
+      int start = 0;
+      int end = strlen(string);
+      Keyword* state = KWD_READ_TEXT;
+      Keyword* newstate = KWD_READ_TEXT;
+      boolean quotedtokenP = false;
+      char quotechar = NULL_CHARACTER;
+      boolean endoftokenP = false;
+      Cons* escapepositions = NIL;
+      char* token = NULL;
+      Cons* result = NIL;
+
+      for (;;) {
+        endoftokenP = false;
+        if (i < end) {
+          ch = string[i];
+          newstate = ((Keyword*)((chartypetable->theArray)[((int)(unsigned char) ch)]));
+          if (newstate == KWD_READ_TEXT) {
+            if ((state == KWD_READ_PUNCTUATION) ||
+                ((state == KWD_READ_WHITE_SPACE) ||
+                 (state == KWD_READ_QUOTE))) {
+              endoftokenP = true;
+            }
+            else {
+            }
+          }
+          else if (newstate == KWD_READ_ESCAPE) {
+            if ((state == KWD_READ_PUNCTUATION) ||
+                ((state == KWD_READ_WHITE_SPACE) ||
+                 (state == KWD_READ_QUOTE))) {
+              endoftokenP = true;
+            }
+            else {
+            }
+            escapepositions = cons(wrapInteger(i), escapepositions);
+            i = i + 2;
+            continue;
+          }
+          else if (newstate == KWD_READ_QUOTE) {
+            if (quotedtokenP &&
+                (ch == quotechar)) {
+              endoftokenP = true;
+              quotedtokenP = false;
+            }
+            else if (quotedtokenP) {
+              newstate = KWD_READ_TEXT;
+            }
+            else {
+              endoftokenP = true;
+              quotedtokenP = true;
+              quotechar = ch;
+            }
+          }
+          else if (newstate == KWD_READ_PUNCTUATION) {
+            if (state == KWD_READ_TEXT) {
+              if (quotedtokenP) {
+                newstate = KWD_READ_TEXT;
+              }
+              else {
+                endoftokenP = true;
+              }
+            }
+            else if ((state == KWD_READ_WHITE_SPACE) ||
+                (state == KWD_READ_QUOTE)) {
+              endoftokenP = true;
+            }
+            else {
+            }
+          }
+          else if (newstate == KWD_READ_WHITE_SPACE) {
+            if (state == KWD_READ_TEXT) {
+              if (quotedtokenP) {
+                newstate = KWD_READ_TEXT;
+              }
+              else {
+                endoftokenP = true;
+              }
+            }
+            else if ((state == KWD_READ_PUNCTUATION) ||
+                (state == KWD_READ_QUOTE)) {
+              endoftokenP = true;
+            }
+            else {
+            }
+          }
+          else {
+            { OutputStringStream* stream000 = newOutputStringStream();
+
+              *(stream000->nativeStream) << "`" << newstate << "'" << " is not a valid case option";
+              throw *newStellaException(stream000->theStringReader());
+            }
+          }
+        }
+        if ((endoftokenP &&
+            (i > 0)) ||
+            (i >= end)) {
+          if (!(state == KWD_READ_WHITE_SPACE)) {
+            if (!(escapepositions == NIL)) {
+              { Cons* parts = NIL;
+                int s = start;
+
+                { IntegerWrapper* e = NULL;
+                  Cons* iter000 = escapepositions->reverse();
+
+                  for (e, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+                    e = ((IntegerWrapper*)(iter000->value));
+                    parts = cons(wrapString(stringSubsequence(string, s, e->wrapperValue)), parts);
+                    s = e->wrapperValue + 1;
+                  }
+                }
+                parts = cons(wrapString(stringSubsequence(string, stella::integerMin(s, end), stella::integerMin(i, end))), parts);
+                parts = parts->reverse();
+                token = stringConcatenate(((StringWrapper*)(parts->value))->wrapperValue, ((StringWrapper*)(parts->rest->value))->wrapperValue);
+                { StringWrapper* part = NULL;
+                  Cons* iter001 = parts->rest->rest;
+
+                  for (part, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+                    part = ((StringWrapper*)(iter001->value));
+                    token = stringConcatenate(token, part->wrapperValue);
+                  }
+                }
+              }
+              escapepositions = NIL;
+            }
+            else {
+              token = stringSubsequence(string, start, i);
+            }
+            result = cons(cons(wrapString(token), cons(state, NIL)), result);
+          }
+          if (i >= end) {
+            break;
+          }
+          start = i;
+        }
+        state = newstate;
+        i = i + 1;
+      }
+      return (result->reverse());
+    }
   }
 }
 
@@ -2868,7 +3358,7 @@ InputStringStream* makeTokenizerStringStream(char* string) {
     TokenizerStreamState* state = new TokenizerStreamState();
     int length = strlen(string) + 1;
 
-    state->buffer = new (GC) char[length];
+    state->buffer = new (PointerFreeGC) char[length];
     state->bufferSize = length;
     state->cursor = length;
     state->end = length;
@@ -2946,9 +3436,10 @@ char* readLine(InputStream* stream) {
               tok_endoftokensP_ = readIntoTokenizerBuffer(tok_inputstream_, tok_streamstate_, tok_tokenstart_);
               tok_buffer_ = tok_streamstate_->buffer;
               tok_size_ = tok_streamstate_->bufferSize;
-              tok_cursor_ = mod(tok_streamstate_->cursor, tok_size_);
+              tok_cursor_ = integerMod(tok_streamstate_->cursor, tok_size_);
               tok_end_ = tok_streamstate_->end;
               if (tok_endoftokensP_) {
+                tok_checkpoint_ = tok_cursor_;
                 if (tok_nextstate_ == -1) {
                 }
                 else if (coerceWrappedBooleanToBoolean(((BooleanWrapper*)((tok_table_->legalEofStates->theArray)[tok_state_])))) {
@@ -3090,9 +3581,10 @@ char* readLine2(InputStream* stream, Keyword*& _Return1) {
                 tok_endoftokensP_ = readIntoTokenizerBuffer(tok_inputstream_, tok_streamstate_, tok_tokenstart_);
                 tok_buffer_ = tok_streamstate_->buffer;
                 tok_size_ = tok_streamstate_->bufferSize;
-                tok_cursor_ = mod(tok_streamstate_->cursor, tok_size_);
+                tok_cursor_ = integerMod(tok_streamstate_->cursor, tok_size_);
                 tok_end_ = tok_streamstate_->end;
                 if (tok_endoftokensP_) {
+                  tok_checkpoint_ = tok_cursor_;
                   if (tok_nextstate_ == -1) {
                   }
                   else if (coerceWrappedBooleanToBoolean(((BooleanWrapper*)((tok_table_->legalEofStates->theArray)[tok_state_])))) {
@@ -3399,7 +3891,7 @@ char* InputStream::streamToString() {
   { InputStream* from = this;
 
     { OutputStringStream* to = newOutputStringStream();
-      char* buffer = new (GC) char[oTOKENIZER_INITIAL_BUFFER_SIZEo];
+      char* buffer = new (PointerFreeGC) char[oTOKENIZER_INITIAL_BUFFER_SIZEo];
       int bytesRead = 0;
 
       for (;;) {
@@ -3602,20 +4094,31 @@ void helpStartupRead3() {
     KWD_READ_NONE = ((Keyword*)(internRigidSymbolWrtModule("NONE", NULL, 2)));
     SYM_READ_STELLA_GET_QUALIFIED_SYMBOL_SEPARATOR_POSITION_INTERNAL = ((Symbol*)(internRigidSymbolWrtModule("GET-QUALIFIED-SYMBOL-SEPARATOR-POSITION-INTERNAL", NULL, 0)));
     KWD_READ_FULLY_ESCAPED = ((Keyword*)(internRigidSymbolWrtModule("FULLY-ESCAPED", NULL, 2)));
+    SYM_READ_STELLA_GET_TOKEN_INTEGER = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-INTEGER", NULL, 0)));
+    SYM_READ_STELLA_GET_TOKEN_INTEGER_INTERNAL = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-INTEGER-INTERNAL", NULL, 0)));
+    SYM_READ_STELLA_GET_TOKEN_LONG_INTEGER = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-LONG-INTEGER", NULL, 0)));
+    SYM_READ_STELLA_GET_TOKEN_LONG_INTEGER_INTERNAL = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-LONG-INTEGER-INTERNAL", NULL, 0)));
+    SYM_READ_STELLA_GET_TOKEN_FLOAT = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-FLOAT", NULL, 0)));
+    SYM_READ_STELLA_GET_TOKEN_FLOAT_INTERNAL = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-FLOAT-INTERNAL", NULL, 0)));
+  }
+}
+
+void helpStartupRead4() {
+  {
     SGT_READ_STELLA_STELLA_TOKEN = ((Surrogate*)(internRigidSymbolWrtModule("STELLA-TOKEN", NULL, 1)));
     SYM_READ_STELLA_LOGICAL_TOKEN_TYPE = ((Symbol*)(internRigidSymbolWrtModule("LOGICAL-TOKEN-TYPE", NULL, 0)));
     SYM_READ_STELLA_MODULE = ((Symbol*)(internRigidSymbolWrtModule("MODULE", NULL, 0)));
     SYM_READ_STELLA_ESCAPE_MODE = ((Symbol*)(internRigidSymbolWrtModule("ESCAPE-MODE", NULL, 0)));
     KWD_READ_FULL = ((Keyword*)(internRigidSymbolWrtModule("FULL", NULL, 2)));
     KWD_READ_PARTIAL = ((Keyword*)(internRigidSymbolWrtModule("PARTIAL", NULL, 2)));
-  }
-}
-
-void helpStartupRead4() {
-  {
     KWD_READ_ESCAPED = ((Keyword*)(internRigidSymbolWrtModule("ESCAPED", NULL, 2)));
     SYM_READ_STELLA_a = ((Symbol*)(internRigidSymbolWrtModule("&", NULL, 0)));
     SYM_READ_STELLA_aa = ((Symbol*)(internRigidSymbolWrtModule("&&", NULL, 0)));
+    KWD_READ_TEXT = ((Keyword*)(internRigidSymbolWrtModule("TEXT", NULL, 2)));
+    KWD_READ_PUNCTUATION = ((Keyword*)(internRigidSymbolWrtModule("PUNCTUATION", NULL, 2)));
+    KWD_READ_QUOTE = ((Keyword*)(internRigidSymbolWrtModule("QUOTE", NULL, 2)));
+    KWD_READ_ESCAPE = ((Keyword*)(internRigidSymbolWrtModule("ESCAPE", NULL, 2)));
+    SGT_READ_STELLA_F_TOKENIZE_STRING_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-TOKENIZE-STRING-MEMO-TABLE-000", NULL, 1)));
     KWD_READ_INITIAL_LINEFEED = ((Keyword*)(internRigidSymbolWrtModule("INITIAL-LINEFEED", NULL, 2)));
     KWD_READ_INITIAL_RETURN = ((Keyword*)(internRigidSymbolWrtModule("INITIAL-RETURN", NULL, 2)));
     KWD_READ_LINEFEED = ((Keyword*)(internRigidSymbolWrtModule("LINEFEED", NULL, 2)));
@@ -3638,26 +4141,28 @@ void helpStartupRead5() {
   {
     oSTELLA_TOKENIZER_TABLE_DEFINITIONo = listO(65, listO(6, KWD_READ_START, KWD_READ_INCLUDE, KWD_READ_DELIMITER, KWD_READ_INCLUDE, KWD_READ_ATOM, NIL), listO(31, KWD_READ_DELIMITER, SYM_READ_STELLA_o, wrapString("("), KWD_READ_OPEN_PAREN, SYM_READ_STELLA_o, wrapString(")"), KWD_READ_CLOSE_PAREN, SYM_READ_STELLA_o, wrapString("\""), listO(3, KWD_READ_OPEN_STRING, KWD_READ_STRING, NIL), SYM_READ_STELLA_o, wrapString("'"), KWD_READ_SINGLE_QUOTE, SYM_READ_STELLA_o, wrapString("`"), KWD_READ_BACK_QUOTE, SYM_READ_STELLA_o, wrapString(","), KWD_READ_COMMA, SYM_READ_STELLA_x, wrapString(";"), KWD_READ_COMMENT, SYM_READ_STELLA_x, wrapString("#"), KWD_READ_HASH, SYM_READ_STELLA_x, listO(5, wrapCharacter(' '), wrapCharacter('\t'), wrapCharacter('\n'), wrapCharacter('\r'), NIL), KWD_READ_WHITE_SPACE, KWD_READ_EOF, KWD_READ_EOF, NIL), listO(4, KWD_READ_WHITE_SPACE, KWD_READ_INCLUDE, KWD_READ_START, NIL), listO(8, KWD_READ_COMMENT, listO(3, wrapCharacter('\n'), wrapCharacter('\r'), NIL), KWD_READ_START, KWD_READ_EOF, KWD_READ_EOF, KWD_READ_OTHERWISE, KWD_READ_COMMENT, NIL), listO(8, KWD_READ_PAREN_COMMENT, wrapString("\\"), KWD_READ_PAREN_COMMENT_ESCAPE, wrapString("|"), KWD_READ_PAREN_COMMENT_BAR, KWD_READ_OTHERWISE, KWD_READ_PAREN_COMMENT, NIL), listO(4, KWD_READ_PAREN_COMMENT_ESCAPE, KWD_READ_ANY, KWD_READ_PAREN_COMMENT, NIL), listO(10, KWD_READ_PAREN_COMMENT_BAR, wrapString("#"), KWD_READ_START, wrapString("\\"), KWD_READ_PAREN_COMMENT_ESCAPE, wrapString("|"), KWD_READ_PAREN_COMMENT_BAR, KWD_READ_OTHERWISE, KWD_READ_PAREN_COMMENT, NIL), listO(4, KWD_READ_OPEN_PAREN, KWD_READ_INCLUDE, KWD_READ_START, NIL), listO(4, KWD_READ_CLOSE_PAREN, KWD_READ_INCLUDE, KWD_READ_START, NIL), listO(4, KWD_READ_SINGLE_QUOTE, KWD_READ_INCLUDE, KWD_READ_START, NIL), listO(4, KWD_READ_BACK_QUOTE, KWD_READ_INCLUDE, KWD_READ_START, NIL), listO(33, KWD_READ_COMMA, wrapString("."), KWD_READ_COMMA_SPLICE, KWD_READ_INCLUDE, KWD_READ_DELIMITER, SYM_READ_STELLA_o, wrapString("-+"), listO(3, KWD_READ_SYMBOL_OR_SIGNED_NUMBER, KWD_READ_SYMBOL, NIL), SYM_READ_STELLA_o, wrapString("0123456789"), listO(3, KWD_READ_SYMBOL_OR_NUMBER, KWD_READ_INTEGER, NIL), SYM_READ_STELLA_o, wrapString("cC"), listO(3, KWD_READ_SYMBOL_OR_CL_SYMBOL, KWD_READ_SYMBOL, NIL), SYM_READ_STELLA_o, wrapString("|"), listO(3, KWD_READ_OPEN_FULLY_ESCAPED_SYMBOL, KWD_READ_FULLY_ESCAPED_SYMBOL, NIL), SYM_READ_STELLA_o, wrapString("\\"), KWD_READ_ESCAPED_SYMBOL_ESCAPE, SYM_READ_STELLA_o, wrapString("/"), KWD_READ_QUALIFIED_NAME, SYM_READ_STELLA_o, wrapString(":"), listO(3, KWD_READ_OPEN_KEYWORD, KWD_READ_KEYWORD, NIL), SYM_READ_STELLA_o, wrapString("@"), listO(3, KWD_READ_OPEN_SURROGATE, KWD_READ_SURROGATE, NIL), SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_SYMBOL, NIL), listO(4, KWD_READ_COMMA_SPLICE, KWD_READ_INCLUDE, KWD_READ_START, NIL), listO(9, KWD_READ_OPEN_STRING, SYM_READ_STELLA_o, wrapString("\""), KWD_READ_CLOSE_STRING, wrapString("\\"), KWD_READ_STRING_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_STRING, NIL), listO(9, KWD_READ_STRING, SYM_READ_STELLA_o, wrapString("\""), KWD_READ_CLOSE_STRING, wrapString("\\"), KWD_READ_STRING_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_STRING, NIL), listO(4, KWD_READ_CLOSE_STRING, KWD_READ_INCLUDE, KWD_READ_START, NIL), listO(4, KWD_READ_STRING_ESCAPE, KWD_READ_ANY, KWD_READ_ESCAPED_STRING, NIL), listO(9, KWD_READ_ESCAPED_STRING, SYM_READ_STELLA_o, wrapString("\""), KWD_READ_CLOSE_STRING, wrapString("\\"), KWD_READ_STRING_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_ESCAPED_STRING, NIL), listO(6, KWD_READ_HASH, wrapString("\\"), KWD_READ_CHARACTER_CONSTANT, wrapString("|"), KWD_READ_PAREN_COMMENT, NIL), listO(5, KWD_READ_CHARACTER_CONSTANT, SYM_READ_STELLA_o, KWD_READ_ANY, KWD_READ_CHARACTER, NIL), listO(6, KWD_READ_CHARACTER, KWD_READ_INCLUDE, KWD_READ_DELIMITER, KWD_READ_OTHERWISE, KWD_READ_CHARACTER, NIL), listO(32, KWD_READ_ATOM, SYM_READ_STELLA_o, wrapString("-+"), listO(3, KWD_READ_SYMBOL_OR_SIGNED_NUMBER, KWD_READ_SYMBOL, NIL), SYM_READ_STELLA_o, wrapString("0123456789"), listO(3, KWD_READ_SYMBOL_OR_NUMBER, KWD_READ_INTEGER, NIL), SYM_READ_STELLA_o, wrapString("."), listO(3, KWD_READ_SYMBOL_OR_MANTISSA, KWD_READ_SYMBOL, NIL), SYM_READ_STELLA_o, wrapString("cC"), listO(3, KWD_READ_SYMBOL_OR_CL_SYMBOL, KWD_READ_SYMBOL, NIL), SYM_READ_STELLA_o, wrapString("|"), listO(3, KWD_READ_OPEN_FULLY_ESCAPED_SYMBOL, KWD_READ_FULLY_ESCAPED_SYMBOL, NIL), SYM_READ_STELLA_o, wrapString("\\"), KWD_READ_ESCAPED_SYMBOL_ESCAPE, SYM_READ_STELLA_o, wrapString("/"), KWD_READ_QUALIFIED_NAME, SYM_READ_STELLA_o, wrapString(":"), listO(3, KWD_READ_OPEN_KEYWORD, KWD_READ_KEYWORD, NIL), SYM_READ_STELLA_o, wrapString("@"), listO(3, KWD_READ_OPEN_SURROGATE, KWD_READ_SURROGATE, NIL), SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_SYMBOL, NIL), listO(16, KWD_READ_SYMBOL_OR_SIGNED_NUMBER, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/"), KWD_READ_QUALIFIED_NAME, wrapString("\\"), KWD_READ_ESCAPED_SYMBOL_ESCAPE, wrapString("0123456789"), listO(3, KWD_READ_SYMBOL_OR_NUMBER, KWD_READ_INTEGER, NIL), wrapString("."), listO(3, KWD_READ_SYMBOL_OR_MANTISSA, KWD_READ_SYMBOL, NIL), wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_SYMBOL, NIL), listO(18, KWD_READ_SYMBOL_OR_NUMBER, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/"), KWD_READ_QUALIFIED_NAME, wrapString("\\"), KWD_READ_ESCAPED_SYMBOL_ESCAPE, wrapString("0123456789"), listO(3, KWD_READ_SYMBOL_OR_NUMBER, KWD_READ_INTEGER, NIL), wrapString("."), listO(3, KWD_READ_SYMBOL_OR_MANTISSA2, KWD_READ_FLOAT, NIL), wrapString("eE"), listO(3, KWD_READ_SYMBOL_OR_EXPONENT_DELIMITER, KWD_READ_SYMBOL, NIL), wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_SYMBOL, NIL), listO(16, KWD_READ_SYMBOL_OR_MANTISSA, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/"), KWD_READ_QUALIFIED_NAME, wrapString("\\"), KWD_READ_ESCAPED_SYMBOL_ESCAPE, wrapString("0123456789"), listO(3, KWD_READ_SYMBOL_OR_MANTISSA2, KWD_READ_FLOAT, NIL), wrapString("eE"), listO(3, KWD_READ_SYMBOL_OR_EXPONENT_DELIMITER, KWD_READ_SYMBOL, NIL), wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_SYMBOL, NIL), listO(4, KWD_READ_SYMBOL_OR_MANTISSA2, KWD_READ_INCLUDE, KWD_READ_SYMBOL_OR_MANTISSA, NIL), listO(16, KWD_READ_SYMBOL_OR_EXPONENT_DELIMITER, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/"), KWD_READ_QUALIFIED_NAME, wrapString("\\"), KWD_READ_ESCAPED_SYMBOL_ESCAPE, wrapString("+-"), listO(3, KWD_READ_SYMBOL_OR_EXPONENT, KWD_READ_SYMBOL, NIL), wrapString("0123456789"), listO(3, KWD_READ_SYMBOL_OR_EXPONENT2, KWD_READ_FLOAT, NIL), wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_SYMBOL, NIL), listO(14, KWD_READ_SYMBOL_OR_EXPONENT, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/"), KWD_READ_QUALIFIED_NAME, wrapString("\\"), KWD_READ_ESCAPED_SYMBOL_ESCAPE, wrapString("0123456789"), listO(3, KWD_READ_SYMBOL_OR_EXPONENT2, KWD_READ_FLOAT, NIL), wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_SYMBOL, NIL), listO(4, KWD_READ_SYMBOL_OR_EXPONENT2, KWD_READ_INCLUDE, KWD_READ_SYMBOL_OR_EXPONENT, NIL), listO(14, KWD_READ_SYMBOL_OR_CL_SYMBOL, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/"), KWD_READ_QUALIFIED_NAME, wrapString("\\"), KWD_READ_ESCAPED_SYMBOL_ESCAPE, wrapString("lL"), listO(3, KWD_READ_SYMBOL_OR_CL_SYMBOL2, KWD_READ_SYMBOL, NIL), wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_SYMBOL, NIL), listO(14, KWD_READ_SYMBOL_OR_CL_SYMBOL2, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/"), KWD_READ_QUALIFIED_NAME, wrapString("\\"), KWD_READ_ESCAPED_SYMBOL_ESCAPE, wrapString(":"), listO(3, KWD_READ_SYMBOL_OR_CL_SYMBOL3, KWD_READ_SYMBOL, NIL), wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_SYMBOL, NIL), listO(8, KWD_READ_SYMBOL_OR_CL_SYMBOL3, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_CL_SYMBOL, NIL), listO(8, KWD_READ_CL_SYMBOL, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_CL_SYMBOL, NIL), listO(4, KWD_READ_ESCAPED_SYMBOL_ESCAPE, KWD_READ_ANY, KWD_READ_ESCAPED_SYMBOL, NIL), listO(10, KWD_READ_ESCAPED_SYMBOL, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/|"), KWD_READ_ERROR, wrapString("\\"), KWD_READ_ESCAPED_SYMBOL_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_ESCAPED_SYMBOL, NIL), listO(9, KWD_READ_OPEN_FULLY_ESCAPED_SYMBOL, SYM_READ_STELLA_o, wrapString("|"), KWD_READ_CLOSE_FULLY_ESCAPED_NAME, wrapString("\\"), KWD_READ_FULLY_ESCAPED_SYMBOL_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_FULLY_ESCAPED_SYMBOL, NIL), listO(4, KWD_READ_FULLY_ESCAPED_SYMBOL_ESCAPE, KWD_READ_ANY, KWD_READ_FULLY_ESCAPED_SYMBOL, NIL), listO(9, KWD_READ_FULLY_ESCAPED_SYMBOL, SYM_READ_STELLA_o, wrapString("|"), KWD_READ_CLOSE_FULLY_ESCAPED_NAME, wrapString("\\"), KWD_READ_FULLY_ESCAPED_SYMBOL_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_FULLY_ESCAPED_SYMBOL, NIL), listO(4, KWD_READ_CLOSE_FULLY_ESCAPED_NAME, KWD_READ_INCLUDE, KWD_READ_START, NIL), listO(12, KWD_READ_SYMBOL, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/"), KWD_READ_QUALIFIED_NAME, wrapString("\\"), KWD_READ_ESCAPED_SYMBOL_ESCAPE, wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_SYMBOL, NIL), listO(10, KWD_READ_OPEN_KEYWORD, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("|"), KWD_READ_FULLY_ESCAPED_KEYWORD, wrapString("\\"), KWD_READ_ESCAPED_KEYWORD_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_KEYWORD, NIL), listO(10, KWD_READ_KEYWORD, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("\\"), KWD_READ_ESCAPED_KEYWORD_ESCAPE, wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_KEYWORD, NIL), listO(4, KWD_READ_ESCAPED_KEYWORD_ESCAPE, KWD_READ_ANY, KWD_READ_ESCAPED_KEYWORD, NIL), listO(10, KWD_READ_ESCAPED_KEYWORD, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("\\"), KWD_READ_ESCAPED_KEYWORD_ESCAPE, wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_ESCAPED_KEYWORD, NIL), listO(9, KWD_READ_FULLY_ESCAPED_KEYWORD, SYM_READ_STELLA_o, wrapString("|"), KWD_READ_CLOSE_FULLY_ESCAPED_NAME, wrapString("\\"), KWD_READ_FULLY_ESCAPED_KEYWORD_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_FULLY_ESCAPED_KEYWORD, NIL), listO(4, KWD_READ_FULLY_ESCAPED_KEYWORD_ESCAPE, KWD_READ_ANY, KWD_READ_FULLY_ESCAPED_KEYWORD, NIL), listO(10, KWD_READ_OPEN_SURROGATE, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("|"), KWD_READ_FULLY_ESCAPED_SURROGATE, wrapString("\\"), KWD_READ_ESCAPED_SURROGATE_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_SURROGATE, NIL), listO(10, KWD_READ_SURROGATE, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/|"), KWD_READ_ERROR, wrapString("\\"), KWD_READ_ESCAPED_SURROGATE_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_SURROGATE, NIL), listO(10, KWD_READ_ESCAPED_SURROGATE, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/|"), KWD_READ_ERROR, wrapString("\\"), KWD_READ_ESCAPED_SURROGATE_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_ESCAPED_SURROGATE, NIL), listO(4, KWD_READ_ESCAPED_SURROGATE_ESCAPE, KWD_READ_ANY, KWD_READ_ESCAPED_SURROGATE, NIL), listO(9, KWD_READ_FULLY_ESCAPED_SURROGATE, SYM_READ_STELLA_o, wrapString("|"), KWD_READ_CLOSE_FULLY_ESCAPED_NAME, wrapString("\\"), KWD_READ_FULLY_ESCAPED_SURROGATE_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_FULLY_ESCAPED_SURROGATE, NIL), listO(4, KWD_READ_FULLY_ESCAPED_SURROGATE_ESCAPE, KWD_READ_ANY, KWD_READ_FULLY_ESCAPED_SURROGATE, NIL), listO(16, KWD_READ_QUALIFIED_NAME, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("@"), KWD_READ_QUALIFIED_SURROGATE, wrapString(":"), KWD_READ_ERROR, wrapString("\\"), KWD_READ_QUALIFIED_ESCAPED_SYMBOL_ESCAPE, wrapString("|"), KWD_READ_QUALIFIED_FULLY_ESCAPED_SYMBOL, wrapString("/"), KWD_READ_QUALIFIED_NAME, KWD_READ_OTHERWISE, KWD_READ_QUALIFIED_SYMBOL, NIL), listO(12, KWD_READ_QUALIFIED_SYMBOL, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/"), KWD_READ_QUALIFIED_NAME, wrapString("\\"), KWD_READ_QUALIFIED_ESCAPED_SYMBOL_ESCAPE, wrapString("|"), KWD_READ_ERROR, KWD_READ_OTHERWISE, KWD_READ_QUALIFIED_SYMBOL, NIL), listO(12, KWD_READ_QUALIFIED_SURROGATE, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/"), KWD_READ_ERROR, wrapString("\\"), KWD_READ_QUALIFIED_ESCAPED_SURROGATE_ESCAPE, wrapString("|"), KWD_READ_QUALIFIED_FULLY_ESCAPED_SURROGATE, KWD_READ_OTHERWISE, KWD_READ_QUALIFIED_SURROGATE, NIL), listO(10, KWD_READ_QUALIFIED_ESCAPED_SYMBOL, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/|"), KWD_READ_ERROR, wrapString("\\"), KWD_READ_QUALIFIED_ESCAPED_SYMBOL_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_QUALIFIED_ESCAPED_SYMBOL, NIL), listO(4, KWD_READ_QUALIFIED_ESCAPED_SYMBOL_ESCAPE, KWD_READ_ANY, KWD_READ_QUALIFIED_ESCAPED_SYMBOL, NIL), listO(10, KWD_READ_QUALIFIED_ESCAPED_SURROGATE, KWD_READ_INCLUDE, KWD_READ_DELIMITER, wrapString("/|"), KWD_READ_ERROR, wrapString("\\"), KWD_READ_QUALIFIED_ESCAPED_SURROGATE_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_QUALIFIED_ESCAPED_SURROGATE, NIL), listO(4, KWD_READ_QUALIFIED_ESCAPED_SURROGATE_ESCAPE, KWD_READ_ANY, KWD_READ_QUALIFIED_ESCAPED_SURROGATE, NIL), listO(9, KWD_READ_QUALIFIED_FULLY_ESCAPED_SYMBOL, SYM_READ_STELLA_o, wrapString("|"), KWD_READ_CLOSE_FULLY_ESCAPED_NAME, wrapString("\\"), KWD_READ_QUALIFIED_FULLY_ESCAPED_SYMBOL_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_QUALIFIED_FULLY_ESCAPED_SYMBOL, NIL), listO(4, KWD_READ_QUALIFIED_FULLY_ESCAPED_SYMBOL_ESCAPE, KWD_READ_ANY, KWD_READ_QUALIFIED_FULLY_ESCAPED_SYMBOL, NIL), listO(9, KWD_READ_QUALIFIED_FULLY_ESCAPED_SURROGATE, SYM_READ_STELLA_o, wrapString("|"), KWD_READ_CLOSE_FULLY_ESCAPED_NAME, wrapString("\\"), KWD_READ_QUALIFIED_FULLY_ESCAPED_SURROGATE_ESCAPE, KWD_READ_OTHERWISE, KWD_READ_QUALIFIED_FULLY_ESCAPED_SURROGATE, NIL), listO(4, KWD_READ_QUALIFIED_FULLY_ESCAPED_SURROGATE_ESCAPE, KWD_READ_ANY, KWD_READ_QUALIFIED_FULLY_ESCAPED_SURROGATE, NIL), listO(4, KWD_READ_ERROR, KWD_READ_INCLUDE, KWD_READ_START, NIL), NIL);
     oSTELLA_TOKENIZER_TABLEo = unstringifyTokenizerTable("32768|EJEJEJEJEJEJEJEJEJKMKMEJEJKMEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMEJEIJMEJEJEJFICIDIEJLIHILINIBJMIMIMIMIMIMIMIMIMIMICJIMEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJGIEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMKMEJEJKMEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMEJEIJMEJEJEJFICIDIEJLIHILINIBJMIMIMIMIMIMIMIMIMIMICJIMEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJGIEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJE" "JEJEJEJEJEJEJEJEJEJEJEJEJKMKMEJEJKMEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMEJEIJMEJEJEJFICIDIEJLIHILINIBJMIMIMIMIMIMIMIMIMIMICJIMEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJGIEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMKMEJEJKMEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMEJEIJMEJEJEJFICIDIEJLIHILINIBJMIMIMIMIMIMIMIMIMIMICJIMEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJGIEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJ" "EJEJEJEJMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBKJMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBLBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBEJEJEJEJEJEJEJEJEJKMKMEJEJKMEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMEJEIJMEJEJEJFICIDIEJLIHILINIBJMIMIMIMIMIMIMIMIMIMICJIMEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJGIEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJE" "JEJEJEJEJEJEJEJEJEJEJEJEJEJKMKMEJEJKMEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMEJEIJMEJEJEJFICIDIEJLIHILINIBJMIMIMIMIMIMIMIMIMIMICJIMEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJGIEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMKMEJEJKMEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMEJEIJMEJEJEJFICIDIEJLIHILIJBBJMIMIMIMIMIMIMIMIMIMICJIMEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJGIEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJ" "EJEJEJEJEJIAIAIAIAIAIAIAIAIAIABAIAIABAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" "AAAAAAAAAAAEJEJEJEJEJEJEJEJEJKMKMEJEJKMEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMEJEIJMEJEJEJFICIDIEJLIHILINIBJMIMIMIMIMIMIMIMIMIMICJIMEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJGIEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEBEBEBEBEBEBEBEBEBKMKMEBEBKMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMEBEIJMEBEBEBFICIDIEBEBHIEBNABBMAMAMAMAMAMAMAMAMAMAEBIMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBABEBEBEBGIEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBAAEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEB" "EBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMKMEBEBKMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMEBEIJMEBEBEBFICIDIEBEBHIEBBCBBMAMAMAMAMAMAMAMAMAMAEBIMEBEBEBEBEBEBEBEBEBCCEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBABEBEBEBGIEBEBEBEBCCEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBAAEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMKMEBEBKMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMEBEIJMEBEBEBFICIDIEBEBHIEBEBBBBCBCBCBCBCBCBCBCBCBCEBIMEBEBEBEBEBEBEBEBEBCCEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBABEBEBEBGIEBEBEBEBCCEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBAAEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBE" "BEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMKMEBEBKMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMEBEIJMEBEBEBFICIDIEBEBHIEBEBBBEBEBEBEBEBEBEBEBEBEBEBIMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBFCEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBABEBEBEBGIEBEBEBEBEBEBEBEBEBEBEBFCEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBAAEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCKCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCJKLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLC" "LCLCLCLCLCLCLCICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICJDJDJDJDJDJDJDJDJDKMKMJDJDKMJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDKMJDEIJMJDJDJDFICIDIJDJDHIJDJDBBJDJDJDJDJDJDJDJDJDJDAAIMJDJDJDJDGDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDHDJDJDJDGIJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDIDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJ" "DJDJDJDJDJDJDJDOCOCOCOCOCOCOCOCOCKMKMOCOCKMOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCKMOCEIJMOCOCOCFICIDIOCOCHIOCOCOCOCOCOCOCOCOCOCOCOCOCOCIMOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCNCOCOCOCGIOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCMCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCDDDDDDDDDDDDDDDDDDKMKMDDDDKMDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDKMDDEIJMDDDDDDFICIDIDDDDHIDDDDDDDDDDDDDDDDDDDDDDDDDDDDIMDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDCDDDDDDDGIDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDBDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" "DDDDDDDDDDDDDDDDEBEBEBEBEBEBEBEBEBKMKMEBEBKMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMEBEIJMEBEBEBFICIDIEBEBHIEBEBBBEBEBEBEBEBEBEBEBEBEBEBIMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBABEBEBEBGIEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBAAEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBAAAAAAAAAAAAAAAAAAKMKMAAAAKMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKMAAEIJMAAAAAAFICIDIAAAAHIAAAAAAAAAAAAAAAAAAAAAAAAAAAAIMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" "AAAAAAAAAAAAAAAAAGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBHBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBIBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGB" "GBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBBAGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBHBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBIBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBGBEJEJEJEJEJEJEJEJEJKMKMEJEJKMEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMEJEIJMEJEJEJFICIDIEJLIHILINIBJMIMIMIMIMIMIMIMIMIMICJIMEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJGIEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJE" "JEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMKMEJEJKMEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMEJEIJMEJEJEJFICIDIEJLIHILINIBJMIMIMIMIMIMIMIMIMIMICJIMEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJGIEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNB" "NBNBNBNBNBNBNBNBNBNBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBKJMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBLBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBMBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBKJNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBLBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBNBN" "BNBNBNBNBNBNBNBNBNBNBPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPJPBPBPBPBPBPBPBPBPBKMKMPBPBKMPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBKMPBEIJMPBPBPBFICIDIPBPBHIPBPBPBPBPBPBPBPBPBPBPBPBPBPBIMPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBGIPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPBPB" "PBPBPBPBPBPBPBPBPBPBPBEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJLIEJLINIBJMIMIMIMIMIMIMIMIMIMICJEJEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJEJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEBEBEBEBEBEBEBEBEBKMKMEBEBKMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMEBEIJMEBEBEBFICIDIEBEBHIEBEBBBBCBCBCBCBCBCBCBCBCBCEBIMEBEBEBEBEBEBEBEBEBCCEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBABEBEBEBGIEBEBEBEBCCEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBAAEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBE" "BEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMKMEBEBKMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMEBEIJMEBEBEBFICIDIEBDCHIDCEBBBECECECECECECECECECECEBIMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBABEBEBEBGIEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBAAEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMKMEBEBKMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMEBEIJMEBEBEBFICIDIEBEBHIEBEBBBECECECECECECECECECECEBIMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBABEBEBEBGIEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBAAEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEB" "EBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMKMEBEBKMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMEBEIJMEBEBEBFICIDIEBEBHIEBEBBBECECECECECECECECECECEBIMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBABEBEBEBGIEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBAAEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMKMEBEBKMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBKMEBEIJMEBEBEBFICIDIEBEBHIEBEBBBEBEBEBEBEBEBEBEBEBEBGCIMEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBABEBEBEBGIEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBAAEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBEBE" "BEBEBEBEBEBEBEBEBEBEBEBEBHCHCHCHCHCHCHCHCHCKMKMHCHCKMHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCKMHCEIJMHCHCHCFICIDIHCHCHIHCHCHCHCHCHCHCHCHCHCHCHCHCHCIMHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCGIHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCAAHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCKMKMHCHCKMHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCKMHCEIJMHCHCHCFICIDIHCHCHIHCHCHCHCHCHCHCHCHCHCHCHCHCHCIMHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCGIHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCAAHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHCHC" "HCHCHCHCHCHCHCHCHCHCHCHCHCICICICICICICICICICKMKMICICKMICICICICICICICICICICICICICICICICICICKMICEIJMICICICFICIDIICICHIICICAAICICICICICICICICICICICIMICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICABICICICGIICICICICICICICICICICICICICICICICICICICICICICICICICICICAAICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICICEJEJEJEJEJEJEJEJEJKMKMEJEJKMEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJKMEJEIJMEJEJEJFICIDIEJLIHILINIBJMIMIMIMIMIMIMIMIMIMICJIMEJEJEJEJDJEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJAJEJEJEJGIEJEJOIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJPIEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJEJE" "JEJEJEJEJEJEJEJEJEJEJEJEJEJLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCKCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCJKLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLCLC" "LCLCLCLCLCLCLCLCLCLCLCLCLCLCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCADMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCJKMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCP" "CPCPCPCPCPCPCPCPCPCPCPCPCPCPCOCOCOCOCOCOCOCOCOCKMKMOCOCKMOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCKMOCEIJMOCOCOCFICIDIOCOCHIOCOCOCOCOCOCOCOCOCOCOCOCOCOCIMOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCNCOCOCOCGIOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCAAOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCOCPCPCPCPCPCPCPCPCPCKMKMPCPCKMPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCKMPCEIJMPCPCPCFICIDIPCPCHIPCPCPCPCPCPCPCPCPCPCPCPCPCPCIMPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCNCPCPCPCGIPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCAAPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPCPC" "PCPCPCPCPCPCPCPCPCPCPCPCPCPCPCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDFDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDJKBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDB" "DBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDDDDDDDDDDDDDDDDDDDKMKMDDDDKMDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDKMDDEIJMDDDDDDFICIDIDDDDHIDDDDAADDDDDDDDDDDDDDDDDDDDDDIMDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDCDDDDDDDGIDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDAADDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEDEDEDEDEDEDEDEDEDKMKMEDEDKMEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDKMEDEIJMEDEDEDFICIDIEDEDHIEDEDAAEDEDEDEDEDEDEDEDEDEDEDIMEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDCDEDEDEDGIEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDAAEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDEDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDB" "DBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDBDGDGDGDGDGDGDGDGDGDKMKMGDGDKMGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDKMGDEIJMGDGDGDFICIDIGDGDHIGDGDAAGDGDGDGDGDGDGDGDGDGDGDIMGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDKDGDGDGDGIGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDLDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDGDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMD" "MDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDODIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDJKIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDJDJDJDJDJDJDJDJDJDKMKMJDJDKMJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDKMJDEIJMJDJDJDFICIDIJDJDHIJDJDBBJDJDJDJDJDJDJDJDJDJDJDIMJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDHDJDJDJDGIJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDAAJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJ" "DJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDJDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDPDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDJKLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLD" "LDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDMDMDMDMDMDMDMDMDMDKMKMMDMDKMMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDKMMDEIJMMDMDMDFICIDIMDMDHIMDMDAAMDMDMDMDMDMDMDMDMDMDMDIMMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDHDMDMDMDGIMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDAAMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDMDNDNDNDNDNDNDNDNDNDKMKMNDNDKMNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDKMNDEIJMNDNDNDFICIDINDNDHINDNDAANDNDNDNDNDNDNDNDNDNDNDIMNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDKDNDNDNDGINDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDAANDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDN" "DNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDNDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLD" "LDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLDLD|64|ERROR|START|OPEN-PAREN|CLOSE-PAREN|OPEN-STRING|SINGLE-QUOTE|BACK-QUOTE|COMMA|COMMENT|HASH|WHITE-SPACE|SYMBOL-OR-SIGNED-NUMBER|SYMBOL-OR-NUMBER|SYMBOL-OR-MANTISSA|SYMBOL-OR-CL-SYMBOL|OPEN-FULLY-ESCAPED-SYMBOL|ESCAPED-SYMBOL-ESCAPE|QUALIFIED-NAME|OPEN-KEYWORD|OPEN-SURROGATE|SYMBOL|DELIMITER|PAREN-COMMENT|PAREN-COMMENT-ESCAPE|PAREN-COMMENT-BAR|COMMA-SPLICE|CLOSE-STRING|STRING-ESCAPE|STRING|ESCAPED-STRING|CHARACTER-CONSTANT|CHARACTER|ATOM|SYMBOL-OR-MANTISSA2|SYMBOL-OR-EXPONENT-DELIMITER|SYMBOL-OR-EXPONENT|SYMBOL-OR-EXPONENT2|SYMBOL-OR-CL-SYMBOL2|SYMBOL-OR-CL-SYMBOL3|CL-SYMBOL|ESCAPED-SYMBOL|CLOSE-FULLY-ESCAPED-NAME|FULLY-ESCAPED-SYMBOL-ESCAPE|FULLY-ESCAPED-SYMBOL|FULLY-ESCAPED-KEYWORD|ESCAPED-KEYWORD-ESCAPE|KEYWORD|ESCAPED-KEYWORD|FULLY-ESCAPED-KEYWORD-ESCAPE|FULLY-ESCAPED-SURROGATE|ESCAPED-SURROGATE-ESCAPE|SURROGATE|ESCAPED-SURROGATE|FULLY-ESCAPED-SURROGATE-ESCAPE|QUALIFIED-SURROGATE|QUALIFIED-ESCAPED-SYMBOL-ESCAPE|QUALIFIED-FULLY-ESCAPED-SYMBOL|QUALIFIED-SYMBOL|QUALIFI" "ED-ESCAPED-SURROGATE-ESCAPE|QUALIFIED-FULLY-ESCAPED-SURROGATE|QUALIFIED-ESCAPED-SYMBOL|QUALIFIED-ESCAPED-SURROGATE|QUALIFIED-FULLY-ESCAPED-SYMBOL-ESCAPE|QUALIFIED-FULLY-ESCAPED-SURROGATE-ESCAPE|64|ERROR|START|OPEN-PAREN|CLOSE-PAREN|STRING|SINGLE-QUOTE|BACK-QUOTE|COMMA|COMMENT|HASH|WHITE-SPACE|SYMBOL|INTEGER|SYMBOL|SYMBOL|FULLY-ESCAPED-SYMBOL|ESCAPED-SYMBOL-ESCAPE|QUALIFIED-NAME|KEYWORD|SURROGATE|SYMBOL|DELIMITER|PAREN-COMMENT|PAREN-COMMENT-ESCAPE|PAREN-COMMENT-BAR|COMMA-SPLICE|CLOSE-STRING|STRING-ESCAPE|STRING|ESCAPED-STRING|CHARACTER-CONSTANT|CHARACTER|ATOM|FLOAT|SYMBOL|SYMBOL|FLOAT|SYMBOL|SYMBOL|CL-SYMBOL|ESCAPED-SYMBOL|CLOSE-FULLY-ESCAPED-NAME|FULLY-ESCAPED-SYMBOL-ESCAPE|FULLY-ESCAPED-SYMBOL|FULLY-ESCAPED-KEYWORD|ESCAPED-KEYWORD-ESCAPE|KEYWORD|ESCAPED-KEYWORD|FULLY-ESCAPED-KEYWORD-ESCAPE|FULLY-ESCAPED-SURROGATE|ESCAPED-SURROGATE-ESCAPE|SURROGATE|ESCAPED-SURROGATE|FULLY-ESCAPED-SURROGATE-ESCAPE|QUALIFIED-SURROGATE|QUALIFIED-ESCAPED-SYMBOL-ESCAPE|QUALIFIED-FULLY-ESCAPED-SYMBOL|QUALIFIED-SYMBOL|QUALIFIED-ESC" "APED-SURROGATE-ESCAPE|QUALIFIED-FULLY-ESCAPED-SURROGATE|QUALIFIED-ESCAPED-SYMBOL|QUALIFIED-ESCAPED-SURROGATE|QUALIFIED-FULLY-ESCAPED-SYMBOL-ESCAPE|QUALIFIED-FULLY-ESCAPED-SURROGATE-ESCAPE|64|TTTTFTTTTFTTTTTFFTTTTTFFFTTFFFFTFTTTTTTTTTFFFFTTFFFTTFTFFTFFTTFF|");
-    { PropertyList* self060 = newPropertyList();
+    { PropertyList* self065 = newPropertyList();
 
-      self060->thePlist = listO(63, KWD_READ_SYMBOL, KWD_READ_SYMBOL, KWD_READ_ESCAPED_SYMBOL, KWD_READ_SYMBOL, KWD_READ_FULLY_ESCAPED_SYMBOL, KWD_READ_SYMBOL, KWD_READ_QUALIFIED_SYMBOL, KWD_READ_SYMBOL, KWD_READ_QUALIFIED_ESCAPED_SYMBOL, KWD_READ_SYMBOL, KWD_READ_QUALIFIED_FULLY_ESCAPED_SYMBOL, KWD_READ_SYMBOL, KWD_READ_CL_SYMBOL, KWD_READ_SYMBOL, KWD_READ_SURROGATE, KWD_READ_SURROGATE, KWD_READ_ESCAPED_SURROGATE, KWD_READ_SURROGATE, KWD_READ_QUALIFIED_SURROGATE, KWD_READ_SURROGATE, KWD_READ_QUALIFIED_ESCAPED_SURROGATE, KWD_READ_SURROGATE, KWD_READ_FULLY_ESCAPED_SURROGATE, KWD_READ_SURROGATE, KWD_READ_QUALIFIED_FULLY_ESCAPED_SURROGATE, KWD_READ_SURROGATE, KWD_READ_KEYWORD, KWD_READ_KEYWORD, KWD_READ_ESCAPED_KEYWORD, KWD_READ_KEYWORD, KWD_READ_FULLY_ESCAPED_KEYWORD, KWD_READ_KEYWORD, KWD_READ_QUALIFIED_NAME, KWD_READ_QUALIFIED_NAME, KWD_READ_STRING, KWD_READ_STRING, KWD_READ_ESCAPED_STRING, KWD_READ_STRING, KWD_READ_INTEGER, KWD_READ_INTEGER, KWD_READ_FLOAT, KWD_READ_FLOAT, KWD_READ_CHARACTER, KWD_READ_CHARACTER, KWD_READ_OPEN_PAREN, KWD_READ_OPEN_PAREN, KWD_READ_CLOSE_PAREN, KWD_READ_CLOSE_PAREN, KWD_READ_SINGLE_QUOTE, KWD_READ_SINGLE_QUOTE, KWD_READ_BACK_QUOTE, KWD_READ_BACK_QUOTE, KWD_READ_COMMA, KWD_READ_COMMA, KWD_READ_COMMA_SPLICE, KWD_READ_COMMA_SPLICE, KWD_READ_CLOSE_STRING, KWD_READ_CLOSE_BALANCED_QUOTE, KWD_READ_CLOSE_FULLY_ESCAPED_NAME, KWD_READ_CLOSE_BALANCED_QUOTE, KWD_READ_ERROR, KWD_READ_ERROR, NIL);
-      oSTELLA_LOGICAL_STATE_NAMES_TABLEo = self060;
+      self065->thePlist = listO(63, KWD_READ_SYMBOL, KWD_READ_SYMBOL, KWD_READ_ESCAPED_SYMBOL, KWD_READ_SYMBOL, KWD_READ_FULLY_ESCAPED_SYMBOL, KWD_READ_SYMBOL, KWD_READ_QUALIFIED_SYMBOL, KWD_READ_SYMBOL, KWD_READ_QUALIFIED_ESCAPED_SYMBOL, KWD_READ_SYMBOL, KWD_READ_QUALIFIED_FULLY_ESCAPED_SYMBOL, KWD_READ_SYMBOL, KWD_READ_CL_SYMBOL, KWD_READ_SYMBOL, KWD_READ_SURROGATE, KWD_READ_SURROGATE, KWD_READ_ESCAPED_SURROGATE, KWD_READ_SURROGATE, KWD_READ_QUALIFIED_SURROGATE, KWD_READ_SURROGATE, KWD_READ_QUALIFIED_ESCAPED_SURROGATE, KWD_READ_SURROGATE, KWD_READ_FULLY_ESCAPED_SURROGATE, KWD_READ_SURROGATE, KWD_READ_QUALIFIED_FULLY_ESCAPED_SURROGATE, KWD_READ_SURROGATE, KWD_READ_KEYWORD, KWD_READ_KEYWORD, KWD_READ_ESCAPED_KEYWORD, KWD_READ_KEYWORD, KWD_READ_FULLY_ESCAPED_KEYWORD, KWD_READ_KEYWORD, KWD_READ_QUALIFIED_NAME, KWD_READ_QUALIFIED_NAME, KWD_READ_STRING, KWD_READ_STRING, KWD_READ_ESCAPED_STRING, KWD_READ_STRING, KWD_READ_INTEGER, KWD_READ_INTEGER, KWD_READ_FLOAT, KWD_READ_FLOAT, KWD_READ_CHARACTER, KWD_READ_CHARACTER, KWD_READ_OPEN_PAREN, KWD_READ_OPEN_PAREN, KWD_READ_CLOSE_PAREN, KWD_READ_CLOSE_PAREN, KWD_READ_SINGLE_QUOTE, KWD_READ_SINGLE_QUOTE, KWD_READ_BACK_QUOTE, KWD_READ_BACK_QUOTE, KWD_READ_COMMA, KWD_READ_COMMA, KWD_READ_COMMA_SPLICE, KWD_READ_COMMA_SPLICE, KWD_READ_CLOSE_STRING, KWD_READ_CLOSE_BALANCED_QUOTE, KWD_READ_CLOSE_FULLY_ESCAPED_NAME, KWD_READ_CLOSE_BALANCED_QUOTE, KWD_READ_ERROR, KWD_READ_ERROR, NIL);
+      oSTELLA_LOGICAL_STATE_NAMES_TABLEo = self065;
     }
-    oSTELLA_LOGICAL_STATE_NAMESo = newVector(oSTELLA_TOKENIZER_TABLEo->stateNames->length());
+    oSTELLA_LOGICAL_STATE_NAMESo = stella::newVector(oSTELLA_TOKENIZER_TABLEo->stateNames->length());
     { int i = NULL_INTEGER;
-      int iter062 = 0;
-      int upperBound063 = oSTELLA_LOGICAL_STATE_NAMESo->length() - 1;
+      int iter067 = 0;
+      int upperBound068 = oSTELLA_LOGICAL_STATE_NAMESo->length() - 1;
 
-      for  (i, iter062, upperBound063; 
-            iter062 <= upperBound063; 
-            iter062 = iter062 + 1) {
-        i = iter062;
+      for  (i, iter067, upperBound068; 
+            iter067 <= upperBound068; 
+            iter067 = iter067 + 1) {
+        i = iter067;
         (oSTELLA_LOGICAL_STATE_NAMESo->theArray)[i] = (((Keyword*)(oSTELLA_LOGICAL_STATE_NAMES_TABLEo->lookup(((Keyword*)(((GeneralizedSymbol*)((oSTELLA_TOKENIZER_TABLEo->stateNames->theArray)[i]))))))));
         if (!((boolean)(((Keyword*)((oSTELLA_LOGICAL_STATE_NAMESo->theArray)[i]))))) {
           (oSTELLA_LOGICAL_STATE_NAMESo->theArray)[i] = KWD_READ_ERROR;
         }
       }
     }
+    oGET_TOKEN_INTEGER_CHECKPOINTo = ((MOST_POSITIVE_INTEGER - 9) / 10);
+    oGET_TOKEN_LONG_INTEGER_CHECKPOINTo = ((MOST_POSITIVE_LONG_INTEGER - 9) / (10l));
     oSTELLA_TOKENIZER_WHITE_SPACE_STATEo = oSTELLA_TOKENIZER_TABLEo->stateNames->position(KWD_READ_WHITE_SPACE, 0);
     oREAD_LINE_TOKENIZER_TABLE_DEFINITIONo = listO(8, listO(13, KWD_READ_START, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_INITIAL_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_INITIAL_RETURN, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(4, KWD_READ_INITIAL_LINEFEED, KWD_READ_INCLUDE, KWD_READ_LINEFEED, NIL), listO(4, KWD_READ_INITIAL_RETURN, KWD_READ_INCLUDE, KWD_READ_RETURN, NIL), listO(13, KWD_READ_RETURN, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_INITIAL_RETURN, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(13, KWD_READ_LINEFEED, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_INITIAL_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_INITIAL_RETURN, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(13, KWD_READ_LINE, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_EOF, KWD_READ_EOF, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(4, KWD_READ_ERROR, KWD_READ_INCLUDE, KWD_READ_START, NIL), NIL);
     oREAD_LINE2_TOKENIZER_TABLE_DEFINITIONo = listO(7, listO(13, KWD_READ_START, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(13, KWD_READ_LINE, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_EOF, KWD_READ_EOF, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(13, KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_EOF, KWD_READ_EOF, cons(wrapCharacter('\n'), NIL), KWD_READ_RETURN_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(13, KWD_READ_LINEFEED, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(14, KWD_READ_RETURN_LINEFEED, SYM_READ_STELLA_o, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(4, KWD_READ_ERROR, KWD_READ_INCLUDE, KWD_READ_START, NIL), NIL);
@@ -3711,7 +4216,7 @@ void helpStartupRead7() {
     defineFunctionObject("PARSE-TOKENIZER-CHARACTER-SPEC", "(DEFUN (PARSE-TOKENIZER-CHARACTER-SPEC CHARACTER-SET) ((CHARACTERSPEC OBJECT) (ALLCHARACTERSETS (LIST OF CHARACTER-SET))))", ((cpp_function_code)(&parseTokenizerCharacterSpec)), NULL);
     defineFunctionObject("STRINGIFY-TOKENIZER-TABLE", "(DEFUN (STRINGIFY-TOKENIZER-TABLE STRING) ((TABLE TOKENIZER-TABLE)))", ((cpp_function_code)(&stringifyTokenizerTable)), NULL);
     defineFunctionObject("UNSTRINGIFY-TOKENIZER-TABLE", "(DEFUN (UNSTRINGIFY-TOKENIZER-TABLE TOKENIZER-TABLE) ((TABLE STRING)))", ((cpp_function_code)(&unstringifyTokenizerTable)), NULL);
-    defineFunctionObject("MAKE-TOKENIZER-BYTE-ARRAY", "(DEFUN (MAKE-TOKENIZER-BYTE-ARRAY TOKENIZER-BYTE-ARRAY) ((SIZE INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:MAKE-STRING SIZE) :CPP \"new (GC) char[size]\" :JAVA \"new byte[size]\")))", ((cpp_function_code)(&makeTokenizerByteArray)), NULL);
+    defineFunctionObject("MAKE-TOKENIZER-BYTE-ARRAY", "(DEFUN (MAKE-TOKENIZER-BYTE-ARRAY TOKENIZER-BYTE-ARRAY) ((SIZE INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:MAKE-STRING SIZE) :CPP \"new (PointerFreeGC) char[size]\" :JAVA \"new byte[size]\")))", ((cpp_function_code)(&makeTokenizerByteArray)), NULL);
     defineFunctionObject("STRING-TO-TOKENIZER-BYTE-ARRAY", "(DEFUN (STRING-TO-TOKENIZER-BYTE-ARRAY TOKENIZER-BYTE-ARRAY) ((STRING STRING)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP STRING :CPP \"string\" :JAVA \"string.getBytes()\")))", ((cpp_function_code)(&stringToTokenizerByteArray)), NULL);
     defineFunctionObject("TOKENIZER-BYTE-ARRAY-TO-STRING", "(DEFUN (TOKENIZER-BYTE-ARRAY-TO-STRING STRING) ((BYTES TOKENIZER-BYTE-ARRAY)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP BYTES :CPP \"bytes\" :JAVA \"new String(bytes)\")))", ((cpp_function_code)(&tokenizerByteArrayToString)), NULL);
     defineMethodObject("(DEFMETHOD (BYTE-ARRAY-NTH CHARACTER) ((BUFFER TOKENIZER-BYTE-ARRAY) (POSITION INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:SCHAR (CL:THE CL:SIMPLE-STRING BUFFER) (CL:THE CL:FIXNUM POSITION)) :CPP \"buffer[position]\" :JAVA \"((char) (0x00ff & buffer[position]))\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
@@ -3726,6 +4231,9 @@ void helpStartupRead7() {
     defineFunctionObject("READ-CHARACTER-FROM-TOKENIZER-BUFFER", "(DEFUN (READ-CHARACTER-FROM-TOKENIZER-BUFFER CHARACTER BOOLEAN) ((STREAM INPUT-STREAM)))", ((cpp_function_code)(&readCharacterFromTokenizerBuffer)), NULL);
     defineFunctionObject("UNREAD-CHARACTER-FROM-TOKENIZER-BUFFER", "(DEFUN UNREAD-CHARACTER-FROM-TOKENIZER-BUFFER ((CHAR CHARACTER) (STREAM INPUT-STREAM)))", ((cpp_function_code)(&unreadCharacterFromTokenizerBuffer)), NULL);
     defineFunctionObject("READ-LINE-FROM-TOKENIZER-BUFFER", "(DEFUN (READ-LINE-FROM-TOKENIZER-BUFFER STRING) ((STREAM INPUT-STREAM)))", ((cpp_function_code)(&readLineFromTokenizerBuffer)), NULL);
+    defineMethodObject("(DEFMETHOD (BUFFERED-INPUT-LENGTH INTEGER) ((STATE TOKENIZER-STREAM-STATE)))", ((cpp_method_code)(&TokenizerStreamState::bufferedInputLength)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD CLEAR ((STATE TOKENIZER-STREAM-STATE)))", ((cpp_method_code)(&TokenizerStreamState::clear)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD RESET ((STATE TOKENIZER-STREAM-STATE)))", ((cpp_method_code)(&TokenizerStreamState::reset)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (GET-SAVED-STATE INTEGER) ((STATE-OBJECT TOKENIZER-STREAM-STATE) (TABLE TOKENIZER-TABLE)))", ((cpp_method_code)(&TokenizerStreamState::getSavedState)), ((cpp_method_code)(NULL)));
     defineFunctionObject("WITH-TOKENIZER", "(DEFUN WITH-TOKENIZER ((TABLE OBJECT) (INPUT OBJECT) |&BODY| (BODY CONS)) :TYPE OBJECT :MACRO? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&withTokenizer)), NULL);
     defineFunctionObject("WITH-TOKENIZER-STRING-INPUT?", "(DEFUN (WITH-TOKENIZER-STRING-INPUT? BOOLEAN) ())", ((cpp_function_code)(&withTokenizerStringInputP)), NULL);
@@ -3743,23 +4251,20 @@ void helpStartupRead7() {
     defineFunctionObject("GET-STELLA-TOKEN-TYPE", "(DEFUN GET-STELLA-TOKEN-TYPE () :TYPE OBJECT :MACRO? TRUE)", ((cpp_function_code)(&getStellaTokenType)), NULL);
     defineFunctionObject("GET-QUALIFIED-SYMBOL-SEPARATOR-POSITION", "(DEFUN GET-QUALIFIED-SYMBOL-SEPARATOR-POSITION (|&BODY| (ESCAPEMODE CONS)) :TYPE OBJECT :MACRO? TRUE)", ((cpp_function_code)(&getQualifiedSymbolSeparatorPosition)), NULL);
     defineFunctionObject("GET-QUALIFIED-SYMBOL-SEPARATOR-POSITION-INTERNAL", "(DEFUN (GET-QUALIFIED-SYMBOL-SEPARATOR-POSITION-INTERNAL INTEGER) ((BUFFER TOKENIZER-BYTE-ARRAY) (TOKENSTART INTEGER) (TOKENEND INTEGER) (SIZE INTEGER) (ESCAPEMODE KEYWORD)))", ((cpp_function_code)(&getQualifiedSymbolSeparatorPositionInternal)), NULL);
+    defineFunctionObject("GET-TOKEN-INTEGER", "(DEFUN GET-TOKEN-INTEGER () :TYPE OBJECT :MACRO? TRUE :DOCUMENTATION \"User-level macro to access the most recently parsed token as an integer.\nThis assumes correct signed integer syntax and only checks for overflows.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getTokenInteger)), NULL);
+    defineFunctionObject("GET-TOKEN-INTEGER-INTERNAL", "(DEFUN (GET-TOKEN-INTEGER-INTERNAL INTEGER) ((BUFFER TOKENIZER-BYTE-ARRAY) (START INTEGER) (END INTEGER) (SIZE INTEGER)))", ((cpp_function_code)(&getTokenIntegerInternal)), NULL);
+    defineFunctionObject("GET-TOKEN-LONG-INTEGER", "(DEFUN GET-TOKEN-LONG-INTEGER () :TYPE OBJECT :MACRO? TRUE :DOCUMENTATION \"User-level macro to access the most recently parsed token as a long integer.\nThis assumes correct signed long-integer syntax and only checks for overflows.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getTokenLongInteger)), NULL);
+    defineFunctionObject("GET-TOKEN-LONG-INTEGER-INTERNAL", "(DEFUN (GET-TOKEN-LONG-INTEGER-INTERNAL LONG-INTEGER) ((BUFFER TOKENIZER-BYTE-ARRAY) (START INTEGER) (END INTEGER) (SIZE INTEGER)))", ((cpp_function_code)(&getTokenLongIntegerInternal)), NULL);
+    defineFunctionObject("GET-TOKEN-FLOAT", "(DEFUN GET-TOKEN-FLOAT () :TYPE OBJECT :MACRO? TRUE :DOCUMENTATION \"User-level macro to access the most recently parsed token as a float.\nThis assumes correct signed float syntax and only checks for overflows.\nThe main benefit for this is that it doesn't generate strings and wrappers.\nFloat parsing and conversion is generally hairy and we are probably not\ncovering all special cases here; but we are fast :-)\" :PUBLIC? TRUE)", ((cpp_function_code)(&getTokenFloat)), NULL);
+    defineFunctionObject("GET-TOKEN-FLOAT-INTERNAL", "(DEFUN (GET-TOKEN-FLOAT-INTERNAL FLOAT) ((BUFFER TOKENIZER-BYTE-ARRAY) (START INTEGER) (END INTEGER) (SIZE INTEGER)))", ((cpp_function_code)(&getTokenFloatInternal)), NULL);
     defineFunctionObject("TOKENIZE-S-EXPRESSION", "(DEFUN (TOKENIZE-S-EXPRESSION STELLA-TOKEN) ((STREAM INPUT-STREAM) (TOKENLIST STELLA-TOKEN)))", ((cpp_function_code)(&tokenizeSExpression)), NULL);
     defineFunctionObject("PARSE-STELLA-NAME", "(DEFUN (PARSE-STELLA-NAME STRING STRING KEYWORD) ((NAME STRING) (ENABLECASECONVERSION? BOOLEAN)) :DOCUMENTATION \"Parse the printed representation `name' of a STELLA symbol, surrogate or\nkeyword and return its symbol name, module name and type (which is either\n:SYMBOL, :SURROGATE or :KEYWORD).  `name' can be qualified and must use the\nexact same syntax and escape characters that would be used if it were to be\nread by `read-s-expression-from-string' (or `unstringify').  If\n`enableCaseConversion?' is TRUE, the returned symbol name will be upcased if\nthe current module is case-insensitive; otherwise, it will be returned as is.\nRaises a read exception if `name' does not represent a symbol.\nThis function is available primarily for efficiency, since it is about\n10-15 times faster than `unstringify'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&parseStellaName)), NULL);
     defineFunctionObject("QUALIFIED-STELLA-NAME?", "(DEFUN (QUALIFIED-STELLA-NAME? BOOLEAN) ((NAME STRING)) :DOCUMENTATION \"Return TRUE if `name' is a symbol or surrogate qualified with a module\npathname or a module pathname ending with a `/'.  Assumes that `name'\nis the printed representation of a STELLA symbol (potentially containing\nescape characters).\" :PUBLIC? TRUE)", ((cpp_function_code)(&qualifiedStellaNameP)), NULL);
     defineFunctionObject("STELLA-TOKEN-LIST-TO-S-EXPRESSION", "(DEFUN (STELLA-TOKEN-LIST-TO-S-EXPRESSION OBJECT) ((TOKENLIST STELLA-TOKEN)))", ((cpp_function_code)(&stellaTokenListToSExpression)), NULL);
     defineFunctionObject("EXPAND-QUOTE-MACRO-TOKEN", "(DEFUN EXPAND-QUOTE-MACRO-TOKEN ((QUOTEDLIST STELLA-TOKEN)))", ((cpp_function_code)(&expandQuoteMacroToken)), NULL);
     defineFunctionObject("STRING-TO-CHARACTER", "(DEFUN (STRING-TO-CHARACTER CHARACTER) ((NAME STRING)))", ((cpp_function_code)(&stringToCharacter)), NULL);
-    defineFunctionObject("READ-S-EXPRESSION", "(DEFUN (READ-S-EXPRESSION OBJECT BOOLEAN) ((STREAM INPUT-STREAM)) :DOCUMENTATION \"Read one STELLA s-expression from `stream' and return\nthe result.  Return `true' as the second value on EOF.\" :PUBLIC? TRUE)", ((cpp_function_code)(&readSExpression)), NULL);
-    defineFunctionObject("EAT-NEXT-CHARACTER-IF-WHITESPACE", "(DEFUN (EAT-NEXT-CHARACTER-IF-WHITESPACE BOOLEAN) ((STREAM INPUT-STREAM)))", ((cpp_function_code)(&eatNextCharacterIfWhitespace)), NULL);
-    defineFunctionObject("CONSUME-WHITESPACE", "(DEFUN (CONSUME-WHITESPACE BOOLEAN) ((STREAM INPUT-STREAM)))", ((cpp_function_code)(&consumeWhitespace)), NULL);
-    defineFunctionObject("READ-S-EXPRESSION-FROM-STRING", "(DEFUN (READ-S-EXPRESSION-FROM-STRING OBJECT) ((STRING STRING)) :DOCUMENTATION \"Read one STELLA s-expression from `string' and\nreturn the result.\" :PUBLIC? TRUE)", ((cpp_function_code)(&readSExpressionFromString)), NULL);
-    defineFunctionObject("MAKE-TOKENIZER-STRING-STREAM", "(DEFUN (MAKE-TOKENIZER-STRING-STREAM STRING-INPUT-STREAM) ((STRING STRING)))", ((cpp_function_code)(&makeTokenizerStringStream)), NULL);
-    defineFunctionObject("NATIVE-READ-LINE", "(DEFUN (NATIVE-READ-LINE STRING) ((INPUTSTREAM INPUT-STREAM)) :DOCUMENTATION \"Read one line from `inputStream' using the native language\nreadline algorithm and return the result.  On EOF return `null'\" :PUBLIC? TRUE)", ((cpp_function_code)(&nativeReadLine)), NULL);
-    defineFunctionObject("READ-LINE", "(DEFUN (READ-LINE STRING) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE :DOCUMENTATION \"Read one line from `stream' and return the result.\nThis differs from `native-read-line' in that it is not platform-dependent.\nIt recognizes any of the three common line ending formats: CR, LF, CR-LF\nin any combination.  It is not as fast as `native-read-line', however.\")", ((cpp_function_code)(&readLine)), NULL);
-    defineFunctionObject("READ-LINE2", "(DEFUN (READ-LINE2 STRING KEYWORD) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE :DOCUMENTATION \"Read one line from `stream' and return the result and\na keyword that indicates the terminator for that line ending:\n`:CR' `:LF' `:CRLF' or `:EOF'.   This is not platform-dependent\nand differs from `read-line' by returning a second value.  It\nmay hang when used on interactive streams such as terminal or\nnetwork streams with only CR line endings.  It should only be\nused on file or string input streams.\")", ((cpp_function_code)(&readLine2)), NULL);
-    defineFunctionObject("READ-CHARACTER", "(DEFUN (READ-CHARACTER CHARACTER BOOLEAN) ((INPUTSTREAM INPUT-STREAM)) :DOCUMENTATION \"Read one character from `inputStream' and return the result.\nReturn `true' as the second value on EOF.\" :PUBLIC? TRUE)", ((cpp_function_code)(&readCharacter)), NULL);
-    defineFunctionObject("UNREAD-CHARACTER", "(DEFUN UNREAD-CHARACTER ((CH CHARACTER) (INPUTSTREAM INPUT-STREAM)) :DOCUMENTATION \"Unread `ch' from `inputStream'.  Signal an error if `ch'\nwas not the last character read.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unreadCharacter)), NULL);
-    defineFunctionObject("YES-OR-NO?", "(DEFUN (YES-OR-NO? BOOLEAN) ((MESSAGE STRING)) :DOCUMENTATION \"Read a line of input from STANDARD-INPUT and return `true'\nif the input was `yes' or `false' if the input was `no'.  Loop until either\n`yes' or `no' was entered.  If 'message' is non-`null' prompt with it before\nthe input is read.  See also special variable `*USER-QUERY-ACTION*'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&yesOrNoP)), NULL);
+    defineFunctionObject("CREATE-TOKENIZE-STRING-TABLE", "(DEFUN (CREATE-TOKENIZE-STRING-TABLE (VECTOR OF KEYWORD)) ((PUNCTUATIONCHARS STRING) (QUOTECHARS STRING) (ESCAPECHARS STRING)))", ((cpp_function_code)(&createTokenizeStringTable)), NULL);
+    defineFunctionObject("TOKENIZE-STRING", "(DEFUN (TOKENIZE-STRING (CONS OF CONS)) ((STRING STRING) (PUNCTUATIONCHARS STRING) (QUOTECHARS STRING) (ESCAPECHARS STRING)) :DOCUMENTATION \"Simple tokenizer that is somewhere between Java's StringTokenizer\nand StreamTokenizer in functionality.  It doens't specially support number\ntokens nor comment strings/sequences even though this could be added at\nthe expense of some extra complexity.\nReturns a list of (<token-string> <token-type>) pairs, where the token\ntype is one of :TEXT, :PUNCTUATION or :QUOTE, i.e., all white space\nis ignored and escape characters are handled and removed.  For example:\n	 \n  (tokenize-string \\\"for(i='fo^'o'; i>0; i++)\\\" \\\"()=<>+-;\\\" \\\"'\\\" \\\"^\\\")\n  =>\n  ((\\\"for\\\" :TEXT) (\\\"(\\\" :PUNCTUATION) (\\\"i\\\" :TEXT)\n   (\\\"=\\\" :PUNCTUATION) (\\\"'\\\" :QUOTE) (\\\"fo'o\\\" :TEXT)\n   (\\\"'\\\" :QUOTE) (\\\";\\\" :PUNCTUATION) (\\\"i\\\" :TEXT)\n   (\\\">\\\" :PUNCTUATION) (\\\"0\\\" :TEXT) (\\\";\\\" :PUNCTUATION)\n   (\\\"i\\\" :TEXT) (\\\"++)\\\" :PU" "NCTUATION))\n	\nNOTE: this aggregates multiple punctuation characters that immediately\nfollow each other into a single token which is (generally) useful to pickup\nmulti-character operators such as ++, >=, etc.  It's still easy to pick them\napart in a post-processing step if necessary (e.g., for the `++)' case above),\nso we leave this for now as a feature.\" :PUBLIC? TRUE)", ((cpp_function_code)(&tokenizeString)), NULL);
   }
 }
 
@@ -3784,6 +4289,17 @@ void startupRead() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupRead7();
+      defineFunctionObject("READ-S-EXPRESSION", "(DEFUN (READ-S-EXPRESSION OBJECT BOOLEAN) ((STREAM INPUT-STREAM)) :DOCUMENTATION \"Read one STELLA s-expression from `stream' and return\nthe result.  Return `true' as the second value on EOF.\" :PUBLIC? TRUE)", ((cpp_function_code)(&readSExpression)), NULL);
+      defineFunctionObject("EAT-NEXT-CHARACTER-IF-WHITESPACE", "(DEFUN (EAT-NEXT-CHARACTER-IF-WHITESPACE BOOLEAN) ((STREAM INPUT-STREAM)))", ((cpp_function_code)(&eatNextCharacterIfWhitespace)), NULL);
+      defineFunctionObject("CONSUME-WHITESPACE", "(DEFUN (CONSUME-WHITESPACE BOOLEAN) ((STREAM INPUT-STREAM)))", ((cpp_function_code)(&consumeWhitespace)), NULL);
+      defineFunctionObject("READ-S-EXPRESSION-FROM-STRING", "(DEFUN (READ-S-EXPRESSION-FROM-STRING OBJECT) ((STRING STRING)) :DOCUMENTATION \"Read one STELLA s-expression from `string' and\nreturn the result.\" :PUBLIC? TRUE)", ((cpp_function_code)(&readSExpressionFromString)), NULL);
+      defineFunctionObject("MAKE-TOKENIZER-STRING-STREAM", "(DEFUN (MAKE-TOKENIZER-STRING-STREAM STRING-INPUT-STREAM) ((STRING STRING)))", ((cpp_function_code)(&makeTokenizerStringStream)), NULL);
+      defineFunctionObject("NATIVE-READ-LINE", "(DEFUN (NATIVE-READ-LINE STRING) ((INPUTSTREAM INPUT-STREAM)) :DOCUMENTATION \"Read one line from `inputStream' using the native language\nreadline algorithm and return the result.  On EOF return `null'\" :PUBLIC? TRUE)", ((cpp_function_code)(&nativeReadLine)), NULL);
+      defineFunctionObject("READ-LINE", "(DEFUN (READ-LINE STRING) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE :DOCUMENTATION \"Read one line from `stream' and return the result.\nThis differs from `native-read-line' in that it is not platform-dependent.\nIt recognizes any of the three common line ending formats: CR, LF, CR-LF\nin any combination.  It is not as fast as `native-read-line', however.\")", ((cpp_function_code)(&readLine)), NULL);
+      defineFunctionObject("READ-LINE2", "(DEFUN (READ-LINE2 STRING KEYWORD) ((STREAM INPUT-STREAM)) :PUBLIC? TRUE :DOCUMENTATION \"Read one line from `stream' and return the result and\na keyword that indicates the terminator for that line ending:\n`:CR' `:LF' `:CRLF' or `:EOF'.   This is not platform-dependent\nand differs from `read-line' by returning a second value.  It\nmay hang when used on interactive streams such as terminal or\nnetwork streams with only CR line endings.  It should only be\nused on file or string input streams.\")", ((cpp_function_code)(&readLine2)), NULL);
+      defineFunctionObject("READ-CHARACTER", "(DEFUN (READ-CHARACTER CHARACTER BOOLEAN) ((INPUTSTREAM INPUT-STREAM)) :DOCUMENTATION \"Read one character from `inputStream' and return the result.\nReturn `true' as the second value on EOF.\" :PUBLIC? TRUE)", ((cpp_function_code)(&readCharacter)), NULL);
+      defineFunctionObject("UNREAD-CHARACTER", "(DEFUN UNREAD-CHARACTER ((CH CHARACTER) (INPUTSTREAM INPUT-STREAM)) :DOCUMENTATION \"Unread `ch' from `inputStream'.  Signal an error if `ch'\nwas not the last character read.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unreadCharacter)), NULL);
+      defineFunctionObject("YES-OR-NO?", "(DEFUN (YES-OR-NO? BOOLEAN) ((MESSAGE STRING)) :DOCUMENTATION \"Read a line of input from STANDARD-INPUT and return `true'\nif the input was `yes' or `false' if the input was `no'.  Loop until either\n`yes' or `no' was entered.  If 'message' is non-`null' prompt with it before\nthe input is read.  See also special variable `*USER-QUERY-ACTION*'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&yesOrNoP)), NULL);
       defineFunctionObject("Y-OR-N?", "(DEFUN (Y-OR-N? BOOLEAN) ((MESSAGE STRING)) :DOCUMENTATION \"Read a line of input from STANDARD-INPUT and return `true'\nif the input was `y' or `false' if the input was `n'.  Loop until either\n`y' or `n' was entered.  If 'message' is non-`null' prompt with it before\nthe input is read.  See also special variable `*USER-QUERY-ACTION*'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&yOrNP)), NULL);
       defineMethodObject("(DEFMETHOD (STREAM-TO-STRING STRING) ((FROM INPUT-STREAM)) :PUBLIC? TRUE :DOCUMENTATION \"Read all of the input from `stream' and return it as a string.\")", ((cpp_method_code)(&InputStream::streamToString)), ((cpp_method_code)(NULL)));
       defineFunctionObject("STARTUP-READ", "(DEFUN STARTUP-READ () :PUBLIC? TRUE)", ((cpp_function_code)(&startupRead)), NULL);
@@ -3797,6 +4313,7 @@ void startupRead() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAX-TOKENIZER-STATES* INTEGER 64)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAX-TOKENIZER-CHARACTERS* INTEGER 256)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TOKENIZER-INITIAL-BUFFER-SIZE* INTEGER 2048)");
@@ -3805,6 +4322,8 @@ void startupRead() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-TOKENIZER-TABLE* TOKENIZER-TABLE NULL)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-LOGICAL-STATE-NAMES* (VECTOR OF KEYWORD) NULL)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-LOGICAL-STATE-NAMES-TABLE* (PROPERTY-LIST OF KEYWORD KEYWORD) (NEW (PROPERTY-LIST OF KEYWORD KEYWORD) :THE-PLIST (BQUOTE (:SYMBOL :SYMBOL :ESCAPED-SYMBOL :SYMBOL :FULLY-ESCAPED-SYMBOL :SYMBOL :QUALIFIED-SYMBOL :SYMBOL :QUALIFIED-ESCAPED-SYMBOL :SYMBOL :QUALIFIED-FULLY-ESCAPED-SYMBOL :SYMBOL :CL-SYMBOL :SYMBOL :SURROGATE :SURROGATE :ESCAPED-SURROGATE :SURROGATE :QUALIFIED-SURROGATE :SURROGATE :QUALIFIED-ESCAPED-SURROGATE :SURROGATE :FULLY-ESCAPED-SURROGATE :SURROGATE :QUALIFIED-FULLY-ESCAPED-SURROGATE :SURROGATE :KEYWORD :KEYWORD :ESCAPED-KEYWORD :KEYWORD :FULLY-ESCAPED-KEYWORD :KEYWORD :QUALIFIED-NAME :QUALIFIED-NAME :STRING :STRING :ESCAPED-STRING :STRING :INTEGER :INTEGER :FLOAT :FLOAT :CHARACTER :CHARACTER :OPEN-PAREN :OPEN-PAREN :CLOSE-PAREN :CLOSE-PAREN :SINGLE-QUOTE :SINGLE-QUOTE :BACK-QUOTE :BACK-QUOTE :COMMA :COMMA :COMMA-SPLICE :COMMA-SPLICE :CLOSE-STRING :CLOSE-BALANCED-QUOTE :CLOSE-FULLY-ESCAPED-NAME :CLOSE-BALANCED-QUOTE :ERROR :ERROR))))");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *GET-TOKEN-INTEGER-CHECKPOINT* INTEGER (DIV (- MOST-POSITIVE-INTEGER 9) 10))");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *GET-TOKEN-LONG-INTEGER-CHECKPOINT* LONG-INTEGER (DIV (- MOST-POSITIVE-LONG-INTEGER 9) 10))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-TOKENIZER-WHITE-SPACE-STATE* INTEGER (POSITION (STATE-NAMES *STELLA-TOKENIZER-TABLE*) :WHITE-SPACE 0))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *READ-LINE-TOKENIZER-TABLE-DEFINITION* CONS (BQUOTE ((:START * (#\\Linefeed) :INITIAL-LINEFEED * (#\\Return) :INITIAL-RETURN :EOF :EOF * :OTHERWISE :LINE) (:INITIAL-LINEFEED :INCLUDE :LINEFEED) (:INITIAL-RETURN :INCLUDE :RETURN) (:RETURN * (#\\Linefeed) :LINEFEED * (#\\Return) :INITIAL-RETURN :EOF :EOF * :OTHERWISE :LINE) (:LINEFEED :EOF :EOF * (#\\Linefeed) :INITIAL-LINEFEED * (#\\Return) :INITIAL-RETURN * :OTHERWISE :LINE) (:LINE * (#\\Linefeed) :LINEFEED * (#\\Return) :RETURN * :EOF :EOF :OTHERWISE :LINE) (:ERROR :INCLUDE :START))) :PUBLIC? FALSE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *READ-LINE2-TOKENIZER-TABLE-DEFINITION* CONS (BQUOTE ((:START * (#\\Linefeed) :LINEFEED * (#\\Return) :RETURN :EOF :EOF * :OTHERWISE :LINE) (:LINE * (#\\Linefeed) :LINEFEED * (#\\Return) :RETURN * :EOF :EOF :OTHERWISE :LINE) (:RETURN * :EOF :EOF (#\\Linefeed) :RETURN-LINEFEED * (#\\Return) :RETURN * :OTHERWISE :LINE) (:LINEFEED :EOF :EOF * (#\\Linefeed) :LINEFEED * (#\\Return) :RETURN * :OTHERWISE :LINE) (:RETURN-LINEFEED * :EOF :EOF * (#\\Linefeed) :LINEFEED * (#\\Return) :RETURN * :OTHERWISE :LINE) (:ERROR :INCLUDE :START))) :PUBLIC? FALSE)");
@@ -4165,6 +4684,18 @@ Symbol* SYM_READ_STELLA_GET_QUALIFIED_SYMBOL_SEPARATOR_POSITION_INTERNAL = NULL;
 
 Keyword* KWD_READ_FULLY_ESCAPED = NULL;
 
+Symbol* SYM_READ_STELLA_GET_TOKEN_INTEGER = NULL;
+
+Symbol* SYM_READ_STELLA_GET_TOKEN_INTEGER_INTERNAL = NULL;
+
+Symbol* SYM_READ_STELLA_GET_TOKEN_LONG_INTEGER = NULL;
+
+Symbol* SYM_READ_STELLA_GET_TOKEN_LONG_INTEGER_INTERNAL = NULL;
+
+Symbol* SYM_READ_STELLA_GET_TOKEN_FLOAT = NULL;
+
+Symbol* SYM_READ_STELLA_GET_TOKEN_FLOAT_INTERNAL = NULL;
+
 Surrogate* SGT_READ_STELLA_STELLA_TOKEN = NULL;
 
 Symbol* SYM_READ_STELLA_LOGICAL_TOKEN_TYPE = NULL;
@@ -4182,6 +4713,16 @@ Keyword* KWD_READ_ESCAPED = NULL;
 Symbol* SYM_READ_STELLA_a = NULL;
 
 Symbol* SYM_READ_STELLA_aa = NULL;
+
+Keyword* KWD_READ_TEXT = NULL;
+
+Keyword* KWD_READ_PUNCTUATION = NULL;
+
+Keyword* KWD_READ_QUOTE = NULL;
+
+Keyword* KWD_READ_ESCAPE = NULL;
+
+Surrogate* SGT_READ_STELLA_F_TOKENIZE_STRING_MEMO_TABLE_000 = NULL;
 
 Keyword* KWD_READ_INITIAL_LINEFEED = NULL;
 

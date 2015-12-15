@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -481,6 +481,19 @@ char* toggleGoalCaching() {
   }
 }
 
+StringWrapper* toggleGoalCachingEvaluatorWrapper(Cons* arguments) {
+  arguments = arguments;
+  { char* result = toggleGoalCaching();
+
+    if (result != NULL) {
+      return (wrapString(result));
+    }
+    else {
+      return (NULL);
+    }
+  }
+}
+
 AtomicGoalCache* newAtomicGoalCache() {
   { AtomicGoalCache* self = NULL;
 
@@ -614,6 +627,10 @@ void AtomicGoalCache::printObject(std::ostream* stream) {
 }
 
 void printAtomicGoalCache(AtomicGoalCache* self, std::ostream* stream) {
+  if (!((boolean)(self->proposition))) {
+    *(stream) << "|GC|[NULL]";
+    return;
+  }
   *(stream) << "|GC|[" << ((self->reversePolarityP ? (char*)"~" : (char*)"")) << "(" << stringifiedKifOperator(self->proposition);
   { 
     BIND_STELLA_SPECIAL(oPRINTMODEo, Keyword*, KWD_GOAL_CACHES_REALISTIC);
@@ -817,7 +834,7 @@ int goalHashCode(ControlFrame* frame) {
 
     code = oCONTEXTo.get()->hashCode();
     if (frame->reversePolarityP) {
-      code = (((((code & 1) == 0) ? ((unsigned int)code >> 1) : (((code >> 1)) | oINTEGER_MSB_MASKo))) ^ 48312004);
+      code = (((((code & 1) == 0) ? ((unsigned int)code >> 1) : (((code >> 1)) | oINTEGER_MSB_MASKo))) ^ 8312004);
     }
     code = (((((code & 1) == 0) ? ((unsigned int)code >> 1) : (((code >> 1)) | oINTEGER_MSB_MASKo))) ^ (safeHashCode(operatoR)));
     { Object* arg = NULL;
@@ -954,23 +971,26 @@ AtomicGoalCache* setGoalCacheList(Proposition* goal, AtomicGoalCache* firstcache
 }
 
 AtomicGoalCache* createAtomicGoalCache(ControlFrame* frame, AtomicGoalCache* cache, boolean successP) {
-  if (!((boolean)(cache))) {
-    cache = newAtomicGoalCache();
-  }
-  { Proposition* proposition = frame->proposition;
+  { boolean collisionP = ((boolean)(cache));
+    Proposition* proposition = frame->proposition;
 
+    if (!collisionP) {
+      cache = newAtomicGoalCache();
+    }
     if (successP) {
-      if (((boolean)(cache->next))) {
-        cache->next->previous = cache->previous;
-        if (!((boolean)(cache->previous))) {
-          setGoalCacheList(cache->next->proposition, cache->next);
+      if (collisionP) {
+        if (((boolean)(cache->next))) {
+          cache->next->previous = cache->previous;
         }
+        if (!((boolean)(cache->previous))) {
+          setGoalCacheList(cache->proposition, cache->next);
+        }
+        else {
+          cache->previous->next = cache->next;
+        }
+        cache->previous = NULL;
+        cache->next = NULL;
       }
-      if (((boolean)(cache->previous))) {
-        cache->previous->next = cache->next;
-      }
-      cache->previous = NULL;
-      cache->next = NULL;
       { AtomicGoalCache* previousstart = getGoalCacheList(proposition);
 
         if (!(cache == previousstart)) {
@@ -1160,6 +1180,26 @@ void cacheGoal(ControlFrame* frame, boolean successP, boolean keepframeP, int cl
     if (!((boolean)(frame->goalBindings))) {
       return;
     }
+    { Object* binding = NULL;
+      Cons* iter000 = frame->goalBindings;
+
+      for (binding, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+        binding = iter000->value;
+        if (((boolean)(binding))) {
+          if (subtypeOfP(safePrimaryType(binding), SGT_GOAL_CACHES_LOGIC_DESCRIPTION)) {
+            { Object* binding000 = binding;
+              Description* binding = ((Description*)(binding000));
+
+              if (((boolean)(((Vector*)(dynamicSlotValue(binding->dynamicSlots, SYM_GOAL_CACHES_LOGIC_EXTERNAL_VARIABLES, NULL)))))) {
+                return;
+              }
+            }
+          }
+          else {
+          }
+        }
+      }
+    }
     if (successP) {
       frame->dontCacheGoalFailureP = true;
     }
@@ -1181,7 +1221,7 @@ void cacheGoal(ControlFrame* frame, boolean successP, boolean keepframeP, int cl
             std::cout << "=========> CACHED " << ((successP ? (char*)"SUCCESS" : (char*)"FAILURE")) << " AT " << (((unsigned int) (goalHashCode(frame))) % 1541) << ": " << frame->proposition << std::endl;
           }
           updateNowTimestamp(KWD_GOAL_CACHES_EXECUTE_QUERY);
-          setDynamicSlotValue(surrogateToDescription(((Surrogate*)(frame->proposition->operatoR)))->dynamicSlots, SYM_GOAL_CACHES_LOGIC_CHECK_FOR_CACHED_GOALSp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+          setDynamicSlotValue(surrogateToDescription(((Surrogate*)(frame->proposition->operatoR)))->dynamicSlots, SYM_GOAL_CACHES_LOGIC_CHECK_FOR_CACHED_GOALSp, TRUE_WRAPPER, FALSE_WRAPPER);
           { int index = NULL_INTEGER;
             AtomicGoalCache* cachedgoal = NULL;
 
@@ -1410,6 +1450,8 @@ void helpStartupGoalCaches1() {
     KWD_GOAL_CACHES_GOAL_INSTANTIATES_CACHE = ((Keyword*)(internRigidSymbolWrtModule("GOAL-INSTANTIATES-CACHE", NULL, 2)));
     KWD_GOAL_CACHES_CACHE_INSTANTIATES_GOAL = ((Keyword*)(internRigidSymbolWrtModule("CACHE-INSTANTIATES-GOAL", NULL, 2)));
     KWD_GOAL_CACHES_ATOMIC_GOAL = ((Keyword*)(internRigidSymbolWrtModule("ATOMIC-GOAL", NULL, 2)));
+    SGT_GOAL_CACHES_LOGIC_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 1)));
+    SYM_GOAL_CACHES_LOGIC_EXTERNAL_VARIABLES = ((Symbol*)(internRigidSymbolWrtModule("EXTERNAL-VARIABLES", NULL, 0)));
     SGT_GOAL_CACHES_PL_KERNEL_KB_FRAME_PREDICATE = ((Surrogate*)(internRigidSymbolWrtModule("FRAME-PREDICATE", getStellaModule("/PL-KERNEL-KB", true), 1)));
     KWD_GOAL_CACHES_EXECUTE_QUERY = ((Keyword*)(internRigidSymbolWrtModule("EXECUTE-QUERY", NULL, 2)));
     SYM_GOAL_CACHES_LOGIC_CHECK_FOR_CACHED_GOALSp = ((Symbol*)(internRigidSymbolWrtModule("CHECK-FOR-CACHED-GOALS?", NULL, 0)));
@@ -1430,10 +1472,10 @@ void startupGoalCaches() {
       helpStartupGoalCaches1();
     }
     if (currentStartupTimePhaseP(4)) {
-      oSUCCEEDED_GOALS_CACHEo = newVector(1541);
-      oFAILED_GOALS_CACHEo = newVector(1541);
-      oUNIFICATION_VECTOR_1o.set(newVector(10));
-      oUNIFICATION_VECTOR_2o.set(newVector(10));
+      oSUCCEEDED_GOALS_CACHEo = stella::newVector(1541);
+      oFAILED_GOALS_CACHEo = stella::newVector(1541);
+      oUNIFICATION_VECTOR_1o.set(stella::newVector(10));
+      oUNIFICATION_VECTOR_2o.set(stella::newVector(10));
     }
     if (currentStartupTimePhaseP(5)) {
       { Class* clasS = defineClassFromStringifiedSource("GOAL-CACHE", "(DEFCLASS GOAL-CACHE (STANDARD-OBJECT) :DOCUMENTATION \"Cache of output bindings derived for a particular goal\nand set of input bindings.\" :SLOTS ((CACHED-BINDINGS :TYPE (LIST OF GOAL-BINDINGS) :ALLOCATION :EMBEDDED) (TIMESTAMP :TYPE TIMESTAMP) (PROPOSITION :TYPE PROPOSITION) (REVERSE-POLARITY? :TYPE BOOLEAN) (CACHE-CONTEXT :TYPE CONTEXT)))");
@@ -1471,7 +1513,7 @@ void startupGoalCaches() {
       defineFunctionObject("CONTINUE-CACHED-BINDINGS-PROOF", "(DEFUN (CONTINUE-CACHED-BINDINGS-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&continueCachedBindingsProof)), NULL);
       defineFunctionObject("TOP-LEVEL-QUERY-CONTEXT?", "(DEFUN (TOP-LEVEL-QUERY-CONTEXT? BOOLEAN) ((SELF CONTEXT)))", ((cpp_function_code)(&topLevelQueryContextP)), NULL);
       defineFunctionObject("CACHE-QUERY-RESULTS?", "(DEFUN (CACHE-QUERY-RESULTS? BOOLEAN) () :GLOBALLY-INLINE? TRUE (RETURN (AND (OR *CACHE-SUCCEEDED-GOALS?* *CACHE-FAILED-GOALS?*) (EQL? *DUPLICATE-SUBGOAL-STRATEGY* :DUPLICATE-GOALS) (NOT (PARTIAL-MATCH-MODE?)))))", ((cpp_function_code)(&cacheQueryResultsP)), NULL);
-      defineFunctionObject("TOGGLE-GOAL-CACHING", "(DEFUN (TOGGLE-GOAL-CACHING STRING) ())", ((cpp_function_code)(&toggleGoalCaching)), NULL);
+      defineFunctionObject("TOGGLE-GOAL-CACHING", "(DEFUN (TOGGLE-GOAL-CACHING STRING) () :COMMAND? TRUE)", ((cpp_function_code)(&toggleGoalCaching)), ((cpp_function_code)(&toggleGoalCachingEvaluatorWrapper)));
       defineFunctionObject("PRINT-ATOMIC-GOAL-CACHE", "(DEFUN PRINT-ATOMIC-GOAL-CACHE ((SELF ATOMIC-GOAL-CACHE) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printAtomicGoalCache)), NULL);
       defineFunctionObject("CLEAR-QUERY-RESULTS-CACHE", "(DEFUN CLEAR-QUERY-RESULTS-CACHE ())", ((cpp_function_code)(&clearQueryResultsCache)), NULL);
       defineFunctionObject("PRINT-QUERY-RESULTS-CACHE", "(DEFUN PRINT-QUERY-RESULTS-CACHE ((LIMIT INTEGER)))", ((cpp_function_code)(&printQueryResultsCache)), NULL);
@@ -1504,6 +1546,7 @@ void startupGoalCaches() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CACHE-SUCCEEDED-GOALS?* BOOLEAN TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CACHE-FAILED-GOALS?* BOOLEAN TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CACHE-GOAL-QUANTUM* INTEGER 5 :DOCUMENTATION \"Only goals whose success or failure took at least this\nnumber of query clock ticks will be cached.\")");
@@ -1590,6 +1633,10 @@ Keyword* KWD_GOAL_CACHES_GOAL_INSTANTIATES_CACHE = NULL;
 Keyword* KWD_GOAL_CACHES_CACHE_INSTANTIATES_GOAL = NULL;
 
 Keyword* KWD_GOAL_CACHES_ATOMIC_GOAL = NULL;
+
+Surrogate* SGT_GOAL_CACHES_LOGIC_DESCRIPTION = NULL;
+
+Symbol* SYM_GOAL_CACHES_LOGIC_EXTERNAL_VARIABLES = NULL;
 
 Surrogate* SGT_GOAL_CACHES_PL_KERNEL_KB_FRAME_PREDICATE = NULL;
 

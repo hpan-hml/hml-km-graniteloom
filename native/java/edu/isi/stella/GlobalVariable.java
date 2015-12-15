@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -84,7 +84,7 @@ public class GlobalVariable extends MappableObject {
     { Stella_Object cltype = StandardObject.lookupClTypeFromStellaType(GlobalVariable.globalVariableTypeSpec(global));
 
       if (cltype != null) {
-        return (Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("TYPE"), Stella_Object.cons(cltype, Stella_Object.cons(Stella_Object.cons(Symbol.clTranslateGlobalSymbol(global.variableName), Stella.NIL), Stella.NIL)))));
+        return (((Cons)(Stella_Object.clConditionalizeTypeDeclarationTree(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("TYPE"), Cons.cons(cltype, Cons.cons(Cons.cons(Symbol.clTranslateGlobalSymbol(global.variableName), Stella.NIL), Stella.NIL))))))));
       }
       else {
         return (null);

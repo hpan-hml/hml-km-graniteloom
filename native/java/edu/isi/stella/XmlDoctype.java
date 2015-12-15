@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -156,13 +156,13 @@ public class XmlDoctype extends StandardObject {
   }
 
   public static String decodeXmlEntityRef(XmlDoctype doctype, String name, boolean peReferenceAllowedP) {
-    { String value = null;
+    { StringWrapper value = null;
 
       if (doctype != null) {
-        value = ((StringWrapper)(doctype.entityTable.lookup(StringWrapper.wrapString(name)))).wrapperValue;
+        value = ((StringWrapper)(doctype.entityTable.lookup(StringWrapper.wrapString(name))));
       }
       if (value == null) {
-        value = ((StringWrapper)(Stella.$XML_BASE_ENTITY_TABLE$.lookup(StringWrapper.wrapString(name)))).wrapperValue;
+        value = ((StringWrapper)(Stella.$XML_BASE_ENTITY_TABLE$.lookup(StringWrapper.wrapString(name))));
       }
       if (value == null) {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -172,7 +172,7 @@ public class XmlDoctype extends StandardObject {
         }
       }
       else {
-        return (XmlDoctype.decodeXmlString(doctype, value, peReferenceAllowedP));
+        return (XmlDoctype.decodeXmlString(doctype, value.wrapperValue, peReferenceAllowedP));
       }
     }
   }

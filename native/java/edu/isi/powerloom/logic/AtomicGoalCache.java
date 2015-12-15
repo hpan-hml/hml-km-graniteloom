@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -282,6 +282,10 @@ public class AtomicGoalCache extends StandardObject {
   }
 
   public static void printAtomicGoalCache(AtomicGoalCache self, java.io.PrintStream stream) {
+    if (self.proposition == null) {
+      stream.print("|GC|[NULL]");
+      return;
+    }
     stream.print("|GC|[" + ((self.reversePolarityP ? "~" : "")) + "(" + Proposition.stringifiedKifOperator(self.proposition));
     { Object old$Printmode$000 = Logic.$PRINTMODE$.get();
       Object old$Printlogicalformstream$000 = Logic.$PRINTLOGICALFORMSTREAM$.get();

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -113,6 +113,7 @@ boolean disjointRelationsP(Object* relationref1, Object* relationref2);
 boolean coveringP(Object* instanceref, Object* classref);
 Cons* collectionMembers(Object* instanceref);
 void helpStartupLoomSupport1();
+void helpStartupLoomSupport2();
 void startupLoomSupport();
 
 // Auxiliary global declarations:
@@ -175,7 +176,7 @@ extern Symbol* SYM_LOOM_SUPPORT_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION;
 extern Symbol* SYM_LOOM_SUPPORT_LOOM_API_F_GET_PARTITIONS_QUERY_000;
 extern Surrogate* SGT_LOOM_SUPPORT_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION;
 extern Symbol* SYM_LOOM_SUPPORT_LOOM_API_pCOVERED;
-extern Symbol* SYM_LOOM_SUPPORT_LOOM_API_COVERING;
+extern Symbol* SYM_LOOM_SUPPORT_PL_KERNEL_KB_COVERING;
 extern Symbol* SYM_LOOM_SUPPORT_LOOM_API_F_COVERINGp_QUERY_000;
 extern Symbol* SYM_LOOM_SUPPORT_LOOM_API_STARTUP_LOOM_SUPPORT;
 extern Symbol* SYM_LOOM_SUPPORT_STELLA_METHOD_STARTUP_CLASSNAME;

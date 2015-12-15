@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -54,13 +54,94 @@ import edu.isi.powerloom.extensions.*;
 import edu.isi.stella.utilities.*;
 
 public class PowerLoom {
+  /** List of extension systems that can be loaded
+   * dynamically (not yet in C++).
+   */
+  public static Cons $POWERLOOM_EXTENSION_SYSTEMS$ = null;
+
+  public static Keyword KWD_KEY = null;
+
   public static Keyword KWD_DOCUMENTATION = null;
+
+  public static Keyword KWD_N_ARGUMENTS = null;
+
+  public static Keyword KWD_HANDLER = null;
+
+  public static Symbol SYM_POWERLOOM_CODE_LOAD_ALL_EXTENSIONS_OPTION_HANDLER = null;
+
+  public static Keyword KWD_ERROR_ACTION = null;
+
+  public static Keyword KWD_ERROR = null;
+
+  public static Symbol SYM_POWERLOOM_CODE_START_POWERLOOM_GUI_OPTION_HANDLER = null;
+
+  public static Keyword KWD_WARN = null;
+
+  public static Keyword KWD_KEY2 = null;
+
+  public static Keyword KWD_PROPERTY = null;
+
+  public static Keyword KWD_VALUE_TYPE = null;
+
+  public static Surrogate SGT_STELLA_BOOLEAN = null;
+
+  public static Keyword KWD_DEFAULT_VALUE = null;
+
+  public static Keyword KWD_KEY3 = null;
+
+  public static Symbol SYM_STELLA_EVAL_OPTION_HANDLER = null;
 
   public static Symbol SYM_POWERLOOM_CODE_STARTUP_POWERLOOM = null;
 
   public static Symbol SYM_STELLA_METHOD_STARTUP_CLASSNAME = null;
 
   public static Symbol SYM_POWERLOOM_CODE_STARTUP_POWERLOOM_SYSTEM = null;
+
+  /** Load and initialize all installed extension systems.
+   */
+  public static void loadAllExtensionSystems() {
+    { StringWrapper system = null;
+      Cons iter000 = PowerLoom.$POWERLOOM_EXTENSION_SYSTEMS$;
+
+      for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+        system = ((StringWrapper)(iter000.value));
+        if (!Stella.systemLoadedOrStartedUpP(Native.stringDowncase(system.wrapperValue))) {
+          System.out.print("Initializing " + StringWrapper.unwrapString(system) + "...");
+          try {
+            Stella.loadSystem(Native.stringDowncase(system.wrapperValue), Stella.NIL);
+          } catch (java.lang.Exception e000) {
+            System.out.print("FAILED");
+          }
+          System.out.println();
+        }
+      }
+    }
+  }
+
+  /** Load and initialize all installed extension systems.
+   * @param option
+   * @param value
+   */
+  public static void loadAllExtensionsOptionHandler(CmdLineOption option, Stella_Object value) {
+    {
+      option = option;
+      value = value;
+    }
+    PowerLoom.loadAllExtensionSystems();
+  }
+
+  /** Start the PowerLoom GUI.
+   * @param option
+   * @param value
+   */
+  public static void startPowerloomGuiOptionHandler(CmdLineOption option, Stella_Object value) {
+    {
+      option = option;
+      value = value;
+    }
+    Stella.setConfigurationProperty("powerloom.runInteractively", Stella.TRUE_WRAPPER, null);
+    Logic.startPowerloomGui(Stella.NIL);
+  }
 
   public static void main(String[] arguments) {
     { int count = arguments.length;
@@ -70,11 +151,14 @@ public class PowerLoom {
       System.out.println("Initializing PowerLoom...");
       StartupLogicSystem.startupLogicSystem();
       StartupPowerloomExtensionsSystem.startupPowerloomExtensionsSystem();
+      StartupPowerloomSystem.startupPowerloomSystem();
       Stella.string_changeModule("PL-USER");
-      Stella.interpretCommandLineArguments(count, arguments);
-      if (!(Stella.consifyCommandLineArguments(count, arguments).memberP(StringWrapper.wrapString("--batch")))) {
+      Stella.processCommandLineArguments(count, arguments, PowerLoom.KWD_WARN);
+      if ((!Stella_Object.eqlP(Stella_Object.getProperty(StringWrapper.wrapString("powerloom.runInteractively"), Stella.NIL), Stella.FALSE_WRAPPER)) &&
+          (!Stella_Object.eqlP(Stella_Object.getProperty(StringWrapper.wrapString("stella.showInfoOnly"), Stella.NIL), Stella.TRUE_WRAPPER))) {
         Logic.powerloom();
       }
+      HookList.runHooks(Stella.$STELLA_EXIT_HOOKS$, null);
     }
   }
 

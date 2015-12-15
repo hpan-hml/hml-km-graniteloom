@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -112,7 +112,7 @@ public abstract class MappableObject extends StandardObject {
       { BooleanWrapper answer = ((BooleanWrapper)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Stella.SYM_STELLA_BADp, null)));
 
         if (answer == null) {
-          return ((false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER));
+          return (Stella.FALSE_WRAPPER);
         }
         else {
           return (answer);

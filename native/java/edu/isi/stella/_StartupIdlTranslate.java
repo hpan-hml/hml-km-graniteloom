@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -60,10 +60,10 @@ public class _StartupIdlTranslate {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.SYM_STELLA_IDL_TYPEDEF = ((Symbol)(Stella.internRigidSymbolWrtModule("IDL_TYPEDEF", null, 0)));
-          Stella.SYM_STELLA_IDL_IDENT = ((Symbol)(Stella.internRigidSymbolWrtModule("IDL_IDENT", null, 0)));
-          Stella.SYM_STELLA_IDL_LITERAL = ((Symbol)(Stella.internRigidSymbolWrtModule("IDL_LITERAL", null, 0)));
-          Stella.SYM_STELLA_STARTUP_IDL_TRANSLATE = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-IDL-TRANSLATE", null, 0)));
+          Stella.SYM_STELLA_IDL_TYPEDEF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL_TYPEDEF", null, 0)));
+          Stella.SYM_STELLA_IDL_IDENT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL_IDENT", null, 0)));
+          Stella.SYM_STELLA_IDL_LITERAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL_LITERAL", null, 0)));
+          Stella.SYM_STELLA_STARTUP_IDL_TRANSLATE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-IDL-TRANSLATE", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Stella.$IDL_CHARACTER_SUBSTITUTION_TABLE$ = Stella.idlCreateCharacterSubstitutionTable();
@@ -114,6 +114,7 @@ public class _StartupIdlTranslate {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *IDL-CHARACTER-SUBSTITUTION-TABLE* STRING (IDL-CREATE-CHARACTER-SUBSTITUTION-TABLE))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *IDL-RESERVED-WORD-TABLE* (STRING-HASH-TABLE OF STRING STRING-WRAPPER) (IDL-CREATE-RESERVED-WORD-TABLE))");
         }

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -58,20 +58,21 @@ public class _StartupNormalize {
         Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/LOGIC", Stella.$STARTUP_TIME_PHASE$ > 1));
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Logic.SGT_PL_KERNEL_KB_CUT = ((Surrogate)(Stella.internRigidSymbolWrtModule("CUT", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-          Logic.SGT_PL_KERNEL_KB_BOUND_VARIABLES = ((Surrogate)(Stella.internRigidSymbolWrtModule("BOUND-VARIABLES", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-          Logic.SGT_PL_KERNEL_KB_FORK = ((Surrogate)(Stella.internRigidSymbolWrtModule("FORK", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-          Logic.SGT_PL_KERNEL_KB_QUERY = ((Surrogate)(Stella.internRigidSymbolWrtModule("QUERY", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-          Logic.SYM_LOGIC_NEURAL_NETWORK = ((Symbol)(Stella.internRigidSymbolWrtModule("NEURAL-NETWORK", null, 0)));
-          Logic.SGT_PL_KERNEL_KB_ARITY = ((Surrogate)(Stella.internRigidSymbolWrtModule("ARITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-          Logic.SGT_PL_KERNEL_KB_CLASS = ((Surrogate)(Stella.internRigidSymbolWrtModule("CLASS", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-          Logic.SYM_LOGIC_DONT_OPTIMIZEp = ((Symbol)(Stella.internRigidSymbolWrtModule("DONT-OPTIMIZE?", null, 0)));
-          Logic.SGT_LOGIC_NOT = ((Surrogate)(Stella.internRigidSymbolWrtModule("NOT", null, 1)));
-          Logic.SGT_LOGIC_FORALL = ((Surrogate)(Stella.internRigidSymbolWrtModule("FORALL", null, 1)));
-          Logic.SGT_LOGIC_EXISTS = ((Surrogate)(Stella.internRigidSymbolWrtModule("EXISTS", null, 1)));
-          Logic.SGT_LOGIC_OR = ((Surrogate)(Stella.internRigidSymbolWrtModule("OR", null, 1)));
-          Logic.SGT_LOGIC_AND = ((Surrogate)(Stella.internRigidSymbolWrtModule("AND", null, 1)));
-          Logic.SYM_LOGIC_STARTUP_NORMALIZE = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-NORMALIZE", null, 0)));
+          Logic.SGT_PL_KERNEL_KB_CUT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CUT", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+          Logic.SGT_PL_KERNEL_KB_BOUND_VARIABLES = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("BOUND-VARIABLES", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+          Logic.SGT_PL_KERNEL_KB_FORK = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FORK", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+          Logic.SGT_PL_KERNEL_KB_QUERY = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("QUERY", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+          Logic.SYM_LOGIC_NEURAL_NETWORK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NEURAL-NETWORK", null, 0)));
+          Logic.SGT_PL_KERNEL_KB_ARITY = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ARITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+          Logic.SGT_PL_KERNEL_KB_CLASS = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CLASS", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+          Logic.SYM_LOGIC_DONT_OPTIMIZEp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DONT-OPTIMIZE?", null, 0)));
+          Logic.KWD_TAIL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TAIL", null, 2)));
+          Logic.SGT_LOGIC_NOT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NOT", null, 1)));
+          Logic.SGT_LOGIC_FORALL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FORALL", null, 1)));
+          Logic.SGT_LOGIC_EXISTS = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("EXISTS", null, 1)));
+          Logic.SGT_LOGIC_OR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("OR", null, 1)));
+          Logic.SGT_LOGIC_AND = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("AND", null, 1)));
+          Logic.SYM_LOGIC_STARTUP_NORMALIZE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-NORMALIZE", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -97,18 +98,19 @@ public class _StartupNormalize {
           Stella.defineFunctionObject("HELP-NORMALIZE-PREDICATE-PROPOSITION", "(DEFUN HELP-NORMALIZE-PREDICATE-PROPOSITION ((SELF PROPOSITION) (RELATIONREF SURROGATE) (PREDICATEARGUMENTS VECTOR)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "helpNormalizePredicateProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("edu.isi.stella.Vector")}), null);
           Stella.defineFunctionObject("NORMALIZE-HOLDS-PROPOSITION", "(DEFUN NORMALIZE-HOLDS-PROPOSITION ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "normalizeHoldsProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("NORMALIZE-PREDICATE-PROPOSITION", "(DEFUN NORMALIZE-PREDICATE-PROPOSITION ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "normalizePredicateProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
+          Stella.defineFunctionObject("NORMALIZE-FUNCTION-PROPOSITION", "(DEFUN NORMALIZE-FUNCTION-PROPOSITION ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "normalizeFunctionProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("COMPUTE-RELATION-TERM-SURROGATE", "(DEFUN (COMPUTE-RELATION-TERM-SURROGATE SURROGATE) ((SKOLEM SKOLEM) (PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Skolem", "computeRelationTermSurrogate", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Skolem"), Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("EVALUATE-RELATION-TERM", "(DEFUN (EVALUATE-RELATION-TERM SURROGATE) ((RELATIONTERM OBJECT) (PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "evaluateRelationTerm", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("NORMALIZE-VALUE-FUNCTION", "(DEFUN (NORMALIZE-VALUE-FUNCTION PROPOSITION) ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "normalizeValueFunction", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("NORMALIZE-EQUIVALENT-PROPOSITION", "(DEFUN NORMALIZE-EQUIVALENT-PROPOSITION ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "normalizeEquivalentProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("SHALLOW-COPY-PROPOSITION", "(DEFUN (SHALLOW-COPY-PROPOSITION PROPOSITION) ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "shallowCopyProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("NORMALIZE-PROPOSITION", "(DEFUN NORMALIZE-PROPOSITION ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "normalizeProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
-          Stella.defineFunctionObject("NORMALIZE-TOP-LEVEL-PROPOSITION", "(DEFUN NORMALIZE-TOP-LEVEL-PROPOSITION ((SELF PROPOSITION) (IOVARIABLES VARIABLES-VECTOR)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "normalizeTopLevelProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Vector")}), null);
-          Stella.defineFunctionObject("NORMALIZE-TOP-LEVEL-DESCRIPTIVE-PROPOSITION", "(DEFUN NORMALIZE-TOP-LEVEL-DESCRIPTIVE-PROPOSITION ((SELF PROPOSITION) (IOVARIABLES VARIABLES-VECTOR)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "normalizeTopLevelDescriptiveProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Vector")}), null);
+          Stella.defineFunctionObject("NORMALIZE-TOP-LEVEL-PROPOSITION", "(DEFUN NORMALIZE-TOP-LEVEL-PROPOSITION ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "normalizeTopLevelProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
+          Stella.defineFunctionObject("NORMALIZE-DESCRIPTIVE-PROPOSITION", "(DEFUN NORMALIZE-DESCRIPTIVE-PROPOSITION ((SELF PROPOSITION) (IOVARIABLES VARIABLES-VECTOR) (KIND KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "normalizeDescriptiveProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Vector"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
           Stella.defineFunctionObject("INVERT-ATOMIC-PROPOSITION", "(DEFUN INVERT-ATOMIC-PROPOSITION ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "invertAtomicProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("INVERT-EXISTS-PROPOSITION", "(DEFUN INVERT-EXISTS-PROPOSITION ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "invertExistsProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("INVERT-FORALL-PROPOSITION", "(DEFUN INVERT-FORALL-PROPOSITION ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "invertForallProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
-          Stella.defineFunctionObject("EXTRACT-PROPOSITION", "(DEFUN (EXTRACT-PROPOSITION PROPOSITION) ((SELF DESCRIPTION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "extractProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
+          Stella.defineFunctionObject("EXTRACT-PROPOSITION", "(DEFUN (EXTRACT-PROPOSITION PROPOSITION) ((SELF DESCRIPTION) (MAPPING ENTITY-MAPPING)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "extractProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.KeyValueMap")}), null);
           Stella.defineFunctionObject("INVERT-IMPLIES-PROPOSITION", "(DEFUN INVERT-IMPLIES-PROPOSITION ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "invertImpliesProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("INVERT-PROPOSITION", "(DEFUN (INVERT-PROPOSITION PROPOSITION) ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "invertProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("SAFELY-INVERT-PROPOSITION", "(DEFUN (SAFELY-INVERT-PROPOSITION PROPOSITION) ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "safelyInvertProposition", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
@@ -121,6 +123,9 @@ public class _StartupNormalize {
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
           Stella.cleanupUnfinalizedClasses();
+        }
+        if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
         }
 
       } finally {

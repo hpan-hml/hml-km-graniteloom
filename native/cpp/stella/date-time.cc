@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -383,8 +383,8 @@ double getLocalTimeZoneForDate(int year, int month, int day, int hour, int minut
   }
 }
 
-char* timeZoneFormat60(double timezone) {
-  // Format `zone' as an hh:mm string
+char* timeZoneFormat60(double timezone, boolean includeColonP) {
+  // Format `zone' as an hh:mm or hhmm string depending on `include-colon?'
   { char* sign = "+";
     int hours = 0;
 
@@ -393,13 +393,16 @@ char* timeZoneFormat60(double timezone) {
       timezone = 0 - timezone;
     }
     hours = stella::round(timezone);
-    return (stringConcatenate(sign, formatWithPadding(integerToString(hours), 2, '0', KWD_DATE_TIME_RIGHT, false), 2, ":", formatWithPadding(integerToString(stella::round((timezone - hours) * 60.0)), 2, '0', KWD_DATE_TIME_RIGHT, false)));
+    return (stringConcatenate(sign, formatWithPadding(integerToString(((long long int)(hours))), 2, '0', KWD_DATE_TIME_RIGHT, false), 2, (includeColonP ? (char*)":" : (char*)""), formatWithPadding(integerToString(((long long int)(stella::round((timezone - hours) * 60.0)))), 2, '0', KWD_DATE_TIME_RIGHT, false)));
   }
 }
 
 int MILLIS_PER_DAY = NULL_INTEGER;
 
 int MILLIS_PER_HOUR = NULL_INTEGER;
+
+// A vector of month names for printing dates
+Vector* oMONTH_NAME_VECTORo = NULL;
 
 // A vector of month abbreviations for printing dates
 Vector* oMONTH_ABBREVIATION_VECTORo = NULL;
@@ -611,22 +614,22 @@ char* DecodedDateTime::decodedDateTimeToIso8601String() {
       int index = 0;
 
       if (date->dateTimeYear != NULL_INTEGER) {
-        index = insertString(integerToString(date->dateTimeYear), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
+        index = insertString(integerToString(((long long int)(date->dateTimeYear))), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
         if (date->dateTimeMonth != NULL_INTEGER) {
           index = insertString("-", 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
-          index = insertString(formatWithPadding(integerToString(date->dateTimeMonth), 2, '0', KWD_DATE_TIME_RIGHT, false), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
+          index = insertString(formatWithPadding(integerToString(((long long int)(date->dateTimeMonth))), 2, '0', KWD_DATE_TIME_RIGHT, false), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
           if (date->dateTimeDay != NULL_INTEGER) {
             index = insertString("-", 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
-            index = insertString(formatWithPadding(integerToString(date->dateTimeDay), 2, '0', KWD_DATE_TIME_RIGHT, false), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
+            index = insertString(formatWithPadding(integerToString(((long long int)(date->dateTimeDay))), 2, '0', KWD_DATE_TIME_RIGHT, false), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
             if (date->dateTimeHour != NULL_INTEGER) {
               index = insertString("T", 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
-              index = insertString(formatWithPadding(integerToString(date->dateTimeHour), 2, '0', KWD_DATE_TIME_RIGHT, false), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
+              index = insertString(formatWithPadding(integerToString(((long long int)(date->dateTimeHour))), 2, '0', KWD_DATE_TIME_RIGHT, false), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
               if (date->dateTimeMinute != NULL_INTEGER) {
                 index = insertString(":", 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
-                index = insertString(formatWithPadding(integerToString(date->dateTimeMinute), 2, '0', KWD_DATE_TIME_RIGHT, false), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
+                index = insertString(formatWithPadding(integerToString(((long long int)(date->dateTimeMinute))), 2, '0', KWD_DATE_TIME_RIGHT, false), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
                 if (date->dateTimeSecond != NULL_INTEGER) {
                   index = insertString(":", 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
-                  index = insertString(formatWithPadding(integerToString(date->dateTimeSecond), 2, '0', KWD_DATE_TIME_RIGHT, false), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
+                  index = insertString(formatWithPadding(integerToString(((long long int)(date->dateTimeSecond))), 2, '0', KWD_DATE_TIME_RIGHT, false), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
                 }
               }
               if (date->dateTimeZone != NULL_FLOAT) {
@@ -634,7 +637,7 @@ char* DecodedDateTime::decodedDateTimeToIso8601String() {
                   index = insertString("Z", 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
                 }
                 else {
-                  index = insertString(timeZoneFormat60(date->dateTimeZone), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
+                  index = insertString(timeZoneFormat60(date->dateTimeZone, true), 0, NULL_INTEGER, buffer, index, KWD_DATE_TIME_PRESERVE);
                 }
               }
             }
@@ -743,7 +746,7 @@ void DecodedDateTime::mergeSuperiorNullFields(DecodedDateTime* defaulT) {
 DecodedTimeDuration* newDecodedTimeDuration() {
   { DecodedTimeDuration* self = NULL;
 
-    self = new DecodedTimeDuration();
+    self = new (PointerFreeGC)DecodedTimeDuration;
     self->durationDays = 0;
     self->durationHours = 0;
     self->durationMinutes = 0;
@@ -821,7 +824,7 @@ int DecodedTimeDuration::hashCode() {
 CalendarDate* newCalendarDate() {
   { CalendarDate* self = NULL;
 
-    self = new CalendarDate();
+    self = new (PointerFreeGC)CalendarDate;
     self->timeMillis = NULL_INTEGER;
     self->modifiedJulianDay = NULL_INTEGER;
     return (self);
@@ -911,10 +914,10 @@ char* CalendarDate::calendarDateToDateString(double timezone, boolean numericMon
 
       year = date->getCalendarDate(timezone, month, day, dow);
       dow = dow;
-      { char* yearString = ((year < 0) ? stringConcatenate(integerToString(0 - year), "BC", 0) : integerToString(year));
-        char* monthString = (numericMonthP ? formatWithPadding(integerToString(month), 2, '0', KWD_DATE_TIME_RIGHT, false) : unwrapString(((StringWrapper*)((oMONTH_ABBREVIATION_VECTORo->theArray)[month]))));
+      { char* yearString = ((year < 0) ? stringConcatenate(integerToString(((long long int)(0 - year))), "BC", 0) : integerToString(((long long int)(year))));
+        char* monthString = (numericMonthP ? formatWithPadding(integerToString(((long long int)(month))), 2, '0', KWD_DATE_TIME_RIGHT, false) : unwrapString(((StringWrapper*)((oMONTH_ABBREVIATION_VECTORo->theArray)[month]))));
 
-        return (stringConcatenate(yearString, "-", 3, monthString, "-", formatWithPadding(integerToString(day), 2, '0', KWD_DATE_TIME_RIGHT, false)));
+        return (stringConcatenate(yearString, "-", 3, monthString, "-", formatWithPadding(integerToString(((long long int)(day))), 2, '0', KWD_DATE_TIME_RIGHT, false)));
       }
     }
   }
@@ -936,9 +939,9 @@ char* CalendarDate::calendarDateToTimeString(double timezone, boolean includeTim
 
       hours = date->getTime(timezone, minutes, seconds, milli);
       { char* timezoneString = (includeTimezoneP ? (((timezone == 0.0) ? (char*)" UTC" : stringConcatenate(" ", floatToString(timezone), 0))) : (char*)"");
-        char* milliString = (includeMillisP ? stringConcatenate(".", formatWithPadding(integerToString(milli), 3, '0', KWD_DATE_TIME_RIGHT, false), 0) : (char*)"");
+        char* milliString = (includeMillisP ? stringConcatenate(".", formatWithPadding(integerToString(((long long int)(milli))), 3, '0', KWD_DATE_TIME_RIGHT, false), 0) : (char*)"");
 
-        return (stringConcatenate((padHoursP ? formatWithPadding(integerToString(hours), 2, '0', KWD_DATE_TIME_RIGHT, false) : integerToString(hours)), ":", 5, formatWithPadding(integerToString(minutes), 2, '0', KWD_DATE_TIME_RIGHT, false), ":", formatWithPadding(integerToString(seconds), 2, '0', KWD_DATE_TIME_RIGHT, false), milliString, timezoneString));
+        return (stringConcatenate((padHoursP ? formatWithPadding(integerToString(((long long int)(hours))), 2, '0', KWD_DATE_TIME_RIGHT, false) : integerToString(((long long int)(hours)))), ":", 5, formatWithPadding(integerToString(((long long int)(minutes))), 2, '0', KWD_DATE_TIME_RIGHT, false), ":", formatWithPadding(integerToString(((long long int)(seconds))), 2, '0', KWD_DATE_TIME_RIGHT, false), milliString, timezoneString));
       }
     }
   }
@@ -973,7 +976,7 @@ char* CalendarDate::calendarDateToIso8601String(double timezone, boolean include
           tzString = "Z";
         }
         else {
-          tzString = timeZoneFormat60(timezone);
+          tzString = timeZoneFormat60(timezone, true);
         }
       }
       return (stringConcatenate(date->calendarDateToDateString(timezone, true), "T", 2, date->calendarDateToTimeString(timezone, false, false, true), tzString));
@@ -1024,7 +1027,7 @@ void CalendarDate::printCalendarDate(std::ostream* stream) {
 TimeDuration* newTimeDuration() {
   { TimeDuration* self = NULL;
 
-    self = new TimeDuration();
+    self = new (PointerFreeGC)TimeDuration;
     self->millis = NULL_INTEGER;
     self->days = NULL_INTEGER;
     return (self);
@@ -1108,23 +1111,23 @@ char* TimeDuration::timeDurationToString() {
 
       if (nDays < 0) {
         if (nMillis <= 0) {
-          return (stringConcatenate("minus ", integerToString(0 - nDays), 3, " days; ", integerToString(0 - nMillis), " ms"));
+          return (stringConcatenate("minus ", integerToString(((long long int)(0 - nDays))), 3, " days; ", integerToString(((long long int)(0 - nMillis))), " ms"));
         }
         else {
-          return (stringConcatenate("minus ", integerToString(0 - (nDays + 1)), 3, " days; ", integerToString(MILLIS_PER_DAY - nMillis), " ms"));
+          return (stringConcatenate("minus ", integerToString(((long long int)(0 - (nDays + 1)))), 3, " days; ", integerToString(((long long int)(MILLIS_PER_DAY - nMillis))), " ms"));
         }
       }
       else {
         if (nMillis < 0) {
           if (nDays > 0) {
-            return (stringConcatenate("plus ", integerToString(nDays - 1), 3, " days; ", integerToString(MILLIS_PER_DAY + nMillis), " ms"));
+            return (stringConcatenate("plus ", integerToString(((long long int)(nDays - 1))), 3, " days; ", integerToString(((long long int)(MILLIS_PER_DAY + nMillis))), " ms"));
           }
           else {
-            return (stringConcatenate("minus 0 days; ", integerToString(0 - nMillis), 1, " ms"));
+            return (stringConcatenate("minus 0 days; ", integerToString(((long long int)(0 - nMillis))), 1, " ms"));
           }
         }
         else {
-          return (stringConcatenate("plus ", integerToString(nDays), 3, " days; ", integerToString(nMillis), " ms"));
+          return (stringConcatenate("plus ", integerToString(((long long int)(nDays))), 3, " days; ", integerToString(((long long int)(nMillis))), " ms"));
         }
       }
     }
@@ -1157,13 +1160,13 @@ TimeDuration* stringToTimeDuration(char* duration) {
       return (NULL);
     }
     else {
-      nDays = stringToInteger(stringSubsequence(duration, dayStartPosition, dayEndPosition - 1));
+      nDays = ((int)(stringToInteger(stringSubsequence(duration, dayStartPosition, dayEndPosition - 1))));
     }
     msStartPosition = stringPosition(duration, ' ', dayEndPosition);
     if (msStartPosition != NULL_INTEGER) {
       msEndPosition = stringSearch(duration, "ms", msStartPosition);
       if (msEndPosition != NULL_INTEGER) {
-        nMillis = stringToInteger(stringSubsequence(duration, msStartPosition, msEndPosition - 1));
+        nMillis = ((int)(stringToInteger(stringSubsequence(duration, msStartPosition + 1, msEndPosition - 1))));
       }
     }
     if (negativeP) {
@@ -2069,6 +2072,7 @@ void fillInDateSubstitution(KeyValueList* substitutionList) {
   // Fill in `substitution-list' with template variable substitions
   // for the names YEAR and DATE which correspond to the current year and date.
   // These substitutions can then be used with `substitute-template-variables-in-string'
+  // DEPRECATED.  Use `add-date-subsitution' or `add-current-date-substitution' instead.
   { int year = NULL_INTEGER;
     int month = NULL_INTEGER;
     int day = NULL_INTEGER;
@@ -2076,9 +2080,60 @@ void fillInDateSubstitution(KeyValueList* substitutionList) {
 
     year = makeCurrentDateTime()->getCalendarDate(getLocalTimeZone(), month, day, dow);
     dow = dow;
-    substitutionList->insertAt(wrapString("YEAR"), wrapString(integerToString(year)));
-    substitutionList->insertAt(wrapString("DATE"), wrapString(stringConcatenate(formatWithPadding(integerToString(day), 2, '0', KWD_DATE_TIME_RIGHT, false), "-", 3, ((StringWrapper*)((oMONTH_ABBREVIATION_VECTORo->theArray)[month]))->wrapperValue, "-", integerToString(year))));
+    substitutionList->insertAt(wrapString("YEAR"), wrapString(integerToString(((long long int)(year)))));
+    substitutionList->insertAt(wrapString("DATE"), wrapString(stringConcatenate(formatWithPadding(integerToString(((long long int)(day))), 2, '0', KWD_DATE_TIME_RIGHT, false), "-", 3, ((StringWrapper*)((oMONTH_ABBREVIATION_VECTORo->theArray)[month]))->wrapperValue, "-", integerToString(((long long int)(year))))));
   }
+}
+
+void addDateSubstitution(CalendarDate* date, KeyValueList* substitutionList) {
+  // Fill in `substitution-list' with template variable substitions
+  // for the names YEAR, MONTH, MON, DAY, HOUR, MINUTE, SECOND, TIMEZONE,
+  // DAY-OF-WEEK, DOW with their values for `date'.  Also, pre-formatted
+  // DATE, TIME and ISO8601 variables are set.
+  // 
+  // TIMEZONE is in the format "{+|-}hhmm".  MONTH is the full English
+  // month name and MON is the numeric month.  DAY-OF-WEEK is an English
+  // string and DOW is the first three letters.  Minutes and seconds are
+  // zero-padded.
+  // 
+  // These substitutions can be used with `substitute-template-variables-in-string'
+  { double tz = getLocalTimeZone();
+
+    { int year = NULL_INTEGER;
+      int month = NULL_INTEGER;
+      int day = NULL_INTEGER;
+      Keyword* dow = NULL;
+
+      year = date->getCalendarDate(tz, month, day, dow);
+      substitutionList->insertAt(wrapString("YEAR"), wrapString(integerToString(((long long int)(year)))));
+      substitutionList->insertAt(wrapString("MONTH"), ((StringWrapper*)((oMONTH_NAME_VECTORo->theArray)[month])));
+      substitutionList->insertAt(wrapString("MON"), wrapString(integerToString(((long long int)(month)))));
+      substitutionList->insertAt(wrapString("DAY"), wrapString(integerToString(((long long int)(day)))));
+      substitutionList->insertAt(wrapString("DAY-OF-WEEK"), wrapString(stringCapitalize(dow->symbolName)));
+      substitutionList->insertAt(wrapString("DOW"), wrapString(stringCapitalize(stringSubsequence(dow->symbolName, 0, 3))));
+      substitutionList->insertAt(wrapString("DATE"), wrapString(stringConcatenate(formatWithPadding(integerToString(((long long int)(day))), 2, '0', KWD_DATE_TIME_RIGHT, false), "-", 3, ((StringWrapper*)((oMONTH_ABBREVIATION_VECTORo->theArray)[month]))->wrapperValue, "-", integerToString(((long long int)(year))))));
+    }
+    { int hour = NULL_INTEGER;
+      int min = NULL_INTEGER;
+      int sec = NULL_INTEGER;
+      int millis = NULL_INTEGER;
+
+      hour = date->getTime(tz, min, sec, millis);
+      millis = millis;
+      substitutionList->insertAt(wrapString("HOUR"), wrapString(integerToString(((long long int)(hour)))));
+      substitutionList->insertAt(wrapString("MINUTE"), wrapString(formatWithPadding(integerToString(((long long int)(min))), 2, '0', KWD_DATE_TIME_RIGHT, false)));
+      substitutionList->insertAt(wrapString("SECOND"), wrapString(formatWithPadding(integerToString(((long long int)(sec))), 2, '0', KWD_DATE_TIME_RIGHT, false)));
+      substitutionList->insertAt(wrapString("TIME"), wrapString(stringConcatenate(integerToString(((long long int)(hour))), ":", 3, formatWithPadding(integerToString(((long long int)(min))), 2, '0', KWD_DATE_TIME_RIGHT, false), ":", formatWithPadding(integerToString(((long long int)(sec))), 2, '0', KWD_DATE_TIME_RIGHT, false))));
+    }
+    substitutionList->insertAt(wrapString("TIMEZONE"), wrapString(timeZoneFormat60(tz, false)));
+    substitutionList->insertAt(wrapString("IOS8601"), wrapString(date->calendarDateToIso8601String(tz, true)));
+  }
+}
+
+void addCurrentDateSubstitution(KeyValueList* substitutionList) {
+  // Fill in `substitution-list' with date information for the current
+  // date and time.  See `add-date-substitution' for details.
+  addDateSubstitution(makeCurrentDateTime(), substitutionList);
 }
 
 void helpStartupDateTime1() {
@@ -2154,7 +2209,7 @@ void helpStartupDateTime2() {
     defineFunctionObject("GET-LOCAL-TIME-ZONE", "(DEFUN (GET-LOCAL-TIME-ZONE FLOAT) () :PUBLIC? TRUE :DOCUMENTATION \"Returns the current time zone offset from UTC as a float,\nconsidering the effects of daylight savings time.\")", ((cpp_function_code)(&getLocalTimeZone)), NULL);
     defineFunctionObject("GET-LOCAL-STANDARD-TIME-ZONE", "(DEFUN (GET-LOCAL-STANDARD-TIME-ZONE FLOAT) () :PUBLIC? TRUE :DOCUMENTATION \"Returns the standard time zone offset from UTC as a float,\nwithout considering the effects of daylight savings time.\")", ((cpp_function_code)(&getLocalStandardTimeZone)), NULL);
     defineFunctionObject("GET-LOCAL-TIME-ZONE-FOR-DATE", "(DEFUN (GET-LOCAL-TIME-ZONE-FOR-DATE FLOAT) ((YEAR INTEGER) (MONTH INTEGER) (DAY INTEGER) (HOUR INTEGER) (MINUTE INTEGER) (SECOND INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Returns the time zone offset from UTC (as a float)\nthat is applicable to the given date.  Assumes that the date is one\nthat is valid for the underlying programming language.  If not, then\nreturns 0.0\")", ((cpp_function_code)(&getLocalTimeZoneForDate)), NULL);
-    defineFunctionObject("TIME-ZONE-FORMAT60", "(DEFUN (TIME-ZONE-FORMAT60 STRING) ((TIMEZONE FLOAT)) :PUBLIC? FALSE :DOCUMENTATION \"Format `zone' as an hh:mm string\")", ((cpp_function_code)(&timeZoneFormat60)), NULL);
+    defineFunctionObject("TIME-ZONE-FORMAT60", "(DEFUN (TIME-ZONE-FORMAT60 STRING) ((TIMEZONE FLOAT) (INCLUDE-COLON? BOOLEAN)) :PUBLIC? FALSE :DOCUMENTATION \"Format `zone' as an hh:mm or hhmm string depending on `include-colon?'\")", ((cpp_function_code)(&timeZoneFormat60)), NULL);
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF DECODED-DATE-TIME)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (LOGXOR (LOGOR (LOGOR (SHIFT-LEFT (DATE-TIME-YEAR SELF) 9) (SHIFT-LEFT (DATE-TIME-MONTH SELF) 5)) (DATE-TIME-DAY SELF)) (LOGOR (LOGOR (SHIFT-LEFT (DATE-TIME-HOUR SELF) 12) (SHIFT-LEFT (DATE-TIME-MINUTE SELF) 6)) (DATE-TIME-SECOND SELF)))))", ((cpp_method_code)(&DecodedDateTime::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD SET-CURRENT-TIME ((VALUES-STRUCTURE DECODED-DATE-TIME)) :PUBLIC? TRUE :DOCUMENTATION \"Sets the current time into `values-structure'\")", ((cpp_method_code)(&DecodedDateTime::setCurrentTime)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD SET-CURRENT-DATE ((VALUES-STRUCTURE DECODED-DATE-TIME)) :PUBLIC? TRUE :DOCUMENTATION \"Sets the current date into `values-structure'\")", ((cpp_method_code)(&DecodedDateTime::setCurrentDate)), ((cpp_method_code)(NULL)));
@@ -2216,36 +2271,53 @@ void startupDateTime() {
     if (currentStartupTimePhaseP(4)) {
       MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
       MILLIS_PER_HOUR = 1000 * 60 * 60;
-      oMONTH_ABBREVIATION_VECTORo = newVector(13);
+      oMONTH_NAME_VECTORo = stella::newVector(13);
       { int i = NULL_INTEGER;
-        int iter038 = 0;
-        int upperBound039 = 12;
+        int iter039 = 0;
+        int upperBound040 = 12;
         Object* abbreviation = NULL;
-        Cons* iter040 = getQuotedTree("((\"NUL\" \"JAN\" \"FEB\" \"MAR\" \"APR\" \"MAY\" \"JUN\" \"JUL\" \"AUG\" \"SEP\" \"OCT\" \"NOV\" \"DEC\") \"/STELLA\")", "/STELLA");
+        Cons* iter041 = getQuotedTree("((\"NUL\" \"January\" \"February\" \"March\" \"April\" \"May\" \"June\" \"July\" \"August\" \"September\" \"October\" \"November\" \"December\") \"/STELLA\")", "/STELLA");
 
-        for  (i, iter038, upperBound039, abbreviation, iter040; 
-              (iter038 <= upperBound039) &&
-                  (!(iter040 == NIL)); 
-              iter038 = iter038 + 1,
-              iter040 = iter040->rest) {
-          i = iter038;
-          abbreviation = iter040->value;
+        for  (i, iter039, upperBound040, abbreviation, iter041; 
+              (iter039 <= upperBound040) &&
+                  (!(iter041 == NIL)); 
+              iter039 = iter039 + 1,
+              iter041 = iter041->rest) {
+          i = iter039;
+          abbreviation = iter041->value;
+          (oMONTH_NAME_VECTORo->theArray)[i] = (((StringWrapper*)(abbreviation)));
+        }
+      }
+      oMONTH_ABBREVIATION_VECTORo = stella::newVector(13);
+      { int i = NULL_INTEGER;
+        int iter043 = 0;
+        int upperBound044 = 12;
+        Object* abbreviation = NULL;
+        Cons* iter045 = getQuotedTree("((\"NUL\" \"JAN\" \"FEB\" \"MAR\" \"APR\" \"MAY\" \"JUN\" \"JUL\" \"AUG\" \"SEP\" \"OCT\" \"NOV\" \"DEC\") \"/STELLA\")", "/STELLA");
+
+        for  (i, iter043, upperBound044, abbreviation, iter045; 
+              (iter043 <= upperBound044) &&
+                  (!(iter045 == NIL)); 
+              iter043 = iter043 + 1,
+              iter045 = iter045->rest) {
+          i = iter043;
+          abbreviation = iter045->value;
           (oMONTH_ABBREVIATION_VECTORo->theArray)[i] = (((StringWrapper*)(abbreviation)));
         }
       }
       oDEFAULT_DECODED_DATE_TIMEo = newDecodedDateTime();
-      { DecodedDateTime* self042 = newDecodedDateTime();
+      { DecodedDateTime* self047 = newDecodedDateTime();
 
-        self042->dateTimeMillis = NULL_FLOAT;
-        self042->dateTimeSecond = NULL_INTEGER;
-        self042->dateTimeMinute = NULL_INTEGER;
-        self042->dateTimeHour = NULL_INTEGER;
-        self042->dateTimeDay = NULL_INTEGER;
-        self042->dateTimeMonth = NULL_INTEGER;
-        self042->dateTimeYear = NULL_INTEGER;
-        self042->dateTimeZone = NULL_FLOAT;
-        self042->dateTimeDow = NULL;
-        oNULL_DECODED_DATE_TIMEo = self042;
+        self047->dateTimeMillis = NULL_FLOAT;
+        self047->dateTimeSecond = NULL_INTEGER;
+        self047->dateTimeMinute = NULL_INTEGER;
+        self047->dateTimeHour = NULL_INTEGER;
+        self047->dateTimeDay = NULL_INTEGER;
+        self047->dateTimeMonth = NULL_INTEGER;
+        self047->dateTimeYear = NULL_INTEGER;
+        self047->dateTimeZone = NULL_FLOAT;
+        self047->dateTimeDow = NULL;
+        oNULL_DECODED_DATE_TIMEo = self047;
       }
     }
     if (currentStartupTimePhaseP(5)) {
@@ -2279,7 +2351,9 @@ void startupDateTime() {
       helpStartupDateTime2();
       defineMethodObject("(DEFMETHOD (GREATER-EQUAL? BOOLEAN) ((T1 CALENDAR-DATE) (T2 OBJECT)))", ((cpp_method_code)(&CalendarDate::greaterEqualP)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (GREATER-EQUAL? BOOLEAN) ((T1 TIME-DURATION) (T2 OBJECT)))", ((cpp_method_code)(&TimeDuration::greaterEqualP)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("FILL-IN-DATE-SUBSTITUTION", "(DEFUN FILL-IN-DATE-SUBSTITUTION ((SUBSTITUTION-LIST (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER))) :DOCUMENTATION \"Fill in `substitution-list' with template variable substitions\nfor the names YEAR and DATE which correspond to the current year and date.\nThese substitutions can then be used with `substitute-template-variables-in-string'\" :PUBLIC? TRUE)", ((cpp_function_code)(&fillInDateSubstitution)), NULL);
+      defineFunctionObject("FILL-IN-DATE-SUBSTITUTION", "(DEFUN FILL-IN-DATE-SUBSTITUTION ((SUBSTITUTION-LIST (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER))) :DOCUMENTATION \"Fill in `substitution-list' with template variable substitions\nfor the names YEAR and DATE which correspond to the current year and date.\nThese substitutions can then be used with `substitute-template-variables-in-string'\nDEPRECATED.  Use `add-date-subsitution' or `add-current-date-substitution' instead.\" :PUBLIC? TRUE)", ((cpp_function_code)(&fillInDateSubstitution)), NULL);
+      defineFunctionObject("ADD-DATE-SUBSTITUTION", "(DEFUN ADD-DATE-SUBSTITUTION ((DATE CALENDAR-DATE) (SUBSTITUTION-LIST (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER))) :DOCUMENTATION \"Fill in `substitution-list' with template variable substitions\nfor the names YEAR, MONTH, MON, DAY, HOUR, MINUTE, SECOND, TIMEZONE,\nDAY-OF-WEEK, DOW with their values for `date'.  Also, pre-formatted\nDATE, TIME and ISO8601 variables are set.\n\nTIMEZONE is in the format \\\"{+|-}hhmm\\\".  MONTH is the full English\nmonth name and MON is the numeric month.  DAY-OF-WEEK is an English\nstring and DOW is the first three letters.  Minutes and seconds are\nzero-padded.\n\nThese substitutions can be used with `substitute-template-variables-in-string'\" :PUBLIC? TRUE)", ((cpp_function_code)(&addDateSubstitution)), NULL);
+      defineFunctionObject("ADD-CURRENT-DATE-SUBSTITUTION", "(DEFUN ADD-CURRENT-DATE-SUBSTITUTION ((SUBSTITUTION-LIST (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER))) :DOCUMENTATION \"Fill in `substitution-list' with date information for the current\ndate and time.  See `add-date-substitution' for details.\" :PUBLIC? TRUE)", ((cpp_function_code)(&addCurrentDateSubstitution)), NULL);
       defineFunctionObject("STARTUP-DATE-TIME", "(DEFUN STARTUP-DATE-TIME () :PUBLIC? TRUE)", ((cpp_function_code)(&startupDateTime)), NULL);
       { MethodSlot* function = lookupFunction(SYM_DATE_TIME_STELLA_STARTUP_DATE_TIME);
 
@@ -2291,8 +2365,10 @@ void startupDateTime() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MILLIS-PER-DAY INTEGER (* 1000 60 60 24) :PUBLIC? FALSE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MILLIS-PER-HOUR INTEGER (* 1000 60 60) :PUBLIC? FALSE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MONTH-NAME-VECTOR* (VECTOR OF STRING-WRAPPER) NULL :DOCUMENTATION \"A vector of month names for printing dates\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MONTH-ABBREVIATION-VECTOR* (VECTOR OF STRING-WRAPPER) NULL :DOCUMENTATION \"A vector of month abbreviations for printing dates\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *DEFAULT-DECODED-DATE-TIME* DECODED-DATE-TIME (NEW DECODED-DATE-TIME))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *NULL-DECODED-DATE-TIME* DECODED-DATE-TIME (NEW DECODED-DATE-TIME :DATE-TIME-MILLIS NULL :DATE-TIME-SECOND NULL :DATE-TIME-MINUTE NULL :DATE-TIME-HOUR NULL :DATE-TIME-DAY NULL :DATE-TIME-MONTH NULL :DATE-TIME-YEAR NULL :DATE-TIME-ZONE NULL :DATE-TIME-DOW NULL))");

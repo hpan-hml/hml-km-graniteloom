@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,7 +56,7 @@ public class _StartupTaxonomies {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.SYM_STELLA_STARTUP_TAXONOMIES = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-TAXONOMIES", null, 0)));
+          Stella.SYM_STELLA_STARTUP_TAXONOMIES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-TAXONOMIES", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Stella.$TAXONOMY_POSTORDER_NUMBER$.setDefaultValue(new Integer(Stella.NULL_INTEGER));
@@ -125,6 +125,7 @@ public class _StartupTaxonomies {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *NUMBERING-INTERVAL* INTEGER 100 :PUBLIC? TRUE :DOCUMENTATION \"Spacing between postorder numbers for nodes.  Allows limited\nincremental insertions without having to renumber the whole graph.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MARKER-LABEL INTEGER -99 :DOCUMENTATION \"Dummy label used for marking a node\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT DELETED-LABEL INTEGER -99 :DOCUMENTATION \"Label used for marking deleted nodes\")");

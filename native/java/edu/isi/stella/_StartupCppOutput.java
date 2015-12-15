@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,18 +50,18 @@ import edu.isi.stella.javalib.*;
 public class _StartupCppOutput {
   static void helpStartupCppOutput1() {
     {
-      Stella.SYM_STELLA_$CURRENT_STREAM$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*CURRENT-STREAM*", null, 0)));
-      Stella.SYM_STELLA_NEWLINE = ((Symbol)(Stella.internRigidSymbolWrtModule("NEWLINE", null, 0)));
-      Stella.SYM_STELLA_CPP_NULL_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("CPP_NULL_VALUE", null, 0)));
-      Stella.SYM_STELLA_ASSIGN = ((Symbol)(Stella.internRigidSymbolWrtModule("ASSIGN", null, 0)));
-      Stella.SYM_STELLA_SCOLON = ((Symbol)(Stella.internRigidSymbolWrtModule("SCOLON", null, 0)));
-      Stella.SYM_STELLA_LPAREN = ((Symbol)(Stella.internRigidSymbolWrtModule("LPAREN", null, 0)));
-      Stella.SYM_STELLA_RPAREN = ((Symbol)(Stella.internRigidSymbolWrtModule("RPAREN", null, 0)));
-      Stella.SYM_STELLA_CPP_NEW = ((Symbol)(Stella.internRigidSymbolWrtModule("CPP_NEW", null, 0)));
-      Stella.SYM_STELLA_CPP_THROW = ((Symbol)(Stella.internRigidSymbolWrtModule("CPP_THROW", null, 0)));
-      Stella.KWD_PRIVATE = ((Keyword)(Stella.internRigidSymbolWrtModule("PRIVATE", null, 2)));
-      Stella.KWD_PROTECTED = ((Keyword)(Stella.internRigidSymbolWrtModule("PROTECTED", null, 2)));
-      Stella.SYM_STELLA_STARTUP_CPP_OUTPUT = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-CPP-OUTPUT", null, 0)));
+      Stella.SYM_STELLA_$CURRENT_STREAM$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*CURRENT-STREAM*", null, 0)));
+      Stella.SYM_STELLA_NEWLINE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NEWLINE", null, 0)));
+      Stella.SYM_STELLA_CPP_NULL_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_NULL_VALUE", null, 0)));
+      Stella.SYM_STELLA_ASSIGN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ASSIGN", null, 0)));
+      Stella.SYM_STELLA_SCOLON = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SCOLON", null, 0)));
+      Stella.SYM_STELLA_LPAREN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LPAREN", null, 0)));
+      Stella.SYM_STELLA_RPAREN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RPAREN", null, 0)));
+      Stella.SYM_STELLA_CPP_NEW = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_NEW", null, 0)));
+      Stella.SYM_STELLA_CPP_THROW = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_THROW", null, 0)));
+      Stella.KWD_PRIVATE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PRIVATE", null, 2)));
+      Stella.KWD_PROTECTED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PROTECTED", null, 2)));
+      Stella.SYM_STELLA_STARTUP_CPP_OUTPUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-CPP-OUTPUT", null, 0)));
     }
   }
 
@@ -113,6 +113,7 @@ public class _StartupCppOutput {
       Stella.defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((OBJECT OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "cppOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((CHARACTER CHARACTER-WRAPPER)))", Native.find_java_method("edu.isi.stella.CharacterWrapper", "cppOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((INT INTEGER-WRAPPER)))", Native.find_java_method("edu.isi.stella.IntegerWrapper", "cppOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+      Stella.defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((INT LONG-INTEGER-WRAPPER)))", Native.find_java_method("edu.isi.stella.LongIntegerWrapper", "cppOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((FLOAT FLOAT-WRAPPER)))", Native.find_java_method("edu.isi.stella.FloatWrapper", "cppOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((BOOLEAN BOOLEAN-WRAPPER)))", Native.find_java_method("edu.isi.stella.BooleanWrapper", "cppOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((CONS CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
@@ -126,7 +127,6 @@ public class _StartupCppOutput {
       Stella.defineMethodObject("(DEFMETHOD CPP-OUTPUT-LITERAL ((KEYWORD KEYWORD)))", Native.find_java_method("edu.isi.stella.Keyword", "cppOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("CPP-OUTPUT-IDENTIFIER", "(DEFUN CPP-OUTPUT-IDENTIFIER ((IDENTIFIER STRING-WRAPPER)))", Native.find_java_method("edu.isi.stella.StringWrapper", "cppOutputIdentifier", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StringWrapper")}), null);
       Stella.defineFunctionObject("CPP-OUTPUT-ATOMIC-EXPRESSION", "(DEFUN CPP-OUTPUT-ATOMIC-EXPRESSION ((ATOM OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "cppOutputAtomicExpression", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("CPP-INDENT", "(DEFUN CPP-INDENT ())", Native.find_java_method("edu.isi.stella.Stella", "cppIndent", new java.lang.Class [] {}), null);
     }
   }
 
@@ -149,6 +149,7 @@ public class _StartupCppOutput {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupCppOutput.helpStartupCppOutput2();
+          Stella.defineFunctionObject("CPP-INDENT", "(DEFUN CPP-INDENT ())", Native.find_java_method("edu.isi.stella.Stella", "cppIndent", new java.lang.Class [] {}), null);
           Stella.defineFunctionObject("CPP-OUTPUT-SEMICOLON?", "(DEFUN (CPP-OUTPUT-SEMICOLON? BOOLEAN) ((STATEMENT CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppOutputSemicolonP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("CPP-INDENT-STATEMENT?", "(DEFUN (CPP-INDENT-STATEMENT? BOOLEAN) ((STATEMENT CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppIndentStatementP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("ILLEGAL-CPP-STATEMENT?", "(DEFUN (ILLEGAL-CPP-STATEMENT? BOOLEAN) ((STATEMENT CONS)))", Native.find_java_method("edu.isi.stella.Cons", "illegalCppStatementP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
@@ -206,6 +207,7 @@ public class _StartupCppOutput {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CPP-INDENT-CHARS* INTEGER 0)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *OUTPUTTINGDEFPRINT?* BOOLEAN FALSE :DOCUMENTATION \"`true' when outputting a defprint, used to \n            conditionally dereference streams in print-native-stream \n            statements.  Also used to take the address of streams\n            when passed to functions inside of a defprint\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CPP-MAX-STRING-LITERAL-LENGTH* INTEGER 1024 :DOCUMENTATION \"C++ string literals longer than this are broken\ninto multiple pieces to avoid problems with certain MS compilers.\")");

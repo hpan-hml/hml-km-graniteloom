@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -152,6 +152,8 @@ public:
   int currentClockTicks;
   // Set to TRUE if query times out.
   boolean timeoutP;
+  // Set to TRUE if one or more depth cutoffs occurred.
+  boolean depthCutoffsP;
   KeyValueList* dynamicSlots;
 public:
   virtual void printObject(std::ostream* stream);
@@ -378,9 +380,11 @@ extern BooleanVectorIndexNode* oBOOLEAN_VECTOR_INDEXo;
 extern DECLARE_STELLA_SPECIAL(oPRINTINFRAMEo, ControlFrame* );
 extern int oCONTROL_FRAME_ID_COUNTERo;
 extern DECLARE_STELLA_SPECIAL(oREVERSEPOLARITYpo, boolean );
+extern boolean oTRACE_DISJOINTNESS_SUBGOALSpo;
 extern int oDUPLICATEINSTANCESCACHECROSSOVERPOINTo;
 extern QueryIterator* oMOST_RECENT_QUERYo;
-extern HashTable* oQUERY_CACHEo;
+extern KeyValueMap* oINLINE_QUERY_CACHEo;
+extern int oMAX_CACHED_QUERIES_PER_IDo;
 
 // Function signatures:
 InferenceLevel* newInferenceLevel();
@@ -439,6 +443,7 @@ Object* boundToInFrame(PatternVariable* self, ControlFrame* frame);
 Object* boundToInRecord(PatternVariable* self, PatternRecord* record);
 boolean containsOperatorP(Proposition* proposition, Surrogate* operatoR);
 Object* argumentBoundTo(Object* self);
+Object* safeArgumentBoundTo(Object* self);
 boolean helpUnifyAttributesP(Object* value1, Object* value2);
 boolean failsUnificationTypeCheckP(PatternVariable* v1, Object* i2);
 boolean failsAntecedentTypeCheckP(PatternVariable* v1, Object* i2);
@@ -490,7 +495,7 @@ boolean terminatePatternRecordP(PatternRecord* self);
 Vector* copyPatternArguments(Vector* arguments, Description* description);
 Cons* computeExternalBindings(Vector* externalarguments);
 Object* instantiateExternalBindings(Object* self);
-Description* instantiateExternalVariables(Description* self, KeyValueList* bindings);
+Description* instantiateExternalVariables(Description* self, KeyValueMap* bindings);
 boolean checkForSingleValuedGoalP(Description* pattern, Cons* iobindings);
 boolean overlayWithPatternFrameP(ControlFrame* frame, Description* description, Vector* ioarguments);
 boolean transferPatternQueryBindingsP(ControlFrame* frame, boolean futurebindingsP);
@@ -515,6 +520,8 @@ QuerySolutionTable* newQuerySolutionTable();
 Object* accessQuerySolutionTableSlotValue(QuerySolutionTable* self, Symbol* slotname, Object* value, boolean setvalueP);
 QuerySolution* newQuerySolution();
 Object* accessQuerySolutionSlotValue(QuerySolution* self, Symbol* slotname, Object* value, boolean setvalueP);
+boolean querySolutionLessThanP(QuerySolution* x, QuerySolution* y);
+boolean querySolutionGreaterThanP(QuerySolution* x, QuerySolution* y);
 QuerySolutionTableIterator* newQuerySolutionTableIterator();
 Object* accessQuerySolutionTableIteratorSlotValue(QuerySolutionTableIterator* self, Symbol* slotname, Object* value, boolean setvalueP);
 void printControlFrame(ControlFrame* self, std::ostream* stream);
@@ -542,7 +549,6 @@ Object* lookupDeferredQueryOption(Object* queryoroptions, Keyword* key, Surrogat
 int lookupHowManySolutions(Object* queryoroptions);
 BooleanWrapper* runYesOrNoQueryP(QueryIterator* query);
 Object* coerceToTree(Object* self);
-char* coerceToString(Object* self);
 QueryIterator* createAskQuery(Object* query);
 TruthValue* callAsk(Object* query);
 TruthValue* ask(Cons* propositionAoptions);
@@ -553,9 +559,11 @@ QueryIterator* callRetrieve(Object* query);
 QueryIterator* retrieve(Cons* query);
 QueryIterator* retrieveEvaluatorWrapper(Cons* arguments);
 Cons* consifyQuery(QueryIterator* self);
-void flushInlineQueryCaches();
+void clearInlineQueryCaches();
+QueryIterator* findCachedQuery(Symbol* queryid);
+void freeCachedQuery(QueryIterator* query, Symbol* queryid);
 QueryIterator* makeCachedQuery(Cons* variables, Cons* querybody, Cons* inputbindings, Object* options, Symbol* cacheid);
-Cons* applyCachedRetrieve(Cons* variables, Cons* querybody, Cons* inputbindings, Object* options, Symbol* cacheid, Cons*& _Return1);
+Cons* applyCachedRetrieve(Cons* variables, Cons* querybody, Cons* inputbindings, Object* options, Symbol* cacheid, Cons*& _Return1, Cons*& _Return2);
 boolean applyCachedAsk(Cons* inputvariables, Cons* querybody, Cons* inputbindings, Object* options, Symbol* cacheid, TruthValue*& _Return1);
 LogicObject* getPrototype(Description* description);
 TruthValue* unaryDescriptionSpecializesDescriptionP(Description* sub, Description* super);
@@ -569,7 +577,7 @@ Object* coerceToInstanceOrLiteral(Object* self, Object* original);
 Vector* coerceToVector(Object* self);
 TruthValue* satisfiesP(Object* instanceortuple, Object* relationref);
 boolean applyKappaP(Description* description, Vector* vector);
-Cons* updatePropositionsFromQuery(QueryIterator* query, Description* description, Module* module, Keyword* updatemode);
+Cons* updatePropositionsFromQuery(QueryIterator* query, Description* description, Module* module, Keyword* updatemode, boolean recordjustificationsP);
 QueryIterator* getQueryIteratorFromCommand(Cons* query);
 Cons* assertFromQuery(Cons* query, Cons* options);
 Cons* assertFromQueryEvaluatorWrapper(Cons* arguments);
@@ -586,6 +594,7 @@ void helpStartupQuery7();
 void helpStartupQuery8();
 void helpStartupQuery9();
 void helpStartupQuery10();
+void helpStartupQuery11();
 void startupQuery();
 
 // Auxiliary global declarations:
@@ -637,6 +646,7 @@ extern Symbol* SYM_QUERY_LOGIC_ALLOTTED_TIME;
 extern Symbol* SYM_QUERY_LOGIC_ALLOTTED_CLOCK_TICKS;
 extern Symbol* SYM_QUERY_LOGIC_CURRENT_CLOCK_TICKS;
 extern Symbol* SYM_QUERY_LOGIC_TIMEOUTp;
+extern Symbol* SYM_QUERY_LOGIC_DEPTH_CUTOFFSp;
 extern Symbol* SYM_QUERY_LOGIC_NEGATED_QUERY;
 extern Symbol* SYM_QUERY_LOGIC_LATEST_PARTIAL_SCORE;
 extern Symbol* SYM_QUERY_LOGIC_AUXILIARY_QUERY;
@@ -709,7 +719,7 @@ extern Keyword* KWD_QUERY_SHALLOW_DISJOINT;
 extern Keyword* KWD_QUERY_DISJOINT;
 extern Keyword* KWD_QUERY_ISA;
 extern Surrogate* SGT_QUERY_LOGIC_LOGIC_OBJECT;
-extern Keyword* KWD_QUERY_PERFORMANCE_CLUES;
+extern Keyword* KWD_QUERY_GOAL_TREE;
 extern Keyword* KWD_QUERY_WARNING;
 extern Symbol* SYM_QUERY_STELLA_NULL;
 extern Surrogate* SGT_QUERY_STELLA_LIST;
@@ -728,7 +738,6 @@ extern Symbol* SYM_QUERY_LOGIC_ANTECEDENTS_RULE;
 extern Keyword* KWD_QUERY_UP_TRUE;
 extern Keyword* KWD_QUERY_UP_FAIL;
 extern Keyword* KWD_QUERY_AND;
-extern Keyword* KWD_QUERY_GOAL_TREE;
 extern Keyword* KWD_QUERY_OR;
 extern Keyword* KWD_QUERY_NOT;
 extern Keyword* KWD_QUERY_FULL_SUBQUERY;
@@ -765,13 +774,18 @@ extern Keyword* KWD_QUERY_MANUFACTURE_SKOLEM;
 extern Symbol* SYM_QUERY_LOGIC_IO_VARIABLES;
 extern Surrogate* SGT_QUERY_LOGIC_NAMED_DESCRIPTION;
 extern Keyword* KWD_QUERY_DESCRIPTION;
+extern Keyword* KWD_QUERY_TOP_LEVEL;
 extern Symbol* SYM_QUERY_LOGIC_CACHED_SINGLE_VALUEDp;
 extern Keyword* KWD_QUERY_FAILED_OVERLAY;
+extern Surrogate* SGT_QUERY_PL_KERNEL_KB_PARTITION_MEMBERSHIP;
 extern Surrogate* SGT_QUERY_PL_KERNEL_KB_DISJOINT;
+extern Keyword* KWD_QUERY_EXTENSIONAL_ASSERTION;
 extern Symbol* SYM_QUERY_LOGIC_pD1;
 extern Symbol* SYM_QUERY_LOGIC_pD2;
 extern Symbol* SYM_QUERY_LOGIC_DISJOINT;
 extern Symbol* SYM_QUERY_LOGIC_F_DISJOINT_TERMSp_QUERY_000;
+extern Surrogate* SGT_QUERY_LOGIC_F_DISJOINT_TERMSp_MEMO_TABLE_000;
+extern Symbol* SYM_QUERY_LOGIC_F_DISJOINT_TERMSp_QUERY_001;
 extern Symbol* SYM_QUERY_STELLA_OR;
 extern Symbol* SYM_QUERY_STELLA_AND;
 extern Symbol* SYM_QUERY_PL_KERNEL_KB_CLASS;
@@ -825,12 +839,18 @@ extern Symbol* SYM_QUERY_STELLA_EXISTS;
 extern Keyword* KWD_QUERY_HOW_MANY;
 extern Keyword* KWD_QUERY_SORT_BY;
 extern Keyword* KWD_QUERY_SCORE;
+extern Keyword* KWD_QUERY_CHECK_VARIABLESp;
 extern Keyword* KWD_QUERY_MOVEOUT;
 extern Keyword* KWD_QUERY_MAXIMUM_DEPTH;
 extern Keyword* KWD_QUERY_INFERENCE_LEVEL;
 extern Surrogate* SGT_QUERY_STELLA_GENERALIZED_SYMBOL;
 extern Keyword* KWD_QUERY_THREE_VALUEDp;
 extern Keyword* KWD_QUERY_SINGLETONSp;
+extern Keyword* KWD_QUERY_ATOMIC_SINGLETONSp;
+extern Keyword* KWD_QUERY_ALL_PROOFSp;
+extern Keyword* KWD_QUERY_VALUES;
+extern Keyword* KWD_QUERY_VALUES_DESCENDING;
+extern Keyword* KWD_QUERY_VALUES_ASCENDING;
 extern Keyword* KWD_QUERY_MINIMUM_SCORE;
 extern Keyword* KWD_QUERY_MAXIMIZE_SCOREp;
 extern Keyword* KWD_QUERY_MAXIMUM_UNKNOWNS;
@@ -843,16 +863,19 @@ extern Symbol* SYM_QUERY_LOGIC_pC;
 extern Symbol* SYM_QUERY_LOGIC_pP;
 extern Symbol* SYM_QUERY_PL_KERNEL_KB_CONCEPT_PROTOTYPE;
 extern Symbol* SYM_QUERY_LOGIC_F_GET_PROTOTYPE_QUERY_000;
-extern Keyword* KWD_QUERY_EXTENSIONAL_ASSERTION;
 extern Keyword* KWD_QUERY_META;
 extern Surrogate* SGT_QUERY_STELLA_RELATION;
 extern Surrogate* SGT_QUERY_STELLA_VECTOR;
 extern Keyword* KWD_QUERY_UPDATE_FROM_QUERY;
 extern Symbol* SYM_QUERY_LOGIC_DESCRIPTIVEp;
 extern Symbol* SYM_QUERY_LOGIC_WEIGHT;
+extern Keyword* KWD_QUERY_ASSERT_FROM_QUERY;
 extern Keyword* KWD_QUERY_MODULE;
 extern Surrogate* SGT_QUERY_STELLA_MODULE;
 extern Keyword* KWD_QUERY_RELATION;
+extern Surrogate* SGT_QUERY_STELLA_SYMBOL;
+extern Keyword* KWD_QUERY_RECORD_JUSTIFICATIONSp;
+extern Surrogate* SGT_QUERY_STELLA_BOOLEAN;
 extern Keyword* KWD_QUERY_ASSERT_TRUE;
 extern Keyword* KWD_QUERY_RETRACT_TRUE;
 extern Symbol* SYM_QUERY_LOGIC_STARTUP_QUERY;

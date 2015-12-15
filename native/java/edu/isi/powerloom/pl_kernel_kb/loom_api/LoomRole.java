@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -70,7 +70,7 @@ public class LoomRole extends Thing {
    * @return NamedDescription
    */
   public static NamedDescription relationOfLoomRole(LoomRole role) {
-    return (((NamedDescription)(Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(LoomApi.SYM_LOOM_API_pROLE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_EXISTS, Stella_Object.cons(LoomApi.SYM_LOOM_API_pI, Stella_Object.cons(Stella.list$(Stella_Object.cons(LoomApi.SYM_LOOM_API_LOOM_ROLE_OF, Stella_Object.cons(LoomApi.SYM_LOOM_API_pI, Stella_Object.cons(LoomApi.SYM_LOOM_API_pR, Stella_Object.cons(LoomApi.SYM_LOOM_API_pROLE, Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(null, Stella_Object.cons(role, Stella.NIL))), Stella.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_RELATION_OF_LOOM_ROLE_QUERY_000, new Object[1]).value)));
+    return (((NamedDescription)(Logic.applyCachedRetrieve(Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(LoomApi.SYM_LOOM_API_pROLE, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(Logic.SYM_STELLA_EXISTS, Cons.cons(LoomApi.SYM_LOOM_API_pI, Cons.cons(Cons.list$(Cons.cons(LoomApi.SYM_LOOM_API_LOOM_ROLE_OF, Cons.cons(LoomApi.SYM_LOOM_API_pI, Cons.cons(LoomApi.SYM_LOOM_API_pR, Cons.cons(LoomApi.SYM_LOOM_API_pROLE, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(null, Cons.cons(role, Stella.NIL))), Cons.consList(Stella.NIL), LoomApi.SYM_LOOM_API_F_RELATION_OF_LOOM_ROLE_QUERY_000, new Object[2]).value)));
   }
 
   public static Stella_Object accessLoomRoleSlotValue(LoomRole self, Symbol slotname, Stella_Object value, boolean setvalueP) {

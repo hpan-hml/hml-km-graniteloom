@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -134,7 +134,7 @@ Context* stringGetStellaContextSlowly(char* self) {
           if (((boolean)(context))) {
             { OutputStringStream* stream000 = newOutputStringStream();
 
-              *(stream000->nativeStream) << "More than one context has the name or nickname " << "`" << self << "'";
+              *(stream000->nativeStream) << "More than one context has the name or nickname " << "`" << self << "'" << ": " << "`" << context << "'" << " and " << "`" << cxt << "'";
               throw *newNoSuchContextException(stream000->theStringReader());
             }
           }
@@ -162,7 +162,7 @@ Context* integerGetStellaContextSlowly(int self) {
 Context* Symbol::getStellaContextSlowly() {
   { Symbol* self = this;
 
-    return (stringGetStellaContextSlowly(self->relativeName()));
+    return (stringGetStellaContextSlowly(self->relativeName(false)));
   }
 }
 
@@ -184,18 +184,28 @@ Context* cc(Cons* name) {
     Object* namespec = name->value;
 
     if (((boolean)(namespec))) {
-      if (subtypeOfIntegerP(safePrimaryType(namespec))) {
-        { Object* namespec000 = namespec;
-          IntegerWrapper* namespec = ((IntegerWrapper*)(namespec000));
+      { Surrogate* testValue000 = safePrimaryType(namespec);
 
-          context = integerGetStellaContextSlowly(namespec->wrapperValue);
+        if (subtypeOfIntegerP(testValue000)) {
+          { Object* namespec000 = namespec;
+            IntegerWrapper* namespec = ((IntegerWrapper*)(namespec000));
+
+            context = integerGetStellaContextSlowly(((int)(namespec->wrapperValue)));
+          }
         }
-      }
-      else {
-        { char* contextname = coerceToModuleName(namespec, true);
+        else if (subtypeOfLongIntegerP(testValue000)) {
+          { Object* namespec001 = namespec;
+            LongIntegerWrapper* namespec = ((LongIntegerWrapper*)(namespec001));
 
-          if (contextname != NULL) {
-            context = getStellaContext(contextname, true);
+            context = integerGetStellaContextSlowly(((int)(namespec->wrapperValue)));
+          }
+        }
+        else {
+          { char* contextname = coerceToModuleName(namespec, true);
+
+            if (contextname != NULL) {
+              context = getStellaContext(contextname, true);
+            }
           }
         }
       }
@@ -214,24 +224,36 @@ Context* ccc(Cons* name) {
   // the pre-existing value of the current context.  `cc' is a no-op if the
   // context reference cannot be successfully evaluated.
   // In CommonLisp, if the new context is case sensitive, then change
-  // the readtable case to :INVERT, otherwise to :UPCASE.
+  // the readtable case to the value of CL-USER::*STELLA-CASE-SENSITIVE-READ-MODE*
+  // [default = :INVERT], otherwise to :UPCASE.
   { Context* context = oCONTEXTo.get();
     Object* namespec = name->value;
     boolean casesensitiveP = context->baseModule->caseSensitiveP;
 
     if (((boolean)(namespec))) {
-      if (subtypeOfIntegerP(safePrimaryType(namespec))) {
-        { Object* namespec000 = namespec;
-          IntegerWrapper* namespec = ((IntegerWrapper*)(namespec000));
+      { Surrogate* testValue000 = safePrimaryType(namespec);
 
-          context = integerGetStellaContextSlowly(namespec->wrapperValue);
+        if (subtypeOfIntegerP(testValue000)) {
+          { Object* namespec000 = namespec;
+            IntegerWrapper* namespec = ((IntegerWrapper*)(namespec000));
+
+            context = integerGetStellaContextSlowly(((int)(namespec->wrapperValue)));
+          }
         }
-      }
-      else {
-        { char* contextname = coerceToModuleName(namespec, true);
+        else if (subtypeOfLongIntegerP(testValue000)) {
+          { Object* namespec001 = namespec;
+            LongIntegerWrapper* namespec = ((LongIntegerWrapper*)(namespec001));
 
-          if (contextname != NULL) {
-            context = getStellaContext(contextname, true);
+            context = integerGetStellaContextSlowly(((int)(namespec->wrapperValue)));
+          }
+        }
+        else {
+          { char* contextname = coerceToModuleName(namespec, true);
+
+            if (contextname != NULL) {
+              context = getStellaContext(contextname, true);
+              casesensitiveP = context->baseModule->caseSensitiveP;
+            }
           }
         }
       }
@@ -599,7 +621,7 @@ void startupContexts() {
       defineMethodObject("(DEFMETHOD (GET-STELLA-CONTEXT-SLOWLY CONTEXT) ((SELF SYMBOL)))", ((cpp_method_code)(&Symbol::getStellaContextSlowly)), ((cpp_method_code)(NULL)));
       defineFunctionObject("CHANGE-CONTEXT-SLOWLY", "(DEFUN (CHANGE-CONTEXT-SLOWLY CONTEXT) ((SELF CONTEXT)))", ((cpp_function_code)(&changeContextSlowly)), NULL);
       defineFunctionObject("CC", "(DEFUN (CC CONTEXT) (|&REST| (NAME NAME)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Change the current context to the one named `name'.  Return the\nvalue of the new current context.  If no `name' is supplied, return\nthe pre-existing value of the current context.  `cc' is a no-op if the\ncontext reference cannot be successfully evaluated.\")", ((cpp_function_code)(&cc)), ((cpp_function_code)(&ccEvaluatorWrapper)));
-      defineFunctionObject("CCC", "(DEFUN (CCC CONTEXT) (|&REST| (NAME NAME)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Change the current context to the one named `name'.  Return the\nvalue of the new current context.  If no `name' is supplied, return\nthe pre-existing value of the current context.  `cc' is a no-op if the\ncontext reference cannot be successfully evaluated.\nIn CommonLisp, if the new context is case sensitive, then change\nthe readtable case to :INVERT, otherwise to :UPCASE.\")", ((cpp_function_code)(&ccc)), ((cpp_function_code)(&cccEvaluatorWrapper)));
+      defineFunctionObject("CCC", "(DEFUN (CCC CONTEXT) (|&REST| (NAME NAME)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Change the current context to the one named `name'.  Return the\nvalue of the new current context.  If no `name' is supplied, return\nthe pre-existing value of the current context.  `cc' is a no-op if the\ncontext reference cannot be successfully evaluated.\nIn CommonLisp, if the new context is case sensitive, then change\nthe readtable case to the value of CL-USER::*STELLA-CASE-SENSITIVE-READ-MODE*\n[default = :INVERT], otherwise to :UPCASE.\")", ((cpp_function_code)(&ccc)), ((cpp_function_code)(&cccEvaluatorWrapper)));
       defineFunctionObject("PRINT-CONTEXT", "(DEFUN PRINT-CONTEXT ((SELF CONTEXT) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printContext)), NULL);
       defineFunctionObject("HELP-PRINT-CONTEXT-TREE", "(DEFUN HELP-PRINT-CONTEXT-TREE ((LIST (LIST OF CONTEXT)) (LEVEL INTEGER)))", ((cpp_function_code)(&helpPrintContextTree)), NULL);
       defineFunctionObject("PRINT-CONTEXT-TREE", "(DEFUN PRINT-CONTEXT-TREE ((ROOT CONTEXT)))", ((cpp_function_code)(&printContextTree)), NULL);
@@ -619,6 +641,7 @@ void startupContexts() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *UNLINK-DISCARDED-CONTEXTS-ON-READ?* BOOLEAN TRUE :DOCUMENTATION \"Eliminate pointers to discarded contexts while\naccessing a CS-VALUE context table.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *UNLINK-DISCARDED-CONTEXTS-ON-WRITE?* BOOLEAN TRUE :DOCUMENTATION \"Eliminate pointers to discarded contexts while\ninserting into a CS-VALUE context table.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CONTEXT-BACKTRACKING-MODE* BOOLEAN FALSE :DOCUMENTATION \"If true, indicates that contexts are being allocated\nand deallocated in depth-first fashion, and that deallocation of\nCS-VALUE entries is taken care of during context destruction.\")");

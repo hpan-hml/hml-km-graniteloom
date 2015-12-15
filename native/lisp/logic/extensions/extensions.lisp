@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,18 +52,17 @@
 
 ;;; Forward declarations:
 
-(CL:DECLAIM
- (CL:SPECIAL *STARTUP-TIME-PHASE* *MODULE* STANDARD-OUTPUT EOL))
+(CL:DECLAIM (CL:SPECIAL *STARTUP-TIME-PHASE* *MODULE* STANDARD-OUTPUT EOL))
 
 ;;; (DEFUN MAIN ...)
 
 (CL:DEFUN MAIN ()
   "Main PowerLoom entry point for your code in C++ and Java."
-  (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT)
-   "Initializing STELLA..." EOL)
+  (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT) "Initializing STELLA..."
+   EOL)
   (STARTUP-STELLA-SYSTEM)
-  (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT)
-   "Initializing PowerLoom..." EOL)
+  (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT) "Initializing PowerLoom..."
+   EOL)
   (STARTUP-LOGIC-SYSTEM)
   (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT)
    "Initializing PowerLoom extensions..." EOL)
@@ -91,10 +90,11 @@
      "(DEFUN STARTUP-EXTENSIONS () :PUBLIC? TRUE)"
      (CL:FUNCTION STARTUP-EXTENSIONS) NULL)
     (CL:LET*
-     ((FUNCTION
-       (LOOKUP-FUNCTION SYM-EXTENSIONS-PLX-STARTUP-EXTENSIONS)))
+     ((FUNCTION (LOOKUP-FUNCTION SYM-EXTENSIONS-PLX-STARTUP-EXTENSIONS)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
       SYM-EXTENSIONS-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupExtensions") NULL-STRING-WRAPPER)))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 8) (FINALIZE-SLOTS)
-    (CLEANUP-UNFINALIZED-CLASSES))))
+    (CLEANUP-UNFINALIZED-CLASSES))
+   (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 9)
+    (%IN-MODULE (COPY-CONS-TREE (WRAP-STRING "PLX"))))))

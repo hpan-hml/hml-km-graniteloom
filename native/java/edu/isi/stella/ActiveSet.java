@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -87,7 +87,7 @@ public class ActiveSet extends List {
 
         if (!(self.theConsList.memberP(value))) {
           if (StandardObject.runSlotGuardDemonsP(owner, slot, self, value)) {
-            self.theConsList = Stella_Object.cons(value, self.theConsList);
+            self.theConsList = Cons.cons(value, self.theConsList);
             StandardObject.runSlotDemons(owner, slot, null, value);
           }
         }

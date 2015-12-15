@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -339,6 +339,9 @@ Keyword* resumeProofStrategyAfterSubgoal(ControlFrame* frame, Keyword* lastmove)
       else if (testValue000 == KWD_STRATEGIES_CONDITIONAL_ANTECEDENT) {
         result = continueConditionalAntecedentProof(frame, lastmove);
       }
+      else if (testValue000 == KWD_STRATEGIES_DISJUNCTIVE_IMPLICATION_INTRODUCTION) {
+        result = resumeDisjunctiveImplicationProof(frame, lastmove);
+      }
       else {
         propagateFrameTruthValue(frame->result, frame);
         if (((boolean)(frame->result->partialMatchFrame))) {
@@ -622,18 +625,47 @@ ControlFrame* createSubgoalFrame(ControlFrame* upframe, Proposition* goal, Keywo
   }
 }
 
+boolean specialistApplicableP(NamedDescription* description, Proposition* proposition) {
+  { int dArity = description->arity();
+    int pArity = proposition->arguments->length();
+
+    if (dArity < 0) {
+      return (true);
+    }
+    else {
+      return (dArity == pArity);
+    }
+  }
+}
+
 Keyword* continueSpecialistProof(ControlFrame* frame, Keyword* lastmove) {
   { Proposition* proposition = frame->proposition;
     NamedDescription* description = getDescription(((Surrogate*)(proposition->operatoR)));
     cpp_function_code specialistcode = lookupSpecialist(description);
-    Keyword* result = ((specialistcode != NULL) ? ((Keyword*  (*) (ControlFrame*, Keyword*))specialistcode)(frame, lastmove) : KWD_STRATEGIES_FAILURE);
+    Keyword* result = KWD_STRATEGIES_FAILURE;
 
-    if (!((boolean)(frame->truthValue))) {
-      if ((result == KWD_STRATEGIES_FINAL_SUCCESS) ||
-          (result == KWD_STRATEGIES_CONTINUING_SUCCESS)) {
-        setFrameTruthValue(frame, TRUE_TRUTH_VALUE);
+    if ((specialistcode != NULL) &&
+        specialistApplicableP(description, proposition)) {
+      if (oPOWERLOOM_EXECUTION_MODEo == KWD_STRATEGIES_DEBUG) {
+        result = ((Keyword*  (*) (ControlFrame*, Keyword*))specialistcode)(frame, lastmove);
       }
       else {
+        try {
+          result = ((Keyword*  (*) (ControlFrame*, Keyword*))specialistcode)(frame, lastmove);
+        }
+        catch (std::exception& _ne) {
+          std::exception* ne = &_ne;
+
+          *(STANDARD_WARNING->nativeStream) << "Warning: " << "Exception executing specialist for " << "`" << description << "'" << ": " << std::endl << "`" << ne << "'" << std::endl;
+        }
+      }
+      if (!((boolean)(frame->truthValue))) {
+        if ((result == KWD_STRATEGIES_FINAL_SUCCESS) ||
+            (result == KWD_STRATEGIES_CONTINUING_SUCCESS)) {
+          setFrameTruthValue(frame, TRUE_TRUTH_VALUE);
+        }
+        else {
+        }
       }
     }
     return (result);
@@ -793,7 +825,15 @@ Keyword* tryGoalCachesProof(ControlFrame* frame) {
       }
     }
   }
-  return (scanCachedGoals(frame));
+  if (allKeyArgumentsBoundP(frame->proposition)) {
+    if (scanCachedGoals(frame) == KWD_STRATEGIES_FAILURE) {
+      return (KWD_STRATEGIES_FAILURE);
+    }
+    else {
+      return (KWD_STRATEGIES_FINAL_SUCCESS);
+    }
+  }
+  return (KWD_STRATEGIES_FAILURE);
 }
 
 Keyword* tryLookupGroundAssertionsProof(ControlFrame* frame) {
@@ -860,7 +900,8 @@ Keyword* tryScanPropositionsProof(ControlFrame* frame) {
     }
     if (!(result == KWD_STRATEGIES_FAILURE)) {
       { TruthValue* truthvalue = propositionsIteratorTruthValue(iterator);
-        double weight = ((FloatWrapper*)(dynamicSlotValue(((Proposition*)(iterator->value))->dynamicSlots, SYM_STRATEGIES_LOGIC_WEIGHT, NULL_FLOAT_WRAPPER)))->wrapperValue;
+        Proposition* matchingProposition = ((Proposition*)(iterator->value));
+        double weight = ((FloatWrapper*)(dynamicSlotValue(matchingProposition->dynamicSlots, SYM_STRATEGIES_LOGIC_WEIGHT, NULL_FLOAT_WRAPPER)))->wrapperValue;
 
         if ((truthvalue == DEFAULT_TRUE_TRUTH_VALUE) ||
             (truthvalue == DEFAULT_FALSE_TRUTH_VALUE)) {
@@ -869,11 +910,29 @@ Keyword* tryScanPropositionsProof(ControlFrame* frame) {
             iterator = allMatchingPropositions(proposition);
             if (iterator->nextP()) {
               truthvalue = propositionsIteratorTruthValue(iterator);
-              weight = ((FloatWrapper*)(dynamicSlotValue(((Proposition*)(iterator->value))->dynamicSlots, SYM_STRATEGIES_LOGIC_WEIGHT, NULL_FLOAT_WRAPPER)))->wrapperValue;
+              matchingProposition = ((Proposition*)(iterator->value));
+              weight = ((FloatWrapper*)(dynamicSlotValue(matchingProposition->dynamicSlots, SYM_STRATEGIES_LOGIC_WEIGHT, NULL_FLOAT_WRAPPER)))->wrapperValue;
             }
           }
         }
         frame->truthValue = truthvalue;
+        if (oRECORD_JUSTIFICATIONSpo.get()) {
+          { Justification* fj = NULL;
+            Cons* iter000 = matchingProposition->forwardJustifications_reader()->theConsList;
+
+            for (fj, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+              fj = ((Justification*)(iter000->value));
+              frame->justifications->push(fj);
+              break;
+            }
+          }
+          { Justification* subsetJustification = createSubsetJustification(proposition, matchingProposition);
+
+            if (((boolean)(subsetJustification))) {
+              frame->justifications->push(subsetJustification);
+            }
+          }
+        }
         if (((boolean)(frame->partialMatchFrame))) {
           if (weight == NULL_FLOAT) {
             weight = 1.0;
@@ -1039,7 +1098,7 @@ Keyword* tryManufactureSkolemProof(ControlFrame* frame) {
       }
     }
     { Cons* inputvalues = argumentvalues->rest->reverse();
-      Proposition* definingproposition = createFunctionProposition(((Surrogate*)(proposition->operatoR)), inputvalues);
+      Proposition* definingproposition = findOrCreateFunctionProposition(((Surrogate*)(proposition->operatoR)), inputvalues);
 
       bindVariableToValueP(((PatternVariable*)((proposition->arguments->theArray)[(proposition->arguments->length() - 1)])), (definingproposition->arguments->theArray)[(definingproposition->arguments->length() - 1)], true);
       return (KWD_STRATEGIES_FINAL_SUCCESS);
@@ -1250,6 +1309,7 @@ Keyword* continueAntecedentsProof(ControlFrame* frame, Keyword* lastmove) {
         if (checkForDuplicateRuleP(frame, impliesproposition)) {
           continue;
         }
+        setDynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_LOGIC_ANTECEDENTS_RULE, impliesproposition, NULL);
         if (!trueP(impliesproposition)) {
           if (getForwardGoals(impliesproposition)->emptyP()) {
             continue;
@@ -1261,7 +1321,6 @@ Keyword* continueAntecedentsProof(ControlFrame* frame, Keyword* lastmove) {
             }
           }
         }
-        setDynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_LOGIC_ANTECEDENTS_RULE, impliesproposition, NULL);
         { ControlFrame* downframe = createSubgoalFrame(frame, NULL, KWD_STRATEGIES_FULL_SUBQUERY);
 
           setDynamicSlotValue(downframe->dynamicSlots, SYM_STRATEGIES_LOGIC_DESCRIPTION, antecedentdescription, NULL);
@@ -1540,12 +1599,12 @@ Keyword* tryFullSubqueryProof(ControlFrame* frame) {
   }
 }
 
-NamedDescription* extractCollectionArgument(Proposition* proposition) {
+Description* extractCollectionArgument(Proposition* proposition) {
   if (proposition->kind == KWD_STRATEGIES_ISA) {
     return (getDescription(((Surrogate*)(proposition->operatoR))));
   }
   else {
-    return (((NamedDescription*)(argumentBoundTo((proposition->arguments->theArray)[1]))));
+    return (((Description*)(argumentBoundTo((proposition->arguments->theArray)[1]))));
   }
 }
 
@@ -1583,7 +1642,7 @@ Keyword* tryIsaPropositionProof(ControlFrame* frame) {
     if (scanisapropositionsP) {
       return (tryScanPropositionsProof(frame));
     }
-    { NamedDescription* collection = extractCollectionArgument(proposition);
+    { Description* collection = extractCollectionArgument(proposition);
 
       if (testIsaP(member, collection->surrogateValueInverse)) {
         return (KWD_STRATEGIES_FINAL_SUCCESS);
@@ -1602,14 +1661,14 @@ Keyword* tryScanCollectionProof(ControlFrame* frame) {
     Iterator* iterator = ((Iterator*)(dynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_STELLA_ITERATOR, NULL)));
 
     if (!((boolean)(iterator))) {
-      { NamedDescription* collection = extractCollectionArgument(proposition);
+      { Description* collection = extractCollectionArgument(proposition);
         List* members = NULL;
 
         { boolean collectdirectmembersonlyP = inferableP(collection);
 
           members = assertedCollectionMembers(collection, collectdirectmembersonlyP);
           if (!collectdirectmembersonlyP) {
-            updateObservedCardinality(collection, members->length());
+            updateObservedCardinality(((NamedDescription*)(collection)), members->length());
           }
         }
         if (!((boolean)(members))) {
@@ -2108,7 +2167,7 @@ Keyword* continueClusteredConjunctionProof(ControlFrame* andframe, Keyword* last
       if (!((boolean)(adjunct))) {
         { ClusteredConjunctionProofAdjunct* self000 = newClusteredConjunctionProofAdjunct();
 
-          self000->clusterFrames = newVector(nofarguments);
+          self000->clusterFrames = stella::newVector(nofarguments);
           adjunct = self000;
         }
         setDynamicSlotValue(andframe->dynamicSlots, SYM_STRATEGIES_LOGIC_PROOF_ADJUNCT, adjunct, NULL);
@@ -2218,7 +2277,7 @@ Keyword* continueClusteredConjunctionProof(ControlFrame* andframe, Keyword* last
 World* pushMonotonicWorld() {
   { World* world = pushWorld();
 
-    setDynamicSlotValue(world->dynamicSlots, SYM_STRATEGIES_LOGIC_MONOTONICp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+    setDynamicSlotValue(world->dynamicSlots, SYM_STRATEGIES_LOGIC_MONOTONICp, TRUE_WRAPPER, FALSE_WRAPPER);
     return (world);
   }
 }
@@ -2285,7 +2344,7 @@ Keyword* tryDisjunctiveImplicationProof(ControlFrame* frame) {
                   index002 = index002 + 1) {
               disj = ((Proposition*)((vector002->theArray)[index002]));
               if (!(disj == subgoaldisjunct)) {
-                assumption = recursivelyFastenDownPropositions(((!negatedtruthvalueP) ? inheritProposition(disj, newKeyValueList()) : conjoinPropositions(inheritAsTopLevelProposition(disj, newKeyValueList()))), false);
+                assumption = recursivelyFastenDownPropositions(((!negatedtruthvalueP) ? inheritProposition(disj, newKeyValueMap()) : conjoinPropositions(inheritAsTopLevelProposition(disj, newKeyValueMap()))), false);
                 if (((boolean)(oTRACED_KEYWORDSo)) &&
                     oTRACED_KEYWORDSo->membP(KWD_STRATEGIES_GOAL_TREE)) {
                   std::cout << std::endl << "  Assume that " << assumption << " is " << ((negatedtruthvalueP ? (char*)"true" : (char*)"false")) << "." << std::endl << std::endl;
@@ -2323,13 +2382,38 @@ Keyword* tryDisjunctiveImplicationProof(ControlFrame* frame) {
   }
 }
 
+Keyword* resumeDisjunctiveImplicationProof(ControlFrame* frame, Keyword* lastmove) {
+  if (lastmove == KWD_STRATEGIES_UP_TRUE) {
+    propagateFrameTruthValue(frame->result, frame);
+    if (((boolean)(frame->result->partialMatchFrame))) {
+      frame->result->partialMatchFrame->propagateFramePartialTruth(frame);
+    }
+    if (((boolean)(frame->down))) {
+      return (KWD_STRATEGIES_CONTINUING_SUCCESS);
+    }
+    else {
+      return (KWD_STRATEGIES_FINAL_SUCCESS);
+    }
+  }
+  else if (lastmove == KWD_STRATEGIES_UP_FAIL) {
+    return (KWD_STRATEGIES_FAILURE);
+  }
+  else {
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "`" << lastmove << "'" << " is not a valid case option";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
+}
+
 Module* oPL_ANONYMOUS_MODULEo = NULL;
 
 LogicObject* createAnonymousInstance(char* prefix, boolean skolemP) {
   { Symbol* instancename = internSymbolInModule(yieldUniqueGensymName(prefix, oPL_ANONYMOUS_MODULEo), oPL_ANONYMOUS_MODULEo, true);
     LogicObject* instance = (skolemP ? createSkolem(NULL, instancename) : ((LogicObject*)(createLogicInstance(internSurrogateInModule(instancename->symbolName, ((Module*)(instancename->homeContext)), true), NULL))));
 
-    setDynamicSlotValue(instance->dynamicSlots, SYM_STRATEGIES_LOGIC_HYPOTHESIZED_INSTANCEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+    setDynamicSlotValue(instance->dynamicSlots, SYM_STRATEGIES_LOGIC_HYPOTHESIZED_INSTANCEp, TRUE_WRAPPER, FALSE_WRAPPER);
     return (instance);
   }
 }
@@ -2337,7 +2421,7 @@ LogicObject* createAnonymousInstance(char* prefix, boolean skolemP) {
 LogicObject* createHypothesizedInstance(char* prefix) {
   { LogicObject* instance = createAnonymousInstance(prefix, true);
 
-    setDynamicSlotValue(instance->dynamicSlots, SYM_STRATEGIES_LOGIC_HYPOTHESIZED_INSTANCEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+    setDynamicSlotValue(instance->dynamicSlots, SYM_STRATEGIES_LOGIC_HYPOTHESIZED_INSTANCEp, TRUE_WRAPPER, FALSE_WRAPPER);
     return (instance);
   }
 }
@@ -2430,24 +2514,29 @@ Keyword* continueForallProof(ControlFrame* frame, Keyword* lastmove) {
       testValue000 = true;
     }
     else {
-      { boolean alwaysP000 = true;
+      {
+        { boolean alwaysP000 = true;
 
-        { PatternVariable* var = NULL;
-          Vector* vector000 = ((Vector*)(dynamicSlotValue(frame->proposition->dynamicSlots, SYM_STRATEGIES_LOGIC_IO_VARIABLES, NULL)));
-          int index000 = 0;
-          int length000 = vector000->length();
+          { PatternVariable* var = NULL;
+            Vector* vector000 = ((Vector*)(dynamicSlotValue(frame->proposition->dynamicSlots, SYM_STRATEGIES_LOGIC_IO_VARIABLES, NULL)));
+            int index000 = 0;
+            int length000 = vector000->length();
 
-          for  (var, vector000, index000, length000; 
-                index000 < length000; 
-                index000 = index000 + 1) {
-            var = ((PatternVariable*)((vector000->theArray)[index000]));
-            if (!closedTermP(getDescription(logicalType(var)))) {
-              alwaysP000 = false;
-              break;
+            for  (var, vector000, index000, length000; 
+                  index000 < length000; 
+                  index000 = index000 + 1) {
+              var = ((PatternVariable*)((vector000->theArray)[index000]));
+              if (!closedTermP(getDescription(logicalType(var)))) {
+                alwaysP000 = false;
+                break;
+              }
             }
           }
+          testValue000 = alwaysP000;
         }
-        testValue000 = alwaysP000;
+        if (!testValue000) {
+          testValue000 = closedPropositionP(((Proposition*)((frame->proposition->arguments->theArray)[0])));
+        }
       }
     }
     if (testValue000) {
@@ -2554,10 +2643,9 @@ Keyword* continueConstantProof(ControlFrame* frame, Keyword* lastmove) {
 
 void registerInferenceCutoff(ControlFrame* frame, Keyword* reason) {
   while (((boolean)(frame))) {
-    if (frame->state == KWD_STRATEGIES_FAIL) {
+    if ((frame->state == KWD_STRATEGIES_FAIL) ||
+        collectDescriptionExtensionFrameP(frame)) {
       setDynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_LOGIC_INFERENCE_CUTOFF_REASON, reason, NULL);
-    }
-    else {
     }
     frame = frame->up;
   }
@@ -2652,6 +2740,7 @@ void helpStartupStrategies1() {
     KWD_STRATEGIES_ANTECEDENTS = ((Keyword*)(internRigidSymbolWrtModule("ANTECEDENTS", NULL, 2)));
     KWD_STRATEGIES_CLUSTERED_CONJUNCTION = ((Keyword*)(internRigidSymbolWrtModule("CLUSTERED-CONJUNCTION", NULL, 2)));
     KWD_STRATEGIES_CONDITIONAL_ANTECEDENT = ((Keyword*)(internRigidSymbolWrtModule("CONDITIONAL-ANTECEDENT", NULL, 2)));
+    KWD_STRATEGIES_DISJUNCTIVE_IMPLICATION_INTRODUCTION = ((Keyword*)(internRigidSymbolWrtModule("DISJUNCTIVE-IMPLICATION-INTRODUCTION", NULL, 2)));
     KWD_STRATEGIES_ATOMIC_GOAL = ((Keyword*)(internRigidSymbolWrtModule("ATOMIC-GOAL", NULL, 2)));
     KWD_STRATEGIES_DUMMY_JUSTIFICATION = ((Keyword*)(internRigidSymbolWrtModule("DUMMY-JUSTIFICATION", NULL, 2)));
     KWD_STRATEGIES_LOOKUP_GOAL_CACHES = ((Keyword*)(internRigidSymbolWrtModule("LOOKUP-GOAL-CACHES", NULL, 2)));
@@ -2672,11 +2761,11 @@ void helpStartupStrategies1() {
     KWD_STRATEGIES_IMPLIES = ((Keyword*)(internRigidSymbolWrtModule("IMPLIES", NULL, 2)));
     KWD_STRATEGIES_CONTAINED_BY = ((Keyword*)(internRigidSymbolWrtModule("CONTAINED-BY", NULL, 2)));
     KWD_STRATEGIES_EQUIVALENCE = ((Keyword*)(internRigidSymbolWrtModule("EQUIVALENCE", NULL, 2)));
-    KWD_STRATEGIES_DISJUNCTIVE_IMPLICATION_INTRODUCTION = ((Keyword*)(internRigidSymbolWrtModule("DISJUNCTIVE-IMPLICATION-INTRODUCTION", NULL, 2)));
     KWD_STRATEGIES_UNIVERSAL_INTRODUCTION = ((Keyword*)(internRigidSymbolWrtModule("UNIVERSAL-INTRODUCTION", NULL, 2)));
     KWD_STRATEGIES_SUBSUMPTION_TEST = ((Keyword*)(internRigidSymbolWrtModule("SUBSUMPTION-TEST", NULL, 2)));
     KWD_STRATEGIES_REFUTATION = ((Keyword*)(internRigidSymbolWrtModule("REFUTATION", NULL, 2)));
     KWD_STRATEGIES_STRATEGY = ((Keyword*)(internRigidSymbolWrtModule("STRATEGY", NULL, 2)));
+    KWD_STRATEGIES_DEBUG = ((Keyword*)(internRigidSymbolWrtModule("DEBUG", NULL, 2)));
     KWD_STRATEGIES_SUCCESS = ((Keyword*)(internRigidSymbolWrtModule("SUCCESS", NULL, 2)));
     SYM_STRATEGIES_LOGIC_LATEST_POSITIVE_SCORE = ((Symbol*)(internRigidSymbolWrtModule("LATEST-POSITIVE-SCORE", NULL, 0)));
     KWD_STRATEGIES_GOAL_CACHES = ((Keyword*)(internRigidSymbolWrtModule("GOAL-CACHES", NULL, 2)));
@@ -2685,12 +2774,12 @@ void helpStartupStrategies1() {
     KWD_STRATEGIES_FUNCTION = ((Keyword*)(internRigidSymbolWrtModule("FUNCTION", NULL, 2)));
     SYM_STRATEGIES_LOGIC_WEIGHT = ((Symbol*)(internRigidSymbolWrtModule("WEIGHT", NULL, 0)));
     SGT_STRATEGIES_PL_KERNEL_KB_MEMBER_OF = ((Surrogate*)(internRigidSymbolWrtModule("MEMBER-OF", getStellaModule("/PL-KERNEL-KB", true), 1)));
-    SGT_STRATEGIES_STELLA_LIST = ((Surrogate*)(internRigidSymbolWrtModule("LIST", getStellaModule("/STELLA", true), 1)));
   }
 }
 
 void helpStartupStrategies2() {
   {
+    SGT_STRATEGIES_STELLA_LIST = ((Surrogate*)(internRigidSymbolWrtModule("LIST", getStellaModule("/STELLA", true), 1)));
     KWD_STRATEGIES_FORWARD = ((Keyword*)(internRigidSymbolWrtModule("FORWARD", NULL, 2)));
     KWD_STRATEGIES_DUPLICATE_ = ((Keyword*)(internRigidSymbolWrtModule("DUPLICATE-", NULL, 2)));
     KWD_STRATEGIES_BACKWARD = ((Keyword*)(internRigidSymbolWrtModule("BACKWARD", NULL, 2)));
@@ -2748,6 +2837,7 @@ void helpStartupStrategies3() {
     defineFunctionObject("TRY-PARALLEL-THREAD-PROOF", "(DEFUN (TRY-PARALLEL-THREAD-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&tryParallelThreadProof)), NULL);
     defineFunctionObject("PUSH-NEXT-STRATEGY", "(DEFUN PUSH-NEXT-STRATEGY ((FRAME CONTROL-FRAME) (STRATEGY KEYWORD)))", ((cpp_function_code)(&pushNextStrategy)), NULL);
     defineFunctionObject("CREATE-SUBGOAL-FRAME", "(DEFUN (CREATE-SUBGOAL-FRAME CONTROL-FRAME) ((UPFRAME CONTROL-FRAME) (GOAL PROPOSITION) (STRATEGY KEYWORD)))", ((cpp_function_code)(&createSubgoalFrame)), NULL);
+    defineFunctionObject("SPECIALIST-APPLICABLE?", "(DEFUN (SPECIALIST-APPLICABLE? BOOLEAN) ((DESCRIPTION NAMED-DESCRIPTION) (PROPOSITION PROPOSITION)))", ((cpp_function_code)(&specialistApplicableP)), NULL);
     defineFunctionObject("CONTINUE-SPECIALIST-PROOF", "(DEFUN (CONTINUE-SPECIALIST-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&continueSpecialistProof)), NULL);
     defineFunctionObject("LOOKUP-CACHED-PROOF", "(DEFUN (LOOKUP-CACHED-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&lookupCachedProof)), NULL);
     defineFunctionObject("SCAN-CACHED-GOALS", "(DEFUN (SCAN-CACHED-GOALS KEYWORD) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&scanCachedGoals)), NULL);
@@ -2773,7 +2863,7 @@ void helpStartupStrategies3() {
     defineFunctionObject("CREATE-CONDITIONAL-ANTECEDENT-SUBFRAME", "(DEFUN (CREATE-CONDITIONAL-ANTECEDENT-SUBFRAME CONTROL-FRAME) ((FRAME CONTROL-FRAME) (GOAL PROPOSITION) (PROVABLERULE PROPOSITION)))", ((cpp_function_code)(&createConditionalAntecedentSubframe)), NULL);
     defineFunctionObject("CONTINUE-CONDITIONAL-ANTECEDENT-PROOF", "(DEFUN (CONTINUE-CONDITIONAL-ANTECEDENT-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&continueConditionalAntecedentProof)), NULL);
     defineFunctionObject("TRY-FULL-SUBQUERY-PROOF", "(DEFUN (TRY-FULL-SUBQUERY-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&tryFullSubqueryProof)), NULL);
-    defineFunctionObject("EXTRACT-COLLECTION-ARGUMENT", "(DEFUN (EXTRACT-COLLECTION-ARGUMENT NAMED-DESCRIPTION) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&extractCollectionArgument)), NULL);
+    defineFunctionObject("EXTRACT-COLLECTION-ARGUMENT", "(DEFUN (EXTRACT-COLLECTION-ARGUMENT DESCRIPTION) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&extractCollectionArgument)), NULL);
     defineFunctionObject("TRY-ISA-PROPOSITION-PROOF", "(DEFUN (TRY-ISA-PROPOSITION-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&tryIsaPropositionProof)), NULL);
     defineFunctionObject("TRY-SCAN-COLLECTION-PROOF", "(DEFUN (TRY-SCAN-COLLECTION-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&tryScanCollectionProof)), NULL);
     defineFunctionObject("INFERABLE-DESCRIPTION?", "(DEFUN (INFERABLE-DESCRIPTION? BOOLEAN) ((SELF OBJECT)))", ((cpp_function_code)(&inferableDescriptionP)), NULL);
@@ -2787,12 +2877,11 @@ void helpStartupStrategies3() {
     defineFunctionObject("CONTINUE-CLUSTERED-CONJUNCTION-PROOF", "(DEFUN (CONTINUE-CLUSTERED-CONJUNCTION-PROOF KEYWORD) ((ANDFRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&continueClusteredConjunctionProof)), NULL);
     defineFunctionObject("PUSH-MONOTONIC-WORLD", "(DEFUN (PUSH-MONOTONIC-WORLD WORLD) ())", ((cpp_function_code)(&pushMonotonicWorld)), NULL);
     defineFunctionObject("TRY-DISJUNCTIVE-IMPLICATION-PROOF", "(DEFUN (TRY-DISJUNCTIVE-IMPLICATION-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&tryDisjunctiveImplicationProof)), NULL);
+    defineFunctionObject("RESUME-DISJUNCTIVE-IMPLICATION-PROOF", "(DEFUN (RESUME-DISJUNCTIVE-IMPLICATION-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&resumeDisjunctiveImplicationProof)), NULL);
     defineFunctionObject("CREATE-ANONYMOUS-INSTANCE", "(DEFUN (CREATE-ANONYMOUS-INSTANCE LOGIC-OBJECT) ((PREFIX STRING) (SKOLEM? BOOLEAN)))", ((cpp_function_code)(&createAnonymousInstance)), NULL);
     defineFunctionObject("CREATE-HYPOTHESIZED-INSTANCE", "(DEFUN (CREATE-HYPOTHESIZED-INSTANCE LOGIC-OBJECT) ((PREFIX STRING)))", ((cpp_function_code)(&createHypothesizedInstance)), NULL);
     defineFunctionObject("TRY-UNIVERSAL-INTRODUCTION-PROOF", "(DEFUN (TRY-UNIVERSAL-INTRODUCTION-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&tryUniversalIntroductionProof)), NULL);
     defineFunctionObject("TRY-REFUTATION-PROOF", "(DEFUN (TRY-REFUTATION-PROOF KEYWORD) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&tryRefutationProof)), NULL);
-    defineFunctionObject("CONTINUE-FORALL-PROOF", "(DEFUN (CONTINUE-FORALL-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&continueForallProof)), NULL);
-    defineFunctionObject("CONTINUE-EXISTS-PROOF", "(DEFUN (CONTINUE-EXISTS-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&continueExistsProof)), NULL);
   }
 }
 
@@ -2825,6 +2914,8 @@ void startupStrategies() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupStrategies3();
+      defineFunctionObject("CONTINUE-FORALL-PROOF", "(DEFUN (CONTINUE-FORALL-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&continueForallProof)), NULL);
+      defineFunctionObject("CONTINUE-EXISTS-PROOF", "(DEFUN (CONTINUE-EXISTS-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&continueExistsProof)), NULL);
       defineFunctionObject("CONTINUE-CONSTANT-PROOF", "(DEFUN (CONTINUE-CONSTANT-PROOF KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&continueConstantProof)), NULL);
       defineExternalSlotFromStringifiedSource("(DEFSLOT CONTROL-FRAME INFERENCE-CUTOFF-REASON :TYPE KEYWORD :ALLOCATION :DYNAMIC)");
       defineFunctionObject("REGISTER-INFERENCE-CUTOFF", "(DEFUN REGISTER-INFERENCE-CUTOFF ((FRAME CONTROL-FRAME) (REASON KEYWORD)))", ((cpp_function_code)(&registerInferenceCutoff)), NULL);
@@ -2841,6 +2932,7 @@ void startupStrategies() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *PARALLEL-STRATEGIES* (LIST OF KEYWORD) (LIST :DISJUNCTIVE-IMPLICATION-INTRODUCTION :UNIVERSAL-INTRODUCTION :REFUTATION) :DOCUMENTATION \"List of strategies (keywords) that fork a parallel\ncontrol stack before executing.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *FAILED-GOAL-CUTOFFS* INTEGER 0)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SUCCEEDED-GOAL-CUTOFFS* INTEGER 0)");
@@ -2903,6 +2995,8 @@ Keyword* KWD_STRATEGIES_CLUSTERED_CONJUNCTION = NULL;
 
 Keyword* KWD_STRATEGIES_CONDITIONAL_ANTECEDENT = NULL;
 
+Keyword* KWD_STRATEGIES_DISJUNCTIVE_IMPLICATION_INTRODUCTION = NULL;
+
 Keyword* KWD_STRATEGIES_ATOMIC_GOAL = NULL;
 
 Keyword* KWD_STRATEGIES_DUMMY_JUSTIFICATION = NULL;
@@ -2943,8 +3037,6 @@ Keyword* KWD_STRATEGIES_CONTAINED_BY = NULL;
 
 Keyword* KWD_STRATEGIES_EQUIVALENCE = NULL;
 
-Keyword* KWD_STRATEGIES_DISJUNCTIVE_IMPLICATION_INTRODUCTION = NULL;
-
 Keyword* KWD_STRATEGIES_UNIVERSAL_INTRODUCTION = NULL;
 
 Keyword* KWD_STRATEGIES_SUBSUMPTION_TEST = NULL;
@@ -2952,6 +3044,8 @@ Keyword* KWD_STRATEGIES_SUBSUMPTION_TEST = NULL;
 Keyword* KWD_STRATEGIES_REFUTATION = NULL;
 
 Keyword* KWD_STRATEGIES_STRATEGY = NULL;
+
+Keyword* KWD_STRATEGIES_DEBUG = NULL;
 
 Keyword* KWD_STRATEGIES_SUCCESS = NULL;
 

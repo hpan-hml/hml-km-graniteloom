@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -78,7 +78,7 @@ public abstract class Iterator extends AbstractIterator {
   public AllPurposeIterator concatenate(Iterator iterator2, Cons otheriterators) {
     { Iterator iterator1 = this;
 
-      { Cons iteratorlist = Stella_Object.cons(iterator2, Stella.NIL);
+      { Cons iteratorlist = Cons.cons(iterator2, Stella.NIL);
 
         { Iterator iterator = null;
           Cons iter000 = otheriterators;
@@ -88,7 +88,7 @@ public abstract class Iterator extends AbstractIterator {
             iterator = ((Iterator)(iter000.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(iterator, Stella.NIL);
+                collect000 = Cons.cons(iterator, Stella.NIL);
                 if (iteratorlist == Stella.NIL) {
                   iteratorlist = collect000;
                 }
@@ -99,7 +99,7 @@ public abstract class Iterator extends AbstractIterator {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(iterator, Stella.NIL);
+                collect000.rest = Cons.cons(iterator, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -233,7 +233,7 @@ public abstract class Iterator extends AbstractIterator {
 
           while (iter000.nextP()) {
             value = iter000.value;
-            list = Stella_Object.cons(value, list);
+            list = Cons.cons(value, list);
           }
         }
         return (list.reverse());

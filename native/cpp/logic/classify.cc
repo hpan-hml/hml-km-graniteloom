@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -141,6 +141,7 @@ boolean inferableThroughBySomeDescendantP(NamedDescription* self, LogicObject* t
         else if (!inferableWithCycleCheckP(throughchild, alreadyvisitedlist)) {
           return (false);
         }
+        alreadyvisitedlist = cons(throughchild, alreadyvisitedlist);
         { Proposition* p = NULL;
           Cons* iter000 = applicableRulesOfDescription(throughchild, KWD_CLASSIFY_BACKWARD, false);
 
@@ -426,7 +427,7 @@ Cons* allNamedDirectSubdescriptions(Description* self) {
 void addIsaLink(LogicObject* instance, Description* superdescription) {
   { Proposition* isaprop = assertIsaProposition(instance, superdescription->surrogateValueInverse);
 
-    setDynamicSlotValue(isaprop->dynamicSlots, SYM_CLASSIFY_LOGIC_SUBSUMPTION_LINKp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+    setDynamicSlotValue(isaprop->dynamicSlots, SYM_CLASSIFY_LOGIC_SUBSUMPTION_LINKp, TRUE_WRAPPER, FALSE_WRAPPER);
     if (traceKeywordP(KWD_CLASSIFY_CLASSIFIER_INFERENCES)) {
       { 
         BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
@@ -442,7 +443,7 @@ void addIsaLink(LogicObject* instance, Description* superdescription) {
 void addSubsumptionLink(Description* subdescription, Description* superdescription) {
   { Proposition* impliesprop = assertDescriptionImpliesDescription(subdescription, superdescription, false);
 
-    setDynamicSlotValue(impliesprop->dynamicSlots, SYM_CLASSIFY_LOGIC_SUBSUMPTION_LINKp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+    setDynamicSlotValue(impliesprop->dynamicSlots, SYM_CLASSIFY_LOGIC_SUBSUMPTION_LINKp, TRUE_WRAPPER, FALSE_WRAPPER);
     if (traceKeywordP(KWD_CLASSIFY_CLASSIFIER_INFERENCES)) {
       { 
         BIND_STELLA_SPECIAL(oINDENTCOUNTERo, int, 4);
@@ -1467,7 +1468,7 @@ void evaporateVirgin(Description* self) {
             bridgeprop = assertDescriptionImpliesDescription(child, parent, true);
             if (((BooleanWrapper*)(dynamicSlotValue(cp->dynamicSlots, SYM_CLASSIFY_LOGIC_SUBRELATION_LINKp, FALSE_WRAPPER)))->wrapperValue &&
                 ((BooleanWrapper*)(dynamicSlotValue(pp->dynamicSlots, SYM_CLASSIFY_LOGIC_SUBRELATION_LINKp, FALSE_WRAPPER)))->wrapperValue) {
-              setDynamicSlotValue(bridgeprop->dynamicSlots, SYM_CLASSIFY_LOGIC_SUBRELATION_LINKp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+              setDynamicSlotValue(bridgeprop->dynamicSlots, SYM_CLASSIFY_LOGIC_SUBRELATION_LINKp, TRUE_WRAPPER, FALSE_WRAPPER);
             }
             updatePropositionTruthValue(bridgeprop, KWD_CLASSIFY_ASSERT_TRUE);
           }
@@ -2141,6 +2142,7 @@ void startupClassify() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SPECIALMARKERTABLE* MARKER-TABLE :DOCUMENTATION \"Special variable that points to the marker table \nreferenced by the function 'test-special-marker-table?'.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *FINDSUPERSANDSUBSDESCRIPTION* DESCRIPTION NULL :DOCUMENTATION \"Points to a possibly unnamed description being\ntemporarily classified.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CLASSIFICATIONSESSION* CLASSIFICATION-SESSION NULL :PUBLIC? TRUE :DOCUMENTATION \"Points to state of on-going classification session.\")");

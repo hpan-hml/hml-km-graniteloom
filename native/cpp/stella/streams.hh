@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -113,6 +113,7 @@ extern char* oHTML_QUOTED_CHARACTERSo;
 extern KeyValueList* oHTML_ESCAPE_TABLEo;
 extern KeyValueList* oLOGGING_REGISTRYo;
 extern double oLOGGING_LOCAL_TIME_ZONEo;
+extern int oLOG_INDENT_LEVELo;
 
 // Function signatures:
 Cons* formatMessageArguments(Cons* messageargumentstree, boolean trailingeolP);
@@ -153,6 +154,10 @@ InputStream* openNetworkStream(char* host, int port, OutputStream*& _Return1);
 Object* withInputFile(Cons* binding, Cons* body);
 Object* withOutputFile(Cons* binding, Cons* body);
 Object* withNetworkStream(Cons* binding, Cons* body);
+long long int nativeFileInputStreamPosition(std::istream* nstream);
+long long int nativeFileInputStreamPositionSetter(std::istream* nstream, long long int newpos);
+long long int nativeFileOutputStreamPosition(std::ostream* nstream);
+long long int nativeFileOutputStreamPositionSetter(std::ostream* nstream, long long int newpos);
 Cons* expandMarkupTagFunction(Cons* tagAndStream, Cons* body, boolean xmlP);
 Object* withHtmlTag(Cons* tagAndStream, Cons* body);
 Object* withXmlTag(Cons* tagAndStream, Cons* body);
@@ -174,8 +179,14 @@ NativeLineIterator* nativeLines(InputStream* stream);
 LineIterator* lines(InputStream* stream);
 CharacterIterator* characters(InputStream* stream);
 Object* lookupLoggingParameter(char* module, Keyword* parameter, Object* defaulT);
-void setLoggingParameters(char* module, int paramsAvalues, ...);
+void setLoggingParameters(char* module, Cons* paramsAvalues);
+void setLoggingParametersEvaluatorWrapper(Cons* arguments);
+void setLogLevel(char* module, Object* level);
+void setLogLevelEvaluatorWrapper(Cons* arguments);
 boolean logLevelLE(Object* level, char* module);
+void bumpLogIndent();
+void unbumpLogIndent();
+OutputStream* getLogStream(char* module);
 void logMessage(char* module, Object* loglevel, Cons* message);
 void logmsg(char* module, Object* loglevel, int message, ...);
 void helpStartupStreams1();
@@ -221,6 +232,7 @@ extern Symbol* SYM_STREAMS_STELLA_UNLESS;
 extern Symbol* SYM_STREAMS_STELLA_SUPPRESS_WARNINGSp;
 extern Symbol* SYM_STREAMS_STELLA_PRINT_ERROR_CONTEXT;
 extern Symbol* SYM_STREAMS_STELLA_STANDARD_ERROR;
+extern Symbol* SYM_STREAMS_STELLA_SIGNAL_TRANSLATION_NOTE;
 extern Symbol* SYM_STREAMS_STELLA_SIGNAL_TRANSLATION_WARNING;
 extern Symbol* SYM_STREAMS_STELLA_WHEN;
 extern Symbol* SYM_STREAMS_STELLA_NOT;
@@ -252,6 +264,7 @@ extern Surrogate* SGT_STREAMS_STELLA_INPUT_STRING_STREAM;
 extern Surrogate* SGT_STREAMS_STELLA_OUTPUT_STRING_STREAM;
 extern Surrogate* SGT_STREAMS_STELLA_INPUT_STREAM;
 extern Surrogate* SGT_STREAMS_STELLA_OUTPUT_STREAM;
+extern Keyword* KWD_STREAMS_BLOCK;
 extern Symbol* SYM_STREAMS_STELLA_FILE_INPUT_STREAM;
 extern Symbol* SYM_STREAMS_STELLA_UNWIND_PROTECT;
 extern Symbol* SYM_STREAMS_STELLA_PROGN;
@@ -266,16 +279,20 @@ extern Symbol* SYM_STREAMS_STELLA_OPEN_NETWORK_STREAM;
 extern Surrogate* SGT_STREAMS_STELLA_OBJECT;
 extern Symbol* SYM_STREAMS_STELLA_SUBSEQUENCE;
 extern Symbol* SYM_STREAMS_STELLA_POSITION;
+extern Keyword* KWD_STREAMS_LETTER;
+extern Keyword* KWD_STREAMS_DIGIT;
 extern Symbol* SYM_STREAMS_STELLA_THE_STREAM;
 extern Surrogate* SGT_STREAMS_STELLA_S_EXPRESSION_ITERATOR;
 extern Surrogate* SGT_STREAMS_STELLA_LINE_ITERATOR;
 extern Surrogate* SGT_STREAMS_STELLA_NATIVE_LINE_ITERATOR;
 extern Surrogate* SGT_STREAMS_STELLA_CHARACTER_ITERATOR;
-extern Keyword* KWD_STREAMS_LOG_LEVELS;
 extern Keyword* KWD_STREAMS_LEVEL;
+extern Keyword* KWD_STREAMS_LOG_LEVELS;
 extern Keyword* KWD_STREAMS_STREAM;
 extern Keyword* KWD_STREAMS_PREFIX;
 extern Keyword* KWD_STREAMS_MAX_WIDTH;
+extern Surrogate* SGT_STREAMS_STELLA_GENERALIZED_SYMBOL;
+extern Surrogate* SGT_STREAMS_STELLA_FILE_OUTPUT_STREAM;
 extern Symbol* SYM_STREAMS_STELLA_STARTUP_STREAMS;
 extern Symbol* SYM_STREAMS_STELLA_METHOD_STARTUP_CLASSNAME;
 

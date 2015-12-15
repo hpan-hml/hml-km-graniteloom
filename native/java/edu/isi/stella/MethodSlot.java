@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -97,7 +97,7 @@ public class MethodSlot extends Slot {
 
   public static Cons idlYieldConstructorSignatureTree(MethodSlot method) {
     Native.setSpecial(Stella.$METHODBEINGWALKED$, method);
-    return (Stella_Object.cons(GeneralizedSymbol.idlTranslateClassName(Stella.internSymbolInModule(method.slotOwner.symbolName, ((Module)(method.slotOwner.homeContext)), false)), Stella.list$(Stella_Object.cons(Stella.NIL, Stella_Object.cons(MethodSlot.idlTranslateConstructorName(method), Stella_Object.cons(Stella_Object.cons(MethodSlot.idlTranslateMethodParameters(method), Stella.NIL), Stella.NIL))))));
+    return (Cons.cons(GeneralizedSymbol.idlTranslateClassName(Symbol.internSymbolInModule(method.slotOwner.symbolName, ((Module)(method.slotOwner.homeContext)), false)), Cons.list$(Cons.cons(Stella.NIL, Cons.cons(MethodSlot.idlTranslateConstructorName(method), Cons.cons(Cons.cons(MethodSlot.idlTranslateMethodParameters(method), Stella.NIL), Stella.NIL))))));
   }
 
   public static Cons idlYieldOperationSignatureTree(MethodSlot method) {
@@ -111,7 +111,7 @@ public class MethodSlot extends Slot {
         mostgeneralmethod = ((MethodSlot)(mostgeneralmethod.slotDirectEquivalent));
       }
       returntype = mostgeneralmethod.slotBaseType;
-      return (Stella_Object.cons((method.methodFunctionP ? null : GeneralizedSymbol.idlTranslateClassName(Stella.internSymbolInModule(method.slotOwner.symbolName, ((Module)(method.slotOwner.homeContext)), false))), Stella.list$(Stella_Object.cons(Stella_Object.cons(StandardObject.idlTranslateTypeSpec(returntype), Stella.NIL), Stella_Object.cons(MethodSlot.idlTranslateFunctionName(method), Stella_Object.cons(Stella_Object.cons(MethodSlot.idlTranslateMethodParameters(method), Stella.NIL), Stella.NIL))))));
+      return (Cons.cons((method.methodFunctionP ? null : GeneralizedSymbol.idlTranslateClassName(Symbol.internSymbolInModule(method.slotOwner.symbolName, ((Module)(method.slotOwner.homeContext)), false))), Cons.list$(Cons.cons(Cons.cons(StandardObject.idlTranslateTypeSpec(returntype), Stella.NIL), Cons.cons(MethodSlot.idlTranslateFunctionName(method), Cons.cons(Cons.cons(MethodSlot.idlTranslateMethodParameters(method), Stella.NIL), Stella.NIL))))));
     }
   }
 
@@ -133,7 +133,7 @@ public class MethodSlot extends Slot {
             name = name;
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Stella.SYM_STELLA_IN, Stella.NIL);
+                collect000 = Cons.cons(Stella.SYM_STELLA_IN, Stella.NIL);
                 if (directions == Stella.NIL) {
                   directions = collect000;
                 }
@@ -144,7 +144,7 @@ public class MethodSlot extends Slot {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Stella.SYM_STELLA_IN, Stella.NIL);
+                collect000.rest = Cons.cons(Stella.SYM_STELLA_IN, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -173,7 +173,7 @@ public class MethodSlot extends Slot {
           direction = iter003.value;
           if (collect001 == null) {
             {
-              collect001 = Stella_Object.cons(Symbol.idlTranslateMethodParameter(name, type, ((Symbol)(direction))), Stella.NIL);
+              collect001 = Cons.cons(Symbol.idlTranslateMethodParameter(name, type, ((Symbol)(direction))), Stella.NIL);
               if (result == Stella.NIL) {
                 result = collect001;
               }
@@ -184,7 +184,7 @@ public class MethodSlot extends Slot {
           }
           else {
             {
-              collect001.rest = Stella_Object.cons(Symbol.idlTranslateMethodParameter(name, type, ((Symbol)(direction))), Stella.NIL);
+              collect001.rest = Cons.cons(Symbol.idlTranslateMethodParameter(name, type, ((Symbol)(direction))), Stella.NIL);
               collect001 = collect001.rest;
             }
           }
@@ -332,7 +332,7 @@ public class MethodSlot extends Slot {
               (i > 1)) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Symbol.javaTranslateMethodParameter(pname, ptype, method), Stella.NIL);
+                collect000 = Cons.cons(Symbol.javaTranslateMethodParameter(pname, ptype, method), Stella.NIL);
                 if (translatedparameters == Stella.NIL) {
                   translatedparameters = collect000;
                 }
@@ -343,7 +343,7 @@ public class MethodSlot extends Slot {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Symbol.javaTranslateMethodParameter(pname, ptype, method), Stella.NIL);
+                collect000.rest = Cons.cons(Symbol.javaTranslateMethodParameter(pname, ptype, method), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -351,7 +351,7 @@ public class MethodSlot extends Slot {
         }
       }
       if (!(method.methodReturnTypeSpecifiers().rest() == Stella.NIL)) {
-        translatedparameters = translatedparameters.concatenate(Stella_Object.cons(Stella.javaTranslateReturnParameter(), Stella.NIL), Stella.NIL);
+        translatedparameters = translatedparameters.concatenate(Cons.cons(Stella.javaTranslateReturnParameter(), Stella.NIL), Stella.NIL);
       }
       return (translatedparameters);
     }
@@ -389,17 +389,17 @@ public class MethodSlot extends Slot {
             skipparameterP = false;
           }
           else if (Stella_Object.anchoredTypeSpecifierP(ts)) {
-            paramclasses = Stella_Object.cons(StandardObject.javaYieldClassObjectExpression(StandardObject.computeAnchoredTypeSpec(owner, ((AnchoredTypeSpecifier)(ts)))), paramclasses);
+            paramclasses = Cons.cons(StandardObject.javaYieldClassObjectExpression(StandardObject.computeAnchoredTypeSpec(owner, ((AnchoredTypeSpecifier)(ts)))), paramclasses);
           }
           else {
-            paramclasses = Stella_Object.cons(StandardObject.javaYieldClassObjectExpression(ts), paramclasses);
+            paramclasses = Cons.cons(StandardObject.javaYieldClassObjectExpression(ts), paramclasses);
           }
         }
       }
       if (!(fn.methodReturnTypeSpecifiers().rest() == Stella.NIL)) {
-        paramclasses = Stella_Object.cons(StandardObject.javaYieldClassObjectArrayExpression(Stella.SGT_STELLA_NATIVE_OBJECT_POINTER, 1), paramclasses);
+        paramclasses = Cons.cons(StandardObject.javaYieldClassObjectArrayExpression(Stella.SGT_STELLA_NATIVE_OBJECT_POINTER, 1), paramclasses);
       }
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_ANONYMOUS_ARRAY, Stella_Object.cons(StringWrapper.wrapString("java.lang.Class"), Stella_Object.cons(paramclasses.reverse().concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_ANONYMOUS_ARRAY, Cons.cons(StringWrapper.wrapString("java.lang.Class"), Cons.cons(paramclasses.reverse().concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))));
     }
   }
 
@@ -446,19 +446,19 @@ public class MethodSlot extends Slot {
       Cons returntype = null;
 
       if (MethodSlot.javaSynchronizedMethodP(method)) {
-        modifiers = Stella_Object.cons(StringWrapper.wrapString("synchronized"), modifiers);
+        modifiers = Cons.cons(StringWrapper.wrapString("synchronized"), modifiers);
       }
       if (MethodSlot.javaMethodObjectIsFunctionP(method)) {
-        modifiers = Stella_Object.cons(StringWrapper.wrapString("static"), modifiers);
+        modifiers = Cons.cons(StringWrapper.wrapString("static"), modifiers);
       }
       if (method.abstractP) {
-        modifiers = Stella_Object.cons(StringWrapper.wrapString("abstract"), modifiers);
+        modifiers = Cons.cons(StringWrapper.wrapString("abstract"), modifiers);
       }
       if (method.publicP()) {
-        modifiers = Stella_Object.cons(StringWrapper.wrapString("public"), modifiers);
+        modifiers = Cons.cons(StringWrapper.wrapString("public"), modifiers);
       }
-      returntype = Stella_Object.cons(StandardObject.javaTranslateTypeSpec(MethodSlot.computeMostGeneralReturnType(method, method.computeReturnTypeSpec(method.slotOwner))), Stella.NIL);
-      return (Stella_Object.cons(modifiers, Stella_Object.cons(returntype, Stella_Object.cons(method.javaTranslateMethodName(), Stella_Object.cons(MethodSlot.javaTranslateMethodParameters(method), Stella.NIL)))));
+      returntype = Cons.cons(StandardObject.javaTranslateTypeSpec(MethodSlot.computeMostGeneralReturnType(method, method.computeReturnTypeSpec(method.slotOwner))), Stella.NIL);
+      return (Cons.cons(modifiers, Cons.cons(returntype, Cons.cons(method.javaTranslateMethodName(), Cons.cons(MethodSlot.javaTranslateMethodParameters(method), Stella.NIL)))));
     }
   }
 
@@ -491,12 +491,12 @@ public class MethodSlot extends Slot {
 
   public static Cons cppYieldConstructorSignatureTree(MethodSlot method) {
     Native.setSpecial(Stella.$METHODBEINGWALKED$, method);
-    return (Stella_Object.cons(GeneralizedSymbol.cppTranslateClassName(Stella.internSymbolInModule(method.slotOwner.symbolName, ((Module)(method.slotOwner.homeContext)), false)), Stella.list$(Stella_Object.cons(Stella.NIL, Stella_Object.cons(MethodSlot.cppTranslateConstructorName(method), Stella_Object.cons(Stella_Object.cons(MethodSlot.cppTranslateFunctionParameters(method), Stella.NIL), Stella.NIL))))));
+    return (Cons.cons(GeneralizedSymbol.cppTranslateClassName(Symbol.internSymbolInModule(method.slotOwner.symbolName, ((Module)(method.slotOwner.homeContext)), false)), Cons.list$(Cons.cons(Stella.NIL, Cons.cons(MethodSlot.cppTranslateConstructorName(method), Cons.cons(Cons.cons(MethodSlot.cppTranslateFunctionParameters(method), Stella.NIL), Stella.NIL))))));
   }
 
   public static Cons cppYieldMemberFuncSignatureTree(MethodSlot method) {
     Native.setSpecial(Stella.$METHODBEINGWALKED$, method);
-    return (Stella_Object.cons((method.methodFunctionP ? null : GeneralizedSymbol.cppTranslateClassName(Stella.internSymbolInModule(method.slotOwner.symbolName, ((Module)(method.slotOwner.homeContext)), false))), Stella.list$(Stella_Object.cons(Stella_Object.cons(StringWrapper.wrapString("virtual"), Stella_Object.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(MethodSlot.computeMostGeneralReturnType(method, method.computeReturnTypeSpec(method.slotOwner))), Stella.NIL)), Stella_Object.cons(MethodSlot.cppTranslateFunctionName(method), Stella_Object.cons(Stella_Object.cons(MethodSlot.cppTranslateFunctionParameters(method), Stella.NIL), Stella.NIL))))));
+    return (Cons.cons((method.methodFunctionP ? null : GeneralizedSymbol.cppTranslateClassName(Symbol.internSymbolInModule(method.slotOwner.symbolName, ((Module)(method.slotOwner.homeContext)), false))), Cons.list$(Cons.cons(Cons.cons(StringWrapper.wrapString("virtual"), Cons.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(MethodSlot.computeMostGeneralReturnType(method, method.computeReturnTypeSpec(method.slotOwner))), Stella.NIL)), Cons.cons(MethodSlot.cppTranslateFunctionName(method, false), Cons.cons(Cons.cons(MethodSlot.cppTranslateFunctionParameters(method), Stella.NIL), Stella.NIL))))));
   }
 
   public static boolean cppMethodObjectIsOverloadedFunctionP(MethodSlot method) {
@@ -511,20 +511,20 @@ public class MethodSlot extends Slot {
         MethodSlot.cppMethodObjectIsOverloadedFunctionP(method));
   }
 
-  public static StringWrapper cppTranslateMethodName(MethodSlot method) {
+  public static StringWrapper cppTranslateMethodName(MethodSlot method, boolean qualifyP) {
     { Surrogate methodtype = method.slotOwner;
-      StringWrapper translatedname = MethodSlot.cppTranslateFunctionName(method);
+      StringWrapper translatedname = MethodSlot.cppTranslateFunctionName(method, qualifyP);
 
       if (MethodSlot.cppMethodObjectIsFunctionP(method)) {
         return (translatedname);
       }
       else {
-        return (StringWrapper.wrapString(GeneralizedSymbol.cppTranslateClassName(Stella.internSymbolInModule(methodtype.symbolName, ((Module)(methodtype.homeContext)), false)).wrapperValue + "::" + translatedname.wrapperValue));
+        return (StringWrapper.wrapString(GeneralizedSymbol.cppTranslateClassName(Symbol.internSymbolInModule(methodtype.symbolName, ((Module)(methodtype.homeContext)), false)).wrapperValue + "::" + translatedname.wrapperValue));
       }
     }
   }
 
-  public static StringWrapper cppTranslateFunctionName(MethodSlot function) {
+  public static StringWrapper cppTranslateFunctionName(MethodSlot function, boolean qualifyP) {
     { Symbol functionname = Symbol.yieldRenamedNameIfNative(function.slotName, Stella.KWD_CPP, Stella.KWD_FUNCTION);
       String translatedname = null;
 
@@ -538,7 +538,12 @@ public class MethodSlot extends Slot {
       if (MethodSlot.slotReaderP(function)) {
         translatedname = translatedname + "_reader";
       }
-      return (StringWrapper.wrapString(Stella.cppYieldQualifiedName(translatedname, Symbol.cppFixupNameSymbol(function.slotName, function.homeModule()))));
+      if (qualifyP) {
+        return (StringWrapper.wrapString(Stella.cppYieldQualifiedName(translatedname, Symbol.cppFixupNameSymbol(function.slotName, function.homeModule()))));
+      }
+      else {
+        return (StringWrapper.wrapString(translatedname));
+      }
     }
   }
 
@@ -585,7 +590,7 @@ public class MethodSlot extends Slot {
                (!(pname == MethodSlot.variableArgumentsName(method))))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Symbol.cppTranslateFunctionParameter(pname, ptype, method), Stella.NIL);
+                collect000 = Cons.cons(Symbol.cppTranslateFunctionParameter(pname, ptype, method), Stella.NIL);
                 if (translatedparameters == Stella.NIL) {
                   translatedparameters = collect000;
                 }
@@ -596,7 +601,7 @@ public class MethodSlot extends Slot {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Symbol.cppTranslateFunctionParameter(pname, ptype, method), Stella.NIL);
+                collect000.rest = Cons.cons(Symbol.cppTranslateFunctionParameter(pname, ptype, method), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -614,7 +619,7 @@ public class MethodSlot extends Slot {
           rtypeindex = iter004;
           if (collect001 == null) {
             {
-              collect001 = Stella_Object.cons(Stella.cppTranslateReturnParameter(rtypeindex, rtype), Stella.NIL);
+              collect001 = Cons.cons(Stella.cppTranslateReturnParameter(rtypeindex, rtype), Stella.NIL);
               if (translatedparameters == Stella.NIL) {
                 translatedparameters = collect001;
               }
@@ -625,13 +630,13 @@ public class MethodSlot extends Slot {
           }
           else {
             {
-              collect001.rest = Stella_Object.cons(Stella.cppTranslateReturnParameter(rtypeindex, rtype), Stella.NIL);
+              collect001.rest = Cons.cons(Stella.cppTranslateReturnParameter(rtypeindex, rtype), Stella.NIL);
               collect001 = collect001.rest;
             }
           }
         }
       }
-      return (translatedparameters.concatenate(((variableargumentsP ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CPP_VAR_ARGS, Stella_Object.cons(Symbol.cppTranslateName(MethodSlot.variableArgumentsName(method)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL));
+      return (translatedparameters.concatenate(((variableargumentsP ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_VAR_ARGS, Cons.cons(Symbol.cppTranslateName(MethodSlot.variableArgumentsName(method)), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL));
     }
   }
 
@@ -665,6 +670,25 @@ public class MethodSlot extends Slot {
     }
   }
 
+  public static Symbol clMethodDefinitionOperator(MethodSlot method) {
+    if (method.methodFunctionP) {
+      return (Stella.internCommonLispSymbol("DEFUN"));
+    }
+    else if (method.abstractP) {
+      return (Stella.internCommonLispSymbol("DEFGENERIC"));
+    }
+    else if (MethodSlot.useDefconsmethodP(method)) {
+      return (Stella.SYM_STELLA_rrDEFCONSMETHOD);
+    }
+    else if ((method.slotOwner == Stella.SGT_STELLA_INTEGER) ||
+        (method.slotOwner == Stella.SGT_STELLA_LONG_INTEGER)) {
+      return (Stella.SYM_STELLA_rrDEFINTEGERMETHOD);
+    }
+    else {
+      return (Stella.internCommonLispSymbol("DEFMETHOD"));
+    }
+  }
+
   public static Cons clTranslateMethodParameters(MethodSlot method) {
     { boolean functionP = method.methodFunctionP;
       boolean abstractP = method.abstractP;
@@ -695,26 +719,26 @@ public class MethodSlot extends Slot {
             { Symbol testValue000 = Symbol.methodCallTypeForVectorStructs(method.slotName, method.slotOwner, functionP);
 
               if (testValue000 == Stella.SYM_STELLA_OBJECT_METHOD) {
-                otree = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CLSYS_SELF, Stella_Object.cons(firstparametertype, Stella_Object.cons(Stella.NIL, Stella.NIL)))), otree);
-                otree = Stella_Object.cons(oparameter, otree);
+                otree = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CLSYS_SELF, Cons.cons(firstparametertype, Cons.cons(Stella.NIL, Stella.NIL)))), otree);
+                otree = Cons.cons(oparameter, otree);
               }
               else if (testValue000 == Stella.SYM_STELLA_NON_OBJECT_METHOD) {
-                otree = Stella_Object.cons(Stella_Object.cons(oparameter, Stella_Object.cons(firstparametertype, Stella.NIL)), otree);
-                otree = Stella_Object.cons(Stella.SYM_STELLA_CLSYS_DUMMY, otree);
+                otree = Cons.cons(Cons.cons(oparameter, Cons.cons(firstparametertype, Stella.NIL)), otree);
+                otree = Cons.cons(Stella.SYM_STELLA_CLSYS_DUMMY, otree);
               }
               else {
-                otree = Stella_Object.cons(Stella_Object.cons(oparameter, Stella_Object.cons(firstparametertype, Stella.NIL)), otree);
+                otree = Cons.cons(Cons.cons(oparameter, Cons.cons(firstparametertype, Stella.NIL)), otree);
               }
             }
           }
           else {
-            otree = Stella_Object.cons(oparameter, otree);
+            otree = Cons.cons(oparameter, otree);
           }
         }
       }
       if (((BooleanWrapper)(KeyValueList.dynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, Stella.FALSE_WRAPPER))).wrapperValue &&
           (!MethodSlot.passVariableArgumentsAsListP(method))) {
-        otree.rest = Stella_Object.cons(Stella.internCommonLispSymbol("&REST"), otree.rest.concatenate(Stella.NIL, Stella.NIL));
+        otree.rest = Cons.cons(Stella.internCommonLispSymbol("&REST"), otree.rest.concatenate(Stella.NIL, Stella.NIL));
       }
       return (otree.reverse());
     }
@@ -727,7 +751,7 @@ public class MethodSlot extends Slot {
     { Stella_Object cltype = StandardObject.lookupClTypeFromStellaType(method.slotBaseType);
 
       if (cltype != null) {
-        return (Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("FTYPE"), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("FUNCTION"), Stella_Object.cons(MethodSlot.clYieldMethodArglistTypeDeclarations(method), Stella_Object.cons(Stella_Object.cons(MethodSlot.clYieldMethodReturnTypeDeclaration(method), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Symbol.clTranslateGlobalSymbol(Symbol.yieldRenamedNameIfNative(method.slotName, Stella.KWD_COMMON_LISP, Stella.KWD_FUNCTION)), Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+        return (((Cons)(Stella_Object.clConditionalizeTypeDeclarationTree(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("FTYPE"), Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("FUNCTION"), Cons.cons(MethodSlot.clYieldMethodArglistTypeDeclarations(method), Cons.cons(Cons.cons(MethodSlot.clYieldMethodReturnTypeDeclaration(method), Stella.NIL), Stella.NIL)))), Cons.cons(Symbol.clTranslateGlobalSymbol(Symbol.yieldRenamedNameIfNative(method.slotName, Stella.KWD_COMMON_LISP, Stella.KWD_FUNCTION)), Cons.cons(Stella.NIL, Stella.NIL)))))))));
       }
       else {
         return (null);
@@ -746,10 +770,10 @@ public class MethodSlot extends Slot {
           tspec = ((StandardObject)(iter000.value));
           cltype = ((Symbol)(StandardObject.lookupClTypeFromStellaType(StandardObject.computeRelativeTypeSpec(tspec, method.slotOwner))));
           if (cltype != null) {
-            types = Stella_Object.cons(cltype, types);
+            types = Cons.cons(cltype, types);
           }
           else {
-            types = Stella_Object.cons(Stella.internCommonLispSymbol("T"), types);
+            types = Cons.cons(Stella.internCommonLispSymbol("T"), types);
           }
         }
       }
@@ -757,7 +781,7 @@ public class MethodSlot extends Slot {
         return (types.value);
       }
       else {
-        return (Stella_Object.cons(Stella.internCommonLispSymbol("VALUES"), types.reverse().concatenate(Stella.NIL, Stella.NIL)));
+        return (Cons.cons(Stella.internCommonLispSymbol("VALUES"), types.reverse().concatenate(Stella.NIL, Stella.NIL)));
       }
     }
   }
@@ -772,11 +796,14 @@ public class MethodSlot extends Slot {
         for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           tspec = ((StandardObject)(iter000.value));
           cltype = ((Symbol)(StandardObject.lookupClTypeFromStellaType(StandardObject.computeRelativeTypeSpec(tspec, method.slotOwner))));
+          if (StandardObject.subTypeSpecOfP(tspec, Stella.SGT_STELLA_ARGUMENT_LIST)) {
+            types = Cons.cons(Stella.internCommonLispSymbol("&REST"), types);
+          }
           if (cltype != null) {
-            types = Stella_Object.cons(cltype, types);
+            types = Cons.cons(cltype, types);
           }
           else {
-            types = Stella_Object.cons(Stella.internCommonLispSymbol("T"), types);
+            types = Cons.cons(Stella.internCommonLispSymbol("T"), types);
           }
         }
       }
@@ -799,7 +826,7 @@ public class MethodSlot extends Slot {
           pname = ((Symbol)(iter001.value));
           cltype = ((Symbol)(StandardObject.lookupClTypeFromStellaType(StandardObject.computeRelativeTypeSpec(tspec, method.slotOwner))));
           if (cltype != null) {
-            types = Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("TYPE"), Stella_Object.cons(cltype, Stella_Object.cons(Stella_Object.cons(Symbol.clTranslateLocalSymbol(pname), Stella.NIL), Stella.NIL)))), types);
+            types = Cons.cons(Cons.list$(Cons.cons(Stella.internCommonLispSymbol("TYPE"), Cons.cons(cltype, Cons.cons(Cons.cons(Symbol.clTranslateLocalSymbol(pname), Stella.NIL), Stella.NIL)))), types);
           }
         }
       }
@@ -870,17 +897,17 @@ public class MethodSlot extends Slot {
         }
       }
       if (!evaluateargumentsP) {
-        KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_EVALUATE_ARGUMENTSp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_EVALUATE_ARGUMENTSp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       }
       if (variableargumentsP) {
-        KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, (false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, Stella.FALSE_WRAPPER, Stella.FALSE_WRAPPER);
       }
       wrappermethod = ((MethodSlot)(Cons.helpWalkAuxiliaryTree(wrappertree, true).theObject));
       if (!evaluateargumentsP) {
-        KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_EVALUATE_ARGUMENTSp, (false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_EVALUATE_ARGUMENTSp, Stella.FALSE_WRAPPER, Stella.FALSE_WRAPPER);
       }
       if (variableargumentsP) {
-        KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+        KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       }
       return (wrappermethod);
     }
@@ -888,7 +915,7 @@ public class MethodSlot extends Slot {
 
   public static Cons yieldEvaluatorWrapperTree(MethodSlot method) {
     { Stella_Object nametree = Symbol.yieldEvaluatorWrapperName(method.slotName);
-      Cons calltree = Stella_Object.cons(method.slotName, Stella.NIL);
+      Cons calltree = Cons.cons(method.slotName, Stella.NIL);
       List parametertypespecs = method.methodParameterTypeSpecifiers();
       Surrogate resulttype = method.type();
       int nofparameters = parametertypespecs.length();
@@ -905,7 +932,7 @@ public class MethodSlot extends Slot {
           index = iter000;
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(Symbol.yieldArgumentAccessTree(Stella.SYM_STELLA_ARGUMENTS, index, variableargumentsP &&
+              collect000 = Cons.cons(Symbol.yieldArgumentAccessTree(Stella.SYM_STELLA_ARGUMENTS, index, variableargumentsP &&
                   (index == nofparameters)), Stella.NIL);
               if (calltree == Stella.NIL) {
                 calltree = collect000;
@@ -917,7 +944,7 @@ public class MethodSlot extends Slot {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(Symbol.yieldArgumentAccessTree(Stella.SYM_STELLA_ARGUMENTS, index, variableargumentsP &&
+              collect000.rest = Cons.cons(Symbol.yieldArgumentAccessTree(Stella.SYM_STELLA_ARGUMENTS, index, variableargumentsP &&
                   (index == nofparameters)), Stella.NIL);
               collect000 = collect000.rest;
             }
@@ -932,7 +959,7 @@ public class MethodSlot extends Slot {
                   it.nextP(); iter001 = iter001.rest) {
           ptype = ((StandardObject)(iter001.value));
           if (StandardObject.subTypeSpecOfP(ptype, Stella.SGT_STELLA_LITERAL)) {
-            it.valueSetter(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SAFE_CAST, Stella_Object.cons(it.value, Stella_Object.cons(Stella_Object.cons(StandardObject.typeSpecToBaseType(ptype).typeToWrappedType(), Stella.NIL), Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+            it.valueSetter(Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAPPER_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SAFE_CAST, Cons.cons(it.value, Cons.cons(Cons.cons(StandardObject.typeSpecToBaseType(ptype).typeToWrappedType(), Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))));
           }
           else if (StandardObject.subTypeSpecOfP(ptype, Stella.SGT_STELLA_ARGUMENT_LIST)) {
             Symbol.pushVariableBinding(Stella.SYM_STELLA_ARGUMENTS, MethodSlot.yieldListifiedVariableArgumentsType(method));
@@ -940,26 +967,26 @@ public class MethodSlot extends Slot {
             Stella.popVariableBinding();
           }
           else if (!(ptype == Stella.SGT_STELLA_OBJECT)) {
-            it.valueSetter(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SAFE_CAST, Stella_Object.cons(it.value, Stella_Object.cons(Stella_Object.cons(StandardObject.yieldTypeSpecTree(ptype), Stella.NIL), Stella.NIL)))));
+            it.valueSetter(Cons.list$(Cons.cons(Stella.SYM_STELLA_SAFE_CAST, Cons.cons(it.value, Cons.cons(Cons.cons(StandardObject.yieldTypeSpecTree(ptype), Stella.NIL), Stella.NIL)))));
           }
         }
       }
       if (StandardObject.voidP(resulttype)) {
       }
       else if (Surrogate.subtypeOfP(resulttype, Stella.SGT_STELLA_LITERAL)) {
-        nametree = Stella_Object.cons(nametree, Stella_Object.cons(resulttype.typeToWrappedType(), Stella.NIL));
+        nametree = Cons.cons(nametree, Cons.cons(resulttype.typeToWrappedType(), Stella.NIL));
         if (method.type() == Stella.SGT_STELLA_BOOLEAN) {
-          calltree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAP_BOOLEAN, Stella_Object.cons(calltree, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+          calltree = Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAP_BOOLEAN, Cons.cons(calltree, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))));
         }
         else {
-          calltree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RESULT, Stella_Object.cons(calltree, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_RESULT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_WRAP_LITERAL, Stella_Object.cons(Stella.SYM_STELLA_RESULT, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+          calltree = Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RESULT, Cons.cons(calltree, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_RESULT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WRAP_LITERAL, Cons.cons(Stella.SYM_STELLA_RESULT, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))));
         }
       }
       else {
-        nametree = Stella_Object.cons(nametree, Stella_Object.cons(resulttype, Stella.NIL));
-        calltree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(calltree, Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        nametree = Cons.cons(nametree, Cons.cons(resulttype, Stella.NIL));
+        calltree = Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(calltree, Cons.cons(Stella.NIL, Stella.NIL))));
       }
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFUN, Stella_Object.cons(nametree, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ARGUMENTS, Stella_Object.cons(Stella.SYM_STELLA_CONS, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella_Object.cons(Stella.KWD_AUXILIARYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons((((nofparameters == 0) ? Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IGNORE, Stella_Object.cons(Stella.SYM_STELLA_ARGUMENTS, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Stella_Object.cons(calltree, Stella.NIL), Stella.NIL), Stella.NIL))))), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFUN, Cons.cons(nametree, Cons.cons(Cons.list$(Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ARGUMENTS, Cons.cons(Stella.SYM_STELLA_CONS, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Cons.cons(Stella.KWD_AUXILIARYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons((((nofparameters == 0) ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IGNORE, Cons.cons(Stella.SYM_STELLA_ARGUMENTS, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL) : Stella.NIL)).concatenate(Cons.cons(calltree, Stella.NIL), Stella.NIL), Stella.NIL))))), Stella.NIL)))));
     }
   }
 
@@ -1068,9 +1095,9 @@ public class MethodSlot extends Slot {
       }
       Cons.lastCons(selftree).firstSetter(selftypetree);
       if (renamed_Class == ((Stella_Class)(Stella.SGT_STELLA_OBJECT.surrogateValue))) {
-        body = Cons.extractOptions(tree, null).concatenate(Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL);
+        body = Cons.extractOptions(tree, null).concatenate(Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL), Stella.NIL);
       }
-      return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFMETHOD, Stella_Object.cons(tree.rest.value, Stella_Object.cons(Stella_Object.cons(parameters, Stella.list$(Stella_Object.cons(Stella.KWD_AUXILIARYp, Stella_Object.cons(Stella.SYM_STELLA_TRUE, Stella_Object.cons(Stella.KWD_PUBLICp, Stella_Object.cons((method.slotPublicP ? Stella.SYM_STELLA_TRUE : Stella.SYM_STELLA_FALSE), Stella_Object.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))))), Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFMETHOD, Cons.cons(tree.rest.value, Cons.cons(Cons.cons(parameters, Cons.list$(Cons.cons(Stella.KWD_AUXILIARYp, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.KWD_PUBLICp, Cons.cons((method.slotPublicP ? Stella.SYM_STELLA_TRUE : Stella.SYM_STELLA_FALSE), Cons.cons(body.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))))), Stella.NIL)))));
     }
   }
 
@@ -1109,10 +1136,10 @@ public class MethodSlot extends Slot {
   }
 
   public static Cons yieldVerbatimInlineCallTree(MethodSlot method, Cons walkedargs) {
-    return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_INLINE_CALL, Stella_Object.cons(Stella_Object.cons((method.methodFunctionP ? Stella.SYM_STELLA_SYS_CALL_FUNCTION : Stella.SYM_STELLA_SYS_CALL_METHOD), ((method.methodFunctionP ? Stella.NIL : Stella_Object.cons(method.slotOwner, Stella.NIL))).concatenate(Stella_Object.cons(method.slotName, walkedargs.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_INLINE_CALL, Cons.cons(Cons.cons((method.methodFunctionP ? Stella.SYM_STELLA_SYS_CALL_FUNCTION : Stella.SYM_STELLA_SYS_CALL_METHOD), ((method.methodFunctionP ? Stella.NIL : Cons.cons(method.slotOwner, Stella.NIL))).concatenate(Cons.cons(method.slotName, walkedargs.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))));
   }
 
-  public static Stella_Object walkInlineMethodCall(MethodSlot method, Cons walkedargs) {
+  public static Stella_Object walkInlineMethodCall(MethodSlot method, Cons walkedargs, StandardObject firstargtype) {
     { Stella_Object body = MethodSlot.inlinableMethodBody(method);
       int nofreferences = Stella.NULL_INTEGER;
       Stella_Object inlinearg = null;
@@ -1135,16 +1162,28 @@ public class MethodSlot extends Slot {
             Cons iter001 = method.methodParameterTypeSpecifiers().theConsList;
             Stella_Object arg = null;
             Cons iter002 = walkedargs;
+            int i = Stella.NULL_INTEGER;
+            int iter003 = 0;
 
             for (;(!(iter000 == Stella.NIL)) &&
                       ((!(iter001 == Stella.NIL)) &&
                        (!(iter002 == Stella.NIL))); 
                   iter000 = iter000.rest,
                   iter001 = iter001.rest,
-                  iter002 = iter002.rest) {
+                  iter002 = iter002.rest,
+                  iter003 = iter003 + 1) {
               var = ((Symbol)(iter000.value));
               tspec = ((StandardObject)(iter001.value));
               arg = iter002.value;
+              i = iter003;
+              if ((i == 0) &&
+                  (Slot.mixinMethodP(method) &&
+                   Stella.translateToSingleInheritanceLanguageP())) {
+                tspec = firstargtype;
+              }
+              else {
+                tspec = StandardObject.computeRelativeTypeSpec(tspec, firstargtype);
+              }
               Symbol.walkADeclaration(var, tspec, null, true);
               Symbol.setLocalVariableInfo(var, Stella.KWD_INLINE_ARGUMENT, arg);
               Symbol.setLocalVariableInfo(var, Stella.KWD_INLINE_REFERENCES, IntegerWrapper.wrapInteger(0));
@@ -1162,10 +1201,10 @@ public class MethodSlot extends Slot {
       }
       if (successP) {
         { Symbol var = null;
-          Cons iter003 = method.methodParameterNames().theConsList;
+          Cons iter004 = method.methodParameterNames().theConsList;
 
-          loop001 : for (;!(iter003 == Stella.NIL); iter003 = iter003.rest) {
-            var = ((Symbol)(iter003.value));
+          loop001 : for (;!(iter004 == Stella.NIL); iter004 = iter004.rest) {
+            var = ((Symbol)(iter004.value));
             inlinearg = Symbol.getLocalVariableInfo(var, Stella.KWD_INLINE_ARGUMENT);
             nofreferences = ((IntegerWrapper)(Symbol.getLocalVariableInfo(var, Stella.KWD_INLINE_REFERENCES))).wrapperValue;
             switch (nofreferences) {
@@ -1189,10 +1228,10 @@ public class MethodSlot extends Slot {
         }
       }
       { Symbol var = null;
-        Cons iter004 = method.methodParameterNames().theConsList;
+        Cons iter005 = method.methodParameterNames().theConsList;
 
-        for (;!(iter004 == Stella.NIL); iter004 = iter004.rest) {
-          var = ((Symbol)(iter004.value));
+        for (;!(iter005 == Stella.NIL); iter005 = iter005.rest) {
+          var = ((Symbol)(iter005.value));
           var = var;
           Stella.popVariableBinding();
         }
@@ -1269,6 +1308,7 @@ public class MethodSlot extends Slot {
 
         try {
           Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+          Stella.signalTranslationNote();
           if (!(Stella.suppressWarningsP())) {
             Stella.printErrorContext(">> NOTE: ", Stella.STANDARD_OUTPUT);
             {
@@ -1304,7 +1344,7 @@ public class MethodSlot extends Slot {
       }
       if (((BooleanWrapper)(KeyValueList.dynamicSlotValue(fnslot.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, Stella.FALSE_WRAPPER))).wrapperValue &&
           (ptypespecs.length() == 1)) {
-        tree.rest = Cons.walkVariableArguments(tree.rest, fnslot);
+        tree.rest = Cons.walkVariableArguments(tree.rest, fnslot, null);
         return (Stella.SGT_STELLA_UNKNOWN);
       }
       if ((tree.rest == Stella.NIL) ||
@@ -1326,13 +1366,13 @@ public class MethodSlot extends Slot {
             { Symbol testValue000 = fnslot.slotName;
 
               if (testValue000 == Stella.SYM_STELLA_GET_SYM) {
-                GeneralizedSymbol.registerSymbol(Stella.getSymFromOffset(otree000.wrapperValue));
+                GeneralizedSymbol.registerSymbol(Symbol.getSymFromOffset(otree000.wrapperValue));
               }
               else if (testValue000 == Stella.SYM_STELLA_GET_SGT) {
-                GeneralizedSymbol.registerSymbol(Stella.getSgtFromOffset(otree000.wrapperValue));
+                GeneralizedSymbol.registerSymbol(Surrogate.getSgtFromOffset(otree000.wrapperValue));
               }
               else if (testValue000 == Stella.SYM_STELLA_GET_KWD) {
-                GeneralizedSymbol.registerSymbol(Stella.getKwdFromOffset(otree000.wrapperValue));
+                GeneralizedSymbol.registerSymbol(Keyword.getKwdFromOffset(otree000.wrapperValue));
               }
               else {
               }
@@ -1376,7 +1416,7 @@ public class MethodSlot extends Slot {
                    StandardObject.subTypeSpecOfP(ptype, Stella.SGT_STELLA_LITERAL))))) {
               continue loop000;
             }
-            it.valueSetter(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_COPY_CONS_TREE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_QUOTE, Stella_Object.cons(it.value, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+            it.valueSetter(Cons.list$(Cons.cons(Stella.SYM_STELLA_COPY_CONS_TREE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_QUOTE, Cons.cons(it.value, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))));
           }
         }
       }
@@ -1410,7 +1450,7 @@ public class MethodSlot extends Slot {
               targetts = StandardObject.computeRelativeTypeSpec(targetts, firstargtype);
               if ((pindex == nofparameters) &&
                   ((BooleanWrapper)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, Stella.FALSE_WRAPPER))).wrapperValue) {
-                tree.nthRestSetter(Cons.walkVariableArguments(cursor, self), pindex);
+                tree.nthRestSetter(Cons.walkVariableArguments(cursor, self, firstargtype), pindex);
                 break loop000;
               }
               cursor.value = Stella_Object.walkExpressionTree(cursor.value, targetts, methodname, true, new Object[1]);
@@ -1429,16 +1469,16 @@ public class MethodSlot extends Slot {
           }
         }
         if (MethodSlot.inlineMethodCallP(self)) {
-          otree = MethodSlot.walkInlineMethodCall(self, tree.rest);
+          otree = MethodSlot.walkInlineMethodCall(self, tree.rest, firstargtype);
           if (otree != null) {
             return (Stella_Object.sysTree(otree, otypespec, MV_returnarray));
           }
         }
         if (self.methodFunctionP) {
-          otree = Stella_Object.cons(Stella.SYM_STELLA_SYS_CALL_FUNCTION, tree.concatenate(Stella.NIL, Stella.NIL));
+          otree = Cons.cons(Stella.SYM_STELLA_SYS_CALL_FUNCTION, tree.concatenate(Stella.NIL, Stella.NIL));
         }
         else {
-          otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Stella_Object.cons(self.slotOwner, Stella_Object.cons(tree.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))));
+          otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_CALL_METHOD, Cons.cons(self.slotOwner, Cons.cons(tree.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))));
         }
         { Stella_Object _return_temp = otree;
 
@@ -1462,7 +1502,7 @@ public class MethodSlot extends Slot {
       { ParametricTypeSpecifier self000 = ParametricTypeSpecifier.newParametricTypeSpecifier();
 
         self000.specifierBaseType = listbasetype;
-        self000.specifierParameterTypes = Stella.list(Stella_Object.cons(elementtype, Stella.NIL));
+        self000.specifierParameterTypes = List.list(Cons.cons(elementtype, Stella.NIL));
         { ParametricTypeSpecifier value000 = self000;
 
           return (value000);
@@ -1567,7 +1607,7 @@ public class MethodSlot extends Slot {
   public static Cons wrapBodyWithLogFunctionCallTree(MethodSlot method, Cons body) {
     if (Stella_Object.consP(body.value) &&
         (!(((Cons)(body.value)).value == Stella.SYM_STELLA_INLINE))) {
-      return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LOG_FUNCTION_CALL, Stella_Object.cons(StringWrapper.wrapString(Native.stringify(method)), Stella_Object.cons(Stella.NIL, Stella.NIL)))), body.concatenate(Stella.NIL, Stella.NIL)));
+      return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOG_FUNCTION_CALL, Cons.cons(StringWrapper.wrapString(Native.stringify(method)), Cons.cons(Stella.NIL, Stella.NIL)))), body.concatenate(Stella.NIL, Stella.NIL)));
     }
     else {
       return (body);
@@ -1845,7 +1885,7 @@ public class MethodSlot extends Slot {
       newfunction.slotExternalP = true;
       newfunction.finalizeSlotTypeComputations();
       if (oldfunction != null) {
-        HookList.runHooks(Stella.$REDEFINE_RELATION_HOOKS$, Stella.list(Stella_Object.cons(oldfunction, Stella_Object.cons(newfunction, Stella.NIL))));
+        HookList.runHooks(Stella.$REDEFINE_RELATION_HOOKS$, List.list(Cons.cons(oldfunction, Cons.cons(newfunction, Stella.NIL))));
         oldfunction.free();
       }
       return (newfunction);
@@ -1975,8 +2015,8 @@ public class MethodSlot extends Slot {
         return (Stella.NIL);
       }
       defaultvalue = storageslot.systemDefaultValue();
-      return (Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LET, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_CURSOR, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_CURSOR, Stella_Object.cons(storageslotname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LOOP, Stella_Object.cons(Stella_Object.cons(Stella.SYM_STELLA_WHEN, ((Surrogate.subtypeOfP(storageslot.type(), Stella.SGT_STELLA_BOOLEAN) ? Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella.NIL) : Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))).concatenate(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_CURSOR, Stella_Object.cons(((Surrogate.subtypeOfP(inheritanceslot.type(), Stella.SGT_STELLA_COLLECTION) ||
-          Surrogate.subtypeOfP(inheritanceslot.type(), Stella.SGT_STELLA_CONS)) ? Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_FIRST, Stella_Object.cons(Stella_Object.cons(inheritanceslotname, Stella_Object.cons(Stella.SYM_STELLA_CURSOR, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella_Object.cons(inheritanceslotname, Stella_Object.cons(Stella.SYM_STELLA_CURSOR, Stella.NIL))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_IF, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINEDp, Stella_Object.cons(Stella.SYM_STELLA_CURSOR, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SETQ, Stella_Object.cons(Stella.SYM_STELLA_VALUE, Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SLOT_VALUE, Stella_Object.cons(Stella.SYM_STELLA_CURSOR, Stella_Object.cons(storageslotname, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_RETURN, Stella_Object.cons(((defaultvalue != null) ? defaultvalue : Stella.SYM_STELLA_NULL), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL)))))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
+      return (Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LET, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CURSOR, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_CURSOR, Cons.cons(storageslotname, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOOP, Cons.cons(Cons.cons(Stella.SYM_STELLA_WHEN, ((Surrogate.subtypeOfP(storageslot.type(), Stella.SGT_STELLA_BOOLEAN) ? Cons.cons(Stella.SYM_STELLA_VALUE, Stella.NIL) : Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))).concatenate(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL), Stella.NIL)), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_CURSOR, Cons.cons(((Surrogate.subtypeOfP(inheritanceslot.type(), Stella.SGT_STELLA_COLLECTION) ||
+          Surrogate.subtypeOfP(inheritanceslot.type(), Stella.SGT_STELLA_CONS)) ? Cons.list$(Cons.cons(Stella.SYM_STELLA_FIRST, Cons.cons(Cons.cons(inheritanceslotname, Cons.cons(Stella.SYM_STELLA_CURSOR, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))) : Cons.cons(inheritanceslotname, Cons.cons(Stella.SYM_STELLA_CURSOR, Stella.NIL))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_CURSOR, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_VALUE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SLOT_VALUE, Cons.cons(Stella.SYM_STELLA_CURSOR, Cons.cons(storageslotname, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_RETURN, Cons.cons(((defaultvalue != null) ? defaultvalue : Stella.SYM_STELLA_NULL), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL));
     }
   }
 
@@ -1984,10 +2024,10 @@ public class MethodSlot extends Slot {
     { String name = Native.stringify(method.slotName);
 
       if (method.methodFunctionP) {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINE_FUNCTION_OBJECT, Stella_Object.cons((Stella.stringEqlP(name, method.slotName.symbolName) ? StringWrapper.wrapString(name) : StringWrapper.wrapString(" " + name)), Stella_Object.cons(Stella_Object.cons(Stella.yieldStringConstantTree(method.methodStringifiedSource), Stella_Object.cons(((codemethod != null) ? ((StandardObject)(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CODE, Stella_Object.cons(Stella.KWD_FUNCTION, Stella_Object.cons(codemethod.slotName, Stella_Object.cons(Stella.NIL, Stella.NIL))))))) : ((StandardObject)(Stella.SYM_STELLA_NULL))), Stella_Object.cons(((wrappermethod != null) ? ((StandardObject)(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CODE, Stella_Object.cons(Stella.KWD_FUNCTION, Stella_Object.cons(wrappermethod.slotName, Stella_Object.cons(Stella_Object.cons(wrappermethod, Stella.NIL), Stella.NIL))))))) : ((StandardObject)(Stella.SYM_STELLA_NULL))), Stella.NIL))), Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINE_FUNCTION_OBJECT, Cons.cons((Stella.stringEqlP(name, method.slotName.symbolName) ? StringWrapper.wrapString(name) : StringWrapper.wrapString(" " + name)), Cons.cons(Cons.cons(Stella.yieldStringConstantTree(method.methodStringifiedSource), Cons.cons(((codemethod != null) ? ((StandardObject)(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CODE, Cons.cons(Stella.KWD_FUNCTION, Cons.cons(codemethod.slotName, Cons.cons(Stella.NIL, Stella.NIL))))))) : ((StandardObject)(Stella.SYM_STELLA_NULL))), Cons.cons(((wrappermethod != null) ? ((StandardObject)(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CODE, Cons.cons(Stella.KWD_FUNCTION, Cons.cons(wrappermethod.slotName, Cons.cons(Cons.cons(wrappermethod, Stella.NIL), Stella.NIL))))))) : ((StandardObject)(Stella.SYM_STELLA_NULL))), Stella.NIL))), Stella.NIL)))));
       }
       else {
-        return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_DEFINE_METHOD_OBJECT, Stella_Object.cons(Stella.yieldStringConstantTree(method.methodStringifiedSource), Stella_Object.cons(Stella_Object.cons(((codemethod != null) ? ((StandardObject)(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_THE_CODE, Stella_Object.cons(Stella.KWD_METHOD, Stella_Object.cons(codemethod.slotOwner, Stella_Object.cons(Stella_Object.cons(codemethod.slotName, Stella.NIL), Stella.NIL))))))) : ((StandardObject)(Stella.SYM_STELLA_NULL))), Stella_Object.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), Stella.NIL)))));
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINE_METHOD_OBJECT, Cons.cons(Stella.yieldStringConstantTree(method.methodStringifiedSource), Cons.cons(Cons.cons(((codemethod != null) ? ((StandardObject)(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CODE, Cons.cons(Stella.KWD_METHOD, Cons.cons(codemethod.slotOwner, Cons.cons(Cons.cons(codemethod.slotName, Stella.NIL), Stella.NIL))))))) : ((StandardObject)(Stella.SYM_STELLA_NULL))), Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), Stella.NIL)))));
       }
     }
   }
@@ -2155,7 +2195,7 @@ public class MethodSlot extends Slot {
                     continue loop000;
                 }
                 if (variableargsP) {
-                  { Cons varargtype = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_ARGUMENT_LIST, Stella_Object.cons(Stella.SYM_STELLA_OF, Stella_Object.cons(p000.rest.value, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+                  { Cons varargtype = Cons.list$(Cons.cons(Stella.SYM_STELLA_ARGUMENT_LIST, Cons.cons(Stella.SYM_STELLA_OF, Cons.cons(p000.rest.value, Cons.cons(Stella.NIL, Stella.NIL)))));
 
                     name = ((Symbol)(p000.value));
                     ts = varargtype.yieldTypeSpecifier();
@@ -2197,12 +2237,12 @@ public class MethodSlot extends Slot {
               { Symbol p000 = ((Symbol)(p));
 
                 if (p000 == Stella.SYM_STELLA_aREST) {
-                  KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+                  KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
                   variableargsP = true;
                   continue loop000;
                 }
                 else if (p000 == Stella.SYM_STELLA_aBODY) {
-                  KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_BODY_ARGUMENTp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+                  KeyValueList.setDynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_BODY_ARGUMENTp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
                   continue loop000;
                 }
                 else {
@@ -2410,7 +2450,7 @@ public class MethodSlot extends Slot {
                   if (slot.slotName == name) {
                     if (collect000 == null) {
                       {
-                        collect000 = Stella_Object.cons(slot, Stella.NIL);
+                        collect000 = Cons.cons(slot, Stella.NIL);
                         if (slots == Stella.NIL) {
                           slots = collect000;
                         }
@@ -2421,7 +2461,7 @@ public class MethodSlot extends Slot {
                     }
                     else {
                       {
-                        collect000.rest = Stella_Object.cons(slot, Stella.NIL);
+                        collect000.rest = Cons.cons(slot, Stella.NIL);
                         collect000 = collect000.rest;
                       }
                     }

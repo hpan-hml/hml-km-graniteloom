@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -162,7 +162,7 @@ Proposition* conjoinPropositions(Cons* conjuncts) {
     result = createProposition(SYM_NORMALIZE_STELLA_AND, flatconjuncts->length());
     result->arguments = copyListToArgumentsVector(flatconjuncts);
     if (((BooleanWrapper*)(dynamicSlotValue(((Proposition*)(flatconjuncts->first()))->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue) {
-      setDynamicSlotValue(result->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(result->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, TRUE_WRAPPER, FALSE_WRAPPER);
     }
     return (result);
   }
@@ -184,7 +184,7 @@ Proposition* conjoinTwoPropositions(Proposition* prop1, Proposition* prop2) {
       (andproposition->arguments->theArray)[0] = prop1;
       (andproposition->arguments->theArray)[1] = prop2;
       if (((BooleanWrapper*)(dynamicSlotValue(prop1->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue) {
-        setDynamicSlotValue(andproposition->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+        setDynamicSlotValue(andproposition->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, TRUE_WRAPPER, FALSE_WRAPPER);
       }
       return (andproposition);
     }
@@ -261,7 +261,7 @@ Proposition* disjoinPropositions(Cons* disjuncts) {
     result = createProposition(SYM_NORMALIZE_STELLA_OR, flatdisjuncts->length());
     result->arguments = copyListToArgumentsVector(flatdisjuncts);
     if (((BooleanWrapper*)(dynamicSlotValue(((Proposition*)(flatdisjuncts->first()))->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue) {
-      setDynamicSlotValue(result->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(result->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, TRUE_WRAPPER, FALSE_WRAPPER);
     }
     return (result);
   }
@@ -274,7 +274,7 @@ PatternVariable* renameLogicVariableApart(PatternVariable* variable, boolean des
     { Symbol* newname = localGensym(variable->skolemName->symbolName);
 
       if (!(destructiveP)) {
-        variable = copyVariable(variable, newKeyValueList());
+        variable = copyVariable(variable, newKeyValueMap());
       }
       variable->skolemName = newname;
       return (variable);
@@ -305,7 +305,7 @@ void overlayProposition(Proposition* self, Proposition* overlayingprop) {
     setDynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_VARIABLE_TYPEp, TRUE_WRAPPER, NULL);
   }
   if (((BooleanWrapper*)(dynamicSlotValue(overlayingprop->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue) {
-    setDynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+    setDynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, TRUE_WRAPPER, FALSE_WRAPPER);
   }
 }
 
@@ -382,7 +382,7 @@ void normalizeExistsProposition(Proposition* self) {
         whereproposition->deletedPSetter(true);
       }
     }
-    if ((((Vector*)(dynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_IO_VARIABLES, NULL)))->arraySize == 0) ||
+    if (((Vector*)(dynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_IO_VARIABLES, NULL)))->emptyP() ||
         (whereproposition->kind == KWD_NORMALIZE_CONSTANT)) {
       overlayProposition(self, whereproposition);
     }
@@ -547,7 +547,7 @@ void normalizeForallProposition(Proposition* self) {
       else {
       }
     }
-    if (((Vector*)(dynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_IO_VARIABLES, NULL)))->arraySize == 0) {
+    if (((Vector*)(dynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_IO_VARIABLES, NULL)))->emptyP()) {
       antecedent = invertProposition(antecedent);
       overlayProposition(self, disjoinPropositions(consList(2, antecedent, consequent)));
       normalizeProposition(self);
@@ -890,59 +890,74 @@ void helpNormalizePredicateProposition(Proposition* self, Surrogate* relationref
 }
 
 void normalizeHoldsProposition(Proposition* self) {
-  { Vector* holdsarguments = self->arguments;
-    Object* relationterm = (holdsarguments->theArray)[0];
-    int nofarguments = holdsarguments->length() - 1;
-    Surrogate* surrogate = evaluateRelationTerm(relationterm, self);
-    Vector* predicatearguments = newVector(nofarguments);
-    Description* description = NULL;
+  { KeyValueMap* dummy1;
 
-    if ((!((boolean)(surrogate))) &&
-        (!isaP(relationterm, SGT_NORMALIZE_LOGIC_DESCRIPTION))) {
-      return;
-    }
-    { int i = NULL_INTEGER;
-      int iter000 = 1;
-      int upperBound000 = nofarguments;
-      boolean unboundedP000 = upperBound000 == NULL_INTEGER;
+    { Vector* holdsarguments = self->arguments;
+      Object* relationterm = (holdsarguments->theArray)[0];
+      int nofarguments = holdsarguments->length() - 1;
+      Surrogate* surrogate = evaluateRelationTerm(relationterm, self);
+      Vector* predicatearguments = stella::newVector(nofarguments);
+      Description* description = NULL;
 
-      for  (i, iter000, upperBound000, unboundedP000; 
-            unboundedP000 ||
-                (iter000 <= upperBound000); 
-            iter000 = iter000 + 1) {
-        i = iter000;
-        (predicatearguments->theArray)[(i - 1)] = ((holdsarguments->theArray)[i]);
-      }
-    }
-    if (((boolean)(surrogate))) {
-      description = ((Description*)(evaluatePredicate(surrogate, (holdsarguments->theArray)[1])));
-      if (classP(description)) {
-        self->kind = KWD_NORMALIZE_ISA;
-      }
-      else if (functionP(description)) {
-        helpNormalizePredicateProposition(self, description->surrogateValueInverse, predicatearguments);
+      if ((!((boolean)(surrogate))) &&
+          ((!isaP(relationterm, SGT_NORMALIZE_LOGIC_DESCRIPTION)) ||
+           (!argumentBoundP(relationterm)))) {
         return;
       }
-      self->operatoR = description->surrogateValueInverse;
-      self->arguments = predicatearguments;
-      normalizeProposition(self);
-      return;
-    }
-    else {
-      description = ((Description*)(relationterm));
-      if (!(description->arity() == nofarguments)) {
-        { OutputStringStream* stream000 = newOutputStringStream();
+      { int i = NULL_INTEGER;
+        int iter000 = 1;
+        int upperBound000 = nofarguments;
+        boolean unboundedP000 = upperBound000 == NULL_INTEGER;
 
-          { 
-            BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-            *(stream000->nativeStream) << "ERROR: " << "Arity violation in HOLDS proposition: " << "`" << self << "'" << "." << std::endl;
-            helpSignalPropositionError(stream000, KWD_NORMALIZE_ERROR);
-          }
-          throw *newPropositionError(stream000->theStringReader());
+        for  (i, iter000, upperBound000, unboundedP000; 
+              unboundedP000 ||
+                  (iter000 <= upperBound000); 
+              iter000 = iter000 + 1) {
+          i = iter000;
+          (predicatearguments->theArray)[(i - 1)] = ((holdsarguments->theArray)[i]);
         }
       }
-      overlayProposition(self, conjoinPropositions(inheritDescriptionPropositions(predicatearguments, description)));
-      normalizeProposition(self);
+      if (((boolean)(surrogate))) {
+        description = ((Description*)(evaluatePredicate(surrogate, (holdsarguments->theArray)[1])));
+        if (!((boolean)(description))) {
+          { OutputStringStream* stream000 = newOutputStringStream();
+
+            { 
+              BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+              *(stream000->nativeStream) << "ERROR: " << "Relation argument " << "`" << surrogate->symbolName << "'" << " in HOLDS proposition is not defined as a relation: " << "`" << self << "'" << "." << std::endl;
+              helpSignalPropositionError(stream000, KWD_NORMALIZE_ERROR);
+            }
+            throw *newPropositionError(stream000->theStringReader());
+          }
+        }
+        if (classP(description)) {
+          self->kind = KWD_NORMALIZE_ISA;
+        }
+        else if (functionP(description)) {
+          helpNormalizePredicateProposition(self, description->surrogateValueInverse, predicatearguments);
+          return;
+        }
+        self->operatoR = description->surrogateValueInverse;
+        self->arguments = predicatearguments;
+        normalizeProposition(self);
+        return;
+      }
+      else {
+        description = ((Description*)(relationterm));
+        if (!(description->arity() == nofarguments)) {
+          { OutputStringStream* stream001 = newOutputStringStream();
+
+            { 
+              BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+              *(stream001->nativeStream) << "ERROR: " << "Arity violation in HOLDS proposition: " << "`" << self << "'" << "." << std::endl;
+              helpSignalPropositionError(stream001, KWD_NORMALIZE_ERROR);
+            }
+            throw *newPropositionError(stream001->theStringReader());
+          }
+        }
+        overlayProposition(self, conjoinPropositions(inheritDescriptionPropositions(predicatearguments, description, dummy1)));
+        normalizeProposition(self);
+      }
     }
   }
 }
@@ -958,6 +973,23 @@ void normalizePredicateProposition(Proposition* self) {
     overlayProposition(self, TRUE_PROPOSITION);
     return;
   }
+  { Object* clause = NULL;
+    Vector* vector000 = self->arguments;
+    int index000 = 0;
+    int length000 = vector000->length();
+
+    for  (clause, vector000, index000, length000; 
+          index000 < length000; 
+          index000 = index000 + 1) {
+      clause = (vector000->theArray)[index000];
+      if (isaP(clause, SGT_NORMALIZE_LOGIC_PROPOSITION)) {
+        normalizeProposition(((Proposition*)(clause)));
+      }
+    }
+  }
+}
+
+void normalizeFunctionProposition(Proposition* self) {
   { Object* clause = NULL;
     Vector* vector000 = self->arguments;
     int index000 = 0;
@@ -1160,10 +1192,10 @@ Proposition* shallowCopyProposition(Proposition* self) {
   { Proposition* copy = createProposition(SYM_NORMALIZE_STELLA_AND, 0);
 
     if (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue) {
-      setDynamicSlotValue(copy->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(copy->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, TRUE_WRAPPER, FALSE_WRAPPER);
     }
     if (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_DONT_OPTIMIZEp, FALSE_WRAPPER)))->wrapperValue) {
-      setDynamicSlotValue(copy->dynamicSlots, SYM_NORMALIZE_LOGIC_DONT_OPTIMIZEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(copy->dynamicSlots, SYM_NORMALIZE_LOGIC_DONT_OPTIMIZEp, TRUE_WRAPPER, FALSE_WRAPPER);
     }
     overlayProposition(copy, self);
     return (copy);
@@ -1197,20 +1229,7 @@ void normalizeProposition(Proposition* self) {
       normalizePredicateProposition(self);
     }
     else if (testValue000 == KWD_NORMALIZE_FUNCTION) {
-      { Object* clause = NULL;
-        Vector* vector000 = self->arguments;
-        int index000 = 0;
-        int length000 = vector000->length();
-
-        for  (clause, vector000, index000, length000; 
-              index000 < length000; 
-              index000 = index000 + 1) {
-          clause = (vector000->theArray)[index000];
-          if (isaP(clause, SGT_NORMALIZE_LOGIC_PROPOSITION)) {
-            normalizeProposition(((Proposition*)(clause)));
-          }
-        }
-      }
+      normalizeFunctionProposition(self);
     }
     else if (testValue000 == KWD_NORMALIZE_EXISTS) {
       normalizeExistsProposition(self);
@@ -1236,62 +1255,32 @@ void normalizeProposition(Proposition* self) {
   }
 }
 
-void normalizeTopLevelProposition(Proposition* self, Vector* iovariables) {
+void normalizeTopLevelProposition(Proposition* self) {
   normalizeProposition(self);
-  if ((self->kind == KWD_NORMALIZE_FORALL) ||
-      ((boolean)(iovariables))) {
-    normalizeTopLevelDescriptiveProposition(self, iovariables);
+  if (self->kind == KWD_NORMALIZE_FORALL) {
+    { Vector* iovars = ((Vector*)(dynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_IO_VARIABLES, NULL)));
+      Vector* args = self->arguments;
+
+      normalizeDescriptiveProposition(((Proposition*)((args->theArray)[0])), iovars, KWD_NORMALIZE_TAIL);
+      normalizeDescriptiveProposition(((Proposition*)((args->theArray)[1])), iovars, KWD_NORMALIZE_HEAD);
+    }
   }
 }
 
-void normalizeTopLevelDescriptiveProposition(Proposition* self, Vector* iovariables) {
-  if ((!((boolean)(iovariables))) &&
-      (self->kind == KWD_NORMALIZE_FORALL)) {
-    { 
-      BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_NORMALIZE_DESCRIPTION);
-      { Proposition* proposition = NULL;
-
-        iovariables = ((Vector*)(dynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_IO_VARIABLES, NULL)));
-        { int i = NULL_INTEGER;
-          int iter000 = 0;
-          int upperBound000 = 1;
-
-          for  (i, iter000, upperBound000; 
-                iter000 <= upperBound000; 
-                iter000 = iter000 + 1) {
-            i = iter000;
-            proposition = ((Proposition*)((self->arguments->theArray)[i]));
-            try {
-              equateTopLevelEquivalences(proposition);
-            }
-            catch (Clash& _e) {
-              Clash* e = &_e;
-
-              *(STANDARD_ERROR->nativeStream) << exceptionMessage(e) << std::endl;
-            }
-            tightenArgumentBindings(proposition, iovariables);
-            simplifyProposition(proposition);
-          }
-        }
-      }
+void normalizeDescriptiveProposition(Proposition* self, Vector* iovariables, Keyword* kind) {
+  { 
+    BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_NORMALIZE_DESCRIPTION);
+    try {
+      equateTopLevelEquivalences(self, iovariables, kind);
     }
+    catch (Clash& _e) {
+      Clash* e = &_e;
+
+      *(STANDARD_ERROR->nativeStream) << exceptionMessage(e) << std::endl;
+    }
+    tightenArgumentBindings(self, iovariables);
+    simplifyProposition(self);
     collapseValueOfChainsForIoVariables(iovariables);
-  }
-  else if (((boolean)(iovariables))) {
-    { 
-      BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_NORMALIZE_DESCRIPTION);
-      try {
-        equateTopLevelEquivalences(self);
-      }
-      catch (Clash& _e) {
-        Clash* e = &_e;
-
-        *(STANDARD_ERROR->nativeStream) << exceptionMessage(e) << std::endl;
-      }
-      tightenArgumentBindings(self, iovariables);
-      simplifyProposition(self);
-      collapseValueOfChainsForIoVariables(iovariables);
-    }
   }
 }
 
@@ -1309,7 +1298,7 @@ void invertAtomicProposition(Proposition* self) {
       setDynamicSlotValue(newatomicproposition->dynamicSlots, SYM_NORMALIZE_LOGIC_VARIABLE_TYPEp, TRUE_WRAPPER, NULL);
     }
     if (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue) {
-      setDynamicSlotValue(newatomicproposition->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(newatomicproposition->dynamicSlots, SYM_NORMALIZE_LOGIC_DESCRIPTIVEp, TRUE_WRAPPER, FALSE_WRAPPER);
     }
     newnotproposition->kind = KWD_NORMALIZE_NOT;
     newnotproposition->operatoR = SGT_NORMALIZE_LOGIC_NOT;
@@ -1319,7 +1308,7 @@ void invertAtomicProposition(Proposition* self) {
 
 void invertExistsProposition(Proposition* self) {
   { Proposition* whereproposition = ((Proposition*)((self->arguments->theArray)[0]));
-    Vector* newarguments = newVector(2);
+    Vector* newarguments = stella::newVector(2);
 
     self->arguments->free();
     normalizeProposition(whereproposition);
@@ -1336,7 +1325,7 @@ void invertExistsProposition(Proposition* self) {
 void invertForallProposition(Proposition* self) {
   { Proposition* antecedent = ((Proposition*)((self->arguments->theArray)[0]));
     Proposition* consequent = ((Proposition*)((self->arguments->theArray)[1]));
-    Vector* newarguments = newVector(1);
+    Vector* newarguments = stella::newVector(1);
 
     self->arguments->free();
     normalizeProposition(antecedent);
@@ -1350,9 +1339,9 @@ void invertForallProposition(Proposition* self) {
   }
 }
 
-Proposition* extractProposition(Description* self, KeyValueList* mapping) {
+Proposition* extractProposition(Description* self, KeyValueMap* mapping) {
   { Proposition* proposition = self->proposition;
-    Cons* existentials = ((self->internalVariables->arraySize > 0) ? topLevelExistentialVariables(self) : NIL);
+    Cons* existentials = (self->internalVariables->nonEmptyP() ? topLevelExistentialVariables(self) : NIL);
     Proposition* existsproposition = ((!(existentials == NIL)) ? createProposition(SYM_NORMALIZE_STELLA_EXISTS, 1) : ((Proposition*)(NULL)));
 
     if (((boolean)(existsproposition))) {
@@ -1382,8 +1371,8 @@ void invertImpliesProposition(Proposition* self) {
       Description* superset = ((Description*)(arg2Value));
       Proposition* subsetprop = NULL;
       Proposition* supersetprop = NULL;
-      KeyValueList* mapping = newKeyValueList();
-      Vector* newarguments = newVector(1);
+      KeyValueMap* mapping = newKeyValueMap();
+      Vector* newarguments = stella::newVector(1);
 
       self->kind = KWD_NORMALIZE_EXISTS;
       self->operatoR = SGT_NORMALIZE_LOGIC_EXISTS;
@@ -1569,6 +1558,8 @@ void helpStartupNormalize1() {
     KWD_NORMALIZE_IMPLIES = ((Keyword*)(internRigidSymbolWrtModule("IMPLIES", NULL, 2)));
     KWD_NORMALIZE_FAIL = ((Keyword*)(internRigidSymbolWrtModule("FAIL", NULL, 2)));
     KWD_NORMALIZE_COLLECT_INTO = ((Keyword*)(internRigidSymbolWrtModule("COLLECT-INTO", NULL, 2)));
+    KWD_NORMALIZE_TAIL = ((Keyword*)(internRigidSymbolWrtModule("TAIL", NULL, 2)));
+    KWD_NORMALIZE_HEAD = ((Keyword*)(internRigidSymbolWrtModule("HEAD", NULL, 2)));
     SYM_NORMALIZE_STELLA_NOT = ((Symbol*)(internRigidSymbolWrtModule("NOT", getStellaModule("/STELLA", true), 0)));
     SGT_NORMALIZE_LOGIC_NOT = ((Surrogate*)(internRigidSymbolWrtModule("NOT", NULL, 1)));
     SGT_NORMALIZE_LOGIC_FORALL = ((Surrogate*)(internRigidSymbolWrtModule("FORALL", NULL, 1)));
@@ -1611,14 +1602,15 @@ void startupNormalize() {
       defineFunctionObject("HELP-NORMALIZE-PREDICATE-PROPOSITION", "(DEFUN HELP-NORMALIZE-PREDICATE-PROPOSITION ((SELF PROPOSITION) (RELATIONREF SURROGATE) (PREDICATEARGUMENTS VECTOR)))", ((cpp_function_code)(&helpNormalizePredicateProposition)), NULL);
       defineFunctionObject("NORMALIZE-HOLDS-PROPOSITION", "(DEFUN NORMALIZE-HOLDS-PROPOSITION ((SELF PROPOSITION)))", ((cpp_function_code)(&normalizeHoldsProposition)), NULL);
       defineFunctionObject("NORMALIZE-PREDICATE-PROPOSITION", "(DEFUN NORMALIZE-PREDICATE-PROPOSITION ((SELF PROPOSITION)))", ((cpp_function_code)(&normalizePredicateProposition)), NULL);
+      defineFunctionObject("NORMALIZE-FUNCTION-PROPOSITION", "(DEFUN NORMALIZE-FUNCTION-PROPOSITION ((SELF PROPOSITION)))", ((cpp_function_code)(&normalizeFunctionProposition)), NULL);
       defineFunctionObject("COMPUTE-RELATION-TERM-SURROGATE", "(DEFUN (COMPUTE-RELATION-TERM-SURROGATE SURROGATE) ((SKOLEM SKOLEM) (PROPOSITION PROPOSITION)))", ((cpp_function_code)(&computeRelationTermSurrogate)), NULL);
       defineFunctionObject("EVALUATE-RELATION-TERM", "(DEFUN (EVALUATE-RELATION-TERM SURROGATE) ((RELATIONTERM OBJECT) (PROPOSITION PROPOSITION)))", ((cpp_function_code)(&evaluateRelationTerm)), NULL);
       defineFunctionObject("NORMALIZE-VALUE-FUNCTION", "(DEFUN (NORMALIZE-VALUE-FUNCTION PROPOSITION) ((SELF PROPOSITION)))", ((cpp_function_code)(&normalizeValueFunction)), NULL);
       defineFunctionObject("NORMALIZE-EQUIVALENT-PROPOSITION", "(DEFUN NORMALIZE-EQUIVALENT-PROPOSITION ((SELF PROPOSITION)))", ((cpp_function_code)(&normalizeEquivalentProposition)), NULL);
       defineFunctionObject("SHALLOW-COPY-PROPOSITION", "(DEFUN (SHALLOW-COPY-PROPOSITION PROPOSITION) ((SELF PROPOSITION)))", ((cpp_function_code)(&shallowCopyProposition)), NULL);
       defineFunctionObject("NORMALIZE-PROPOSITION", "(DEFUN NORMALIZE-PROPOSITION ((SELF PROPOSITION)))", ((cpp_function_code)(&normalizeProposition)), NULL);
-      defineFunctionObject("NORMALIZE-TOP-LEVEL-PROPOSITION", "(DEFUN NORMALIZE-TOP-LEVEL-PROPOSITION ((SELF PROPOSITION) (IOVARIABLES VARIABLES-VECTOR)))", ((cpp_function_code)(&normalizeTopLevelProposition)), NULL);
-      defineFunctionObject("NORMALIZE-TOP-LEVEL-DESCRIPTIVE-PROPOSITION", "(DEFUN NORMALIZE-TOP-LEVEL-DESCRIPTIVE-PROPOSITION ((SELF PROPOSITION) (IOVARIABLES VARIABLES-VECTOR)))", ((cpp_function_code)(&normalizeTopLevelDescriptiveProposition)), NULL);
+      defineFunctionObject("NORMALIZE-TOP-LEVEL-PROPOSITION", "(DEFUN NORMALIZE-TOP-LEVEL-PROPOSITION ((SELF PROPOSITION)))", ((cpp_function_code)(&normalizeTopLevelProposition)), NULL);
+      defineFunctionObject("NORMALIZE-DESCRIPTIVE-PROPOSITION", "(DEFUN NORMALIZE-DESCRIPTIVE-PROPOSITION ((SELF PROPOSITION) (IOVARIABLES VARIABLES-VECTOR) (KIND KEYWORD)))", ((cpp_function_code)(&normalizeDescriptiveProposition)), NULL);
       defineFunctionObject("INVERT-ATOMIC-PROPOSITION", "(DEFUN INVERT-ATOMIC-PROPOSITION ((SELF PROPOSITION)))", ((cpp_function_code)(&invertAtomicProposition)), NULL);
       defineFunctionObject("INVERT-EXISTS-PROPOSITION", "(DEFUN INVERT-EXISTS-PROPOSITION ((SELF PROPOSITION)))", ((cpp_function_code)(&invertExistsProposition)), NULL);
       defineFunctionObject("INVERT-FORALL-PROPOSITION", "(DEFUN INVERT-FORALL-PROPOSITION ((SELF PROPOSITION)))", ((cpp_function_code)(&invertForallProposition)), NULL);
@@ -1635,6 +1627,9 @@ void startupNormalize() {
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
+    }
+    if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
     }
   }
 }
@@ -1728,6 +1723,10 @@ Keyword* KWD_NORMALIZE_IMPLIES = NULL;
 Keyword* KWD_NORMALIZE_FAIL = NULL;
 
 Keyword* KWD_NORMALIZE_COLLECT_INTO = NULL;
+
+Keyword* KWD_NORMALIZE_TAIL = NULL;
+
+Keyword* KWD_NORMALIZE_HEAD = NULL;
 
 Symbol* SYM_NORMALIZE_STELLA_NOT = NULL;
 

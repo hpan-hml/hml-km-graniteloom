@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -85,6 +85,7 @@ void generateManualFromTemplate(char* templatefile, char* outputfile);
 char* manualExpandTemplateCommands(char* line);
 void texinfoInsertDoc(Object* spec);
 void texinfoInsertPreamble();
+void helpStartupManuals1();
 void startupManuals();
 
 // Auxiliary global declarations:

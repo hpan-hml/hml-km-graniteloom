@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -70,6 +70,14 @@ public class ForwardChainingIndex extends StandardObject {
       self.masterRule = null;
       self.forwardGoal = null;
       return (self);
+    }
+  }
+
+  public boolean deletedP() {
+    { ForwardChainingIndex self = this;
+
+      return ((self.masterRule == null) ||
+          Proposition.deletedPropositionP(self.masterRule));
     }
   }
 

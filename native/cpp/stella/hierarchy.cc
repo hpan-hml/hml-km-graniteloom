@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -157,7 +157,7 @@ BooleanWrapper* ActiveObject::badP_reader() {
     { BooleanWrapper* answer = ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_HIERARCHY_STELLA_BADp, NULL)));
 
       if (!((boolean)(answer))) {
-        return ((false ? TRUE_WRAPPER : FALSE_WRAPPER));
+        return (FALSE_WRAPPER);
       }
       else {
         return (answer);
@@ -1522,18 +1522,27 @@ Object* accessExtensibleSymbolArraySlotValue(ExtensibleSymbolArray* self, Symbol
   return (value);
 }
 
-int VectorSequence::resizeIncrement_reader() {
+VectorSequence* newVectorSequence(int arraySize) {
+  { VectorSequence* self = NULL;
+
+    self = new VectorSequence();
+    self->arraySize = arraySize;
+    self->theArray = NULL;
+    self->sequenceLength = 0;
+    self->initializeVector();
+    return (self);
+  }
+}
+
+Surrogate* VectorSequence::primaryType() {
   { VectorSequence* self = this;
 
-    return (oHARDWIRED_RESIZE_INCREMENT_ON_VECTOR_SEQUENCEo);
+    return (SGT_HIERARCHY_STELLA_VECTOR_SEQUENCE);
   }
 }
 
 Object* accessVectorSequenceSlotValue(VectorSequence* self, Symbol* slotname, Object* value, boolean setvalueP) {
-  if (slotname == SYM_HIERARCHY_STELLA_RESIZE_INCREMENT) {
-    value = wrapInteger(self->resizeIncrement_reader());
-  }
-  else if (slotname == SYM_HIERARCHY_STELLA_SEQUENCE_LENGTH) {
+  if (slotname == SYM_HIERARCHY_STELLA_SEQUENCE_LENGTH) {
     if (setvalueP) {
       self->sequenceLength = ((IntegerWrapper*)(value))->wrapperValue;
     }
@@ -1551,42 +1560,33 @@ Object* accessVectorSequenceSlotValue(VectorSequence* self, Symbol* slotname, Ob
   return (value);
 }
 
-ShortVectorSequence* newShortVectorSequence(int arraySize) {
-  { ShortVectorSequence* self = NULL;
+CustomVectorSequence* newCustomVectorSequence(int arraySize) {
+  { CustomVectorSequence* self = NULL;
 
-    self = new ShortVectorSequence();
+    self = new CustomVectorSequence();
     self->arraySize = arraySize;
     self->theArray = NULL;
     self->sequenceLength = 0;
+    self->resizeFactor = 2.0;
     self->initializeVector();
     return (self);
   }
 }
 
-Surrogate* ShortVectorSequence::primaryType() {
-  { ShortVectorSequence* self = this;
+Surrogate* CustomVectorSequence::primaryType() {
+  { CustomVectorSequence* self = this;
 
-    return (SGT_HIERARCHY_STELLA_SHORT_VECTOR_SEQUENCE);
+    return (SGT_HIERARCHY_STELLA_CUSTOM_VECTOR_SEQUENCE);
   }
 }
 
-int ShortVectorSequence::resizeIncrement_reader() {
-  { ShortVectorSequence* self = this;
-
-    return (oHARDWIRED_RESIZE_INCREMENT_ON_SHORT_VECTOR_SEQUENCEo);
-  }
-}
-
-Object* accessShortVectorSequenceSlotValue(ShortVectorSequence* self, Symbol* slotname, Object* value, boolean setvalueP) {
-  if (slotname == SYM_HIERARCHY_STELLA_RESIZE_INCREMENT) {
-    value = wrapInteger(self->resizeIncrement_reader());
-  }
-  else if (slotname == SYM_HIERARCHY_STELLA_SEQUENCE_LENGTH) {
+Object* accessCustomVectorSequenceSlotValue(CustomVectorSequence* self, Symbol* slotname, Object* value, boolean setvalueP) {
+  if (slotname == SYM_HIERARCHY_STELLA_RESIZE_FACTOR) {
     if (setvalueP) {
-      self->sequenceLength = ((IntegerWrapper*)(value))->wrapperValue;
+      self->resizeFactor = ((FloatWrapper*)(value))->wrapperValue;
     }
     else {
-      value = wrapInteger(self->sequenceLength);
+      value = wrapFloat(self->resizeFactor);
     }
   }
   else {
@@ -2076,7 +2076,7 @@ BooleanWrapper* MappableObject::badP_reader() {
     { BooleanWrapper* answer = ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_HIERARCHY_STELLA_BADp, NULL)));
 
       if (!((boolean)(answer))) {
-        return ((false ? TRUE_WRAPPER : FALSE_WRAPPER));
+        return (FALSE_WRAPPER);
       }
       else {
         return (answer);
@@ -2903,7 +2903,7 @@ Object* accessClassSlotValue(Class* self, Symbol* slotname, Object* value, boole
 void Class::printObject(std::ostream* stream) {
   { Class* self = this;
 
-    *(stream) << "|C|" << ((((boolean)(self->classType)) ? classSymbol(self)->relativeName() : (char*)"??"));
+    *(stream) << "|C|" << ((((boolean)(self->classType)) ? classSymbol(self)->relativeName(false) : (char*)"??"));
   }
 }
 
@@ -4057,7 +4057,7 @@ Object* accessGlobalVariableSlotValue(GlobalVariable* self, Symbol* slotname, Ob
 QuotedExpression* newQuotedExpression() {
   { QuotedExpression* self = NULL;
 
-    self = new QuotedExpression();
+    self = new (PointerFreeGC)QuotedExpression;
     self->quotationTableOffset = NULL_INTEGER;
     return (self);
   }
@@ -4095,7 +4095,7 @@ BooleanWrapper* Thing::badP_reader() {
     { BooleanWrapper* answer = ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_HIERARCHY_STELLA_BADp, NULL)));
 
       if (!((boolean)(answer))) {
-        return ((false ? TRUE_WRAPPER : FALSE_WRAPPER));
+        return (FALSE_WRAPPER);
       }
       else {
         return (answer);
@@ -4685,7 +4685,7 @@ Surrogate* CsValue::primaryType() {
 Interval* newInterval() {
   { Interval* self = NULL;
 
-    self = new Interval();
+    self = new (PointerFreeGC)Interval;
     self->upperBound = NULL_INTEGER;
     self->lowerBound = NULL_INTEGER;
     return (self);
@@ -5103,6 +5103,14 @@ IncompatibleQuantityException* newIncompatibleQuantityException(char* message) {
   }
 }
 
+TimeoutException* newTimeoutException(char* message) {
+  { TimeoutException* self = NULL;
+
+    self = new TimeoutException(message);
+    return (self);
+  }
+}
+
 Quantity* Quantity::coerceTo(Object* other) {
   { Quantity* self = this;
 
@@ -5150,7 +5158,7 @@ boolean Quantity::greaterP(Object* other) {
 IntegerWrapper* newIntegerWrapper(int wrapperValue) {
   { IntegerWrapper* self = NULL;
 
-    self = new IntegerWrapper();
+    self = new (PointerFreeGC)IntegerWrapper;
     self->wrapperValue = wrapperValue;
     return (self);
   }
@@ -5207,10 +5215,70 @@ void IntegerWrapper::printObject(std::ostream* stream) {
   }
 }
 
+LongIntegerWrapper* newLongIntegerWrapper(long long int wrapperValue) {
+  { LongIntegerWrapper* self = NULL;
+
+    self = new (PointerFreeGC)LongIntegerWrapper;
+    self->wrapperValue = wrapperValue;
+    return (self);
+  }
+}
+
+Surrogate* LongIntegerWrapper::primaryType() {
+  { LongIntegerWrapper* self = this;
+
+    return (SGT_HIERARCHY_STELLA_LONG_INTEGER_WRAPPER);
+  }
+}
+
+Object* accessLongIntegerWrapperSlotValue(LongIntegerWrapper* self, Symbol* slotname, Object* value, boolean setvalueP) {
+  if (slotname == SYM_HIERARCHY_STELLA_WRAPPER_VALUE) {
+    if (setvalueP) {
+      self->wrapperValue = ((LongIntegerWrapper*)(value))->wrapperValue;
+    }
+    else {
+      value = wrapLongInteger(self->wrapperValue);
+    }
+  }
+  else {
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "`" << slotname << "'" << " is not a valid case option";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
+  return (value);
+}
+
+void LongIntegerWrapper::printObject(std::ostream* stream) {
+  { LongIntegerWrapper* self = this;
+
+    { long long int value = self->wrapperValue;
+
+      if (value == NULL_LONG_INTEGER) {
+        if (oPRINTREADABLYpo.get()) {
+          *(stream) << SYM_HIERARCHY_STELLA_NULL_LONG_INTEGER;
+        }
+        else {
+          *(stream) << "|L|NULL-LONG-INTEGER";
+        }
+      }
+      else {
+        if (oPRINTREADABLYpo.get()) {
+          *(stream) << value;
+        }
+        else {
+          *(stream) << "|L|" << value;
+        }
+      }
+    }
+  }
+}
+
 FloatWrapper* newFloatWrapper(double wrapperValue) {
   { FloatWrapper* self = NULL;
 
-    self = new FloatWrapper();
+    self = new (PointerFreeGC)FloatWrapper;
     self->wrapperValue = wrapperValue;
     return (self);
   }
@@ -5371,7 +5439,7 @@ void MutableStringWrapper::printObject(std::ostream* stream) {
 CharacterWrapper* newCharacterWrapper(char wrapperValue) {
   { CharacterWrapper* self = NULL;
 
-    self = new CharacterWrapper();
+    self = new (PointerFreeGC)CharacterWrapper;
     self->wrapperValue = wrapperValue;
     return (self);
   }
@@ -5589,6 +5657,7 @@ SystemDefinition* newSystemDefinition() {
     self->loadedP = false;
     self->requiredSystems = NULL;
     self->preprocessedFiles = NULL;
+    self->dataFiles = NULL;
     self->javaOnlyFiles = NULL;
     self->cppOnlyFiles = NULL;
     self->lispOnlyFiles = NULL;
@@ -5653,6 +5722,14 @@ Object* accessSystemDefinitionSlotValue(SystemDefinition* self, Symbol* slotname
     }
     else {
       value = self->javaOnlyFiles;
+    }
+  }
+  else if (slotname == SYM_HIERARCHY_STELLA_DATA_FILES) {
+    if (setvalueP) {
+      self->dataFiles = ((Cons*)(value));
+    }
+    else {
+      value = self->dataFiles;
     }
   }
   else if (slotname == SYM_HIERARCHY_STELLA_PREPROCESSED_FILES) {
@@ -6219,11 +6296,10 @@ void helpStartupHierarchy2() {
     SGT_HIERARCHY_STELLA_EXTENSIBLE_SYMBOL_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("EXTENSIBLE-SYMBOL-ARRAY", NULL, 1)));
     SYM_HIERARCHY_STELLA_TOP_SYMBOL_OFFSET = ((Symbol*)(internRigidSymbolWrtModule("TOP-SYMBOL-OFFSET", NULL, 0)));
     SYM_HIERARCHY_STELLA_POTENTIAL_FREE_SYMBOL_OFFSET = ((Symbol*)(internRigidSymbolWrtModule("POTENTIAL-FREE-SYMBOL-OFFSET", NULL, 0)));
-    SYM_HIERARCHY_STELLA_RESIZE_INCREMENT = ((Symbol*)(internRigidSymbolWrtModule("RESIZE-INCREMENT", NULL, 0)));
+    SGT_HIERARCHY_STELLA_VECTOR_SEQUENCE = ((Surrogate*)(internRigidSymbolWrtModule("VECTOR-SEQUENCE", NULL, 1)));
     SYM_HIERARCHY_STELLA_SEQUENCE_LENGTH = ((Symbol*)(internRigidSymbolWrtModule("SEQUENCE-LENGTH", NULL, 0)));
-    SYM_HIERARCHY_STELLA_VSEQ = ((Symbol*)(internRigidSymbolWrtModule("VSEQ", NULL, 0)));
-    SGT_HIERARCHY_STELLA_SHORT_VECTOR_SEQUENCE = ((Surrogate*)(internRigidSymbolWrtModule("SHORT-VECTOR-SEQUENCE", NULL, 1)));
-    SYM_HIERARCHY_STELLA_SVSEQ = ((Symbol*)(internRigidSymbolWrtModule("SVSEQ", NULL, 0)));
+    SGT_HIERARCHY_STELLA_CUSTOM_VECTOR_SEQUENCE = ((Surrogate*)(internRigidSymbolWrtModule("CUSTOM-VECTOR-SEQUENCE", NULL, 1)));
+    SYM_HIERARCHY_STELLA_RESIZE_FACTOR = ((Symbol*)(internRigidSymbolWrtModule("RESIZE-FACTOR", NULL, 0)));
     SGT_HIERARCHY_STELLA_BOOLEAN_VECTOR = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN-VECTOR", NULL, 1)));
     SGT_HIERARCHY_STELLA_INTEGER_VECTOR = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-VECTOR", NULL, 1)));
     SGT_HIERARCHY_STELLA_ACTIVE_LIST = ((Surrogate*)(internRigidSymbolWrtModule("ACTIVE-LIST", NULL, 1)));
@@ -6263,12 +6339,12 @@ void helpStartupHierarchy2() {
     SYM_HIERARCHY_STELLA_ABSTRACTp = ((Symbol*)(internRigidSymbolWrtModule("ABSTRACT?", NULL, 0)));
     SGT_HIERARCHY_STELLA_CLASS = ((Surrogate*)(internRigidSymbolWrtModule("CLASS", NULL, 1)));
     SYM_HIERARCHY_STELLA_STORED_ACTIVEp = ((Symbol*)(internRigidSymbolWrtModule("STORED-ACTIVE?", NULL, 0)));
+    SGT_HIERARCHY_STELLA_ACTIVE_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("ACTIVE-OBJECT", NULL, 1)));
   }
 }
 
 void helpStartupHierarchy3() {
   {
-    SGT_HIERARCHY_STELLA_ACTIVE_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("ACTIVE-OBJECT", NULL, 1)));
     SYM_HIERARCHY_STELLA_CLASS_CREATOR = ((Symbol*)(internRigidSymbolWrtModule("CLASS-CREATOR", NULL, 0)));
     SYM_HIERARCHY_STELLA_CLASS_INITIALIZER = ((Symbol*)(internRigidSymbolWrtModule("CLASS-INITIALIZER", NULL, 0)));
     SYM_HIERARCHY_STELLA_CLASS_TERMINATOR = ((Symbol*)(internRigidSymbolWrtModule("CLASS-TERMINATOR", NULL, 0)));
@@ -6328,12 +6404,12 @@ void helpStartupHierarchy3() {
     SYM_HIERARCHY_STELLA_SLOT_BASE_TYPE = ((Symbol*)(internRigidSymbolWrtModule("SLOT-BASE-TYPE", NULL, 0)));
     SYM_HIERARCHY_STELLA_SLOT_SLOTREF = ((Symbol*)(internRigidSymbolWrtModule("SLOT-SLOTREF", NULL, 0)));
     SYM_HIERARCHY_STELLA_SLOT_PUBLICp = ((Symbol*)(internRigidSymbolWrtModule("SLOT-PUBLIC?", NULL, 0)));
+    SYM_HIERARCHY_STELLA_SLOT_RENAMEDp = ((Symbol*)(internRigidSymbolWrtModule("SLOT-RENAMED?", NULL, 0)));
   }
 }
 
 void helpStartupHierarchy4() {
   {
-    SYM_HIERARCHY_STELLA_SLOT_RENAMEDp = ((Symbol*)(internRigidSymbolWrtModule("SLOT-RENAMED?", NULL, 0)));
     SYM_HIERARCHY_STELLA_SLOT_EXTERNALp = ((Symbol*)(internRigidSymbolWrtModule("SLOT-EXTERNAL?", NULL, 0)));
     SYM_HIERARCHY_STELLA_SLOT_MARKEDp = ((Symbol*)(internRigidSymbolWrtModule("SLOT-MARKED?", NULL, 0)));
     SYM_HIERARCHY_STELLA_SLOT_DOCUMENTATION = ((Symbol*)(internRigidSymbolWrtModule("SLOT-DOCUMENTATION", NULL, 0)));
@@ -6393,12 +6469,12 @@ void helpStartupHierarchy4() {
     SYM_HIERARCHY_STELLA_QUOTATION_TABLE_OFFSET = ((Symbol*)(internRigidSymbolWrtModule("QUOTATION-TABLE-OFFSET", NULL, 0)));
     SYM_HIERARCHY_STELLA_SURROGATE_VALUE_INVERSE = ((Symbol*)(internRigidSymbolWrtModule("SURROGATE-VALUE-INVERSE", NULL, 0)));
     SGT_HIERARCHY_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", NULL, 1)));
+    SGT_HIERARCHY_STELLA_WORLD = ((Surrogate*)(internRigidSymbolWrtModule("WORLD", NULL, 1)));
   }
 }
 
 void helpStartupHierarchy5() {
   {
-    SGT_HIERARCHY_STELLA_WORLD = ((Surrogate*)(internRigidSymbolWrtModule("WORLD", NULL, 1)));
     SYM_HIERARCHY_STELLA_WORLD_NAME = ((Symbol*)(internRigidSymbolWrtModule("WORLD-NAME", NULL, 0)));
     SYM_HIERARCHY_STELLA_CHILD_CONTEXTS = ((Symbol*)(internRigidSymbolWrtModule("CHILD-CONTEXTS", NULL, 0)));
     SYM_HIERARCHY_STELLA_BASE_MODULE = ((Symbol*)(internRigidSymbolWrtModule("BASE-MODULE", NULL, 0)));
@@ -6456,13 +6532,15 @@ void helpStartupHierarchy5() {
     SGT_HIERARCHY_STELLA_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-WRAPPER", NULL, 1)));
     SYM_HIERARCHY_STELLA_WRAPPER_VALUE = ((Symbol*)(internRigidSymbolWrtModule("WRAPPER-VALUE", NULL, 0)));
     SYM_HIERARCHY_STELLA_NULL_INTEGER = ((Symbol*)(internRigidSymbolWrtModule("NULL-INTEGER", NULL, 0)));
+    SGT_HIERARCHY_STELLA_LONG_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("LONG-INTEGER-WRAPPER", NULL, 1)));
+    SYM_HIERARCHY_STELLA_NULL_LONG_INTEGER = ((Symbol*)(internRigidSymbolWrtModule("NULL-LONG-INTEGER", NULL, 0)));
     SGT_HIERARCHY_STELLA_FLOAT_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT-WRAPPER", NULL, 1)));
-    SYM_HIERARCHY_STELLA_NULL_FLOAT = ((Symbol*)(internRigidSymbolWrtModule("NULL-FLOAT", NULL, 0)));
   }
 }
 
 void helpStartupHierarchy6() {
   {
+    SYM_HIERARCHY_STELLA_NULL_FLOAT = ((Symbol*)(internRigidSymbolWrtModule("NULL-FLOAT", NULL, 0)));
     SGT_HIERARCHY_STELLA_STRING_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("STRING-WRAPPER", NULL, 1)));
     SYM_HIERARCHY_STELLA_NULL_STRING = ((Symbol*)(internRigidSymbolWrtModule("NULL-STRING", NULL, 0)));
     SGT_HIERARCHY_STELLA_MUTABLE_STRING_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("MUTABLE-STRING-WRAPPER", NULL, 1)));
@@ -6483,6 +6561,7 @@ void helpStartupHierarchy6() {
     SYM_HIERARCHY_STELLA_LISP_ONLY_FILES = ((Symbol*)(internRigidSymbolWrtModule("LISP-ONLY-FILES", NULL, 0)));
     SYM_HIERARCHY_STELLA_CPP_ONLY_FILES = ((Symbol*)(internRigidSymbolWrtModule("CPP-ONLY-FILES", NULL, 0)));
     SYM_HIERARCHY_STELLA_JAVA_ONLY_FILES = ((Symbol*)(internRigidSymbolWrtModule("JAVA-ONLY-FILES", NULL, 0)));
+    SYM_HIERARCHY_STELLA_DATA_FILES = ((Symbol*)(internRigidSymbolWrtModule("DATA-FILES", NULL, 0)));
     SYM_HIERARCHY_STELLA_PREPROCESSED_FILES = ((Symbol*)(internRigidSymbolWrtModule("PREPROCESSED-FILES", NULL, 0)));
     SYM_HIERARCHY_STELLA_REQUIRED_SYSTEMS = ((Symbol*)(internRigidSymbolWrtModule("REQUIRED-SYSTEMS", NULL, 0)));
     SYM_HIERARCHY_STELLA_LOADEDp = ((Symbol*)(internRigidSymbolWrtModule("LOADED?", NULL, 0)));
@@ -6681,17 +6760,15 @@ void helpStartupHierarchy7() {
       clasS->classConstructorCode = ((cpp_function_code)(&newExtensibleSymbolArray));
       clasS->classSlotAccessorCode = ((cpp_function_code)(&accessExtensibleSymbolArraySlotValue));
     }
-    { Class* clasS = defineClassFromStringifiedSource("VECTOR-SEQUENCE", "(DEFCLASS VECTOR-SEQUENCE (VECTOR) :ABSTRACT? TRUE :PUBLIC-SLOTS ((RESIZE-INCREMENT :TYPE INTEGER :HARDWIRED? TRUE :INITIALLY 100) (SEQUENCE-LENGTH :TYPE INTEGER)) :INITIALIZER INITIALIZE-VECTOR :SYNONYMS (VSEQ))");
+    { Class* clasS = defineClassFromStringifiedSource("VECTOR-SEQUENCE", "(DEFCLASS VECTOR-SEQUENCE (VECTOR) :DOCUMENTATION \"Extensible sequence implemented by a vector.  Whenever we run\nout of room, we grow the sequence by a factor of two.  Note that this keeps the\naverage insertion cost per element constant.  This is generally preferable over\nlinked lists unless we need within-list insertions or removals, since it uses\nless space and has better cache locality.\" :PUBLIC-SLOTS ((SEQUENCE-LENGTH :TYPE INTEGER :INITIALLY 0)) :INITIALIZER INITIALIZE-VECTOR)");
 
-      oHARDWIRED_RESIZE_INCREMENT_ON_VECTOR_SEQUENCEo = 100;
+      clasS->classConstructorCode = ((cpp_function_code)(&newVectorSequence));
       clasS->classSlotAccessorCode = ((cpp_function_code)(&accessVectorSequenceSlotValue));
     }
-    { Class* clasS = defineClassFromStringifiedSource("SHORT-VECTOR-SEQUENCE", "(DEFCLASS SHORT-VECTOR-SEQUENCE (VECTOR-SEQUENCE) :PUBLIC-SLOTS ((RESIZE-INCREMENT :TYPE INTEGER :HARDWIRED? TRUE :INITIALLY 4) (SEQUENCE-LENGTH :TYPE INTEGER :INITIALLY 0)) :INITIALIZER INITIALIZE-VECTOR :SYNONYMS (SVSEQ))");
+    { Class* clasS = defineClassFromStringifiedSource("CUSTOM-VECTOR-SEQUENCE", "(DEFCLASS CUSTOM-VECTOR-SEQUENCE (VECTOR-SEQUENCE) :DOCUMENTATION \"VECTOR-SEQUENCE (which see) with a customizable resize factor.\nThe resize factor needs to be > 1.\" :PUBLIC-SLOTS ((RESIZE-FACTOR :TYPE FLOAT :INITIALLY 2.0)))");
 
-      oHARDWIRED_RESIZE_INCREMENT_ON_VECTOR_SEQUENCEo = 100;
-      oHARDWIRED_RESIZE_INCREMENT_ON_SHORT_VECTOR_SEQUENCEo = 4;
-      clasS->classConstructorCode = ((cpp_function_code)(&newShortVectorSequence));
-      clasS->classSlotAccessorCode = ((cpp_function_code)(&accessShortVectorSequenceSlotValue));
+      clasS->classConstructorCode = ((cpp_function_code)(&newCustomVectorSequence));
+      clasS->classSlotAccessorCode = ((cpp_function_code)(&accessCustomVectorSequenceSlotValue));
     }
     { Class* clasS = defineClassFromStringifiedSource("BOOLEAN-VECTOR", "(DEFCLASS BOOLEAN-VECTOR (VECTOR) :PARAMETERS ((ANY-VALUE :TYPE BOOLEAN-WRAPPER)))");
 
@@ -6759,7 +6836,7 @@ void helpStartupHierarchy8() {
 
       clasS->classSlotAccessorCode = ((cpp_function_code)(&accessRelationSlotValue));
     }
-    { Class* clasS = defineClassFromStringifiedSource("CLASS", stringConcatenate("(DEFCLASS CLASS (RELATION) :PUBLIC-SLOTS ((CL-STRUCT? :TYPE BOOLEAN :INITIALLY FALSE) (MIXIN? :TYPE BOOLEAN :INITIALLY FALSE) (PRINT-FORM :TYPE OBJECT :ALLOCATION :DYNAMIC :OPTION-KEYWORD :PRINT-FORM) (CLASS-TYPE :TYPE TYPE :PUBLIC? TRUE) (CLASS-ARITY :TYPE INTEGER :INITIALLY 1 :HARDWIRED? TRUE) (CLASS-DIRECT-SUPERS :TYPE (LIST OF TYPE) :ALLOCATION :EMBEDDED) (CLASS-DIRECT-SUBS :TYPE (LIST OF TYPE) :ALLOCATION :EMBEDDED) (CLASS-ALL-SUPER-CLASSES :TYPE (CONS OF CLASS) :INITIALLY NIL :PUBLIC? TRUE) (CLASS-ALL-SLOTS :TYPE (CONS OF SLOT)) (CLASS-LOCAL-SLOTS :TYPE (LIST OF SLOT)) (CLASS-SLOT-AND-METHOD-CACHE :TYPE (VECTOR OF SLOT)) (CLASS-ABSTRACT? :TYPE BOOLEAN :INITIALLY FALSE :RENAMES ABSTRACT?) (CLASS-MIXIN? :TYPE BOOLEAN :INITIALLY FALSE :RENAMES MIXIN?) (CLASS-COLLECTION? :TYPE BOOLEAN :INITIALLY FALSE) (CLASS-CL-STRUCT? :TYPE BOOLEAN :INITIALLY FALSE :RENAMES CL-STRUCT?) (CLASS-CL-STRUCT-SLOTS :TYPE (LIST OF STORAGE-SLOT) :ALLOCATION :DYNAMIC) (CLASS-PUBLIC? :TYPE BOOLEAN :INITIALLY TRUE :OPTION-KEYWORD :P" "UBLIC?) (CLASS-RECYCLE-METHOD :TYPE KEYWORD :ALLOCATION :DYNAMIC :DEFAULT :NONE :OPTION-KEYWORD :RECYCLE-METHOD) (CLASS-FINALIZED? :TYPE BOOLEAN :INITIALLY FALSE :PUBLIC? TRUE) (CLASS-SLOTS-FINALIZED? :TYPE BOOLEAN :INITIALLY FALSE) (CLASS-STRINGIFIED-SOURCE :TYPE STRING) (CLASS-PARAMETERS :TYPE (LIST OF SYMBOL) :ALLOCATION :DYNAMIC :DEFAULT NIL-LIST :OPTION-KEYWORD :PARAMETERS) (CLASS-CONSTRUCTOR-CODE :TYPE FUNCTION-CODE) (CLASS-SLOT-ACCESSOR-CODE :TYPE FUNCTION-CODE) (CLASS-CREATOR :TYPE SYMBOL :ALLOCATION :DYNAMIC :OPTION-KEYWORD :CREATOR) (CLASS-INITIALIZER :TYPE SYMBOL :ALLOCATION :DYNAMIC :OPTION-KEYWORD :INITIALIZER) (CLASS-TERMINATOR :TYPE SYMBOL :ALLOCATION :DYNAMIC :OPTION-KEYWORD :TERMINATOR) (CLASS-DESTRUCTOR :TYPE SYMBOL :ALLOCATION :DYNAMIC :OPTION-KEYWORD :DESTRUCTOR) (CLASS-DOCUMENTATION :ALLOCATION :DYNAMIC :RENAMES DOCUMENTATION :OPTION-KEYWORD :DOCUMENTATION) (CLASS-EXTENSION-NAME :TYPE SYMBOL :ALLOCATION :DYNAMIC :OPTION-KEYWORD :EXTENSION) (CLASS-EXTENSION :TYPE CLASS-EXTENSION :ALLOCATI" "ON :DYNAMIC) (CLASS-REQUIRED-SLOT-NAMES :TYPE (LIST OF SYMBOL) :ALLOCATION :DYNAMIC :DEFAULT NIL-LIST) (CLASS-GUARD-CONSTRUCTOR-DEMONS :TYPE (LIST OF DEMON) :ALLOCATION :DYNAMIC) (CLASS-CONSTRUCTOR-DEMONS :TYPE (LIST OF DEMON) :ALLOCATION :DYNAMIC) (CLASS-GUARD-DESTRUCTOR-DEMONS :TYPE (LIST OF DEMON) :ALLOCATION :DYNAMIC) (CLASS-DESTRUCTOR-DEMONS :TYPE (LIST OF DEMON) :ALLOCATION :DYNAMIC) (CLASS-INITIAL-VALUE :TYPE OBJECT :ALLOCATION :DYNAMIC :OPTION-KEYWORD :INITIAL-VALUE) (CLASS-PRINT-FORM :TYPE OBJECT :RENAMES PRINT-FORM :OPTION-KEYWORD :PRINT-FORM) (CLASS-KEY :TYPE (LIST OF SLOT) :ALLOCATION :DYNAMIC :DEFAULT NIL-LIST) (CLASS-SYNONYMS :TYPE (LIST OF TYPE) :ALLOCATION :DYNAMIC :DEFAULT NIL-LIST :OPTION-KEYWORD :SYNONYMS) (CLASS-IS-LINK :TYPE TYPE :ALLOCATION :DYNAMIC) (CLASS-INVERSE-IS-LINK :TYPE CLASS :ALLOCATION :DYNAMIC) (CLASS-CL-NATIVE-TYPE :TYPE STRING :ALLOCATION :DYNAMIC :OPTION-KEYWORD :CL-NATIVE-TYPE) (CLASS-CPP-NATIVE-TYPE :TYPE STRING :ALLOCATION :DYNAMIC :OPTION-KEYWORD :CPP-NATIVE-TYPE) (CL" "ASS-JAVA-NATIVE-TYPE :TYPE STRING :ALLOCATION :DYNAMIC :OPTION-KEYWORD :JAVA-NATIVE-TYPE) (CLASS-IDL-NATIVE-TYPE :TYPE STRING :ALLOCATION :DYNAMIC :OPTION-KEYWORD :IDL-NATIVE-TYPE) (CLASS-MARKED? :TYPE BOOLEAN) (CLASS-PROTOTYPE :TYPE OBJECT :ALLOCATION :DYNAMIC) (CLASS-TAXONOMY-NODE :TYPE TAXONOMY-NODE)) :PUBLIC-METHODS ((NAME ((SELF CLASS)) :TYPE STRING (RETURN (SYMBOL-NAME (CLASS-TYPE SELF)))) (HOME-MODULE ((SELF CLASS)) :TYPE MODULE (RETURN (INTERNED-IN (CLASS-TYPE SELF)))) (ARITY ((SELF CLASS)) :TYPE INTEGER (RETURN 1)) (PUBLIC? ((SELF CLASS)) :TYPE BOOLEAN :STORAGE-SLOT CLASS-PUBLIC? (RETURN (CLASS-PUBLIC? SELF))) (ACTIVE? ((SELF CLASS)) :TYPE BOOLEAN :STORAGE-SLOT STORED-ACTIVE? (RETURN (OR (AND (DEFINED? (STORED-ACTIVE? SELF)) (STORED-ACTIVE? SELF)) (SUBTYPE-OF? (CLASS-TYPE SELF) @ACTIVE-OBJECT)))) (CREATOR ((SELF CLASS)) :TYPE SYMBOL :STORAGE-SLOT CLASS-CREATOR (RETURN (CLASS-CREATOR SELF))) (INITIALIZER ((SEL", "F CLASS)) :TYPE SYMBOL :STORAGE-SLOT CLASS-INITIALIZER :INHERITS-THROUGH SUPER-CLASSES) (TERMINATOR ((SELF CLASS)) :TYPE SYMBOL :STORAGE-SLOT CLASS-TERMINATOR :INHERITS-THROUGH SUPER-CLASSES) (DESTRUCTOR ((SELF CLASS)) :TYPE SYMBOL :STORAGE-SLOT CLASS-DESTRUCTOR (RETURN (CLASS-DESTRUCTOR SELF))) (REQUIRED-SLOTS ((SELF CLASS)) :TYPE (LIST OF SYMBOL) :DOCUMENTATION \"Returns a list of names of required slots for `self'.\" (RETURN (CLASS-REQUIRED-SLOT-NAMES SELF))) (PARAMETERS ((SELF CLASS)) :TYPE (LIST OF SYMBOL) :DOCUMENTATION \"Returns the list of parameters names of `self'.\" :STORAGE-SLOT CLASS-PARAMETERS :INHERITS-THROUGH SUPER-CLASSES) (INITIAL-VALUE ((SELF CLASS)) :TYPE OBJECT :DOCUMENTATION \"Return an initial value for the class `self'.\" :STORAGE-SLOT CLASS-INITIAL-VALUE :INHERITS-THROUGH SUPER-CLASSES) (EXTENSION ((SELF CLASS)) :TYPE CLASS-EXTENSION :DOCUMENTATION \"Return the nearest class extension that records instances\nof the class `self'.\" :STORAGE-SLOT CLASS-EXTENSION :INHERITS-THROUGH SUPER" "-CLASSES) (CL-NATIVE-TYPE ((SELF CLASS)) :TYPE STRING :STORAGE-SLOT CLASS-CL-NATIVE-TYPE (RETURN (CLASS-CL-NATIVE-TYPE SELF))) (CPP-NATIVE-TYPE ((SELF CLASS)) :TYPE STRING :STORAGE-SLOT CLASS-CPP-NATIVE-TYPE (RETURN (CLASS-CPP-NATIVE-TYPE SELF))) (IDL-NATIVE-TYPE ((SELF CLASS)) :TYPE STRING :STORAGE-SLOT CLASS-IDL-NATIVE-TYPE (RETURN (CLASS-CPP-NATIVE-TYPE SELF))) (JAVA-NATIVE-TYPE ((SELF CLASS)) :TYPE STRING :STORAGE-SLOT CLASS-JAVA-NATIVE-TYPE (LET ((NATIVETYPE (CLASS-JAVA-NATIVE-TYPE SELF))) (IF (DEFINED? NATIVETYPE) (RETURN (SUBSTITUTE-TEMPLATE-VARIABLES-IN-STRING NATIVETYPE *JAVA-STELLA-PACKAGE-MAPPING*)) (RETURN NULL))))) :PRINT-FORM (PRINT-NATIVE-STREAM STREAM \"|C|\" (CHOOSE (DEFINED? (CLASS-TYPE SELF)) (RELATIVE-NAME (CLASS-SYMBOL SELF)) \"??\")))", 0));
+    { Class* clasS = defineClassFromStringifiedSource("CLASS", stringConcatenate("(DEFCLASS CLASS (RELATION) :PUBLIC-SLOTS ((CL-STRUCT? :TYPE BOOLEAN :INITIALLY FALSE) (MIXIN? :TYPE BOOLEAN :INITIALLY FALSE) (PRINT-FORM :TYPE OBJECT :ALLOCATION :DYNAMIC :OPTION-KEYWORD :PRINT-FORM) (CLASS-TYPE :TYPE TYPE :PUBLIC? TRUE) (CLASS-ARITY :TYPE INTEGER :INITIALLY 1 :HARDWIRED? TRUE) (CLASS-DIRECT-SUPERS :TYPE (LIST OF TYPE) :ALLOCATION :EMBEDDED) (CLASS-DIRECT-SUBS :TYPE (LIST OF TYPE) :ALLOCATION :EMBEDDED) (CLASS-ALL-SUPER-CLASSES :TYPE (CONS OF CLASS) :INITIALLY NIL :PUBLIC? TRUE) (CLASS-ALL-SLOTS :TYPE (CONS OF SLOT)) (CLASS-LOCAL-SLOTS :TYPE (LIST OF SLOT)) (CLASS-SLOT-AND-METHOD-CACHE :TYPE (VECTOR OF SLOT)) (CLASS-ABSTRACT? :TYPE BOOLEAN :INITIALLY FALSE :RENAMES ABSTRACT?) (CLASS-MIXIN? :TYPE BOOLEAN :INITIALLY FALSE :RENAMES MIXIN?) (CLASS-COLLECTION? :TYPE BOOLEAN :INITIALLY FALSE) (CLASS-CL-STRUCT? :TYPE BOOLEAN :INITIALLY FALSE :RENAMES CL-STRUCT?) (CLASS-CL-STRUCT-SLOTS :TYPE (LIST OF STORAGE-SLOT) :ALLOCATION :DYNAMIC) (CLASS-PUBLIC? :TYPE BOOLEAN :INITIALLY TRUE :OPTION-KEYWORD :P" "UBLIC?) (CLASS-RECYCLE-METHOD :TYPE KEYWORD :ALLOCATION :DYNAMIC :DEFAULT :NONE :OPTION-KEYWORD :RECYCLE-METHOD) (CLASS-FINALIZED? :TYPE BOOLEAN :INITIALLY FALSE :PUBLIC? TRUE) (CLASS-SLOTS-FINALIZED? :TYPE BOOLEAN :INITIALLY FALSE) (CLASS-STRINGIFIED-SOURCE :TYPE STRING) (CLASS-PARAMETERS :TYPE (LIST OF SYMBOL) :ALLOCATION :DYNAMIC :DEFAULT NIL-LIST :OPTION-KEYWORD :PARAMETERS) (CLASS-CONSTRUCTOR-CODE :TYPE FUNCTION-CODE) (CLASS-SLOT-ACCESSOR-CODE :TYPE FUNCTION-CODE) (CLASS-CREATOR :TYPE SYMBOL :ALLOCATION :DYNAMIC :OPTION-KEYWORD :CREATOR) (CLASS-INITIALIZER :TYPE SYMBOL :ALLOCATION :DYNAMIC :OPTION-KEYWORD :INITIALIZER) (CLASS-TERMINATOR :TYPE SYMBOL :ALLOCATION :DYNAMIC :OPTION-KEYWORD :TERMINATOR) (CLASS-DESTRUCTOR :TYPE SYMBOL :ALLOCATION :DYNAMIC :OPTION-KEYWORD :DESTRUCTOR) (CLASS-DOCUMENTATION :ALLOCATION :DYNAMIC :RENAMES DOCUMENTATION :OPTION-KEYWORD :DOCUMENTATION) (CLASS-EXTENSION-NAME :TYPE SYMBOL :ALLOCATION :DYNAMIC :OPTION-KEYWORD :EXTENSION) (CLASS-EXTENSION :TYPE CLASS-EXTENSION :ALLOCATI" "ON :DYNAMIC) (CLASS-REQUIRED-SLOT-NAMES :TYPE (LIST OF SYMBOL) :ALLOCATION :DYNAMIC :DEFAULT NIL-LIST) (CLASS-GUARD-CONSTRUCTOR-DEMONS :TYPE (LIST OF DEMON) :ALLOCATION :DYNAMIC) (CLASS-CONSTRUCTOR-DEMONS :TYPE (LIST OF DEMON) :ALLOCATION :DYNAMIC) (CLASS-GUARD-DESTRUCTOR-DEMONS :TYPE (LIST OF DEMON) :ALLOCATION :DYNAMIC) (CLASS-DESTRUCTOR-DEMONS :TYPE (LIST OF DEMON) :ALLOCATION :DYNAMIC) (CLASS-INITIAL-VALUE :TYPE OBJECT :ALLOCATION :DYNAMIC :OPTION-KEYWORD :INITIAL-VALUE) (CLASS-PRINT-FORM :TYPE OBJECT :RENAMES PRINT-FORM :OPTION-KEYWORD :PRINT-FORM) (CLASS-KEY :TYPE (LIST OF SLOT) :ALLOCATION :DYNAMIC :DEFAULT NIL-LIST) (CLASS-SYNONYMS :TYPE (LIST OF TYPE) :ALLOCATION :DYNAMIC :DEFAULT NIL-LIST :OPTION-KEYWORD :SYNONYMS) (CLASS-IS-LINK :TYPE TYPE :ALLOCATION :DYNAMIC) (CLASS-INVERSE-IS-LINK :TYPE CLASS :ALLOCATION :DYNAMIC) (CLASS-CL-NATIVE-TYPE :TYPE STRING :ALLOCATION :DYNAMIC :OPTION-KEYWORD :CL-NATIVE-TYPE) (CLASS-CPP-NATIVE-TYPE :TYPE STRING :ALLOCATION :DYNAMIC :OPTION-KEYWORD :CPP-NATIVE-TYPE) (CL" "ASS-JAVA-NATIVE-TYPE :TYPE STRING :ALLOCATION :DYNAMIC :OPTION-KEYWORD :JAVA-NATIVE-TYPE) (CLASS-IDL-NATIVE-TYPE :TYPE STRING :ALLOCATION :DYNAMIC :OPTION-KEYWORD :IDL-NATIVE-TYPE) (CLASS-MARKED? :TYPE BOOLEAN) (CLASS-PROTOTYPE :TYPE OBJECT :ALLOCATION :DYNAMIC) (CLASS-TAXONOMY-NODE :TYPE TAXONOMY-NODE)) :PUBLIC-METHODS ((NAME ((SELF CLASS)) :TYPE STRING (RETURN (SYMBOL-NAME (CLASS-TYPE SELF)))) (HOME-MODULE ((SELF CLASS)) :TYPE MODULE (RETURN (INTERNED-IN (CLASS-TYPE SELF)))) (ARITY ((SELF CLASS)) :TYPE INTEGER (RETURN 1)) (PUBLIC? ((SELF CLASS)) :TYPE BOOLEAN :STORAGE-SLOT CLASS-PUBLIC? (RETURN (CLASS-PUBLIC? SELF))) (ACTIVE? ((SELF CLASS)) :TYPE BOOLEAN :STORAGE-SLOT STORED-ACTIVE? (RETURN (OR (AND (DEFINED? (STORED-ACTIVE? SELF)) (STORED-ACTIVE? SELF)) (SUBTYPE-OF? (CLASS-TYPE SELF) @ACTIVE-OBJECT)))) (CREATOR ((SELF CLASS)) :TYPE SYMBOL :STORAGE-SLOT CLASS-CREATOR (RETURN (CLASS-CREATOR SELF))) (INITIALIZER ((SEL", "F CLASS)) :TYPE SYMBOL :STORAGE-SLOT CLASS-INITIALIZER :INHERITS-THROUGH SUPER-CLASSES) (TERMINATOR ((SELF CLASS)) :TYPE SYMBOL :STORAGE-SLOT CLASS-TERMINATOR :INHERITS-THROUGH SUPER-CLASSES) (DESTRUCTOR ((SELF CLASS)) :TYPE SYMBOL :STORAGE-SLOT CLASS-DESTRUCTOR (RETURN (CLASS-DESTRUCTOR SELF))) (REQUIRED-SLOTS ((SELF CLASS)) :TYPE (LIST OF SYMBOL) :DOCUMENTATION \"Returns a list of names of required slots for `self'.\" (RETURN (CLASS-REQUIRED-SLOT-NAMES SELF))) (PARAMETERS ((SELF CLASS)) :TYPE (LIST OF SYMBOL) :DOCUMENTATION \"Returns the list of parameters names of `self'.\" :STORAGE-SLOT CLASS-PARAMETERS :INHERITS-THROUGH SUPER-CLASSES) (INITIAL-VALUE ((SELF CLASS)) :TYPE OBJECT :DOCUMENTATION \"Return an initial value for the class `self'.\" :STORAGE-SLOT CLASS-INITIAL-VALUE :INHERITS-THROUGH SUPER-CLASSES) (EXTENSION ((SELF CLASS)) :TYPE CLASS-EXTENSION :DOCUMENTATION \"Return the nearest class extension that records instances\nof the class `self'.\" :STORAGE-SLOT CLASS-EXTENSION :INHERITS-THROUGH SUPER" "-CLASSES) (CL-NATIVE-TYPE ((SELF CLASS)) :TYPE STRING :STORAGE-SLOT CLASS-CL-NATIVE-TYPE (RETURN (CLASS-CL-NATIVE-TYPE SELF))) (CPP-NATIVE-TYPE ((SELF CLASS)) :TYPE STRING :STORAGE-SLOT CLASS-CPP-NATIVE-TYPE (RETURN (CLASS-CPP-NATIVE-TYPE SELF))) (IDL-NATIVE-TYPE ((SELF CLASS)) :TYPE STRING :STORAGE-SLOT CLASS-IDL-NATIVE-TYPE (RETURN (CLASS-CPP-NATIVE-TYPE SELF))) (JAVA-NATIVE-TYPE ((SELF CLASS)) :TYPE STRING :STORAGE-SLOT CLASS-JAVA-NATIVE-TYPE (LET ((NATIVETYPE (CLASS-JAVA-NATIVE-TYPE SELF))) (IF (DEFINED? NATIVETYPE) (RETURN (SUBSTITUTE-TEMPLATE-VARIABLES-IN-STRING NATIVETYPE *JAVA-STELLA-PACKAGE-MAPPING*)) (RETURN NULL))))) :PRINT-FORM (PRINT-NATIVE-STREAM STREAM \"|C|\" (CHOOSE (DEFINED? (CLASS-TYPE SELF)) (RELATIVE-NAME (CLASS-SYMBOL SELF) FALSE) \"??\")))", 0));
 
       oHARDWIRED_CLASS_ARITY_ON_CLASSo = 1;
       clasS->classConstructorCode = ((cpp_function_code)(&newClass));
@@ -6799,7 +6876,7 @@ void helpStartupHierarchy8() {
       clasS->classConstructorCode = ((cpp_function_code)(&newTable));
       clasS->classSlotAccessorCode = ((cpp_function_code)(&accessTableSlotValue));
     }
-    { Class* clasS = defineClassFromStringifiedSource("GLOBAL-VARIABLE", "(DEFCLASS GLOBAL-VARIABLE (MAPPABLE-OBJECT) :PUBLIC-SLOTS ((DOCUMENTATION :TYPE STRING)) :PUBLIC-METHODS ((NAME ((SELF GLOBAL-VARIABLE)) :TYPE STRING (RETURN (SYMBOL-NAME (VARIABLE-NAME SELF)))) (TYPE ((SELF GLOBAL-VARIABLE)) :TYPE TYPE :STORAGE-SLOT VARIABLE-TYPE (RETURN (VARIABLE-TYPE SELF))) (HOME-MODULE ((SELF GLOBAL-VARIABLE)) :TYPE MODULE (LET ((MODULE (VARIABLE-HOME-MODULE SELF))) (IF (DEFINED? MODULE) (RETURN MODULE) (RETURN (INTERNED-IN (VARIABLE-NAME SELF))))))) :PUBLIC-SLOTS ((VARIABLE-NAME :TYPE SYMBOL) (VARIABLE-TYPE :TYPE TYPE) (VARIABLE-TYPE-SPECIFIER :TYPE TYPE-SPEC :ALLOCATION :DYNAMIC) (VARIABLE-HOME-MODULE :TYPE MODULE :ALLOCATION :DYNAMIC) (VARIABLE-SPECIAL? :TYPE BOOLEAN) (VARIABLE-CONSTANT? :TYPE BOOLEAN) (VARIABLE-PUBLIC? :TYPE BOOLEAN :INITIALLY TRUE) (VARIABLE-AUXILIARY? :TYPE BOOLEAN) (VARIABLE-GET-VALUE-CODE :TYPE FUNCTION-CODE) (VARIABLE-SET-VALUE-CODE :TYPE FUNCTION-CODE) (VARIABLE-VALUE-STACK :TYPE LIST) (VARIABLE-DOCUMENTATION :TYPE STRING :RENAMES DOCUMENTATION) (VARIABLE-STRI" "NGIFIED-SOURCE :TYPE STRING)))");
+    { Class* clasS = defineClassFromStringifiedSource("GLOBAL-VARIABLE", "(DEFCLASS GLOBAL-VARIABLE (MAPPABLE-OBJECT) :PUBLIC-SLOTS ((DOCUMENTATION :TYPE STRING)) :PUBLIC-METHODS ((NAME ((SELF GLOBAL-VARIABLE)) :TYPE STRING (RETURN (SYMBOL-NAME (VARIABLE-NAME SELF)))) (TYPE ((SELF GLOBAL-VARIABLE)) :TYPE TYPE :STORAGE-SLOT VARIABLE-TYPE (RETURN (VARIABLE-TYPE SELF))) (HOME-MODULE ((SELF GLOBAL-VARIABLE)) :TYPE MODULE (LET ((MODULE (VARIABLE-HOME-MODULE SELF))) (IF (DEFINED? MODULE) (RETURN MODULE) (RETURN (INTERNED-IN (VARIABLE-NAME SELF))))))) :PUBLIC-SLOTS ((VARIABLE-NAME :TYPE SYMBOL) (VARIABLE-TYPE :TYPE TYPE) (VARIABLE-TYPE-SPECIFIER :TYPE TYPE-SPEC :ALLOCATION :DYNAMIC) (VARIABLE-HOME-MODULE :TYPE MODULE :ALLOCATION :DYNAMIC) (VARIABLE-SPECIAL? :TYPE BOOLEAN) (VARIABLE-CONSTANT? :TYPE BOOLEAN) (VARIABLE-PUBLIC? :TYPE BOOLEAN :INITIALLY TRUE) (VARIABLE-AUXILIARY? :TYPE BOOLEAN) (VARIABLE-THREAD-LOCAL? :TYPE BOOLEAN :OPTION-KEYWORD :THREAD-LOCAL? :ALLOCATION :DYNAMIC :DOCUMENTATION \"If true, the variable will be allocated on a per-thread\nbasis similar to specials for which t" "his is always true.  CAUTION: this is\nonly a documentation place holder so far and not yet used by the translators.\") (VARIABLE-GET-VALUE-CODE :TYPE FUNCTION-CODE) (VARIABLE-SET-VALUE-CODE :TYPE FUNCTION-CODE) (VARIABLE-VALUE-STACK :TYPE LIST) (VARIABLE-DOCUMENTATION :TYPE STRING :RENAMES DOCUMENTATION) (VARIABLE-STRINGIFIED-SOURCE :TYPE STRING)))");
 
       clasS->classConstructorCode = ((cpp_function_code)(&newGlobalVariable));
       clasS->classSlotAccessorCode = ((cpp_function_code)(&accessGlobalVariableSlotValue));
@@ -6906,21 +6983,24 @@ void helpStartupHierarchy8() {
 
       clasS->classConstructorCode = ((cpp_function_code)(&newIncompatibleQuantityException));
     }
+    { Class* clasS = defineClassFromStringifiedSource("TIMEOUT-EXCEPTION", "(DEFCLASS TIMEOUT-EXCEPTION (STELLA-EXCEPTION) :PUBLIC? TRUE)");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newTimeoutException));
+    }
     defineClassFromStringifiedSource("QUANTITY", "(DEFCLASS QUANTITY (OBJECT) :PUBLIC? TRUE :ABSTRACT? TRUE :DOCUMENTATION \"General superclass for extensible quantity objects\" :PUBLIC-METHODS ((COERCE-TO ((SELF QUANTITY) (OTHER OBJECT)) :TYPE QUANTITY (IF (ISA? OTHER (PRIMARY-TYPE SELF)) (RETURN OTHER) (RETURN NULL))) (LESS? ((SELF QUANTITY) (OTHER OBJECT)) :TYPE BOOLEAN (IGNORE OTHER) (RETURN FALSE)) (LESS-EQUAL? ((SELF QUANTITY) (OTHER OBJECT)) :TYPE BOOLEAN (RETURN (OR (OBJECT-EQL? SELF OTHER) (LESS? SELF OTHER)))) (GREATER-EQUAL? ((SELF QUANTITY) (OTHER OBJECT)) :TYPE BOOLEAN (RETURN (OR (OBJECT-EQL? SELF OTHER) (GREATER? SELF OTHER)))) (GREATER? ((SELF QUANTITY) (OTHER OBJECT)) :TYPE BOOLEAN (IGNORE OTHER) (RETURN FALSE))))");
     defineClassFromStringifiedSource("LITERAL", "(DEFCLASS LITERAL (NON-OBJECT) :ABSTRACT? TRUE)");
     defineClassFromStringifiedSource("NUMBER", "(DEFCLASS NUMBER (LITERAL) :ABSTRACT? TRUE)");
-    defineClassFromStringifiedSource("INTEGER", "(DEFCLASS INTEGER (NUMBER) :CL-NATIVE-TYPE \"INTEGER\" :CPP-NATIVE-TYPE \"int\" :IDL-NATIVE-TYPE \"long\" :JAVA-NATIVE-TYPE \"int\" :INITIAL-VALUE NULL-INTEGER :EQUALITY-TEST EQL?)");
+    defineClassFromStringifiedSource("INTEGER", "(DEFCLASS INTEGER (NUMBER) :CL-NATIVE-TYPE \"FIXNUM\" :CPP-NATIVE-TYPE \"int\" :IDL-NATIVE-TYPE \"long\" :JAVA-NATIVE-TYPE \"int\" :INITIAL-VALUE NULL-INTEGER :EQUALITY-TEST EQL?)");
     defineClassFromStringifiedSource("FLOAT", "(DEFCLASS FLOAT (NUMBER) :CL-NATIVE-TYPE \"FLOAT\" :CPP-NATIVE-TYPE \"double\" :IDL-NATIVE-TYPE \"double\" :JAVA-NATIVE-TYPE \"double\" :INITIAL-VALUE NULL-FLOAT :EQUALITY-TEST EQL?)");
     defineClassFromStringifiedSource("MUTABLE-STRING", "(DEFCLASS MUTABLE-STRING (LITERAL) :CL-NATIVE-TYPE \"STRING\" :IDL-NATIVE-TYPE \"string\" :JAVA-NATIVE-TYPE \"StringBuffer\" :CPP-NATIVE-TYPE \"char*\" :EQUALITY-TEST STRING-EQL? :INITIAL-VALUE (VERBATIM :COMMON-LISP \"STELLA::NULL-STRING\" :JAVA \"null\" :CPP \"NULL\"))");
     defineClassFromStringifiedSource("STRING", "(DEFCLASS STRING (LITERAL) :SYNONYMS (FILE-NAME) :CL-NATIVE-TYPE \"STRING\" :IDL-NATIVE-TYPE \"string\" :JAVA-NATIVE-TYPE \"String\" :CPP-NATIVE-TYPE \"char*\" :EQUALITY-TEST STRING-EQL? :INITIAL-VALUE (VERBATIM :COMMON-LISP \"STELLA::NULL-STRING\" :JAVA \"null\" :CPP \"NULL\"))");
     defineClassFromStringifiedSource("CHARACTER", "(DEFCLASS CHARACTER (LITERAL) :CL-NATIVE-TYPE \"CHARACTER\" :CPP-NATIVE-TYPE \"char\" :IDL-NATIVE-TYPE \"char\" :JAVA-NATIVE-TYPE \"char\" :INITIAL-VALUE NULL-CHARACTER)");
-    defineClassFromStringifiedSource("SHORT-INTEGER", "(DEFCLASS SHORT-INTEGER (INTEGER) :CL-NATIVE-TYPE \"INTEGER\" :CPP-NATIVE-TYPE \"short int\" :IDL-NATIVE-TYPE \"short int\" :JAVA-NATIVE-TYPE \"short\" :INITIAL-VALUE NULL-SHORT-INTEGER :EQUALITY-TEST EQL?)");
-    defineClassFromStringifiedSource("LONG-INTEGER", "(DEFCLASS LONG-INTEGER (INTEGER) :CL-NATIVE-TYPE \"INTEGER\" :CPP-NATIVE-TYPE \"long int\" :IDL-NATIVE-TYPE \"long int\" :JAVA-NATIVE-TYPE \"long\" :INITIAL-VALUE NULL-LONG-INTEGER :EQUALITY-TEST EQL?)");
-    defineClassFromStringifiedSource("UNSIGNED-SHORT-INTEGER", "(DEFCLASS UNSIGNED-SHORT-INTEGER (INTEGER) :CL-NATIVE-TYPE \"INTEGER\" :CPP-NATIVE-TYPE \"unsigned short int\" :IDL-NATIVE-TYPE \"unsigned short int\" :JAVA-NATIVE-TYPE \"short\" :INITIAL-VALUE NULL-UNSIGNED-SHORT-INTEGER :EQUALITY-TEST EQL?)");
-    defineClassFromStringifiedSource("UNSIGNED-LONG-INTEGER", "(DEFCLASS UNSIGNED-LONG-INTEGER (INTEGER) :CL-NATIVE-TYPE \"INTEGER\" :IDL-NATIVE-TYPE \"unsigned long int\" :CPP-NATIVE-TYPE \"unsigned long int\" :JAVA-NATIVE-TYPE \"long\" :INITIAL-VALUE NULL-UNSIGNED-LONG-INTEGER :EQUALITY-TEST EQL?)");
-    defineClassFromStringifiedSource("SINGLE-FLOAT", "(DEFCLASS SINGLE-FLOAT (FLOAT) :CL-NATIVE-TYPE \"FLOAT\" :JAVA-NATIVE-TYPE \"float\" :IDL-NATIVE-TYPE \"float\" :CPP-NATIVE-TYPE \"float\" :INITIAL-VALUE NULL-SINGLE-FLOAT :EQUALITY-TEST EQL?)");
-    defineClassFromStringifiedSource("DOUBLE-FLOAT", "(DEFCLASS DOUBLE-FLOAT (FLOAT) :CL-NATIVE-TYPE \"FLOAT\" :CPP-NATIVE-TYPE \"double\" :JAVA-NATIVE-TYPE \"double\" :IDL-NATIVE-TYPE \"double\" :INITIAL-VALUE NULL-DOUBLE-FLOAT :EQUALITY-TEST EQL?)");
-    defineClassFromStringifiedSource("BYTE", "(DEFCLASS BYTE (LITERAL) :CL-NATIVE-TYPE \"FIXNUM\" :CPP-NATIVE-TYPE \"char\" :IDL-NATIVE-TYPE \"char\" :JAVA-NATIVE-TYPE \"byte\" :INITIAL-VALUE NULL-BYTE :EQUALITY-TEST EQL?)");
+    defineClassFromStringifiedSource("SHORT-INTEGER", "(DEFCLASS SHORT-INTEGER (NUMBER) :CL-NATIVE-TYPE \"FIXNUM\" :CPP-NATIVE-TYPE \"short int\" :IDL-NATIVE-TYPE \"short int\" :JAVA-NATIVE-TYPE \"short\" :INITIAL-VALUE NULL-SHORT-INTEGER :EQUALITY-TEST EQL?)");
+    defineClassFromStringifiedSource("LONG-INTEGER", "(DEFCLASS LONG-INTEGER (NUMBER) :CL-NATIVE-TYPE \"INTEGER\" :CPP-NATIVE-TYPE \"long long int\" :IDL-NATIVE-TYPE \"long int\" :JAVA-NATIVE-TYPE \"long\" :INITIAL-VALUE NULL-LONG-INTEGER :EQUALITY-TEST EQL?)");
+    defineClassFromStringifiedSource("UNSIGNED-SHORT-INTEGER", "(DEFCLASS UNSIGNED-SHORT-INTEGER (NUMBER) :CL-NATIVE-TYPE \"INTEGER\" :CPP-NATIVE-TYPE \"unsigned short int\" :IDL-NATIVE-TYPE \"unsigned short int\" :JAVA-NATIVE-TYPE \"short\" :INITIAL-VALUE NULL-UNSIGNED-SHORT-INTEGER :EQUALITY-TEST EQL?)");
+    defineClassFromStringifiedSource("UNSIGNED-LONG-INTEGER", "(DEFCLASS UNSIGNED-LONG-INTEGER (NUMBER) :CL-NATIVE-TYPE \"INTEGER\" :IDL-NATIVE-TYPE \"unsigned long int\" :CPP-NATIVE-TYPE \"unsigned long int\" :JAVA-NATIVE-TYPE \"long\" :INITIAL-VALUE NULL-UNSIGNED-LONG-INTEGER :EQUALITY-TEST EQL?)");
+    defineClassFromStringifiedSource("SINGLE-FLOAT", "(DEFCLASS SINGLE-FLOAT (NUMBER) :CL-NATIVE-TYPE \"FLOAT\" :JAVA-NATIVE-TYPE \"float\" :IDL-NATIVE-TYPE \"float\" :CPP-NATIVE-TYPE \"float\" :INITIAL-VALUE NULL-SINGLE-FLOAT :EQUALITY-TEST EQL?)");
+    defineClassFromStringifiedSource("DOUBLE-FLOAT", "(DEFCLASS DOUBLE-FLOAT (NUMBER) :CL-NATIVE-TYPE \"FLOAT\" :CPP-NATIVE-TYPE \"double\" :JAVA-NATIVE-TYPE \"double\" :IDL-NATIVE-TYPE \"double\" :INITIAL-VALUE NULL-DOUBLE-FLOAT :EQUALITY-TEST EQL?)");
   }
 }
 
@@ -6936,9 +7016,14 @@ void startupHierarchy() {
       helpStartupHierarchy5();
       helpStartupHierarchy6();
     }
+    if (currentStartupTimePhaseP(4)) {
+      oHARDWIRED_TRANSIENTp_ON_TRANSIENT_MIXINo = false;
+      oHARDWIRED_CLASS_ARITY_ON_CLASSo = NULL_INTEGER;
+    }
     if (currentStartupTimePhaseP(5)) {
       helpStartupHierarchy7();
       helpStartupHierarchy8();
+      defineClassFromStringifiedSource("BYTE", "(DEFCLASS BYTE (LITERAL) :CL-NATIVE-TYPE \"FIXNUM\" :CPP-NATIVE-TYPE \"char\" :IDL-NATIVE-TYPE \"char\" :JAVA-NATIVE-TYPE \"byte\" :INITIAL-VALUE NULL-BYTE :EQUALITY-TEST EQL?)");
       defineClassFromStringifiedSource("OCTET", "(DEFCLASS OCTET (BYTE) :CL-NATIVE-TYPE \"FIXNUM\" :CPP-NATIVE-TYPE \"char\" :IDL-NATIVE-TYPE \"octet\" :JAVA-NATIVE-TYPE \"byte\" :INITIAL-VALUE NULL-OCTET :EQUALITY-TEST EQL?)");
       defineClassFromStringifiedSource("WRAPPER", "(DEFCLASS WRAPPER (OBJECT) :PUBLIC-SLOTS ((WRAPPER-VALUE :TYPE UNKNOWN :REQUIRED? TRUE)) :KEY (WRAPPER-VALUE) :PUBLIC? TRUE :ABSTRACT? TRUE)");
       defineClassFromStringifiedSource("LITERAL-WRAPPER", "(DEFCLASS LITERAL-WRAPPER (WRAPPER) :ABSTRACT? TRUE)");
@@ -6947,6 +7032,11 @@ void startupHierarchy() {
 
         clasS->classConstructorCode = ((cpp_function_code)(&newIntegerWrapper));
         clasS->classSlotAccessorCode = ((cpp_function_code)(&accessIntegerWrapperSlotValue));
+      }
+      { Class* clasS = defineClassFromStringifiedSource("LONG-INTEGER-WRAPPER", "(DEFCLASS LONG-INTEGER-WRAPPER (NUMBER-WRAPPER) :SLOTS ((WRAPPER-VALUE :TYPE LONG-INTEGER)) :PRINT-FORM (LET ((VALUE (WRAPPER-VALUE SELF))) (IF (NULL? VALUE) (IF *PRINTREADABLY?* (PRINT-NATIVE-STREAM STREAM (QUOTE NULL-LONG-INTEGER)) (PRINT-NATIVE-STREAM STREAM \"|L|NULL-LONG-INTEGER\")) (IF *PRINTREADABLY?* (PRINT-NATIVE-STREAM STREAM VALUE) (PRINT-NATIVE-STREAM STREAM \"|L|\" VALUE)))))");
+
+        clasS->classConstructorCode = ((cpp_function_code)(&newLongIntegerWrapper));
+        clasS->classSlotAccessorCode = ((cpp_function_code)(&accessLongIntegerWrapperSlotValue));
       }
       { Class* clasS = defineClassFromStringifiedSource("FLOAT-WRAPPER", "(DEFCLASS FLOAT-WRAPPER (NUMBER-WRAPPER) :PUBLIC-SLOTS ((WRAPPER-VALUE :TYPE FLOAT)) :PRINT-FORM (LET ((VALUE (WRAPPER-VALUE SELF))) (IF (NULL? VALUE) (IF *PRINTREADABLY?* (PRINT-NATIVE-STREAM STREAM (QUOTE NULL-FLOAT)) (PRINT-NATIVE-STREAM STREAM \"|L|NULL-FLOAT\")) (IF *PRINTREADABLY?* (PRINT-NATIVE-STREAM STREAM VALUE) (PRINT-NATIVE-STREAM STREAM \"|L|\" VALUE)))))");
 
@@ -6998,7 +7088,7 @@ void startupHierarchy() {
       defineClassFromStringifiedSource("TICKTOCK", "(DEFCLASS TICKTOCK () :DOCUMENTATION \"A data type that is used to hold information for computing\ntiming of code.  It is intentionally opaque to the user.\nIt should only be used as an argument to the TICKTOCK-DIFFERENCE\nfunction.  Values are obtained with the GET-TICKTOCK function.\" :CPP-NATIVE-TYPE \"clock_t\" :CL-NATIVE-TYPE \"FIXNUM\" :JAVA-NATIVE-TYPE \"long\")");
       defineClassFromStringifiedSource("NATIVE-OBJECT-POINTER", "(DEFCLASS NATIVE-OBJECT-POINTER (SECOND-CLASS-OBJECT) :DOCUMENTATION \"A pointer type that can point at an arbitrary native\nnon-literal object.  Usable to store native objects that fall outside the\nSTELLA OBJECT hierarchy (e.g., native arrays) without having to use their\nexact type.\" :CL-NATIVE-TYPE \"T\" :CPP-NATIVE-TYPE \"char*\" :JAVA-NATIVE-TYPE \"Object\")");
       defineClassFromStringifiedSource("PROCESS-LOCK-OBJECT", "(DEFCLASS PROCESS-LOCK-OBJECT () :DOCUMENTATION \"A process lock object for synchronizing in a multi-threaded environment.\nFully supported in Java; supported in some Common Lisp systems; not supported\nin C++.\" :CL-NATIVE-TYPE \"T\" :CPP-NATIVE-TYPE \"char*\" :JAVA-NATIVE-TYPE \"Object\")");
-      { Class* clasS = defineClassFromStringifiedSource("SYSTEM-DEFINITION", "(DEFCLASS SYSTEM-DEFINITION (STANDARD-OBJECT) :DOCUMENTATION \"The System-Definition class is used to define systems of files\nthat constitute Stella applications.\" :SLOTS ((NAME :TYPE STRING) (DIRECTORY :TYPE FILE-NAME) (FILES :TYPE (CONS OF STRING-WRAPPER)) (LISP-ONLY-FILES :TYPE (CONS OF STRING-WRAPPER)) (CPP-ONLY-FILES :TYPE (CONS OF STRING-WRAPPER)) (JAVA-ONLY-FILES :TYPE (CONS OF STRING-WRAPPER)) (PREPROCESSED-FILES :TYPE (CONS OF STRING-WRAPPER)) (REQUIRED-SYSTEMS :TYPE (CONS OF STRING-WRAPPER)) (LOADED? :TYPE BOOLEAN) (UP-TO-DATE? :TYPE BOOLEAN) (CARDINAL-MODULE :TYPE STRING) (SOURCE-ROOT-DIRECTORY :TYPE FILE-NAME) (NATIVE-ROOT-DIRECTORY :TYPE FILE-NAME) (BINARY-ROOT-DIRECTORY :TYPE FILE-NAME) (BANNER :TYPE STRING) (COPYRIGHT-HEADER :RENAMES BANNER) (PRODUCTION-SETTINGS :TYPE (CONS OF INTEGER-WRAPPER)) (DEVELOPMENT-SETTINGS :TYPE (CONS OF INTEGER-WRAPPER)) (FINALIZATION-FUNCTION :TYPE SYMBOL)) :PRINT-FORM (PRINT-NATIVE-STREAM STREAM \"|SYSTEM|\" (NAME SELF)))");
+      { Class* clasS = defineClassFromStringifiedSource("SYSTEM-DEFINITION", "(DEFCLASS SYSTEM-DEFINITION (STANDARD-OBJECT) :DOCUMENTATION \"The System-Definition class is used to define systems of files\nthat constitute Stella applications.\" :SLOTS ((NAME :TYPE STRING) (DIRECTORY :TYPE FILE-NAME) (FILES :TYPE (CONS OF STRING-WRAPPER)) (LISP-ONLY-FILES :TYPE (CONS OF STRING-WRAPPER)) (CPP-ONLY-FILES :TYPE (CONS OF STRING-WRAPPER)) (JAVA-ONLY-FILES :TYPE (CONS OF STRING-WRAPPER)) (DATA-FILES :TYPE (CONS OF STRING-WRAPPER)) (PREPROCESSED-FILES :TYPE (CONS OF STRING-WRAPPER)) (REQUIRED-SYSTEMS :TYPE (CONS OF STRING-WRAPPER)) (LOADED? :TYPE BOOLEAN) (UP-TO-DATE? :TYPE BOOLEAN) (CARDINAL-MODULE :TYPE STRING) (SOURCE-ROOT-DIRECTORY :TYPE FILE-NAME) (NATIVE-ROOT-DIRECTORY :TYPE FILE-NAME) (BINARY-ROOT-DIRECTORY :TYPE FILE-NAME) (BANNER :TYPE STRING) (COPYRIGHT-HEADER :RENAMES BANNER) (PRODUCTION-SETTINGS :TYPE (CONS OF INTEGER-WRAPPER)) (DEVELOPMENT-SETTINGS :TYPE (CONS OF INTEGER-WRAPPER)) (FINALIZATION-FUNCTION :TYPE SYMBOL)) :PRINT-FORM (PRINT-NATIVE-STREAM STREAM \"|SYSTEM|\" (NAME SELF" ")))");
 
         clasS->classConstructorCode = ((cpp_function_code)(&newSystemDefinition));
         clasS->classSlotAccessorCode = ((cpp_function_code)(&accessSystemDefinitionSlotValue));
@@ -7046,6 +7136,8 @@ void startupHierarchy() {
       finalizeClasses();
     }
     if (currentStartupTimePhaseP(7)) {
+      defineMethodObject("(DEFMETHOD (TRANSIENT? BOOLEAN) ((SELF TRANSIENT-MIXIN)) :AUXILIARY? TRUE (RETURN *HARDWIRED-TRANSIENT?-ON-TRANSIENT-MIXIN*))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (BAD? BOOLEAN-WRAPPER) ((SELF DYNAMIC-SLOTS-MIXIN)) :AUXILIARY? TRUE (LET ((ANSWER (SLOT-VALUE SELF BAD?))) (IF (NULL? ANSWER) (RETURN FALSE) (RETURN ANSWER))))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
       defineFunctionObject("STARTUP-HIERARCHY", "(DEFUN STARTUP-HIERARCHY () :PUBLIC? TRUE)", ((cpp_function_code)(&startupHierarchy)), NULL);
       { MethodSlot* function = lookupFunction(SYM_HIERARCHY_STELLA_STARTUP_HIERARCHY);
 
@@ -7055,6 +7147,9 @@ void startupHierarchy() {
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
       cleanupUnfinalizedClasses();
+    }
+    if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
     }
   }
 }
@@ -7213,19 +7308,13 @@ Symbol* SYM_HIERARCHY_STELLA_TOP_SYMBOL_OFFSET = NULL;
 
 Symbol* SYM_HIERARCHY_STELLA_POTENTIAL_FREE_SYMBOL_OFFSET = NULL;
 
-int oHARDWIRED_RESIZE_INCREMENT_ON_VECTOR_SEQUENCEo = NULL_INTEGER;
-
-Symbol* SYM_HIERARCHY_STELLA_RESIZE_INCREMENT = NULL;
+Surrogate* SGT_HIERARCHY_STELLA_VECTOR_SEQUENCE = NULL;
 
 Symbol* SYM_HIERARCHY_STELLA_SEQUENCE_LENGTH = NULL;
 
-Symbol* SYM_HIERARCHY_STELLA_VSEQ = NULL;
+Surrogate* SGT_HIERARCHY_STELLA_CUSTOM_VECTOR_SEQUENCE = NULL;
 
-Surrogate* SGT_HIERARCHY_STELLA_SHORT_VECTOR_SEQUENCE = NULL;
-
-int oHARDWIRED_RESIZE_INCREMENT_ON_SHORT_VECTOR_SEQUENCEo = NULL_INTEGER;
-
-Symbol* SYM_HIERARCHY_STELLA_SVSEQ = NULL;
+Symbol* SYM_HIERARCHY_STELLA_RESIZE_FACTOR = NULL;
 
 Surrogate* SGT_HIERARCHY_STELLA_BOOLEAN_VECTOR = NULL;
 
@@ -7663,6 +7752,10 @@ Symbol* SYM_HIERARCHY_STELLA_WRAPPER_VALUE = NULL;
 
 Symbol* SYM_HIERARCHY_STELLA_NULL_INTEGER = NULL;
 
+Surrogate* SGT_HIERARCHY_STELLA_LONG_INTEGER_WRAPPER = NULL;
+
+Symbol* SYM_HIERARCHY_STELLA_NULL_LONG_INTEGER = NULL;
+
 Surrogate* SGT_HIERARCHY_STELLA_FLOAT_WRAPPER = NULL;
 
 Symbol* SYM_HIERARCHY_STELLA_NULL_FLOAT = NULL;
@@ -7706,6 +7799,8 @@ Symbol* SYM_HIERARCHY_STELLA_LISP_ONLY_FILES = NULL;
 Symbol* SYM_HIERARCHY_STELLA_CPP_ONLY_FILES = NULL;
 
 Symbol* SYM_HIERARCHY_STELLA_JAVA_ONLY_FILES = NULL;
+
+Symbol* SYM_HIERARCHY_STELLA_DATA_FILES = NULL;
 
 Symbol* SYM_HIERARCHY_STELLA_PREPROCESSED_FILES = NULL;
 

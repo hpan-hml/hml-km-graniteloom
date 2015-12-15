@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -70,18 +70,19 @@ void normalizeOrProposition(Proposition* self);
 void helpNormalizePredicateProposition(Proposition* self, Surrogate* relationref, Vector* predicatearguments);
 void normalizeHoldsProposition(Proposition* self);
 void normalizePredicateProposition(Proposition* self);
+void normalizeFunctionProposition(Proposition* self);
 Surrogate* computeRelationTermSurrogate(Skolem* skolem, Proposition* proposition);
 Surrogate* evaluateRelationTerm(Object* relationterm, Proposition* proposition);
 Proposition* normalizeValueFunction(Proposition* self);
 void normalizeEquivalentProposition(Proposition* self);
 Proposition* shallowCopyProposition(Proposition* self);
 void normalizeProposition(Proposition* self);
-void normalizeTopLevelProposition(Proposition* self, Vector* iovariables);
-void normalizeTopLevelDescriptiveProposition(Proposition* self, Vector* iovariables);
+void normalizeTopLevelProposition(Proposition* self);
+void normalizeDescriptiveProposition(Proposition* self, Vector* iovariables, Keyword* kind);
 void invertAtomicProposition(Proposition* self);
 void invertExistsProposition(Proposition* self);
 void invertForallProposition(Proposition* self);
-Proposition* extractProposition(Description* self, KeyValueList* mapping);
+Proposition* extractProposition(Description* self, KeyValueMap* mapping);
 void invertImpliesProposition(Proposition* self);
 Proposition* invertProposition(Proposition* self);
 Proposition* safelyInvertProposition(Proposition* self);
@@ -134,6 +135,8 @@ extern Symbol* SYM_NORMALIZE_LOGIC_DONT_OPTIMIZEp;
 extern Keyword* KWD_NORMALIZE_IMPLIES;
 extern Keyword* KWD_NORMALIZE_FAIL;
 extern Keyword* KWD_NORMALIZE_COLLECT_INTO;
+extern Keyword* KWD_NORMALIZE_TAIL;
+extern Keyword* KWD_NORMALIZE_HEAD;
 extern Symbol* SYM_NORMALIZE_STELLA_NOT;
 extern Surrogate* SGT_NORMALIZE_LOGIC_NOT;
 extern Surrogate* SGT_NORMALIZE_LOGIC_FORALL;

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -62,6 +62,32 @@ public class Vector extends Sequence {
     }
   }
 
+  /** Perform a destructive sort of <code>self</code> according to
+   * <code>predicate</code>, and return the result.  If <code>predicate</code> has a '&lt;' semantics, the
+   * result will be in ascending order.  If <code>predicate</code> is <code>null</code>, a
+   * suitable '&lt;' predicate is chosen depending on the first element of <code>self</code>,
+   * and it is assumed that all elements of <code>self</code> have the same type (supported
+   * element types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT).
+   * @param predicate
+   * @return Vector
+   */
+  public Vector sort(java.lang.reflect.Method predicate) {
+    { Vector self = this;
+
+      { int length = self.length();
+
+        if (length == 0) {
+          return (self);
+        }
+        else if (predicate == null) {
+          predicate = Stella_Object.chooseSortPredicate((self.theArray)[0]);
+        }
+        Stella.heapSortNativeVector(self.theArray, self.length(), predicate);
+        return (self);
+      }
+    }
+  }
+
   /** Generate all but the last element of the vector <code>self</code>.
    * @return Iterator
    */
@@ -86,7 +112,7 @@ public class Vector extends Sequence {
 
         iterator.iteratorObject = self;
         iterator.iteratorInteger = 0;
-        iterator.iteratorSecondInteger = self.arraySize;
+        iterator.iteratorSecondInteger = self.length();
         iterator.iteratorNextCode = Native.find_java_method("edu.isi.stella.AllPurposeIterator", "vectorNextP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.AllPurposeIterator")});
         return (iterator);
       }
@@ -477,7 +503,7 @@ public class Vector extends Sequence {
             v = (vector000.theArray)[index000];
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(v, Stella.NIL);
+                collect000 = Cons.cons(v, Stella.NIL);
                 if (result.theConsList == Stella.NIL) {
                   result.theConsList = collect000;
                 }
@@ -488,7 +514,7 @@ public class Vector extends Sequence {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(v, Stella.NIL);
+                collect000.rest = Cons.cons(v, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -517,7 +543,7 @@ public class Vector extends Sequence {
             v = (vector000.theArray)[index000];
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(v, Stella.NIL);
+                collect000 = Cons.cons(v, Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect000;
                 }
@@ -528,7 +554,7 @@ public class Vector extends Sequence {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(v, Stella.NIL);
+                collect000.rest = Cons.cons(v, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }

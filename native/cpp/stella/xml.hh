@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -220,6 +220,7 @@ TokenizerToken* tokenizeXmlExpression(InputStream* stream, TokenizerToken* token
 Cons* processAttributeList(Cons* reverseattributelist, XmlElement* element, KvCons* namespaceTable);
 Object* xmlTokenListToSExpression(TokenizerToken* tokenlist, XmlDoctype* doctype, boolean doctypeDefinitionP);
 Object* readXmlExpression(InputStream* stream, Object* startTag, boolean& _Return1);
+Cons* readXmlExpressions(char* filename);
 XmlExpressionIterator* newXmlExpressionIterator();
 Object* accessXmlExpressionIteratorSlotValue(XmlExpressionIterator* self, Symbol* slotname, Object* value, boolean setvalueP);
 boolean xmlRegionMatchesP(Cons* regionspec, Cons* regiontag);
@@ -228,6 +229,9 @@ XmlExpressionIterator* xmlExpressions(InputStream* stream, Object* regiontag);
 boolean xmlCdataP(Object* item);
 boolean xmlElementP(Object* item);
 boolean xmlAttributeP(Object* item);
+boolean xmlGlobalAttributeP(Object* item);
+boolean xmlLocalAttributeP(Object* item);
+boolean xmlBaseAttributeP(Object* item);
 boolean xmlDeclarationP(Object* item);
 boolean xmlProcessingInstructionP(Object* item);
 boolean xmlElementFormP(Object* form);
@@ -237,6 +241,7 @@ boolean xmlDoctypeFormP(Object* form);
 boolean xmlCdataFormP(Object* form);
 XmlElement* getXmlTag(Cons* expression);
 Cons* getXmlAttributes(Cons* expression);
+char* getXmlBaseAttributeValue(Cons* expression);
 Cons* getXmlContent(Cons* expression);
 char* getXmlCdataContent(Cons* form);
 boolean xmlGlobalAttributeMatchP(XmlGlobalAttribute* attribute, char* name, char* namespacE);

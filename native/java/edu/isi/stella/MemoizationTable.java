@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -92,7 +92,7 @@ public class MemoizationTable extends StandardObject {
       if (hashtable == null) {
         hashtable = IntegerHashTable.newIntegerHashTable();
         memotable.hashTable = hashtable;
-        memotable.currentTimestamp = Stella_Object.cons(null, Stella.NIL);
+        memotable.currentTimestamp = Cons.cons(null, Stella.NIL);
       }
       timestamp = memotable.currentTimestamp;
       hashcode = Cons.hashMemoizedArgumentsn(args, eqvector);
@@ -109,12 +109,12 @@ public class MemoizationTable extends StandardObject {
           bucket.rest = Stella.NIL;
         }
       }
-      entry = Stella_Object.cons(null, args);
+      entry = Cons.cons(null, args);
       if (bucket != null) {
-        bucket.rest = Stella_Object.cons(entry, bucket.rest);
+        bucket.rest = Cons.cons(entry, bucket.rest);
       }
       else {
-        hashtable.insertAt(hashcode, Stella_Object.cons(timestamp, Stella_Object.cons(entry, Stella.NIL)));
+        hashtable.insertAt(hashcode, Cons.cons(timestamp, Cons.cons(entry, Stella.NIL)));
       }
       return (entry);
     }
@@ -130,7 +130,7 @@ public class MemoizationTable extends StandardObject {
       if (hashtable == null) {
         hashtable = IntegerHashTable.newIntegerHashTable();
         memotable.hashTable = hashtable;
-        memotable.currentTimestamp = Stella_Object.cons(null, Stella.NIL);
+        memotable.currentTimestamp = Cons.cons(null, Stella.NIL);
       }
       timestamp = memotable.currentTimestamp;
       hashcode = Stella_Object.hashMemoizedArguments(arg1, arg2, arg3, arg4, eqvector);
@@ -149,10 +149,10 @@ public class MemoizationTable extends StandardObject {
       }
       entry = Stella_Object.makeMemoizedValueEntry(null, arg1, arg2, arg3, arg4);
       if (bucket != null) {
-        bucket.rest = Stella_Object.cons(entry, bucket.rest);
+        bucket.rest = Cons.cons(entry, bucket.rest);
       }
       else {
-        hashtable.insertAt(hashcode, Stella_Object.cons(timestamp, Stella_Object.cons(entry, Stella.NIL)));
+        hashtable.insertAt(hashcode, Cons.cons(timestamp, Cons.cons(entry, Stella.NIL)));
       }
       return (entry);
     }

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -116,7 +116,7 @@ public class MemoizableIterator extends Iterator {
         if (iterator != null) {
           if (iterator.nextP()) {
             self.value = iterator.value;
-            cursor.rest = Stella_Object.cons(self.value, Stella.NIL);
+            cursor.rest = Cons.cons(self.value, Stella.NIL);
             self.cursor = cursor.rest;
             return (true);
           }
@@ -164,7 +164,7 @@ public class MemoizableIterator extends Iterator {
   public void initializeMemoizableIterator() {
     { MemoizableIterator self = this;
 
-      { Cons iterandvalues = Stella_Object.cons(self.baseIterator, Stella.NIL);
+      { Cons iterandvalues = Cons.cons(self.baseIterator, Stella.NIL);
 
         self.iteratorAndValues = iterandvalues;
         self.cursor = iterandvalues;

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -98,7 +98,8 @@ public class QuerySolutionTable extends Dictionary {
   public QuerySolutionTable sort(java.lang.reflect.Method predicate) {
     { QuerySolutionTable self = this;
 
-      { Cons solutions = self.consify().sort(predicate);
+      { java.lang.reflect.Method thepredicate = ((predicate != null) ? predicate : Native.find_java_method("edu.isi.powerloom.logic.QuerySolution", "querySolutionLessThanP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QuerySolution"), Native.find_java_class("edu.isi.powerloom.logic.QuerySolution")}));
+        Cons solutions = self.consify().sort(thepredicate);
         QuerySolution current = null;
         QuerySolution next = null;
 
@@ -139,7 +140,7 @@ public class QuerySolutionTable extends Dictionary {
             solution = ((QuerySolution)(iter000.value));
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(solution, Stella.NIL);
+                collect000 = Cons.cons(solution, Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect000;
                 }
@@ -150,7 +151,7 @@ public class QuerySolutionTable extends Dictionary {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(solution, Stella.NIL);
+                collect000.rest = Cons.cons(solution, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }

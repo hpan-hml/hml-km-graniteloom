@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -444,7 +444,9 @@ char* stringifiedSurrogate(Surrogate* operatoR) {
       { Keyword* testValue000 = computeSymbolEscapeCode(string, oMODULEo.get()->caseSensitiveP);
 
         if (testValue000 == KWD_KIF_OUT_UNESCAPED) {
-          string = maybeDowncase(string);
+          if (visibleP) {
+            string = maybeDowncase(string);
+          }
         }
         else if (testValue000 == KWD_KIF_OUT_ESCAPED) {
           string = stringConcatenate("|", string, 1, "|");
@@ -463,7 +465,7 @@ char* stringifiedSurrogate(Surrogate* operatoR) {
         }
       }
     }
-    if (operatoR == lookupSurrogateInModule(operatoR->symbolName, oMODULEo.get(), false)) {
+    if (visibleP) {
       return (string);
     }
     else {
@@ -576,6 +578,9 @@ void helpPrintKifProposition(Proposition* self) {
       else if ((testValue000 == KWD_KIF_OUT_ISA) ||
           (testValue000 == KWD_KIF_OUT_PREDICATE)) {
         operatoR = stringifiedKifOperator(self);
+        if (self->operatoR == SGT_KIF_OUT_PL_KERNEL_KB_FORK) {
+          separatelinesP = true;
+        }
       }
       else if (testValue000 == KWD_KIF_OUT_FUNCTION) {
         if (oPRINTFUNCTIONSASRELATIONSpo.get()) {
@@ -665,7 +670,7 @@ void printKifImpliesProposition(Proposition* self) {
       printDescriptionsAsKifRule(((Description*)(headarg)), ((Description*)(tailarg)), self, false);
     }
     else {
-      printKifOperatorWithArguments("subset-of", self->arguments, true, false);
+      printKifOperatorWithArguments(stringifiedSurrogate(SGT_KIF_OUT_PL_KERNEL_KB_SUBSET_OF), self->arguments, true, false);
     }
   }
 }
@@ -812,23 +817,30 @@ void printKifWrapper(LiteralWrapper* self) {
           *(stream->nativeStream) << self->wrapperValue;
         }
       }
-      else if (subtypeOfFloatP(testValue000)) {
+      else if (subtypeOfLongIntegerP(testValue000)) {
         { LiteralWrapper* self001 = self;
-          FloatWrapper* self = ((FloatWrapper*)(self001));
+          LongIntegerWrapper* self = ((LongIntegerWrapper*)(self001));
+
+          *(stream->nativeStream) << self->wrapperValue;
+        }
+      }
+      else if (subtypeOfFloatP(testValue000)) {
+        { LiteralWrapper* self002 = self;
+          FloatWrapper* self = ((FloatWrapper*)(self002));
 
           *(stream->nativeStream) << self->wrapperValue;
         }
       }
       else if (subtypeOfBooleanP(testValue000)) {
-        { LiteralWrapper* self002 = self;
-          BooleanWrapper* self = ((BooleanWrapper*)(self002));
+        { LiteralWrapper* self003 = self;
+          BooleanWrapper* self = ((BooleanWrapper*)(self003));
 
           *(stream->nativeStream) << self->wrapperValue;
         }
       }
       else if (subtypeOfStringP(testValue000)) {
-        { LiteralWrapper* self003 = self;
-          StringWrapper* self = ((StringWrapper*)(self003));
+        { LiteralWrapper* self004 = self;
+          StringWrapper* self = ((StringWrapper*)(self004));
 
           { 
             BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
@@ -837,8 +849,8 @@ void printKifWrapper(LiteralWrapper* self) {
         }
       }
       else if (subtypeOfCharacterP(testValue000)) {
-        { LiteralWrapper* self004 = self;
-          CharacterWrapper* self = ((CharacterWrapper*)(self004));
+        { LiteralWrapper* self005 = self;
+          CharacterWrapper* self = ((CharacterWrapper*)(self005));
 
           { 
             BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
@@ -936,13 +948,13 @@ void printKifDescription(Description* self) {
 
 void printKifDescriptionProposition(Description* self, boolean invertP) {
   { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
-    Vector* existentials = ((self->internalVariables->arraySize > 0) ? copyConsListToVariablesVector(topLevelExistentialVariables(self)) : ZERO_VARIABLES_VECTOR);
+    Vector* existentials = (self->internalVariables->nonEmptyP() ? copyConsListToVariablesVector(topLevelExistentialVariables(self)) : ZERO_VARIABLES_VECTOR);
 
     if (invertP) {
       *(stream->nativeStream) << "(" << stringifiedSurrogate(SGT_KIF_OUT_PL_KERNEL_KB_NOT) << " ";
       increaseIndent(4);
     }
-    if (existentials->arraySize > 0) {
+    if (existentials->nonEmptyP()) {
       *(stream->nativeStream) << "(" << stringifiedSurrogate(SGT_KIF_OUT_PL_KERNEL_KB_EXISTS) << " ";
       printKifQuantifiedVariables(existentials, false);
       *(stream->nativeStream) << std::endl;
@@ -950,7 +962,7 @@ void printKifDescriptionProposition(Description* self, boolean invertP) {
       printIndent(stream, NULL_INTEGER);
     }
     printAsKifInternal(self->proposition);
-    if (existentials->arraySize > 0) {
+    if (existentials->nonEmptyP()) {
       *(stream->nativeStream) << ")";
       decreaseIndent(NULL_INTEGER);
     }
@@ -1000,8 +1012,8 @@ Surrogate* chooseImplicationOperator(Proposition* rule, boolean forwardP) {
   }
 }
 
-KeyValueList* createSkolemMappingTable(Vector* oldvars, Vector* newvars) {
-  { KeyValueList* mapping = NULL;
+KeyValueMap* createSkolemMappingTable(Vector* oldvars, Vector* newvars) {
+  { KeyValueMap* mapping = NULL;
 
     { PatternVariable* oldvar = NULL;
       Vector* vector000 = oldvars;
@@ -1021,7 +1033,7 @@ KeyValueList* createSkolemMappingTable(Vector* oldvars, Vector* newvars) {
         newvar = ((PatternVariable*)((vector001->theArray)[index001]));
         if (!(oldvar->skolemName == newvar->skolemName)) {
           if (!((boolean)(mapping))) {
-            mapping = newKeyValueList();
+            mapping = newKeyValueMap();
           }
           mapping->insertAt(oldvar, newvar);
         }
@@ -1037,10 +1049,13 @@ void printDescriptionsAsKifRule(Description* head, Description* tail, Propositio
         (!reversepolarityP);
     boolean reverseargumentsP = forwardarrowP ||
         reversepolarityP;
-    boolean mapheadvariablesP = namedDescriptionP(head);
     int currentindentcounter = oINDENTCOUNTERo.get();
     Surrogate* operatorprefix = chooseImplicationOperator(rule, forwardarrowP);
     int operatorprefixindent = 2 + strlen((operatorprefix->symbolName));
+    boolean mapheadvariablesP = namedDescriptionP(head);
+    Vector* ruleVariables = ((Vector*)(dynamicSlotValue(rule->dynamicSlots, SYM_KIF_OUT_LOGIC_IO_VARIABLES, NULL)));
+    KeyValueMap* headvariablemapping = NULL;
+    KeyValueMap* tailvariablemapping = NULL;
 
     if (head->deletedP() ||
         tail->deletedP()) {
@@ -1055,23 +1070,35 @@ void printDescriptionsAsKifRule(Description* head, Description* tail, Propositio
       }
       mapheadvariablesP = !mapheadvariablesP;
     }
+    if (((boolean)(ruleVariables))) {
+      headvariablemapping = ((KeyValueMap*)(createSkolemMappingTable(head->ioVariables, ruleVariables)));
+      tailvariablemapping = ((KeyValueMap*)(createSkolemMappingTable(tail->ioVariables, ruleVariables)));
+    }
+    else if (mapheadvariablesP) {
+      ruleVariables = tail->ioVariables;
+      headvariablemapping = ((KeyValueMap*)(createSkolemMappingTable(head->ioVariables, ruleVariables)));
+    }
+    else {
+      ruleVariables = head->ioVariables;
+      tailvariablemapping = ((KeyValueMap*)(createSkolemMappingTable(tail->ioVariables, ruleVariables)));
+    }
     { 
       BIND_STELLA_SPECIAL(oINDENTCOUNTERo, int, currentindentcounter);
       *(stream->nativeStream) << "(" << stringifiedSurrogate(SGT_KIF_OUT_PL_KERNEL_KB_FORALL) << " ";
-      printKifQuantifiedVariables((mapheadvariablesP ? tail->ioVariables : head->ioVariables), false);
+      printKifQuantifiedVariables(ruleVariables, false);
       *(stream->nativeStream) << std::endl;
       increaseIndent(NULL_INTEGER);
       printIndent(stream, NULL_INTEGER);
       *(stream->nativeStream) << "(" << stringifiedSurrogate(operatorprefix) << " ";
       increaseIndent(operatorprefixindent);
       { 
-        BIND_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueList*, (mapheadvariablesP ? ((KeyValueList*)(createSkolemMappingTable(head->ioVariables, tail->ioVariables))) : NULL));
+        BIND_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueMap*, headvariablemapping);
         printKifDescriptionProposition(head, reversepolarityP);
       }
       *(stream->nativeStream) << std::endl;
       printIndent(stream, NULL_INTEGER);
       { 
-        BIND_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueList*, ((!mapheadvariablesP) ? ((KeyValueList*)(createSkolemMappingTable(tail->ioVariables, head->ioVariables))) : NULL));
+        BIND_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueMap*, tailvariablemapping);
         printKifDescriptionProposition(tail, reversepolarityP);
       }
       *(stream->nativeStream) << "))";
@@ -1116,19 +1143,6 @@ void excludeOriginatedPropositions() {
         }
       }
     }
-  }
-}
-
-boolean functionOutputSkolemP(Object* self) {
-  if (subtypeOfP(safePrimaryType(self), SGT_KIF_OUT_LOGIC_SKOLEM)) {
-    { Object* self000 = self;
-      Skolem* self = ((Skolem*)(self000));
-
-      return ((((boolean)(self->definingProposition)) ? true : false));
-    }
-  }
-  else {
-    return (false);
   }
 }
 
@@ -1810,6 +1824,7 @@ void helpStartupKifOut1() {
     KWD_KIF_OUT_NOT = ((Keyword*)(internRigidSymbolWrtModule("NOT", NULL, 2)));
     KWD_KIF_OUT_EQUIVALENT = ((Keyword*)(internRigidSymbolWrtModule("EQUIVALENT", NULL, 2)));
     KWD_KIF_OUT_PREDICATE = ((Keyword*)(internRigidSymbolWrtModule("PREDICATE", NULL, 2)));
+    SGT_KIF_OUT_PL_KERNEL_KB_FORK = ((Surrogate*)(internRigidSymbolWrtModule("FORK", getStellaModule("/PL-KERNEL-KB", true), 1)));
     KWD_KIF_OUT_FUNCTION = ((Keyword*)(internRigidSymbolWrtModule("FUNCTION", NULL, 2)));
     KWD_KIF_OUT_IMPLIES = ((Keyword*)(internRigidSymbolWrtModule("IMPLIES", NULL, 2)));
     KWD_KIF_OUT_FORALL = ((Keyword*)(internRigidSymbolWrtModule("FORALL", NULL, 2)));
@@ -1817,6 +1832,7 @@ void helpStartupKifOut1() {
     KWD_KIF_OUT_CONSTANT = ((Keyword*)(internRigidSymbolWrtModule("CONSTANT", NULL, 2)));
     KWD_KIF_OUT_CONTAINED_BY = ((Keyword*)(internRigidSymbolWrtModule("CONTAINED-BY", NULL, 2)));
     KWD_KIF_OUT_DELETED = ((Keyword*)(internRigidSymbolWrtModule("DELETED", NULL, 2)));
+    SGT_KIF_OUT_PL_KERNEL_KB_SUBSET_OF = ((Surrogate*)(internRigidSymbolWrtModule("SUBSET-OF", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SYM_KIF_OUT_LOGIC_FORWARD_ONLYp = ((Symbol*)(internRigidSymbolWrtModule("FORWARD-ONLY?", NULL, 0)));
     SGT_KIF_OUT_PL_KERNEL_KB_le = ((Surrogate*)(internRigidSymbolWrtModule("<=", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_KIF_OUT_PL_KERNEL_KB_FORALL = ((Surrogate*)(internRigidSymbolWrtModule("FORALL", getStellaModule("/PL-KERNEL-KB", true), 1)));
@@ -1841,13 +1857,13 @@ void helpStartupKifOut1() {
     KWD_KIF_OUT_VERBOSE = ((Keyword*)(internRigidSymbolWrtModule("VERBOSE", NULL, 2)));
     KWD_KIF_OUT_SOURCE = ((Keyword*)(internRigidSymbolWrtModule("SOURCE", NULL, 2)));
     KWD_KIF_OUT_SLOTS = ((Keyword*)(internRigidSymbolWrtModule("SLOTS", NULL, 2)));
-    KWD_KIF_OUT_PUBLIC_SLOTS = ((Keyword*)(internRigidSymbolWrtModule("PUBLIC-SLOTS", NULL, 2)));
-    KWD_KIF_OUT_METHODS = ((Keyword*)(internRigidSymbolWrtModule("METHODS", NULL, 2)));
   }
 }
 
 void helpStartupKifOut2() {
   {
+    KWD_KIF_OUT_PUBLIC_SLOTS = ((Keyword*)(internRigidSymbolWrtModule("PUBLIC-SLOTS", NULL, 2)));
+    KWD_KIF_OUT_METHODS = ((Keyword*)(internRigidSymbolWrtModule("METHODS", NULL, 2)));
     KWD_KIF_OUT_PUBLIC_METHODS = ((Keyword*)(internRigidSymbolWrtModule("PUBLIC-METHODS", NULL, 2)));
     SYM_KIF_OUT_LOGIC_PRESUME = ((Symbol*)(internRigidSymbolWrtModule("PRESUME", NULL, 0)));
     SYM_KIF_OUT_STELLA_ASSERT = ((Symbol*)(internRigidSymbolWrtModule("ASSERT", getStellaModule("/STELLA", true), 0)));
@@ -1903,7 +1919,6 @@ void helpStartupKifOut3() {
     defineFunctionObject("CREATE-SKOLEM-MAPPING-TABLE", "(DEFUN (CREATE-SKOLEM-MAPPING-TABLE ENTITY-MAPPING) ((OLDVARS VARIABLES-VECTOR) (NEWVARS VARIABLES-VECTOR)))", ((cpp_function_code)(&createSkolemMappingTable)), NULL);
     defineFunctionObject("PRINT-DESCRIPTIONS-AS-KIF-RULE", "(DEFUN PRINT-DESCRIPTIONS-AS-KIF-RULE ((HEAD DESCRIPTION) (TAIL DESCRIPTION) (RULE PROPOSITION) (REVERSEPOLARITY? BOOLEAN)))", ((cpp_function_code)(&printDescriptionsAsKifRule)), NULL);
     defineFunctionObject("EXCLUDE-ORIGINATED-PROPOSITIONS", "(DEFUN EXCLUDE-ORIGINATED-PROPOSITIONS ())", ((cpp_function_code)(&excludeOriginatedPropositions)), NULL);
-    defineFunctionObject("FUNCTION-OUTPUT-SKOLEM?", "(DEFUN (FUNCTION-OUTPUT-SKOLEM? BOOLEAN) ((SELF OBJECT)))", ((cpp_function_code)(&functionOutputSkolemP)), NULL);
     defineFunctionObject("HIDDEN-RELATION?", "(DEFUN (HIDDEN-RELATION? BOOLEAN) ((RELATION-REF SURROGATE)))", ((cpp_function_code)(&hiddenRelationP)), NULL);
     defineFunctionObject("EXCLUDED-PROPOSITION?", "(DEFUN (EXCLUDED-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&excludedPropositionP)), NULL);
     defineFunctionObject("PRETTY-PRINT-NAMED-DESCRIPTION", "(DEFUN PRETTY-PRINT-NAMED-DESCRIPTION ((SELF NAMED-DESCRIPTION) (STREAM OUTPUT-STREAM)))", ((cpp_function_code)(&prettyPrintNamedDescription)), NULL);
@@ -1924,7 +1939,7 @@ void helpStartupKifOut3() {
     defineMethodObject("(DEFMETHOD CLEAR-OBJECT-STORE ((STORE OBJECT-STORE)))", ((cpp_method_code)(&ObjectStore::clearObjectStore)), ((cpp_method_code)(NULL)));
     defineFunctionObject("SAVE-OBJECT", "(DEFUN SAVE-OBJECT ((OBJECT OBJECT) (STORE OBJECT)))", ((cpp_function_code)(&saveObject)), NULL);
     defineFunctionObject("DO-SAVE-MODULE", "(DEFUN DO-SAVE-MODULE ((MODULE MODULE) (STORE OBJECT)) :DOCUMENTATION \"Save `module' to the persistent store `store' which can\neither be an output stream or a persistent OBJECT-STORE.\" :PUBLIC? TRUE)", ((cpp_function_code)(&doSaveModule)), NULL);
-    defineFunctionObject("SAVE-MODULE", "(DEFUN SAVE-MODULE ((NAME NAME) (FILE STRING)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Save all definitions and assertions of module `name' to `file'.\")", ((cpp_function_code)(&saveModule)), ((cpp_function_code)(&saveModuleEvaluatorWrapper)));
+    defineFunctionObject("SAVE-MODULE", "(DEFUN SAVE-MODULE ((NAME NAME) (FILE STRING)) :COMMAND? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Save all definitions and assertions of module `name' to `file'.\")", ((cpp_function_code)(&saveModule)), ((cpp_function_code)(&saveModuleEvaluatorWrapper)));
     defineFunctionObject("STARTUP-KIF-OUT", "(DEFUN STARTUP-KIF-OUT () :PUBLIC? TRUE)", ((cpp_function_code)(&startupKifOut)), NULL);
     { MethodSlot* function = lookupFunction(SYM_KIF_OUT_LOGIC_STARTUP_KIF_OUT);
 
@@ -1956,6 +1971,7 @@ void startupKifOut() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRETTYPRINTLOGICALFORMS?* BOOLEAN FALSE :PUBLIC? TRUE :DOCUMENTATION \"Controls whether logical forms print on single lines\n(unformatted) or multi-line indented.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRETTYPRINTKIF?* BOOLEAN FALSE :PUBLIC? TRUE :DOCUMENTATION \"Controls whether KIF expressions print on single lines\n(unformatted) or multi-line indented.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTLOGICALFORMSTREAM* OUTPUT-STREAM NULL :PUBLIC? TRUE :DOCUMENTATION \"Eliminates necessity of passing stream argument\nthroughout 'print-logical-form' functions.\")");
@@ -2024,6 +2040,8 @@ Keyword* KWD_KIF_OUT_EQUIVALENT = NULL;
 
 Keyword* KWD_KIF_OUT_PREDICATE = NULL;
 
+Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_FORK = NULL;
+
 Keyword* KWD_KIF_OUT_FUNCTION = NULL;
 
 Keyword* KWD_KIF_OUT_IMPLIES = NULL;
@@ -2037,6 +2055,8 @@ Keyword* KWD_KIF_OUT_CONSTANT = NULL;
 Keyword* KWD_KIF_OUT_CONTAINED_BY = NULL;
 
 Keyword* KWD_KIF_OUT_DELETED = NULL;
+
+Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_SUBSET_OF = NULL;
 
 Symbol* SYM_KIF_OUT_LOGIC_FORWARD_ONLYp = NULL;
 

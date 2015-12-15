@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -71,7 +71,6 @@ public:
   virtual void processDefinitionOptions(Object* options);
   virtual int introductionTimestamp();
   virtual void markAsIncoherent();
-  virtual List* elaboratedInWorlds_reader();
   virtual boolean deletedPSetter(boolean value);
   virtual boolean deletedP();
   virtual BooleanWrapper* badP_reader();
@@ -99,6 +98,7 @@ public:
   virtual void markAsIncoherent();
   virtual void reactToInferenceUpdate();
   virtual boolean objectEqualP(Object* other);
+  virtual int skolemGenerationCount_reader();
   virtual Cons* conflictingDefaultValues_reader();
 };
 
@@ -121,6 +121,7 @@ public:
   Description* consequent;
 public:
   virtual Surrogate* primaryType();
+  virtual boolean deletedP();
 };
 
 class Description : public LogicObject {
@@ -142,6 +143,7 @@ public:
   virtual Surrogate* descriptionSurrogate();
   virtual int arity();
   virtual Relation* nativeRelation();
+  virtual List* structuralFunctionEvaluationOrder_reader();
   virtual BooleanWrapper* deferredContrapositivesP_reader();
   virtual List* forwardChainingIndices_reader();
 public:
@@ -263,6 +265,7 @@ public:
 
 class CheckTypesRecord : public StandardObject {
 public:
+  Proposition* proposition;
   Object* parentProposition;
   Description* parentDescription;
   Module* module;
@@ -308,7 +311,7 @@ extern DECLARE_STELLA_SPECIAL(oVISITEDUNFASTENEDDEFININGPROPOSITIONSo, List* );
 extern boolean oAUTO_COERCE_PROPOSITIONAL_ARGUMENTSpo;
 extern Keyword* oTYPE_CHECK_POLICYo;
 extern DECLARE_STELLA_SPECIAL(oTYPECHECKMODEo, Keyword* );
-extern KeyValueList* oCHECK_TYPES_AGENDAo;
+extern VectorSequence* oCHECK_TYPES_AGENDAo;
 
 // Function signatures:
 BacklinksIndex* newBacklinksIndex();
@@ -345,6 +348,7 @@ List* originatedPropositions(Object* self);
 List* originatedPropositionsSetter(Object* self, List* value);
 Proposition* createProposition(Symbol* kind, int argumentcount);
 void enforceCodeOnly();
+Surrogate* getPropositionBaseOperator(Proposition* prop);
 boolean logicModuleP(Module* self);
 SequenceIndex* locallyConceivedPropositions(Module* self);
 void locallyConceivedPropositionsSetter(Module* self, SequenceIndex* value);
@@ -430,6 +434,7 @@ boolean falseTruthValueP(TruthValue* self);
 boolean strictTruthValueP(TruthValue* self);
 boolean defaultTruthValueP(TruthValue* self);
 boolean unknownTruthValueP(TruthValue* self);
+boolean knownTruthValueP(TruthValue* self);
 boolean inconsistentTruthValueP(TruthValue* self);
 void printTruthValue(TruthValue* self, OutputStream* stream);
 void signalUnificationClash(Object* term1, Object* term2);
@@ -492,7 +497,7 @@ ObjectAlreadyExistsException* newObjectAlreadyExistsException(char* message);
 Object* helpCreateLogicInstance(Surrogate* name, Surrogate* type);
 Object* createLogicInstance(Surrogate* name, Surrogate* type);
 void cleanupStructuredObjectsIndex(Module* clearmodule);
-int propositionHashIndex(Proposition* self);
+int propositionHashIndex(Proposition* self, KeyValueMap* mapping);
 Proposition* findDuplicateComplexProposition(Proposition* self);
 Proposition* findDuplicateProposition(Proposition* self);
 Proposition* fastenDownOneProposition(Proposition* self, boolean dontcheckforduplicatesP);
@@ -518,6 +523,7 @@ void removeAnnotation(Proposition* proposition, Keyword* key);
 Proposition* buildAnnotatedProposition(Cons* tree);
 void finalizePropositionAnnotations(Proposition* proposition);
 void clearPropositionAnnotations(Proposition* proposition);
+void forwardBackwardOptionHandler(Proposition* self, StorageSlot* slot, Object* tree);
 boolean functionInducedExistsP(Proposition* proposition);
 Proposition* predicateOfFunctionInducedExists(Proposition* existsproposition);
 Proposition* embedNegationWithinFunctionInducedExists(Proposition* existsproposition);
@@ -538,6 +544,8 @@ boolean nonPolymorphicPredicateP(LogicObject* self);
 LogicObject* evaluatePredicate(GeneralizedSymbol* name, Object* firstargument);
 boolean propositionalArgumentP(Object* argument);
 Object* evaluateTypedArgument(Object* argument, Surrogate* type);
+Object* evaluatePropositionTerm(Object* tree);
+LogicObject* evaluatePredicateAndFirstArgument(Cons* tree, Object*& _Return1);
 Object* evaluateFirstArgument(Object* argument, Symbol* relationname);
 Cons* evaluateRemainingArguments(LogicObject* predicatevalue, Cons* arguments);
 boolean classOperatorP(GeneralizedSymbol* operatoR);
@@ -578,11 +586,12 @@ boolean functionWithDefinedValueP(Proposition* proposition);
 Skolem* createEnumeratedSet(List* set);
 Skolem* createLogicalList(List* list);
 boolean logicalCollectionP(Object* self);
+boolean functionOutputSkolemP(Object* self);
 boolean skolemDefinedByOperatorP(Object* self, Surrogate* operatoR);
+Skolem* getSkolemAndValueTerms(Proposition* proposition, Object*& _Return1);
 boolean enumeratedSetP(Object* self);
 boolean enumeratedListP(Object* self);
 Object* canonicalizePropositionTree(Object* tree);
-void eraseProposition(Proposition* proposition);
 Proposition* updateEquivalenceProposition(Proposition* proposition, Keyword* updatemode);
 Proposition* skolemizeExistsProposition(Proposition* existsproposition);
 Cons* helpUpdateTopLevelProposition(Proposition* proposition, Keyword* updatemode);
@@ -605,6 +614,7 @@ Object* unassert(Object* proposition);
 void unassertProposition(Proposition* self);
 boolean deletedPropositionP(Proposition* self);
 Proposition* destroyProposition(Proposition* proposition);
+void destroyRedundantProposition(Proposition* proposition);
 void destroyLogicInstance(Object* self);
 void destroyTerm(LogicObject* self);
 void destroyInstance(Object* self);
@@ -641,6 +651,7 @@ void helpStartupPropositions9();
 void helpStartupPropositions10();
 void helpStartupPropositions11();
 void helpStartupPropositions12();
+void helpStartupPropositions13();
 void startupPropositions();
 
 // Auxiliary global declarations:
@@ -726,6 +737,7 @@ extern Symbol* SYM_PROPOSITIONS_LOGIC_FUNCTION_TERM;
 extern Surrogate* SGT_PROPOSITIONS_LOGIC_INTEGER_LOGIC_WRAPPER;
 extern Surrogate* SGT_PROPOSITIONS_LOGIC_FLOAT_LOGIC_WRAPPER;
 extern Surrogate* SGT_PROPOSITIONS_LOGIC_STRING_LOGIC_WRAPPER;
+extern Symbol* SYM_PROPOSITIONS_LOGIC_ENTITY_MAPPING;
 extern Keyword* KWD_PROPOSITIONS_AND;
 extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_AND;
 extern Keyword* KWD_PROPOSITIONS_OR;
@@ -830,6 +842,7 @@ extern Symbol* SYM_PROPOSITIONS_STELLA_p;
 extern Symbol* SYM_PROPOSITIONS_STELLA_CLASS_EXTENSION;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_TRANSFER_LOGIC_INFORMATION_FROM_RELATION_HOOK;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_SUBRELATION_LINKp;
+extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_HOLDS;
 extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_MEMBER_OF;
 extern Keyword* KWD_PROPOSITIONS_DISABLED;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_ANNOTATIONS;
@@ -861,11 +874,9 @@ extern Symbol* SYM_PROPOSITIONS_STELLA_SETOF;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_LISTOF;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_EQUIVALENT;
 extern Symbol* SYM_PROPOSITIONS_PL_KERNEL_KB_HOLDS;
-extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_HOLDS;
 extern Surrogate* SGT_PROPOSITIONS_STELLA_TABLE;
 extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_POLYMORPHIC;
 extern Symbol* SYM_PROPOSITIONS_PL_KERNEL_KB_VALUE;
-extern Symbol* SYM_PROPOSITIONS_PL_KERNEL_KB_CUT;
 extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_VALUE;
 extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_QUANTITY;
 extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_DATE;

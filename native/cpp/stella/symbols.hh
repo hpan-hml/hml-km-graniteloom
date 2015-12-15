@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -166,6 +166,7 @@ boolean symbolConstituentCharacterP(char character);
 char* initializeSymbolEscapeCodeTable(boolean casesensitiveP);
 Keyword* computeSymbolEscapeCode(char* name, boolean casesensitiveP);
 void printSymbolNameReadably(char* name, std::ostream* stream, boolean casesensitiveP);
+char* readableSymbolName(char* name, boolean casesensitiveP);
 void printSymbol(Symbol* self, std::ostream* stream);
 void printSurrogate(Surrogate* self, std::ostream* stream);
 void printKeyword(Keyword* self, std::ostream* stream);

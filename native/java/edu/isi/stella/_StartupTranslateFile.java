@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,20 +50,23 @@ import edu.isi.stella.javalib.*;
 public class _StartupTranslateFile {
   static void helpStartupTranslateFile1() {
     {
-      Stella.KWD_WINDOWS = ((Keyword)(Stella.internRigidSymbolWrtModule("WINDOWS", null, 2)));
-      Stella.KWD_UNIX = ((Keyword)(Stella.internRigidSymbolWrtModule("UNIX", null, 2)));
-      Stella.KWD_MAC = ((Keyword)(Stella.internRigidSymbolWrtModule("MAC", null, 2)));
-      Stella.KWD_ROOT_DIRECTORY = ((Keyword)(Stella.internRigidSymbolWrtModule("ROOT-DIRECTORY", null, 2)));
-      Stella.KWD_LISP_TRANSLATIONS = ((Keyword)(Stella.internRigidSymbolWrtModule("LISP-TRANSLATIONS", null, 2)));
-      Stella.KWD_KB = ((Keyword)(Stella.internRigidSymbolWrtModule("KB", null, 2)));
-      Stella.KWD_CPP_CODE = ((Keyword)(Stella.internRigidSymbolWrtModule("CPP-CODE", null, 2)));
-      Stella.KWD_CPP_HEADER = ((Keyword)(Stella.internRigidSymbolWrtModule("CPP-HEADER", null, 2)));
-      Stella.KWD_C_CODE = ((Keyword)(Stella.internRigidSymbolWrtModule("C-CODE", null, 2)));
-      Stella.KWD_C_HEADER = ((Keyword)(Stella.internRigidSymbolWrtModule("C-HEADER", null, 2)));
-      Stella.KWD_DIRECTORY = ((Keyword)(Stella.internRigidSymbolWrtModule("DIRECTORY", null, 2)));
-      Stella.SYM_STELLA_SYSTEM_UNITS_ALIST = ((Symbol)(Stella.internRigidSymbolWrtModule("SYSTEM-UNITS-ALIST", null, 0)));
-      Stella.KWD_DEVELOPMENT_SETTINGSp = ((Keyword)(Stella.internRigidSymbolWrtModule("DEVELOPMENT-SETTINGS?", null, 2)));
-      Stella.SYM_STELLA_STARTUP_TRANSLATE_FILE = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-TRANSLATE-FILE", null, 0)));
+      Stella.KWD_WINDOWS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("WINDOWS", null, 2)));
+      Stella.KWD_UNIX = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UNIX", null, 2)));
+      Stella.KWD_MAC = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MAC", null, 2)));
+      Stella.KWD_ROOT_DIRECTORY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ROOT-DIRECTORY", null, 2)));
+      Stella.KWD_LISP_TRANSLATIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LISP-TRANSLATIONS", null, 2)));
+      Stella.KWD_KB = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("KB", null, 2)));
+      Stella.KWD_CPP_CODE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP-CODE", null, 2)));
+      Stella.KWD_CPP_HEADER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP-HEADER", null, 2)));
+      Stella.KWD_C_CODE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("C-CODE", null, 2)));
+      Stella.KWD_C_HEADER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("C-HEADER", null, 2)));
+      Stella.KWD_DIRECTORY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DIRECTORY", null, 2)));
+      Stella.SYM_STELLA_SYSTEM_UNITS_ALIST = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SYSTEM-UNITS-ALIST", null, 0)));
+      Stella.KWD_LANGUAGE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LANGUAGE", null, 2)));
+      Stella.KWD_ACTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ACTION", null, 2)));
+      Stella.KWD_TRANSLATE_SYSTEM = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TRANSLATE-SYSTEM", null, 2)));
+      Stella.KWD_DEVELOPMENT_SETTINGSp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEVELOPMENT-SETTINGS?", null, 2)));
+      Stella.SYM_STELLA_STARTUP_TRANSLATE_FILE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-TRANSLATE-FILE", null, 0)));
     }
   }
 
@@ -77,7 +80,7 @@ public class _StartupTranslateFile {
       Stella.$CURRENTSYSTEMDEFINITION$.setDefaultValue(null);
       Stella.$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$.setDefaultValue("");
       Stella.$OS$ = Stella.operatingSystem();
-      Stella.$TYPE_TO_FILE_EXTENSION_TABLE$ = Stella.list$(Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_STELLA, Stella_Object.cons(StringWrapper.wrapString(".ste"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_KB, Stella_Object.cons(StringWrapper.wrapString(".kb"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_CPP, Stella_Object.cons(StringWrapper.wrapString(".cc"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_CPP_CODE, Stella_Object.cons(StringWrapper.wrapString(".cc"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_CPP_HEADER, Stella_Object.cons(StringWrapper.wrapString(".hh"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_C_CODE, Stella_Object.cons(StringWrapper.wrapString(".c"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_C_HEADER, Stella_Object.cons(StringWrapper.wrapString(".h"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_JAVA, Stella_Object.cons(StringWrapper.wrapString(".java"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_IDL, Stella_Object.cons(StringWrapper.wrapString(".idl"), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_NONE, Stella_Object.cons(StringWrapper.wrapString(""), Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))))))))));
+      Stella.$TYPE_TO_FILE_EXTENSION_TABLE$ = Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.KWD_STELLA, Cons.cons(StringWrapper.wrapString(".ste"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_KB, Cons.cons(StringWrapper.wrapString(".kb"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_CPP, Cons.cons(StringWrapper.wrapString(".cc"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_CPP_CODE, Cons.cons(StringWrapper.wrapString(".cc"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_CPP_HEADER, Cons.cons(StringWrapper.wrapString(".hh"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_C_CODE, Cons.cons(StringWrapper.wrapString(".c"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_C_HEADER, Cons.cons(StringWrapper.wrapString(".h"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_JAVA, Cons.cons(StringWrapper.wrapString(".java"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_IDL, Cons.cons(StringWrapper.wrapString(".idl"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_OTHER, Cons.cons(StringWrapper.wrapString(""), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.KWD_NONE, Cons.cons(StringWrapper.wrapString(""), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))))))))));
       Stella.$DONTTRUNCATEFILENAMESp$.setDefaultValue(new Boolean(false));
     }
   }
@@ -88,7 +91,7 @@ public class _StartupTranslateFile {
       Stella.defineFunctionObject("ROOT-NATIVE-DIRECTORY", "(DEFUN (ROOT-NATIVE-DIRECTORY FILE-NAME) ())", Native.find_java_method("edu.isi.stella.Stella", "rootNativeDirectory", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("ROOT-BINARY-DIRECTORY", "(DEFUN (ROOT-BINARY-DIRECTORY FILE-NAME) ())", Native.find_java_method("edu.isi.stella.Stella", "rootBinaryDirectory", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("SYSTEM-DEFINITIONS-DIRECTORY", "(DEFUN (SYSTEM-DEFINITIONS-DIRECTORY FILE-NAME) ())", Native.find_java_method("edu.isi.stella.Stella", "systemDefinitionsDirectory", new java.lang.Class [] {}), null);
-      Stella.defineFunctionObject("HANDLE-IN-MODULE-TREE", "(DEFUN (HANDLE-IN-MODULE-TREE BOOLEAN BOOLEAN) ((TREE CONS) (SEENINMODULE? BOOLEAN)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Cons", "handleInModuleTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), java.lang.Boolean.TYPE, Native.find_java_class("[Ljava.lang.Object;")}), null);
+      Stella.defineFunctionObject("HANDLE-IN-MODULE-TREE", "(DEFUN (HANDLE-IN-MODULE-TREE BOOLEAN BOOLEAN) ((TREE CONS) (SEENINMODULE? BOOLEAN) (ERRORONINMODULE? BOOLEAN)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Cons", "handleInModuleTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), java.lang.Boolean.TYPE, java.lang.Boolean.TYPE, Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("TRANSLATE-AND-OUTPUT-UNITS-TO-FILE", "(DEFUN TRANSLATE-AND-OUTPUT-UNITS-TO-FILE ((FILE FILE-NAME) (TARGETLANGUAGE STRING)))", Native.find_java_method("edu.isi.stella.Stella", "translateAndOutputUnitsToFile", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String")}), null);
       Stella.defineFunctionObject("OPERATE-ON-FILE", "(DEFUN OPERATE-ON-FILE ((FILE FILE-NAME) (OPERATION KEYWORD)))", Native.find_java_method("edu.isi.stella.Stella", "operateOnFile", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("CLEAN-UP-TRANSLATION-UNITS-SPECIAL", "(DEFUN CLEAN-UP-TRANSLATION-UNITS-SPECIAL ())", Native.find_java_method("edu.isi.stella.Stella", "cleanUpTranslationUnitsSpecial", new java.lang.Class [] {}), null);
@@ -141,9 +144,9 @@ public class _StartupTranslateFile {
       Stella.defineFunctionObject("SYSTEM-NEEDS-TRANSLATION?", "(DEFUN (SYSTEM-NEEDS-TRANSLATION? BOOLEAN) ((SYSTEMNAME STRING) (LANGUAGE KEYWORD)))", Native.find_java_method("edu.isi.stella.Stella", "systemNeedsTranslationP", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("COMPUTE-FILE-UNITS-MODULE", "(DEFUN (COMPUTE-FILE-UNITS-MODULE MODULE) ((FILEUNITS (LIST OF TRANSLATION-UNIT))))", Native.find_java_method("edu.isi.stella.List", "computeFileUnitsModule", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.List")}), null);
       Stella.defineFunctionObject("CONCATENATE-SYSTEM-UNITS", "(DEFUN (CONCATENATE-SYSTEM-UNITS (LIST OF TRANSLATION-UNIT)) ((SYSTEMUNITS SYSTEM-UNITS-ALIST)))", Native.find_java_method("edu.isi.stella.KeyValueList", "concatenateSystemUnits", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
-      Stella.defineFunctionObject("TRANSLATE-SYSTEM", "(DEFUN (TRANSLATE-SYSTEM BOOLEAN) ((SYSTEMNAME STRING) (OUTPUTLANGUAGE KEYWORD) |&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Translate all of the STELLA source files in system `systemName' into\n`outputLanguage'.  The following keyword/value `options' are recognized:\n\n`:two-pass?' (default false): if true, all files will be scanned twice, once\nto load the signatures of objects defined in them, and once to actually\ntranslate the definitions.\n\n`:force-translation?' (default false): if true, files will be translated\nwhether or not their translations are up-to-date.\n\n`:development-settings?' (default false): if true translation will favor\nsafe, readable and debuggable code over efficiency (according to the value\nof `:development-settings' on the system definition).  If false, efficiency\nwill be favored instead (according to the value of `:production-settings'\non the system definition).\n\n`:production-settings?' (default true): inverse to `:development-settings?'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "translateSystem", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.Keyword"), Native.find_java_class("edu.isi.stella.Cons")}), null);
+      Stella.defineFunctionObject("TRANSLATE-SYSTEM", "(DEFUN (TRANSLATE-SYSTEM BOOLEAN) ((SYSTEMNAME STRING) |&REST| (|LANGUAGE&OPTIONS| OBJECT)) :DOCUMENTATION \"Translate all of the STELLA source files in system `systemName' into\n`language' (the optional first argument).  The following keyword/value\n`options' are recognized:\n\n`:language': can be used as an alternative to the optional language argument.\nIf not specified, the language of the running implementation is assumed.\n\n`:two-pass?' (default false): if true, all files will be scanned twice, once\nto load the signatures of objects defined in them, and once to actually\ntranslate the definitions.\n\n`:force-translation?' (default false): if true, files will be translated\nwhether or not their translations are up-to-date.\n\n`:development-settings?' (default false): if true translation will favor\nsafe, readable and debuggable code over efficiency (according to the value\nof `:development-settings' on the system definition).  If false, efficiency\nwill be favored instead (according to the value of `:production-settings'\non the system definition).\n\n`:production-settings?' (default true): inverse to `:development-settings?'.\" :PUBLIC? TRUE :COMMAND? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "translateSystem", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.stella.Cons", "translateSystemEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
       Stella.defineFunctionObject("HELP-TRANSLATE-SYSTEM", "(DEFUN (HELP-TRANSLATE-SYSTEM BOOLEAN) ((FILES (CONS OF STRING-WRAPPER)) (TWOPASS? BOOLEAN) (FORCETRANSLATION? BOOLEAN)))", Native.find_java_method("edu.isi.stella.Cons", "helpTranslateSystem", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), java.lang.Boolean.TYPE, java.lang.Boolean.TYPE}), null);
-      Stella.defineFunctionObject("TRANSFER-NATIVE-SYSTEM-FILES", "(DEFUN TRANSFER-NATIVE-SYSTEM-FILES ((OUTPUTLANGUAGE KEYWORD)))", Native.find_java_method("edu.isi.stella.Keyword", "transferNativeSystemFiles", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Keyword")}), null);
+      Stella.defineFunctionObject("TRANSFER-NATIVE-SYSTEM-FILES", "(DEFUN TRANSFER-NATIVE-SYSTEM-FILES ((OUTPUT-LANGUAGE KEYWORD)))", Native.find_java_method("edu.isi.stella.Keyword", "transferNativeSystemFiles", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Keyword")}), null);
     }
   }
 
@@ -172,6 +175,8 @@ public class _StartupTranslateFile {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupTranslateFile.helpStartupTranslateFile3();
+          Stella.defineFunctionObject("TRANSFER-DATA-FILES", "(DEFUN TRANSFER-DATA-FILES ((OUTPUT-LANGUAGE KEYWORD)))", Native.find_java_method("edu.isi.stella.Keyword", "transferDataFiles", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Keyword")}), null);
+          Stella.defineFunctionObject("TRANSFER-FILES", "(DEFUN TRANSFER-FILES ((FILES (CONS OF STRING-WRAPPER)) (OUTPUT-LANGUAGE KEYWORD)))", Native.find_java_method("edu.isi.stella.Cons", "transferFiles", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
           Stella.defineFunctionObject("STARTUP-TRANSLATE-FILE", "(DEFUN STARTUP-TRANSLATE-FILE () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella._StartupTranslateFile", "startupTranslateFile", new java.lang.Class [] {}), null);
           { MethodSlot function = Symbol.lookupFunction(Stella.SYM_STELLA_STARTUP_TRANSLATE_FILE);
 
@@ -183,6 +188,7 @@ public class _StartupTranslateFile {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *RECORD-SIGNATURES?* BOOLEAN FALSE :DOCUMENTATION \"If `true', record object signatures into a persistent table.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *WALK-WITH-RECORDED-SIGNATURES?* BOOLEAN FALSE :DOCUMENTATION \"If `true', the walker will try to find previously recorded\nsignatures for referenced but undefined functions, methods, etc.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *USERECORDEDSIGNATURES?* BOOLEAN FALSE :DOCUMENTATION \"If `true', `safe-lookup-slot' and `lookup-function' will\ntry to retrieve a previously recorded signature if normal lookup fails.\")");
@@ -197,7 +203,7 @@ public class _StartupTranslateFile {
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT LOGICAL-DIRECTORY-SEPARATOR CHARACTER #\\;)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT LOGICAL-HOST-SEPARATOR CHARACTER #\\:)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOGICAL-HOST-TABLE* (STRING-HASH-TABLE OF STRING KEY-VALUE-LIST) NULL)");
-          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TYPE-TO-FILE-EXTENSION-TABLE* (CONS OF CONS) (BQUOTE ((:STELLA \".ste\") (:KB \".kb\") (:CPP \".cc\") (:CPP-CODE \".cc\") (:CPP-HEADER \".hh\") (:C-CODE \".c\") (:C-HEADER \".h\") (:JAVA \".java\") (:IDL \".idl\") (:NONE \"\"))) :DOCUMENTATION \"Used by `select-file-extension'.\")");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TYPE-TO-FILE-EXTENSION-TABLE* (CONS OF CONS) (BQUOTE ((:STELLA \".ste\") (:KB \".kb\") (:CPP \".cc\") (:CPP-CODE \".cc\") (:CPP-HEADER \".hh\") (:C-CODE \".c\") (:C-HEADER \".h\") (:JAVA \".java\") (:IDL \".idl\") (:OTHER \"\") (:NONE \"\"))) :DOCUMENTATION \"Used by `select-file-extension'.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LISP-SPLITTER-PATH* STRING \"lisp\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *JAVA-SPLITTER-PATH* STRING \"java\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CPP-SPLITTER-PATH* STRING \"cpp\")");

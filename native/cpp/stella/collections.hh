@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -47,6 +47,31 @@
 namespace stella {
 
 // Class definitions:
+class Heap : public Vector {
+// Implements a Min or Max heap depending on the semantics
+// of `predicate' (Min if `predicate' has a `<' semantics).  This is useful
+// for in-place sorting (even though we have specialzed sort routines for that)
+// or to maintain top-N lists with log(N) insertion time.  We place this under
+// VECTOR instead of VECTOR-SEQUENCE for now, since sequential order isn't
+// really maintained or accessible until we sort the heap.
+public:
+  cpp_function_code predicate;
+  int fillPointer;
+public:
+  virtual Vector* sort(cpp_function_code predicate);
+  virtual void heapify();
+  virtual void insertIfBetter(Object* value);
+  virtual void replaceHeapRoot(Object* value);
+  virtual void insert(Object* value);
+  virtual Object* fastHeapRoot();
+  virtual Object* heapRoot();
+  virtual boolean emptyP();
+  virtual int length();
+  virtual void clear();
+  virtual void initializeHeap();
+  virtual Surrogate* primaryType();
+};
+
 class StellaHashTable : public AbstractHashTable {
 public:
   KvCons** theTable;
@@ -153,6 +178,79 @@ public:
   virtual Surrogate* primaryType();
 };
 
+class AbstractDimensionalArray : public AbstractCollection {
+// Array objects that are aware of their dimensions.
+};
+
+class oneDArray : public AbstractDimensionalArray {
+// 1-dimensional array with OBJECT values.  This is more or
+// less equivalent to VECTOR (fewer methods) but kept here for symmetry.
+public:
+  int dim1;
+  Object** theArray;
+public:
+  virtual Surrogate* primaryType();
+  virtual void initializeDimensionalArray();
+  virtual int length();
+  virtual void initializeArray(Object* initialvalue);
+  virtual Object* oneDAref(int i);
+  virtual Object* oneDArefSetter(Object* value, int i);
+  virtual int oneDArefAddress(int i);
+};
+
+class oneDFloatArray : public AbstractDimensionalArray {
+// 1-dimensional array with float values.
+public:
+  int dim1;
+  double* theArray;
+public:
+  virtual Surrogate* primaryType();
+  virtual void initializeDimensionalArray();
+  virtual int length();
+  virtual void initializeArray(double initialvalue);
+  virtual double oneDAref(int i);
+  virtual double oneDArefSetter(double value, int i);
+  virtual int oneDArefAddress(int i);
+};
+
+class twoDArray : public AbstractDimensionalArray {
+// 2-dimensional array with object values.
+public:
+  int dim2;
+  int dim1;
+  Object** theArray;
+public:
+  virtual Surrogate* primaryType();
+  virtual void initializeDimensionalArray();
+  virtual void initializeArray(Object* initialvalue);
+  virtual Object* oneDAref(int i);
+  virtual Object* oneDArefSetter(Object* value, int i);
+  virtual int oneDArefAddress(int i);
+  virtual int length();
+  virtual Object* twoDAref(int i, int j);
+  virtual Object* twoDArefSetter(Object* value, int i, int j);
+  virtual int twoDArefAddress(int i, int j);
+};
+
+class twoDFloatArray : public AbstractDimensionalArray {
+// 2-dimensional array with float values.
+public:
+  int dim2;
+  int dim1;
+  double* theArray;
+public:
+  virtual Surrogate* primaryType();
+  virtual void initializeDimensionalArray();
+  virtual void initializeArray(double initialvalue);
+  virtual double oneDAref(int i);
+  virtual double oneDArefSetter(double value, int i);
+  virtual int oneDArefAddress(int i);
+  virtual int length();
+  virtual double twoDAref(int i, int j);
+  virtual double twoDArefSetter(double value, int i, int j);
+  virtual int twoDArefAddress(int i, int j);
+};
+
 
 // Global declarations:
 extern boolean oUSE_STELLA_HASH_TABLESpo;
@@ -162,8 +260,18 @@ extern int oKEY_VALUE_MAP_CROSSOVER_POINTo;
 // Function signatures:
 boolean stellaCollectionP(Object* self);
 Set* set(int values, ...);
-Vector* stella::vector(int values, ...);
+Vector* vector(int values, ...);
+void copyVectorSequence(VectorSequence* source, VectorSequence* copy);
 boolean vectorNextP(AllPurposeIterator* self);
+void heapSortNativeVector(Object** vector, int size, cpp_function_code predicate);
+void heapSortHeapify(Object** vector, int size, cpp_function_code predicate);
+void heapSortSiftDown(Object** vector, int start, int end, cpp_function_code predicate);
+Object* quickSortPickSplitElement(Object** vector, int start, int end, cpp_function_code predicate);
+void quickSortNativeVector(Object** vector, int start, int end, cpp_function_code predicate);
+Heap* newHeap(cpp_function_code predicate, int arraySize);
+Object* accessHeapSlotValue(Heap* self, Symbol* slotname, Object* value, boolean setvalueP);
+void heapSiftUp(Object** heap, int start, int end, Object* value, cpp_function_code predicate);
+void heapSiftDown(Object** heap, int start, int end, Object* value, cpp_function_code predicate);
 StellaHashTable* newStellaHashTable();
 Object* accessStellaHashTableSlotValue(StellaHashTable* self, Symbol* slotname, Object* value, boolean setvalueP);
 void initializeStellaHashTable(StellaHashTable* self);
@@ -178,8 +286,15 @@ KeyValueMap* newKeyValueMap();
 Object* accessKeyValueMapSlotValue(KeyValueMap* self, Symbol* slotname, Object* value, boolean setvalueP);
 HashSet* newHashSet();
 HashSet* hashSet(int values, ...);
+HashSet* coerceToHashSet(Object* self, boolean equaltestP);
+oneDArray* new1DArray(int dim1);
+oneDFloatArray* new1DFloatArray(int dim1);
+twoDArray* new2DArray(int dim2, int dim1);
+twoDFloatArray* new2DFloatArray(int dim2, int dim1);
 void helpStartupCollections1();
 void helpStartupCollections2();
+void helpStartupCollections3();
+void helpStartupCollections4();
 void startupCollections();
 
 // Auxiliary global declarations:
@@ -189,6 +304,10 @@ extern Symbol* SYM_COLLECTIONS_STELLA_VECTOR;
 extern Keyword* KWD_COLLECTIONS_CPP;
 extern Keyword* KWD_COLLECTIONS_FUNCTION;
 extern Surrogate* SGT_COLLECTIONS_STELLA_VECTOR;
+extern Surrogate* SGT_COLLECTIONS_STELLA_VECTOR_SEQUENCE;
+extern Surrogate* SGT_COLLECTIONS_STELLA_HEAP;
+extern Symbol* SYM_COLLECTIONS_STELLA_PREDICATE;
+extern Symbol* SYM_COLLECTIONS_STELLA_FILL_POINTER;
 extern Surrogate* SGT_COLLECTIONS_STELLA_STELLA_HASH_TABLE;
 extern Symbol* SYM_COLLECTIONS_STELLA_SIZE;
 extern Symbol* SYM_COLLECTIONS_STELLA_INITIAL_SIZE;
@@ -201,6 +320,14 @@ extern Surrogate* SGT_COLLECTIONS_STELLA_KEY_VALUE_MAP;
 extern Symbol* SYM_COLLECTIONS_STELLA_THE_MAP;
 extern Symbol* SYM_COLLECTIONS_STELLA_CROSSOVER_POINT;
 extern Surrogate* SGT_COLLECTIONS_STELLA_HASH_SET;
+extern Surrogate* SGT_COLLECTIONS_STELLA_CONS;
+extern Surrogate* SGT_COLLECTIONS_STELLA_LIST;
+extern Surrogate* SGT_COLLECTIONS_STELLA_1D_ARRAY;
+extern Symbol* SYM_COLLECTIONS_STELLA_OBJECT_ARRAY;
+extern Surrogate* SGT_COLLECTIONS_STELLA_1D_FLOAT_ARRAY;
+extern Symbol* SYM_COLLECTIONS_STELLA_FLOAT_ARRAY;
+extern Surrogate* SGT_COLLECTIONS_STELLA_2D_ARRAY;
+extern Surrogate* SGT_COLLECTIONS_STELLA_2D_FLOAT_ARRAY;
 extern Symbol* SYM_COLLECTIONS_STELLA_STARTUP_COLLECTIONS;
 extern Symbol* SYM_COLLECTIONS_STELLA_METHOD_STARTUP_CLASSNAME;
 

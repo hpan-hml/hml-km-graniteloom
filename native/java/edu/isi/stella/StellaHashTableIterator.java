@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -68,6 +68,7 @@ public class StellaHashTableIterator extends DictionaryIterator {
       self.key = null;
       self.bucketCursor = null;
       self.bucketIndex = 0;
+      self.bucketTable = null;
       self.size = Stella.NULL_INTEGER;
       return (self);
     }

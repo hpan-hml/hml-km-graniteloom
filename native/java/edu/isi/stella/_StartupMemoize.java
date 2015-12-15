@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,34 +50,34 @@ import edu.isi.stella.javalib.*;
 public class _StartupMemoize {
   static void helpStartupMemoize1() {
     {
-      Stella.SGT_STELLA_MEMOIZATION_TABLE = ((Surrogate)(Stella.internRigidSymbolWrtModule("MEMOIZATION-TABLE", null, 1)));
-      Stella.SYM_STELLA_HASH_TABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("HASH-TABLE", null, 0)));
-      Stella.SYM_STELLA_TABLE_NAME = ((Symbol)(Stella.internRigidSymbolWrtModule("TABLE-NAME", null, 0)));
-      Stella.SYM_STELLA_CURRENT_TIMESTAMP = ((Symbol)(Stella.internRigidSymbolWrtModule("CURRENT-TIMESTAMP", null, 0)));
-      Stella.SYM_STELLA_TIMESTAMPS = ((Symbol)(Stella.internRigidSymbolWrtModule("TIMESTAMPS", null, 0)));
-      Stella.SGT_STELLA_MRU_MEMOIZATION_TABLE = ((Surrogate)(Stella.internRigidSymbolWrtModule("MRU-MEMOIZATION-TABLE", null, 1)));
-      Stella.SYM_STELLA_MRU_BUCKETS_VECTOR = ((Symbol)(Stella.internRigidSymbolWrtModule("MRU-BUCKETS-VECTOR", null, 0)));
-      Stella.SYM_STELLA_LRU_BUCKETS_VECTOR = ((Symbol)(Stella.internRigidSymbolWrtModule("LRU-BUCKETS-VECTOR", null, 0)));
-      Stella.SYM_STELLA_MRU_TIMESTAMP = ((Symbol)(Stella.internRigidSymbolWrtModule("MRU-TIMESTAMP", null, 0)));
-      Stella.SYM_STELLA_LRU_TIMESTAMP = ((Symbol)(Stella.internRigidSymbolWrtModule("LRU-TIMESTAMP", null, 0)));
-      Stella.SYM_STELLA_NOF_BUCKETS = ((Symbol)(Stella.internRigidSymbolWrtModule("NOF-BUCKETS", null, 0)));
-      Stella.SYM_STELLA_FREE_ENTRIES = ((Symbol)(Stella.internRigidSymbolWrtModule("FREE-ENTRIES", null, 0)));
-      Stella.SYM_STELLA_MAX_ENTRIES = ((Symbol)(Stella.internRigidSymbolWrtModule("MAX-ENTRIES", null, 0)));
-      Stella.KWD_MAX_VALUES = ((Keyword)(Stella.internRigidSymbolWrtModule("MAX-VALUES", null, 2)));
-      Stella.KWD_TIMESTAMPS = ((Keyword)(Stella.internRigidSymbolWrtModule("TIMESTAMPS", null, 2)));
-      Stella.KWD_NAME = ((Keyword)(Stella.internRigidSymbolWrtModule("NAME", null, 2)));
-      Stella.SYM_STELLA_LOOKUP_MEMOIZED_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("LOOKUP-MEMOIZED-VALUE", null, 0)));
-      Stella.SYM_STELLA_LOOKUP_MEMOIZED_VALUEN = ((Symbol)(Stella.internRigidSymbolWrtModule("LOOKUP-MEMOIZED-VALUEN", null, 0)));
-      Stella.SYM_STELLA_LOOKUP_MRU_MEMOIZED_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("LOOKUP-MRU-MEMOIZED-VALUE", null, 0)));
-      Stella.SYM_STELLA_LOOKUP_MRU_MEMOIZED_VALUEN = ((Symbol)(Stella.internRigidSymbolWrtModule("LOOKUP-MRU-MEMOIZED-VALUEN", null, 0)));
-      Stella.SYM_STELLA_MEMOIZED_NULL_VALUE = ((Symbol)(Stella.internRigidSymbolWrtModule("MEMOIZED-NULL-VALUE", null, 0)));
-      Stella.SYM_STELLA_MEMOIZATION_TABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("MEMOIZATION-TABLE", null, 0)));
-      Stella.SYM_STELLA_$MEMOIZATION_ENABLEDp$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*MEMOIZATION-ENABLED?*", null, 0)));
-      Stella.SYM_STELLA_INITIALIZE_MEMOIZATION_TABLE = ((Symbol)(Stella.internRigidSymbolWrtModule("INITIALIZE-MEMOIZATION-TABLE", null, 0)));
-      Stella.SGT_STELLA_MEMOIZABLE_ITERATOR = ((Surrogate)(Stella.internRigidSymbolWrtModule("MEMOIZABLE-ITERATOR", null, 1)));
-      Stella.SYM_STELLA_BASE_ITERATOR = ((Symbol)(Stella.internRigidSymbolWrtModule("BASE-ITERATOR", null, 0)));
-      Stella.SYM_STELLA_ITERATOR_AND_VALUES = ((Symbol)(Stella.internRigidSymbolWrtModule("ITERATOR-AND-VALUES", null, 0)));
-      Stella.SYM_STELLA_STARTUP_MEMOIZE = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-MEMOIZE", null, 0)));
+      Stella.SGT_STELLA_MEMOIZATION_TABLE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("MEMOIZATION-TABLE", null, 1)));
+      Stella.SYM_STELLA_HASH_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("HASH-TABLE", null, 0)));
+      Stella.SYM_STELLA_TABLE_NAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TABLE-NAME", null, 0)));
+      Stella.SYM_STELLA_CURRENT_TIMESTAMP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CURRENT-TIMESTAMP", null, 0)));
+      Stella.SYM_STELLA_TIMESTAMPS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TIMESTAMPS", null, 0)));
+      Stella.SGT_STELLA_MRU_MEMOIZATION_TABLE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("MRU-MEMOIZATION-TABLE", null, 1)));
+      Stella.SYM_STELLA_MRU_BUCKETS_VECTOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MRU-BUCKETS-VECTOR", null, 0)));
+      Stella.SYM_STELLA_LRU_BUCKETS_VECTOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LRU-BUCKETS-VECTOR", null, 0)));
+      Stella.SYM_STELLA_MRU_TIMESTAMP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MRU-TIMESTAMP", null, 0)));
+      Stella.SYM_STELLA_LRU_TIMESTAMP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LRU-TIMESTAMP", null, 0)));
+      Stella.SYM_STELLA_NOF_BUCKETS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NOF-BUCKETS", null, 0)));
+      Stella.SYM_STELLA_FREE_ENTRIES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FREE-ENTRIES", null, 0)));
+      Stella.SYM_STELLA_MAX_ENTRIES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MAX-ENTRIES", null, 0)));
+      Stella.KWD_MAX_VALUES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MAX-VALUES", null, 2)));
+      Stella.KWD_TIMESTAMPS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TIMESTAMPS", null, 2)));
+      Stella.KWD_NAME = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NAME", null, 2)));
+      Stella.SYM_STELLA_LOOKUP_MEMOIZED_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOKUP-MEMOIZED-VALUE", null, 0)));
+      Stella.SYM_STELLA_LOOKUP_MEMOIZED_VALUEN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOKUP-MEMOIZED-VALUEN", null, 0)));
+      Stella.SYM_STELLA_LOOKUP_MRU_MEMOIZED_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOKUP-MRU-MEMOIZED-VALUE", null, 0)));
+      Stella.SYM_STELLA_LOOKUP_MRU_MEMOIZED_VALUEN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LOOKUP-MRU-MEMOIZED-VALUEN", null, 0)));
+      Stella.SYM_STELLA_MEMOIZED_NULL_VALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MEMOIZED-NULL-VALUE", null, 0)));
+      Stella.SYM_STELLA_MEMOIZATION_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MEMOIZATION-TABLE", null, 0)));
+      Stella.SYM_STELLA_$MEMOIZATION_ENABLEDp$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*MEMOIZATION-ENABLED?*", null, 0)));
+      Stella.SYM_STELLA_INITIALIZE_MEMOIZATION_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INITIALIZE-MEMOIZATION-TABLE", null, 0)));
+      Stella.SGT_STELLA_MEMOIZABLE_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("MEMOIZABLE-ITERATOR", null, 1)));
+      Stella.SYM_STELLA_BASE_ITERATOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BASE-ITERATOR", null, 0)));
+      Stella.SYM_STELLA_ITERATOR_AND_VALUES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ITERATOR-AND-VALUES", null, 0)));
+      Stella.SYM_STELLA_STARTUP_MEMOIZE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-MEMOIZE", null, 0)));
     }
   }
 
@@ -93,10 +93,10 @@ public class _StartupMemoize {
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Stella.$ALL_MEMOIZATION_TABLES$ = List.newList();
-          { Symbol self068 = Symbol.newSymbol("MEMOIZED-NULL-VALUE");
+          { Symbol self073 = Symbol.newSymbol("MEMOIZED-NULL-VALUE");
 
-            self068.homeContext = null;
-            Stella.MEMOIZED_NULL_VALUE = self068;
+            self073.homeContext = null;
+            Stella.MEMOIZED_NULL_VALUE = self073;
           }
         }
         if (Stella.currentStartupTimePhaseP(5)) {
@@ -156,6 +156,7 @@ public class _StartupMemoize {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *ALL-MEMOIZATION-TABLES* (LIST OF MEMOIZATION-TABLE) (NEW LIST) :DOCUMENTATION \"Holds all currently active memoization tables for timestamp\nmaintenance and clearance purposes.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MEMOIZATION-ENABLED?* BOOLEAN FALSE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MEMOIZED-NULL-VALUE SYMBOL (NEW SYMBOL :SYMBOL-NAME \"MEMOIZED-NULL-VALUE\" :HOME-CONTEXT NULL) :DOCUMENTATION \"Used by memoization to indicate that a NULL value\nwas cached.  Needed to distinguish between an undefined value and a\ncached NULL.\")");

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -156,7 +156,7 @@ public class KeyValueMap extends Dictionary {
             value = iter000.value;
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(Stella_Object.cons(key, Stella_Object.cons(value, Stella.NIL)), Stella.NIL);
+                collect000 = Cons.cons(Cons.cons(key, Cons.cons(value, Stella.NIL)), Stella.NIL);
                 if (result == Stella.NIL) {
                   result = collect000;
                 }
@@ -167,7 +167,7 @@ public class KeyValueMap extends Dictionary {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(Stella_Object.cons(key, Stella_Object.cons(value, Stella.NIL)), Stella.NIL);
+                collect000.rest = Cons.cons(Cons.cons(key, Cons.cons(value, Stella.NIL)), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -410,7 +410,7 @@ public class KeyValueMap extends Dictionary {
                 cursor = cursor.rest;
               }
             }
-            cursor = Stella_Object.kvCons(key, value, ((KvCons)(map)));
+            cursor = KvCons.kvCons(key, value, ((KvCons)(map)));
             self.theMap = cursor;
             crossover = crossover - 1;
             self.crossoverPoint = crossover;

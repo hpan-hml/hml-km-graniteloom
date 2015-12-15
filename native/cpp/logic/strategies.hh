@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -87,6 +87,7 @@ ParallelThread* createChildThread(ParallelControlFrame* pframe);
 Keyword* tryParallelThreadProof(ControlFrame* frame);
 void pushNextStrategy(ControlFrame* frame, Keyword* strategy);
 ControlFrame* createSubgoalFrame(ControlFrame* upframe, Proposition* goal, Keyword* strategy);
+boolean specialistApplicableP(NamedDescription* description, Proposition* proposition);
 Keyword* continueSpecialistProof(ControlFrame* frame, Keyword* lastmove);
 Keyword* lookupCachedProof(ControlFrame* frame);
 Keyword* scanCachedGoals(ControlFrame* frame);
@@ -114,7 +115,7 @@ Object* accessConditionalAntecedentProofAdjunctSlotValue(ConditionalAntecedentPr
 ControlFrame* createConditionalAntecedentSubframe(ControlFrame* frame, Proposition* goal, Proposition* provablerule);
 Keyword* continueConditionalAntecedentProof(ControlFrame* frame, Keyword* lastmove);
 Keyword* tryFullSubqueryProof(ControlFrame* frame);
-NamedDescription* extractCollectionArgument(Proposition* proposition);
+Description* extractCollectionArgument(Proposition* proposition);
 Keyword* tryIsaPropositionProof(ControlFrame* frame);
 Keyword* tryScanCollectionProof(ControlFrame* frame);
 boolean inferableDescriptionP(Object* self);
@@ -130,6 +131,7 @@ Object* accessClusteredConjunctionProofAdjunctSlotValue(ClusteredConjunctionProo
 Keyword* continueClusteredConjunctionProof(ControlFrame* andframe, Keyword* lastmove);
 World* pushMonotonicWorld();
 Keyword* tryDisjunctiveImplicationProof(ControlFrame* frame);
+Keyword* resumeDisjunctiveImplicationProof(ControlFrame* frame, Keyword* lastmove);
 LogicObject* createAnonymousInstance(char* prefix, boolean skolemP);
 LogicObject* createHypothesizedInstance(char* prefix);
 Keyword* tryUniversalIntroductionProof(ControlFrame* frame);
@@ -171,6 +173,7 @@ extern Keyword* KWD_STRATEGIES_SPECIALIST;
 extern Keyword* KWD_STRATEGIES_ANTECEDENTS;
 extern Keyword* KWD_STRATEGIES_CLUSTERED_CONJUNCTION;
 extern Keyword* KWD_STRATEGIES_CONDITIONAL_ANTECEDENT;
+extern Keyword* KWD_STRATEGIES_DISJUNCTIVE_IMPLICATION_INTRODUCTION;
 extern Keyword* KWD_STRATEGIES_ATOMIC_GOAL;
 extern Keyword* KWD_STRATEGIES_DUMMY_JUSTIFICATION;
 extern Keyword* KWD_STRATEGIES_LOOKUP_GOAL_CACHES;
@@ -191,11 +194,11 @@ extern Keyword* KWD_STRATEGIES_FORWARD_GOALS;
 extern Keyword* KWD_STRATEGIES_IMPLIES;
 extern Keyword* KWD_STRATEGIES_CONTAINED_BY;
 extern Keyword* KWD_STRATEGIES_EQUIVALENCE;
-extern Keyword* KWD_STRATEGIES_DISJUNCTIVE_IMPLICATION_INTRODUCTION;
 extern Keyword* KWD_STRATEGIES_UNIVERSAL_INTRODUCTION;
 extern Keyword* KWD_STRATEGIES_SUBSUMPTION_TEST;
 extern Keyword* KWD_STRATEGIES_REFUTATION;
 extern Keyword* KWD_STRATEGIES_STRATEGY;
+extern Keyword* KWD_STRATEGIES_DEBUG;
 extern Keyword* KWD_STRATEGIES_SUCCESS;
 extern Symbol* SYM_STRATEGIES_LOGIC_LATEST_POSITIVE_SCORE;
 extern Keyword* KWD_STRATEGIES_GOAL_CACHES;

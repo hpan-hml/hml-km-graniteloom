@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -197,7 +197,7 @@ Description* createDescription(int arity, boolean namedP) {
   enforceCodeOnly();
   { Description* description = (namedP ? newNamedDescription() : newDescription());
 
-    description->ioVariables = ((arity != NULL_INTEGER) ? newVector(arity) : FAKE_IO_VARIABLES);
+    description->ioVariables = ((arity != NULL_INTEGER) ? stella::newVector(arity) : FAKE_IO_VARIABLES);
     return (description);
   }
 }
@@ -239,7 +239,7 @@ Symbol* yieldSystemDefinedParameterName(int index, Object* referenceobject) {
     return (internSymbolInModule(((Symbol*)(SYSTEM_DEFINED_ARGUMENT_NAMES->nth(index)))->symbolName, referenceobject->homeModule(), true));
   }
   else {
-    return (internSymbolInModule(stringConcatenate("?X", integerToString(index + 1), 0), referenceobject->homeModule(), true));
+    return (internSymbolInModule(stringConcatenate("?X", integerToString(((long long int)(index + 1))), 0), referenceobject->homeModule(), true));
   }
 }
 
@@ -943,7 +943,7 @@ Vector* copyConsListToVariablesVector(Cons* conslist) {
   if (conslist == NIL) {
     return (ZERO_VARIABLES_VECTOR);
   }
-  { Vector* vector = newVector(conslist->length());
+  { Vector* vector = stella::newVector(conslist->length());
 
     { Object* t = NULL;
       Cons* iter000 = conslist;
@@ -963,7 +963,7 @@ Vector* copyConsListToVariablesVector(Cons* conslist) {
   }
 }
 
-boolean equivalentHoldsPropositionP(Proposition* self, Proposition* other, KeyValueList* mapping) {
+boolean equivalentHoldsPropositionP(Proposition* self, Proposition* other, KeyValueMap* mapping) {
   { boolean testValue000 = false;
 
     testValue000 = equivalentFormulaeP((self->arguments->theArray)[0], other->operatoR, mapping);
@@ -1002,7 +1002,7 @@ boolean equivalentHoldsPropositionP(Proposition* self, Proposition* other, KeyVa
   }
 }
 
-boolean equivalentCommutativePropositionsP(Proposition* self, Proposition* other, KeyValueList* mapping) {
+boolean equivalentCommutativePropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping) {
   { boolean testValue000 = false;
 
     testValue000 = self->operatoR == other->operatoR;
@@ -1060,7 +1060,7 @@ boolean equivalentCommutativePropositionsP(Proposition* self, Proposition* other
   }
 }
 
-boolean equivalentPropositionsP(Proposition* self, Proposition* other, KeyValueList* mapping) {
+boolean equivalentPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping) {
   if (self == other) {
     return (true);
   }
@@ -1086,7 +1086,7 @@ boolean equivalentPropositionsP(Proposition* self, Proposition* other, KeyValueL
               return (false);
             }
             if (!((boolean)(mapping))) {
-              mapping = newKeyValueList();
+              mapping = newKeyValueMap();
             }
             { PatternVariable* v1 = NULL;
               Vector* vector000 = iovars1;
@@ -1160,11 +1160,11 @@ boolean equivalentPropositionsP(Proposition* self, Proposition* other, KeyValueL
   }
 }
 
-boolean equivalentFunctionPropositionsP(Proposition* self, Proposition* other, KeyValueList* mapping) {
+boolean equivalentFunctionPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping) {
   if ((self->kind == KWD_DESCRIPTIONS_FUNCTION) &&
       (other->kind == KWD_DESCRIPTIONS_FUNCTION)) {
     if (!((boolean)(mapping))) {
-      mapping = newKeyValueList();
+      mapping = newKeyValueMap();
     }
     mapping->insertAt((self->arguments->theArray)[(self->arguments->length() - 1)], (other->arguments->theArray)[(other->arguments->length() - 1)]);
     return (equivalentPropositionsP(self, other, mapping));
@@ -1172,7 +1172,7 @@ boolean equivalentFunctionPropositionsP(Proposition* self, Proposition* other, K
   return (false);
 }
 
-boolean equivalentDescriptionsP(Description* self, Description* other, KeyValueList* mapping) {
+boolean equivalentDescriptionsP(Description* self, Description* other, KeyValueMap* mapping) {
   if (self == other) {
     return (true);
   }
@@ -1188,7 +1188,7 @@ boolean equivalentDescriptionsP(Description* self, Description* other, KeyValueL
   }
   else {
     if (!((boolean)(mapping))) {
-      mapping = newKeyValueList();
+      mapping = newKeyValueMap();
     }
     { PatternVariable* v1 = NULL;
       Vector* vector000 = self->ioVariables;
@@ -1207,14 +1207,15 @@ boolean equivalentDescriptionsP(Description* self, Description* other, KeyValueL
         v1 = ((PatternVariable*)((vector000->theArray)[index000]));
         v2 = ((PatternVariable*)((vector001->theArray)[index001]));
         mapping->insertAt(v1, v2);
+        mapping->insertAt(v2, v1);
       }
     }
     { PatternVariable* v1 = NULL;
-      Vector* vector002 = self->internalVariables;
+      Vector* vector002 = self->ioVariables;
       int index002 = 0;
       int length002 = vector002->length();
       PatternVariable* v2 = NULL;
-      Vector* vector003 = other->internalVariables;
+      Vector* vector003 = other->ioVariables;
       int index003 = 0;
       int length003 = vector003->length();
 
@@ -1225,6 +1226,28 @@ boolean equivalentDescriptionsP(Description* self, Description* other, KeyValueL
             index003 = index003 + 1) {
         v1 = ((PatternVariable*)((vector002->theArray)[index002]));
         v2 = ((PatternVariable*)((vector003->theArray)[index003]));
+        if (!((mapping->lookup(v1) == v2) &&
+            (mapping->lookup(v2) == v1))) {
+          return (false);
+        }
+      }
+    }
+    { PatternVariable* v1 = NULL;
+      Vector* vector004 = self->internalVariables;
+      int index004 = 0;
+      int length004 = vector004->length();
+      PatternVariable* v2 = NULL;
+      Vector* vector005 = other->internalVariables;
+      int index005 = 0;
+      int length005 = vector005->length();
+
+      for  (v1, vector004, index004, length004, v2, vector005, index005, length005; 
+            (index004 < length004) &&
+                (index005 < length005); 
+            index004 = index004 + 1,
+            index005 = index005 + 1) {
+        v1 = ((PatternVariable*)((vector004->theArray)[index004]));
+        v2 = ((PatternVariable*)((vector005->theArray)[index005]));
         mapping->insertAt(v1, v2);
       }
     }
@@ -1303,7 +1326,7 @@ boolean equivalentEnumerationsP(Collection* self, Collection* other) {
   }
 }
 
-boolean equivalentFormulaeP(Object* self, Object* other, KeyValueList* mapping) {
+boolean equivalentFormulaeP(Object* self, Object* other, KeyValueMap* mapping) {
   { Object* surrogatevalue = NULL;
 
     if (isaP(self, SGT_DESCRIPTIONS_STELLA_SURROGATE)) {
@@ -1425,7 +1448,7 @@ boolean sameAndUniqueArgumentsP(Vector* variables, Vector* arguments) {
 
 DEFINE_STELLA_SPECIAL(oUNIFY_PROPOSITIONSpo, boolean , false);
 
-boolean unifyPropositionsP(Proposition* self, Proposition* other, KeyValueList* mapping) {
+boolean unifyPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping) {
   { 
     BIND_STELLA_SPECIAL(oUNIFY_PROPOSITIONSpo, boolean, true);
     return (equivalentPropositionsP(self, other, mapping));
@@ -1482,7 +1505,13 @@ LogicObject* Description::findDuplicateNamedDescription() {
         }
         else {
           if (sameAndUniqueArgumentsP(self->ioVariables, proposition->arguments)) {
-            return (extractGoalDescription(proposition, NULL));
+            { Description* nameddescription = extractGoalDescription(proposition, NULL);
+
+              if (((boolean)(nameddescription)) &&
+                  (self->ioVariables->length() == nameddescription->ioVariables->length())) {
+                return (nameddescription);
+              }
+            }
           }
         }
       }
@@ -1492,10 +1521,10 @@ LogicObject* Description::findDuplicateNamedDescription() {
 }
 
 Description* findDuplicateComplexDescription(Description* self) {
-  { IntegerWrapper* index = wrapInteger(propositionHashIndex(self->proposition));
+  { IntegerWrapper* index = wrapInteger(propositionHashIndex(self->proposition, NULL));
     List* bucket = ((List*)(oSTRUCTURED_OBJECTS_INDEXo->lookup(index)));
     Module* homemodule = self->homeContext->baseModule;
-    KeyValueList* mapping = newKeyValueList();
+    KeyValueMap* mapping = newKeyValueMap();
 
     if (!((boolean)(bucket))) {
       oSTRUCTURED_OBJECTS_INDEXo->insertAt(index, list(1, self));
@@ -1504,7 +1533,7 @@ Description* findDuplicateComplexDescription(Description* self) {
     bucket->removeDeletedMembers();
     if (((boolean)(((Vector*)(dynamicSlotValue(self->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_EXTERNAL_VARIABLES, NULL))))) &&
         ((boolean)(oQUERYITERATORo.get()))) {
-      mapping = newKeyValueList();
+      mapping = newKeyValueMap();
       { PatternVariable* v = NULL;
         Vector* vector000 = ((Vector*)(dynamicSlotValue(self->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_EXTERNAL_VARIABLES, NULL)));
         int index000 = 0;
@@ -1843,13 +1872,34 @@ void tightenArgumentBindings(Proposition* proposition, Vector* iovariables) {
   }
 }
 
-void equateTopLevelEquivalences(Proposition* proposition) {
+void equateTopLevelEquivalences(Proposition* proposition, Vector* iovariables, Keyword* kind) {
   { Vector* arguments = proposition->arguments;
 
     { Keyword* testValue000 = proposition->kind;
 
       if (testValue000 == KWD_DESCRIPTIONS_EQUIVALENT) {
-        equateValues(innermostOf((arguments->theArray)[0]), innermostOf((arguments->theArray)[1]));
+        { Object* arg1 = innermostOf((arguments->theArray)[0]);
+          Object* arg2 = innermostOf((arguments->theArray)[1]);
+
+          if ((variableP(arg1) ||
+              argumentBoundP(arg1)) &&
+              (variableP(arg2) ||
+               argumentBoundP(arg2))) {
+            if (iovariables->memberP(arg1)) {
+              if (iovariables->memberP(arg2)) {
+                if (!(kind == KWD_DESCRIPTIONS_HEAD)) {
+                  equateValues(arg1, arg2);
+                }
+              }
+              else {
+                equateValues(arg2, arg1);
+              }
+            }
+            else {
+              equateValues(arg1, arg2);
+            }
+          }
+        }
       }
       else if (testValue000 == KWD_DESCRIPTIONS_AND) {
         { Object* arg = NULL;
@@ -1861,12 +1911,12 @@ void equateTopLevelEquivalences(Proposition* proposition) {
                 index000 < length000; 
                 index000 = index000 + 1) {
             arg = (vector000->theArray)[index000];
-            equateTopLevelEquivalences(((Proposition*)(arg)));
+            equateTopLevelEquivalences(((Proposition*)(arg)), iovariables, kind);
           }
         }
       }
       else if (testValue000 == KWD_DESCRIPTIONS_EXISTS) {
-        equateTopLevelEquivalences(((Proposition*)((arguments->theArray)[0])));
+        equateTopLevelEquivalences(((Proposition*)((arguments->theArray)[0])), iovariables, kind);
       }
       else if (testValue000 == KWD_DESCRIPTIONS_FUNCTION) {
         evaluateFunctionProposition(proposition);
@@ -1991,7 +2041,7 @@ void collectExternalVariables(Proposition* proposition) {
   }
 }
 
-Description* finishBuildingDescription(Description* description, boolean checkforduplicateP) {
+Description* finishBuildingDescription(Description* description, boolean checkforduplicateP, Keyword* kind) {
   { Proposition* proposition = description->proposition;
 
     normalizeProposition(proposition);
@@ -2001,7 +2051,7 @@ Description* finishBuildingDescription(Description* description, boolean checkfo
     }
     resolveUnresolvedSlotReferences(description);
     updateSkolemTypeFromIsaAssertions(proposition);
-    normalizeTopLevelProposition(proposition, description->ioVariables);
+    normalizeDescriptiveProposition(proposition, description->ioVariables, kind);
     recursivelyFastenDownPropositions(proposition, true);
     computeInternalVariables(description);
     if (checkforduplicateP) {
@@ -2020,7 +2070,7 @@ Description* evaluateDescriptionTerm(Cons* term, boolean checkforduplicateP) {
   { Description* description = createDescription(NULL_INTEGER, false);
 
     if (((GeneralizedSymbol*)(term->value)) == SYM_DESCRIPTIONS_LOGIC_THE_ONLY) {
-      setDynamicSlotValue(description->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_IOTAp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(description->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_IOTAp, TRUE_WRAPPER, FALSE_WRAPPER);
     }
     else {
     }
@@ -2046,7 +2096,7 @@ Description* evaluateDescriptionTerm(Cons* term, boolean checkforduplicateP) {
         }
         description->proposition = (((boolean)(proposition)) ? proposition : TRUE_PROPOSITION);
       }
-      return (finishBuildingDescription(description, checkforduplicateP));
+      return (finishBuildingDescription(description, checkforduplicateP, KWD_DESCRIPTIONS_TOP_LEVEL));
     }
   }
 }
@@ -2132,7 +2182,7 @@ Description* getComplementOfGoalDescription(NamedDescription* self) {
               declarations = cons(v->skolemName, declarations);
             }
             else {
-              declarations = cons(cons(v->skolemName, cons(surrogateToSymbol(type), NIL)), declarations);
+              declarations = cons(cons(v->skolemName, cons(internSymbolInModule(type->symbolName, ((Module*)(type->homeContext)), true), NIL)), declarations);
             }
             if (!((boolean)(collect000))) {
               {
@@ -3018,7 +3068,7 @@ void createDummyRelation(Proposition* waywardproposition) {
     description = createPrimitiveDescription(NIL_LIST, fakevariabletypes, false, waywardproposition->kind == KWD_DESCRIPTIONS_ISA, waywardproposition->kind == KWD_DESCRIPTIONS_FUNCTION, ((Module*)(relationref->homeContext)));
     waywardproposition->operatoR = relationref;
     bindLogicObjectToSurrogate(symbolref, description);
-    setDynamicSlotValue(description->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_UNDECLAREDp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+    setDynamicSlotValue(description->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_UNDECLAREDp, TRUE_WRAPPER, FALSE_WRAPPER);
   }
 }
 
@@ -3323,7 +3373,6 @@ void helpStartupDescriptions3() {
     KWD_DESCRIPTIONS_ISA = ((Keyword*)(internRigidSymbolWrtModule("ISA", NULL, 2)));
     SYM_DESCRIPTIONS_LOGIC_VARIABLE_TYPEp = ((Symbol*)(internRigidSymbolWrtModule("VARIABLE-TYPE?", NULL, 0)));
     SYM_DESCRIPTIONS_STELLA_EXISTS = ((Symbol*)(internRigidSymbolWrtModule("EXISTS", getStellaModule("/STELLA", true), 0)));
-    SYM_DESCRIPTIONS_LOGIC_ENTITY_MAPPING = ((Symbol*)(internRigidSymbolWrtModule("ENTITY-MAPPING", NULL, 0)));
     KWD_DESCRIPTIONS_AND = ((Keyword*)(internRigidSymbolWrtModule("AND", NULL, 2)));
     KWD_DESCRIPTIONS_OR = ((Keyword*)(internRigidSymbolWrtModule("OR", NULL, 2)));
     KWD_DESCRIPTIONS_EQUIVALENT = ((Keyword*)(internRigidSymbolWrtModule("EQUIVALENT", NULL, 2)));
@@ -3345,8 +3394,10 @@ void helpStartupDescriptions3() {
     SGT_DESCRIPTIONS_STELLA_PROPOSITIONdIF = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION.IF", getStellaModule("/STELLA", true), 1)));
     SYM_DESCRIPTIONS_STELLA_AND = ((Symbol*)(internRigidSymbolWrtModule("AND", getStellaModule("/STELLA", true), 0)));
     SGT_DESCRIPTIONS_STELLA_CS_VALUE = ((Surrogate*)(internRigidSymbolWrtModule("CS-VALUE", getStellaModule("/STELLA", true), 1)));
+    KWD_DESCRIPTIONS_HEAD = ((Keyword*)(internRigidSymbolWrtModule("HEAD", NULL, 2)));
     SYM_DESCRIPTIONS_LOGIC_THE_ONLY = ((Symbol*)(internRigidSymbolWrtModule("THE-ONLY", NULL, 0)));
     SYM_DESCRIPTIONS_LOGIC_IOTAp = ((Symbol*)(internRigidSymbolWrtModule("IOTA?", NULL, 0)));
+    KWD_DESCRIPTIONS_TOP_LEVEL = ((Keyword*)(internRigidSymbolWrtModule("TOP-LEVEL", NULL, 2)));
     SYM_DESCRIPTIONS_LOGIC_COMPLEMENT_DESCRIPTION = ((Symbol*)(internRigidSymbolWrtModule("COMPLEMENT-DESCRIPTION", NULL, 0)));
     SYM_DESCRIPTIONS_LOGIC_VARIABLE_TYPE_TABLE = ((Symbol*)(internRigidSymbolWrtModule("VARIABLE-TYPE-TABLE", NULL, 0)));
     SGT_DESCRIPTIONS_LOGIC_LOGIC_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("LOGIC-OBJECT", NULL, 1)));
@@ -3418,11 +3469,11 @@ void helpStartupDescriptions4() {
     defineFunctionObject("COLLAPSE-VALUE-OF-CHAINS-FOR-IO-VARIABLES", "(DEFUN COLLAPSE-VALUE-OF-CHAINS-FOR-IO-VARIABLES ((IOVARIABLES VARIABLES-VECTOR)))", ((cpp_function_code)(&collapseValueOfChainsForIoVariables)), NULL);
     defineFunctionObject("REMOVE-NULLS-IN-VARIABLES-VECTOR", "(DEFUN (REMOVE-NULLS-IN-VARIABLES-VECTOR VARIABLES-VECTOR) ((IOVARIABLES VARIABLES-VECTOR)))", ((cpp_function_code)(&removeNullsInVariablesVector)), NULL);
     defineFunctionObject("TIGHTEN-ARGUMENT-BINDINGS", "(DEFUN TIGHTEN-ARGUMENT-BINDINGS ((PROPOSITION PROPOSITION) (IOVARIABLES VARIABLES-VECTOR)))", ((cpp_function_code)(&tightenArgumentBindings)), NULL);
-    defineFunctionObject("EQUATE-TOP-LEVEL-EQUIVALENCES", "(DEFUN EQUATE-TOP-LEVEL-EQUIVALENCES ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&equateTopLevelEquivalences)), NULL);
+    defineFunctionObject("EQUATE-TOP-LEVEL-EQUIVALENCES", "(DEFUN EQUATE-TOP-LEVEL-EQUIVALENCES ((PROPOSITION PROPOSITION) (IOVARIABLES VARIABLES-VECTOR) (KIND KEYWORD)))", ((cpp_function_code)(&equateTopLevelEquivalences)), NULL);
     defineFunctionObject("COLLECT-ALL-VARIABLES", "(DEFUN COLLECT-ALL-VARIABLES ((SELF PROPOSITION) (COLLECTION (LIST OF PATTERN-VARIABLE)) (BEENTHERE LIST)))", ((cpp_function_code)(&collectAllVariables)), NULL);
     defineFunctionObject("COMPUTE-INTERNAL-VARIABLES", "(DEFUN COMPUTE-INTERNAL-VARIABLES ((SELF DESCRIPTION)))", ((cpp_function_code)(&computeInternalVariables)), NULL);
     defineFunctionObject("COLLECT-EXTERNAL-VARIABLES", "(DEFUN COLLECT-EXTERNAL-VARIABLES ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&collectExternalVariables)), NULL);
-    defineFunctionObject("FINISH-BUILDING-DESCRIPTION", "(DEFUN (FINISH-BUILDING-DESCRIPTION DESCRIPTION) ((DESCRIPTION DESCRIPTION) (CHECKFORDUPLICATE? BOOLEAN)))", ((cpp_function_code)(&finishBuildingDescription)), NULL);
+    defineFunctionObject("FINISH-BUILDING-DESCRIPTION", "(DEFUN (FINISH-BUILDING-DESCRIPTION DESCRIPTION) ((DESCRIPTION DESCRIPTION) (CHECKFORDUPLICATE? BOOLEAN) (KIND KEYWORD)))", ((cpp_function_code)(&finishBuildingDescription)), NULL);
   }
 }
 
@@ -3436,11 +3487,10 @@ void startupDescriptions() {
       helpStartupDescriptions3();
     }
     if (currentStartupTimePhaseP(4)) {
-      FAKE_IO_VARIABLES = newVector(0);
+      FAKE_IO_VARIABLES = stella::newVector(0);
       SYSTEM_DEFINED_ARGUMENT_NAMES = listO(101, SYM_DESCRIPTIONS_LOGIC_pX1, SYM_DESCRIPTIONS_LOGIC_pX2, SYM_DESCRIPTIONS_LOGIC_pX3, SYM_DESCRIPTIONS_LOGIC_pX4, SYM_DESCRIPTIONS_LOGIC_pX5, SYM_DESCRIPTIONS_LOGIC_pX6, SYM_DESCRIPTIONS_LOGIC_pX7, SYM_DESCRIPTIONS_LOGIC_pX8, SYM_DESCRIPTIONS_LOGIC_pX9, SYM_DESCRIPTIONS_LOGIC_pX10, SYM_DESCRIPTIONS_LOGIC_pX11, SYM_DESCRIPTIONS_LOGIC_pX12, SYM_DESCRIPTIONS_LOGIC_pX13, SYM_DESCRIPTIONS_LOGIC_pX14, SYM_DESCRIPTIONS_LOGIC_pX15, SYM_DESCRIPTIONS_LOGIC_pX16, SYM_DESCRIPTIONS_LOGIC_pX17, SYM_DESCRIPTIONS_LOGIC_pX18, SYM_DESCRIPTIONS_LOGIC_pX19, SYM_DESCRIPTIONS_LOGIC_pX20, SYM_DESCRIPTIONS_LOGIC_pX21, SYM_DESCRIPTIONS_LOGIC_pX22, SYM_DESCRIPTIONS_LOGIC_pX23, SYM_DESCRIPTIONS_LOGIC_pX24, SYM_DESCRIPTIONS_LOGIC_pX25, SYM_DESCRIPTIONS_LOGIC_pX26, SYM_DESCRIPTIONS_LOGIC_pX27, SYM_DESCRIPTIONS_LOGIC_pX28, SYM_DESCRIPTIONS_LOGIC_pX29, SYM_DESCRIPTIONS_LOGIC_pX30, SYM_DESCRIPTIONS_LOGIC_pX31, SYM_DESCRIPTIONS_LOGIC_pX32, SYM_DESCRIPTIONS_LOGIC_pX33, SYM_DESCRIPTIONS_LOGIC_pX34, SYM_DESCRIPTIONS_LOGIC_pX35, SYM_DESCRIPTIONS_LOGIC_pX36, SYM_DESCRIPTIONS_LOGIC_pX37, SYM_DESCRIPTIONS_LOGIC_pX38, SYM_DESCRIPTIONS_LOGIC_pX39, SYM_DESCRIPTIONS_LOGIC_pX40, SYM_DESCRIPTIONS_LOGIC_pX41, SYM_DESCRIPTIONS_LOGIC_pX42, SYM_DESCRIPTIONS_LOGIC_pX43, SYM_DESCRIPTIONS_LOGIC_pX44, SYM_DESCRIPTIONS_LOGIC_pX45, SYM_DESCRIPTIONS_LOGIC_pX46, SYM_DESCRIPTIONS_LOGIC_pX47, SYM_DESCRIPTIONS_LOGIC_pX48, SYM_DESCRIPTIONS_LOGIC_pX49, SYM_DESCRIPTIONS_LOGIC_pX50, SYM_DESCRIPTIONS_LOGIC_pX51, SYM_DESCRIPTIONS_LOGIC_pX52, SYM_DESCRIPTIONS_LOGIC_pX53, SYM_DESCRIPTIONS_LOGIC_pX54, SYM_DESCRIPTIONS_LOGIC_pX55, SYM_DESCRIPTIONS_LOGIC_pX56, SYM_DESCRIPTIONS_LOGIC_pX57, SYM_DESCRIPTIONS_LOGIC_pX58, SYM_DESCRIPTIONS_LOGIC_pX59, SYM_DESCRIPTIONS_LOGIC_pX60, SYM_DESCRIPTIONS_LOGIC_pX61, SYM_DESCRIPTIONS_LOGIC_pX62, SYM_DESCRIPTIONS_LOGIC_pX63, SYM_DESCRIPTIONS_LOGIC_pX64, SYM_DESCRIPTIONS_LOGIC_pX65, SYM_DESCRIPTIONS_LOGIC_pX66, SYM_DESCRIPTIONS_LOGIC_pX67, SYM_DESCRIPTIONS_LOGIC_pX68, SYM_DESCRIPTIONS_LOGIC_pX69, SYM_DESCRIPTIONS_LOGIC_pX70, SYM_DESCRIPTIONS_LOGIC_pX71, SYM_DESCRIPTIONS_LOGIC_pX72, SYM_DESCRIPTIONS_LOGIC_pX73, SYM_DESCRIPTIONS_LOGIC_pX74, SYM_DESCRIPTIONS_LOGIC_pX75, SYM_DESCRIPTIONS_LOGIC_pX76, SYM_DESCRIPTIONS_LOGIC_pX77, SYM_DESCRIPTIONS_LOGIC_pX78, SYM_DESCRIPTIONS_LOGIC_pX79, SYM_DESCRIPTIONS_LOGIC_pX80, SYM_DESCRIPTIONS_LOGIC_pX81, SYM_DESCRIPTIONS_LOGIC_pX82, SYM_DESCRIPTIONS_LOGIC_pX83, SYM_DESCRIPTIONS_LOGIC_pX84, SYM_DESCRIPTIONS_LOGIC_pX85, SYM_DESCRIPTIONS_LOGIC_pX86, SYM_DESCRIPTIONS_LOGIC_pX87, SYM_DESCRIPTIONS_LOGIC_pX88, SYM_DESCRIPTIONS_LOGIC_pX89, SYM_DESCRIPTIONS_LOGIC_pX90, SYM_DESCRIPTIONS_LOGIC_pX91, SYM_DESCRIPTIONS_LOGIC_pX92, SYM_DESCRIPTIONS_LOGIC_pX93, SYM_DESCRIPTIONS_LOGIC_pX94, SYM_DESCRIPTIONS_LOGIC_pX95, SYM_DESCRIPTIONS_LOGIC_pX96, SYM_DESCRIPTIONS_LOGIC_pX97, SYM_DESCRIPTIONS_LOGIC_pX98, SYM_DESCRIPTIONS_LOGIC_pX99, SYM_DESCRIPTIONS_LOGIC_pX100, NIL);
     }
     if (currentStartupTimePhaseP(5)) {
-      defineStellaTypeFromStringifiedSource("(DEFTYPE ENTITY-MAPPING (KEY-VALUE-LIST OF OBJECT OBJECT) :DOCUMENTATION \"Used to keep track of copied or substituted variables\nand propositions within 'copy-description', etc.  This needs to be a\nsubtype of DICTIONARY.  KEY-VALUE-LIST is a good choice for most cases,\nhowever, for very high-arity relations and descriptions we do get bad performance\nduring copying and equivalence checking and KEY-VALUE-MAP (though more\nheavy-weight) would be the better option.\")");
       defineStellaTypeFromStringifiedSource("(DEFTYPE VARIABLE-TYPE-TABLE (KEY-VALUE-LIST OF PATTERN-VARIABLE (LIST OF TYPE)))");
     }
     if (currentStartupTimePhaseP(6)) {
@@ -3483,6 +3533,7 @@ void startupDescriptions() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT FAKE-IO-VARIABLES VARIABLES-VECTOR (NEW VARIABLES-VECTOR :ARRAY-SIZE 0) :DOCUMENTATION \"Installed in a description with undetermined arity.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT SYSTEM-DEFINED-ARGUMENT-NAMES (CONS OF SYMBOL) (BQUOTE (?X1 ?X2 ?X3 ?X4 ?X5 ?X6 ?X7 ?X8 ?X9 ?X10 ?X11 ?X12 ?X13 ?X14 ?X15 ?X16 ?X17 ?X18 ?X19 ?X20 ?X21 ?X22 ?X23 ?X24 ?X25 ?X26 ?X27 ?X28 ?X29 ?X30 ?X31 ?X32 ?X33 ?X34 ?X35 ?X36 ?X37 ?X38 ?X39 ?X40 ?X41 ?X42 ?X43 ?X44 ?X45 ?X46 ?X47 ?X48 ?X49 ?X50 ?X51 ?X52 ?X53 ?X54 ?X55 ?X56 ?X57 ?X58 ?X59 ?X60 ?X61 ?X62 ?X63 ?X64 ?X65 ?X66 ?X67 ?X68 ?X69 ?X70 ?X71 ?X72 ?X73 ?X74 ?X75 ?X76 ?X77 ?X78 ?X79 ?X80 ?X81 ?X82 ?X83 ?X84 ?X85 ?X86 ?X87 ?X88 ?X89 ?X90 ?X91 ?X92 ?X93 ?X94 ?X95 ?X96 ?X97 ?X98 ?X99 ?X100)) :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *LOGICVARIABLETABLE* (CONS OF SKOLEM) NULL :DOCUMENTATION \"Table mapping logic variable names to variables or skolems.\nUsed during construction of a proposition or description.\")");
@@ -3749,8 +3800,6 @@ Symbol* SYM_DESCRIPTIONS_LOGIC_VARIABLE_TYPEp = NULL;
 
 Symbol* SYM_DESCRIPTIONS_STELLA_EXISTS = NULL;
 
-Symbol* SYM_DESCRIPTIONS_LOGIC_ENTITY_MAPPING = NULL;
-
 Keyword* KWD_DESCRIPTIONS_AND = NULL;
 
 Keyword* KWD_DESCRIPTIONS_OR = NULL;
@@ -3793,9 +3842,13 @@ Symbol* SYM_DESCRIPTIONS_STELLA_AND = NULL;
 
 Surrogate* SGT_DESCRIPTIONS_STELLA_CS_VALUE = NULL;
 
+Keyword* KWD_DESCRIPTIONS_HEAD = NULL;
+
 Symbol* SYM_DESCRIPTIONS_LOGIC_THE_ONLY = NULL;
 
 Symbol* SYM_DESCRIPTIONS_LOGIC_IOTAp = NULL;
+
+Keyword* KWD_DESCRIPTIONS_TOP_LEVEL = NULL;
 
 Symbol* SYM_DESCRIPTIONS_LOGIC_COMPLEMENT_DESCRIPTION = NULL;
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -225,7 +225,7 @@ Cons* foreachToPrefixForeachTree(Cons* foreachtree) {
           signalTranslationError();
           if (!(suppressWarningsP())) {
             printErrorContext(">> ERROR: ", STANDARD_ERROR);
-            *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Extra expressions at the end of foreach statement:" << "." << std::endl;
+            *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Extra expressions at the end of foreach statement: " << "`" << deUglifyParseTree(residue) << "'" << "." << std::endl;
           }
         }
         return (listO(4, SYM_FOREACH_STELLA_PREFIX_FOREACH, listO(4, SYM_FOREACH_STELLA_IN, SYM_FOREACH_STELLA_X, SYM_FOREACH_STELLA_NIL, NIL), listO(3, SYM_FOREACH_STELLA_DO, walkDontCallMeTree(otree, SGT_FOREACH_STELLA_VOID, dummy3), NIL), NIL));
@@ -1130,6 +1130,7 @@ void startupForeach() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AGGRESSIVELY-OPTIMIZE-INTERVAL-FOREACH?* BOOLEAN FALSE)");
     }
   }

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -229,7 +229,7 @@ void buildCaseFromInstance(LogicObject* inst, Surrogate* kind) {
 Vector* createCaseInstanceVector(Surrogate* clasS) {
   { Cons* iterator = allClassInstances(clasS);
     int num = iterator->length();
-    Vector* instances = newVector(num);
+    Vector* instances = stella::newVector(num);
 
     { int i = NULL_INTEGER;
       int iter000 = 0;
@@ -259,7 +259,7 @@ FloatWrapper* matchInstances(LogicObject* x, LogicObject* y) {
 }
 
 Vector* createCaseValueVector(List* instances, Surrogate* slot) {
-  { Vector* slotValues = newVector(instances->length());
+  { Vector* slotValues = stella::newVector(instances->length());
 
     { int i = NULL_INTEGER;
       int iter000 = 0;
@@ -303,9 +303,9 @@ Object* guess(Symbol* instName, Symbol* slotName) {
 Object* generateCaseBasedAnswer(LogicObject* probe, Surrogate* slot, List* cases) {
   { int num = cases->length();
     Vector* slotVector = createCaseValueVector(cases, slot);
-    Vector* matchScores = newVector(num);
+    Vector* matchScores = stella::newVector(num);
     int farthest = 0;
-    Vector* nearestNeighbors = newVector(oNUM_NEIGHBORSo);
+    Vector* nearestNeighbors = stella::newVector(oNUM_NEIGHBORSo);
     double max = 0.0;
 
     { int i = NULL_INTEGER;
@@ -489,7 +489,7 @@ void trainCaseMatcher(Symbol* className, Symbol* slotName, int cycles) {
   { Surrogate* clasS = getDescription(className)->surrogateValueInverse;
     Surrogate* slot = getDescription(slotName)->surrogateValueInverse;
     List* ilist = allClassInstances(clasS)->listify();
-    Vector* instances = newVector(ilist->length());
+    Vector* instances = stella::newVector(ilist->length());
 
     { int i = NULL_INTEGER;
       int iter000 = 0;
@@ -525,7 +525,7 @@ void generateCaseRuleWoSlot(Vector* cases, Symbol* className, Symbol* slotName) 
     Surrogate* kind = getDescription(className)->surrogateValueInverse;
     List* caseNames = newList();
     Surrogate* slot = getDescription(slotName)->surrogateValueInverse;
-    Vector* slotValues = newVector(numCases);
+    Vector* slotValues = stella::newVector(numCases);
 
     clearCases();
     { LogicObject* casE = NULL;
@@ -629,9 +629,9 @@ double trainAndTestCaseMatcher(Symbol* className, Symbol* slotName, int numTrain
   slotName = ((Symbol*)(slotName->permanentify()));
   { Surrogate* clasS = getDescription(className)->surrogateValueInverse;
     List* cases = allClassInstances(clasS)->listify();
-    Vector* instances = newVector(numTrain);
+    Vector* instances = stella::newVector(numTrain);
     Surrogate* slot = getDescription(slotName)->surrogateValueInverse;
-    Vector* slotValues = newVector(cases->length());
+    Vector* slotValues = stella::newVector(cases->length());
     int numCorrect = 0;
 
     shuffleList(cases);
@@ -734,7 +734,7 @@ double testCaseBasedReasoner(Symbol* className, Symbol* slotName, int numTrain, 
     Surrogate* slot = getDescription(slotName)->surrogateValueInverse;
     OutputFileStream* fptr = newOutputFileStream("cbr-test-output.txt");
     List* trainingCases = newList();
-    Vector* caseVector = newVector(numCases);
+    Vector* caseVector = stella::newVector(numCases);
     int numCorrect = 0;
 
     shuffleList(caseList);
@@ -957,11 +957,11 @@ FloatWrapper* testCaseMatcherEvaluatorWrapper(Cons* arguments) {
 
 int generateCaseTrainingExamples(Vector* instances, Surrogate* slot) {
   { int numInstances = instances->length();
-    Vector* slotValues = newVector(numInstances);
+    Vector* slotValues = stella::newVector(numInstances);
     int k = 0;
     int l = 0;
-    Vector* index = newVector(numInstances * oNUM_TRAINING_PER_CASEo);
-    Vector* matchScores = newVector(numInstances * oNUM_TRAINING_PER_CASEo);
+    Vector* index = stella::newVector(numInstances * oNUM_TRAINING_PER_CASEo);
+    Vector* matchScores = stella::newVector(numInstances * oNUM_TRAINING_PER_CASEo);
 
     { int i = NULL_INTEGER;
       int iter000 = 0;
@@ -1546,10 +1546,10 @@ void setPrintCaseDistancesEvaluatorWrapper(Cons* arguments) {
 List* getNearestNeighbors(TrainingExample* probe, List* cases, int k) {
   { List* result = newList();
     Module* currentModule = oMODULEo.get();
-    Vector* neighbors = newVector(k);
+    Vector* neighbors = stella::newVector(k);
     int farthest = 0;
     double distance = 0.0;
-    Vector* distances = newVector(k);
+    Vector* distances = stella::newVector(k);
 
     { int i = NULL_INTEGER;
       int iter000 = 0;
@@ -1796,6 +1796,7 @@ void startupCaseBased() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOG-MATCH-RULES* BOOLEAN FALSE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOG-ANTECEDENT-CONSTRUCTION* BOOLEAN FALSE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *NUM-NEIGHBORS* INTEGER 3)");

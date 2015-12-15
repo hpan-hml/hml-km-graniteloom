@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -712,13 +712,9 @@ Cons* cppTranslateCast(Cons* tree) {
   { Object* expression = tree->rest->value;
     Surrogate* type = typeSpecToBaseType(((StandardObject*)(tree->rest->rest->value)));
 
-    if (subtypeOfP(type, SGT_CPP_TRANSLATE_STELLA_FLOAT) &&
-        isaP(expression, SGT_CPP_TRANSLATE_STELLA_INTEGER_WRAPPER)) {
-      return (((Cons*)(cppTranslateATree(wrapFloat(((double)(((IntegerWrapper*)(expression))->wrapperValue)))))));
-    }
-    if (subtypeOfP(type, SGT_CPP_TRANSLATE_STELLA_INTEGER) &&
-        isaP(expression, SGT_CPP_TRANSLATE_STELLA_FLOAT_WRAPPER)) {
-      return (((Cons*)(cppTranslateATree(wrapInteger(((int)(((FloatWrapper*)(expression))->wrapperValue)))))));
+    if (subtypeOfP(type, SGT_CPP_TRANSLATE_STELLA_NUMBER) &&
+        isaP(expression, SGT_CPP_TRANSLATE_STELLA_NUMBER_WRAPPER)) {
+      return (((Cons*)(cppTranslateATree(coerceNumericConstant(((NumberWrapper*)(expression)), type)))));
     }
     tree->firstSetter(SYM_CPP_TRANSLATE_STELLA_CPP_CAST);
     tree->secondSetter(cppTranslateATree(tree->rest->value));
@@ -1236,12 +1232,73 @@ Cons* cppTranslateSysPointerToFunction(Cons* tree) {
 
 Cons* cppTranslateSysNew(Cons* tree) {
   { StandardObject* typespec = ((StandardObject*)(tree->rest->value));
+    Class* clasS = typeSpecToClass(typespec);
 
     if (arrayTypeSpecifierP(typespec)) {
       return (cppTranslateNewArray(tree));
     }
     else {
-      return (listO(4, SYM_CPP_TRANSLATE_STELLA_CPP_FUNCTION_CALL, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, cppTranslateName(yieldConstructorName(typeSpecToClass(typespec))), NIL), cppTranslateActualParameters(tree->rest->rest), NIL));
+      return (listO(4, SYM_CPP_TRANSLATE_STELLA_CPP_FUNCTION_CALL, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, wrapString(cppYieldQualifiedName(cppTranslateName(yieldConstructorName(clasS))->wrapperValue, classSymbol(clasS))), NIL), cppTranslateActualParameters(tree->rest->rest), NIL));
+    }
+  }
+}
+
+boolean cppNonPointerTypeP(StandardObject* typespec) {
+  { Surrogate* basetype = typeSpecToBaseType(typespec);
+
+    if ((basetype == SGT_CPP_TRANSLATE_STELLA_INTEGER) ||
+        ((basetype == SGT_CPP_TRANSLATE_STELLA_SHORT_INTEGER) ||
+         ((basetype == SGT_CPP_TRANSLATE_STELLA_LONG_INTEGER) ||
+          ((basetype == SGT_CPP_TRANSLATE_STELLA_UNSIGNED_LONG_INTEGER) ||
+           ((basetype == SGT_CPP_TRANSLATE_STELLA_FLOAT) ||
+            ((basetype == SGT_CPP_TRANSLATE_STELLA_SINGLE_FLOAT) ||
+             ((basetype == SGT_CPP_TRANSLATE_STELLA_DOUBLE_FLOAT) ||
+              ((basetype == SGT_CPP_TRANSLATE_STELLA_CHARACTER) ||
+               ((basetype == SGT_CPP_TRANSLATE_STELLA_BYTE) ||
+                (basetype == SGT_CPP_TRANSLATE_STELLA_OCTET)))))))))) {
+      return (true);
+    }
+    else {
+      return (false);
+    }
+  }
+}
+
+boolean cppTypeWithoutInteriorPointersP(StandardObject* typespec) {
+  { boolean dummy1;
+
+    { Surrogate* basetype = typeSpecToBaseType(typespec);
+      Class* clasS = ((Class*)(basetype->surrogateValue));
+
+      if (arrayTypeSpecifierP(typespec)) {
+        return (cppNonPointerTypeP(extractParameterType(typespec, SYM_CPP_TRANSLATE_STELLA_ANY_VALUE, dummy1)));
+      }
+      if (createNativeClassP(clasS) &&
+          (!subtypeOfP(basetype, SGT_CPP_TRANSLATE_STELLA_NATIVE_EXCEPTION))) {
+        { boolean alwaysP000 = true;
+
+          { Slot* slot = NULL;
+            Iterator* iter000 = clasS->classSlots();
+
+            for (slot, iter000; iter000->nextP(); ) {
+              slot = ((Slot*)(iter000->value));
+              if (storageSlotP(slot) &&
+                  (nativeSlotP(((StorageSlot*)(slot))) &&
+                   (!slotHasUnknownTypeP(((StorageSlot*)(slot)), clasS)))) {
+                if (!cppNonPointerTypeP(slot->slotBaseType)) {
+                  alwaysP000 = false;
+                  break;
+                }
+              }
+            }
+          }
+          { boolean value000 = alwaysP000;
+
+            return (value000);
+          }
+        }
+      }
+      return (false);
     }
   }
 }
@@ -1254,7 +1311,8 @@ Cons* cppTranslateNewArray(Cons* tree) {
       Cons* dimensions = cppTranslateListOfTrees(tree->rest->rest->rest);
       StandardObject* elementtype = extractParameterType(arraytype, SYM_CPP_TRANSLATE_STELLA_ANY_VALUE, dummy1);
 
-      return (listO(4, SYM_CPP_TRANSLATE_STELLA_CPP_FUNCTION_CALL, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, (cppUseGarbageCollectorP() ? wrapString("new (GC)") : wrapString("new")), NIL), listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_ACTUALS, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_ARRAY_REFERENCE, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, cppTranslateAndPointerizeTypeSpec(elementtype), NIL), dimensions->concatenate(NIL, 0)), NIL), NIL));
+      initialelement = initialelement;
+      return (listO(4, SYM_CPP_TRANSLATE_STELLA_CPP_FUNCTION_CALL, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, (cppUseGarbageCollectorP() ? ((cppNonPointerTypeP(elementtype) ? wrapString("new (PointerFreeGC)") : wrapString("new (GC)"))) : wrapString("new")), NIL), listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_ACTUALS, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_ARRAY_REFERENCE, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, cppTranslateAndPointerizeTypeSpec(elementtype), NIL), dimensions->concatenate(NIL, 0)), NIL), NIL));
     }
   }
 }
@@ -1317,7 +1375,12 @@ Cons* cppTranslateMakeTree(Cons* tree) {
     Cons* arguments = cppTranslateActualParameters(tree->rest->rest);
 
     if (nativetype == NULL) {
-      return (listO(4, SYM_CPP_TRANSLATE_STELLA_CPP_MAKE, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, cppTranslateClassName(classname), NIL), arguments, NIL));
+      if (cppTypeWithoutInteriorPointersP(clasS->classType)) {
+        return (listO(5, SYM_CPP_TRANSLATE_STELLA_CPP_MAKE, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_ACTUALS, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, wrapString("PointerFreeGC"), NIL), NIL), listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, cppTranslateClassName(classname), NIL), arguments, NIL));
+      }
+      else {
+        return (listO(4, SYM_CPP_TRANSLATE_STELLA_CPP_MAKE, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, cppTranslateClassName(classname), NIL), arguments, NIL));
+      }
     }
     else if (cppNativePointerTypeP(nativetype)) {
       return (listO(4, SYM_CPP_TRANSLATE_STELLA_CPP_MAKE, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, wrapString(cppUnpointerizeNativeType(nativetype)), NIL), arguments, NIL));
@@ -2086,7 +2149,7 @@ StringWrapper* cppTranslateClassParameterName(Symbol* namesymbol) {
 }
 
 StringWrapper* cppTranslateReturnParameterName(Symbol* namesymbol, int parameternumber) {
-  { Symbol* returnsymbol = internSymbol(stringConcatenate(namesymbol->symbolName, integerToString(parameternumber), 0));
+  { Symbol* returnsymbol = internSymbol(stringConcatenate(namesymbol->symbolName, integerToString(((long long int)(parameternumber))), 0));
     StringWrapper* translatedname = cppTranslateName(returnsymbol);
 
     return (translatedname);
@@ -2307,7 +2370,7 @@ StringWrapper* cppTranslateFunctionNameFromName(Symbol* functionname) {
   { MethodSlot* function = lookupFunction(functionname);
 
     if (((boolean)(function))) {
-      return (cppTranslateFunctionName(function));
+      return (cppTranslateFunctionName(function, true));
     }
     else {
       return (cppTranslateName(functionname));
@@ -2315,7 +2378,7 @@ StringWrapper* cppTranslateFunctionNameFromName(Symbol* functionname) {
   }
 }
 
-StringWrapper* cppTranslateFunctionName(MethodSlot* function) {
+StringWrapper* cppTranslateFunctionName(MethodSlot* function, boolean qualifyP) {
   { Symbol* functionname = yieldRenamedNameIfNative(function->slotName, KWD_CPP_TRANSLATE_CPP, KWD_CPP_TRANSLATE_FUNCTION);
     char* translatedname = NULL;
 
@@ -2329,7 +2392,12 @@ StringWrapper* cppTranslateFunctionName(MethodSlot* function) {
     if (slotReaderP(function)) {
       translatedname = stringConcatenate(translatedname, "_reader", 0);
     }
-    return (wrapString(cppYieldQualifiedName(translatedname, cppFixupNameSymbol(function->slotName, function->homeModule()))));
+    if (qualifyP) {
+      return (wrapString(cppYieldQualifiedName(translatedname, cppFixupNameSymbol(function->slotName, function->homeModule()))));
+    }
+    else {
+      return (wrapString(translatedname));
+    }
   }
 }
 
@@ -2343,9 +2411,9 @@ StringWrapper* cppTranslateMethodNameFromName(Symbol* methodname, StandardObject
   }
 }
 
-StringWrapper* cppTranslateMethodName(MethodSlot* method) {
+StringWrapper* cppTranslateMethodName(MethodSlot* method, boolean qualifyP) {
   { Surrogate* methodtype = method->slotOwner;
-    StringWrapper* translatedname = cppTranslateFunctionName(method);
+    StringWrapper* translatedname = cppTranslateFunctionName(method, qualifyP);
 
     if (cppMethodObjectIsFunctionP(method)) {
       return (translatedname);
@@ -2418,7 +2486,7 @@ Cons* cppTranslateDefineMethodUnit(TranslationUnit* unit) {
         translatedmethodbody->rest = cons(listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_COMMENT, wrapString(((StringWrapper*)(dynamicSlotValue(method->dynamicSlots, SYM_CPP_TRANSLATE_STELLA_DOCUMENTATION, NULL_STRING_WRAPPER)))->wrapperValue), NIL), translatedmethodbody->rest->concatenate(NIL, 0));
       }
       returntype = (cppConstructorP(method) ? NIL : cons(cppTranslateAndPointerizeTypeSpec(computeMostGeneralReturnType(method, method->computeReturnTypeSpec(method->slotOwner))), NIL));
-      otree = cons((unitisfunction ? SYM_CPP_TRANSLATE_STELLA_CPP_FUNCTION : SYM_CPP_TRANSLATE_STELLA_CPP_METHOD), cons(returntype, cons(cppTranslateMethodName(method), cons(cppTranslateFunctionParameters(method), cons(translatedmethodbody, NIL)))));
+      otree = cons((unitisfunction ? SYM_CPP_TRANSLATE_STELLA_CPP_FUNCTION : SYM_CPP_TRANSLATE_STELLA_CPP_METHOD), cons(returntype, cons(cppTranslateMethodName(method, false), cons(cppTranslateFunctionParameters(method), cons(translatedmethodbody, NIL)))));
       return (otree);
     }
   }
@@ -2892,7 +2960,7 @@ Cons* cppTranslateFunctionCall(Cons* tree, MethodSlot* method) {
       otree = cppTranslateOperatorCall(operatoR, functionargs, functionargs->length());
     }
     else {
-      otree = listO(4, SYM_CPP_TRANSLATE_STELLA_CPP_FUNCTION_CALL, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, cppTranslateFunctionName(function), NIL), ((((BooleanWrapper*)(dynamicSlotValue(function->dynamicSlots, SYM_CPP_TRANSLATE_STELLA_METHOD_VARIABLE_ARGUMENTSp, FALSE_WRAPPER)))->wrapperValue &&
+      otree = listO(4, SYM_CPP_TRANSLATE_STELLA_CPP_FUNCTION_CALL, listO(3, SYM_CPP_TRANSLATE_STELLA_CPP_IDENT, cppTranslateFunctionName(function, true), NIL), ((((BooleanWrapper*)(dynamicSlotValue(function->dynamicSlots, SYM_CPP_TRANSLATE_STELLA_METHOD_VARIABLE_ARGUMENTSp, FALSE_WRAPPER)))->wrapperValue &&
           (!passVariableArgumentsAsListP(function))) ? cppTranslateVariableLengthActuals(functionargs, function) : cppTranslateActualParameters(functionargs)), NIL);
     }
     return (otree);
@@ -3133,10 +3201,8 @@ void helpStartupCppTranslate3() {
     SYM_CPP_TRANSLATE_STELLA_CPP_TYPE = ((Symbol*)(internRigidSymbolWrtModule("CPP_TYPE", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_CPP_LOCAL = ((Symbol*)(internRigidSymbolWrtModule("CPP_LOCAL", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_CPP_UNWIND_PROTECT = ((Symbol*)(internRigidSymbolWrtModule("CPP_UNWIND_PROTECT", NULL, 0)));
-    SGT_CPP_TRANSLATE_STELLA_FLOAT = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT", NULL, 1)));
-    SGT_CPP_TRANSLATE_STELLA_INTEGER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-WRAPPER", NULL, 1)));
-    SGT_CPP_TRANSLATE_STELLA_INTEGER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER", NULL, 1)));
-    SGT_CPP_TRANSLATE_STELLA_FLOAT_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT-WRAPPER", NULL, 1)));
+    SGT_CPP_TRANSLATE_STELLA_NUMBER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER", NULL, 1)));
+    SGT_CPP_TRANSLATE_STELLA_NUMBER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER-WRAPPER", NULL, 1)));
     SYM_CPP_TRANSLATE_STELLA_CPP_CAST = ((Symbol*)(internRigidSymbolWrtModule("CPP_CAST", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_CPP_ASSIGN = ((Symbol*)(internRigidSymbolWrtModule("CPP_ASSIGN", NULL, 0)));
     KWD_CPP_TRANSLATE_UNBOUND_SPECIAL_VARIABLE = ((Keyword*)(internRigidSymbolWrtModule("UNBOUND-SPECIAL-VARIABLE", NULL, 2)));
@@ -3159,6 +3225,7 @@ void helpStartupCppTranslate3() {
     SYM_CPP_TRANSLATE_STELLA_CPP_FOREACH = ((Symbol*)(internRigidSymbolWrtModule("CPP_FOREACH", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_VA_START = ((Symbol*)(internRigidSymbolWrtModule("VA_START", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_VA_END = ((Symbol*)(internRigidSymbolWrtModule("VA_END", NULL, 0)));
+    SGT_CPP_TRANSLATE_STELLA_INTEGER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER", NULL, 1)));
     SYM_CPP_TRANSLATE_STELLA_ALLOCATE_ITERATOR = ((Symbol*)(internRigidSymbolWrtModule("ALLOCATE-ITERATOR", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_LENGTH = ((Symbol*)(internRigidSymbolWrtModule("LENGTH", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_NEXTp = ((Symbol*)(internRigidSymbolWrtModule("NEXT?", NULL, 0)));
@@ -3172,16 +3239,26 @@ void helpStartupCppTranslate3() {
     KWD_CPP_TRANSLATE_METHOD = ((Keyword*)(internRigidSymbolWrtModule("METHOD", NULL, 2)));
     SYM_CPP_TRANSLATE_STELLA_CPP_METHOD_POINTER = ((Symbol*)(internRigidSymbolWrtModule("CPP_METHOD_POINTER", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_TRUE = ((Symbol*)(internRigidSymbolWrtModule("TRUE", NULL, 0)));
-    SYM_CPP_TRANSLATE_STELLA_ANY_VALUE = ((Symbol*)(internRigidSymbolWrtModule("ANY-VALUE", NULL, 0)));
-    SYM_CPP_TRANSLATE_STELLA_CPP_ARRAY_REFERENCE = ((Symbol*)(internRigidSymbolWrtModule("CPP_ARRAY_REFERENCE", NULL, 0)));
-    SGT_CPP_TRANSLATE_STELLA_VOID = ((Surrogate*)(internRigidSymbolWrtModule("VOID", NULL, 1)));
-    SYM_CPP_TRANSLATE_STELLA_CPP_REFERENCED_SLOT_VALUE = ((Symbol*)(internRigidSymbolWrtModule("CPP_REFERENCED_SLOT_VALUE", NULL, 0)));
-    SYM_CPP_TRANSLATE_STELLA_CPP_SLOT_VALUE = ((Symbol*)(internRigidSymbolWrtModule("CPP_SLOT_VALUE", NULL, 0)));
+    SGT_CPP_TRANSLATE_STELLA_SHORT_INTEGER = ((Surrogate*)(internRigidSymbolWrtModule("SHORT-INTEGER", NULL, 1)));
+    SGT_CPP_TRANSLATE_STELLA_LONG_INTEGER = ((Surrogate*)(internRigidSymbolWrtModule("LONG-INTEGER", NULL, 1)));
+    SGT_CPP_TRANSLATE_STELLA_UNSIGNED_LONG_INTEGER = ((Surrogate*)(internRigidSymbolWrtModule("UNSIGNED-LONG-INTEGER", NULL, 1)));
+    SGT_CPP_TRANSLATE_STELLA_FLOAT = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT", NULL, 1)));
+    SGT_CPP_TRANSLATE_STELLA_SINGLE_FLOAT = ((Surrogate*)(internRigidSymbolWrtModule("SINGLE-FLOAT", NULL, 1)));
+    SGT_CPP_TRANSLATE_STELLA_DOUBLE_FLOAT = ((Surrogate*)(internRigidSymbolWrtModule("DOUBLE-FLOAT", NULL, 1)));
   }
 }
 
 void helpStartupCppTranslate4() {
   {
+    SGT_CPP_TRANSLATE_STELLA_CHARACTER = ((Surrogate*)(internRigidSymbolWrtModule("CHARACTER", NULL, 1)));
+    SGT_CPP_TRANSLATE_STELLA_BYTE = ((Surrogate*)(internRigidSymbolWrtModule("BYTE", NULL, 1)));
+    SGT_CPP_TRANSLATE_STELLA_OCTET = ((Surrogate*)(internRigidSymbolWrtModule("OCTET", NULL, 1)));
+    SYM_CPP_TRANSLATE_STELLA_ANY_VALUE = ((Symbol*)(internRigidSymbolWrtModule("ANY-VALUE", NULL, 0)));
+    SGT_CPP_TRANSLATE_STELLA_NATIVE_EXCEPTION = ((Surrogate*)(internRigidSymbolWrtModule("NATIVE-EXCEPTION", NULL, 1)));
+    SYM_CPP_TRANSLATE_STELLA_CPP_ARRAY_REFERENCE = ((Symbol*)(internRigidSymbolWrtModule("CPP_ARRAY_REFERENCE", NULL, 0)));
+    SGT_CPP_TRANSLATE_STELLA_VOID = ((Surrogate*)(internRigidSymbolWrtModule("VOID", NULL, 1)));
+    SYM_CPP_TRANSLATE_STELLA_CPP_REFERENCED_SLOT_VALUE = ((Symbol*)(internRigidSymbolWrtModule("CPP_REFERENCED_SLOT_VALUE", NULL, 0)));
+    SYM_CPP_TRANSLATE_STELLA_CPP_SLOT_VALUE = ((Symbol*)(internRigidSymbolWrtModule("CPP_SLOT_VALUE", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_CPP_SLOT_VALUE_SETTER = ((Symbol*)(internRigidSymbolWrtModule("CPP_SLOT_VALUE_SETTER", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_CLASS_CPP_NATIVE_TYPE = ((Symbol*)(internRigidSymbolWrtModule("CLASS-CPP-NATIVE-TYPE", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_CPP_MAKE = ((Symbol*)(internRigidSymbolWrtModule("CPP_MAKE", NULL, 0)));
@@ -3233,6 +3310,11 @@ void helpStartupCppTranslate4() {
     SYM_CPP_TRANSLATE_STELLA_AREF = ((Symbol*)(internRigidSymbolWrtModule("AREF", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_AREF_SETTER = ((Symbol*)(internRigidSymbolWrtModule("AREF-SETTER", NULL, 0)));
     SGT_CPP_TRANSLATE_STELLA_ARGUMENT_LIST = ((Surrogate*)(internRigidSymbolWrtModule("ARGUMENT-LIST", NULL, 1)));
+  }
+}
+
+void helpStartupCppTranslate5() {
+  {
     SYM_CPP_TRANSLATE_STELLA_CPP_METHOD_CALL = ((Symbol*)(internRigidSymbolWrtModule("CPP_METHOD_CALL", NULL, 0)));
     SGT_CPP_TRANSLATE_STELLA_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("OBJECT", NULL, 1)));
     SGT_CPP_TRANSLATE_STELLA_BOOLEAN = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN", NULL, 1)));
@@ -3242,11 +3324,6 @@ void helpStartupCppTranslate4() {
     SGT_CPP_TRANSLATE_STELLA_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("ARRAY", NULL, 1)));
     SYM_CPP_TRANSLATE_STELLA_CPP_FUNCTION_SIGNATURE = ((Symbol*)(internRigidSymbolWrtModule("CPP_FUNCTION_SIGNATURE", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_CPP_METHOD_SIGNATURE = ((Symbol*)(internRigidSymbolWrtModule("CPP_METHOD_SIGNATURE", NULL, 0)));
-  }
-}
-
-void helpStartupCppTranslate5() {
-  {
     SYM_CPP_TRANSLATE_STELLA_CPP_FUNCALL = ((Symbol*)(internRigidSymbolWrtModule("CPP_FUNCALL", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_CPP_METHOD_CODE_CALL = ((Symbol*)(internRigidSymbolWrtModule("CPP_METHOD_CODE_CALL", NULL, 0)));
     SYM_CPP_TRANSLATE_STELLA_GET_SYM = ((Symbol*)(internRigidSymbolWrtModule("GET-SYM", NULL, 0)));
@@ -3321,6 +3398,8 @@ void helpStartupCppTranslate7() {
     defineFunctionObject("CPP-TRANSLATE-THE-CODE", "(DEFUN (CPP-TRANSLATE-THE-CODE CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateTheCode)), NULL);
     defineFunctionObject("CPP-TRANSLATE-SYS-POINTER-TO-FUNCTION", "(DEFUN (CPP-TRANSLATE-SYS-POINTER-TO-FUNCTION CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateSysPointerToFunction)), NULL);
     defineFunctionObject("CPP-TRANSLATE-SYS-NEW", "(DEFUN (CPP-TRANSLATE-SYS-NEW CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateSysNew)), NULL);
+    defineFunctionObject("CPP-NON-POINTER-TYPE?", "(DEFUN (CPP-NON-POINTER-TYPE? BOOLEAN) ((TYPESPEC TYPE-SPEC)))", ((cpp_function_code)(&cppNonPointerTypeP)), NULL);
+    defineFunctionObject("CPP-TYPE-WITHOUT-INTERIOR-POINTERS?", "(DEFUN (CPP-TYPE-WITHOUT-INTERIOR-POINTERS? BOOLEAN) ((TYPESPEC TYPE-SPEC)))", ((cpp_function_code)(&cppTypeWithoutInteriorPointersP)), NULL);
     defineFunctionObject("CPP-TRANSLATE-NEW-ARRAY", "(DEFUN (CPP-TRANSLATE-NEW-ARRAY CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateNewArray)), NULL);
     defineFunctionObject("CPP-TRANSLATE-VOID-SYS", "(DEFUN (CPP-TRANSLATE-VOID-SYS CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateVoidSys)), NULL);
     defineFunctionObject("CPP-TRANSLATE-TYPED-SYS", "(DEFUN (CPP-TRANSLATE-TYPED-SYS CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateTypedSys)), NULL);
@@ -3331,13 +3410,13 @@ void helpStartupCppTranslate7() {
     defineFunctionObject("CPP-TRANSLATE-MAKE-TREE", "(DEFUN (CPP-TRANSLATE-MAKE-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateMakeTree)), NULL);
     defineFunctionObject("CPP-TRANSLATE-STARTUP-TIME-PROGN", "(DEFUN (CPP-TRANSLATE-STARTUP-TIME-PROGN CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateStartupTimeProgn)), NULL);
     defineFunctionObject("CPP-STREAM-IS-STANDARD-OUTPUT?", "(DEFUN (CPP-STREAM-IS-STANDARD-OUTPUT? BOOLEAN) ((TREE OBJECT)))", ((cpp_function_code)(&cppStreamIsStandardOutputP)), NULL);
-    defineFunctionObject("CPP-TRANSLATE-PRINT-STREAM", "(DEFUN (CPP-TRANSLATE-PRINT-STREAM CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslatePrintStream)), NULL);
-    defineFunctionObject("CPP-TRANSLATE-SETQ-TREE", "(DEFUN (CPP-TRANSLATE-SETQ-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateSetqTree)), NULL);
   }
 }
 
 void helpStartupCppTranslate8() {
   {
+    defineFunctionObject("CPP-TRANSLATE-PRINT-STREAM", "(DEFUN (CPP-TRANSLATE-PRINT-STREAM CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslatePrintStream)), NULL);
+    defineFunctionObject("CPP-TRANSLATE-SETQ-TREE", "(DEFUN (CPP-TRANSLATE-SETQ-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateSetqTree)), NULL);
     defineFunctionObject("CPP-TRANSLATE-NULL", "(DEFUN (CPP-TRANSLATE-NULL CONS) ())", ((cpp_function_code)(&cppTranslateNull)), NULL);
     defineMethodObject("(DEFMETHOD (CPP-TRANSLATE-ATOMIC-TREE CONS) ((TREE OBJECT)))", ((cpp_method_code)(&Object::cppTranslateAtomicTree)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (CPP-TRANSLATE-ATOMIC-TREE CONS) ((TREE KEYWORD)))", ((cpp_method_code)(&Keyword::cppTranslateAtomicTree)), ((cpp_method_code)(NULL)));
@@ -3387,17 +3466,15 @@ void helpStartupCppTranslate8() {
     defineFunctionObject("SLOT-READER?", "(DEFUN (SLOT-READER? BOOLEAN) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&slotReaderP)), NULL);
     defineFunctionObject("CPP-TRANSLATE-CONSTRUCTOR-NAME", "(DEFUN (CPP-TRANSLATE-CONSTRUCTOR-NAME STRING-WRAPPER) ((CONSTRUCTOR METHOD-SLOT)))", ((cpp_function_code)(&cppTranslateConstructorName)), NULL);
     defineFunctionObject("CPP-TRANSLATE-FUNCTION-NAME-FROM-NAME", "(DEFUN (CPP-TRANSLATE-FUNCTION-NAME-FROM-NAME STRING-WRAPPER) ((FUNCTIONNAME SYMBOL)))", ((cpp_function_code)(&cppTranslateFunctionNameFromName)), NULL);
-    defineFunctionObject("CPP-TRANSLATE-FUNCTION-NAME", "(DEFUN (CPP-TRANSLATE-FUNCTION-NAME STRING-WRAPPER) ((FUNCTION METHOD-SLOT)))", ((cpp_function_code)(&cppTranslateFunctionName)), NULL);
+    defineFunctionObject("CPP-TRANSLATE-FUNCTION-NAME", "(DEFUN (CPP-TRANSLATE-FUNCTION-NAME STRING-WRAPPER) ((FUNCTION METHOD-SLOT) (QUALIFY? BOOLEAN)))", ((cpp_function_code)(&cppTranslateFunctionName)), NULL);
     defineFunctionObject("CPP-TRANSLATE-METHOD-NAME-FROM-NAME", "(DEFUN (CPP-TRANSLATE-METHOD-NAME-FROM-NAME STRING-WRAPPER) ((METHODNAME SYMBOL) (METHODOWNER TYPE-SPEC)))", ((cpp_function_code)(&cppTranslateMethodNameFromName)), NULL);
-    defineFunctionObject("CPP-TRANSLATE-METHOD-NAME", "(DEFUN (CPP-TRANSLATE-METHOD-NAME STRING-WRAPPER) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&cppTranslateMethodName)), NULL);
+    defineFunctionObject("CPP-TRANSLATE-METHOD-NAME", "(DEFUN (CPP-TRANSLATE-METHOD-NAME STRING-WRAPPER) ((METHOD METHOD-SLOT) (QUALIFY? BOOLEAN)))", ((cpp_function_code)(&cppTranslateMethodName)), NULL);
     defineFunctionObject("DELETE-QUOTED-NULL-STATEMENTS", "(DEFUN (DELETE-QUOTED-NULL-STATEMENTS CONS) ((TREES CONS)))", ((cpp_function_code)(&deleteQuotedNullStatements)), NULL);
     defineFunctionObject("CPP-METHOD-OBJECT-IS-FUNCTION?", "(DEFUN (CPP-METHOD-OBJECT-IS-FUNCTION? BOOLEAN) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&cppMethodObjectIsFunctionP)), NULL);
     defineFunctionObject("CPP-METHOD-OBJECT-IS-OVERLOADED-FUNCTION?", "(DEFUN (CPP-METHOD-OBJECT-IS-OVERLOADED-FUNCTION? BOOLEAN) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&cppMethodObjectIsOverloadedFunctionP)), NULL);
     defineFunctionObject("WRAP-METHOD-BODY-WITH-CPP-AUXILIARY-DECLARATIONS", "(DEFUN (WRAP-METHOD-BODY-WITH-CPP-AUXILIARY-DECLARATIONS CONS) ((METHODBODY CONS) (DECLARATIONS CONS)))", ((cpp_function_code)(&wrapMethodBodyWithCppAuxiliaryDeclarations)), NULL);
     defineFunctionObject("CPP-TRANSLATE-DEFINE-METHOD-UNIT", "(DEFUN (CPP-TRANSLATE-DEFINE-METHOD-UNIT CONS) ((UNIT TRANSLATION-UNIT)))", ((cpp_function_code)(&cppTranslateDefineMethodUnit)), NULL);
     defineFunctionObject("CPP-TRANSLATE-RETURN-TREE", "(DEFUN (CPP-TRANSLATE-RETURN-TREE CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateReturnTree)), NULL);
-    defineFunctionObject("CPP-TRANSLATE-ACTUAL-PARAMETERS", "(DEFUN (CPP-TRANSLATE-ACTUAL-PARAMETERS CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateActualParameters)), NULL);
-    defineFunctionObject("CPP-TRANSLATE-VARIABLE-LENGTH-ACTUALS", "(DEFUN (CPP-TRANSLATE-VARIABLE-LENGTH-ACTUALS CONS) ((ACTUALS CONS) (METHOD METHOD-SLOT)))", ((cpp_function_code)(&cppTranslateVariableLengthActuals)), NULL);
   }
 }
 
@@ -3421,6 +3498,8 @@ void startupCppTranslate() {
     if (currentStartupTimePhaseP(7)) {
       helpStartupCppTranslate7();
       helpStartupCppTranslate8();
+      defineFunctionObject("CPP-TRANSLATE-ACTUAL-PARAMETERS", "(DEFUN (CPP-TRANSLATE-ACTUAL-PARAMETERS CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateActualParameters)), NULL);
+      defineFunctionObject("CPP-TRANSLATE-VARIABLE-LENGTH-ACTUALS", "(DEFUN (CPP-TRANSLATE-VARIABLE-LENGTH-ACTUALS CONS) ((ACTUALS CONS) (METHOD METHOD-SLOT)))", ((cpp_function_code)(&cppTranslateVariableLengthActuals)), NULL);
       defineFunctionObject("CPP-TRANSLATE-CALL-METHOD-SETTER", "(DEFUN (CPP-TRANSLATE-CALL-METHOD-SETTER CONS) ((TREE CONS)))", ((cpp_function_code)(&cppTranslateCallMethodSetter)), NULL);
       defineFunctionObject("CPP-CREATE-OVERLOADED-FUNCTION-NAME", "(DEFUN (CPP-CREATE-OVERLOADED-FUNCTION-NAME SYMBOL) ((FUNCTIONNAME SYMBOL) (CLASSTYPE TYPE)))", ((cpp_function_code)(&cppCreateOverloadedFunctionName)), NULL);
       defineFunctionObject("CPP-TRANSLATE-METHOD-CALL", "(DEFUN (CPP-TRANSLATE-METHOD-CALL CONS) ((TREE CONS) (REFERENCED? BOOLEAN)))", ((cpp_function_code)(&cppTranslateMethodCall)), NULL);
@@ -3448,6 +3527,7 @@ void startupCppTranslate() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CPP-TRUE-STRING-WRAPPER* STRING-WRAPPER (WRAP-LITERAL \"TRUE\") :PUBLIC? FALSE :DOCUMENTATION \"Wrapped TRUE string, used to reduce consing.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CPP-FALSE-STRING-WRAPPER* STRING-WRAPPER (WRAP-LITERAL \"FALSE\") :PUBLIC? FALSE :DOCUMENTATION \"Wrapped FALSE string, used to reduce consing.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *DUMMYDECLARATIONS* CONS NULL :DOCUMENTATION \"Temporary List of declarations for unused return parameters\")");
@@ -3734,13 +3814,9 @@ Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_LOCAL = NULL;
 
 Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_UNWIND_PROTECT = NULL;
 
-Surrogate* SGT_CPP_TRANSLATE_STELLA_FLOAT = NULL;
+Surrogate* SGT_CPP_TRANSLATE_STELLA_NUMBER = NULL;
 
-Surrogate* SGT_CPP_TRANSLATE_STELLA_INTEGER_WRAPPER = NULL;
-
-Surrogate* SGT_CPP_TRANSLATE_STELLA_INTEGER = NULL;
-
-Surrogate* SGT_CPP_TRANSLATE_STELLA_FLOAT_WRAPPER = NULL;
+Surrogate* SGT_CPP_TRANSLATE_STELLA_NUMBER_WRAPPER = NULL;
 
 Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_CAST = NULL;
 
@@ -3786,6 +3862,8 @@ Symbol* SYM_CPP_TRANSLATE_STELLA_VA_START = NULL;
 
 Symbol* SYM_CPP_TRANSLATE_STELLA_VA_END = NULL;
 
+Surrogate* SGT_CPP_TRANSLATE_STELLA_INTEGER = NULL;
+
 Symbol* SYM_CPP_TRANSLATE_STELLA_ALLOCATE_ITERATOR = NULL;
 
 Symbol* SYM_CPP_TRANSLATE_STELLA_LENGTH = NULL;
@@ -3812,7 +3890,27 @@ Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_METHOD_POINTER = NULL;
 
 Symbol* SYM_CPP_TRANSLATE_STELLA_TRUE = NULL;
 
+Surrogate* SGT_CPP_TRANSLATE_STELLA_SHORT_INTEGER = NULL;
+
+Surrogate* SGT_CPP_TRANSLATE_STELLA_LONG_INTEGER = NULL;
+
+Surrogate* SGT_CPP_TRANSLATE_STELLA_UNSIGNED_LONG_INTEGER = NULL;
+
+Surrogate* SGT_CPP_TRANSLATE_STELLA_FLOAT = NULL;
+
+Surrogate* SGT_CPP_TRANSLATE_STELLA_SINGLE_FLOAT = NULL;
+
+Surrogate* SGT_CPP_TRANSLATE_STELLA_DOUBLE_FLOAT = NULL;
+
+Surrogate* SGT_CPP_TRANSLATE_STELLA_CHARACTER = NULL;
+
+Surrogate* SGT_CPP_TRANSLATE_STELLA_BYTE = NULL;
+
+Surrogate* SGT_CPP_TRANSLATE_STELLA_OCTET = NULL;
+
 Symbol* SYM_CPP_TRANSLATE_STELLA_ANY_VALUE = NULL;
+
+Surrogate* SGT_CPP_TRANSLATE_STELLA_NATIVE_EXCEPTION = NULL;
 
 Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_ARRAY_REFERENCE = NULL;
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -63,14 +63,12 @@
     (DEFINE-MODULE-FROM-STRINGIFIED-SOURCE "/UTILITIES"
      "(:LISP-PACKAGE \"STELLA\" :JAVA-PACKAGE \"edu.isi.stella.utilities\" :USES (\"STELLA\") :NICKNAME \"UTIL\" :CODE-ONLY? TRUE)"))
    (CL:LET*
-    ((*MODULE*
-      (GET-STELLA-MODULE "/UTILITIES" (> *STARTUP-TIME-PHASE* 1)))
+    ((*MODULE* (GET-STELLA-MODULE "/UTILITIES" (> *STARTUP-TIME-PHASE* 1)))
      (*CONTEXT* *MODULE*))
     (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
     (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
      (CL:SETQ SYM-STARTUP-SYSTEM-UTILITIES-STARTUP-UTILITIES-SYSTEM
-      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-UTILITIES-SYSTEM" NULL
-       0))
+      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-UTILITIES-SYSTEM" NULL 0))
      (CL:SETQ SYM-STARTUP-SYSTEM-STELLA-METHOD-STARTUP-CLASSNAME
       (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME"
        (GET-STELLA-MODULE "/STELLA" CL:T) 0)))
@@ -89,10 +87,11 @@
     (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 8) (FINALIZE-SLOTS)
      (CLEANUP-UNFINALIZED-CLASSES))
     (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 9)
+     (%IN-MODULE (COPY-CONS-TREE (WRAP-STRING "/UTILITIES")))
      (CL:LET* ((PHASE NULL-INTEGER) (ITER-000 0) (UPPER-BOUND-001 9))
       (CL:DECLARE (CL:TYPE CL:FIXNUM PHASE ITER-000 UPPER-BOUND-001))
       (CL:LOOP WHILE (CL:<= ITER-000 UPPER-BOUND-001) DO
        (CL:SETQ PHASE ITER-000) (CL:SETQ *STARTUP-TIME-PHASE* PHASE)
        (STARTUP-MANUALS) (STARTUP-UNITS) (STARTUP-UNIT-DEFS)
-       (STARTUP-HTTP) (CL:SETQ ITER-000 (CL:1+ ITER-000))))
+       (CL:SETQ ITER-000 (CL:1+ ITER-000))))
      (CL:SETQ *STARTUP-TIME-PHASE* 999)))))

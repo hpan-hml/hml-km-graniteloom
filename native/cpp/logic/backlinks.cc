@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -448,26 +448,29 @@ boolean oBACKLINK_ALL_PROPOSITION_ARGUMENTSpo = false;
 boolean indexIthDomainP(NamedDescription* description, int i) {
   { boolean testValue000 = false;
 
-    testValue000 = functionDescriptionP(description);
+    testValue000 = false;
     if (testValue000) {
-      testValue000 = !computedRelationP(description);
+      testValue000 = functionDescriptionP(description);
       if (testValue000) {
-        testValue000 = i == 0;
+        testValue000 = !computedRelationP(description);
         if (testValue000) {
-          { boolean alwaysP000 = true;
+          testValue000 = i == 0;
+          if (testValue000) {
+            { boolean alwaysP000 = true;
 
-            { Surrogate* t = NULL;
-              Iterator* iter000 = description->ioVariableTypes->butLast();
+              { Surrogate* t = NULL;
+                Iterator* iter000 = description->ioVariableTypes->butLast();
 
-              for (t, iter000; iter000->nextP(); ) {
-                t = ((Surrogate*)(iter000->value));
-                if (!logicalSubtypeOfLiteralP(t)) {
-                  alwaysP000 = false;
-                  break;
+                for (t, iter000; iter000->nextP(); ) {
+                  t = ((Surrogate*)(iter000->value));
+                  if (!logicalSubtypeOfLiteralP(t)) {
+                    alwaysP000 = false;
+                    break;
+                  }
                 }
               }
+              testValue000 = alwaysP000;
             }
-            testValue000 = alwaysP000;
           }
         }
       }
@@ -518,9 +521,10 @@ boolean rewrapIthArgumentP(Object* argument, Proposition* proposition, int i) {
       }
     }
     else {
-      return (oBACKLINK_ALL_PROPOSITION_ARGUMENTSpo ||
-          (getQuotedTree("((:PREDICATE :FUNCTION) \"/LOGIC\")", "/LOGIC")->memberP(proposition->kind) &&
-           indexIthDomainP(getDescription(((Surrogate*)(proposition->operatoR))), i)));
+      return ((!isaP(argument, SGT_BACKLINKS_LOGIC_BACKLINKS_MIXIN)) &&
+          (oBACKLINK_ALL_PROPOSITION_ARGUMENTSpo ||
+           (getQuotedTree("((:PREDICATE :FUNCTION) \"/LOGIC\")", "/LOGIC")->memberP(proposition->kind) &&
+            indexIthDomainP(getDescription(((Surrogate*)(proposition->operatoR))), i))));
     }
   }
 }
@@ -1251,64 +1255,80 @@ SequenceIndex* selectIsaPropositions(Cons* pattern) {
 }
 
 SequenceIndex* helpSelectRelationPropositions(Cons* pattern) {
-  { Cons* arguments = pattern->rest->rest;
-    Object* relation = arguments->value;
-    Cons* keys = arguments->rest;
+  { Object* dummy1;
 
-    { Object* value000 = NULL;
+    { Cons* arguments = pattern->rest->rest;
+      Object* relation = arguments->value;
+      Cons* keys = arguments->rest;
 
-      { Object* key = NULL;
-        Cons* iter000 = keys;
+      { Object* value000 = NULL;
 
-        for (key, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-          key = iter000->value;
-          if (((boolean)(key)) &&
-              instanceHasBacklinksP(key)) {
-            value000 = key;
-            break;
-          }
-        }
-      }
-      { Object* anchor = value000;
+        { Object* key = NULL;
+          Cons* iter000 = keys;
 
-        if (!((boolean)(anchor))) {
-          { NamedDescription* description = getDescription(relation);
-
-            if (((boolean)(description))) {
-              return (getDescriptionExtension(description, true));
-            }
-            else {
-              return (NIL_NON_PAGING_INDEX);
+          for (key, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+            key = iter000->value;
+            if (((boolean)(key)) &&
+                instanceHasBacklinksP(key)) {
+              value000 = key;
+              break;
             }
           }
         }
-        { SequenceIndex* index = unfilteredDependentPropositions(anchor, ((Surrogate*)(relation)));
-          Cons* sequence = index->theSequence;
-          Cons* filteredsequence = NIL;
-          Cons* allkeyvalues = NULL;
+        { Object* anchor = value000;
+          Skolem* functionSkolem = NULL;
 
-          if (subtypeOfP(safePrimaryType(index), SGT_BACKLINKS_LOGIC_PAGING_INDEX)) {
-            { SequenceIndex* index000 = index;
-              PagingIndex* index = ((PagingIndex*)(index000));
+          if (!((boolean)(anchor))) {
+            { NamedDescription* description = getDescription(relation);
 
-              if (((boolean)(index->store)) &&
-                  (((Keyword*)(index->selectionPattern->value)) == KWD_BACKLINKS_RELATION)) {
-                index->selectionPattern = pattern;
-                return (index);
+              if (((boolean)(description))) {
+                return (getDescriptionExtension(description, true));
+              }
+              else {
+                return (NIL_NON_PAGING_INDEX);
               }
             }
           }
-          else {
-          }
-          if (sequence == NIL) {
-            return (NIL_NON_PAGING_INDEX);
-          }
-          { Proposition* prop = NULL;
-            Cons* iter001 = sequence;
+          { SequenceIndex* index = unfilteredDependentPropositions(anchor, ((Surrogate*)(relation)));
+            Cons* sequence = index->theSequence;
+            Cons* filteredsequence = NIL;
+            Cons* allkeyvalues = NULL;
 
-            for (prop, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
-              prop = ((Proposition*)(iter001->value));
-              if (equalP(relation, prop->operatoR)) {
+            if (subtypeOfP(safePrimaryType(index), SGT_BACKLINKS_LOGIC_PAGING_INDEX)) {
+              { SequenceIndex* index000 = index;
+                PagingIndex* index = ((PagingIndex*)(index000));
+
+                if (((boolean)(index->store)) &&
+                    (((Keyword*)(index->selectionPattern->value)) == KWD_BACKLINKS_RELATION)) {
+                  index->selectionPattern = pattern;
+                  return (index);
+                }
+              }
+            }
+            else {
+            }
+            if (sequence == NIL) {
+              return (NIL_NON_PAGING_INDEX);
+            }
+            { Proposition* prop = NULL;
+              Cons* iter001 = sequence;
+
+              for (prop, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+                prop = ((Proposition*)(iter001->value));
+                if (!(equalP(relation, prop->operatoR))) {
+                  if (prop->kind == KWD_BACKLINKS_EQUIVALENT) {
+                    functionSkolem = getSkolemAndValueTerms(prop, dummy1);
+                    if (((boolean)(functionSkolem))) {
+                      prop = functionSkolem->definingProposition;
+                    }
+                    if (!(equalP(relation, prop->operatoR))) {
+                      continue;
+                    }
+                  }
+                  else {
+                    continue;
+                  }
+                }
                 if (!((boolean)(allkeyvalues))) {
                   allkeyvalues = NIL;
                   if (!(keys->rest == NIL)) {
@@ -1368,7 +1388,7 @@ SequenceIndex* helpSelectRelationPropositions(Cons* pattern) {
                                   (equalP(key, valueOf(arg)) ||
                                    (isaP(key, SGT_BACKLINKS_LOGIC_PROPOSITION) &&
                                     (isaP(valueOf(arg), SGT_BACKLINKS_LOGIC_PROPOSITION) &&
-                                     unifyPropositionsP(((Proposition*)(key)), ((Proposition*)(valueOf(arg))), newKeyValueList())))))) {
+                                     unifyPropositionsP(((Proposition*)(key)), ((Proposition*)(valueOf(arg))), newKeyValueMap())))))) {
                                 alwaysP000 = false;
                                 break;
                               }
@@ -1388,17 +1408,17 @@ SequenceIndex* helpSelectRelationPropositions(Cons* pattern) {
                 }
               }
             }
-          }
-          if (filteredsequence == NIL) {
-            return (NIL_NON_PAGING_INDEX);
-          }
-          else {
-            { NonPagingIndex* self001 = newNonPagingIndex();
+            if (filteredsequence == NIL) {
+              return (NIL_NON_PAGING_INDEX);
+            }
+            else {
+              { NonPagingIndex* self001 = newNonPagingIndex();
 
-              self001->theSequence = filteredsequence;
-              { NonPagingIndex* value001 = self001;
+                self001->theSequence = filteredsequence;
+                { NonPagingIndex* value001 = self001;
 
-                return (value001);
+                  return (value001);
+                }
               }
             }
           }
@@ -1573,7 +1593,7 @@ TruthValue* evaluateSelectionPattern(Cons* pattern) {
 
     for (proposition, iter000; iter000->nextP(); ) {
       proposition = ((Proposition*)(iter000->value));
-      if (!unknownTruthValueP(((TruthValue*)(accessInContext(proposition->truthValue, proposition->homeContext, false))))) {
+      if (knownTruthValueP(((TruthValue*)(accessInContext(proposition->truthValue, proposition->homeContext, false))))) {
         return (((TruthValue*)(accessInContext(proposition->truthValue, proposition->homeContext, false))));
       }
     }
@@ -1983,7 +2003,8 @@ void cleanupAllDescriptionExtensions() {
 DEFINE_STELLA_SPECIAL(oSUPPRESSINSERTIONINTOCLASSEXTENSIONpo, boolean , false);
 
 void updateDescriptionExtension(Proposition* self) {
-  if (descriptionModeP()) {
+  if (descriptionModeP() ||
+      ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_BACKLINKS_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue) {
     return;
   }
   { Keyword* testValue000 = self->kind;
@@ -2113,6 +2134,7 @@ void helpStartupBacklinks1() {
     SGT_BACKLINKS_STELLA_FLOAT = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT", getStellaModule("/STELLA", true), 1)));
     SGT_BACKLINKS_STELLA_STRING = ((Surrogate*)(internRigidSymbolWrtModule("STRING", getStellaModule("/STELLA", true), 1)));
     SGT_BACKLINKS_STELLA_LITERAL_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL-WRAPPER", getStellaModule("/STELLA", true), 1)));
+    SGT_BACKLINKS_LOGIC_BACKLINKS_MIXIN = ((Surrogate*)(internRigidSymbolWrtModule("BACKLINKS-MIXIN", NULL, 1)));
     SGT_BACKLINKS_LOGIC_PAGING_INDEX = ((Surrogate*)(internRigidSymbolWrtModule("PAGING-INDEX", NULL, 1)));
     SGT_BACKLINKS_PL_KERNEL_KB_SUBSET_OF = ((Surrogate*)(internRigidSymbolWrtModule("SUBSET-OF", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SYM_BACKLINKS_LOGIC_MASTER_PROPOSITION = ((Symbol*)(internRigidSymbolWrtModule("MASTER-PROPOSITION", NULL, 0)));
@@ -2121,6 +2143,7 @@ void helpStartupBacklinks1() {
     KWD_BACKLINKS_RULES = ((Keyword*)(internRigidSymbolWrtModule("RULES", NULL, 2)));
     KWD_BACKLINKS_CONTEXT_PROPOSITIONS = ((Keyword*)(internRigidSymbolWrtModule("CONTEXT-PROPOSITIONS", NULL, 2)));
     KWD_BACKLINKS_CONTEXT_INSTANCES = ((Keyword*)(internRigidSymbolWrtModule("CONTEXT-INSTANCES", NULL, 2)));
+    KWD_BACKLINKS_EQUIVALENT = ((Keyword*)(internRigidSymbolWrtModule("EQUIVALENT", NULL, 2)));
     SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-SELECT-RELATION-PROPOSITIONS-MEMO-TABLE-000", NULL, 1)));
     SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_001 = ((Surrogate*)(internRigidSymbolWrtModule("F-SELECT-RELATION-PROPOSITIONS-MEMO-TABLE-001", NULL, 1)));
     SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_002 = ((Surrogate*)(internRigidSymbolWrtModule("F-SELECT-RELATION-PROPOSITIONS-MEMO-TABLE-002", NULL, 1)));
@@ -2128,7 +2151,6 @@ void helpStartupBacklinks1() {
     SYM_BACKLINKS_STELLA_TRUE = ((Symbol*)(internRigidSymbolWrtModule("TRUE", getStellaModule("/STELLA", true), 0)));
     KWD_BACKLINKS_FUNCTION = ((Keyword*)(internRigidSymbolWrtModule("FUNCTION", NULL, 2)));
     KWD_BACKLINKS_PREDICATE = ((Keyword*)(internRigidSymbolWrtModule("PREDICATE", NULL, 2)));
-    KWD_BACKLINKS_EQUIVALENT = ((Keyword*)(internRigidSymbolWrtModule("EQUIVALENT", NULL, 2)));
     KWD_BACKLINKS_EXTENSIONAL_ASSERTION = ((Keyword*)(internRigidSymbolWrtModule("EXTENSIONAL-ASSERTION", NULL, 2)));
     KWD_BACKLINKS_DESCRIPTION = ((Keyword*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 2)));
     KWD_BACKLINKS_PAGING = ((Keyword*)(internRigidSymbolWrtModule("PAGING", NULL, 2)));
@@ -2234,6 +2256,7 @@ void startupBacklinks() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SPECIALIZED-BACKLINKS-CROSSOVER-POINT* INTEGER 10 :DOCUMENTATION \"When 'dependent-propositions-list' gets this long in a\nbacklinks index, then we create a hash table index and other\nspecialized indices.\")");
       oWRAPPED_TYPE_TABLEo = oWRAPPED_TYPE_TABLEo->concatenate(listO(4, listO(3, SGT_BACKLINKS_LOGIC_INTEGER_LOGIC_WRAPPER, SGT_BACKLINKS_STELLA_INTEGER, NIL), listO(3, SGT_BACKLINKS_LOGIC_FLOAT_LOGIC_WRAPPER, SGT_BACKLINKS_STELLA_FLOAT, NIL), listO(3, SGT_BACKLINKS_LOGIC_STRING_LOGIC_WRAPPER, SGT_BACKLINKS_STELLA_STRING, NIL), NIL), 0);
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *INTEGER-LOGIC-WRAPPER-TABLE* INTEGER-HASH-TABLE (NEW INTEGER-HASH-TABLE))");
@@ -2291,6 +2314,8 @@ Surrogate* SGT_BACKLINKS_STELLA_STRING = NULL;
 
 Surrogate* SGT_BACKLINKS_STELLA_LITERAL_WRAPPER = NULL;
 
+Surrogate* SGT_BACKLINKS_LOGIC_BACKLINKS_MIXIN = NULL;
+
 Surrogate* SGT_BACKLINKS_LOGIC_PAGING_INDEX = NULL;
 
 Surrogate* SGT_BACKLINKS_PL_KERNEL_KB_SUBSET_OF = NULL;
@@ -2307,6 +2332,8 @@ Keyword* KWD_BACKLINKS_CONTEXT_PROPOSITIONS = NULL;
 
 Keyword* KWD_BACKLINKS_CONTEXT_INSTANCES = NULL;
 
+Keyword* KWD_BACKLINKS_EQUIVALENT = NULL;
+
 Surrogate* SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_000 = NULL;
 
 Surrogate* SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_001 = NULL;
@@ -2320,8 +2347,6 @@ Symbol* SYM_BACKLINKS_STELLA_TRUE = NULL;
 Keyword* KWD_BACKLINKS_FUNCTION = NULL;
 
 Keyword* KWD_BACKLINKS_PREDICATE = NULL;
-
-Keyword* KWD_BACKLINKS_EQUIVALENT = NULL;
 
 Keyword* KWD_BACKLINKS_EXTENSIONAL_ASSERTION = NULL;
 

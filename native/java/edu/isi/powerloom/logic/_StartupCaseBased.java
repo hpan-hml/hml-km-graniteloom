@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,18 +52,18 @@ import edu.isi.stella.*;
 public class _StartupCaseBased {
   static void helpStartupCaseBased1() {
     {
-      Logic.KWD_WEIGHTED_VOTE = ((Keyword)(Stella.internRigidSymbolWrtModule("WEIGHTED-VOTE", null, 2)));
-      Logic.SYM_LOGIC_CASE_MATCH = ((Symbol)(Stella.internRigidSymbolWrtModule("CASE-MATCH", null, 0)));
-      Logic.SYM_PL_KERNEL_KB_CASE_MATCH = ((Symbol)(Stella.internRigidSymbolWrtModule("CASE-MATCH", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
-      Logic.KWD_WEIGHTED_AVERAGE = ((Keyword)(Stella.internRigidSymbolWrtModule("WEIGHTED-AVERAGE", null, 2)));
-      Logic.SGT_STELLA_FLOAT_WRAPPER = ((Surrogate)(Stella.internRigidSymbolWrtModule("FLOAT-WRAPPER", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.SGT_STELLA_INTEGER_WRAPPER = ((Surrogate)(Stella.internRigidSymbolWrtModule("INTEGER-WRAPPER", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.KWD_AVERAGE = ((Keyword)(Stella.internRigidSymbolWrtModule("AVERAGE", null, 2)));
-      Logic.SYM_LOGIC_OBJECT_NAME = ((Symbol)(Stella.internRigidSymbolWrtModule("OBJECT-NAME", null, 0)));
-      Logic.SYM_STELLA_SECOND = ((Symbol)(Stella.internRigidSymbolWrtModule("SECOND", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_CASES = ((Symbol)(Stella.internRigidSymbolWrtModule("CASES", null, 0)));
-      Logic.SYM_LOGIC_SOFT_EQ = ((Symbol)(Stella.internRigidSymbolWrtModule("SOFT-EQ", null, 0)));
-      Logic.SYM_LOGIC_STARTUP_CASE_BASED = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-CASE-BASED", null, 0)));
+      Logic.KWD_WEIGHTED_VOTE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("WEIGHTED-VOTE", null, 2)));
+      Logic.SYM_LOGIC_CASE_MATCH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CASE-MATCH", null, 0)));
+      Logic.SYM_PL_KERNEL_KB_CASE_MATCH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CASE-MATCH", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
+      Logic.KWD_WEIGHTED_AVERAGE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("WEIGHTED-AVERAGE", null, 2)));
+      Logic.SGT_STELLA_FLOAT_WRAPPER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FLOAT-WRAPPER", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.SGT_STELLA_INTEGER_WRAPPER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("INTEGER-WRAPPER", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.KWD_AVERAGE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("AVERAGE", null, 2)));
+      Logic.SYM_LOGIC_OBJECT_NAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("OBJECT-NAME", null, 0)));
+      Logic.SYM_STELLA_SECOND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SECOND", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_CASES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CASES", null, 0)));
+      Logic.SYM_LOGIC_SOFT_EQ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SOFT-EQ", null, 0)));
+      Logic.SYM_LOGIC_STARTUP_CASE_BASED = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-CASE-BASED", null, 0)));
     }
   }
 
@@ -154,6 +154,7 @@ public class _StartupCaseBased {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOG-MATCH-RULES* BOOLEAN FALSE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOG-ANTECEDENT-CONSTRUCTION* BOOLEAN FALSE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *NUM-NEIGHBORS* INTEGER 3)");

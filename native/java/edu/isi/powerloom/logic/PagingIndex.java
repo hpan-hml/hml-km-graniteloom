@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -168,7 +168,7 @@ public class PagingIndex extends SequenceIndex {
       if (!(!(self == Logic.NIL_PAGING_INDEX))) {
         System.err.print("Safety violation: Attempt to insert into NIL-PAGING-INDEX");
       }
-      self.theSequence = Stella_Object.cons(value, self.theSequence);
+      self.theSequence = Cons.cons(value, self.theSequence);
     }
   }
 

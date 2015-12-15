@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -53,22 +53,22 @@ import edu.isi.stella.*;
 public class _StartupArithmetic {
   static void helpStartupArithmetic1() {
     {
-      PlKernelKb.SGT_PL_KERNEL_KB_INTEGER_INTERVAL = ((Surrogate)(Stella.internRigidSymbolWrtModule("INTEGER-INTERVAL", null, 1)));
-      PlKernelKb.SYM_PL_KERNEL_KB_INTERVAL_LOWER_BOUND = ((Symbol)(Stella.internRigidSymbolWrtModule("INTERVAL-LOWER-BOUND", null, 0)));
-      PlKernelKb.SYM_PL_KERNEL_KB_INTERVAL_UPPER_BOUND = ((Symbol)(Stella.internRigidSymbolWrtModule("INTERVAL-UPPER-BOUND", null, 0)));
-      PlKernelKb.SYM_PL_KERNEL_KB_INTERVAL_MEMBER = ((Symbol)(Stella.internRigidSymbolWrtModule("INTERVAL-MEMBER", null, 0)));
-      PlKernelKb.SYM_STELLA_LOWER_BOUND = ((Symbol)(Stella.internRigidSymbolWrtModule("LOWER-BOUND", Stella.getStellaModule("/STELLA", true), 0)));
-      PlKernelKb.SYM_STELLA_UPPER_BOUND = ((Symbol)(Stella.internRigidSymbolWrtModule("UPPER-BOUND", Stella.getStellaModule("/STELLA", true), 0)));
-      PlKernelKb.SYM_PL_KERNEL_KB_STRICT_LOWER_BOUNDp = ((Symbol)(Stella.internRigidSymbolWrtModule("STRICT-LOWER-BOUND?", null, 0)));
-      PlKernelKb.SYM_PL_KERNEL_KB_STRICT_UPPER_BOUNDp = ((Symbol)(Stella.internRigidSymbolWrtModule("STRICT-UPPER-BOUND?", null, 0)));
-      PlKernelKb.SGT_PL_KERNEL_KB_INTERVAL_CACHE_OF = ((Surrogate)(Stella.internRigidSymbolWrtModule("INTERVAL-CACHE-OF", null, 1)));
-      PlKernelKb.SGT_PL_KERNEL_KB_g = ((Surrogate)(Stella.internRigidSymbolWrtModule(">", null, 1)));
-      PlKernelKb.SGT_PL_KERNEL_KB_l = ((Surrogate)(Stella.internRigidSymbolWrtModule("<", null, 1)));
-      PlKernelKb.SGT_PL_KERNEL_KB_el = ((Surrogate)(Stella.internRigidSymbolWrtModule("=<", null, 1)));
-      PlKernelKb.KWD_LOWER_BOUND = ((Keyword)(Stella.internRigidSymbolWrtModule("LOWER-BOUND", null, 2)));
-      PlKernelKb.KWD_UPPER_BOUND = ((Keyword)(Stella.internRigidSymbolWrtModule("UPPER-BOUND", null, 2)));
-      PlKernelKb.SGT_PL_KERNEL_KB_e = ((Surrogate)(Stella.internRigidSymbolWrtModule("=", null, 1)));
-      PlKernelKb.SYM_PL_KERNEL_KB_STARTUP_ARITHMETIC = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-ARITHMETIC", null, 0)));
+      PlKernelKb.SGT_PL_KERNEL_KB_INTEGER_INTERVAL = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("INTEGER-INTERVAL", null, 1)));
+      PlKernelKb.SYM_PL_KERNEL_KB_INTERVAL_LOWER_BOUND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTERVAL-LOWER-BOUND", null, 0)));
+      PlKernelKb.SYM_PL_KERNEL_KB_INTERVAL_UPPER_BOUND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTERVAL-UPPER-BOUND", null, 0)));
+      PlKernelKb.SYM_PL_KERNEL_KB_INTERVAL_MEMBER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTERVAL-MEMBER", null, 0)));
+      PlKernelKb.SYM_STELLA_LOWER_BOUND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LOWER-BOUND", Stella.getStellaModule("/STELLA", true), 0)));
+      PlKernelKb.SYM_STELLA_UPPER_BOUND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("UPPER-BOUND", Stella.getStellaModule("/STELLA", true), 0)));
+      PlKernelKb.SYM_PL_KERNEL_KB_STRICT_LOWER_BOUNDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STRICT-LOWER-BOUND?", null, 0)));
+      PlKernelKb.SYM_PL_KERNEL_KB_STRICT_UPPER_BOUNDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STRICT-UPPER-BOUND?", null, 0)));
+      PlKernelKb.SGT_PL_KERNEL_KB_INTERVAL_CACHE_OF = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("INTERVAL-CACHE-OF", null, 1)));
+      PlKernelKb.SGT_PL_KERNEL_KB_g = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule(">", null, 1)));
+      PlKernelKb.SGT_PL_KERNEL_KB_l = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("<", null, 1)));
+      PlKernelKb.SGT_PL_KERNEL_KB_el = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("=<", null, 1)));
+      PlKernelKb.KWD_LOWER_BOUND = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LOWER-BOUND", null, 2)));
+      PlKernelKb.KWD_UPPER_BOUND = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UPPER-BOUND", null, 2)));
+      PlKernelKb.SGT_PL_KERNEL_KB_e = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("=", null, 1)));
+      PlKernelKb.SYM_PL_KERNEL_KB_STARTUP_ARITHMETIC = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-ARITHMETIC", null, 0)));
     }
   }
 
@@ -136,9 +136,11 @@ public class _StartupArithmetic {
           Stella.defineFunctionObject("LESS-SPECIALIST-HELPER", "(DEFUN (LESS-SPECIALIST-HELPER KEYWORD) ((FRAME CONTROL-FRAME) (RELATION SURROGATE) (XARG OBJECT) (YARG OBJECT)))", Native.find_java_method("edu.isi.powerloom.pl_kernel_kb.PlKernelKb", "lessSpecialistHelper", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
           Stella.defineFunctionObject("INEQUALITY-SPECIALIST", "(DEFUN (INEQUALITY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.pl_kernel_kb.PlKernelKb", "inequalitySpecialist", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
           Stella.defineFunctionObject("INEQUALITY-EVALUATOR", "(DEFUN INEQUALITY-EVALUATOR ((SELF PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.pl_kernel_kb.PlKernelKb", "inequalityEvaluator", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
-          Stella.defineFunctionObject("CONCATENATE-CONSTRAINT", "(DEFUN (CONCATENATE-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 STRING-WRAPPER) (X2 STRING-WRAPPER) (X3 STRING-WRAPPER)))", Native.find_java_method("edu.isi.powerloom.pl_kernel_kb.PlKernelKb", "concatenateConstraint", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.IntegerWrapper"), Native.find_java_class("edu.isi.stella.StringWrapper"), Native.find_java_class("edu.isi.stella.StringWrapper"), Native.find_java_class("edu.isi.stella.StringWrapper")}), null);
+          Stella.defineFunctionObject("STRING-CONCATENATE-COMPUTATION", "(DEFUN (STRING-CONCATENATE-COMPUTATION STRING-WRAPPER) ((X OBJECT) (YARGS CONS)))", Native.find_java_method("edu.isi.powerloom.pl_kernel_kb.PlKernelKb", "stringConcatenateComputation", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("SUBSEQUENCE-SPECIALIST", "(DEFUN (SUBSEQUENCE-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.pl_kernel_kb.PlKernelKb", "subsequenceSpecialist", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
+          Stella.defineFunctionObject("STRING-MATCH-COMPUTATION-HELPER", "(DEFUN (STRING-MATCH-COMPUTATION-HELPER INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT) (IGNORE-CASE? BOOLEAN)) :PUBLIC? FALSE)", Native.find_java_method("edu.isi.powerloom.pl_kernel_kb.PlKernelKb", "stringMatchComputationHelper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE}), null);
           Stella.defineFunctionObject("STRING-MATCH-COMPUTATION", "(DEFUN (STRING-MATCH-COMPUTATION INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT)))", Native.find_java_method("edu.isi.powerloom.pl_kernel_kb.PlKernelKb", "stringMatchComputation", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+          Stella.defineFunctionObject("STRING-MATCH-IGNORE-CASE-COMPUTATION", "(DEFUN (STRING-MATCH-IGNORE-CASE-COMPUTATION INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT)))", Native.find_java_method("edu.isi.powerloom.pl_kernel_kb.PlKernelKb", "stringMatchIgnoreCaseComputation", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
           Stella.defineFunctionObject("LENGTH-COMPUTATION", "(DEFUN (LENGTH-COMPUTATION INTEGER-WRAPPER) ((X OBJECT)))", Native.find_java_method("edu.isi.powerloom.pl_kernel_kb.PlKernelKb", "lengthComputation", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
           Stella.defineFunctionObject("STARTUP-ARITHMETIC", "(DEFUN STARTUP-ARITHMETIC () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.pl_kernel_kb._StartupArithmetic", "startupArithmetic", new java.lang.Class [] {}), null);
           { MethodSlot function = Symbol.lookupFunction(PlKernelKb.SYM_PL_KERNEL_KB_STARTUP_ARITHMETIC);
@@ -149,6 +151,9 @@ public class _StartupArithmetic {
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
           Stella.cleanupUnfinalizedClasses();
+        }
+        if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("PL-KERNEL")))));
         }
 
       } finally {

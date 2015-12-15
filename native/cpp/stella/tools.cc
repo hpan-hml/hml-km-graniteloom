@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -82,7 +82,7 @@ void indentOutline(int currentDepth, OutputStream* stream) {
 
 void printOutline(Object* thing, OutputStream* stream, int depth, boolean namedP) {
   // Print an outline of `thing' and its subparts on `stream'.
-  // If `depth' is greater than 0, only `depth' levels will be printed.
+  // If `depth' is non-negative, only `depth' levels will be printed.
   // If `named?' is `TRUE', then only named entities will be printed.
   // 
   // This function is intended to be used on things like modules, contexts,
@@ -170,7 +170,7 @@ void Class::helpPrintOutline(OutputStream* stream, int currentDepth, int depth, 
 
         for (c, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
           c = ((Surrogate*)(iter000->value));
-          c->helpPrintOutline(stream, currentDepth, depth, namedP);
+          typeToClass(c)->helpPrintOutline(stream, currentDepth, depth, namedP);
         }
       }
     }
@@ -213,7 +213,7 @@ void startupTools() {
     if (currentStartupTimePhaseP(7)) {
       defineFunctionObject("OUTLINE-DEPTH-EXCEEDED?", "(DEFUN (OUTLINE-DEPTH-EXCEEDED? BOOLEAN) ((CURRENT-DEPTH INTEGER) (DEPTH-LIMIT INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Helper function that returns `true' if `current-depth' exceeds `depth-limit'.\nThis functions uses the convention that a `null' or negative value of\n`depth-limit' means the depth is unlimited.  In those cases it always\nreturns false.\" (RETURN (AND (DEFINED? DEPTH-LIMIT) (>= DEPTH-LIMIT 0) (>= CURRENT-DEPTH DEPTH-LIMIT))))", ((cpp_function_code)(&outlineDepthExceededP)), NULL);
       defineFunctionObject("INDENT-OUTLINE", "(DEFUN INDENT-OUTLINE ((CURRENT-DEPTH INTEGER) (STREAM OUTPUT-STREAM)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Helper function that indents outline printings for level\n`current-depth' on `stream' using the value of the global\nvariable `*OUTLINE-INDENT-STRING*'\" (FOREACH I IN (INTERVAL 1 CURRENT-DEPTH) DO (IGNORE I) (PRINT-STREAM STREAM *OUTLINE-INDENT-STRING*)))", ((cpp_function_code)(&indentOutline)), NULL);
-      defineFunctionObject("PRINT-OUTLINE", "(DEFUN PRINT-OUTLINE ((THING OBJECT) (STREAM OUTPUT-STREAM) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :COMMAND? TRUE :DOCUMENTATION \"Print an outline of `thing' and its subparts on `stream'.\nIf `depth' is greater than 0, only `depth' levels will be printed.\nIf `named?' is `TRUE', then only named entities will be printed.\n\nThis function is intended to be used on things like modules, contexts,\nconcepts, etc. that have hierarchical structure.  If `thing' doesn't\nhave a hierarchical structure, it will just be printed.\")", ((cpp_function_code)(&printOutline)), ((cpp_function_code)(&printOutlineEvaluatorWrapper)));
+      defineFunctionObject("PRINT-OUTLINE", "(DEFUN PRINT-OUTLINE ((THING OBJECT) (STREAM OUTPUT-STREAM) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :COMMAND? TRUE :DOCUMENTATION \"Print an outline of `thing' and its subparts on `stream'.\nIf `depth' is non-negative, only `depth' levels will be printed.\nIf `named?' is `TRUE', then only named entities will be printed.\n\nThis function is intended to be used on things like modules, contexts,\nconcepts, etc. that have hierarchical structure.  If `thing' doesn't\nhave a hierarchical structure, it will just be printed.\")", ((cpp_function_code)(&printOutline)), ((cpp_function_code)(&printOutlineEvaluatorWrapper)));
       defineMethodObject("(DEFMETHOD HELP-PRINT-OUTLINE ((TOP OBJECT) (STREAM OUTPUT-STREAM) (CURRENT-DEPTH INTEGER) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Helper method for `print-outline'\")", ((cpp_method_code)(&Object::helpPrintOutline)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD HELP-PRINT-OUTLINE ((TOP CONTEXT) (STREAM OUTPUT-STREAM) (CURRENT-DEPTH INTEGER) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Helper method for `print-outline'\")", ((cpp_method_code)(&Context::helpPrintOutline)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD HELP-PRINT-OUTLINE ((TOP MODULE) (STREAM OUTPUT-STREAM) (CURRENT-DEPTH INTEGER) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Helper method for `print-outline'\")", ((cpp_method_code)(&Module::helpPrintOutline)), ((cpp_method_code)(NULL)));
@@ -230,6 +230,7 @@ void startupTools() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *OUTLINE-INDENT-STRING* STRING \"| \" :DOCUMENTATION \"String used in the PRINT-OUTLINE for each level of outline\")");
     }
   }

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -94,6 +94,7 @@ void startupPowerloomExtensionsSystem() {
         cleanupUnfinalizedClasses();
       }
       if (currentStartupTimePhaseP(9)) {
+        inModule(((StringWrapper*)(copyConsTree(wrapString("/PLX")))));
         { int phase = NULL_INTEGER;
           int iter004 = 0;
           int upperBound005 = 9;

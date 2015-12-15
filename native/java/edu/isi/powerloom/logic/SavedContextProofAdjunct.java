@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -51,11 +51,13 @@ import edu.isi.stella.*;
 
 public class SavedContextProofAdjunct extends ProofAdjunct {
     public Context savedContext;
+    public ControlFrame downFrame;
 
   public static SavedContextProofAdjunct newSavedContextProofAdjunct() {
     { SavedContextProofAdjunct self = null;
 
       self = new SavedContextProofAdjunct();
+      self.downFrame = null;
       self.savedContext = null;
       return (self);
     }
@@ -68,6 +70,14 @@ public class SavedContextProofAdjunct extends ProofAdjunct {
       }
       else {
         value = self.savedContext;
+      }
+    }
+    else if (slotname == Logic.SYM_LOGIC_DOWN_FRAME) {
+      if (setvalueP) {
+        self.downFrame = ((ControlFrame)(value));
+      }
+      else {
+        value = self.downFrame;
       }
     }
     else {

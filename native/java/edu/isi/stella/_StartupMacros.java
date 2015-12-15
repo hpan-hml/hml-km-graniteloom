@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,24 +56,24 @@ public class _StartupMacros {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.SYM_STELLA_MEMBERp = ((Symbol)(Stella.internRigidSymbolWrtModule("MEMBER?", null, 0)));
-          Stella.SYM_STELLA_FIRST_DEFINED = ((Symbol)(Stella.internRigidSymbolWrtModule("FIRST-DEFINED", null, 0)));
-          Stella.SYM_STELLA_$TRANSIENTOBJECTSp$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*TRANSIENTOBJECTS?*", null, 0)));
-          Stella.SYM_STELLA_$CONTEXT$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*CONTEXT*", null, 0)));
-          Stella.SYM_STELLA_SAFETY = ((Symbol)(Stella.internRigidSymbolWrtModule("SAFETY", null, 0)));
-          Stella.SYM_STELLA_WORLD = ((Symbol)(Stella.internRigidSymbolWrtModule("WORLD", null, 0)));
-          Stella.SYM_STELLA_$MODULE$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*MODULE*", null, 0)));
-          Stella.SYM_STELLA_$CURRENTSYSTEMDEFINITION$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*CURRENTSYSTEMDEFINITION*", null, 0)));
-          Stella.SYM_STELLA_GET_SYSTEM_DEFINITION = ((Symbol)(Stella.internRigidSymbolWrtModule("GET-SYSTEM-DEFINITION", null, 0)));
-          Stella.SYM_STELLA_$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$ = ((Symbol)(Stella.internRigidSymbolWrtModule("*CURRENTSYSTEMDEFINITIONSUBDIRECTORY*", null, 0)));
-          Stella.SYM_STELLA_ONLY_IF = ((Symbol)(Stella.internRigidSymbolWrtModule("ONLY-IF", null, 0)));
-          Stella.SYM_STELLA_WARN = ((Symbol)(Stella.internRigidSymbolWrtModule("WARN", null, 0)));
-          Stella.KWD_STARTUP_SYSTEMp = ((Keyword)(Stella.internRigidSymbolWrtModule("STARTUP-SYSTEM?", null, 2)));
-          Stella.SYM_STELLA_INTEGER = ((Symbol)(Stella.internRigidSymbolWrtModule("INTEGER", null, 0)));
-          Stella.SYM_STELLA_ARRAY = ((Symbol)(Stella.internRigidSymbolWrtModule("ARRAY", null, 0)));
-          Stella.SYM_STELLA_rrARGS = ((Symbol)(Stella.internRigidSymbolWrtModule("%%ARGS", null, 0)));
-          Stella.KWD_INITIAL_CONTENTS = ((Keyword)(Stella.internRigidSymbolWrtModule("INITIAL-CONTENTS", null, 2)));
-          Stella.SYM_STELLA_STARTUP_MACROS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-MACROS", null, 0)));
+          Stella.SYM_STELLA_MEMBERp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MEMBER?", null, 0)));
+          Stella.SYM_STELLA_FIRST_DEFINED = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FIRST-DEFINED", null, 0)));
+          Stella.SYM_STELLA_$TRANSIENTOBJECTSp$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*TRANSIENTOBJECTS?*", null, 0)));
+          Stella.SYM_STELLA_$CONTEXT$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*CONTEXT*", null, 0)));
+          Stella.SYM_STELLA_SAFETY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SAFETY", null, 0)));
+          Stella.SYM_STELLA_WORLD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WORLD", null, 0)));
+          Stella.SYM_STELLA_$MODULE$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*MODULE*", null, 0)));
+          Stella.SYM_STELLA_$CURRENTSYSTEMDEFINITION$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*CURRENTSYSTEMDEFINITION*", null, 0)));
+          Stella.SYM_STELLA_GET_SYSTEM_DEFINITION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GET-SYSTEM-DEFINITION", null, 0)));
+          Stella.SYM_STELLA_$CURRENTSYSTEMDEFINITIONSUBDIRECTORY$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*CURRENTSYSTEMDEFINITIONSUBDIRECTORY*", null, 0)));
+          Stella.SYM_STELLA_ONLY_IF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ONLY-IF", null, 0)));
+          Stella.SYM_STELLA_WARN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WARN", null, 0)));
+          Stella.KWD_STARTUP_SYSTEMp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-SYSTEM?", null, 2)));
+          Stella.SYM_STELLA_INTEGER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTEGER", null, 0)));
+          Stella.SYM_STELLA_ARRAY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ARRAY", null, 0)));
+          Stella.SYM_STELLA_rrARGS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("%%ARGS", null, 0)));
+          Stella.KWD_INITIAL_CONTENTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INITIAL-CONTENTS", null, 2)));
+          Stella.SYM_STELLA_STARTUP_MACROS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-MACROS", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -116,6 +116,7 @@ public class _StartupMacros {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Symbol.registerNativeName(Stella.SYM_STELLA___, Stella.KWD_JAVA, Stella.KWD_FUNCTION);
         }
 

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -65,7 +65,7 @@ Cons* extractGoalArguments(Proposition* goal);
 Proposition* substituteProposition(Proposition* proposition, Proposition* outprop, Proposition* inprop);
 Proposition* extractInvertedGoal(Proposition* proposition, Proposition* goal);
 Proposition* invertForallAroundGoal(Proposition* forallprop, Proposition* goal, Keyword* headortail, boolean contrapositiveP);
-Object* constructDescriptionFromForallProposition(Proposition* forallprop, Keyword* headortail);
+Description* constructDescriptionFromForallProposition(Proposition* forallprop, Keyword* headortail);
 void markAsForwardRule(Proposition* impliesprop);
 void deriveOneSatelliteRule(Proposition* masterforall, Proposition* goal, Keyword* headortail, boolean contrapositiveP);
 boolean deriveSatelliteRulesForGoalP(Proposition* forallprop, Description* goaldescription, Keyword* direction, boolean lazysatellitesP);
@@ -128,7 +128,6 @@ extern Keyword* KWD_RULES_NON_PAGING;
 extern Symbol* SYM_RULES_LOGIC_DEFERRED_CONTRAPOSITIVESp;
 extern Keyword* KWD_RULES_POSITIVE_AND_CONTRAPOSITIVE;
 extern Symbol* SYM_RULES_STELLA_TRUE;
-extern Symbol* SYM_RULES_LOGIC_KAPPA;
 extern Symbol* SYM_RULES_STELLA_EXISTS;
 extern Symbol* SYM_RULES_LOGIC_FORWARD_CHAINING_INDICES;
 extern Surrogate* SGT_RULES_LOGIC_NAMED_DESCRIPTION;

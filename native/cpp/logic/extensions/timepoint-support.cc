@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -163,11 +163,14 @@ int DateTimeLogicWrapper::hashCode() {
 boolean DateTimeLogicWrapper::objectEqlP(Object* x) {
   { DateTimeLogicWrapper* self = this;
 
-    try {
-      return (isaP(x, SGT_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER) &&
-          ((DateTimeObject*)(self->wrapperValue))->objectEqlP(((DateTimeObject*)(((DateTimeLogicWrapper*)(x))->wrapperValue))));
+    if (subtypeOfP(safePrimaryType(x), SGT_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER)) {
+      { Object* x000 = x;
+        DateTimeLogicWrapper* x = ((DateTimeLogicWrapper*)(x000));
+
+        return (((DateTimeObject*)(self->wrapperValue))->objectEqlP(((DateTimeObject*)(x->wrapperValue))));
+      }
     }
-    catch (StellaException ) {
+    else {
       return (false);
     }
   }
@@ -232,6 +235,9 @@ DateTimeLogicWrapper* helpGetCalendarTime(Object* item) {
 
         { Object* value = ((Object*)(accessInContext(item->variableValue, item->homeContext, false)));
 
+          if (!((boolean)(value))) {
+            return (NULL);
+          }
           { Surrogate* testValue001 = safePrimaryType(value);
 
             if (subtypeOfP(testValue001, SGT_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER)) {
@@ -329,6 +335,9 @@ DateTimeLogicWrapper* helpGetTimeDuration(Object* item) {
 
         { Object* value = ((Object*)(accessInContext(item->variableValue, item->homeContext, false)));
 
+          if (!((boolean)(value))) {
+            return (NULL);
+          }
           { Surrogate* testValue001 = safePrimaryType(value);
 
             if (subtypeOfP(testValue001, SGT_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER)) {
@@ -623,142 +632,45 @@ boolean canBindAllP(Cons* plObjects, Cons* values) {
   return (true);
 }
 
-void timepointOfEvaluator(Proposition* self) {
-  { Object* value1 = valueOf((self->arguments->theArray)[0]);
-    Object* value2 = valueOf((self->arguments->theArray)[1]);
-    DateTimeLogicWrapper* time1 = helpGetCalendarTime(value1);
+Object* timepointOfConstraint(IntegerWrapper* missingArgument, StringWrapper* x1, DateTimeLogicWrapper* x2) {
+  { Object* value = NULL;
 
-    if (((boolean)(time1))) {
-      { Surrogate* testValue000 = safePrimaryType(value2);
+    switch (missingArgument->wrapperValue) {
+      case -1: 
+        value = (((DateTimeObject*)(helpGetCalendarTime(x1)->wrapperValue))->objectEqlP(((DateTimeObject*)(x2->wrapperValue))) ? TRUE_WRAPPER : FALSE_WRAPPER);
+      break;
+      case 0: 
+        { DateTimeLogicWrapper* timepointwrapper = helpGetCalendarTime(x2);
 
-        if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM)) {
-          { Object* value2000 = value2;
-            Skolem* value2 = ((Skolem*)(value2000));
-
-            bindSkolemToValue(value2, time1, false);
-          }
+          value = wrapString(((CalendarDate*)(((DateTimeObject*)(timepointwrapper->wrapperValue))))->calendarDateToString(0.0, false, true));
         }
-        else if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER)) {
-          { Object* value2001 = value2;
-            DateTimeLogicWrapper* value2 = ((DateTimeLogicWrapper*)(value2001));
+      break;
+      case 1: 
+        { Object* timepointspecvalue = valueOf(x1);
 
-            if (!(((DateTimeObject*)(time1->wrapperValue))->objectEqlP(((DateTimeObject*)(value2->wrapperValue))))) {
-              signalUnificationClash(time1, value2);
-            }
-          }
-        }
-        else {
-          signalUnificationClash(time1, value2);
-        }
-      }
-    }
-  }
-}
-
-Keyword* timepointOfSpecialist(ControlFrame* frame, Keyword* lastmove) {
-  { Proposition* proposition = frame->proposition;
-    Object* value1 = valueOf((proposition->arguments->theArray)[0]);
-    Object* value2 = valueOf((proposition->arguments->theArray)[1]);
-    DateTimeLogicWrapper* theTime = helpGetCalendarTime(value1);
-
-    lastmove = lastmove;
-    if (((boolean)(theTime))) {
-      { Surrogate* testValue000 = safePrimaryType(value2);
-
-        if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_LOGIC_PATTERN_VARIABLE)) {
-          { Object* value2000 = value2;
-            PatternVariable* value2 = ((PatternVariable*)(value2000));
-
-            return (selectProofResult(bindVariableToValueP(value2, theTime, true), false, true));
-          }
-        }
-        else if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM)) {
-          { Object* value2001 = value2;
-            Skolem* value2 = ((Skolem*)(value2001));
-
-            { Skolem* object000 = value2;
-              Object* value000 = theTime;
-              Object* oldValue000 = object000->variableValue;
-              Object* newValue000 = updateInContext(oldValue000, value000, object000->homeContext, false);
-
-              if (!(((boolean)(oldValue000)) &&
-                  (oldValue000->primaryType() == SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE))) {
-                object000->variableValue = newValue000;
-              }
-            }
-            return (KWD_TIMEPOINT_SUPPORT_FINAL_SUCCESS);
-          }
-        }
-        else if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER)) {
-          { Object* value2002 = value2;
-            DateTimeLogicWrapper* value2 = ((DateTimeLogicWrapper*)(value2002));
-
-            return (selectProofResult(((DateTimeObject*)(theTime->wrapperValue))->objectEqlP(((DateTimeObject*)(value2->wrapperValue))), false, true));
-          }
-        }
-        else {
-          { OutputStringStream* stream000 = newOutputStringStream();
-
-            *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
-            throw *newStellaException(stream000->theStringReader());
-          }
-        }
-      }
-    }
-    else if (((boolean)(value2))) {
-      theTime = helpGetCalendarTime(value2);
-      if (((boolean)(theTime))) {
-        { Surrogate* testValue001 = safePrimaryType(value1);
-
-          if (subtypeOfP(testValue001, SGT_TIMEPOINT_SUPPORT_LOGIC_PATTERN_VARIABLE)) {
-            { Object* value1000 = value1;
-              PatternVariable* value1 = ((PatternVariable*)(value1000));
-
-              return (selectProofResult(bindVariableToValueP(value1, wrapString(((CalendarDate*)(((DateTimeObject*)(theTime->wrapperValue))))->calendarDateToString(0.0, false, true)), true), false, true));
-            }
-          }
-          else if (subtypeOfP(testValue001, SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM)) {
-            { Object* value1001 = value1;
-              Skolem* value1 = ((Skolem*)(value1001));
-
-              { Skolem* object001 = value1;
-                Object* value001 = wrapString(((CalendarDate*)(((DateTimeObject*)(theTime->wrapperValue))))->calendarDateToString(0.0, false, true));
-                Object* oldValue001 = object001->variableValue;
-                Object* newValue001 = updateInContext(oldValue001, value001, object001->homeContext, false);
-
-                if (!(((boolean)(oldValue001)) &&
-                    (oldValue001->primaryType() == SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE))) {
-                  object001->variableValue = newValue001;
-                }
-              }
-              return (KWD_TIMEPOINT_SUPPORT_FINAL_SUCCESS);
-            }
+          if (!((boolean)(timepointspecvalue))) {
+            value = NULL;
           }
           else {
-            return (KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE);
+            value = helpGetCalendarTime(timepointspecvalue);
           }
         }
-      }
-      else {
-        return (KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE);
-      }
+      break;
+      default:
+      break;
     }
-    else {
-      return (KWD_TIMEPOINT_SUPPORT_FAILURE);
-    }
+    return (value);
   }
 }
 
-void timepointOfOEvaluator(Proposition* self) {
-  { Vector* args = self->arguments;
-    Object* yyValue = valueOf((args->theArray)[0]);
-    Object* mmValue = valueOf((args->theArray)[1]);
-    Object* ddValue = valueOf((args->theArray)[2]);
-    Object* hrValue = valueOf((args->theArray)[3]);
-    Object* minValue = valueOf((args->theArray)[4]);
-    Object* secValue = valueOf((args->theArray)[5]);
-    Object* tzValue = valueOf((args->theArray)[6]);
-    Object* tpValue = valueOf((args->theArray)[7]);
+DateTimeLogicWrapper* timepointOfOComputation(IntegerWrapper* yy, IntegerWrapper* mm, IntegerWrapper* dd, IntegerWrapper* hr, IntegerWrapper* min, NumberWrapper* sec, Object* tz) {
+  { Object* yyValue = valueOf(yy);
+    Object* mmValue = valueOf(mm);
+    Object* ddValue = valueOf(dd);
+    Object* hrValue = valueOf(hr);
+    Object* minValue = valueOf(min);
+    Object* secValue = valueOf(sec);
+    Object* tzValue = valueOf(tz);
     int year = helpGetInteger(yyValue);
     int month = helpGetInteger(mmValue);
     int day = helpGetInteger(ddValue);
@@ -767,7 +679,7 @@ void timepointOfOEvaluator(Proposition* self) {
     double secondFloat = helpGetFloat(secValue);
     double zone = helpGetTimezone(tzValue);
     int second = 0;
-    DateTimeLogicWrapper* time1 = NULL;
+    DateTimeLogicWrapper* tp = NULL;
 
     if ((year != NULL_INTEGER) &&
         ((month != NULL_INTEGER) &&
@@ -777,29 +689,20 @@ void timepointOfOEvaluator(Proposition* self) {
             ((secondFloat != NULL_FLOAT) &&
              (zone != NULL_FLOAT))))))) {
       second = stella::floor(secondFloat);
-      time1 = wrapDateTime(makeDateTime(year, month, day, hour, minute, second, stella::floor(1000 * (secondFloat - second)), zone));
-      { Surrogate* testValue000 = safePrimaryType(tpValue);
+      tp = wrapDateTime(makeDateTime(year, month, day, hour, minute, second, stella::floor(1000 * (secondFloat - second)), zone));
+    }
+    return (tp);
+  }
+}
 
-        if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM)) {
-          { Object* tpValue000 = tpValue;
-            Skolem* tpValue = ((Skolem*)(tpValue000));
+void timepointOfOEvaluator(Proposition* self) {
+  equateEquivalentFunctionPropositions(self);
+  { Object* storedvalue = valueOf((self->arguments->theArray)[7]);
+    Object* computedvalue = computeRelationValue(self, ((cpp_function_code)(&timepointOfOComputation)), false);
 
-            bindSkolemToValue(tpValue, time1, false);
-          }
-        }
-        else if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER)) {
-          { Object* tpValue001 = tpValue;
-            DateTimeLogicWrapper* tpValue = ((DateTimeLogicWrapper*)(tpValue001));
-
-            if (!(((DateTimeObject*)(time1->wrapperValue))->objectEqlP(((DateTimeObject*)(tpValue->wrapperValue))))) {
-              signalUnificationClash(time1, tpValue);
-            }
-          }
-        }
-        else {
-          signalUnificationClash(time1, tpValue);
-        }
-      }
+    if (((boolean)(computedvalue)) &&
+        (!eqlP(computedvalue, storedvalue))) {
+      equateValues(computedvalue, storedvalue);
     }
   }
 }
@@ -807,22 +710,15 @@ void timepointOfOEvaluator(Proposition* self) {
 Keyword* timepointOfOSpecialist(ControlFrame* frame, Keyword* lastmove) {
   { Proposition* proposition = frame->proposition;
     Vector* args = proposition->arguments;
-    Object* yyValue = valueOf((args->theArray)[0]);
-    Object* mmValue = valueOf((args->theArray)[1]);
-    Object* ddValue = valueOf((args->theArray)[2]);
-    Object* hrValue = valueOf((args->theArray)[3]);
-    Object* minValue = valueOf((args->theArray)[4]);
-    Object* secValue = valueOf((args->theArray)[5]);
-    Object* tzValue = valueOf((args->theArray)[6]);
-    Object* tpValue = valueOf((args->theArray)[7]);
-    int year = helpGetInteger(yyValue);
-    int month = helpGetInteger(mmValue);
-    int day = helpGetInteger(ddValue);
-    int hour = helpGetInteger(hrValue);
-    int minute = helpGetInteger(minValue);
-    double secondFloat = helpGetFloat(secValue);
+    int year = helpGetInteger(argumentBoundTo((args->theArray)[0]));
+    int month = helpGetInteger(argumentBoundTo((args->theArray)[1]));
+    int day = helpGetInteger(argumentBoundTo((args->theArray)[2]));
+    int hour = helpGetInteger(argumentBoundTo((args->theArray)[3]));
+    int minute = helpGetInteger(argumentBoundTo((args->theArray)[4]));
+    double secondFloat = helpGetFloat(argumentBoundTo((args->theArray)[5]));
     int second = 0;
-    double zone = helpGetTimezone(tzValue);
+    double zone = helpGetTimezone(argumentBoundTo((args->theArray)[6]));
+    Object* tp = argumentBoundTo((args->theArray)[7]);
     DateTimeLogicWrapper* theTime = NULL;
     CalendarDate* calendarDate = NULL;
 
@@ -836,83 +732,15 @@ Keyword* timepointOfOSpecialist(ControlFrame* frame, Keyword* lastmove) {
              (zone != NULL_FLOAT))))))) {
       second = stella::floor(secondFloat);
       theTime = wrapDateTime(makeDateTime(year, month, day, hour, minute, second, stella::floor(1000 * (secondFloat - second)), zone));
-      { Surrogate* testValue000 = safePrimaryType(tpValue);
-
-        if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_LOGIC_PATTERN_VARIABLE)) {
-          { Object* tpValue000 = tpValue;
-            PatternVariable* tpValue = ((PatternVariable*)(tpValue000));
-
-            return (selectProofResult(bindVariableToValueP(tpValue, theTime, true), false, true));
-          }
-        }
-        else if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM)) {
-          { Object* tpValue001 = tpValue;
-            Skolem* tpValue = ((Skolem*)(tpValue001));
-
-            { Skolem* object000 = tpValue;
-              Object* value000 = theTime;
-              Object* oldValue000 = object000->variableValue;
-              Object* newValue000 = updateInContext(oldValue000, value000, object000->homeContext, false);
-
-              if (!(((boolean)(oldValue000)) &&
-                  (oldValue000->primaryType() == SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE))) {
-                object000->variableValue = newValue000;
-              }
-            }
-            return (KWD_TIMEPOINT_SUPPORT_FINAL_SUCCESS);
-          }
-        }
-        else if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER)) {
-          { Object* tpValue002 = tpValue;
-            DateTimeLogicWrapper* tpValue = ((DateTimeLogicWrapper*)(tpValue002));
-
-            return (selectProofResult(((DateTimeObject*)(theTime->wrapperValue))->objectEqlP(((DateTimeObject*)(tpValue->wrapperValue))), false, true));
-          }
-        }
-        else {
-          { OutputStringStream* stream000 = newOutputStringStream();
-
-            *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
-            throw *newStellaException(stream000->theStringReader());
-          }
-        }
-      }
+      return (selectProofResult(bindArgumentToValueP((args->theArray)[7], theTime, true), false, true));
     }
-    else if (((boolean)(tpValue))) {
-      theTime = helpGetCalendarTime(tpValue);
+    else if (((boolean)(tp))) {
+      theTime = helpGetCalendarTime(tp);
       calendarDate = ((CalendarDate*)(((DateTimeObject*)(theTime->wrapperValue))));
       if (zone == NULL_FLOAT) {
         zone = 0.0;
-        { Surrogate* testValue001 = safePrimaryType(tzValue);
-
-          if (subtypeOfP(testValue001, SGT_TIMEPOINT_SUPPORT_LOGIC_PATTERN_VARIABLE)) {
-            { Object* tzValue000 = tzValue;
-              PatternVariable* tzValue = ((PatternVariable*)(tzValue000));
-
-              if (!(bindVariableToValueP(tzValue, wrapFloat(zone), true))) {
-                return (KWD_TIMEPOINT_SUPPORT_FAILURE);
-              }
-            }
-          }
-          else if (subtypeOfP(testValue001, SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM)) {
-            { Object* tzValue001 = tzValue;
-              Skolem* tzValue = ((Skolem*)(tzValue001));
-
-              { Skolem* object001 = tzValue;
-                Object* value001 = wrapFloat(zone);
-                Object* oldValue001 = object001->variableValue;
-                Object* newValue001 = updateInContext(oldValue001, value001, object001->homeContext, false);
-
-                if (!(((boolean)(oldValue001)) &&
-                    (oldValue001->primaryType() == SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE))) {
-                  object001->variableValue = newValue001;
-                }
-              }
-            }
-          }
-          else {
-            return (KWD_TIMEPOINT_SUPPORT_FAILURE);
-          }
+        if (!(bindArgumentToValueP((args->theArray)[6], wrapFloat(zone), true))) {
+          return (KWD_TIMEPOINT_SUPPORT_FAILURE);
         }
       }
       if (((boolean)(theTime))) {
@@ -929,7 +757,7 @@ Keyword* timepointOfOSpecialist(ControlFrame* frame, Keyword* lastmove) {
             int milli = NULL_INTEGER;
 
             h = calendarDate->getTime(zone, m, s, milli);
-            return (selectProofResult(canBindAllP(consList(6, yyValue, mmValue, ddValue, hrValue, minValue, secValue), consList(6, wrapInteger(yy), wrapInteger(mm), wrapInteger(dd), wrapInteger(h), wrapInteger(m), wrapFloat(((double)(s + (milli * 0.001)))))), false, true));
+            return (selectProofResult(canBindAllP(consList(6, (args->theArray)[0], (args->theArray)[1], (args->theArray)[2], (args->theArray)[3], (args->theArray)[4], (args->theArray)[5]), consList(6, wrapInteger(yy), wrapInteger(mm), wrapInteger(dd), wrapInteger(h), wrapInteger(m), wrapFloat(((double)(s + (milli * 0.001)))))), false, true));
           }
         }
       }
@@ -943,179 +771,34 @@ Keyword* timepointOfOSpecialist(ControlFrame* frame, Keyword* lastmove) {
   }
 }
 
-void durationOfEvaluator(Proposition* self) {
-  { Object* value1 = valueOf((self->arguments->theArray)[0]);
-    Object* value2 = valueOf((self->arguments->theArray)[1]);
-    DateTimeLogicWrapper* time1 = helpGetCalendarTime(value1);
+Object* durationOfConstraint(IntegerWrapper* missingArgument, StringWrapper* x1, DateTimeLogicWrapper* x2) {
+  { Object* value = NULL;
 
-    if (((boolean)(time1))) {
-      { Surrogate* testValue000 = safePrimaryType(value2);
+    switch (missingArgument->wrapperValue) {
+      case -1: 
+        value = (((DateTimeObject*)(helpGetTimeDuration(x1)->wrapperValue))->objectEqlP(((DateTimeObject*)(x2->wrapperValue))) ? TRUE_WRAPPER : FALSE_WRAPPER);
+      break;
+      case 0: 
+        { DateTimeLogicWrapper* durationwrapper = helpGetTimeDuration(x2);
 
-        if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM)) {
-          { Object* value2000 = value2;
-            Skolem* value2 = ((Skolem*)(value2000));
-
-            bindSkolemToValue(value2, time1, false);
-          }
+          value = wrapString(((TimeDuration*)(((DateTimeObject*)(durationwrapper->wrapperValue))))->timeDurationToString());
         }
-        else if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER)) {
-          { Object* value2001 = value2;
-            DateTimeLogicWrapper* value2 = ((DateTimeLogicWrapper*)(value2001));
+      break;
+      case 1: 
+        { Object* durationspecvalue = valueOf(x1);
 
-            if (!(((DateTimeObject*)(time1->wrapperValue))->objectEqlP(((DateTimeObject*)(value2->wrapperValue))))) {
-              signalUnificationClash(time1, value2);
-            }
-          }
-        }
-        else {
-          { OutputStringStream* stream000 = newOutputStringStream();
-
-            *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
-            throw *newStellaException(stream000->theStringReader());
-          }
-        }
-      }
-    }
-  }
-}
-
-Keyword* durationOfSpecialist(ControlFrame* frame, Keyword* lastmove) {
-  { Proposition* proposition = frame->proposition;
-    Object* value1 = valueOf((proposition->arguments->theArray)[0]);
-    Object* value2 = valueOf((proposition->arguments->theArray)[1]);
-    DateTimeLogicWrapper* theTime = helpGetTimeDuration(value1);
-
-    lastmove = lastmove;
-    if (((boolean)(theTime))) {
-      { Surrogate* testValue000 = safePrimaryType(value2);
-
-        if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_LOGIC_PATTERN_VARIABLE)) {
-          { Object* value2000 = value2;
-            PatternVariable* value2 = ((PatternVariable*)(value2000));
-
-            return (selectProofResult(bindVariableToValueP(value2, theTime, true), false, true));
-          }
-        }
-        else if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM)) {
-          { Object* value2001 = value2;
-            Skolem* value2 = ((Skolem*)(value2001));
-
-            { Skolem* object000 = value2;
-              Object* value000 = theTime;
-              Object* oldValue000 = object000->variableValue;
-              Object* newValue000 = updateInContext(oldValue000, value000, object000->homeContext, false);
-
-              if (!(((boolean)(oldValue000)) &&
-                  (oldValue000->primaryType() == SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE))) {
-                object000->variableValue = newValue000;
-              }
-            }
-            return (KWD_TIMEPOINT_SUPPORT_FINAL_SUCCESS);
-          }
-        }
-        else if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_DATE_TIME_LOGIC_WRAPPER)) {
-          { Object* value2002 = value2;
-            DateTimeLogicWrapper* value2 = ((DateTimeLogicWrapper*)(value2002));
-
-            return (selectProofResult(((DateTimeObject*)(theTime->wrapperValue))->objectEqlP(((DateTimeObject*)(value2->wrapperValue))), false, true));
-          }
-        }
-        else {
-          { OutputStringStream* stream000 = newOutputStringStream();
-
-            *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
-            throw *newStellaException(stream000->theStringReader());
-          }
-        }
-      }
-    }
-    else if (((boolean)(value2))) {
-      theTime = helpGetTimeDuration(value2);
-      if (((boolean)(theTime))) {
-        { Surrogate* testValue001 = safePrimaryType(value1);
-
-          if (subtypeOfP(testValue001, SGT_TIMEPOINT_SUPPORT_LOGIC_PATTERN_VARIABLE)) {
-            { Object* value1000 = value1;
-              PatternVariable* value1 = ((PatternVariable*)(value1000));
-
-              return (selectProofResult(bindVariableToValueP(value1, wrapString(((TimeDuration*)(((DateTimeObject*)(theTime->wrapperValue))))->timeDurationToString()), true), false, true));
-            }
-          }
-          else if (subtypeOfP(testValue001, SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM)) {
-            { Object* value1001 = value1;
-              Skolem* value1 = ((Skolem*)(value1001));
-
-              { Skolem* object001 = value1;
-                Object* value001 = wrapString(((TimeDuration*)(((DateTimeObject*)(theTime->wrapperValue))))->timeDurationToString());
-                Object* oldValue001 = object001->variableValue;
-                Object* newValue001 = updateInContext(oldValue001, value001, object001->homeContext, false);
-
-                if (!(((boolean)(oldValue001)) &&
-                    (oldValue001->primaryType() == SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE))) {
-                  object001->variableValue = newValue001;
-                }
-              }
-              return (KWD_TIMEPOINT_SUPPORT_FINAL_SUCCESS);
-            }
+          if (!((boolean)(durationspecvalue))) {
+            value = NULL;
           }
           else {
-            return (KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE);
+            value = helpGetTimeDuration(durationspecvalue);
           }
         }
-      }
-      else {
-        return (KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE);
-      }
+      break;
+      default:
+      break;
     }
-    else {
-      return (KWD_TIMEPOINT_SUPPORT_FAILURE);
-    }
-  }
-}
-
-void timeMinusEvaluator(Proposition* self) {
-  { Object* value1 = valueOf((self->arguments->theArray)[0]);
-    Object* value2 = valueOf((self->arguments->theArray)[1]);
-    Object* value3 = valueOf((self->arguments->theArray)[2]);
-    DateTimeLogicWrapper* time1 = helpGetTimeObject(value1);
-    DateTimeLogicWrapper* time2 = helpGetTimeObject(value2);
-    DateTimeLogicWrapper* time3 = helpGetTimeObject(value3);
-
-    if (((boolean)(time1)) &&
-        (((boolean)(time2)) &&
-         ((boolean)(time3)))) {
-      try {
-        if (!(((DateTimeObject*)(time3->wrapperValue))->objectEqlP(timeSubtract(((DateTimeObject*)(time1->wrapperValue)), ((DateTimeObject*)(time2->wrapperValue)))))) {
-          signalTruthValueClash(self);
-        }
-      }
-      catch (StellaException ) {
-        signalTruthValueClash(self);
-      }
-    }
-  }
-}
-
-void timeAddEvaluator(Proposition* self) {
-  { Object* value1 = valueOf((self->arguments->theArray)[0]);
-    Object* value2 = valueOf((self->arguments->theArray)[1]);
-    Object* value3 = valueOf((self->arguments->theArray)[2]);
-    DateTimeLogicWrapper* time1 = helpGetTimeObject(value1);
-    DateTimeLogicWrapper* time2 = helpGetTimeObject(value2);
-    DateTimeLogicWrapper* time3 = helpGetTimeObject(value3);
-
-    if (((boolean)(time1)) &&
-        (((boolean)(time2)) &&
-         ((boolean)(time3)))) {
-      try {
-        if (!(((DateTimeObject*)(time3->wrapperValue))->objectEqlP(timeAdd(((DateTimeObject*)(time1->wrapperValue)), ((DateTimeObject*)(time2->wrapperValue)))))) {
-          signalTruthValueClash(self);
-        }
-      }
-      catch (StellaException ) {
-        signalTruthValueClash(self);
-      }
-    }
+    return (value);
   }
 }
 
@@ -1142,7 +825,7 @@ Object* timeMinusConstraint(IntegerWrapper* missingArgument, DateTimeLogicWrappe
   }
 }
 
-Object* timeAddConstraint(IntegerWrapper* missingArgument, DateTimeLogicWrapper* x1, DateTimeLogicWrapper* x2, DateTimeLogicWrapper* x3) {
+Object* timePlusConstraint(IntegerWrapper* missingArgument, DateTimeLogicWrapper* x1, DateTimeLogicWrapper* x2, DateTimeLogicWrapper* x3) {
   { Object* value = NULL;
 
     switch (missingArgument->wrapperValue) {
@@ -1237,215 +920,181 @@ LogicObject* dowKeywordToInstance(Keyword* dow) {
   }
 }
 
-Object* helpExtractDateTimeComponent(DateTimeLogicWrapper* timepoint, double timeZone, GeneralizedSymbol* predicate) {
-  { CalendarDate* date = ((CalendarDate*)(((DateTimeObject*)(timepoint->wrapperValue))));
+IntegerWrapper* timepointYearComputation(DateTimeLogicWrapper* timepoint, Object* timezone) {
+  timezone = wrapFloat(helpGetTimeZone(timezone));
+  if (((boolean)(timezone))) {
+    { int year = NULL_INTEGER;
+      int month = NULL_INTEGER;
+      int day = NULL_INTEGER;
+      Keyword* dow = NULL;
 
-    if (predicate == SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_YEAR) {
-      { int year = NULL_INTEGER;
-        int month = NULL_INTEGER;
-        int day = NULL_INTEGER;
-        Keyword* dow = NULL;
-
-        year = date->getCalendarDate(timeZone, month, day, dow);
-        {
-          month = month;
-          day = day;
-          dow = dow;
-        }
-        return (wrapInteger(year));
+      year = ((CalendarDate*)(((DateTimeObject*)(timepoint->wrapperValue))))->getCalendarDate(((FloatWrapper*)(timezone))->wrapperValue, month, day, dow);
+      {
+        month = month;
+        day = day;
+        dow = dow;
       }
+      return (wrapInteger(year));
     }
-    else if (predicate == SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_MONTH) {
-      { int year = NULL_INTEGER;
-        int month = NULL_INTEGER;
-        int day = NULL_INTEGER;
-        Keyword* dow = NULL;
-
-        year = date->getCalendarDate(timeZone, month, day, dow);
-        {
-          year = year;
-          day = day;
-          dow = dow;
-        }
-        return (wrapInteger(month));
-      }
-    }
-    else if (predicate == SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DAY) {
-      { int year = NULL_INTEGER;
-        int month = NULL_INTEGER;
-        int day = NULL_INTEGER;
-        Keyword* dow = NULL;
-
-        year = date->getCalendarDate(timeZone, month, day, dow);
-        {
-          year = year;
-          month = month;
-          dow = dow;
-        }
-        return (wrapInteger(day));
-      }
-    }
-    else if (predicate == SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DAY_OF_WEEK) {
-      { int year = NULL_INTEGER;
-        int month = NULL_INTEGER;
-        int day = NULL_INTEGER;
-        Keyword* dow = NULL;
-
-        year = date->getCalendarDate(timeZone, month, day, dow);
-        {
-          year = year;
-          month = month;
-          day = day;
-        }
-        return (dowKeywordToInstance(dow));
-      }
-    }
-    else if (predicate == SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_HOUR) {
-      { int hour = NULL_INTEGER;
-        int minute = NULL_INTEGER;
-        int second = NULL_INTEGER;
-        int millisecond = NULL_INTEGER;
-
-        hour = date->getTime(timeZone, minute, second, millisecond);
-        {
-          minute = minute;
-          second = second;
-          millisecond = millisecond;
-        }
-        return (wrapInteger(hour));
-      }
-    }
-    else if (predicate == SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_MINUTE) {
-      { int hour = NULL_INTEGER;
-        int minute = NULL_INTEGER;
-        int second = NULL_INTEGER;
-        int millisecond = NULL_INTEGER;
-
-        hour = date->getTime(timeZone, minute, second, millisecond);
-        {
-          hour = hour;
-          second = second;
-          millisecond = millisecond;
-        }
-        return (wrapInteger(minute));
-      }
-    }
-    else if (predicate == SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_SECOND) {
-      { int hour = NULL_INTEGER;
-        int minute = NULL_INTEGER;
-        int second = NULL_INTEGER;
-        int millisecond = NULL_INTEGER;
-
-        hour = date->getTime(timeZone, minute, second, millisecond);
-        {
-          hour = hour;
-          minute = minute;
-        }
-        if (millisecond == 0) {
-          return (wrapInteger(second));
-        }
-        else {
-          return (wrapFloat(((double)(second)) + (millisecond * 0.001)));
-        }
-      }
-    }
-    else if (predicate == SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DATE) {
-      return (wrapString(date->calendarDateToDateString(timeZone, false)));
-    }
-    else if (predicate == SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_TIME) {
-      return (wrapString(date->calendarDateToTimeString(timeZone, true, true, true)));
-    }
-    else {
-      { OutputStringStream* stream000 = newOutputStringStream();
-
-        *(stream000->nativeStream) << "`" << predicate << "'" << " is not a valid case option";
-        throw *newStellaException(stream000->theStringReader());
-      }
-    }
+  }
+  else {
+    return (NULL);
   }
 }
 
-Keyword* timepointAccessorSpecialist(ControlFrame* frame, Keyword* lastmove) {
-  { Proposition* proposition = frame->proposition;
-    GeneralizedSymbol* predicate = proposition->operatoR;
-    Object* timepointValue = valueOf((proposition->arguments->theArray)[0]);
-    Object* timeZoneValue = valueOf((proposition->arguments->theArray)[1]);
-    Object* result = valueOf((proposition->arguments->theArray)[2]);
-    DateTimeLogicWrapper* timepoint = helpGetTimeObject(timepointValue);
-    double timeZone = helpGetTimeZone(timeZoneValue);
+IntegerWrapper* timepointMonthComputation(DateTimeLogicWrapper* timepoint, Object* timezone) {
+  timezone = wrapFloat(helpGetTimeZone(timezone));
+  if (((boolean)(timezone))) {
+    { int year = NULL_INTEGER;
+      int month = NULL_INTEGER;
+      int day = NULL_INTEGER;
+      Keyword* dow = NULL;
 
-    lastmove = lastmove;
-    try {
-      if ((!((boolean)(timepoint))) ||
-          (timeZone == NULL_FLOAT)) {
-        return (KWD_TIMEPOINT_SUPPORT_FAILURE);
+      year = ((CalendarDate*)(((DateTimeObject*)(timepoint->wrapperValue))))->getCalendarDate(((FloatWrapper*)(timezone))->wrapperValue, month, day, dow);
+      {
+        year = year;
+        day = day;
+        dow = dow;
       }
-      else if (((boolean)(result))) {
-        { Object* theValue = helpExtractDateTimeComponent(timepoint, timeZone, predicate);
+      return (wrapInteger(month));
+    }
+  }
+  else {
+    return (NULL);
+  }
+}
 
-          { Surrogate* testValue000 = safePrimaryType(result);
+IntegerWrapper* timepointDayComputation(DateTimeLogicWrapper* timepoint, Object* timezone) {
+  timezone = wrapFloat(helpGetTimeZone(timezone));
+  if (((boolean)(timezone))) {
+    { int year = NULL_INTEGER;
+      int month = NULL_INTEGER;
+      int day = NULL_INTEGER;
+      Keyword* dow = NULL;
 
-            if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_LOGIC_PATTERN_VARIABLE)) {
-              { Object* result000 = result;
-                PatternVariable* result = ((PatternVariable*)(result000));
+      year = ((CalendarDate*)(((DateTimeObject*)(timepoint->wrapperValue))))->getCalendarDate(((FloatWrapper*)(timezone))->wrapperValue, month, day, dow);
+      {
+        year = year;
+        month = month;
+        dow = dow;
+      }
+      return (wrapInteger(day));
+    }
+  }
+  else {
+    return (NULL);
+  }
+}
 
-                return (selectProofResult(bindVariableToValueP(result, theValue, true), false, true));
-              }
-            }
-            else if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM)) {
-              { Object* result001 = result;
-                Skolem* result = ((Skolem*)(result001));
+LogicObject* timepointDayOfWeekComputation(DateTimeLogicWrapper* timepoint, Object* timezone) {
+  timezone = wrapFloat(helpGetTimeZone(timezone));
+  if (((boolean)(timezone))) {
+    { int year = NULL_INTEGER;
+      int month = NULL_INTEGER;
+      int day = NULL_INTEGER;
+      Keyword* dow = NULL;
 
-                { Skolem* object000 = result;
-                  Object* value000 = theValue;
-                  Object* oldValue000 = object000->variableValue;
-                  Object* newValue000 = updateInContext(oldValue000, value000, object000->homeContext, false);
+      year = ((CalendarDate*)(((DateTimeObject*)(timepoint->wrapperValue))))->getCalendarDate(((FloatWrapper*)(timezone))->wrapperValue, month, day, dow);
+      {
+        year = year;
+        month = month;
+        day = day;
+      }
+      return (dowKeywordToInstance(dow));
+    }
+  }
+  else {
+    return (NULL);
+  }
+}
 
-                  if (!(((boolean)(oldValue000)) &&
-                      (oldValue000->primaryType() == SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE))) {
-                    object000->variableValue = newValue000;
-                  }
-                }
-                return (KWD_TIMEPOINT_SUPPORT_FINAL_SUCCESS);
-              }
-            }
-            else if (subtypeOfP(testValue000, SGT_TIMEPOINT_SUPPORT_STELLA_NUMBER_WRAPPER)) {
-              { Object* result002 = result;
-                NumberWrapper* result = ((NumberWrapper*)(result002));
+IntegerWrapper* timepointHourComputation(DateTimeLogicWrapper* timepoint, Object* timezone) {
+  timezone = wrapFloat(helpGetTimeZone(timezone));
+  if (((boolean)(timezone))) {
+    { int hour = NULL_INTEGER;
+      int minute = NULL_INTEGER;
+      int second = NULL_INTEGER;
+      int millisecond = NULL_INTEGER;
 
-                return (selectProofResult(theValue->objectEqlP(result), false, true));
-              }
-            }
-            else if (subtypeOfStringP(testValue000)) {
-              { Object* result003 = result;
-                StringWrapper* result = ((StringWrapper*)(result003));
+      hour = ((CalendarDate*)(((DateTimeObject*)(timepoint->wrapperValue))))->getTime(((FloatWrapper*)(timezone))->wrapperValue, minute, second, millisecond);
+      {
+        minute = minute;
+        second = second;
+        millisecond = millisecond;
+      }
+      return (wrapInteger(hour));
+    }
+  }
+  else {
+    return (NULL);
+  }
+}
 
-                if (isaP(theValue, SGT_TIMEPOINT_SUPPORT_STELLA_STRING_WRAPPER)) {
-                  return (selectProofResult(stringEqualP(((StringWrapper*)(theValue))->wrapperValue, result->wrapperValue), false, true));
-                }
-                else {
-                  return (KWD_TIMEPOINT_SUPPORT_FAILURE);
-                }
-              }
-            }
-            else {
-              { OutputStringStream* stream000 = newOutputStringStream();
+IntegerWrapper* timepointMinuteComputation(DateTimeLogicWrapper* timepoint, Object* timezone) {
+  timezone = wrapFloat(helpGetTimeZone(timezone));
+  if (((boolean)(timezone))) {
+    { int hour = NULL_INTEGER;
+      int minute = NULL_INTEGER;
+      int second = NULL_INTEGER;
+      int millisecond = NULL_INTEGER;
 
-                *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
-                throw *newStellaException(stream000->theStringReader());
-              }
-            }
-          }
-        }
+      hour = ((CalendarDate*)(((DateTimeObject*)(timepoint->wrapperValue))))->getTime(((FloatWrapper*)(timezone))->wrapperValue, minute, second, millisecond);
+      {
+        hour = hour;
+        second = second;
+        millisecond = millisecond;
+      }
+      return (wrapInteger(minute));
+    }
+  }
+  else {
+    return (NULL);
+  }
+}
+
+NumberWrapper* timepointSecondComputation(DateTimeLogicWrapper* timepoint, Object* timezone) {
+  timezone = wrapFloat(helpGetTimeZone(timezone));
+  if (((boolean)(timezone))) {
+    { int hour = NULL_INTEGER;
+      int minute = NULL_INTEGER;
+      int second = NULL_INTEGER;
+      int millisecond = NULL_INTEGER;
+
+      hour = ((CalendarDate*)(((DateTimeObject*)(timepoint->wrapperValue))))->getTime(((FloatWrapper*)(timezone))->wrapperValue, minute, second, millisecond);
+      {
+        hour = hour;
+        minute = minute;
+      }
+      if (millisecond == 0) {
+        return (wrapInteger(second));
       }
       else {
-        return (KWD_TIMEPOINT_SUPPORT_FAILURE);
+        return (wrapFloat(second + (millisecond * 0.001)));
       }
     }
-    catch (StellaException ) {
-      setFrameTruthValue(frame, UNKNOWN_TRUTH_VALUE);
-      return (KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE);
-    }
+  }
+  else {
+    return (NULL);
+  }
+}
+
+StringWrapper* timepointDateComputation(DateTimeLogicWrapper* timepoint, Object* timezone) {
+  timezone = wrapFloat(helpGetTimeZone(timezone));
+  if (((boolean)(timezone))) {
+    return (wrapString(((CalendarDate*)(((DateTimeObject*)(timepoint->wrapperValue))))->calendarDateToDateString(((FloatWrapper*)(timezone))->wrapperValue, false)));
+  }
+  else {
+    return (NULL);
+  }
+}
+
+StringWrapper* timepointTimeComputation(DateTimeLogicWrapper* timepoint, Object* timezone) {
+  timezone = wrapFloat(helpGetTimeZone(timezone));
+  if (((boolean)(timezone))) {
+    return (wrapString(((CalendarDate*)(((DateTimeObject*)(timepoint->wrapperValue))))->calendarDateToTimeString(((FloatWrapper*)(timezone))->wrapperValue, true, true, true)));
+  }
+  else {
+    return (NULL);
   }
 }
 
@@ -1461,9 +1110,8 @@ void helpStartupTimepointSupport1() {
     SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM = ((Surrogate*)(internRigidSymbolWrtModule("SKOLEM", getStellaModule("/LOGIC", true), 1)));
     SGT_TIMEPOINT_SUPPORT_UNIT_SUPPORT_DIM_NUMBER_LOGIC_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("DIM-NUMBER-LOGIC-WRAPPER", getStellaModule("/UNIT-SUPPORT", true), 1)));
     SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE = ((Surrogate*)(internRigidSymbolWrtModule("CS-VALUE", getStellaModule("/STELLA", true), 1)));
-    KWD_TIMEPOINT_SUPPORT_FINAL_SUCCESS = ((Keyword*)(internRigidSymbolWrtModule("FINAL-SUCCESS", NULL, 2)));
-    KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE = ((Keyword*)(internRigidSymbolWrtModule("TERMINAL-FAILURE", NULL, 2)));
     KWD_TIMEPOINT_SUPPORT_FAILURE = ((Keyword*)(internRigidSymbolWrtModule("FAILURE", NULL, 2)));
+    KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE = ((Keyword*)(internRigidSymbolWrtModule("TERMINAL-FAILURE", NULL, 2)));
     KWD_TIMEPOINT_SUPPORT_MONDAY = ((Keyword*)(internRigidSymbolWrtModule("MONDAY", NULL, 2)));
     SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_MONDAY = ((Surrogate*)(internRigidSymbolWrtModule("MONDAY", getStellaModule("/TIMEPOINT-KB", true), 1)));
     KWD_TIMEPOINT_SUPPORT_TUESDAY = ((Keyword*)(internRigidSymbolWrtModule("TUESDAY", NULL, 2)));
@@ -1478,17 +1126,6 @@ void helpStartupTimepointSupport1() {
     SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_SATURDAY = ((Surrogate*)(internRigidSymbolWrtModule("SATURDAY", getStellaModule("/TIMEPOINT-KB", true), 1)));
     KWD_TIMEPOINT_SUPPORT_SUNDAY = ((Keyword*)(internRigidSymbolWrtModule("SUNDAY", NULL, 2)));
     SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_SUNDAY = ((Surrogate*)(internRigidSymbolWrtModule("SUNDAY", getStellaModule("/TIMEPOINT-KB", true), 1)));
-    SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_YEAR = ((Surrogate*)(internRigidSymbolWrtModule("TIMEPOINT-YEAR", getStellaModule("/TIMEPOINT-KB", true), 1)));
-    SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_MONTH = ((Surrogate*)(internRigidSymbolWrtModule("TIMEPOINT-MONTH", getStellaModule("/TIMEPOINT-KB", true), 1)));
-    SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DAY = ((Surrogate*)(internRigidSymbolWrtModule("TIMEPOINT-DAY", getStellaModule("/TIMEPOINT-KB", true), 1)));
-    SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DAY_OF_WEEK = ((Surrogate*)(internRigidSymbolWrtModule("TIMEPOINT-DAY-OF-WEEK", getStellaModule("/TIMEPOINT-KB", true), 1)));
-    SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_HOUR = ((Surrogate*)(internRigidSymbolWrtModule("TIMEPOINT-HOUR", getStellaModule("/TIMEPOINT-KB", true), 1)));
-    SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_MINUTE = ((Surrogate*)(internRigidSymbolWrtModule("TIMEPOINT-MINUTE", getStellaModule("/TIMEPOINT-KB", true), 1)));
-    SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_SECOND = ((Surrogate*)(internRigidSymbolWrtModule("TIMEPOINT-SECOND", getStellaModule("/TIMEPOINT-KB", true), 1)));
-    SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DATE = ((Surrogate*)(internRigidSymbolWrtModule("TIMEPOINT-DATE", getStellaModule("/TIMEPOINT-KB", true), 1)));
-    SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_TIME = ((Surrogate*)(internRigidSymbolWrtModule("TIMEPOINT-TIME", getStellaModule("/TIMEPOINT-KB", true), 1)));
-    SGT_TIMEPOINT_SUPPORT_STELLA_NUMBER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER-WRAPPER", getStellaModule("/STELLA", true), 1)));
-    SGT_TIMEPOINT_SUPPORT_STELLA_STRING_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("STRING-WRAPPER", getStellaModule("/STELLA", true), 1)));
     SYM_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_STARTUP_TIMEPOINT_SUPPORT = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-TIMEPOINT-SUPPORT", NULL, 0)));
     SYM_TIMEPOINT_SUPPORT_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
   }
@@ -1526,20 +1163,24 @@ void startupTimepointSupport() {
       defineFunctionObject("HELP-GET-FLOAT", "(DEFUN (HELP-GET-FLOAT FLOAT) ((OBJ OBJECT)))", ((cpp_function_code)(&helpGetFloat)), NULL);
       defineFunctionObject("HELP-GET-TIMEZONE", "(DEFUN (HELP-GET-TIMEZONE FLOAT) ((OBJ OBJECT)))", ((cpp_function_code)(&helpGetTimezone)), NULL);
       defineFunctionObject("CAN-BIND-ALL?", "(DEFUN (CAN-BIND-ALL? BOOLEAN) ((PL-OBJECTS CONS) (VALUES CONS)))", ((cpp_function_code)(&canBindAllP)), NULL);
-      defineFunctionObject("TIMEPOINT-OF-EVALUATOR", "(DEFUN TIMEPOINT-OF-EVALUATOR ((SELF PROPOSITION)))", ((cpp_function_code)(&timepointOfEvaluator)), NULL);
-      defineFunctionObject("TIMEPOINT-OF-SPECIALIST", "(DEFUN (TIMEPOINT-OF-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&timepointOfSpecialist)), NULL);
+      defineFunctionObject("TIMEPOINT-OF-CONSTRAINT", "(DEFUN (TIMEPOINT-OF-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 STRING-WRAPPER) (X2 DATE-TIME-LOGIC-WRAPPER)))", ((cpp_function_code)(&timepointOfConstraint)), NULL);
+      defineFunctionObject("TIMEPOINT-OF*-COMPUTATION", "(DEFUN (TIMEPOINT-OF*-COMPUTATION DATE-TIME-LOGIC-WRAPPER) ((YY INTEGER-WRAPPER) (MM INTEGER-WRAPPER) (DD INTEGER-WRAPPER) (HR INTEGER-WRAPPER) (MIN INTEGER-WRAPPER) (SEC NUMBER-WRAPPER) (TZ OBJECT)))", ((cpp_function_code)(&timepointOfOComputation)), NULL);
       defineFunctionObject("TIMEPOINT-OF*-EVALUATOR", "(DEFUN TIMEPOINT-OF*-EVALUATOR ((SELF PROPOSITION)))", ((cpp_function_code)(&timepointOfOEvaluator)), NULL);
       defineFunctionObject("TIMEPOINT-OF*-SPECIALIST", "(DEFUN (TIMEPOINT-OF*-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&timepointOfOSpecialist)), NULL);
-      defineFunctionObject("DURATION-OF-EVALUATOR", "(DEFUN DURATION-OF-EVALUATOR ((SELF PROPOSITION)))", ((cpp_function_code)(&durationOfEvaluator)), NULL);
-      defineFunctionObject("DURATION-OF-SPECIALIST", "(DEFUN (DURATION-OF-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&durationOfSpecialist)), NULL);
-      defineFunctionObject("TIME-MINUS-EVALUATOR", "(DEFUN TIME-MINUS-EVALUATOR ((SELF PROPOSITION)))", ((cpp_function_code)(&timeMinusEvaluator)), NULL);
-      defineFunctionObject("TIME-ADD-EVALUATOR", "(DEFUN TIME-ADD-EVALUATOR ((SELF PROPOSITION)))", ((cpp_function_code)(&timeAddEvaluator)), NULL);
+      defineFunctionObject("DURATION-OF-CONSTRAINT", "(DEFUN (DURATION-OF-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 STRING-WRAPPER) (X2 DATE-TIME-LOGIC-WRAPPER)))", ((cpp_function_code)(&durationOfConstraint)), NULL);
       defineFunctionObject("TIME-MINUS-CONSTRAINT", "(DEFUN (TIME-MINUS-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 DATE-TIME-LOGIC-WRAPPER) (X2 DATE-TIME-LOGIC-WRAPPER) (X3 DATE-TIME-LOGIC-WRAPPER)))", ((cpp_function_code)(&timeMinusConstraint)), NULL);
-      defineFunctionObject("TIME-ADD-CONSTRAINT", "(DEFUN (TIME-ADD-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 DATE-TIME-LOGIC-WRAPPER) (X2 DATE-TIME-LOGIC-WRAPPER) (X3 DATE-TIME-LOGIC-WRAPPER)))", ((cpp_function_code)(&timeAddConstraint)), NULL);
+      defineFunctionObject("TIME-PLUS-CONSTRAINT", "(DEFUN (TIME-PLUS-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 DATE-TIME-LOGIC-WRAPPER) (X2 DATE-TIME-LOGIC-WRAPPER) (X3 DATE-TIME-LOGIC-WRAPPER)))", ((cpp_function_code)(&timePlusConstraint)), NULL);
       defineFunctionObject("HELP-GET-TIME-ZONE", "(DEFUN (HELP-GET-TIME-ZONE FLOAT) ((TIME-ZONE-SPECIFIER OBJECT)))", ((cpp_function_code)(&helpGetTimeZone)), NULL);
       defineFunctionObject("DOW-KEYWORD-TO-INSTANCE", "(DEFUN (DOW-KEYWORD-TO-INSTANCE LOGIC-OBJECT) ((DOW KEYWORD)))", ((cpp_function_code)(&dowKeywordToInstance)), NULL);
-      defineFunctionObject("HELP-EXTRACT-DATE-TIME-COMPONENT", "(DEFUN (HELP-EXTRACT-DATE-TIME-COMPONENT OBJECT) ((TIMEPOINT DATE-TIME-LOGIC-WRAPPER) (TIME-ZONE FLOAT) (PREDICATE GENERALIZED-SYMBOL)))", ((cpp_function_code)(&helpExtractDateTimeComponent)), NULL);
-      defineFunctionObject("TIMEPOINT-ACCESSOR-SPECIALIST", "(DEFUN (TIMEPOINT-ACCESSOR-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&timepointAccessorSpecialist)), NULL);
+      defineFunctionObject("TIMEPOINT-YEAR-COMPUTATION", "(DEFUN (TIMEPOINT-YEAR-COMPUTATION INTEGER-WRAPPER) ((TIMEPOINT DATE-TIME-LOGIC-WRAPPER) (TIMEZONE OBJECT)))", ((cpp_function_code)(&timepointYearComputation)), NULL);
+      defineFunctionObject("TIMEPOINT-MONTH-COMPUTATION", "(DEFUN (TIMEPOINT-MONTH-COMPUTATION INTEGER-WRAPPER) ((TIMEPOINT DATE-TIME-LOGIC-WRAPPER) (TIMEZONE OBJECT)))", ((cpp_function_code)(&timepointMonthComputation)), NULL);
+      defineFunctionObject("TIMEPOINT-DAY-COMPUTATION", "(DEFUN (TIMEPOINT-DAY-COMPUTATION INTEGER-WRAPPER) ((TIMEPOINT DATE-TIME-LOGIC-WRAPPER) (TIMEZONE OBJECT)))", ((cpp_function_code)(&timepointDayComputation)), NULL);
+      defineFunctionObject("TIMEPOINT-DAY-OF-WEEK-COMPUTATION", "(DEFUN (TIMEPOINT-DAY-OF-WEEK-COMPUTATION LOGIC-OBJECT) ((TIMEPOINT DATE-TIME-LOGIC-WRAPPER) (TIMEZONE OBJECT)))", ((cpp_function_code)(&timepointDayOfWeekComputation)), NULL);
+      defineFunctionObject("TIMEPOINT-HOUR-COMPUTATION", "(DEFUN (TIMEPOINT-HOUR-COMPUTATION INTEGER-WRAPPER) ((TIMEPOINT DATE-TIME-LOGIC-WRAPPER) (TIMEZONE OBJECT)))", ((cpp_function_code)(&timepointHourComputation)), NULL);
+      defineFunctionObject("TIMEPOINT-MINUTE-COMPUTATION", "(DEFUN (TIMEPOINT-MINUTE-COMPUTATION INTEGER-WRAPPER) ((TIMEPOINT DATE-TIME-LOGIC-WRAPPER) (TIMEZONE OBJECT)))", ((cpp_function_code)(&timepointMinuteComputation)), NULL);
+      defineFunctionObject("TIMEPOINT-SECOND-COMPUTATION", "(DEFUN (TIMEPOINT-SECOND-COMPUTATION NUMBER-WRAPPER) ((TIMEPOINT DATE-TIME-LOGIC-WRAPPER) (TIMEZONE OBJECT)))", ((cpp_function_code)(&timepointSecondComputation)), NULL);
+      defineFunctionObject("TIMEPOINT-DATE-COMPUTATION", "(DEFUN (TIMEPOINT-DATE-COMPUTATION STRING-WRAPPER) ((TIMEPOINT DATE-TIME-LOGIC-WRAPPER) (TIMEZONE OBJECT)))", ((cpp_function_code)(&timepointDateComputation)), NULL);
+      defineFunctionObject("TIMEPOINT-TIME-COMPUTATION", "(DEFUN (TIMEPOINT-TIME-COMPUTATION STRING-WRAPPER) ((TIMEPOINT DATE-TIME-LOGIC-WRAPPER) (TIMEZONE OBJECT)))", ((cpp_function_code)(&timepointTimeComputation)), NULL);
       defineFunctionObject("STARTUP-TIMEPOINT-SUPPORT", "(DEFUN STARTUP-TIMEPOINT-SUPPORT () :PUBLIC? TRUE)", ((cpp_function_code)(&startupTimepointSupport)), NULL);
       { MethodSlot* function = lookupFunction(SYM_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_STARTUP_TIMEPOINT_SUPPORT);
 
@@ -1551,6 +1192,7 @@ void startupTimepointSupport() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("TIMEPOINT-SUPPORT")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DATE-TIME-HASH-TABLE* (STELLA-HASH-TABLE OF DATE-TIME-OBJECT DATE-TIME-LOGIC-WRAPPER) (NEW STELLA-HASH-TABLE) :DOCUMENTATION \"Table for interning date-time logic wrappers\")");
     }
   }
@@ -1576,11 +1218,9 @@ Surrogate* SGT_TIMEPOINT_SUPPORT_UNIT_SUPPORT_DIM_NUMBER_LOGIC_WRAPPER = NULL;
 
 Surrogate* SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE = NULL;
 
-Keyword* KWD_TIMEPOINT_SUPPORT_FINAL_SUCCESS = NULL;
+Keyword* KWD_TIMEPOINT_SUPPORT_FAILURE = NULL;
 
 Keyword* KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE = NULL;
-
-Keyword* KWD_TIMEPOINT_SUPPORT_FAILURE = NULL;
 
 Keyword* KWD_TIMEPOINT_SUPPORT_MONDAY = NULL;
 
@@ -1609,28 +1249,6 @@ Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_SATURDAY = NULL;
 Keyword* KWD_TIMEPOINT_SUPPORT_SUNDAY = NULL;
 
 Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_SUNDAY = NULL;
-
-Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_YEAR = NULL;
-
-Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_MONTH = NULL;
-
-Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DAY = NULL;
-
-Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DAY_OF_WEEK = NULL;
-
-Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_HOUR = NULL;
-
-Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_MINUTE = NULL;
-
-Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_SECOND = NULL;
-
-Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_DATE = NULL;
-
-Surrogate* SGT_TIMEPOINT_SUPPORT_TIMEPOINT_KB_TIMEPOINT_TIME = NULL;
-
-Surrogate* SGT_TIMEPOINT_SUPPORT_STELLA_NUMBER_WRAPPER = NULL;
-
-Surrogate* SGT_TIMEPOINT_SUPPORT_STELLA_STRING_WRAPPER = NULL;
 
 Symbol* SYM_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_STARTUP_TIMEPOINT_SUPPORT = NULL;
 

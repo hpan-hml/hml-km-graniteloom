@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -67,6 +67,60 @@ public class InputFileStream extends InputStream {
     }
   }
 
+  /** Set the current position of the file input cursor in <code>self</code> to <code>newpos</code>.
+   * If <code>self</code> has any tokenizer state associated with it, this will also reset
+   * to the start state of the tokenizer table; otherwise, behavior would be
+   * unpredictable unless the character class of the new position is exactly the
+   * same as the one following the most recent token.
+   * @param newpos
+   * @return long
+   */
+  public long streamPositionSetter(long newpos) {
+    { InputFileStream self = this;
+
+      { java.io.PushbackInputStream nstream = self.nativeStream;
+        TokenizerStreamState state = self.tokenizerState;
+
+        if (state != null) {
+          { long fileposition = Stella.nativeFileInputStreamPosition(nstream);
+            long offset = fileposition - newpos;
+            int buffered = 0;
+
+            if (offset > 0) {
+              buffered = state.bufferedInputLength();
+              if (offset <= buffered) {
+                state.cursor = ((int)(Stella.longInteger_mod(state.cursor + (buffered - offset), ((long)(state.bufferSize)))));
+                state.reset();
+                return (newpos);
+              }
+            }
+            state.clear();
+            state.reset();
+          }
+        }
+        Stella.nativeFileInputStreamPositionSetter(nstream, newpos);
+        return (newpos);
+      }
+    }
+  }
+
+  /** Return the current position of the file input cursor in <code>self</code>.
+   * @return long
+   */
+  public long streamPosition() {
+    { InputFileStream self = this;
+
+      { long position = Stella.nativeFileInputStreamPosition(self.nativeStream);
+        TokenizerStreamState state = self.tokenizerState;
+
+        if (state != null) {
+          position = position - state.bufferedInputLength();
+        }
+        return (position);
+      }
+    }
+  }
+
   public static boolean terminateFileInputStreamP(InputFileStream self) {
     { java.io.PushbackInputStream nativeStream = self.nativeStream;
 
@@ -95,7 +149,7 @@ public class InputFileStream extends InputStream {
 
         if ((testValue000 == Stella.KWD_ABORT) ||
             (testValue000 == Stella.KWD_PROBE)) {
-          if (!(Native.probeFileP(filename))) {
+          if (!(Stella.probeFileP(filename))) {
             return;
           }
         }
@@ -110,7 +164,7 @@ public class InputFileStream extends InputStream {
           }
         }
       }
-      self.nativeStream = new java.io.PushbackInputStream(Native.openInputFileStream(filename));
+      self.nativeStream = NativeFileInputStream.open(filename);
       if (self.nativeStream == null) {
         { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
 

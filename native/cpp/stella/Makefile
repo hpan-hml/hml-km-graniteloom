@@ -3,7 +3,7 @@
 # Makefile for STELLA.
 # Uses various constructs only supported by GNU make!
 
-# Template version: Makefile.in,v 1.10 2006/05/16 06:39:08 hans Exp
+# Template version: Makefile.in,v 1.11 2010/10/11 22:05:30 hans Exp
 
 SYSTEMS-ROOT = ..
 STELLA-ROOT = ../stella
@@ -11,7 +11,7 @@ STELLA-ROOT = ../stella
 # g++ settings:
 CXX    = g++
 CC     = gcc
-CFLAGS = -w -g -O2 -fno-common
+CFLAGS = -w -g -O2 -fno-common -fPIC
 
 # Some versions of Unix and/or gcc need special switches; see what we have:
 OS = $(shell if gcc --version | grep -iq "CYGWIN"; then echo "CYGWIN"; \

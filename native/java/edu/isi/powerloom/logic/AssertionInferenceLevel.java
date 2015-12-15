@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -73,7 +73,7 @@ public class AssertionInferenceLevel extends SubsumptionInferenceLevel {
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             m = iter000.value;
             if (level.levellizedTestTypeOnInstanceP(m, type)) {
-              members = Stella_Object.cons(m, members);
+              members = Cons.cons(m, members);
             }
           }
         }

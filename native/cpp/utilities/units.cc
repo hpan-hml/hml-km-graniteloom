@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -82,7 +82,7 @@ Ratio* oRATIO_ONEo = NULL;
 Ratio* newRatio(int numerator, int denominator) {
   { Ratio* self = NULL;
 
-    self = new Ratio();
+    self = new (PointerFreeGC)Ratio;
     self->numerator = numerator;
     self->denominator = denominator;
     return (self);
@@ -131,7 +131,7 @@ void Ratio::printObject(std::ostream* stream) {
 }
 
 Ratio* makeRatio(int num, int denom) {
-  { int thegcd = gcd(num, denom);
+  { long long int thegcd = gcd(((long long int)(num)), ((long long int)(denom)));
     int n = 0;
     int d = 0;
     boolean negativeP = false;
@@ -639,7 +639,7 @@ double unitToScaleFactorAndId(char* definition, Ratio*& _Return1) {
             scaledP = false;
           }
           else if (testValue000 == KWD_UNITS_INTEGER) {
-            exponentValue = stringToInteger(getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false));
+            exponentValue = ((int)(stringToInteger(getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false))));
             if (invertP) {
               exponentValue = 0 - exponentValue;
             }
@@ -774,11 +774,11 @@ char* computeUnitsForInteger(int value, boolean negateExponentP) {
           }
           i = insertString(((Measure*)(oPRIME_TO_BASE_MEASURE_TABLEo->lookup(p)))->baseUnit, 0, NULL_INTEGER, buffer, i, KWD_UNITS_PRESERVE);
           if (negateExponentP) {
-            i = insertString(integerToString(0 - e), 0, NULL_INTEGER, buffer, i, KWD_UNITS_PRESERVE);
+            i = insertString(integerToString(((long long int)(0 - e))), 0, NULL_INTEGER, buffer, i, KWD_UNITS_PRESERVE);
             previousNoExponentP = false;
           }
           else if (e > 1) {
-            i = insertString(integerToString(e), 0, NULL_INTEGER, buffer, i, KWD_UNITS_PRESERVE);
+            i = insertString(integerToString(((long long int)(e))), 0, NULL_INTEGER, buffer, i, KWD_UNITS_PRESERVE);
             previousNoExponentP = false;
           }
           else {
@@ -1361,9 +1361,20 @@ TimeDuration* dimToTimeDuration(DimNumber* timeValue) {
   // Converts the dimensioned number `time-value' to its
   // equivalent value as a `time-duration' object.  If `time-value' is not
   // of the appropriate units, an `incompatible-units-exception' is thrown.
-  { int days = stella::floor(timeValue->getMagnitude("days"));
+  if (timeValue->signum() == -1) {
+    {
+      timeValue = timeValue->negate();
+      { int days = stella::floor(timeValue->getMagnitude("days"));
 
-    return (makeTimeDuration(days, stella::floor(timeValue->subtract(makeDimNumber(((double)(days)), "days"))->getMagnitude("ms"))));
+        return (makeTimeDuration(0 - days, 0 - stella::floor(timeValue->subtract(makeDimNumber(((double)(days)), "days"))->getMagnitude("ms"))));
+      }
+    }
+  }
+  else {
+    { int days = stella::floor(timeValue->getMagnitude("days"));
+
+      return (makeTimeDuration(days, stella::floor(timeValue->subtract(makeDimNumber(((double)(days)), "days"))->getMagnitude("ms"))));
+    }
   }
 }
 
@@ -1636,6 +1647,7 @@ void startupUnits() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("UTILITIES")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *PRIME-NUMBERS* (CONS OF INTEGER-WRAPPER) (QUOTE (2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97)) :PUBLIC? FALSE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CURRENT-PRIME-INDEX* INTEGER -1 :PUBLIC? FALSE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *PRIME-TO-MEASURE-TABLE* (STELLA-HASH-TABLE OF RATIO MEASURE) (NEW STELLA-HASH-TABLE) :PUBLIC? FALSE)");

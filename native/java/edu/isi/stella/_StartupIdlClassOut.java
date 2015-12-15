@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,16 +56,16 @@ public class _StartupIdlClassOut {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.SYM_STELLA_IDL_INTERFACE = ((Symbol)(Stella.internRigidSymbolWrtModule("IDL_INTERFACE", null, 0)));
-          Stella.SYM_STELLA_sIDL_THEORYsinterface = ((Symbol)(Stella.internRigidSymbolWrtModule("/IDL-THEORY/interface", null, 0)));
-          Stella.SYM_STELLA_sIDL_THEORYsstruct = ((Symbol)(Stella.internRigidSymbolWrtModule("/IDL-THEORY/struct", null, 0)));
-          Stella.SYM_STELLA_sIDL_THEORYsenum = ((Symbol)(Stella.internRigidSymbolWrtModule("/IDL-THEORY/enum", null, 0)));
-          Stella.SYM_STELLA_sIDL_THEORYstypedef = ((Symbol)(Stella.internRigidSymbolWrtModule("/IDL-THEORY/typedef", null, 0)));
-          Stella.SYM_STELLA_IDL_STRUCT = ((Symbol)(Stella.internRigidSymbolWrtModule("IDL_STRUCT", null, 0)));
-          Stella.SYM_STELLA_IDL_ENUM = ((Symbol)(Stella.internRigidSymbolWrtModule("IDL_ENUM", null, 0)));
-          Stella.SYM_STELLA_IDL_DECLARATIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("IDL_DECLARATIONS", null, 0)));
-          Stella.SYM_STELLA_IDL_SIGNATURES = ((Symbol)(Stella.internRigidSymbolWrtModule("IDL_SIGNATURES", null, 0)));
-          Stella.SYM_STELLA_STARTUP_IDL_CLASS_OUT = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-IDL-CLASS-OUT", null, 0)));
+          Stella.SYM_STELLA_IDL_INTERFACE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL_INTERFACE", null, 0)));
+          Stella.SYM_STELLA_sIDL_THEORYsinterface = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("/IDL-THEORY/interface", null, 0)));
+          Stella.SYM_STELLA_sIDL_THEORYsstruct = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("/IDL-THEORY/struct", null, 0)));
+          Stella.SYM_STELLA_sIDL_THEORYsenum = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("/IDL-THEORY/enum", null, 0)));
+          Stella.SYM_STELLA_sIDL_THEORYstypedef = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("/IDL-THEORY/typedef", null, 0)));
+          Stella.SYM_STELLA_IDL_STRUCT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL_STRUCT", null, 0)));
+          Stella.SYM_STELLA_IDL_ENUM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL_ENUM", null, 0)));
+          Stella.SYM_STELLA_IDL_DECLARATIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL_DECLARATIONS", null, 0)));
+          Stella.SYM_STELLA_IDL_SIGNATURES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IDL_SIGNATURES", null, 0)));
+          Stella.SYM_STELLA_STARTUP_IDL_CLASS_OUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-IDL-CLASS-OUT", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -95,6 +95,9 @@ public class _StartupIdlClassOut {
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
           Stella.cleanupUnfinalizedClasses();
+        }
+        if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
         }
 
       } finally {

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,46 +50,46 @@ import edu.isi.stella.javalib.*;
 public class _StartupDateTime {
   static void helpStartupDateTime1() {
     {
-      Stella.KWD_MONDAY = ((Keyword)(Stella.internRigidSymbolWrtModule("MONDAY", null, 2)));
-      Stella.KWD_TUESDAY = ((Keyword)(Stella.internRigidSymbolWrtModule("TUESDAY", null, 2)));
-      Stella.KWD_WEDNESDAY = ((Keyword)(Stella.internRigidSymbolWrtModule("WEDNESDAY", null, 2)));
-      Stella.KWD_THURSDAY = ((Keyword)(Stella.internRigidSymbolWrtModule("THURSDAY", null, 2)));
-      Stella.KWD_FRIDAY = ((Keyword)(Stella.internRigidSymbolWrtModule("FRIDAY", null, 2)));
-      Stella.KWD_SATURDAY = ((Keyword)(Stella.internRigidSymbolWrtModule("SATURDAY", null, 2)));
-      Stella.KWD_SUNDAY = ((Keyword)(Stella.internRigidSymbolWrtModule("SUNDAY", null, 2)));
-      Stella.KWD_NEW_MOON = ((Keyword)(Stella.internRigidSymbolWrtModule("NEW-MOON", null, 2)));
-      Stella.KWD_FIRST_QUARTER = ((Keyword)(Stella.internRigidSymbolWrtModule("FIRST-QUARTER", null, 2)));
-      Stella.KWD_FULL_MOON = ((Keyword)(Stella.internRigidSymbolWrtModule("FULL-MOON", null, 2)));
-      Stella.KWD_LAST_QUARTER = ((Keyword)(Stella.internRigidSymbolWrtModule("LAST-QUARTER", null, 2)));
-      Stella.SGT_STELLA_DECODED_DATE_TIME = ((Surrogate)(Stella.internRigidSymbolWrtModule("DECODED-DATE-TIME", null, 1)));
-      Stella.SYM_STELLA_DATE_TIME_MILLIS = ((Symbol)(Stella.internRigidSymbolWrtModule("DATE-TIME-MILLIS", null, 0)));
-      Stella.SYM_STELLA_DATE_TIME_SECOND = ((Symbol)(Stella.internRigidSymbolWrtModule("DATE-TIME-SECOND", null, 0)));
-      Stella.SYM_STELLA_DATE_TIME_MINUTE = ((Symbol)(Stella.internRigidSymbolWrtModule("DATE-TIME-MINUTE", null, 0)));
-      Stella.SYM_STELLA_DATE_TIME_HOUR = ((Symbol)(Stella.internRigidSymbolWrtModule("DATE-TIME-HOUR", null, 0)));
-      Stella.SYM_STELLA_DATE_TIME_DAY = ((Symbol)(Stella.internRigidSymbolWrtModule("DATE-TIME-DAY", null, 0)));
-      Stella.SYM_STELLA_DATE_TIME_MONTH = ((Symbol)(Stella.internRigidSymbolWrtModule("DATE-TIME-MONTH", null, 0)));
-      Stella.SYM_STELLA_DATE_TIME_YEAR = ((Symbol)(Stella.internRigidSymbolWrtModule("DATE-TIME-YEAR", null, 0)));
-      Stella.SYM_STELLA_DATE_TIME_ZONE = ((Symbol)(Stella.internRigidSymbolWrtModule("DATE-TIME-ZONE", null, 0)));
-      Stella.SYM_STELLA_DATE_TIME_DOW = ((Symbol)(Stella.internRigidSymbolWrtModule("DATE-TIME-DOW", null, 0)));
-      Stella.SGT_STELLA_DECODED_TIME_DURATION = ((Surrogate)(Stella.internRigidSymbolWrtModule("DECODED-TIME-DURATION", null, 1)));
-      Stella.SYM_STELLA_DURATION_MILLIS = ((Symbol)(Stella.internRigidSymbolWrtModule("DURATION-MILLIS", null, 0)));
-      Stella.SYM_STELLA_DURATION_SECONDS = ((Symbol)(Stella.internRigidSymbolWrtModule("DURATION-SECONDS", null, 0)));
-      Stella.SYM_STELLA_DURATION_MINUTES = ((Symbol)(Stella.internRigidSymbolWrtModule("DURATION-MINUTES", null, 0)));
-      Stella.SYM_STELLA_DURATION_HOURS = ((Symbol)(Stella.internRigidSymbolWrtModule("DURATION-HOURS", null, 0)));
-      Stella.SYM_STELLA_DURATION_DAYS = ((Symbol)(Stella.internRigidSymbolWrtModule("DURATION-DAYS", null, 0)));
-      Stella.SGT_STELLA_CALENDAR_DATE = ((Surrogate)(Stella.internRigidSymbolWrtModule("CALENDAR-DATE", null, 1)));
-      Stella.SYM_STELLA_MODIFIED_JULIAN_DAY = ((Symbol)(Stella.internRigidSymbolWrtModule("MODIFIED-JULIAN-DAY", null, 0)));
-      Stella.SYM_STELLA_TIME_MILLIS = ((Symbol)(Stella.internRigidSymbolWrtModule("TIME-MILLIS", null, 0)));
-      Stella.SGT_STELLA_TIME_DURATION = ((Surrogate)(Stella.internRigidSymbolWrtModule("TIME-DURATION", null, 1)));
-      Stella.SYM_STELLA_DAYS = ((Symbol)(Stella.internRigidSymbolWrtModule("DAYS", null, 0)));
-      Stella.SYM_STELLA_MILLIS = ((Symbol)(Stella.internRigidSymbolWrtModule("MILLIS", null, 0)));
-      Stella.SGT_STELLA_NUMBER_WRAPPER = ((Surrogate)(Stella.internRigidSymbolWrtModule("NUMBER-WRAPPER", null, 1)));
-      Stella.SYM_STELLA_INCOMPATIBLE_QUANTITY_EXCEPTION = ((Symbol)(Stella.internRigidSymbolWrtModule("INCOMPATIBLE-QUANTITY-EXCEPTION", null, 0)));
-      Stella.SYM_STELLA_T1 = ((Symbol)(Stella.internRigidSymbolWrtModule("T1", null, 0)));
-      Stella.SYM_STELLA_T2 = ((Symbol)(Stella.internRigidSymbolWrtModule("T2", null, 0)));
-      Stella.SYM_STELLA_CALENDAR_DATE = ((Symbol)(Stella.internRigidSymbolWrtModule("CALENDAR-DATE", null, 0)));
-      Stella.SYM_STELLA_TIME_DURATION = ((Symbol)(Stella.internRigidSymbolWrtModule("TIME-DURATION", null, 0)));
-      Stella.SYM_STELLA_STARTUP_DATE_TIME = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-DATE-TIME", null, 0)));
+      Stella.KWD_MONDAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MONDAY", null, 2)));
+      Stella.KWD_TUESDAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TUESDAY", null, 2)));
+      Stella.KWD_WEDNESDAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("WEDNESDAY", null, 2)));
+      Stella.KWD_THURSDAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("THURSDAY", null, 2)));
+      Stella.KWD_FRIDAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FRIDAY", null, 2)));
+      Stella.KWD_SATURDAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SATURDAY", null, 2)));
+      Stella.KWD_SUNDAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SUNDAY", null, 2)));
+      Stella.KWD_NEW_MOON = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NEW-MOON", null, 2)));
+      Stella.KWD_FIRST_QUARTER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FIRST-QUARTER", null, 2)));
+      Stella.KWD_FULL_MOON = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FULL-MOON", null, 2)));
+      Stella.KWD_LAST_QUARTER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LAST-QUARTER", null, 2)));
+      Stella.SGT_STELLA_DECODED_DATE_TIME = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DECODED-DATE-TIME", null, 1)));
+      Stella.SYM_STELLA_DATE_TIME_MILLIS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DATE-TIME-MILLIS", null, 0)));
+      Stella.SYM_STELLA_DATE_TIME_SECOND = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DATE-TIME-SECOND", null, 0)));
+      Stella.SYM_STELLA_DATE_TIME_MINUTE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DATE-TIME-MINUTE", null, 0)));
+      Stella.SYM_STELLA_DATE_TIME_HOUR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DATE-TIME-HOUR", null, 0)));
+      Stella.SYM_STELLA_DATE_TIME_DAY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DATE-TIME-DAY", null, 0)));
+      Stella.SYM_STELLA_DATE_TIME_MONTH = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DATE-TIME-MONTH", null, 0)));
+      Stella.SYM_STELLA_DATE_TIME_YEAR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DATE-TIME-YEAR", null, 0)));
+      Stella.SYM_STELLA_DATE_TIME_ZONE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DATE-TIME-ZONE", null, 0)));
+      Stella.SYM_STELLA_DATE_TIME_DOW = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DATE-TIME-DOW", null, 0)));
+      Stella.SGT_STELLA_DECODED_TIME_DURATION = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DECODED-TIME-DURATION", null, 1)));
+      Stella.SYM_STELLA_DURATION_MILLIS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DURATION-MILLIS", null, 0)));
+      Stella.SYM_STELLA_DURATION_SECONDS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DURATION-SECONDS", null, 0)));
+      Stella.SYM_STELLA_DURATION_MINUTES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DURATION-MINUTES", null, 0)));
+      Stella.SYM_STELLA_DURATION_HOURS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DURATION-HOURS", null, 0)));
+      Stella.SYM_STELLA_DURATION_DAYS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DURATION-DAYS", null, 0)));
+      Stella.SGT_STELLA_CALENDAR_DATE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CALENDAR-DATE", null, 1)));
+      Stella.SYM_STELLA_MODIFIED_JULIAN_DAY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MODIFIED-JULIAN-DAY", null, 0)));
+      Stella.SYM_STELLA_TIME_MILLIS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TIME-MILLIS", null, 0)));
+      Stella.SGT_STELLA_TIME_DURATION = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("TIME-DURATION", null, 1)));
+      Stella.SYM_STELLA_DAYS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DAYS", null, 0)));
+      Stella.SYM_STELLA_MILLIS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MILLIS", null, 0)));
+      Stella.SGT_STELLA_NUMBER_WRAPPER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NUMBER-WRAPPER", null, 1)));
+      Stella.SYM_STELLA_INCOMPATIBLE_QUANTITY_EXCEPTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INCOMPATIBLE-QUANTITY-EXCEPTION", null, 0)));
+      Stella.SYM_STELLA_T1 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("T1", null, 0)));
+      Stella.SYM_STELLA_T2 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("T2", null, 0)));
+      Stella.SYM_STELLA_CALENDAR_DATE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CALENDAR-DATE", null, 0)));
+      Stella.SYM_STELLA_TIME_DURATION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TIME-DURATION", null, 0)));
+      Stella.SYM_STELLA_STARTUP_DATE_TIME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-DATE-TIME", null, 0)));
     }
   }
 
@@ -106,7 +106,7 @@ public class _StartupDateTime {
       Stella.defineFunctionObject("GET-LOCAL-TIME-ZONE", "(DEFUN (GET-LOCAL-TIME-ZONE FLOAT) () :PUBLIC? TRUE :DOCUMENTATION \"Returns the current time zone offset from UTC as a float,\nconsidering the effects of daylight savings time.\")", Native.find_java_method("edu.isi.stella.Stella", "getLocalTimeZone", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("GET-LOCAL-STANDARD-TIME-ZONE", "(DEFUN (GET-LOCAL-STANDARD-TIME-ZONE FLOAT) () :PUBLIC? TRUE :DOCUMENTATION \"Returns the standard time zone offset from UTC as a float,\nwithout considering the effects of daylight savings time.\")", Native.find_java_method("edu.isi.stella.Stella", "getLocalStandardTimeZone", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("GET-LOCAL-TIME-ZONE-FOR-DATE", "(DEFUN (GET-LOCAL-TIME-ZONE-FOR-DATE FLOAT) ((YEAR INTEGER) (MONTH INTEGER) (DAY INTEGER) (HOUR INTEGER) (MINUTE INTEGER) (SECOND INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Returns the time zone offset from UTC (as a float)\nthat is applicable to the given date.  Assumes that the date is one\nthat is valid for the underlying programming language.  If not, then\nreturns 0.0\")", Native.find_java_method("edu.isi.stella.Stella", "getLocalTimeZoneForDate", new java.lang.Class [] {java.lang.Integer.TYPE, java.lang.Integer.TYPE, java.lang.Integer.TYPE, java.lang.Integer.TYPE, java.lang.Integer.TYPE, java.lang.Integer.TYPE}), null);
-      Stella.defineFunctionObject("TIME-ZONE-FORMAT60", "(DEFUN (TIME-ZONE-FORMAT60 STRING) ((TIMEZONE FLOAT)) :PUBLIC? FALSE :DOCUMENTATION \"Format `zone' as an hh:mm string\")", Native.find_java_method("edu.isi.stella.Stella", "timeZoneFormat60", new java.lang.Class [] {java.lang.Double.TYPE}), null);
+      Stella.defineFunctionObject("TIME-ZONE-FORMAT60", "(DEFUN (TIME-ZONE-FORMAT60 STRING) ((TIMEZONE FLOAT) (INCLUDE-COLON? BOOLEAN)) :PUBLIC? FALSE :DOCUMENTATION \"Format `zone' as an hh:mm or hhmm string depending on `include-colon?'\")", Native.find_java_method("edu.isi.stella.Stella", "timeZoneFormat60", new java.lang.Class [] {java.lang.Double.TYPE, java.lang.Boolean.TYPE}), null);
       Stella.defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF DECODED-DATE-TIME)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (LOGXOR (LOGOR (LOGOR (SHIFT-LEFT (DATE-TIME-YEAR SELF) 9) (SHIFT-LEFT (DATE-TIME-MONTH SELF) 5)) (DATE-TIME-DAY SELF)) (LOGOR (LOGOR (SHIFT-LEFT (DATE-TIME-HOUR SELF) 12) (SHIFT-LEFT (DATE-TIME-MINUTE SELF) 6)) (DATE-TIME-SECOND SELF)))))", Native.find_java_method("edu.isi.stella.DecodedDateTime", "hashCode_", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD SET-CURRENT-TIME ((VALUES-STRUCTURE DECODED-DATE-TIME)) :PUBLIC? TRUE :DOCUMENTATION \"Sets the current time into `values-structure'\")", Native.find_java_method("edu.isi.stella.DecodedDateTime", "setCurrentTime", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD SET-CURRENT-DATE ((VALUES-STRUCTURE DECODED-DATE-TIME)) :PUBLIC? TRUE :DOCUMENTATION \"Sets the current date into `values-structure'\")", Native.find_java_method("edu.isi.stella.DecodedDateTime", "setCurrentDate", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
@@ -171,33 +171,47 @@ public class _StartupDateTime {
         if (Stella.currentStartupTimePhaseP(4)) {
           Stella.MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
           Stella.MILLIS_PER_HOUR = 1000 * 60 * 60;
+          Stella.$MONTH_NAME_VECTOR$ = Vector.newVector(13);
+          { int i = Stella.NULL_INTEGER;
+            int iter039 = 0;
+            int upperBound040 = 12;
+            Stella_Object abbreviation = null;
+            Cons iter041 = Stella.getQuotedTree("((\"NUL\" \"January\" \"February\" \"March\" \"April\" \"May\" \"June\" \"July\" \"August\" \"September\" \"October\" \"November\" \"December\") \"/STELLA\")", "/STELLA");
+
+            for (;(iter039 <= upperBound040) &&
+                      (!(iter041 == Stella.NIL)); iter039 = iter039 + 1, iter041 = iter041.rest) {
+              i = iter039;
+              abbreviation = iter041.value;
+              (Stella.$MONTH_NAME_VECTOR$.theArray)[i] = (((StringWrapper)(abbreviation)));
+            }
+          }
           Stella.$MONTH_ABBREVIATION_VECTOR$ = Vector.newVector(13);
           { int i = Stella.NULL_INTEGER;
-            int iter038 = 0;
-            int upperBound039 = 12;
+            int iter043 = 0;
+            int upperBound044 = 12;
             Stella_Object abbreviation = null;
-            Cons iter040 = Stella.getQuotedTree("((\"NUL\" \"JAN\" \"FEB\" \"MAR\" \"APR\" \"MAY\" \"JUN\" \"JUL\" \"AUG\" \"SEP\" \"OCT\" \"NOV\" \"DEC\") \"/STELLA\")", "/STELLA");
+            Cons iter045 = Stella.getQuotedTree("((\"NUL\" \"JAN\" \"FEB\" \"MAR\" \"APR\" \"MAY\" \"JUN\" \"JUL\" \"AUG\" \"SEP\" \"OCT\" \"NOV\" \"DEC\") \"/STELLA\")", "/STELLA");
 
-            for (;(iter038 <= upperBound039) &&
-                      (!(iter040 == Stella.NIL)); iter038 = iter038 + 1, iter040 = iter040.rest) {
-              i = iter038;
-              abbreviation = iter040.value;
+            for (;(iter043 <= upperBound044) &&
+                      (!(iter045 == Stella.NIL)); iter043 = iter043 + 1, iter045 = iter045.rest) {
+              i = iter043;
+              abbreviation = iter045.value;
               (Stella.$MONTH_ABBREVIATION_VECTOR$.theArray)[i] = (((StringWrapper)(abbreviation)));
             }
           }
           Stella.$DEFAULT_DECODED_DATE_TIME$ = DecodedDateTime.newDecodedDateTime();
-          { DecodedDateTime self042 = DecodedDateTime.newDecodedDateTime();
+          { DecodedDateTime self047 = DecodedDateTime.newDecodedDateTime();
 
-            self042.dateTimeMillis = Stella.NULL_FLOAT;
-            self042.dateTimeSecond = Stella.NULL_INTEGER;
-            self042.dateTimeMinute = Stella.NULL_INTEGER;
-            self042.dateTimeHour = Stella.NULL_INTEGER;
-            self042.dateTimeDay = Stella.NULL_INTEGER;
-            self042.dateTimeMonth = Stella.NULL_INTEGER;
-            self042.dateTimeYear = Stella.NULL_INTEGER;
-            self042.dateTimeZone = Stella.NULL_FLOAT;
-            self042.dateTimeDow = null;
-            Stella.$NULL_DECODED_DATE_TIME$ = self042;
+            self047.dateTimeMillis = Stella.NULL_FLOAT;
+            self047.dateTimeSecond = Stella.NULL_INTEGER;
+            self047.dateTimeMinute = Stella.NULL_INTEGER;
+            self047.dateTimeHour = Stella.NULL_INTEGER;
+            self047.dateTimeDay = Stella.NULL_INTEGER;
+            self047.dateTimeMonth = Stella.NULL_INTEGER;
+            self047.dateTimeYear = Stella.NULL_INTEGER;
+            self047.dateTimeZone = Stella.NULL_FLOAT;
+            self047.dateTimeDow = null;
+            Stella.$NULL_DECODED_DATE_TIME$ = self047;
           }
         }
         if (Stella.currentStartupTimePhaseP(5)) {
@@ -231,7 +245,9 @@ public class _StartupDateTime {
           _StartupDateTime.helpStartupDateTime2();
           Stella.defineMethodObject("(DEFMETHOD (GREATER-EQUAL? BOOLEAN) ((T1 CALENDAR-DATE) (T2 OBJECT)))", Native.find_java_method("edu.isi.stella.CalendarDate", "greaterEqualP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), ((java.lang.reflect.Method)(null)));
           Stella.defineMethodObject("(DEFMETHOD (GREATER-EQUAL? BOOLEAN) ((T1 TIME-DURATION) (T2 OBJECT)))", Native.find_java_method("edu.isi.stella.TimeDuration", "greaterEqualP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), ((java.lang.reflect.Method)(null)));
-          Stella.defineFunctionObject("FILL-IN-DATE-SUBSTITUTION", "(DEFUN FILL-IN-DATE-SUBSTITUTION ((SUBSTITUTION-LIST (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER))) :DOCUMENTATION \"Fill in `substitution-list' with template variable substitions\nfor the names YEAR and DATE which correspond to the current year and date.\nThese substitutions can then be used with `substitute-template-variables-in-string'\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.KeyValueList", "fillInDateSubstitution", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
+          Stella.defineFunctionObject("FILL-IN-DATE-SUBSTITUTION", "(DEFUN FILL-IN-DATE-SUBSTITUTION ((SUBSTITUTION-LIST (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER))) :DOCUMENTATION \"Fill in `substitution-list' with template variable substitions\nfor the names YEAR and DATE which correspond to the current year and date.\nThese substitutions can then be used with `substitute-template-variables-in-string'\nDEPRECATED.  Use `add-date-subsitution' or `add-current-date-substitution' instead.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.KeyValueList", "fillInDateSubstitution", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
+          Stella.defineFunctionObject("ADD-DATE-SUBSTITUTION", "(DEFUN ADD-DATE-SUBSTITUTION ((DATE CALENDAR-DATE) (SUBSTITUTION-LIST (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER))) :DOCUMENTATION \"Fill in `substitution-list' with template variable substitions\nfor the names YEAR, MONTH, MON, DAY, HOUR, MINUTE, SECOND, TIMEZONE,\nDAY-OF-WEEK, DOW with their values for `date'.  Also, pre-formatted\nDATE, TIME and ISO8601 variables are set.\n\nTIMEZONE is in the format \\\"{+|-}hhmm\\\".  MONTH is the full English\nmonth name and MON is the numeric month.  DAY-OF-WEEK is an English\nstring and DOW is the first three letters.  Minutes and seconds are\nzero-padded.\n\nThese substitutions can be used with `substitute-template-variables-in-string'\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.CalendarDate", "addDateSubstitution", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.CalendarDate"), Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
+          Stella.defineFunctionObject("ADD-CURRENT-DATE-SUBSTITUTION", "(DEFUN ADD-CURRENT-DATE-SUBSTITUTION ((SUBSTITUTION-LIST (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER))) :DOCUMENTATION \"Fill in `substitution-list' with date information for the current\ndate and time.  See `add-date-substitution' for details.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.KeyValueList", "addCurrentDateSubstitution", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.KeyValueList")}), null);
           Stella.defineFunctionObject("STARTUP-DATE-TIME", "(DEFUN STARTUP-DATE-TIME () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella._StartupDateTime", "startupDateTime", new java.lang.Class [] {}), null);
           { MethodSlot function = Symbol.lookupFunction(Stella.SYM_STELLA_STARTUP_DATE_TIME);
 
@@ -243,8 +259,10 @@ public class _StartupDateTime {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MILLIS-PER-DAY INTEGER (* 1000 60 60 24) :PUBLIC? FALSE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT MILLIS-PER-HOUR INTEGER (* 1000 60 60) :PUBLIC? FALSE)");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MONTH-NAME-VECTOR* (VECTOR OF STRING-WRAPPER) NULL :DOCUMENTATION \"A vector of month names for printing dates\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MONTH-ABBREVIATION-VECTOR* (VECTOR OF STRING-WRAPPER) NULL :DOCUMENTATION \"A vector of month abbreviations for printing dates\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *DEFAULT-DECODED-DATE-TIME* DECODED-DATE-TIME (NEW DECODED-DATE-TIME))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT *NULL-DECODED-DATE-TIME* DECODED-DATE-TIME (NEW DECODED-DATE-TIME :DATE-TIME-MILLIS NULL :DATE-TIME-SECOND NULL :DATE-TIME-MINUTE NULL :DATE-TIME-HOUR NULL :DATE-TIME-DAY NULL :DATE-TIME-MONTH NULL :DATE-TIME-YEAR NULL :DATE-TIME-ZONE NULL :DATE-TIME-DOW NULL))");

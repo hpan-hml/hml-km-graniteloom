@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -129,7 +129,7 @@ public class LogicObject extends ContextSensitiveObject {
    * @return boolean
    */
   public static boolean testSlotValueP(LogicObject self, Surrogate relation, Stella_Object filler) {
-    return (Logic.testRelationOnArgumentsP(relation, Stella.consList(Stella_Object.cons(self, Stella_Object.cons(filler, Stella.NIL)))));
+    return (Logic.testRelationOnArgumentsP(relation, Cons.consList(Cons.cons(self, Cons.cons(filler, Stella.NIL)))));
   }
 
   /** Return a single value for the slot 'relation' (a surrogate)
@@ -149,7 +149,7 @@ public class LogicObject extends ContextSensitiveObject {
    * @return Cons
    */
   public static Cons allSlotValues(LogicObject self, Surrogate relation) {
-    return (Logic.allRelationValues(relation, Stella.consList(Stella_Object.cons(self, Stella.NIL))));
+    return (Logic.allRelationValues(relation, Cons.consList(Cons.cons(self, Stella.NIL))));
   }
 
   public void processDefinitionOptions(Stella_Object options) {
@@ -171,8 +171,8 @@ public class LogicObject extends ContextSensitiveObject {
   }
 
   public static Cons allEquivalentCollections(LogicObject self, boolean reflexiveP) {
-    { Cons equivalents = Stella.consList(Stella_Object.cons(self, Stella.NIL));
-      List unscannedequivalents = Stella.list(Stella_Object.cons(self, Stella.NIL));
+    { Cons equivalents = Cons.consList(Cons.cons(self, Stella.NIL));
+      List unscannedequivalents = List.list(Cons.cons(self, Stella.NIL));
       LogicObject u = null;
 
       if (LogicObject.allSupercollections(self).memberP(self)) {
@@ -185,7 +185,7 @@ public class LogicObject extends ContextSensitiveObject {
               parent = ((LogicObject)(iter000.value));
               if ((!equivalents.memberP(parent)) &&
                   LogicObject.allSupercollections(parent).memberP(u)) {
-                equivalents = Stella_Object.cons(parent, equivalents);
+                equivalents = Cons.cons(parent, equivalents);
                 unscannedequivalents.push(parent);
               }
             }
@@ -420,7 +420,7 @@ public class LogicObject extends ContextSensitiveObject {
     }
     if ((Stella.$TRACED_KEYWORDS$ != null) &&
         Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_CLASSIFIER)) {
-      System.out.println("   ALL-INFERABLE-SUBS:  " + Stella.consList(Stella_Object.cons(LogicObject.allInferableDirectSubcollections(renamed_Super).listify(), Stella.NIL)));
+      System.out.println("   ALL-INFERABLE-SUBS:  " + Cons.consList(Cons.cons(LogicObject.allInferableDirectSubcollections(renamed_Super).listify(), Stella.NIL)));
     }
     { Object old$ReversepolarityP$000 = Logic.$REVERSEPOLARITYp$.get();
 
@@ -565,7 +565,7 @@ public class LogicObject extends ContextSensitiveObject {
   public static void addIsaLink(LogicObject instance, Description superdescription) {
     { Proposition isaprop = Logic.assertIsaProposition(instance, superdescription.surrogateValueInverse);
 
-      KeyValueList.setDynamicSlotValue(isaprop.dynamicSlots, Logic.SYM_LOGIC_SUBSUMPTION_LINKp, (true ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER), Stella.FALSE_WRAPPER);
+      KeyValueList.setDynamicSlotValue(isaprop.dynamicSlots, Logic.SYM_LOGIC_SUBSUMPTION_LINKp, Stella.TRUE_WRAPPER, Stella.FALSE_WRAPPER);
       if (Stella_Object.traceKeywordP(Logic.KWD_CLASSIFIER_INFERENCES)) {
         { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
 
@@ -594,7 +594,7 @@ public class LogicObject extends ContextSensitiveObject {
 
   public static Cons helpAllSupportedNamedSubcollections(LogicObject self) {
     { Cons subcollections = Stella.NIL;
-      SupportedClosureIterator closureiterator = Logic.allocateSupportedClosureIterator(Stella_Object.cons(self, Stella_Object.cons(Logic.TRUE_TRUTH_VALUE, Stella.NIL)), Native.find_java_method("edu.isi.powerloom.logic.Logic", "allDirectlyLinkedSubcollections", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      SupportedClosureIterator closureiterator = Logic.allocateSupportedClosureIterator(Cons.cons(self, Cons.cons(Logic.TRUE_TRUTH_VALUE, Stella.NIL)), Native.find_java_method("edu.isi.powerloom.logic.Logic", "allDirectlyLinkedSubcollections", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
 
       { Cons sub = null;
         SupportedClosureIterator iter000 = closureiterator;
@@ -606,7 +606,7 @@ public class LogicObject extends ContextSensitiveObject {
               (!(sub.value == self))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(sub, Stella.NIL);
+                collect000 = Cons.cons(sub, Stella.NIL);
                 if (subcollections == Stella.NIL) {
                   subcollections = collect000;
                 }
@@ -617,7 +617,7 @@ public class LogicObject extends ContextSensitiveObject {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(sub, Stella.NIL);
+                collect000.rest = Cons.cons(sub, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -725,7 +725,7 @@ public class LogicObject extends ContextSensitiveObject {
                   child = ((LogicObject)(iter001.value));
                   if ((!equivalents.memberP(child)) &&
                       (!directsubs.memberP(child))) {
-                    directsubs = Stella_Object.cons(child, directsubs);
+                    directsubs = Cons.cons(child, directsubs);
                   }
                 }
               }
@@ -769,7 +769,7 @@ public class LogicObject extends ContextSensitiveObject {
                   parent = ((LogicObject)(iter001.value));
                   if ((!equivalents.memberP(parent)) &&
                       (!directsupers.memberP(parent))) {
-                    directsupers = Stella_Object.cons(parent, directsupers);
+                    directsupers = Cons.cons(parent, directsupers);
                   }
                 }
               }
@@ -847,7 +847,7 @@ public class LogicObject extends ContextSensitiveObject {
   }
 
   public static boolean derivePartitionMembershipsP(LogicObject self) {
-    { List tuples = Stella.list(Stella.NIL);
+    { List tuples = List.list(Stella.NIL);
 
       LogicObject.helpDerivePartitionMemberships(self, self, tuples);
       { LogicObject renamed_Super = null;
@@ -864,13 +864,13 @@ public class LogicObject extends ContextSensitiveObject {
 
   public static void helpDerivePartitionMemberships(LogicObject self, LogicObject renamed_Super, List tuples) {
     { Stella_Object mc = null;
-      Cons iter000 = Logic.applyCachedRetrieve(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_pSUPER, Stella_Object.cons(Logic.SYM_LOGIC_pMDC, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.list$(Stella_Object.cons(Logic.SYM_STELLA_AND, Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_MEMBER_OF, Stella_Object.cons(Logic.SYM_LOGIC_pSUPER, Stella_Object.cons(Logic.SYM_LOGIC_pMDC, Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Logic.SYM_LOGIC_MUTUALLY_DISJOINT_COLLECTION, Stella_Object.cons(Logic.SYM_LOGIC_pMDC, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella_Object.cons(Stella.NIL, Stella.NIL))))), Stella.consList(Stella_Object.cons(renamed_Super, Stella_Object.cons(null, Stella.NIL))), Stella.consList(Stella.NIL), Logic.SYM_LOGIC_F_HELP_DERIVE_PARTITION_MEMBERSHIPS_QUERY_000, new Object[1]);
+      Cons iter000 = Logic.applyCachedRetrieve(Cons.list$(Cons.cons(Logic.SYM_LOGIC_pSUPER, Cons.cons(Logic.SYM_LOGIC_pMDC, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.list$(Cons.cons(Logic.SYM_STELLA_AND, Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_MEMBER_OF, Cons.cons(Logic.SYM_LOGIC_pSUPER, Cons.cons(Logic.SYM_LOGIC_pMDC, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Logic.SYM_LOGIC_MUTUALLY_DISJOINT_COLLECTION, Cons.cons(Logic.SYM_LOGIC_pMDC, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.consList(Cons.cons(renamed_Super, Cons.cons(null, Stella.NIL))), Cons.consList(Stella.NIL), Logic.SYM_LOGIC_F_HELP_DERIVE_PARTITION_MEMBERSHIPS_QUERY_000, new Object[2]);
 
       for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
         mc = iter000.value;
         { Proposition mdcproposition = ((Proposition)(Logic.allTrueDependentPropositions(mc, Logic.SGT_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION, false).consify().value));
 
-          tuples.push(Logic.assertTuple(Logic.SGT_PL_KERNEL_KB_PARTITION_MEMBERSHIP, Stella.consList(Stella_Object.cons(self, Stella_Object.cons(mdcproposition, Stella_Object.cons(renamed_Super, Stella.NIL))))));
+          tuples.push(Logic.assertTuple(Logic.SGT_PL_KERNEL_KB_PARTITION_MEMBERSHIP, Cons.consList(Cons.cons(self, Cons.cons(mdcproposition, Cons.cons(renamed_Super, Stella.NIL))))));
         }
       }
     }
@@ -879,7 +879,7 @@ public class LogicObject extends ContextSensitiveObject {
 
       while (iter001.nextP()) {
         p = ((Proposition)(iter001.value));
-        tuples.push(Logic.assertTuple(Logic.SGT_PL_KERNEL_KB_PARTITION_MEMBERSHIP, Stella.consList(Stella_Object.cons(self, Stella_Object.cons(p, Stella_Object.cons(renamed_Super, Stella.NIL))))));
+        tuples.push(Logic.assertTuple(Logic.SGT_PL_KERNEL_KB_PARTITION_MEMBERSHIP, Cons.consList(Cons.cons(self, Cons.cons(p, Cons.cons(renamed_Super, Stella.NIL))))));
       }
     }
   }
@@ -1031,7 +1031,7 @@ public class LogicObject extends ContextSensitiveObject {
   }
 
   public static FloatWrapper matchInstances(LogicObject x, LogicObject y) {
-    { Cons prop = Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_CASE_MATCH, Stella_Object.cons(x, Stella_Object.cons(Stella_Object.cons(y, Stella.NIL), Stella.NIL))));
+    { Cons prop = Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_CASE_MATCH, Cons.cons(x, Cons.cons(Cons.cons(y, Stella.NIL), Stella.NIL))));
 
       return (FloatWrapper.wrapFloat(QueryIterator.returnPartialTruth(Logic.makeQuery(Stella.NIL, Logic.coerceToTree(prop), Stella.NIL, Stella.NIL), true)));
     }
@@ -1053,7 +1053,7 @@ public class LogicObject extends ContextSensitiveObject {
       List typeDefs = null;
 
       if (caseList == null) {
-        Logic.$CASE_NAME_TABLE$.insertAt(classSymbol, Stella.list(Stella_Object.cons(name, Stella.NIL)));
+        Logic.$CASE_NAME_TABLE$.insertAt(classSymbol, List.list(Cons.cons(name, Stella.NIL)));
       }
       else {
         {
@@ -1130,9 +1130,7 @@ public class LogicObject extends ContextSensitiveObject {
 
       while (iter000.nextP()) {
         p = ((Proposition)(iter000.value));
-        if (!(Proposition.evaluationState(p) != null)) {
-          Proposition.postForEvaluation(p);
-        }
+        Proposition.postForEvaluation(p, ((Context)(Stella.$CONTEXT$.get())));
         visitedlist.push(self);
         { Stella_Object arg = null;
           Vector vector000 = p.arguments;
@@ -1146,21 +1144,6 @@ public class LogicObject extends ContextSensitiveObject {
               LogicObject.evaluateReachableInequalities(((LogicObject)(arg)), visitedlist);
             }
           }
-        }
-      }
-    }
-  }
-
-  public List elaboratedInWorlds() {
-    { LogicObject self = this;
-
-      { List answer = ((List)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_ELABORATED_IN_WORLDS, null)));
-
-        if (answer == null) {
-          return (Stella.NIL_LIST);
-        }
-        else {
-          return (answer);
         }
       }
     }
@@ -1199,7 +1182,7 @@ public class LogicObject extends ContextSensitiveObject {
                (!truerulesonlyP))) {
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(p, Stella.NIL);
+                collect000 = Cons.cons(p, Stella.NIL);
                 if (rules == Stella.NIL) {
                   rules = collect000;
                 }
@@ -1210,7 +1193,7 @@ public class LogicObject extends ContextSensitiveObject {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(p, Stella.NIL);
+                collect000.rest = Cons.cons(p, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -1298,7 +1281,7 @@ public class LogicObject extends ContextSensitiveObject {
                 { Stella_Object arg = head000;
 
                   if (arg != null) {
-                    evaluatedarguments = Stella_Object.cons(Logic.evaluateTypedArgument(arg, type), evaluatedarguments);
+                    evaluatedarguments = Cons.cons(Logic.evaluateTypedArgument(arg, type), evaluatedarguments);
                   }
                 }
               }
@@ -1309,7 +1292,7 @@ public class LogicObject extends ContextSensitiveObject {
 
             for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
               arg = iter001.value;
-              evaluatedarguments = Stella_Object.cons(Logic.evaluateTypedArgument(arg, ((Surrogate)(variabletypes.last()))), evaluatedarguments);
+              evaluatedarguments = Cons.cons(Logic.evaluateTypedArgument(arg, ((Surrogate)(variabletypes.last()))), evaluatedarguments);
             }
           }
           return (evaluatedarguments.reverse());
@@ -1325,7 +1308,7 @@ public class LogicObject extends ContextSensitiveObject {
               arg = iter002.value;
               if (collect000 == null) {
                 {
-                  collect000 = Stella_Object.cons(Logic.evaluateTerm(arg), Stella.NIL);
+                  collect000 = Cons.cons(Logic.evaluateTerm(arg), Stella.NIL);
                   if (evaluatedarguments == Stella.NIL) {
                     evaluatedarguments = collect000;
                   }
@@ -1336,7 +1319,7 @@ public class LogicObject extends ContextSensitiveObject {
               }
               else {
                 {
-                  collect000.rest = Stella_Object.cons(Logic.evaluateTerm(arg), Stella.NIL);
+                  collect000.rest = Cons.cons(Logic.evaluateTerm(arg), Stella.NIL);
                   collect000 = collect000.rest;
                 }
               }
@@ -1411,7 +1394,7 @@ public class LogicObject extends ContextSensitiveObject {
           propertyproposition = Logic.createProposition(Logic.SYM_STELLA_PREDICATE, 1);
           (propertyproposition.arguments.theArray)[0] = self;
           propertyproposition.operator = surrogate;
-          Proposition.fastenDownOneProposition(propertyproposition, true);
+          Proposition.fastenDownOneProposition(propertyproposition, false);
         }
         Proposition.updatePropositionTruthValue(propertyproposition, updatemode);
         return (propertyproposition);
@@ -1425,6 +1408,9 @@ public class LogicObject extends ContextSensitiveObject {
       if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PATTERN_VARIABLE)) {
         { PatternVariable self000 = ((PatternVariable)(self));
 
+          if (Logic.lookupLogicVariableBinding(self000.skolemName) != null) {
+            return (self000);
+          }
         }
       }
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_SKOLEM)) {
@@ -1629,7 +1615,7 @@ public class LogicObject extends ContextSensitiveObject {
       }
     }
     { Description object002 = to;
-      Cons value002 = Stella_Object.cons(from, from.variableValueInverse());
+      Cons value002 = Cons.cons(from, from.variableValueInverse());
       Stella_Object oldValue003 = object002.variableValueInverse;
       Stella_Object newValue002 = Stella_Object.updateInContext(oldValue003, value002, object002.homeContext, false);
 
@@ -1747,7 +1733,7 @@ public class LogicObject extends ContextSensitiveObject {
       { BooleanWrapper answer = ((BooleanWrapper)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_STELLA_BADp, null)));
 
         if (answer == null) {
-          return ((false ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER));
+          return (Stella.FALSE_WRAPPER);
         }
         else {
           return (answer);

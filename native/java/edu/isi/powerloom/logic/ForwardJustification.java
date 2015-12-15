@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -49,59 +49,29 @@ import edu.isi.stella.javalib.Native;
 import edu.isi.stella.javalib.StellaSpecialVariable;
 import edu.isi.stella.*;
 
-/** Connects a proposition to other propositions
- * that collectively implied its truth.
- * @author Stella Java Translator
- */
-public class ForwardJustification extends StandardObject {
-    public Proposition consequent;
-    public Proposition forwardRule;
-    public Cons antecedents;
-
+public class ForwardJustification extends Justification {
   public static ForwardJustification newForwardJustification() {
     { ForwardJustification self = null;
 
       self = new ForwardJustification();
-      self.antecedents = null;
-      self.forwardRule = null;
-      self.consequent = null;
+      self.negativeScore = Stella.NULL_FLOAT;
+      self.positiveScore = Stella.NULL_FLOAT;
+      self.truthValue = null;
+      self.reversePolarityP = false;
+      self.substitution = null;
+      self.patternJustification = null;
+      self.antecedents = Stella.NIL;
+      self.proposition = null;
+      self.inferenceRule = null;
       return (self);
     }
   }
 
-  public static Stella_Object accessForwardJustificationSlotValue(ForwardJustification self, Symbol slotname, Stella_Object value, boolean setvalueP) {
-    if (slotname == Logic.SYM_LOGIC_CONSEQUENT) {
-      if (setvalueP) {
-        self.consequent = ((Proposition)(value));
-      }
-      else {
-        value = self.consequent;
-      }
-    }
-    else if (slotname == Logic.SYM_LOGIC_FORWARD_RULE) {
-      if (setvalueP) {
-        self.forwardRule = ((Proposition)(value));
-      }
-      else {
-        value = self.forwardRule;
-      }
-    }
-    else if (slotname == Logic.SYM_LOGIC_ANTECEDENTS) {
-      if (setvalueP) {
-        self.antecedents = ((Cons)(value));
-      }
-      else {
-        value = self.antecedents;
-      }
-    }
-    else {
-      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+  public Keyword inferenceDirection() {
+    { ForwardJustification self = this;
 
-        stream000.nativeStream.print("`" + slotname + "' is not a valid case option");
-        throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
-      }
+      return (Logic.KWD_FORWARD);
     }
-    return (value);
   }
 
   public Surrogate primaryType() {

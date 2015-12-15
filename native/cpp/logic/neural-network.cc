@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -158,7 +158,7 @@ Object* accessPropositionNeuralNetworkSlotValue(PropositionNeuralNetwork* self, 
   }
   else if (slotname == SYM_NEURAL_NETWORK_LOGIC_IH) {
     if (setvalueP) {
-      self->ih = ((twoDArray*)(value));
+      self->ih = ((two_D_array*)(value));
     }
     else {
       value = self->ih;
@@ -166,7 +166,7 @@ Object* accessPropositionNeuralNetworkSlotValue(PropositionNeuralNetwork* self, 
   }
   else if (slotname == SYM_NEURAL_NETWORK_LOGIC_IH_DELTA) {
     if (setvalueP) {
-      self->ihDelta = ((twoDArray*)(value));
+      self->ihDelta = ((two_D_array*)(value));
     }
     else {
       value = self->ihDelta;
@@ -190,7 +190,7 @@ Object* accessPropositionNeuralNetworkSlotValue(PropositionNeuralNetwork* self, 
   }
   else if (slotname == SYM_NEURAL_NETWORK_LOGIC_IH_SLOPE) {
     if (setvalueP) {
-      self->ihSlope = ((twoDArray*)(value));
+      self->ihSlope = ((two_D_array*)(value));
     }
     else {
       value = self->ihSlope;
@@ -198,7 +198,7 @@ Object* accessPropositionNeuralNetworkSlotValue(PropositionNeuralNetwork* self, 
   }
   else if (slotname == SYM_NEURAL_NETWORK_LOGIC_IH_PREV_SLOPE) {
     if (setvalueP) {
-      self->ihPrevSlope = ((twoDArray*)(value));
+      self->ihPrevSlope = ((two_D_array*)(value));
     }
     else {
       value = self->ihPrevSlope;
@@ -440,7 +440,7 @@ void randomizeNeuralNetwork(PropositionNeuralNetwork* net) {
 PropositionNeuralNetwork* createNeuralNetwork(Proposition* prop) {
   { PropositionNeuralNetwork* net = NULL;
     int numIn = prop->arguments->length() + 1;
-    int numHidden = stella::min(numIn + 0, 20);
+    int numHidden = stella::integerMin(numIn + 0, 20);
 
     if (numIn > 100) {
       numHidden = stella::floor(numIn / 10.0) + 10;
@@ -526,19 +526,19 @@ PropositionNeuralNetwork* defineNeuralNetworkFromParseTree(Cons* tree) {
 PropositionNeuralNetwork* allocateNeuralNetwork(int numIn, int numHidden) {
   { PropositionNeuralNetwork* net = newPropositionNeuralNetwork();
 
-    net->input = newVector(numIn);
-    net->hidden = newVector(numHidden);
-    net->ih = new2DArray(numIn, numHidden);
-    net->ihDelta = new2DArray(numIn, numHidden);
-    net->inputError = newVector(numIn);
-    net->hiddenError = newVector(numHidden);
-    net->ho = newVector(numHidden);
-    net->hoDelta = newVector(numHidden);
+    net->input = stella::newVector(numIn);
+    net->hidden = stella::newVector(numHidden);
+    net->ih = new2_D_array(numIn, numHidden);
+    net->ihDelta = new2_D_array(numIn, numHidden);
+    net->inputError = stella::newVector(numIn);
+    net->hiddenError = stella::newVector(numHidden);
+    net->ho = stella::newVector(numHidden);
+    net->hoDelta = stella::newVector(numHidden);
     if (oNEURAL_NETWORK_TRAINING_METHODo == KWD_NEURAL_NETWORK_QUICKPROP) {
-      net->ihSlope = new2DArray(numIn, numHidden);
-      net->ihPrevSlope = new2DArray(numIn, numHidden);
-      net->hoSlope = newVector(numHidden);
-      net->hoPrevSlope = newVector(numHidden);
+      net->ihSlope = new2_D_array(numIn, numHidden);
+      net->ihPrevSlope = new2_D_array(numIn, numHidden);
+      net->hoSlope = stella::newVector(numHidden);
+      net->hoPrevSlope = stella::newVector(numHidden);
     }
     return (net);
   }
@@ -551,7 +551,7 @@ double activatePropositionalNeuralNetwork(PropositionNeuralNetwork* net) {
     int stop = numIn - 1;
     Vector* input = net->input;
     Vector* hidden = net->hidden;
-    twoDArray* ih = net->ih;
+    two_D_array* ih = net->ih;
     Vector* ho = net->ho;
     double score = 0.0;
     double sum = 0.0;
@@ -631,7 +631,7 @@ void trainUncachedNeuralNetworks(int cycles, int numTraining) {
   { double mse = 0.0;
     int numEx = oTRAINING_EXAMPLESo->length();
     OutputStream* lookPtr = NULL;
-    Vector* examples = newVector(numTraining);
+    Vector* examples = stella::newVector(numTraining);
 
     if (numTraining > numEx) {
       *(STANDARD_ERROR->nativeStream) << "Error: There are only " << numEx << " training examples";
@@ -799,8 +799,8 @@ void backpropagateError(Proposition* prop, double error) {
       }
       error = error * output * (1.0 - output);
       if (recursiveConflict) {
-        savedInput = newVector(numIn);
-        savedHidden = newVector(numHidden);
+        savedInput = stella::newVector(numIn);
+        savedHidden = stella::newVector(numHidden);
         { int i = NULL_INTEGER;
           int iter002 = 0;
           int upperBound002 = numIn - 1;
@@ -824,8 +824,8 @@ void backpropagateError(Proposition* prop, double error) {
           }
         }
       }
-      hiddenError = newVector(numHidden);
-      inputError = newVector(numIn);
+      hiddenError = stella::newVector(numHidden);
+      inputError = stella::newVector(numIn);
       { int h = NULL_INTEGER;
         int iter004 = 0;
         int upperBound004 = numHidden - 1;
@@ -1018,7 +1018,7 @@ void quickpropagateError(Proposition* prop, double error) {
       }
       activatePropositionalNeuralNetwork(net);
       error = error * (oSIGMOID_PRIME_OFFSETo + (output * (1.0 - output)));
-      inputError = newVector(numIn);
+      inputError = stella::newVector(numIn);
       zeroVector(inputError);
       { int h = NULL_INTEGER;
         int iter001 = 0;
@@ -1295,7 +1295,7 @@ FloatWrapper* testOverTrainingExamplesEvaluatorWrapper(Cons* arguments) {
 double trainAndTestNeuralNetwork(int cycles, int numTraining, int numTesting) {
   trainNeuralNetwork(cycles, numTraining);
   { double mse = 0.0;
-    Vector* testingExamples = newVector(numTesting);
+    Vector* testingExamples = stella::newVector(numTesting);
 
     { int i = NULL_INTEGER;
       int iter000 = numTraining;
@@ -1386,7 +1386,7 @@ FloatWrapper* testNeuralNetworkEvaluatorWrapper(Cons* arguments) {
 }
 
 double multipleNetworkTrainingRuns(int runs, int cycles, int numTraining) {
-  { Vector* errors = newVector(runs);
+  { Vector* errors = stella::newVector(runs);
     double sum = 0.0;
 
     { int i = NULL_INTEGER;
@@ -1439,10 +1439,10 @@ void trainCachedNeuralNetworks(int cycles, int numTraining) {
     double target = 0.0;
     double output = 0.0;
     int numEx = oTRAINING_EXAMPLESo->length();
-    Vector* index = newVector(numTraining);
+    Vector* index = stella::newVector(numTraining);
     OutputStream* lookPtr = NULL;
-    Vector* examples = newVector(numTraining);
-    Vector* netRecords = newVector(numTraining);
+    Vector* examples = stella::newVector(numTraining);
+    Vector* netRecords = stella::newVector(numTraining);
 
     if (numTraining > numEx) {
       std::cout << "Error: There are only " << numEx << " training examples";
@@ -1746,9 +1746,9 @@ void cachedBackpropagateError(Cons* tree, double error) {
     }
     if (recursiveConflictP) {
       activateCachedNetwork(consList(1, tree));
-      hidden = newVector(net->hidden->length());
-      hiddenError = newVector(net->hidden->length());
-      input = newVector(net->input->length());
+      hidden = stella::newVector(net->hidden->length());
+      hiddenError = stella::newVector(net->hidden->length());
+      input = stella::newVector(net->input->length());
       { int i = NULL_INTEGER;
         int iter006 = 0;
         int upperBound001 = input->length() - 1;
@@ -2184,7 +2184,7 @@ Object* buildNetworkTree(Proposition* prop, Cons* propList) {
 }
 
 double activateCachedNetwork(Cons* tree) {
-  { Vector* scores = newVector(tree->length());
+  { Vector* scores = stella::newVector(tree->length());
     double score = 0.0;
     double sum = 0.0;
 
@@ -2345,7 +2345,7 @@ double randomFloat(double n) {
 
 Vector* consToVector(Cons* form) {
   { int size = form->length();
-    Vector* vect = newVector(size);
+    Vector* vect = stella::newVector(size);
 
     { int i = NULL_INTEGER;
       int iter000 = 0;
@@ -2364,7 +2364,7 @@ Vector* consToVector(Cons* form) {
 
 Vector* createVector(int values, ...) {
   // Return a vector containing 'values', in order.
-  { Vector* vector = newVector(values);
+  { Vector* vector = stella::newVector(values);
 
     { va_list iter000;
       int iter000Count = values;
@@ -2407,7 +2407,7 @@ void structuredNeuralNetworkRegression(Symbol* className, Symbol* slotName, int 
   { Surrogate* clasS = getDescription(className)->surrogateValueInverse;
     Surrogate* slot = getDescription(slotName)->surrogateValueInverse;
     List* ilist = allClassInstances(clasS)->listify();
-    Vector* instances = newVector(ilist->length());
+    Vector* instances = stella::newVector(ilist->length());
 
     if (!floatFunctionP(slot)) {
       std::cout << "ERROR " << slotName << " is not a function of type float or integer" << std::endl;
@@ -2446,10 +2446,10 @@ void structuredNeuralNetworkRegressionEvaluatorWrapper(Cons* arguments) {
 List* getNnNearestNeighbors(TrainingExample* probe, List* cases, int k) {
   { List* result = newList();
     Module* currentModule = oMODULEo.get();
-    Vector* neighbors = newVector(k);
+    Vector* neighbors = stella::newVector(k);
     int farthest = 0;
     double distance = 0.0;
-    Vector* distances = newVector(k);
+    Vector* distances = stella::newVector(k);
 
     shuffleList(cases);
     { int i = NULL_INTEGER;
@@ -2755,7 +2755,7 @@ Vector* createHiddenSignature(Cons* consQuery) {
     callAskPartial(query);
     pmf = ((NnPartialMatch*)(query->baseControlFrame->partialMatchFrame->child->child));
     net = ((PropositionNeuralNetwork*)(dynamicSlotValue(pmf->controlFrame->proposition->dynamicSlots, SYM_NEURAL_NETWORK_LOGIC_NEURAL_NETWORK, NULL)));
-    result = newVector(net->hidden->length());
+    result = stella::newVector(net->hidden->length());
     { int i = NULL_INTEGER;
       int iter000 = 0;
       int upperBound000 = net->hidden->length() - 1;
@@ -2774,7 +2774,7 @@ Vector* createHiddenSignature(Cons* consQuery) {
 MultiDimensionalArray* newMultiDimensionalArray() {
   { MultiDimensionalArray* self = NULL;
 
-    self = new MultiDimensionalArray();
+    self = new (PointerFreeGC)MultiDimensionalArray;
     return (self);
   }
 }
@@ -2786,26 +2786,26 @@ Surrogate* MultiDimensionalArray::primaryType() {
   }
 }
 
-twoDArray* new2DArray(int nofRows, int nofColumns) {
-  { twoDArray* self = NULL;
+two_D_array* new2_D_array(int nofRows, int nofColumns) {
+  { two_D_array* self = NULL;
 
-    self = new twoDArray();
+    self = new two_D_array();
     self->nofRows = nofRows;
     self->nofColumns = nofColumns;
     self->theArray = NULL;
-    initialize2DArray(self);
+    initialize2_D_array(self);
     return (self);
   }
 }
 
-Surrogate* twoDArray::primaryType() {
-  { twoDArray* self = this;
+Surrogate* two_D_array::primaryType() {
+  { two_D_array* self = this;
 
     return (SGT_NEURAL_NETWORK_LOGIC_2_D_ARRAY);
   }
 }
 
-Object* access2DArraySlotValue(twoDArray* self, Symbol* slotname, Object* value, boolean setvalueP) {
+Object* access2_D_arraySlotValue(two_D_array* self, Symbol* slotname, Object* value, boolean setvalueP) {
   if (slotname == SYM_NEURAL_NETWORK_LOGIC_NOF_ROWS) {
     if (setvalueP) {
       self->nofRows = ((IntegerWrapper*)(value))->wrapperValue;
@@ -2832,43 +2832,43 @@ Object* access2DArraySlotValue(twoDArray* self, Symbol* slotname, Object* value,
   return (value);
 }
 
-void twoDArray::printObject(std::ostream* stream) {
-  { twoDArray* self = this;
+void two_D_array::printObject(std::ostream* stream) {
+  { two_D_array* self = this;
 
     self->printArray(stream);
   }
 }
 
-void initialize2DArray(twoDArray* self) {
-  { Vector* vector = newVector(self->nofRows * self->nofColumns);
+void initialize2_D_array(two_D_array* self) {
+  { Vector* vector = stella::newVector(self->nofRows * self->nofColumns);
 
     self->theArray = vector->theArray;
     vector->theArray = NULL;
   }
 }
 
-Object* twoDArray::twoDElement(int row, int column) {
+Object* two_D_array::two_D_element(int row, int column) {
   // Return the element of `array' at position [`row', `column'].
-  { twoDArray* array = this;
+  { two_D_array* array = this;
 
     return ((array->theArray)[((row * array->nofColumns) + column)]);
   }
 }
 
-Object* twoDArray::twoDElementSetter(Object* value, int row, int column) {
+Object* two_D_array::two_D_elementSetter(Object* value, int row, int column) {
   // Set the element of `array' at position [`row', `column']
   // to `value' and return the result.
-  { twoDArray* array = this;
+  { two_D_array* array = this;
 
     return ((array->theArray)[((row * array->nofColumns) + column)] = value);
   }
 }
 
-twoDArray* create2DArray(int nofRows, int nofColumns, int values, ...) {
+two_D_array* create2_D_array(int nofRows, int nofColumns, int values, ...) {
   // Create a two-dimensional array with `nof-rows' rows and
   // `nof-columns' columns, and initialize it in row-major-order from `values'.
   // Missing values will be padded with NULL, extraneous values will be ignored.
-  { twoDArray* array = new2DArray(nofRows, nofColumns);
+  { two_D_array* array = new2_D_array(nofRows, nofColumns);
     Object** nativearray = array->theArray;
 
     { va_list iter001;
@@ -2893,11 +2893,11 @@ twoDArray* create2DArray(int nofRows, int nofColumns, int values, ...) {
   }
 }
 
-void twoDArray::fillArray(int values, ...) {
+void two_D_array::fillArray(int values, ...) {
   // Fill the two-dimensional array `self' in row-major-order
   // from `values'.  Missing values will retain their old values, extraneous values
   // will be ignored.
-  { twoDArray* self = this;
+  { two_D_array* self = this;
 
     { Object** nativearray = self->theArray;
 
@@ -2923,9 +2923,9 @@ void twoDArray::fillArray(int values, ...) {
   }
 }
 
-void twoDArray::printArray(std::ostream* stream) {
+void two_D_array::printArray(std::ostream* stream) {
   // Print the array `self' to `stream'.
-  { twoDArray* self = this;
+  { two_D_array* self = this;
 
     { int nofRows = self->nofRows;
       int nofColumns = self->nofColumns;
@@ -3023,7 +3023,7 @@ void FloatVector::printObject(std::ostream* stream) {
 }
 
 void initializeFloatVector(FloatVector* self) {
-  { Vector* vector = newVector(self->arraySize);
+  { Vector* vector = stella::newVector(self->arraySize);
 
     { int i = NULL_INTEGER;
       int iter000 = 0;
@@ -3167,26 +3167,26 @@ boolean FloatVector::memberP(double object) {
   }
 }
 
-twoDFloatArray* new2DFloatArray(int nofRows, int nofColumns) {
-  { twoDFloatArray* self = NULL;
+two_D_floatArray* new2_D_floatArray(int nofRows, int nofColumns) {
+  { two_D_floatArray* self = NULL;
 
-    self = new twoDFloatArray();
+    self = new two_D_floatArray();
     self->nofRows = nofRows;
     self->nofColumns = nofColumns;
     self->theArray = NULL;
-    initialize2DFloatArray(self);
+    initialize2_D_floatArray(self);
     return (self);
   }
 }
 
-Surrogate* twoDFloatArray::primaryType() {
-  { twoDFloatArray* self = this;
+Surrogate* two_D_floatArray::primaryType() {
+  { two_D_floatArray* self = this;
 
     return (SGT_NEURAL_NETWORK_LOGIC_2_D_FLOAT_ARRAY);
   }
 }
 
-Object* access2DFloatArraySlotValue(twoDFloatArray* self, Symbol* slotname, Object* value, boolean setvalueP) {
+Object* access2_D_floatArraySlotValue(two_D_floatArray* self, Symbol* slotname, Object* value, boolean setvalueP) {
   if (slotname == SYM_NEURAL_NETWORK_LOGIC_NOF_ROWS) {
     if (setvalueP) {
       self->nofRows = ((IntegerWrapper*)(value))->wrapperValue;
@@ -3213,15 +3213,15 @@ Object* access2DFloatArraySlotValue(twoDFloatArray* self, Symbol* slotname, Obje
   return (value);
 }
 
-void twoDFloatArray::printObject(std::ostream* stream) {
-  { twoDFloatArray* self = this;
+void two_D_floatArray::printObject(std::ostream* stream) {
+  { two_D_floatArray* self = this;
 
     self->printArray(stream);
   }
 }
 
-void initialize2DFloatArray(twoDFloatArray* self) {
-  { Vector* vector = newVector(self->nofRows * self->nofColumns);
+void initialize2_D_floatArray(two_D_floatArray* self) {
+  { Vector* vector = stella::newVector(self->nofRows * self->nofColumns);
 
     { int i = NULL_INTEGER;
       int iter000 = 0;
@@ -3239,28 +3239,28 @@ void initialize2DFloatArray(twoDFloatArray* self) {
   }
 }
 
-double twoDFloatArray::twoDElement(int row, int column) {
+double two_D_floatArray::two_D_element(int row, int column) {
   // Return the element of `array' at position [`row', `column'].
-  { twoDFloatArray* array = this;
+  { two_D_floatArray* array = this;
 
     return (((FloatWrapper*)(((FloatWrapper*)((array->theArray)[((row * array->nofColumns) + column)]))))->wrapperValue);
   }
 }
 
-double twoDFloatArray::twoDElementSetter(double value, int row, int column) {
+double two_D_floatArray::two_D_elementSetter(double value, int row, int column) {
   // Set the element of `array' at position [`row', `column']
   // to `value' and return the result.
-  { twoDFloatArray* array = this;
+  { two_D_floatArray* array = this;
 
     return (((FloatWrapper*)(((FloatWrapper*)((array->theArray)[((row * array->nofColumns) + column)]))))->wrapperValue = value);
   }
 }
 
-twoDFloatArray* create2DFloatArray(int nofRows, int nofColumns, int values, ...) {
+two_D_floatArray* create2_D_floatArray(int nofRows, int nofColumns, int values, ...) {
   // Create a two-dimensional array with `nof-rows' rows and
   // `nof-columns' columns, and initialize it in row-major-order from `values'.
   // Missing values will be padded with NULL, extraneous values will be ignored.
-  { twoDFloatArray* array = new2DFloatArray(nofRows, nofColumns);
+  { two_D_floatArray* array = new2_D_floatArray(nofRows, nofColumns);
     Object** nativearray = array->theArray;
 
     { va_list iter001;
@@ -3285,11 +3285,11 @@ twoDFloatArray* create2DFloatArray(int nofRows, int nofColumns, int values, ...)
   }
 }
 
-void twoDFloatArray::fillArray(int values, ...) {
+void two_D_floatArray::fillArray(int values, ...) {
   // Fill the two-dimensional array `self' in row-major-order
   // from `values'.  Missing values will retain their old values, extraneous values
   // will be ignored.
-  { twoDFloatArray* self = this;
+  { two_D_floatArray* self = this;
 
     { Object** nativearray = self->theArray;
 
@@ -3315,9 +3315,9 @@ void twoDFloatArray::fillArray(int values, ...) {
   }
 }
 
-void twoDFloatArray::printArray(std::ostream* stream) {
+void two_D_floatArray::printArray(std::ostream* stream) {
   // Print the array `self' to `stream'.
-  { twoDFloatArray* self = this;
+  { two_D_floatArray* self = this;
 
     { int nofRows = self->nofRows;
       int nofColumns = self->nofColumns;
@@ -3374,7 +3374,7 @@ void helpStartupNeuralNetwork1() {
   {
     KWD_NEURAL_NETWORK_BACKPROP = ((Keyword*)(internRigidSymbolWrtModule("BACKPROP", NULL, 2)));
     SYM_NEURAL_NETWORK_LOGIC_WEIGHT_VECTOR = ((Symbol*)(internRigidSymbolWrtModule("WEIGHT-VECTOR", NULL, 0)));
-    SYM_NEURAL_NETWORK_LOGIC_2_D_WEIGHT_ARRAY = ((Symbol*)(internRigidSymbolWrtModule("2-D-WEIGHT-ARRAY", NULL, 0)));
+    SYM_NEURAL_NETWORK_LOGIC_2_D_WEIGHT_ARRAY = ((Symbol*)(internRigidSymbolWrtModule("2_D_WEIGHT-ARRAY", NULL, 0)));
     SGT_NEURAL_NETWORK_LOGIC_PROPOSITION_NEURAL_NETWORK = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION-NEURAL-NETWORK", NULL, 1)));
     SYM_NEURAL_NETWORK_LOGIC_PROPOSITION = ((Symbol*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 0)));
     SYM_NEURAL_NETWORK_LOGIC_INPUT = ((Symbol*)(internRigidSymbolWrtModule("INPUT", NULL, 0)));
@@ -3405,12 +3405,12 @@ void helpStartupNeuralNetwork1() {
     KWD_NEURAL_NETWORK_NN = ((Keyword*)(internRigidSymbolWrtModule("NN", NULL, 2)));
     KWD_NEURAL_NETWORK_MAXIMIZE_SCOREp = ((Keyword*)(internRigidSymbolWrtModule("MAXIMIZE-SCORE?", NULL, 2)));
     SGT_NEURAL_NETWORK_LOGIC_MULTI_DIMENSIONAL_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("MULTI-DIMENSIONAL-ARRAY", NULL, 1)));
-    SGT_NEURAL_NETWORK_LOGIC_2_D_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("2-D-ARRAY", NULL, 1)));
+    SGT_NEURAL_NETWORK_LOGIC_2_D_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("2_D_ARRAY", NULL, 1)));
     SYM_NEURAL_NETWORK_LOGIC_NOF_ROWS = ((Symbol*)(internRigidSymbolWrtModule("NOF-ROWS", NULL, 0)));
     SYM_NEURAL_NETWORK_LOGIC_NOF_COLUMNS = ((Symbol*)(internRigidSymbolWrtModule("NOF-COLUMNS", NULL, 0)));
     SGT_NEURAL_NETWORK_LOGIC_FLOAT_VECTOR = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT-VECTOR", NULL, 1)));
     SYM_NEURAL_NETWORK_STELLA_ARRAY_SIZE = ((Symbol*)(internRigidSymbolWrtModule("ARRAY-SIZE", getStellaModule("/STELLA", true), 0)));
-    SGT_NEURAL_NETWORK_LOGIC_2_D_FLOAT_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("2-D-FLOAT-ARRAY", NULL, 1)));
+    SGT_NEURAL_NETWORK_LOGIC_2_D_FLOAT_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("2_D_FLOAT-ARRAY", NULL, 1)));
     SYM_NEURAL_NETWORK_LOGIC_STARTUP_NEURAL_NETWORK = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-NEURAL-NETWORK", NULL, 0)));
     SYM_NEURAL_NETWORK_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
   }
@@ -3419,8 +3419,8 @@ void helpStartupNeuralNetwork1() {
 void helpStartupNeuralNetwork2() {
   {
     defineStellaTypeFromStringifiedSource("(DEFTYPE WEIGHT-VECTOR (VECTOR OF FLOAT-WRAPPER))");
-    defineStellaTypeFromStringifiedSource("(DEFTYPE 2-D-WEIGHT-ARRAY (2-D-ARRAY OF FLOAT-WRAPPER))");
-    { Class* clasS = defineClassFromStringifiedSource("PROPOSITION-NEURAL-NETWORK", "(DEFCLASS PROPOSITION-NEURAL-NETWORK (STANDARD-OBJECT) :SLOTS ((PROPOSITION :TYPE PROPOSITION) (INPUT :TYPE WEIGHT-VECTOR) (HIDDEN :TYPE WEIGHT-VECTOR) (OUTPUT :TYPE FLOAT) (INPUT-ERROR :TYPE WEIGHT-VECTOR) (HIDDEN-ERROR :TYPE WEIGHT-VECTOR) (IH :TYPE 2-D-WEIGHT-ARRAY) (IH-DELTA :TYPE 2-D-WEIGHT-ARRAY) (HO :TYPE WEIGHT-VECTOR) (HO-DELTA :TYPE WEIGHT-VECTOR) (IH-SLOPE :TYPE 2-D-WEIGHT-ARRAY) (IH-PREV-SLOPE :TYPE 2-D-WEIGHT-ARRAY) (HO-SLOPE :TYPE WEIGHT-VECTOR) (HO-PREV-SLOPE :TYPE WEIGHT-VECTOR)))");
+    defineStellaTypeFromStringifiedSource("(DEFTYPE 2_D_WEIGHT-ARRAY (2_D_ARRAY OF FLOAT-WRAPPER))");
+    { Class* clasS = defineClassFromStringifiedSource("PROPOSITION-NEURAL-NETWORK", "(DEFCLASS PROPOSITION-NEURAL-NETWORK (STANDARD-OBJECT) :SLOTS ((PROPOSITION :TYPE PROPOSITION) (INPUT :TYPE WEIGHT-VECTOR) (HIDDEN :TYPE WEIGHT-VECTOR) (OUTPUT :TYPE FLOAT) (INPUT-ERROR :TYPE WEIGHT-VECTOR) (HIDDEN-ERROR :TYPE WEIGHT-VECTOR) (IH :TYPE 2_D_WEIGHT-ARRAY) (IH-DELTA :TYPE 2_D_WEIGHT-ARRAY) (HO :TYPE WEIGHT-VECTOR) (HO-DELTA :TYPE WEIGHT-VECTOR) (IH-SLOPE :TYPE 2_D_WEIGHT-ARRAY) (IH-PREV-SLOPE :TYPE 2_D_WEIGHT-ARRAY) (HO-SLOPE :TYPE WEIGHT-VECTOR) (HO-PREV-SLOPE :TYPE WEIGHT-VECTOR)))");
 
       clasS->classConstructorCode = ((cpp_function_code)(&newPropositionNeuralNetwork));
       clasS->classSlotAccessorCode = ((cpp_function_code)(&accessPropositionNeuralNetworkSlotValue));
@@ -3429,20 +3429,20 @@ void helpStartupNeuralNetwork2() {
 
       clasS->classConstructorCode = ((cpp_function_code)(&newMultiDimensionalArray));
     }
-    { Class* clasS = defineClassFromStringifiedSource("2-D-ARRAY", "(DEFCLASS 2-D-ARRAY (MULTI-DIMENSIONAL-ARRAY) :DOCUMENTATION \"Two-dimensional arrays with elements of type OBJECT.\" :PARAMETERS ((ANY-VALUE :TYPE OBJECT)) :SLOTS ((NOF-ROWS :TYPE INTEGER :REQUIRED? TRUE) (NOF-COLUMNS :TYPE INTEGER :REQUIRED? TRUE) (THE-ARRAY :TYPE (NATIVE-VECTOR OF (LIKE (ANY-VALUE SELF))))) :INITIALIZER INITIALIZE-2-D-ARRAY :PRINT-FORM (PRINT-ARRAY SELF STREAM))");
+    { Class* clasS = defineClassFromStringifiedSource("2_D_ARRAY", "(DEFCLASS 2_D_ARRAY (MULTI-DIMENSIONAL-ARRAY) :DOCUMENTATION \"Two-dimensional arrays with elements of type OBJECT.\" :PARAMETERS ((ANY-VALUE :TYPE OBJECT)) :SLOTS ((NOF-ROWS :TYPE INTEGER :REQUIRED? TRUE) (NOF-COLUMNS :TYPE INTEGER :REQUIRED? TRUE) (THE-ARRAY :TYPE (NATIVE-VECTOR OF (LIKE (ANY-VALUE SELF))))) :INITIALIZER INITIALIZE-2_D_ARRAY :PRINT-FORM (PRINT-ARRAY SELF STREAM))");
 
-      clasS->classConstructorCode = ((cpp_function_code)(&new2DArray));
-      clasS->classSlotAccessorCode = ((cpp_function_code)(&access2DArraySlotValue));
+      clasS->classConstructorCode = ((cpp_function_code)(&new2_D_array));
+      clasS->classSlotAccessorCode = ((cpp_function_code)(&access2_D_arraySlotValue));
     }
     { Class* clasS = defineClassFromStringifiedSource("FLOAT-VECTOR", "(DEFCLASS FLOAT-VECTOR (ABSTRACT-COLLECTION SEQUENCE-MIXIN) :PARAMETERS ((ANY-VALUE :TYPE FLOAT)) :PUBLIC-SLOTS ((ARRAY-SIZE :TYPE INTEGER :REQUIRED? TRUE)) :SLOTS ((THE-ARRAY :TYPE (NATIVE-VECTOR OF FLOAT-WRAPPER))) :PRINT-FORM (PRINT-VECTOR SELF STREAM) :INITIALIZER INITIALIZE-FLOAT-VECTOR)");
 
       clasS->classConstructorCode = ((cpp_function_code)(&newFloatVector));
       clasS->classSlotAccessorCode = ((cpp_function_code)(&accessFloatVectorSlotValue));
     }
-    { Class* clasS = defineClassFromStringifiedSource("2-D-FLOAT-ARRAY", "(DEFCLASS 2-D-FLOAT-ARRAY (MULTI-DIMENSIONAL-ARRAY) :DOCUMENTATION \"Two-dimensional arrays with elements of type FLOAT.\" :PARAMETERS ((ANY-VALUE :TYPE FLOAT)) :SLOTS ((NOF-ROWS :TYPE INTEGER :REQUIRED? TRUE) (NOF-COLUMNS :TYPE INTEGER :REQUIRED? TRUE) (THE-ARRAY :TYPE (NATIVE-VECTOR OF FLOAT-WRAPPER))) :INITIALIZER INITIALIZE-2-D-FLOAT-ARRAY :PRINT-FORM (PRINT-ARRAY SELF STREAM))");
+    { Class* clasS = defineClassFromStringifiedSource("2_D_FLOAT-ARRAY", "(DEFCLASS 2_D_FLOAT-ARRAY (MULTI-DIMENSIONAL-ARRAY) :DOCUMENTATION \"Two-dimensional arrays with elements of type FLOAT.\" :PARAMETERS ((ANY-VALUE :TYPE FLOAT)) :SLOTS ((NOF-ROWS :TYPE INTEGER :REQUIRED? TRUE) (NOF-COLUMNS :TYPE INTEGER :REQUIRED? TRUE) (THE-ARRAY :TYPE (NATIVE-VECTOR OF FLOAT-WRAPPER))) :INITIALIZER INITIALIZE-2_D_FLOAT-ARRAY :PRINT-FORM (PRINT-ARRAY SELF STREAM))");
 
-      clasS->classConstructorCode = ((cpp_function_code)(&new2DFloatArray));
-      clasS->classSlotAccessorCode = ((cpp_function_code)(&access2DFloatArraySlotValue));
+      clasS->classConstructorCode = ((cpp_function_code)(&new2_D_floatArray));
+      clasS->classSlotAccessorCode = ((cpp_function_code)(&access2_D_floatArraySlotValue));
     }
   }
 }
@@ -3503,12 +3503,12 @@ void helpStartupNeuralNetwork3() {
     defineFunctionObject("SAVE-NEURAL-NETWORK", "(DEFUN SAVE-NEURAL-NETWORK ((NET PROPOSITION-NEURAL-NETWORK) (FILE STRING)) :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&saveNeuralNetwork)), ((cpp_function_code)(&saveNeuralNetworkEvaluatorWrapper)));
     defineFunctionObject("PRINT-NEURAL-NETWORK", "(DEFUN PRINT-NEURAL-NETWORK ((NET PROPOSITION-NEURAL-NETWORK) (STREAM OUTPUT-STREAM)))", ((cpp_function_code)(&printNeuralNetwork)), NULL);
     defineFunctionObject("CREATE-HIDDEN-SIGNATURE", "(DEFUN (CREATE-HIDDEN-SIGNATURE WEIGHT-VECTOR) ((CONS-QUERY CONS)))", ((cpp_function_code)(&createHiddenSignature)), NULL);
-    defineFunctionObject("INITIALIZE-2-D-ARRAY", "(DEFUN INITIALIZE-2-D-ARRAY ((SELF 2-D-ARRAY)))", ((cpp_function_code)(&initialize2DArray)), NULL);
-    defineMethodObject("(DEFMETHOD (2-D-ELEMENT (LIKE (ANY-VALUE SELF))) ((ARRAY 2-D-ARRAY) (ROW INTEGER) (COLUMN INTEGER)) :DOCUMENTATION \"Return the element of `array' at position [`row', `column'].\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (NTH (THE-ARRAY ARRAY) (+ (* ROW (NOF-COLUMNS ARRAY)) COLUMN))))", ((cpp_method_code)(&twoDArray::twoDElement)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (2-D-ELEMENT-SETTER (LIKE (ANY-VALUE SELF))) ((ARRAY 2-D-ARRAY) (VALUE OBJECT) (ROW INTEGER) (COLUMN INTEGER)) :DOCUMENTATION \"Set the element of `array' at position [`row', `column']\nto `value' and return the result.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (SETF (NTH (THE-ARRAY ARRAY) (+ (* ROW (NOF-COLUMNS ARRAY)) COLUMN)) VALUE)))", ((cpp_method_code)(&twoDArray::twoDElementSetter)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("CREATE-2-D-ARRAY", "(DEFUN (CREATE-2-D-ARRAY 2-D-ARRAY) ((NOF-ROWS INTEGER) (NOF-COLUMNS INTEGER) |&REST| (VALUES OBJECT)) :DOCUMENTATION \"Create a two-dimensional array with `nof-rows' rows and\n`nof-columns' columns, and initialize it in row-major-order from `values'.\nMissing values will be padded with NULL, extraneous values will be ignored.\" :PUBLIC? TRUE)", ((cpp_function_code)(&create2DArray)), NULL);
-    defineMethodObject("(DEFMETHOD FILL-ARRAY ((SELF 2-D-ARRAY) |&REST| (VALUES OBJECT)) :DOCUMENTATION \"Fill the two-dimensional array `self' in row-major-order\nfrom `values'.  Missing values will retain their old values, extraneous values\nwill be ignored.\" :PUBLIC? TRUE)", ((cpp_method_code)(&twoDArray::fillArray)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD PRINT-ARRAY ((SELF 2-D-ARRAY) (STREAM NATIVE-OUTPUT-STREAM)) :DOCUMENTATION \"Print the array `self' to `stream'.\")", ((cpp_method_code)(&twoDArray::printArray)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("INITIALIZE-2_D_ARRAY", "(DEFUN INITIALIZE-2_D_ARRAY ((SELF 2_D_ARRAY)))", ((cpp_function_code)(&initialize2_D_array)), NULL);
+    defineMethodObject("(DEFMETHOD (2_D_ELEMENT (LIKE (ANY-VALUE SELF))) ((ARRAY 2_D_ARRAY) (ROW INTEGER) (COLUMN INTEGER)) :DOCUMENTATION \"Return the element of `array' at position [`row', `column'].\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (NTH (THE-ARRAY ARRAY) (+ (* ROW (NOF-COLUMNS ARRAY)) COLUMN))))", ((cpp_method_code)(&two_D_array::two_D_element)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (2_D_ELEMENT-SETTER (LIKE (ANY-VALUE SELF))) ((ARRAY 2_D_ARRAY) (VALUE OBJECT) (ROW INTEGER) (COLUMN INTEGER)) :DOCUMENTATION \"Set the element of `array' at position [`row', `column']\nto `value' and return the result.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (SETF (NTH (THE-ARRAY ARRAY) (+ (* ROW (NOF-COLUMNS ARRAY)) COLUMN)) VALUE)))", ((cpp_method_code)(&two_D_array::two_D_elementSetter)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("CREATE-2_D_ARRAY", "(DEFUN (CREATE-2_D_ARRAY 2_D_ARRAY) ((NOF-ROWS INTEGER) (NOF-COLUMNS INTEGER) |&REST| (VALUES OBJECT)) :DOCUMENTATION \"Create a two-dimensional array with `nof-rows' rows and\n`nof-columns' columns, and initialize it in row-major-order from `values'.\nMissing values will be padded with NULL, extraneous values will be ignored.\" :PUBLIC? TRUE)", ((cpp_function_code)(&create2_D_array)), NULL);
+    defineMethodObject("(DEFMETHOD FILL-ARRAY ((SELF 2_D_ARRAY) |&REST| (VALUES OBJECT)) :DOCUMENTATION \"Fill the two-dimensional array `self' in row-major-order\nfrom `values'.  Missing values will retain their old values, extraneous values\nwill be ignored.\" :PUBLIC? TRUE)", ((cpp_method_code)(&two_D_array::fillArray)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD PRINT-ARRAY ((SELF 2_D_ARRAY) (STREAM NATIVE-OUTPUT-STREAM)) :DOCUMENTATION \"Print the array `self' to `stream'.\")", ((cpp_method_code)(&two_D_array::printArray)), ((cpp_method_code)(NULL)));
   }
 }
 
@@ -3521,6 +3521,7 @@ void startupNeuralNetwork() {
     }
     if (currentStartupTimePhaseP(4)) {
       oNEURAL_NETWORK_TRAINING_METHODo = KWD_NEURAL_NETWORK_BACKPROP;
+      oSAVE_NETWORK_FILEo = NULL;
       oSHRINK_FACTORo = oMAX_MOVEMENTo / (1.0 + oMAX_MOVEMENTo);
       oMASTER_NEURAL_NETWORK_LISTo = newList();
       oACTIVATED_NETWORKSo = newList();
@@ -3543,12 +3544,12 @@ void startupNeuralNetwork() {
       defineMethodObject("(DEFMETHOD (NTH-SETTER FLOAT) ((SELF FLOAT-VECTOR) (VALUE FLOAT) (POSITION INTEGER)) :GLOBALLY-INLINE? TRUE (RETURN (SETF (WRAPPER-VALUE (SAFE-CAST (NTH (THE-ARRAY SELF) POSITION) FLOAT-WRAPPER)) VALUE)))", ((cpp_method_code)(&FloatVector::nthSetter)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF FLOAT-VECTOR)) :GLOBALLY-INLINE? TRUE (RETURN (ARRAY-SIZE SELF)))", ((cpp_method_code)(&FloatVector::length)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (MEMBER? BOOLEAN) ((SELF FLOAT-VECTOR) (OBJECT FLOAT)))", ((cpp_method_code)(&FloatVector::memberP)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("INITIALIZE-2-D-FLOAT-ARRAY", "(DEFUN INITIALIZE-2-D-FLOAT-ARRAY ((SELF 2-D-FLOAT-ARRAY)))", ((cpp_function_code)(&initialize2DFloatArray)), NULL);
-      defineMethodObject("(DEFMETHOD (2-D-ELEMENT FLOAT) ((ARRAY 2-D-FLOAT-ARRAY) (ROW INTEGER) (COLUMN INTEGER)) :DOCUMENTATION \"Return the element of `array' at position [`row', `column'].\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (SAFE-CAST (NTH (THE-ARRAY ARRAY) (+ (* ROW (NOF-COLUMNS ARRAY)) COLUMN)) FLOAT-WRAPPER)))", ((cpp_method_code)(&twoDFloatArray::twoDElement)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (2-D-ELEMENT-SETTER (LIKE (ANY-VALUE SELF))) ((ARRAY 2-D-FLOAT-ARRAY) (VALUE FLOAT) (ROW INTEGER) (COLUMN INTEGER)) :DOCUMENTATION \"Set the element of `array' at position [`row', `column']\nto `value' and return the result.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (SETF (WRAPPER-VALUE (SAFE-CAST (NTH (THE-ARRAY ARRAY) (+ (* ROW (NOF-COLUMNS ARRAY)) COLUMN)) FLOAT-WRAPPER)) VALUE)))", ((cpp_method_code)(&twoDFloatArray::twoDElementSetter)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("CREATE-2-D-FLOAT-ARRAY", "(DEFUN (CREATE-2-D-FLOAT-ARRAY 2-D-FLOAT-ARRAY) ((NOF-ROWS INTEGER) (NOF-COLUMNS INTEGER) |&REST| (VALUES FLOAT)) :DOCUMENTATION \"Create a two-dimensional array with `nof-rows' rows and\n`nof-columns' columns, and initialize it in row-major-order from `values'.\nMissing values will be padded with NULL, extraneous values will be ignored.\" :PUBLIC? TRUE)", ((cpp_function_code)(&create2DFloatArray)), NULL);
-      defineMethodObject("(DEFMETHOD FILL-ARRAY ((SELF 2-D-FLOAT-ARRAY) |&REST| (VALUES FLOAT)) :DOCUMENTATION \"Fill the two-dimensional array `self' in row-major-order\nfrom `values'.  Missing values will retain their old values, extraneous values\nwill be ignored.\" :PUBLIC? TRUE)", ((cpp_method_code)(&twoDFloatArray::fillArray)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD PRINT-ARRAY ((SELF 2-D-FLOAT-ARRAY) (STREAM NATIVE-OUTPUT-STREAM)) :DOCUMENTATION \"Print the array `self' to `stream'.\")", ((cpp_method_code)(&twoDFloatArray::printArray)), ((cpp_method_code)(NULL)));
+      defineFunctionObject("INITIALIZE-2_D_FLOAT-ARRAY", "(DEFUN INITIALIZE-2_D_FLOAT-ARRAY ((SELF 2_D_FLOAT-ARRAY)))", ((cpp_function_code)(&initialize2_D_floatArray)), NULL);
+      defineMethodObject("(DEFMETHOD (2_D_ELEMENT FLOAT) ((ARRAY 2_D_FLOAT-ARRAY) (ROW INTEGER) (COLUMN INTEGER)) :DOCUMENTATION \"Return the element of `array' at position [`row', `column'].\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (SAFE-CAST (NTH (THE-ARRAY ARRAY) (+ (* ROW (NOF-COLUMNS ARRAY)) COLUMN)) FLOAT-WRAPPER)))", ((cpp_method_code)(&two_D_floatArray::two_D_element)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (2_D_ELEMENT-SETTER (LIKE (ANY-VALUE SELF))) ((ARRAY 2_D_FLOAT-ARRAY) (VALUE FLOAT) (ROW INTEGER) (COLUMN INTEGER)) :DOCUMENTATION \"Set the element of `array' at position [`row', `column']\nto `value' and return the result.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (SETF (WRAPPER-VALUE (SAFE-CAST (NTH (THE-ARRAY ARRAY) (+ (* ROW (NOF-COLUMNS ARRAY)) COLUMN)) FLOAT-WRAPPER)) VALUE)))", ((cpp_method_code)(&two_D_floatArray::two_D_elementSetter)), ((cpp_method_code)(NULL)));
+      defineFunctionObject("CREATE-2_D_FLOAT-ARRAY", "(DEFUN (CREATE-2_D_FLOAT-ARRAY 2_D_FLOAT-ARRAY) ((NOF-ROWS INTEGER) (NOF-COLUMNS INTEGER) |&REST| (VALUES FLOAT)) :DOCUMENTATION \"Create a two-dimensional array with `nof-rows' rows and\n`nof-columns' columns, and initialize it in row-major-order from `values'.\nMissing values will be padded with NULL, extraneous values will be ignored.\" :PUBLIC? TRUE)", ((cpp_function_code)(&create2_D_floatArray)), NULL);
+      defineMethodObject("(DEFMETHOD FILL-ARRAY ((SELF 2_D_FLOAT-ARRAY) |&REST| (VALUES FLOAT)) :DOCUMENTATION \"Fill the two-dimensional array `self' in row-major-order\nfrom `values'.  Missing values will retain their old values, extraneous values\nwill be ignored.\" :PUBLIC? TRUE)", ((cpp_method_code)(&two_D_floatArray::fillArray)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD PRINT-ARRAY ((SELF 2_D_FLOAT-ARRAY) (STREAM NATIVE-OUTPUT-STREAM)) :DOCUMENTATION \"Print the array `self' to `stream'.\")", ((cpp_method_code)(&two_D_floatArray::printArray)), ((cpp_method_code)(NULL)));
       defineFunctionObject("STARTUP-NEURAL-NETWORK", "(DEFUN STARTUP-NEURAL-NETWORK () :PUBLIC? TRUE)", ((cpp_function_code)(&startupNeuralNetwork)), NULL);
       { MethodSlot* function = lookupFunction(SYM_NEURAL_NETWORK_LOGIC_STARTUP_NEURAL_NETWORK);
 
@@ -3560,6 +3561,7 @@ void startupNeuralNetwork() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *NEURAL-NETWORK-TRAINING-METHOD* KEYWORD :BACKPROP)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LEARNING-RATE* FLOAT 0.1)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MOMENTUM-TERM* FLOAT 0.9)");

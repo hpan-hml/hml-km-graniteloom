@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,43 +52,44 @@ import edu.isi.stella.*;
 public class _StartupFrameSupport {
   static void helpStartupFrameSupport1() {
     {
-      Logic.SGT_PL_KERNEL_KB_SCALAR = ((Surrogate)(Stella.internRigidSymbolWrtModule("SCALAR", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_LOGIC_F_ALL_TYPES_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-ALL-TYPES-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_LOGIC_F_ALL_EQUIVALENT_RELATIONS_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-ALL-EQUIVALENT-RELATIONS-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_LOGIC_F_ALL_SUPERRELATIONS_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-ALL-SUPERRELATIONS-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_LOGIC_F_ALL_SUBRELATIONS_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-ALL-SUBRELATIONS-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_LOGIC_F_ALL_DIRECT_SUPERRELATIONS_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-ALL-DIRECT-SUPERRELATIONS-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_LOGIC_F_ALL_DIRECT_SUBRELATIONS_MEMO_TABLE_000 = ((Surrogate)(Stella.internRigidSymbolWrtModule("F-ALL-DIRECT-SUBRELATIONS-MEMO-TABLE-000", null, 1)));
-      Logic.SGT_PL_KERNEL_KB_RANGE_MIN_CARDINALITY = ((Surrogate)(Stella.internRigidSymbolWrtModule("RANGE-MIN-CARDINALITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_PL_KERNEL_KB_RANGE_MAX_CARDINALITY = ((Surrogate)(Stella.internRigidSymbolWrtModule("RANGE-MAX-CARDINALITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SGT_PL_KERNEL_KB_RANGE_TYPE = ((Surrogate)(Stella.internRigidSymbolWrtModule("RANGE-TYPE", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
-      Logic.SYM_LOGIC_pCONCEPT = ((Symbol)(Stella.internRigidSymbolWrtModule("?CONCEPT", null, 0)));
-      Logic.SYM_LOGIC_pINSTANCE = ((Symbol)(Stella.internRigidSymbolWrtModule("?INSTANCE", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_TYPE_ON_INSTANCEp_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-TEST-TYPE-ON-INSTANCE?-QUERY-000", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_CLASS_INSTANCES_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-CLASS-INSTANCES-QUERY-000", null, 0)));
-      Logic.SYM_LOGIC_pRELATION = ((Symbol)(Stella.internRigidSymbolWrtModule("?RELATION", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-RELATION-VALUES-QUERY-000", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_001 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-RELATION-VALUES-QUERY-001", null, 0)));
-      Logic.SYM_LOGIC_pZ = ((Symbol)(Stella.internRigidSymbolWrtModule("?Z", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_002 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-RELATION-VALUES-QUERY-002", null, 0)));
-      Logic.SYM_LOGIC_pW = ((Symbol)(Stella.internRigidSymbolWrtModule("?W", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_003 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-RELATION-VALUES-QUERY-003", null, 0)));
-      Logic.SYM_LOGIC_ALL = ((Symbol)(Stella.internRigidSymbolWrtModule("ALL", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-TEST-RELATION-ON-ARGUMENTS?-QUERY-000", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_001 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-TEST-RELATION-ON-ARGUMENTS?-QUERY-001", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_002 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-TEST-RELATION-ON-ARGUMENTS?-QUERY-002", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_003 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-TEST-RELATION-ON-ARGUMENTS?-QUERY-003", null, 0)));
-      Logic.SYM_LOGIC_pOBJECT = ((Symbol)(Stella.internRigidSymbolWrtModule("?OBJECT", null, 0)));
-      Logic.SYM_LOGIC_pN = ((Symbol)(Stella.internRigidSymbolWrtModule("?N", null, 0)));
-      Logic.SYM_LOGIC_RANGE_MIN_CARDINALITY = ((Symbol)(Stella.internRigidSymbolWrtModule("RANGE-MIN-CARDINALITY", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MINIMUM_CARDINALITY_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-GET-SLOT-MINIMUM-CARDINALITY-QUERY-000", null, 0)));
-      Logic.SYM_LOGIC_RANGE_MAX_CARDINALITY = ((Symbol)(Stella.internRigidSymbolWrtModule("RANGE-MAX-CARDINALITY", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MAXIMUM_CARDINALITY_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-GET-SLOT-MAXIMUM-CARDINALITY-QUERY-000", null, 0)));
-      Logic.SYM_LOGIC_pTYPE = ((Symbol)(Stella.internRigidSymbolWrtModule("?TYPE", null, 0)));
-      Logic.SYM_LOGIC_RANGE_TYPE = ((Symbol)(Stella.internRigidSymbolWrtModule("RANGE-TYPE", null, 0)));
-      Logic.SYM_LOGIC_BOUND_VARIABLES = ((Symbol)(Stella.internRigidSymbolWrtModule("BOUND-VARIABLES", null, 0)));
-      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_SLOT_VALUE_TYPES_QUERY_000 = ((Symbol)(Stella.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-SLOT-VALUE-TYPES-QUERY-000", null, 0)));
-      Logic.SYM_LOGIC_STARTUP_FRAME_SUPPORT = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-FRAME-SUPPORT", null, 0)));
+      Logic.SGT_PL_KERNEL_KB_SCALAR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("SCALAR", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-ALL-TAXONOMIC-TYPES-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_LOGIC_F_ALL_TYPES_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-ALL-TYPES-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_LOGIC_F_ALL_EQUIVALENT_RELATIONS_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-ALL-EQUIVALENT-RELATIONS-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_LOGIC_F_ALL_SUPERRELATIONS_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-ALL-SUPERRELATIONS-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_LOGIC_F_ALL_SUBRELATIONS_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-ALL-SUBRELATIONS-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_LOGIC_F_ALL_DIRECT_SUPERRELATIONS_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-ALL-DIRECT-SUPERRELATIONS-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_LOGIC_F_ALL_DIRECT_SUBRELATIONS_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-ALL-DIRECT-SUBRELATIONS-MEMO-TABLE-000", null, 1)));
+      Logic.SGT_PL_KERNEL_KB_RANGE_MIN_CARDINALITY = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE-MIN-CARDINALITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_PL_KERNEL_KB_RANGE_MAX_CARDINALITY = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE-MAX-CARDINALITY", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SGT_PL_KERNEL_KB_RANGE_TYPE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE-TYPE", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
+      Logic.SYM_LOGIC_pCONCEPT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?CONCEPT", null, 0)));
+      Logic.SYM_LOGIC_pINSTANCE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?INSTANCE", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_TYPE_ON_INSTANCEp_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-TEST-TYPE-ON-INSTANCE?-QUERY-000", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_CLASS_INSTANCES_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-CLASS-INSTANCES-QUERY-000", null, 0)));
+      Logic.SYM_LOGIC_pRELATION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?RELATION", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-RELATION-VALUES-QUERY-000", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_001 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-RELATION-VALUES-QUERY-001", null, 0)));
+      Logic.SYM_LOGIC_pZ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?Z", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_002 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-RELATION-VALUES-QUERY-002", null, 0)));
+      Logic.SYM_LOGIC_pW = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?W", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_RELATION_VALUES_QUERY_003 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-RELATION-VALUES-QUERY-003", null, 0)));
+      Logic.SYM_LOGIC_ALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ALL", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-TEST-RELATION-ON-ARGUMENTS?-QUERY-000", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_001 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-TEST-RELATION-ON-ARGUMENTS?-QUERY-001", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_002 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-TEST-RELATION-ON-ARGUMENTS?-QUERY-002", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_TEST_RELATION_ON_ARGUMENTSp_QUERY_003 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-TEST-RELATION-ON-ARGUMENTS?-QUERY-003", null, 0)));
+      Logic.SYM_LOGIC_pOBJECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?OBJECT", null, 0)));
+      Logic.SYM_LOGIC_pN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?N", null, 0)));
+      Logic.SYM_LOGIC_RANGE_MIN_CARDINALITY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE-MIN-CARDINALITY", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MINIMUM_CARDINALITY_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-GET-SLOT-MINIMUM-CARDINALITY-QUERY-000", null, 0)));
+      Logic.SYM_LOGIC_RANGE_MAX_CARDINALITY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE-MAX-CARDINALITY", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_GET_SLOT_MAXIMUM_CARDINALITY_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-GET-SLOT-MAXIMUM-CARDINALITY-QUERY-000", null, 0)));
+      Logic.SYM_LOGIC_pTYPE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?TYPE", null, 0)));
+      Logic.SYM_LOGIC_RANGE_TYPE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE-TYPE", null, 0)));
+      Logic.SYM_LOGIC_BOUND_VARIABLES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BOUND-VARIABLES", null, 0)));
+      Logic.SYM_LOGIC_M_NORMAL_INFERENCE_LEVELdLEVELLIZED_ALL_SLOT_VALUE_TYPES_QUERY_000 = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("M-NORMAL-INFERENCE-LEVEL.LEVELLIZED-ALL-SLOT-VALUE-TYPES-QUERY-000", null, 0)));
+      Logic.SYM_LOGIC_STARTUP_FRAME_SUPPORT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-FRAME-SUPPORT", null, 0)));
     }
   }
 
@@ -111,8 +112,10 @@ public class _StartupFrameSupport {
       Stella.defineFunctionObject("RELATION-ARITY-OK?", "(DEFUN (RELATION-ARITY-OK? BOOLEAN) ((RELATIONREF SURROGATE) (ARITY INTEGER)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "relationArityOkP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate"), java.lang.Integer.TYPE}), null);
       Stella.defineFunctionObject("FILTER-OUT-UNNAMED-DESCRIPTIONS", "(DEFUN (FILTER-OUT-UNNAMED-DESCRIPTIONS (CONS OF NAMED-DESCRIPTION)) ((DESCRIPTIONS (CONS OF LOGIC-OBJECT))))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "filterOutUnnamedDescriptions", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("ALL-ASSERTED-TYPES", "(DEFUN (ALL-ASSERTED-TYPES (CONS OF NAMED-DESCRIPTION)) ((SELF OBJECT)) :DOCUMENTATION \"Return a set of all of the types that are\nasserted to be satisfied by 'self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "allAssertedTypes", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("ALL-TAXONOMIC-TYPES", "(DEFUN (ALL-TAXONOMIC-TYPES (CONS OF NAMED-DESCRIPTION)) ((SELF OBJECT)) :DOCUMENTATION \"Return a set of all of the types that are\nsatisfied by 'self', using only assertions and upward\ntaxonomic reasoning.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "allTaxonomicTypes", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("ALL-TYPES", "(DEFUN (ALL-TYPES (CONS OF NAMED-DESCRIPTION)) ((SELF OBJECT)) :DOCUMENTATION \"Return a set of all of the types that are\nsatisfied by 'self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "allTypes", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("HELP-ALL-TYPES", "(DEFUN (HELP-ALL-TYPES (CONS OF NAMED-DESCRIPTION)) ((SELF OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "helpAllTypes", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("HELP-ALL-TYPES", "(DEFUN (HELP-ALL-TYPES (CONS OF NAMED-DESCRIPTION)) ((SELF OBJECT) (DO-SUBTYPES? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "helpAllTypes", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE}), null);
+      Stella.defineFunctionObject("HELP-ALL-SUBTYPES", "(DEFUN HELP-ALL-SUBTYPES ((SUPER DESCRIPTION) (SELF OBJECT) (TYPES LIST)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "helpAllSubtypes", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.List")}), null);
       Stella.defineFunctionObject("ALL-DIRECT-TYPES", "(DEFUN (ALL-DIRECT-TYPES (CONS OF LOGIC-OBJECT)) ((SELF OBJECT)) :DOCUMENTATION \"Return a set of most specific types that are\nsatisfied by 'self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "allDirectTypes", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("TEST-TYPE-ON-INSTANCE?", "(DEFUN (TEST-TYPE-ON-INSTANCE? BOOLEAN) ((SELF OBJECT) (TYPE SURROGATE)) :DOCUMENTATION \"Return TRUE if 'self' satisfies 'type'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "testTypeOnInstanceP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Surrogate")}), null);
       Stella.defineMethodObject("(DEFMETHOD (LEVELLIZED-TEST-TYPE-ON-INSTANCE? BOOLEAN) ((LEVEL SUBSUMPTION-INFERENCE-LEVEL) (SELF OBJECT) (TYPE SURROGATE)))", Native.find_java_method("edu.isi.powerloom.logic.SubsumptionInferenceLevel", "levellizedTestTypeOnInstanceP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Surrogate")}), ((java.lang.reflect.Method)(null)));
@@ -152,8 +155,6 @@ public class _StartupFrameSupport {
       Stella.defineMethodObject("(DEFMETHOD (LEVELLIZED-ALL-CLASS-INSTANCES CONS) ((LEVEL NORMAL-INFERENCE-LEVEL) (TYPE SURROGATE)))", Native.find_java_method("edu.isi.powerloom.logic.NormalInferenceLevel", "levellizedAllClassInstances", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate")}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (LEVELLIZED-ALL-RELATION-VALUES CONS) ((LEVEL NORMAL-INFERENCE-LEVEL) (RELATION SURROGATE) (NMINUSONEARGUMENTS CONS)))", Native.find_java_method("edu.isi.powerloom.logic.NormalInferenceLevel", "levellizedAllRelationValues", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("edu.isi.stella.Cons")}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (LEVELLIZED-TEST-RELATION-ON-ARGUMENTS? BOOLEAN) ((LEVEL NORMAL-INFERENCE-LEVEL) (RELATION SURROGATE) (ARGUMENTS CONS)))", Native.find_java_method("edu.isi.powerloom.logic.NormalInferenceLevel", "levellizedTestRelationOnArgumentsP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("edu.isi.stella.Cons")}), ((java.lang.reflect.Method)(null)));
-      Stella.defineMethodObject("(DEFMETHOD (LEVELLIZED-GET-SLOT-MINIMUM-CARDINALITY INTEGER) ((LEVEL NORMAL-INFERENCE-LEVEL) (SELF LOGIC-OBJECT) (RELATION SURROGATE)))", Native.find_java_method("edu.isi.powerloom.logic.NormalInferenceLevel", "levellizedGetSlotMinimumCardinality", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.LogicObject"), Native.find_java_class("edu.isi.stella.Surrogate")}), ((java.lang.reflect.Method)(null)));
-      Stella.defineMethodObject("(DEFMETHOD (LEVELLIZED-GET-SLOT-MAXIMUM-CARDINALITY INTEGER) ((LEVEL NORMAL-INFERENCE-LEVEL) (SELF LOGIC-OBJECT) (RELATION SURROGATE)))", Native.find_java_method("edu.isi.powerloom.logic.NormalInferenceLevel", "levellizedGetSlotMaximumCardinality", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.LogicObject"), Native.find_java_class("edu.isi.stella.Surrogate")}), ((java.lang.reflect.Method)(null)));
     }
   }
 
@@ -172,6 +173,8 @@ public class _StartupFrameSupport {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupFrameSupport.helpStartupFrameSupport2();
+          Stella.defineMethodObject("(DEFMETHOD (LEVELLIZED-GET-SLOT-MINIMUM-CARDINALITY INTEGER) ((LEVEL NORMAL-INFERENCE-LEVEL) (SELF LOGIC-OBJECT) (RELATION SURROGATE)))", Native.find_java_method("edu.isi.powerloom.logic.NormalInferenceLevel", "levellizedGetSlotMinimumCardinality", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.LogicObject"), Native.find_java_class("edu.isi.stella.Surrogate")}), ((java.lang.reflect.Method)(null)));
+          Stella.defineMethodObject("(DEFMETHOD (LEVELLIZED-GET-SLOT-MAXIMUM-CARDINALITY INTEGER) ((LEVEL NORMAL-INFERENCE-LEVEL) (SELF LOGIC-OBJECT) (RELATION SURROGATE)))", Native.find_java_method("edu.isi.powerloom.logic.NormalInferenceLevel", "levellizedGetSlotMaximumCardinality", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.LogicObject"), Native.find_java_class("edu.isi.stella.Surrogate")}), ((java.lang.reflect.Method)(null)));
           Stella.defineMethodObject("(DEFMETHOD (LEVELLIZED-ALL-SLOT-VALUE-TYPES (CONS OF NAMED-DESCRIPTION)) ((LEVEL NORMAL-INFERENCE-LEVEL) (SELF LOGIC-OBJECT) (RELATION SURROGATE)))", Native.find_java_method("edu.isi.powerloom.logic.NormalInferenceLevel", "levellizedAllSlotValueTypes", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.LogicObject"), Native.find_java_class("edu.isi.stella.Surrogate")}), ((java.lang.reflect.Method)(null)));
           Stella.defineFunctionObject("STARTUP-FRAME-SUPPORT", "(DEFUN STARTUP-FRAME-SUPPORT () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic._StartupFrameSupport", "startupFrameSupport", new java.lang.Class [] {}), null);
           { MethodSlot function = Symbol.lookupFunction(Logic.SYM_LOGIC_STARTUP_FRAME_SUPPORT);
@@ -182,6 +185,10 @@ public class _StartupFrameSupport {
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
           Stella.cleanupUnfinalizedClasses();
+        }
+        if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LEVELLIZED-BACKCHAINING-ENABLED?* BOOLEAN FALSE :DOCUMENTATION \"KLUDGE: until we know how to handle recursive subgoals\nacross recursive query invocations, this allows us to disable chaining.\")");
         }
 
       } finally {

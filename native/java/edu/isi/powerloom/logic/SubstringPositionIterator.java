@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -93,7 +93,7 @@ public class SubstringPositionIterator extends Iterator {
 
         if (p1 != Stella.NULL_INTEGER) {
           {
-            it.value = Stella_Object.cons(IntegerWrapper.wrapInteger(p1), Stella_Object.cons(IntegerWrapper.wrapInteger(p1 + it.subLength), Stella.NIL));
+            it.value = Cons.cons(IntegerWrapper.wrapInteger(p1), Cons.cons(IntegerWrapper.wrapInteger(p1 + it.subLength), Stella.NIL));
             it.start = p1 + 1;
             return (true);
           }

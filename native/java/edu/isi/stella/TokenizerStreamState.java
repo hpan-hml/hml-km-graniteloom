@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -96,6 +96,38 @@ public class TokenizerStreamState extends StandardObject {
           else {
             return (1);
           }
+        }
+      }
+    }
+  }
+
+  public void reset() {
+    { TokenizerStreamState state = this;
+
+      state.state = 1;
+      state.stateDictionary = null;
+    }
+  }
+
+  public void clear() {
+    { TokenizerStreamState state = this;
+
+      state.cursor = 0;
+      state.end = 0;
+    }
+  }
+
+  public int bufferedInputLength() {
+    { TokenizerStreamState state = this;
+
+      { int cursor = state.cursor;
+        int end = state.end;
+
+        if (end >= cursor) {
+          return (end - cursor);
+        }
+        else {
+          return ((state.bufferSize - cursor) + end);
         }
       }
     }

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,38 +52,40 @@ import edu.isi.stella.*;
 public class _StartupJustifications {
   static void helpStartupJustifications1() {
     {
-      Logic.SGT_LOGIC_JUSTIFICATION = ((Surrogate)(Stella.internRigidSymbolWrtModule("JUSTIFICATION", null, 1)));
-      Logic.SYM_LOGIC_INFERENCE_RULE = ((Symbol)(Stella.internRigidSymbolWrtModule("INFERENCE-RULE", null, 0)));
-      Logic.SYM_LOGIC_ANTECEDENTS = ((Symbol)(Stella.internRigidSymbolWrtModule("ANTECEDENTS", null, 0)));
-      Logic.SYM_LOGIC_PATTERN_JUSTIFICATION = ((Symbol)(Stella.internRigidSymbolWrtModule("PATTERN-JUSTIFICATION", null, 0)));
-      Logic.SYM_LOGIC_SUBSTITUTION = ((Symbol)(Stella.internRigidSymbolWrtModule("SUBSTITUTION", null, 0)));
-      Logic.KWD_PRIMITIVE_STRATEGY = ((Keyword)(Stella.internRigidSymbolWrtModule("PRIMITIVE-STRATEGY", null, 2)));
-      Logic.SGT_LOGIC_PRIMITIVE_STRATEGY = ((Surrogate)(Stella.internRigidSymbolWrtModule("PRIMITIVE-STRATEGY", null, 1)));
-      Logic.SYM_LOGIC_STRATEGY = ((Symbol)(Stella.internRigidSymbolWrtModule("STRATEGY", null, 0)));
-      Logic.KWD_COMPUTED_PREDICATE = ((Keyword)(Stella.internRigidSymbolWrtModule("COMPUTED-PREDICATE", null, 2)));
-      Logic.SGT_STELLA_KEY_VALUE_LIST = ((Surrogate)(Stella.internRigidSymbolWrtModule("KEY-VALUE-LIST", Stella.getStellaModule("/STELLA", true), 1)));
-      Logic.KWD_MODUS_TOLLENS = ((Keyword)(Stella.internRigidSymbolWrtModule("MODUS-TOLLENS", null, 2)));
-      Logic.KWD_MODUS_PONENS = ((Keyword)(Stella.internRigidSymbolWrtModule("MODUS-PONENS", null, 2)));
-      Logic.KWD_AMPLIFICATION = ((Keyword)(Stella.internRigidSymbolWrtModule("AMPLIFICATION", null, 2)));
-      Logic.KWD_AND_INTRODUCTION = ((Keyword)(Stella.internRigidSymbolWrtModule("AND-INTRODUCTION", null, 2)));
-      Logic.KWD_PARTIAL = ((Keyword)(Stella.internRigidSymbolWrtModule("PARTIAL", null, 2)));
-      Logic.KWD_REVERSE = ((Keyword)(Stella.internRigidSymbolWrtModule("REVERSE", null, 2)));
-      Logic.KWD_OR_INTRODUCTION = ((Keyword)(Stella.internRigidSymbolWrtModule("OR-INTRODUCTION", null, 2)));
-      Logic.KWD_DISPROOF = ((Keyword)(Stella.internRigidSymbolWrtModule("DISPROOF", null, 2)));
-      Logic.KWD_FAIL_INTRODUCTION = ((Keyword)(Stella.internRigidSymbolWrtModule("FAIL-INTRODUCTION", null, 2)));
-      Logic.KWD_CLOSED_NOT_INTRODUCTION = ((Keyword)(Stella.internRigidSymbolWrtModule("CLOSED-NOT-INTRODUCTION", null, 2)));
-      Logic.KWD_EXISTENTIAL_INTRODUCTION = ((Keyword)(Stella.internRigidSymbolWrtModule("EXISTENTIAL-INTRODUCTION", null, 2)));
-      Logic.KWD_RAW = ((Keyword)(Stella.internRigidSymbolWrtModule("RAW", null, 2)));
-      Logic.KWD_INFERENCE_RULE = ((Keyword)(Stella.internRigidSymbolWrtModule("INFERENCE-RULE", null, 2)));
-      Logic.KWD_TRUTH_VALUE = ((Keyword)(Stella.internRigidSymbolWrtModule("TRUTH-VALUE", null, 2)));
-      Logic.KWD_POSITIVE_SCORE = ((Keyword)(Stella.internRigidSymbolWrtModule("POSITIVE-SCORE", null, 2)));
-      Logic.KWD_SUBSTITUTION = ((Keyword)(Stella.internRigidSymbolWrtModule("SUBSTITUTION", null, 2)));
-      Logic.SGT_LOGIC_FORWARD_GOAL_RECORD = ((Surrogate)(Stella.internRigidSymbolWrtModule("FORWARD-GOAL-RECORD", null, 1)));
-      Logic.SYM_LOGIC_FORWARD_RULE = ((Symbol)(Stella.internRigidSymbolWrtModule("FORWARD-RULE", null, 0)));
-      Logic.SYM_LOGIC_FORWARD_CHAINING_GOALS = ((Symbol)(Stella.internRigidSymbolWrtModule("FORWARD-CHAINING-GOALS", null, 0)));
-      Logic.SGT_LOGIC_FORWARD_JUSTIFICATION = ((Surrogate)(Stella.internRigidSymbolWrtModule("FORWARD-JUSTIFICATION", null, 1)));
-      Logic.SYM_LOGIC_FORWARD_JUSTIFICATIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("FORWARD-JUSTIFICATIONS", null, 0)));
-      Logic.SYM_LOGIC_STARTUP_JUSTIFICATIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-JUSTIFICATIONS", null, 0)));
+      Logic.SGT_LOGIC_JUSTIFICATION = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("JUSTIFICATION", null, 1)));
+      Logic.SYM_LOGIC_INFERENCE_RULE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INFERENCE-RULE", null, 0)));
+      Logic.SYM_LOGIC_ANTECEDENTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ANTECEDENTS", null, 0)));
+      Logic.SYM_LOGIC_PATTERN_JUSTIFICATION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PATTERN-JUSTIFICATION", null, 0)));
+      Logic.SYM_LOGIC_SUBSTITUTION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUBSTITUTION", null, 0)));
+      Logic.KWD_PRIMITIVE_STRATEGY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PRIMITIVE-STRATEGY", null, 2)));
+      Logic.SGT_LOGIC_PRIMITIVE_STRATEGY = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PRIMITIVE-STRATEGY", null, 1)));
+      Logic.SYM_LOGIC_STRATEGY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STRATEGY", null, 0)));
+      Logic.KWD_COMPUTED_PREDICATE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("COMPUTED-PREDICATE", null, 2)));
+      Logic.KWD_SUBSUMPTION_REASONING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SUBSUMPTION-REASONING", null, 2)));
+      Logic.SGT_STELLA_KEY_VALUE_LIST = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("KEY-VALUE-LIST", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.KWD_AND_INTRODUCTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("AND-INTRODUCTION", null, 2)));
+      Logic.KWD_MODUS_TOLLENS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MODUS-TOLLENS", null, 2)));
+      Logic.KWD_MODUS_PONENS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MODUS-PONENS", null, 2)));
+      Logic.KWD_AMPLIFICATION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("AMPLIFICATION", null, 2)));
+      Logic.KWD_PARTIAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PARTIAL", null, 2)));
+      Logic.KWD_REVERSE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("REVERSE", null, 2)));
+      Logic.KWD_OR_INTRODUCTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("OR-INTRODUCTION", null, 2)));
+      Logic.KWD_DISPROOF = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DISPROOF", null, 2)));
+      Logic.KWD_FAIL_INTRODUCTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FAIL-INTRODUCTION", null, 2)));
+      Logic.KWD_CLOSED_NOT_INTRODUCTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CLOSED-NOT-INTRODUCTION", null, 2)));
+      Logic.KWD_EXISTENTIAL_INTRODUCTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("EXISTENTIAL-INTRODUCTION", null, 2)));
+      Logic.KWD_RAW = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RAW", null, 2)));
+      Logic.KWD_INFERENCE_RULE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INFERENCE-RULE", null, 2)));
+      Logic.KWD_TRUTH_VALUE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TRUTH-VALUE", null, 2)));
+      Logic.KWD_POSITIVE_SCORE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("POSITIVE-SCORE", null, 2)));
+      Logic.KWD_SUBSTITUTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SUBSTITUTION", null, 2)));
+      Logic.SGT_LOGIC_FORWARD_GOAL_RECORD = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FORWARD-GOAL-RECORD", null, 1)));
+      Logic.SYM_LOGIC_FORWARD_RULE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FORWARD-RULE", null, 0)));
+      Logic.SYM_LOGIC_FORWARD_CHAINING_GOALS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FORWARD-CHAINING-GOALS", null, 0)));
+      Logic.SGT_LOGIC_FORWARD_JUSTIFICATION = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FORWARD-JUSTIFICATION", null, 1)));
+      Logic.SYM_LOGIC_FORWARD_JUSTIFICATIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FORWARD-JUSTIFICATIONS", null, 0)));
+      Logic.KWD_FORWARD_INFERENCE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FORWARD-INFERENCE", null, 2)));
+      Logic.SYM_LOGIC_STARTUP_JUSTIFICATIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-JUSTIFICATIONS", null, 0)));
     }
   }
 
@@ -101,7 +103,7 @@ public class _StartupJustifications {
           Logic.$RECORD_JUSTIFICATIONSp$.setDefaultValue(new Boolean(false));
         }
         if (Stella.currentStartupTimePhaseP(5)) {
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("JUSTIFICATION", "(DEFCLASS JUSTIFICATION (STANDARD-OBJECT) :SLOTS ((INFERENCE-RULE :TYPE KEYWORD :DOCUMENTATION \"Keyword describing the inference rule used to conclude the\nproposition of this justification.\") (PROPOSITION :TYPE PROPOSITION :DOCUMENTATION \"The proposition supported by this justification.\") (ANTECEDENTS :TYPE (CONS OF JUSTIFICATION) :INITIALLY NIL :DOCUMENTATION \"Antecedents justifications of this justification.\") (PATTERN-JUSTIFICATION :TYPE JUSTIFICATION :DOCUMENTATION \"Backpointer to the closest parent :PATTERN justification containing\nthe variable substitutions from the associated pattern control frame.  If this\nis a :PATTERN justification, the slot points to the parent pattern.\") (SUBSTITUTION :TYPE (ENTITY-MAPPING OF PATTERN-VARIABLE OBJECT) :DOCUMENTATION \"List of variable bindings recorded for :PATTERN justifications.\") (REVERSE-POLARITY? :TYPE BOOLEAN :DOCUMENTATION \"True if proposition was derived in reverse polarity.\") (TRUTH-VALUE :TYPE TRUTH-VALUE :DOCUMENTATION \"Truth value of the derived proposition.\") (POSITIVE-SCORE :TYPE PARTIAL-MATCH-SCORE :DOCUMENTATION \"Positive partial match score of the derived proposition.\") (NEGATIVE-SCORE :TYPE PARTIAL-MATCH-SCORE :DOCUMENTATION \"Negative partial match score of the derived proposition.\")) :METHODS ((INFERENCE-STRATEGY ((SELF JUSTIFICATION)) :TYPE KEYWORD (RETURN NULL))))");
+          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("JUSTIFICATION", "(DEFCLASS JUSTIFICATION (STANDARD-OBJECT) :SLOTS ((INFERENCE-RULE :TYPE KEYWORD :DOCUMENTATION \"Keyword describing the inference rule used to conclude the\nproposition of this justification.\") (PROPOSITION :TYPE PROPOSITION :DOCUMENTATION \"The proposition supported by this justification.\") (ANTECEDENTS :TYPE (CONS OF JUSTIFICATION) :INITIALLY NIL :DOCUMENTATION \"Antecedents justifications of this justification.\") (PATTERN-JUSTIFICATION :TYPE JUSTIFICATION :DOCUMENTATION \"Backpointer to the closest parent :PATTERN justification containing\nthe variable substitutions from the associated pattern control frame.  If this\nis a :PATTERN justification, the slot points to the parent pattern.\") (SUBSTITUTION :TYPE (ENTITY-MAPPING OF PATTERN-VARIABLE OBJECT) :DOCUMENTATION \"List of variable bindings recorded for :PATTERN justifications.\") (REVERSE-POLARITY? :TYPE BOOLEAN :DOCUMENTATION \"True if proposition was derived in reverse polarity.\") (TRUTH-VALUE :TYPE TRUTH-VALUE :DOCUMENTATION \"Truth value of the derived proposition.\") (POSITIVE-SCORE :TYPE PARTIAL-MATCH-SCORE :DOCUMENTATION \"Positive partial match score of the derived proposition.\") (NEGATIVE-SCORE :TYPE PARTIAL-MATCH-SCORE :DOCUMENTATION \"Negative partial match score of the derived proposition.\")) :METHODS ((INFERENCE-STRATEGY ((SELF JUSTIFICATION)) :TYPE KEYWORD (RETURN NULL)) (INFERENCE-DIRECTION ((SELF JUSTIFICATION)) :TYPE KEYWORD (RETURN :BACKWARD))))");
 
             renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.powerloom.logic.Justification", "newJustification", new java.lang.Class [] {});
             renamed_Class.classSlotAccessorCode = Native.find_java_method("edu.isi.powerloom.logic.Justification", "accessJustificationSlotValue", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Justification"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE});
@@ -116,10 +118,9 @@ public class _StartupJustifications {
             renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.powerloom.logic.ForwardGoalRecord", "newForwardGoalRecord", new java.lang.Class [] {});
             renamed_Class.classSlotAccessorCode = Native.find_java_method("edu.isi.powerloom.logic.ForwardGoalRecord", "accessForwardGoalRecordSlotValue", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ForwardGoalRecord"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE});
           }
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("FORWARD-JUSTIFICATION", "(DEFCLASS FORWARD-JUSTIFICATION (STANDARD-OBJECT) :DOCUMENTATION \"Connects a proposition to other propositions\nthat collectively implied its truth.\" :SLOTS ((CONSEQUENT :TYPE PROPOSITION) (FORWARD-RULE :TYPE PROPOSITION) (ANTECEDENTS :TYPE (CONS OF PROPOSITION))))");
+          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("FORWARD-JUSTIFICATION", "(DEFCLASS FORWARD-JUSTIFICATION (JUSTIFICATION) :METHODS ((INFERENCE-DIRECTION ((SELF FORWARD-JUSTIFICATION)) :TYPE KEYWORD (RETURN :FORWARD))))");
 
             renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.powerloom.logic.ForwardJustification", "newForwardJustification", new java.lang.Class [] {});
-            renamed_Class.classSlotAccessorCode = Native.find_java_method("edu.isi.powerloom.logic.ForwardJustification", "accessForwardJustificationSlotValue", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ForwardJustification"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE});
           }
         }
         if (Stella.currentStartupTimePhaseP(6)) {
@@ -127,7 +128,7 @@ public class _StartupJustifications {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           Stella.defineFunctionObject("JUSTIFICATION-ARGUMENT-BOUND-TO", "(DEFUN (JUSTIFICATION-ARGUMENT-BOUND-TO OBJECT) ((ARGUMENT OBJECT) (JUSTIFICATION JUSTIFICATION)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "justificationArgumentBoundTo", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.powerloom.logic.Justification")}), null);
-          Stella.defineFunctionObject("YIELD-JUSTIFICATION-SUBSTITUTION", "(DEFUN (YIELD-JUSTIFICATION-SUBSTITUTION ENTITY-MAPPING) ((JUSTIFICATION JUSTIFICATION) (SUBSTITUTION ENTITY-MAPPING) (ARGUMENT PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Justification", "yieldJustificationSubstitution", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Justification"), Native.find_java_class("edu.isi.stella.KeyValueList"), Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
+          Stella.defineFunctionObject("YIELD-JUSTIFICATION-SUBSTITUTION", "(DEFUN (YIELD-JUSTIFICATION-SUBSTITUTION ENTITY-MAPPING) ((JUSTIFICATION JUSTIFICATION) (SUBSTITUTION ENTITY-MAPPING) (ARGUMENT PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Justification", "yieldJustificationSubstitution", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Justification"), Native.find_java_class("edu.isi.stella.KeyValueMap"), Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("JUSTIFICATION-EQL?", "(DEFUN (JUSTIFICATION-EQL? BOOLEAN) ((JUST1 JUSTIFICATION) (JUST2 JUSTIFICATION)))", Native.find_java_method("edu.isi.powerloom.logic.Justification", "justificationEqlP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Justification"), Native.find_java_class("edu.isi.powerloom.logic.Justification")}), null);
           Stella.defineFunctionObject("JUSTIFICATION-PROPOSITIONS-EQL?", "(DEFUN (JUSTIFICATION-PROPOSITIONS-EQL? BOOLEAN) ((PROPOSITION1 PROPOSITION) (JUST1 JUSTIFICATION) (PROPOSITION2 PROPOSITION) (JUST2 JUSTIFICATION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "justificationPropositionsEqlP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Justification"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Justification")}), null);
           Stella.defineMethodObject("(DEFMETHOD (COPY (LIKE SELF)) ((SELF JUSTIFICATION)) :DOCUMENTATION \"Return a copy of the proof starting at `self'.  Allocates\nall new justification objects, but structure-shares other information such\nas propositions and substitutions.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Justification", "copy", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
@@ -157,9 +158,15 @@ public class _StartupJustifications {
           Stella.defineFunctionObject("ASSERTED-AS-TRUE?", "(DEFUN (ASSERTED-AS-TRUE? BOOLEAN) ((PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "assertedAsTrueP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("ELABORATION-RULE?", "(DEFUN (ELABORATION-RULE? BOOLEAN) ((CONSEQUENTPROPOSITION PROPOSITION) (FORWARDRULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "elaborationRuleP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Vector")}), null);
           Stella.defineFunctionObject("GET-FORWARD-GOALS", "(DEFUN (GET-FORWARD-GOALS (LIST OF FORWARD-GOAL-RECORD)) ((PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "getForwardGoals", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
-          Stella.defineExternalSlotFromStringifiedSource("(DEFSLOT PROPOSITION FORWARD-JUSTIFICATIONS :TYPE (LIST OF FORWARD-JUSTIFICATION) :ALLOCATION :DYNAMIC)");
-          Stella.defineFunctionObject("CREATE-FORWARD-JUSTIFICATION", "(DEFUN (CREATE-FORWARD-JUSTIFICATION FORWARD-JUSTIFICATION) ((CONSEQUENTPROPOSITION PROPOSITION) (FORWARDRULE PROPOSITION) (ANTECEDENTS (CONS OF PROPOSITION))))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "createForwardJustification", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Cons")}), null);
-          Stella.defineFunctionObject("RECORD-FORWARD-JUSTIFICATION", "(DEFUN RECORD-FORWARD-JUSTIFICATION ((CONSEQUENTPROPOSITION PROPOSITION) (FORWARDRULE PROPOSITION) (ANTECEDENTS (CONS OF PROPOSITION))))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "recordForwardJustification", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Cons")}), null);
+          Stella.defineExternalSlotFromStringifiedSource("(DEFSLOT PROPOSITION FORWARD-JUSTIFICATIONS :TYPE (LIST OF JUSTIFICATION) :ALLOCATION :DYNAMIC)");
+          Stella.defineFunctionObject("HAS-FORWARD-JUSTIFICATIONS?", "(DEFUN (HAS-FORWARD-JUSTIFICATIONS? BOOLEAN) ((PROPOSITION PROPOSITION)) :DOCUMENTATION \"Return TRUE if `proposition' has any forward justifications.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NON-EMPTY? (FORWARD-JUSTIFICATIONS PROPOSITION))))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "hasForwardJustificationsP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
+          Stella.defineFunctionObject("GET-FORWARD-JUSTIFICATIONS", "(DEFUN (GET-FORWARD-JUSTIFICATIONS (LIST OF JUSTIFICATION)) ((PROPOSITION PROPOSITION)) :DOCUMENTATION \"Return `proposition's forward justifications.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (FORWARD-JUSTIFICATIONS PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "getForwardJustifications", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
+          Stella.defineFunctionObject("ADD-FORWARD-JUSTIFICATIONS", "(DEFUN ADD-FORWARD-JUSTIFICATIONS ((PROPOSITION PROPOSITION) (JUSTIFICATION JUSTIFICATION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "addForwardJustifications", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Justification")}), null);
+          Stella.defineFunctionObject("GET-RULE-IO-VARIABLES", "(DEFUN (GET-RULE-IO-VARIABLES VARIABLES-VECTOR) ((RULE PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "getRuleIoVariables", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
+          Stella.defineFunctionObject("CREATE-FORWARD-JUSTIFICATION", "(DEFUN (CREATE-FORWARD-JUSTIFICATION FORWARD-JUSTIFICATION) ((ANTECEDENTS (CONS OF PROPOSITION)) (FORWARDRULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR) (CONSEQUENTPROPOSITION PROPOSITION) (BC-JUSTIFICATION JUSTIFICATION)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "createForwardJustification", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Vector"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Justification")}), null);
+          Stella.defineFunctionObject("GET-FORWARD-ANTECEDENT-JUSTIFICATION", "(DEFUN (GET-FORWARD-ANTECEDENT-JUSTIFICATION JUSTIFICATION) ((ANTECEDENT PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "getForwardAntecedentJustification", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
+          Stella.defineFunctionObject("RECORD-FORWARD-JUSTIFICATION", "(DEFUN RECORD-FORWARD-JUSTIFICATION ((ANTECEDENTS (CONS OF PROPOSITION)) (FORWARDRULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR) (CONSEQUENTPROPOSITION PROPOSITION) (BC-JUSTIFICATION JUSTIFICATION)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "recordForwardJustification", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Vector"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Justification")}), null);
+          Stella.defineFunctionObject("CREATE-SUBSET-JUSTIFICATION", "(DEFUN (CREATE-SUBSET-JUSTIFICATION JUSTIFICATION) ((MAIN-PROPOSITION PROPOSITION) (MATCHING-PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "createSubsetJustification", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
           Stella.defineFunctionObject("STARTUP-JUSTIFICATIONS", "(DEFUN STARTUP-JUSTIFICATIONS () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic._StartupJustifications", "startupJustifications", new java.lang.Class [] {}), null);
           { MethodSlot function = Symbol.lookupFunction(Logic.SYM_LOGIC_STARTUP_JUSTIFICATIONS);
 
@@ -171,6 +178,7 @@ public class _StartupJustifications {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *RECORD-JUSTIFICATIONS?* BOOLEAN FALSE :DOCUMENTATION \"If TRUE every query records justifications to enable\nthe explanation of concluded results.\")");
           Logic.defineExplanationPhrase(Logic.KWD_SCAN_COLLECTION, Logic.KWD_TECHNICAL, "by explicit assertion", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_SCAN_PROPOSITIONS, Logic.KWD_TECHNICAL, "by explicit assertion", Stella.NIL);
@@ -188,37 +196,41 @@ public class _StartupJustifications {
           Logic.defineExplanationPhrase(Logic.KWD_EQUIVALENCE, Logic.KWD_LAY, "because its arguments are equivalent", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_SUBSUMPTION_TEST, Logic.KWD_TECHNICAL, "because of a successful subsumption test", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_SUBSUMPTION_TEST, Logic.KWD_LAY, "because of a successful subsumption test", Stella.NIL);
+          Logic.defineExplanationPhrase(Logic.KWD_SUBSUMPTION_REASONING, Logic.KWD_TECHNICAL, "because a subsumed relation is true", Stella.NIL);
+          Logic.defineExplanationPhrase(Logic.KWD_SUBSUMPTION_REASONING, Logic.KWD_LAY, "because of it is true of a relation that is a subset of the one we want", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_FAILURE, Logic.KWD_TECHNICAL, "could not be proven", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_FAILURE, Logic.KWD_LAY, "could not be proven", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_MODUS_PONENS, Logic.KWD_TECHNICAL, "by Modus Ponens", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_MODUS_PONENS, Logic.KWD_LAY, "because an if-then rule applies", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_MODUS_TOLLENS, Logic.KWD_TECHNICAL, "by Modus Tollens", Stella.NIL);
-          Logic.defineExplanationPhrase(Logic.KWD_MODUS_TOLLENS, Logic.KWD_TECHNICAL, "(p => q, ~q |= ~p)", Stella_Object.cons(Logic.KWD_AMPLIFICATION, Stella.NIL));
+          Logic.defineExplanationPhrase(Logic.KWD_MODUS_TOLLENS, Logic.KWD_TECHNICAL, "(p => q, ~q |= ~p)", Cons.cons(Logic.KWD_AMPLIFICATION, Stella.NIL));
           Logic.defineExplanationPhrase(Logic.KWD_MODUS_TOLLENS, Logic.KWD_LAY, "because an if-then rule was used backwards", Stella.NIL);
-          Logic.defineExplanationPhrase(Logic.KWD_MODUS_TOLLENS, Logic.KWD_LAY, "(if P then Q with Q false allows us to conclude P)", Stella_Object.cons(Logic.KWD_AMPLIFICATION, Stella.NIL));
+          Logic.defineExplanationPhrase(Logic.KWD_MODUS_TOLLENS, Logic.KWD_LAY, "(if P then Q with Q false allows us to conclude P)", Cons.cons(Logic.KWD_AMPLIFICATION, Stella.NIL));
           Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_TECHNICAL, "by And-Introduction", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_LAY, "because all parts of an AND expression were true", Stella.NIL);
-          Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_LAY, "because parts of an AND expression were true", Stella_Object.cons(Logic.KWD_PARTIAL, Stella.NIL));
-          Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_TECHNICAL, "by Not-Or-Introduction", Stella_Object.cons(Logic.KWD_REVERSE, Stella.NIL));
-          Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_LAY, "because all parts of an OR expression were false", Stella_Object.cons(Logic.KWD_REVERSE, Stella.NIL));
-          Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_TECHNICAL, "(~p, ~q |= ~(p v q))", Stella_Object.cons(Logic.KWD_REVERSE, Stella_Object.cons(Logic.KWD_AMPLIFICATION, Stella.NIL)));
-          Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_LAY, "(therefore the OR is also false)", Stella_Object.cons(Logic.KWD_REVERSE, Stella_Object.cons(Logic.KWD_AMPLIFICATION, Stella.NIL)));
+          Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_LAY, "because parts of an AND expression were true", Cons.cons(Logic.KWD_PARTIAL, Stella.NIL));
+          Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_TECHNICAL, "by Not-Or-Introduction", Cons.cons(Logic.KWD_REVERSE, Stella.NIL));
+          Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_LAY, "because all parts of an OR expression were false", Cons.cons(Logic.KWD_REVERSE, Stella.NIL));
+          Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_TECHNICAL, "(~p, ~q |= ~(p v q))", Cons.cons(Logic.KWD_REVERSE, Cons.cons(Logic.KWD_AMPLIFICATION, Stella.NIL)));
+          Logic.defineExplanationPhrase(Logic.KWD_AND_INTRODUCTION, Logic.KWD_LAY, "(therefore the OR is also false)", Cons.cons(Logic.KWD_REVERSE, Cons.cons(Logic.KWD_AMPLIFICATION, Stella.NIL)));
           Logic.defineExplanationPhrase(Logic.KWD_OR_INTRODUCTION, Logic.KWD_TECHNICAL, "by Or-Introduction", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_OR_INTRODUCTION, Logic.KWD_LAY, "because at least one part of an OR expression was true", Stella.NIL);
-          Logic.defineExplanationPhrase(Logic.KWD_OR_INTRODUCTION, Logic.KWD_TECHNICAL, "by Not-And-Introduction", Stella_Object.cons(Logic.KWD_REVERSE, Stella.NIL));
-          Logic.defineExplanationPhrase(Logic.KWD_OR_INTRODUCTION, Logic.KWD_LAY, "because at least one part of an AND expression was false", Stella_Object.cons(Logic.KWD_REVERSE, Stella.NIL));
-          Logic.defineExplanationPhrase(Logic.KWD_OR_INTRODUCTION, Logic.KWD_TECHNICAL, "(~p |= ~(p & q))", Stella_Object.cons(Logic.KWD_REVERSE, Stella_Object.cons(Logic.KWD_AMPLIFICATION, Stella.NIL)));
-          Logic.defineExplanationPhrase(Logic.KWD_OR_INTRODUCTION, Logic.KWD_LAY, "(therefore the AND is also false)", Stella_Object.cons(Logic.KWD_REVERSE, Stella_Object.cons(Logic.KWD_AMPLIFICATION, Stella.NIL)));
+          Logic.defineExplanationPhrase(Logic.KWD_OR_INTRODUCTION, Logic.KWD_TECHNICAL, "by Not-And-Introduction", Cons.cons(Logic.KWD_REVERSE, Stella.NIL));
+          Logic.defineExplanationPhrase(Logic.KWD_OR_INTRODUCTION, Logic.KWD_LAY, "because at least one part of an AND expression was false", Cons.cons(Logic.KWD_REVERSE, Stella.NIL));
+          Logic.defineExplanationPhrase(Logic.KWD_OR_INTRODUCTION, Logic.KWD_TECHNICAL, "(~p |= ~(p & q))", Cons.cons(Logic.KWD_REVERSE, Cons.cons(Logic.KWD_AMPLIFICATION, Stella.NIL)));
+          Logic.defineExplanationPhrase(Logic.KWD_OR_INTRODUCTION, Logic.KWD_LAY, "(therefore the AND is also false)", Cons.cons(Logic.KWD_REVERSE, Cons.cons(Logic.KWD_AMPLIFICATION, Stella.NIL)));
           Logic.defineExplanationPhrase(Logic.KWD_DISPROOF, Logic.KWD_TECHNICAL, "by disproof", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_DISPROOF, Logic.KWD_LAY, "by proving the negation", Stella.NIL);
-          Logic.defineExplanationPhrase(Logic.KWD_DISPROOF, Logic.KWD_TECHNICAL, "by Double-Negation-Introduction", Stella_Object.cons(Logic.KWD_REVERSE, Stella.NIL));
-          Logic.defineExplanationPhrase(Logic.KWD_DISPROOF, Logic.KWD_LAY, "by negating a negation", Stella_Object.cons(Logic.KWD_REVERSE, Stella.NIL));
+          Logic.defineExplanationPhrase(Logic.KWD_DISPROOF, Logic.KWD_TECHNICAL, "by Double-Negation-Introduction", Cons.cons(Logic.KWD_REVERSE, Stella.NIL));
+          Logic.defineExplanationPhrase(Logic.KWD_DISPROOF, Logic.KWD_LAY, "by negating a negation", Cons.cons(Logic.KWD_REVERSE, Stella.NIL));
           Logic.defineExplanationPhrase(Logic.KWD_CLOSED_NOT_INTRODUCTION, Logic.KWD_TECHNICAL, "because the argument proposition was not derivable and it uses closed-world semantics", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_CLOSED_NOT_INTRODUCTION, Logic.KWD_LAY, "because the argument proposition could not be proven and it is a closed-world proposition", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_FAIL_INTRODUCTION, Logic.KWD_TECHNICAL, "because the argument proposition was not derivable", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_FAIL_INTRODUCTION, Logic.KWD_LAY, "because the argument proposition could not be proven", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_EXISTENTIAL_INTRODUCTION, Logic.KWD_TECHNICAL, "by Existential Introduction", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_EXISTENTIAL_INTRODUCTION, Logic.KWD_LAY, "because it was true for at least one case", Stella.NIL);
+          Logic.defineExplanationPhrase(Logic.KWD_FORWARD_INFERENCE, Logic.KWD_TECHNICAL, "by Forward Inference", Stella.NIL);
+          Logic.defineExplanationPhrase(Logic.KWD_FORWARD_INFERENCE, Logic.KWD_LAY, "by forward rule reasoning", Stella.NIL);
         }
 
       } finally {

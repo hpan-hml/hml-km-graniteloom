@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -93,18 +93,29 @@ Symbol* generateNameOfVariable(PatternVariable* self) {
 }
 
 Object* generateOneVariable(PatternVariable* self, boolean typedP) {
-  if (((boolean)(oCURRENTJUSTIFICATIONo.get())) &&
-      ((boolean)(justificationArgumentBoundTo(self, NULL)))) {
-    return (generateTerm(justificationArgumentBoundTo(self, NULL)));
-  }
-  { Symbol* name = generateNameOfVariable(self);
+  { Object* value = NULL;
 
-    if (typedP &&
-        (!(logicalType(self) == SGT_GENERATE_STELLA_THING))) {
-      return (cons(name, cons(symbolize(logicalType(self)), NIL)));
+    if (((boolean)(oCURRENTJUSTIFICATIONo.get()))) {
+      value = justificationArgumentBoundTo(self, NULL);
+    }
+    if (!((boolean)(value))) {
+      value = safeArgumentBoundTo(self);
+    }
+    if (((boolean)(value)) &&
+        (!(value == self))) {
+      return (generateTerm(value));
     }
     else {
-      return (name);
+      { Symbol* name = generateNameOfVariable(self);
+
+        if (typedP &&
+            (!(logicalType(self) == SGT_GENERATE_STELLA_THING))) {
+          return (cons(name, cons(symbolize(logicalType(self)), NIL)));
+        }
+        else {
+          return (name);
+        }
+      }
     }
   }
 }
@@ -500,7 +511,7 @@ Cons* generateImpliesProposition(Proposition* self) {
 
 Cons* generateDescriptionProposition(Description* self, boolean invertP) {
   { Object* prop = generateProposition(self->proposition);
-    Cons* existentals = ((self->internalVariables->arraySize > 0) ? topLevelExistentialVariables(self) : NIL);
+    Cons* existentals = (self->internalVariables->nonEmptyP() ? topLevelExistentialVariables(self) : NIL);
 
     { Object* var = NULL;
       Cons* iter000 = existentals;
@@ -577,11 +588,11 @@ Cons* generateDescriptionsAsRule(Description* head, Description* tail, Propositi
       }
     }
     { 
-      BIND_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueList*, (mapheadvariablesP ? ((KeyValueList*)(createSkolemMappingTable(head->ioVariables, tail->ioVariables))) : NULL));
+      BIND_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueMap*, (mapheadvariablesP ? ((KeyValueMap*)(createSkolemMappingTable(head->ioVariables, tail->ioVariables))) : NULL));
       headprop = generateDescriptionProposition(head, reversepolarityP);
     }
     { 
-      BIND_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueList*, ((!mapheadvariablesP) ? ((KeyValueList*)(createSkolemMappingTable(tail->ioVariables, head->ioVariables))) : NULL));
+      BIND_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueMap*, ((!mapheadvariablesP) ? ((KeyValueMap*)(createSkolemMappingTable(tail->ioVariables, head->ioVariables))) : NULL));
       tailprop = generateDescriptionProposition(tail, reversepolarityP);
     }
     return (listO(3, SYM_GENERATE_STELLA_FORALL, universals, cons(cons(arrow, cons(headprop, cons(tailprop, NIL))), NIL)));
@@ -719,6 +730,9 @@ void startupGenerate() {
     if (currentStartupTimePhaseP(2)) {
       helpStartupGenerate1();
     }
+    if (currentStartupTimePhaseP(4)) {
+      oCANONICALVARIABLECOUNTERo.set(NULL_INTEGER);
+    }
     if (currentStartupTimePhaseP(5)) {
       { Class* clasS = defineClassFromStringifiedSource("TERM-GENERATION-EXCEPTION", "(DEFCLASS TERM-GENERATION-EXCEPTION (LOGIC-EXCEPTION) :PUBLIC? TRUE :DOCUMENTATION \"Signals an exception during term generation.\" :PUBLIC-SLOTS ((OFFENDING-TERM :TYPE OBJECT :REQUIRED? TRUE)))");
 
@@ -757,6 +771,7 @@ void startupGenerate() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CANONICALVARIABLENAMEMAPPING* KEY-VALUE-LIST NULL :DOCUMENTATION \"Maps variables to symbols in SYSTEM-DEFINED-ARGUMENT-NAMES.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CANONICALVARIABLECOUNTER* INTEGER NULL :DOCUMENTATION \"Number of the last canonically-mapped variable.\")");
     }

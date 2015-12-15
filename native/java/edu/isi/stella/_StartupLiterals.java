@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,49 +50,52 @@ import edu.isi.stella.javalib.*;
 public class _StartupLiterals {
   static void helpStartupLiterals1() {
     {
-      Stella.SGT_STELLA_BOOLEAN = ((Surrogate)(Stella.internRigidSymbolWrtModule("BOOLEAN", null, 1)));
-      Stella.KWD_NULL_WRAPPER = ((Keyword)(Stella.internRigidSymbolWrtModule("NULL-WRAPPER", null, 2)));
-      Stella.SYM_STELLA_FALSE_WRAPPER = ((Symbol)(Stella.internRigidSymbolWrtModule("FALSE-WRAPPER", null, 0)));
-      Stella.SGT_STELLA_INTEGER = ((Surrogate)(Stella.internRigidSymbolWrtModule("INTEGER", null, 1)));
-      Stella.SYM_STELLA_NULL_INTEGER_WRAPPER = ((Symbol)(Stella.internRigidSymbolWrtModule("NULL-INTEGER-WRAPPER", null, 0)));
-      Stella.SGT_STELLA_FLOAT = ((Surrogate)(Stella.internRigidSymbolWrtModule("FLOAT", null, 1)));
-      Stella.SYM_STELLA_NULL_FLOAT_WRAPPER = ((Symbol)(Stella.internRigidSymbolWrtModule("NULL-FLOAT-WRAPPER", null, 0)));
-      Stella.SGT_STELLA_STRING = ((Surrogate)(Stella.internRigidSymbolWrtModule("STRING", null, 1)));
-      Stella.SYM_STELLA_NULL_STRING_WRAPPER = ((Symbol)(Stella.internRigidSymbolWrtModule("NULL-STRING-WRAPPER", null, 0)));
-      Stella.SGT_STELLA_MUTABLE_STRING = ((Surrogate)(Stella.internRigidSymbolWrtModule("MUTABLE-STRING", null, 1)));
-      Stella.SYM_STELLA_NULL_MUTABLE_STRING_WRAPPER = ((Symbol)(Stella.internRigidSymbolWrtModule("NULL-MUTABLE-STRING-WRAPPER", null, 0)));
-      Stella.SGT_STELLA_CHARACTER = ((Surrogate)(Stella.internRigidSymbolWrtModule("CHARACTER", null, 1)));
-      Stella.SYM_STELLA_NULL_CHARACTER_WRAPPER = ((Symbol)(Stella.internRigidSymbolWrtModule("NULL-CHARACTER-WRAPPER", null, 0)));
-      Stella.SGT_STELLA_FUNCTION_CODE = ((Surrogate)(Stella.internRigidSymbolWrtModule("FUNCTION-CODE", null, 1)));
-      Stella.SYM_STELLA_NULL_FUNCTION_CODE_WRAPPER = ((Symbol)(Stella.internRigidSymbolWrtModule("NULL-FUNCTION-CODE-WRAPPER", null, 0)));
-      Stella.SGT_STELLA_METHOD_CODE = ((Surrogate)(Stella.internRigidSymbolWrtModule("METHOD-CODE", null, 1)));
-      Stella.SYM_STELLA_NULL_METHOD_CODE_WRAPPER = ((Symbol)(Stella.internRigidSymbolWrtModule("NULL-METHOD-CODE-WRAPPER", null, 0)));
-      Stella.SYM_STELLA_TRUE_WRAPPER = ((Symbol)(Stella.internRigidSymbolWrtModule("TRUE-WRAPPER", null, 0)));
-      Stella.SYM_STELLA_WRAP_BOOLEAN = ((Symbol)(Stella.internRigidSymbolWrtModule("WRAP-BOOLEAN", null, 0)));
-      Stella.SYM_STELLA_COERCE_WRAPPED_BOOLEAN_TO_BOOLEAN = ((Symbol)(Stella.internRigidSymbolWrtModule("COERCE-WRAPPED-BOOLEAN-TO-BOOLEAN", null, 0)));
-      Stella.KWD_WRAP_FUNCTION = ((Keyword)(Stella.internRigidSymbolWrtModule("WRAP-FUNCTION", null, 2)));
-      Stella.SYM_STELLA_WRAP_INTEGER = ((Symbol)(Stella.internRigidSymbolWrtModule("WRAP-INTEGER", null, 0)));
-      Stella.SYM_STELLA_WRAP_FLOAT = ((Symbol)(Stella.internRigidSymbolWrtModule("WRAP-FLOAT", null, 0)));
-      Stella.SYM_STELLA_WRAP_STRING = ((Symbol)(Stella.internRigidSymbolWrtModule("WRAP-STRING", null, 0)));
-      Stella.SYM_STELLA_WRAP_CHARACTER = ((Symbol)(Stella.internRigidSymbolWrtModule("WRAP-CHARACTER", null, 0)));
-      Stella.SYM_STELLA_WRAP_FUNCTION_CODE = ((Symbol)(Stella.internRigidSymbolWrtModule("WRAP-FUNCTION-CODE", null, 0)));
-      Stella.SYM_STELLA_WRAP_METHOD_CODE = ((Symbol)(Stella.internRigidSymbolWrtModule("WRAP-METHOD-CODE", null, 0)));
-      Stella.SYM_STELLA_NIL = ((Symbol)(Stella.internRigidSymbolWrtModule("NIL", null, 0)));
-      Stella.SYM_STELLA_CONS = ((Symbol)(Stella.internRigidSymbolWrtModule("CONS", null, 0)));
-      Stella.SYM_STELLA_WRAP_LITERAL = ((Symbol)(Stella.internRigidSymbolWrtModule("WRAP-LITERAL", null, 0)));
-      Stella.SYM_STELLA_GET_KWD = ((Symbol)(Stella.internRigidSymbolWrtModule("GET-KWD", null, 0)));
-      Stella.SYM_STELLA_TYPED_SYS = ((Symbol)(Stella.internRigidSymbolWrtModule("TYPED-SYS", null, 0)));
-      Stella.SYM_STELLA_GET_SGT = ((Symbol)(Stella.internRigidSymbolWrtModule("GET-SGT", null, 0)));
-      Stella.SYM_STELLA_INTERN_COMMON_LISP_SYMBOL = ((Symbol)(Stella.internRigidSymbolWrtModule("INTERN-COMMON-LISP-SYMBOL", null, 0)));
-      Stella.SYM_STELLA_GET_SYM = ((Symbol)(Stella.internRigidSymbolWrtModule("GET-SYM", null, 0)));
-      Stella.SYM_STELLA_LIST$ = ((Symbol)(Stella.internRigidSymbolWrtModule("LIST*", null, 0)));
-      Stella.SYM_STELLA_a = ((Symbol)(Stella.internRigidSymbolWrtModule("&", null, 0)));
-      Stella.SYM_STELLA_aa = ((Symbol)(Stella.internRigidSymbolWrtModule("&&", null, 0)));
-      Stella.KWD_OTHER = ((Keyword)(Stella.internRigidSymbolWrtModule("OTHER", null, 2)));
-      Stella.KWD_SYMBOL_QUALIFIER = ((Keyword)(Stella.internRigidSymbolWrtModule("SYMBOL-QUALIFIER", null, 2)));
-      Stella.KWD_ESCAPE = ((Keyword)(Stella.internRigidSymbolWrtModule("ESCAPE", null, 2)));
-      Stella.KWD_DELIMITER = ((Keyword)(Stella.internRigidSymbolWrtModule("DELIMITER", null, 2)));
-      Stella.SYM_STELLA_STARTUP_LITERALS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-LITERALS", null, 0)));
+      Stella.SGT_STELLA_BOOLEAN = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("BOOLEAN", null, 1)));
+      Stella.KWD_NULL_WRAPPER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL-WRAPPER", null, 2)));
+      Stella.SYM_STELLA_FALSE_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FALSE-WRAPPER", null, 0)));
+      Stella.SGT_STELLA_INTEGER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("INTEGER", null, 1)));
+      Stella.SYM_STELLA_NULL_INTEGER_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL-INTEGER-WRAPPER", null, 0)));
+      Stella.SGT_STELLA_LONG_INTEGER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("LONG-INTEGER", null, 1)));
+      Stella.SYM_STELLA_NULL_LONG_INTEGER_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL-LONG-INTEGER-WRAPPER", null, 0)));
+      Stella.SGT_STELLA_FLOAT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FLOAT", null, 1)));
+      Stella.SYM_STELLA_NULL_FLOAT_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL-FLOAT-WRAPPER", null, 0)));
+      Stella.SGT_STELLA_STRING = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("STRING", null, 1)));
+      Stella.SYM_STELLA_NULL_STRING_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL-STRING-WRAPPER", null, 0)));
+      Stella.SGT_STELLA_MUTABLE_STRING = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("MUTABLE-STRING", null, 1)));
+      Stella.SYM_STELLA_NULL_MUTABLE_STRING_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL-MUTABLE-STRING-WRAPPER", null, 0)));
+      Stella.SGT_STELLA_CHARACTER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CHARACTER", null, 1)));
+      Stella.SYM_STELLA_NULL_CHARACTER_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL-CHARACTER-WRAPPER", null, 0)));
+      Stella.SGT_STELLA_FUNCTION_CODE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FUNCTION-CODE", null, 1)));
+      Stella.SYM_STELLA_NULL_FUNCTION_CODE_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL-FUNCTION-CODE-WRAPPER", null, 0)));
+      Stella.SGT_STELLA_METHOD_CODE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-CODE", null, 1)));
+      Stella.SYM_STELLA_NULL_METHOD_CODE_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NULL-METHOD-CODE-WRAPPER", null, 0)));
+      Stella.SYM_STELLA_TRUE_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TRUE-WRAPPER", null, 0)));
+      Stella.SYM_STELLA_WRAP_BOOLEAN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAP-BOOLEAN", null, 0)));
+      Stella.SYM_STELLA_COERCE_WRAPPED_BOOLEAN_TO_BOOLEAN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COERCE-WRAPPED-BOOLEAN-TO-BOOLEAN", null, 0)));
+      Stella.KWD_WRAP_FUNCTION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAP-FUNCTION", null, 2)));
+      Stella.SYM_STELLA_WRAP_INTEGER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAP-INTEGER", null, 0)));
+      Stella.SYM_STELLA_WRAP_LONG_INTEGER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAP-LONG-INTEGER", null, 0)));
+      Stella.SYM_STELLA_WRAP_FLOAT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAP-FLOAT", null, 0)));
+      Stella.SYM_STELLA_WRAP_STRING = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAP-STRING", null, 0)));
+      Stella.SYM_STELLA_WRAP_CHARACTER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAP-CHARACTER", null, 0)));
+      Stella.SYM_STELLA_WRAP_FUNCTION_CODE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAP-FUNCTION-CODE", null, 0)));
+      Stella.SYM_STELLA_WRAP_METHOD_CODE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAP-METHOD-CODE", null, 0)));
+      Stella.SYM_STELLA_NIL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NIL", null, 0)));
+      Stella.SYM_STELLA_CONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CONS", null, 0)));
+      Stella.SYM_STELLA_WRAP_LITERAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAP-LITERAL", null, 0)));
+      Stella.SYM_STELLA_GET_KWD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GET-KWD", null, 0)));
+      Stella.SYM_STELLA_TYPED_SYS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TYPED-SYS", null, 0)));
+      Stella.SYM_STELLA_GET_SGT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GET-SGT", null, 0)));
+      Stella.SYM_STELLA_INTERN_COMMON_LISP_SYMBOL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTERN-COMMON-LISP-SYMBOL", null, 0)));
+      Stella.SYM_STELLA_GET_SYM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GET-SYM", null, 0)));
+      Stella.SYM_STELLA_LIST$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LIST*", null, 0)));
+      Stella.SYM_STELLA_a = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("&", null, 0)));
+      Stella.SYM_STELLA_aa = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("&&", null, 0)));
+      Stella.KWD_OTHER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("OTHER", null, 2)));
+      Stella.KWD_SYMBOL_QUALIFIER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SYMBOL-QUALIFIER", null, 2)));
+      Stella.KWD_ESCAPE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ESCAPE", null, 2)));
+      Stella.KWD_DELIMITER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DELIMITER", null, 2)));
+      Stella.SYM_STELLA_STARTUP_LITERALS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-LITERALS", null, 0)));
     }
   }
 
@@ -102,6 +105,7 @@ public class _StartupLiterals {
       Stella.$LITERAL_TYPES$ = List.newList();
       Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_BOOLEAN, Stella.KWD_NULL_WRAPPER, Stella.SYM_STELLA_FALSE_WRAPPER);
       Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_INTEGER, Stella.KWD_NULL_WRAPPER, Stella.SYM_STELLA_NULL_INTEGER_WRAPPER);
+      Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_LONG_INTEGER, Stella.KWD_NULL_WRAPPER, Stella.SYM_STELLA_NULL_LONG_INTEGER_WRAPPER);
       Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_FLOAT, Stella.KWD_NULL_WRAPPER, Stella.SYM_STELLA_NULL_FLOAT_WRAPPER);
       Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_STRING, Stella.KWD_NULL_WRAPPER, Stella.SYM_STELLA_NULL_STRING_WRAPPER);
       Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_MUTABLE_STRING, Stella.KWD_NULL_WRAPPER, Stella.SYM_STELLA_NULL_MUTABLE_STRING_WRAPPER);
@@ -110,6 +114,7 @@ public class _StartupLiterals {
       Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_METHOD_CODE, Stella.KWD_NULL_WRAPPER, Stella.SYM_STELLA_NULL_METHOD_CODE_WRAPPER);
       Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_BOOLEAN, Stella.KWD_WRAP_FUNCTION, Stella.SYM_STELLA_WRAP_BOOLEAN);
       Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_INTEGER, Stella.KWD_WRAP_FUNCTION, Stella.SYM_STELLA_WRAP_INTEGER);
+      Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_LONG_INTEGER, Stella.KWD_WRAP_FUNCTION, Stella.SYM_STELLA_WRAP_LONG_INTEGER);
       Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_FLOAT, Stella.KWD_WRAP_FUNCTION, Stella.SYM_STELLA_WRAP_FLOAT);
       Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_STRING, Stella.KWD_WRAP_FUNCTION, Stella.SYM_STELLA_WRAP_STRING);
       Surrogate.setLiteralTypeInfo(Stella.SGT_STELLA_CHARACTER, Stella.KWD_WRAP_FUNCTION, Stella.SYM_STELLA_WRAP_CHARACTER);
@@ -129,6 +134,9 @@ public class _StartupLiterals {
       Stella.defineFunctionObject("SET-LITERAL-TYPE-INFO", "(DEFUN SET-LITERAL-TYPE-INFO ((TYPE TYPE) (KEY KEYWORD) (VALUE OBJECT)))", Native.find_java_method("edu.isi.stella.Surrogate", "setLiteralTypeInfo", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("edu.isi.stella.Keyword"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("WRAP-INTEGER", "(DEFUN (WRAP-INTEGER INTEGER-WRAPPER) ((VALUE INTEGER)) :DOCUMENTATION \"Return a literal object whose value is the INTEGER 'value'.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", Native.find_java_method("edu.isi.stella.IntegerWrapper", "wrapInteger", new java.lang.Class [] {java.lang.Integer.TYPE}), null);
       Stella.defineFunctionObject("UNWRAP-INTEGER", "(DEFUN (UNWRAP-INTEGER INTEGER) ((WRAPPER INTEGER-WRAPPER)) :DOCUMENTATION \"Unwrap `wrapper' and return the result.\nReturn NULL if `wrapper' is NULL.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.IntegerWrapper", "unwrapInteger", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.IntegerWrapper")}), null);
+      Stella.defineFunctionObject("WRAP-LONG-INTEGER", "(DEFUN (WRAP-LONG-INTEGER LONG-INTEGER-WRAPPER) ((VALUE LONG-INTEGER)) :DOCUMENTATION \"Return a literal object whose value is the LONG-INTEGER 'value'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "wrapLongInteger", new java.lang.Class [] {java.lang.Long.TYPE}), null);
+      Stella.defineFunctionObject("UNWRAP-LONG-INTEGER", "(DEFUN (UNWRAP-LONG-INTEGER LONG-INTEGER) ((WRAPPER LONG-INTEGER-WRAPPER)) :DOCUMENTATION \"Unwrap `wrapper' and return the result.\nReturn NULL if `wrapper' is NULL.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.LongIntegerWrapper", "unwrapLongInteger", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.LongIntegerWrapper")}), null);
+      Stella.defineFunctionObject("WRAP-INTEGER-VALUE", "(DEFUN (WRAP-INTEGER-VALUE NUMBER-WRAPPER) ((VALUE LONG-INTEGER)) :DOCUMENTATION \"Return a literal object whose value is 'value'.  Choose a regular integer\nwrapper unless `value' is too large and needs to be stored in a long wrapper.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "wrapIntegerValue", new java.lang.Class [] {java.lang.Long.TYPE}), null);
       Stella.defineFunctionObject("WRAP-FLOAT", "(DEFUN (WRAP-FLOAT FLOAT-WRAPPER) ((VALUE FLOAT)) :DOCUMENTATION \"Return a literal object whose value is the FLOAT 'value'.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", Native.find_java_method("edu.isi.stella.FloatWrapper", "wrapFloat", new java.lang.Class [] {java.lang.Double.TYPE}), null);
       Stella.defineFunctionObject("UNWRAP-FLOAT", "(DEFUN (UNWRAP-FLOAT FLOAT) ((WRAPPER FLOAT-WRAPPER)) :DOCUMENTATION \"Unwrap `wrapper' and return the result.\nReturn NULL if `wrapper' is NULL.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.FloatWrapper", "unwrapFloat", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.FloatWrapper")}), null);
       Stella.defineFunctionObject("WRAP-STRING", "(DEFUN (WRAP-STRING STRING-WRAPPER) ((VALUE STRING)) :DOCUMENTATION \"Return a literal object whose value is the STRING 'value'.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", Native.find_java_method("edu.isi.stella.StringWrapper", "wrapString", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), null);
@@ -147,6 +155,7 @@ public class _StartupLiterals {
       Stella.defineFunctionObject("INLINE-WRAP-BOOLEAN", "(DEFUN INLINE-WRAP-BOOLEAN ((EXPRESSION OBJECT)) :TYPE OBJECT :MACRO? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "inlineWrapBoolean", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("INLINE-UNWRAP-BOOLEAN", "(DEFUN INLINE-UNWRAP-BOOLEAN ((EXPRESSION OBJECT)) :TYPE OBJECT :MACRO? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "inlineUnwrapBoolean", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineMethodObject("(DEFMETHOD (WRAP-LITERAL INTEGER-WRAPPER) ((VALUE INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (WRAP-INTEGER VALUE)))", Native.find_java_method("edu.isi.stella.Stella", "integer_wrapLiteral", new java.lang.Class [] {java.lang.Integer.TYPE}), ((java.lang.reflect.Method)(null)));
+      Stella.defineMethodObject("(DEFMETHOD (WRAP-LITERAL LONG-INTEGER-WRAPPER) ((VALUE LONG-INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (WRAP-LONG-INTEGER VALUE)))", Native.find_java_method("edu.isi.stella.Stella", "longInteger_wrapLiteral", new java.lang.Class [] {java.lang.Long.TYPE}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (WRAP-LITERAL FLOAT-WRAPPER) ((VALUE FLOAT)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (WRAP-FLOAT VALUE)))", Native.find_java_method("edu.isi.stella.Stella", "float_wrapLiteral", new java.lang.Class [] {java.lang.Double.TYPE}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (WRAP-LITERAL MUTABLE-STRING-WRAPPER) ((VALUE MUTABLE-STRING)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (WRAP-MUTABLE-STRING VALUE)))", Native.find_java_method("edu.isi.stella.Stella", "mutableString_wrapLiteral", new java.lang.Class [] {Native.find_java_class("java.lang.StringBuffer")}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (WRAP-LITERAL STRING-WRAPPER) ((VALUE STRING)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (WRAP-STRING VALUE)))", Native.find_java_method("edu.isi.stella.Stella", "string_wrapLiteral", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), ((java.lang.reflect.Method)(null)));
@@ -156,6 +165,7 @@ public class _StartupLiterals {
       Stella.defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF STANDARD-OBJECT)))", Native.find_java_method("edu.isi.stella.StandardObject", "copyWrappedLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF LITERAL-WRAPPER)))", Native.find_java_method("edu.isi.stella.LiteralWrapper", "copyWrappedLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF INTEGER-WRAPPER)))", Native.find_java_method("edu.isi.stella.IntegerWrapper", "copyWrappedLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+      Stella.defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF LONG-INTEGER-WRAPPER)))", Native.find_java_method("edu.isi.stella.LongIntegerWrapper", "copyWrappedLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF FLOAT-WRAPPER)))", Native.find_java_method("edu.isi.stella.FloatWrapper", "copyWrappedLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF STRING-WRAPPER)))", Native.find_java_method("edu.isi.stella.StringWrapper", "copyWrappedLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (COPY-WRAPPED-LITERAL OBJECT) ((SELF MUTABLE-STRING-WRAPPER)))", Native.find_java_method("edu.isi.stella.MutableStringWrapper", "copyWrappedLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
@@ -165,6 +175,7 @@ public class _StartupLiterals {
       Stella.defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X OBJECT) (Y OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "objectEqlP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X STANDARD-OBJECT) (Y OBJECT)))", Native.find_java_method("edu.isi.stella.StandardObject", "objectEqlP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X INTEGER-WRAPPER) (Y OBJECT)))", Native.find_java_method("edu.isi.stella.IntegerWrapper", "objectEqlP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), ((java.lang.reflect.Method)(null)));
+      Stella.defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X LONG-INTEGER-WRAPPER) (Y OBJECT)))", Native.find_java_method("edu.isi.stella.LongIntegerWrapper", "objectEqlP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X FLOAT-WRAPPER) (Y OBJECT)))", Native.find_java_method("edu.isi.stella.FloatWrapper", "objectEqlP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X BOOLEAN-WRAPPER) (Y OBJECT)))", Native.find_java_method("edu.isi.stella.BooleanWrapper", "objectEqlP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X STRING-WRAPPER) (Y OBJECT)))", Native.find_java_method("edu.isi.stella.StringWrapper", "objectEqlP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), ((java.lang.reflect.Method)(null)));
@@ -172,17 +183,11 @@ public class _StartupLiterals {
       Stella.defineMethodObject("(DEFMETHOD (OBJECT-EQL? BOOLEAN) ((X CHARACTER-WRAPPER) (Y OBJECT)))", Native.find_java_method("edu.isi.stella.CharacterWrapper", "objectEqlP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("EQL-TO-BOOLEAN?", "(DEFUN (EQL-TO-BOOLEAN? BOOLEAN) ((Y OBJECT) (X BOOLEAN)))", Native.find_java_method("edu.isi.stella.Stella_Object", "eqlToBooleanP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE}), null);
       Stella.defineFunctionObject("EQL-TO-INTEGER?", "(DEFUN (EQL-TO-INTEGER? BOOLEAN) ((Y OBJECT) (X INTEGER)))", Native.find_java_method("edu.isi.stella.Stella_Object", "eqlToIntegerP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Integer.TYPE}), null);
+      Stella.defineFunctionObject("EQL-TO-LONG-INTEGER?", "(DEFUN (EQL-TO-LONG-INTEGER? BOOLEAN) ((Y OBJECT) (X LONG-INTEGER)))", Native.find_java_method("edu.isi.stella.Stella_Object", "eqlToLongIntegerP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Long.TYPE}), null);
       Stella.defineFunctionObject("EQL-TO-FLOAT?", "(DEFUN (EQL-TO-FLOAT? BOOLEAN) ((Y OBJECT) (X FLOAT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "eqlToFloatP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Double.TYPE}), null);
       Stella.defineFunctionObject("EQL-TO-STRING?", "(DEFUN (EQL-TO-STRING? BOOLEAN) ((Y OBJECT) (X STRING)))", Native.find_java_method("edu.isi.stella.Stella_Object", "eqlToStringP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("java.lang.String")}), null);
       Stella.defineFunctionObject("EQL-TO-CHARACTER?", "(DEFUN (EQL-TO-CHARACTER? BOOLEAN) ((Y OBJECT) (X CHARACTER)))", Native.find_java_method("edu.isi.stella.Stella_Object", "eqlToCharacterP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Character.TYPE}), null);
       Stella.defineFunctionObject("HELP-BQUOTIFY", "(DEFUN (HELP-BQUOTIFY OBJECT) ((TREE OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "helpBquotify", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("BQUOTIFY", "(DEFUN (BQUOTIFY OBJECT) ((TREE OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "bquotify", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("EXPAND-BQUOTE-TREE", "(DEFUN (EXPAND-BQUOTE-TREE OBJECT) ((TREE OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "expandBquoteTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("SIMPLIFY-BQUOTE-TREE", "(DEFUN (SIMPLIFY-BQUOTE-TREE OBJECT) ((TREE OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "simplifyBquoteTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineMethodObject("(DEFMETHOD (PERMANENTIFY OBJECT) ((SELF OBJECT)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "permanentify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-      Stella.defineMethodObject("(DEFMETHOD (PERMANENTIFY SYMBOL) ((SELF SYMBOL)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Symbol", "permanentify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-      Stella.defineMethodObject("(DEFMETHOD (PERMANENTIFY SYMBOL) ((SELF TRANSIENT-SYMBOL)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.TransientSymbol", "permanentify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-      Stella.defineMethodObject("(DEFMETHOD (PERMANENTIFY LITERAL-WRAPPER) ((SELF LITERAL-WRAPPER)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.LiteralWrapper", "permanentify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
     }
   }
 
@@ -193,6 +198,7 @@ public class _StartupLiterals {
       Stella.FALSE_WRAPPER = BooleanWrapper.newBooleanWrapper(false);
       Stella.TRUE_WRAPPER = BooleanWrapper.newBooleanWrapper(true);
       Stella.NULL_INTEGER_WRAPPER = IntegerWrapper.newIntegerWrapper(Stella.NULL_INTEGER);
+      Stella.NULL_LONG_INTEGER_WRAPPER = LongIntegerWrapper.newLongIntegerWrapper(Stella.NULL_LONG_INTEGER);
       Stella.NULL_FLOAT_WRAPPER = FloatWrapper.newFloatWrapper(Stella.NULL_FLOAT);
       Stella.NULL_STRING_WRAPPER = StringWrapper.newStringWrapper(null);
       Stella.NULL_MUTABLE_STRING_WRAPPER = MutableStringWrapper.newMutableStringWrapper(null);
@@ -217,6 +223,13 @@ public class _StartupLiterals {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupLiterals.helpStartupLiterals3();
+          Stella.defineFunctionObject("BQUOTIFY", "(DEFUN (BQUOTIFY OBJECT) ((TREE OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "bquotify", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+          Stella.defineFunctionObject("EXPAND-BQUOTE-TREE", "(DEFUN (EXPAND-BQUOTE-TREE OBJECT) ((TREE OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "expandBquoteTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+          Stella.defineFunctionObject("SIMPLIFY-BQUOTE-TREE", "(DEFUN (SIMPLIFY-BQUOTE-TREE OBJECT) ((TREE OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "simplifyBquoteTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+          Stella.defineMethodObject("(DEFMETHOD (PERMANENTIFY OBJECT) ((SELF OBJECT)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "permanentify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+          Stella.defineMethodObject("(DEFMETHOD (PERMANENTIFY SYMBOL) ((SELF SYMBOL)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Symbol", "permanentify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+          Stella.defineMethodObject("(DEFMETHOD (PERMANENTIFY SYMBOL) ((SELF TRANSIENT-SYMBOL)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.TransientSymbol", "permanentify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+          Stella.defineMethodObject("(DEFMETHOD (PERMANENTIFY LITERAL-WRAPPER) ((SELF LITERAL-WRAPPER)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.LiteralWrapper", "permanentify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
           Stella.defineFunctionObject("PERMANENT-COPY", "(DEFUN (PERMANENT-COPY OBJECT) ((TREE OBJECT)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "permanentCopy", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
           Stella.defineMethodObject("(DEFMETHOD (SOFT-PERMANENTIFY SYMBOL) ((SYMBOL SYMBOL)))", Native.find_java_method("edu.isi.stella.Symbol", "softPermanentify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
           Stella.defineMethodObject("(DEFMETHOD (SOFT-PERMANENTIFY SYMBOL) ((SYMBOL TRANSIENT-SYMBOL)))", Native.find_java_method("edu.isi.stella.TransientSymbol", "softPermanentify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
@@ -238,6 +251,7 @@ public class _StartupLiterals {
           Stella.defineFunctionObject("MUTABLE-STRING-TO-STRING", "(DEFUN (MUTABLE-STRING-TO-STRING STRING) ((S MUTABLE-STRING)) :DOCUMENTATION \"Convert `s' into a regular string with the same content.\nIn Lisp and C++ this is a no-op.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP S :CPP \"s\" :JAVA \"s.toString()\")))", Native.find_java_method("edu.isi.stella.Stella", "mutableStringToString", new java.lang.Class [] {Native.find_java_class("java.lang.StringBuffer")}), null);
           Stella.defineMethodObject("(DEFMETHOD (NUMBER-WRAPPER-TO-FLOAT FLOAT) ((SELF OBJECT)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Object", "numberWrapperToFloat", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
           Stella.defineMethodObject("(DEFMETHOD (NUMBER-WRAPPER-TO-FLOAT FLOAT) ((SELF INTEGER-WRAPPER)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.IntegerWrapper", "numberWrapperToFloat", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+          Stella.defineMethodObject("(DEFMETHOD (NUMBER-WRAPPER-TO-FLOAT FLOAT) ((SELF LONG-INTEGER-WRAPPER)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.LongIntegerWrapper", "numberWrapperToFloat", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
           Stella.defineMethodObject("(DEFMETHOD (NUMBER-WRAPPER-TO-FLOAT FLOAT) ((SELF FLOAT-WRAPPER)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.FloatWrapper", "numberWrapperToFloat", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
           Stella.defineFunctionObject("STARTUP-LITERALS", "(DEFUN STARTUP-LITERALS () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella._StartupLiterals", "startupLiterals", new java.lang.Class [] {}), null);
           { MethodSlot function = Symbol.lookupFunction(Stella.SYM_STELLA_STARTUP_LITERALS);
@@ -250,11 +264,13 @@ public class _StartupLiterals {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL ZERO-WRAPPER INTEGER-WRAPPER NULL :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL ONE-WRAPPER INTEGER-WRAPPER NULL :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL TRUE-WRAPPER BOOLEAN-WRAPPER NULL :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL FALSE-WRAPPER BOOLEAN-WRAPPER NULL :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NULL-INTEGER-WRAPPER INTEGER-WRAPPER NULL :PUBLIC? TRUE)");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NULL-LONG-INTEGER-WRAPPER LONG-INTEGER-WRAPPER NULL :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NULL-FLOAT-WRAPPER FLOAT-WRAPPER NULL :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NULL-STRING-WRAPPER STRING-WRAPPER NULL :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL NULL-MUTABLE-STRING-WRAPPER MUTABLE-STRING-WRAPPER NULL :PUBLIC? TRUE)");

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -56,12 +56,12 @@ public:
   double output;
   Vector* inputError;
   Vector* hiddenError;
-  twoDArray* ih;
-  twoDArray* ihDelta;
+  two_D_array* ih;
+  two_D_array* ihDelta;
   Vector* ho;
   Vector* hoDelta;
-  twoDArray* ihSlope;
-  twoDArray* ihPrevSlope;
+  two_D_array* ihSlope;
+  two_D_array* ihPrevSlope;
   Vector* hoSlope;
   Vector* hoPrevSlope;
 public:
@@ -73,7 +73,7 @@ public:
   virtual Surrogate* primaryType();
 };
 
-class twoDArray : public MultiDimensionalArray {
+class two_D_array : public MultiDimensionalArray {
 // Two-dimensional arrays with elements of type OBJECT.
 public:
   int nofRows;
@@ -84,8 +84,8 @@ public:
   virtual Surrogate* primaryType();
   virtual void printArray(std::ostream* stream);
   virtual void fillArray(int values, ...);
-  virtual Object* twoDElementSetter(Object* value, int row, int column);
-  virtual Object* twoDElement(int row, int column);
+  virtual Object* two_D_elementSetter(Object* value, int row, int column);
+  virtual Object* two_D_element(int row, int column);
 };
 
 class FloatVector : public AbstractCollection {
@@ -104,7 +104,7 @@ public:
   virtual void printVector(std::ostream* stream);
 };
 
-class twoDFloatArray : public MultiDimensionalArray {
+class two_D_floatArray : public MultiDimensionalArray {
 // Two-dimensional arrays with elements of type FLOAT.
 public:
   int nofRows;
@@ -115,8 +115,8 @@ public:
   virtual Surrogate* primaryType();
   virtual void printArray(std::ostream* stream);
   virtual void fillArray(int values, ...);
-  virtual double twoDElementSetter(double value, int row, int column);
-  virtual double twoDElement(int row, int column);
+  virtual double two_D_elementSetter(double value, int row, int column);
+  virtual double two_D_element(int row, int column);
 };
 
 
@@ -219,18 +219,18 @@ void saveNeuralNetworkEvaluatorWrapper(Cons* arguments);
 void printNeuralNetwork(PropositionNeuralNetwork* net, OutputStream* stream);
 Vector* createHiddenSignature(Cons* consQuery);
 MultiDimensionalArray* newMultiDimensionalArray();
-twoDArray* new2DArray(int nofRows, int nofColumns);
-Object* access2DArraySlotValue(twoDArray* self, Symbol* slotname, Object* value, boolean setvalueP);
-void initialize2DArray(twoDArray* self);
-twoDArray* create2DArray(int nofRows, int nofColumns, int values, ...);
+two_D_array* new2_D_array(int nofRows, int nofColumns);
+Object* access2_D_arraySlotValue(two_D_array* self, Symbol* slotname, Object* value, boolean setvalueP);
+void initialize2_D_array(two_D_array* self);
+two_D_array* create2_D_array(int nofRows, int nofColumns, int values, ...);
 FloatVector* newFloatVector(int arraySize);
 Object* accessFloatVectorSlotValue(FloatVector* self, Symbol* slotname, Object* value, boolean setvalueP);
 void initializeFloatVector(FloatVector* self);
 FloatVector* createFloatVector(int values, ...);
-twoDFloatArray* new2DFloatArray(int nofRows, int nofColumns);
-Object* access2DFloatArraySlotValue(twoDFloatArray* self, Symbol* slotname, Object* value, boolean setvalueP);
-void initialize2DFloatArray(twoDFloatArray* self);
-twoDFloatArray* create2DFloatArray(int nofRows, int nofColumns, int values, ...);
+two_D_floatArray* new2_D_floatArray(int nofRows, int nofColumns);
+Object* access2_D_floatArraySlotValue(two_D_floatArray* self, Symbol* slotname, Object* value, boolean setvalueP);
+void initialize2_D_floatArray(two_D_floatArray* self);
+two_D_floatArray* create2_D_floatArray(int nofRows, int nofColumns, int values, ...);
 void helpStartupNeuralNetwork1();
 void helpStartupNeuralNetwork2();
 void helpStartupNeuralNetwork3();

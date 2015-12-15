@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -76,8 +76,8 @@ returns false."
   #+MCL
   (CL:CHECK-TYPE DEPTH-LIMIT CL:FIXNUM)
   (CL:RETURN-FROM OUTLINE-DEPTH-EXCEEDED?
-   (CL:AND (DEFINED? DEPTH-LIMIT) (CL:>= DEPTH-LIMIT 0)
-    (CL:>= CURRENT-DEPTH DEPTH-LIMIT))))
+   (CL:AND (CL:NOT (CL:= DEPTH-LIMIT NULL-INTEGER))
+    (CL:>= DEPTH-LIMIT 0) (CL:>= CURRENT-DEPTH DEPTH-LIMIT))))
 
 ;;; (DEFUN INDENT-OUTLINE ...)
 
@@ -90,9 +90,10 @@ variable `*OUTLINE-INDENT-STRING*'"
   (CL:CHECK-TYPE CURRENT-DEPTH CL:FIXNUM)
   (CL:LET*
    ((I NULL-INTEGER) (ITER-000 1) (UPPER-BOUND-000 CURRENT-DEPTH)
-    (UNBOUNDED?-000 (NULL? UPPER-BOUND-000)))
+    (UNBOUNDED?-000 (CL:= UPPER-BOUND-000 NULL-INTEGER)))
    (CL:DECLARE (CL:TYPE CL:FIXNUM I ITER-000 UPPER-BOUND-000))
-   (CL:LOOP WHILE (CL:OR UNBOUNDED?-000 (CL:<= ITER-000 UPPER-BOUND-000)) DO
+   (CL:LOOP WHILE
+    (CL:OR UNBOUNDED?-000 (CL:<= ITER-000 UPPER-BOUND-000)) DO
     (CL:SETQ I ITER-000) (CL:SETQ I I)
     (%%PRINT-STREAM (%NATIVE-STREAM STREAM) *OUTLINE-INDENT-STRING*)
     (CL:SETQ ITER-000 (CL:1+ ITER-000))))
@@ -102,7 +103,7 @@ variable `*OUTLINE-INDENT-STRING*'"
 
 (CL:DEFUN %PRINT-OUTLINE (THING STREAM DEPTH NAMED?)
   "Print an outline of `thing' and its subparts on `stream'.
-If `depth' is greater than 0, only `depth' levels will be printed.
+If `depth' is non-negative, only `depth' levels will be printed.
 If `named?' is `TRUE', then only named entities will be printed.
 
 This function is intended to be used on things like modules, contexts,
@@ -122,7 +123,7 @@ have a hierarchical structure, it will just be printed."
 
 (CL:DEFMACRO PRINT-OUTLINE (CL:&WHOLE EXPRESSION CL:&REST IGNORE)
   "Print an outline of `thing' and its subparts on `stream'.
-If `depth' is greater than 0, only `depth' levels will be printed.
+If `depth' is non-negative, only `depth' levels will be printed.
 If `named?' is `TRUE', then only named entities will be printed.
 
 This function is intended to be used on things like modules, contexts,
@@ -143,8 +144,8 @@ have a hierarchical structure, it will just be printed."
   (CL:CHECK-TYPE CURRENT-DEPTH CL:FIXNUM)
   #+MCL
   (CL:CHECK-TYPE DEPTH CL:FIXNUM)
-  (CL:PROGN (CL:SETQ NAMED? NAMED?) (CL:SETQ CURRENT-DEPTH CURRENT-DEPTH)
-   (CL:SETQ DEPTH DEPTH))
+  (CL:PROGN (CL:SETQ NAMED? NAMED?)
+   (CL:SETQ CURRENT-DEPTH CURRENT-DEPTH) (CL:SETQ DEPTH DEPTH))
   (%%PRINT-STREAM (%NATIVE-STREAM STREAM) TOP EOL)
   :VOID)
 
@@ -162,9 +163,11 @@ have a hierarchical structure, it will just be printed."
   (%%PRINT-STREAM (%NATIVE-STREAM STREAM) TOP EOL)
   (CL:WHEN
    (CL:NOT
-    (CL:AND (DEFINED? DEPTH) (CL:>= DEPTH 0) (CL:>= CURRENT-DEPTH DEPTH)))
+    (CL:AND (CL:NOT (CL:= DEPTH NULL-INTEGER)) (CL:>= DEPTH 0)
+     (CL:>= CURRENT-DEPTH DEPTH)))
    (CL:SETQ CURRENT-DEPTH (CL:1+ CURRENT-DEPTH))
-   (CL:LET* ((C NULL) (ITER-000 (%THE-CONS-LIST (%CHILD-CONTEXTS TOP))))
+   (CL:LET*
+    ((C NULL) (ITER-000 (%THE-CONS-LIST (%CHILD-CONTEXTS TOP))))
     (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
      (CL:SETQ C (%%VALUE ITER-000))
      (HELP-PRINT-OUTLINE C STREAM CURRENT-DEPTH DEPTH NAMED?)
@@ -184,9 +187,11 @@ have a hierarchical structure, it will just be printed."
   (%%PRINT-STREAM (%NATIVE-STREAM STREAM) (NAME TOP) EOL)
   (CL:WHEN
    (CL:NOT
-    (CL:AND (DEFINED? DEPTH) (CL:>= DEPTH 0) (CL:>= CURRENT-DEPTH DEPTH)))
+    (CL:AND (CL:NOT (CL:= DEPTH NULL-INTEGER)) (CL:>= DEPTH 0)
+     (CL:>= CURRENT-DEPTH DEPTH)))
    (CL:SETQ CURRENT-DEPTH (CL:1+ CURRENT-DEPTH))
-   (CL:LET* ((C NULL) (ITER-000 (%THE-CONS-LIST (%CHILD-CONTEXTS TOP))))
+   (CL:LET*
+    ((C NULL) (ITER-000 (%THE-CONS-LIST (%CHILD-CONTEXTS TOP))))
     (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
      (CL:SETQ C (%%VALUE ITER-000))
      (HELP-PRINT-OUTLINE C STREAM CURRENT-DEPTH DEPTH NAMED?)
@@ -206,12 +211,15 @@ have a hierarchical structure, it will just be printed."
   (%%PRINT-STREAM (%NATIVE-STREAM STREAM) (NAME TOP) EOL)
   (CL:WHEN
    (CL:NOT
-    (CL:AND (DEFINED? DEPTH) (CL:>= DEPTH 0) (CL:>= CURRENT-DEPTH DEPTH)))
+    (CL:AND (CL:NOT (CL:= DEPTH NULL-INTEGER)) (CL:>= DEPTH 0)
+     (CL:>= CURRENT-DEPTH DEPTH)))
    (CL:SETQ CURRENT-DEPTH (CL:1+ CURRENT-DEPTH))
-   (CL:LET* ((C NULL) (ITER-000 (%THE-CONS-LIST (%CLASS-DIRECT-SUBS TOP))))
+   (CL:LET*
+    ((C NULL) (ITER-000 (%THE-CONS-LIST (%CLASS-DIRECT-SUBS TOP))))
     (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
      (CL:SETQ C (%%VALUE ITER-000))
-     (HELP-PRINT-OUTLINE C STREAM CURRENT-DEPTH DEPTH NAMED?)
+     (HELP-PRINT-OUTLINE (TYPE-TO-CLASS C) STREAM CURRENT-DEPTH DEPTH
+      NAMED?)
      (CL:SETQ ITER-000 (%%REST ITER-000)))))
   :VOID)
 
@@ -228,9 +236,11 @@ have a hierarchical structure, it will just be printed."
   (%%PRINT-STREAM (%NATIVE-STREAM STREAM) (NAME TOP) EOL)
   (CL:WHEN
    (CL:NOT
-    (CL:AND (DEFINED? DEPTH) (CL:>= DEPTH 0) (CL:>= CURRENT-DEPTH DEPTH)))
+    (CL:AND (CL:NOT (CL:= DEPTH NULL-INTEGER)) (CL:>= DEPTH 0)
+     (CL:>= CURRENT-DEPTH DEPTH)))
    (CL:SETQ CURRENT-DEPTH (CL:1+ CURRENT-DEPTH))
-   (CL:LET* ((C NULL) (ITER-000 (%THE-CONS-LIST (SLOT-DIRECT-SUBS TOP))))
+   (CL:LET*
+    ((C NULL) (ITER-000 (%THE-CONS-LIST (SLOT-DIRECT-SUBS TOP))))
     (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
      (CL:SETQ C (%%VALUE ITER-000))
      (HELP-PRINT-OUTLINE C STREAM CURRENT-DEPTH DEPTH NAMED?)
@@ -250,7 +260,8 @@ have a hierarchical structure, it will just be printed."
     (CL:SETQ SYM-TOOLS-STELLA-STARTUP-TOOLS
      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-TOOLS" NULL 0))
     (CL:SETQ SYM-TOOLS-STELLA-METHOD-STARTUP-CLASSNAME
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME" NULL 0)))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME" NULL
+      0)))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7)
     (DEFINE-FUNCTION-OBJECT "OUTLINE-DEPTH-EXCEEDED?"
@@ -266,7 +277,7 @@ variable `*OUTLINE-INDENT-STRING*'\" (FOREACH I IN (INTERVAL 1 CURRENT-DEPTH) DO
      (CL:FUNCTION INDENT-OUTLINE) NULL)
     (DEFINE-FUNCTION-OBJECT "PRINT-OUTLINE"
      "(DEFUN PRINT-OUTLINE ((THING OBJECT) (STREAM OUTPUT-STREAM) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :COMMAND? TRUE :DOCUMENTATION \"Print an outline of `thing' and its subparts on `stream'.
-If `depth' is greater than 0, only `depth' levels will be printed.
+If `depth' is non-negative, only `depth' levels will be printed.
 If `named?' is `TRUE', then only named entities will be printed.
 
 This function is intended to be used on things like modules, contexts,
@@ -290,17 +301,19 @@ have a hierarchical structure, it will just be printed.\")"
      "(DEFMETHOD HELP-PRINT-OUTLINE ((TOP SLOT) (STREAM OUTPUT-STREAM) (CURRENT-DEPTH INTEGER) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Helper method for `print-outline'\")"
      (CL:FUNCTION HELP-PRINT-OUTLINE) NULL)
     (DEFINE-FUNCTION-OBJECT "STARTUP-TOOLS"
-     "(DEFUN STARTUP-TOOLS () :PUBLIC? TRUE)" (CL:FUNCTION STARTUP-TOOLS)
-     NULL)
-    (CL:LET* ((FUNCTION (LOOKUP-FUNCTION SYM-TOOLS-STELLA-STARTUP-TOOLS)))
+     "(DEFUN STARTUP-TOOLS () :PUBLIC? TRUE)"
+     (CL:FUNCTION STARTUP-TOOLS) NULL)
+    (CL:LET*
+     ((FUNCTION (LOOKUP-FUNCTION SYM-TOOLS-STELLA-STARTUP-TOOLS)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
-      SYM-TOOLS-STELLA-METHOD-STARTUP-CLASSNAME (WRAP-STRING "_StartupTools")
-      NULL-STRING-WRAPPER)))
+      SYM-TOOLS-STELLA-METHOD-STARTUP-CLASSNAME
+      (WRAP-STRING "_StartupTools") NULL-STRING-WRAPPER)))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 8) (FINALIZE-SLOTS)
     (CLEANUP-UNFINALIZED-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 9)
+    (%IN-MODULE (COPY-CONS-TREE (WRAP-STRING "STELLA")))
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
      "(DEFGLOBAL *OUTLINE-INDENT-STRING* STRING \"| \" :DOCUMENTATION \"String used in the PRINT-OUTLINE for each level of outline\")")
-    (REGISTER-NATIVE-NAME SYM-TOOLS-STELLA-PRINT-OUTLINE KWD-TOOLS-COMMON-LISP
-     KWD-TOOLS-FUNCTION)))
+    (REGISTER-NATIVE-NAME SYM-TOOLS-STELLA-PRINT-OUTLINE
+     KWD-TOOLS-COMMON-LISP KWD-TOOLS-FUNCTION)))
   :VOID)

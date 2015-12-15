@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,23 +56,23 @@ public class _StartupNameUtility {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.KWD_CLEVER = ((Keyword)(Stella.internRigidSymbolWrtModule("CLEVER", null, 2)));
-          Stella.KWD_TITLECASE = ((Keyword)(Stella.internRigidSymbolWrtModule("TITLECASE", null, 2)));
-          Stella.KWD_BREAK_ON_CAP = ((Keyword)(Stella.internRigidSymbolWrtModule("BREAK-ON-CAP", null, 2)));
-          Stella.KWD_BREAK_ON_NUMBER = ((Keyword)(Stella.internRigidSymbolWrtModule("BREAK-ON-NUMBER", null, 2)));
-          Stella.KWD_BREAK_ON_SEPARATORS = ((Keyword)(Stella.internRigidSymbolWrtModule("BREAK-ON-SEPARATORS", null, 2)));
-          Stella.KWD_REMOVE_PREFIX = ((Keyword)(Stella.internRigidSymbolWrtModule("REMOVE-PREFIX", null, 2)));
-          Stella.KWD_REMOVE_SUFFIX = ((Keyword)(Stella.internRigidSymbolWrtModule("REMOVE-SUFFIX", null, 2)));
-          Stella.KWD_ADD_PREFIX = ((Keyword)(Stella.internRigidSymbolWrtModule("ADD-PREFIX", null, 2)));
-          Stella.KWD_ADD_SUFFIX = ((Keyword)(Stella.internRigidSymbolWrtModule("ADD-SUFFIX", null, 2)));
-          Stella.KWD_CASE = ((Keyword)(Stella.internRigidSymbolWrtModule("CASE", null, 2)));
-          Stella.KWD_SEPARATOR = ((Keyword)(Stella.internRigidSymbolWrtModule("SEPARATOR", null, 2)));
-          Stella.KWD_SUFFIX = ((Keyword)(Stella.internRigidSymbolWrtModule("SUFFIX", null, 2)));
-          Stella.KWD_TRANSLATION_TABLE = ((Keyword)(Stella.internRigidSymbolWrtModule("TRANSLATION-TABLE", null, 2)));
-          Stella.KWD_USE_ACRONYM_HEURISTICSp = ((Keyword)(Stella.internRigidSymbolWrtModule("USE-ACRONYM-HEURISTICS?", null, 2)));
-          Stella.KWD_ALLCAPS = ((Keyword)(Stella.internRigidSymbolWrtModule("ALLCAPS", null, 2)));
-          Stella.KWD_TITLECASEX = ((Keyword)(Stella.internRigidSymbolWrtModule("TITLECASEX", null, 2)));
-          Stella.SYM_STELLA_STARTUP_NAME_UTILITY = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-NAME-UTILITY", null, 0)));
+          Stella.KWD_CLEVER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CLEVER", null, 2)));
+          Stella.KWD_TITLECASE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TITLECASE", null, 2)));
+          Stella.KWD_BREAK_ON_CAP = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("BREAK-ON-CAP", null, 2)));
+          Stella.KWD_BREAK_ON_NUMBER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("BREAK-ON-NUMBER", null, 2)));
+          Stella.KWD_BREAK_ON_SEPARATORS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("BREAK-ON-SEPARATORS", null, 2)));
+          Stella.KWD_REMOVE_PREFIX = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("REMOVE-PREFIX", null, 2)));
+          Stella.KWD_REMOVE_SUFFIX = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("REMOVE-SUFFIX", null, 2)));
+          Stella.KWD_ADD_PREFIX = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ADD-PREFIX", null, 2)));
+          Stella.KWD_ADD_SUFFIX = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ADD-SUFFIX", null, 2)));
+          Stella.KWD_CASE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CASE", null, 2)));
+          Stella.KWD_SEPARATOR = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SEPARATOR", null, 2)));
+          Stella.KWD_SUFFIX = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SUFFIX", null, 2)));
+          Stella.KWD_TRANSLATION_TABLE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TRANSLATION-TABLE", null, 2)));
+          Stella.KWD_USE_ACRONYM_HEURISTICSp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("USE-ACRONYM-HEURISTICS?", null, 2)));
+          Stella.KWD_ALLCAPS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ALLCAPS", null, 2)));
+          Stella.KWD_TITLECASEX = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TITLECASEX", null, 2)));
+          Stella.SYM_STELLA_STARTUP_NAME_UTILITY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-NAME-UTILITY", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -96,6 +96,9 @@ public class _StartupNameUtility {
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
           Stella.cleanupUnfinalizedClasses();
+        }
+        if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("STELLA")))));
         }
 
       } finally {

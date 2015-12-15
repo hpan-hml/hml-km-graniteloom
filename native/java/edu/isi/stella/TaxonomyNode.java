@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -257,7 +257,7 @@ public class TaxonomyNode extends StandardObject {
           }
           else {
             if (interval.upperBound >= renamed_Int.upperBound) {
-              intervalstoremove = Stella_Object.cons(renamed_Int, intervalstoremove);
+              intervalstoremove = Cons.cons(renamed_Int, intervalstoremove);
             }
             else {
               if (renamed_Int.lowerBound <= (interval.upperBound + 1)) {
@@ -298,7 +298,7 @@ public class TaxonomyNode extends StandardObject {
   }
 
   public static void addTaxonomyNodeInterval(TaxonomyNode node, Interval interval) {
-    node.intervals = Stella_Object.cons(interval, node.intervals);
+    node.intervals = Cons.cons(interval, node.intervals);
     node.firstIntervalLowerBound = interval.lowerBound;
     node.firstIntervalUpperBound = interval.upperBound;
   }

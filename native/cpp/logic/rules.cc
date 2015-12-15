@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -537,7 +537,7 @@ Proposition* extractInvertedGoal(Proposition* proposition, Proposition* goal) {
 }
 
 Proposition* invertForallAroundGoal(Proposition* forallprop, Proposition* goal, Keyword* headortail, boolean contrapositiveP) {
-  { KeyValueList* mapping = newKeyValueList();
+  { KeyValueMap* mapping = newKeyValueMap();
     Proposition* invertedforall = copyProposition(forallprop, mapping);
     Object* oldhead = (invertedforall->arguments->theArray)[1];
     Object* oldtail = (invertedforall->arguments->theArray)[0];
@@ -726,14 +726,14 @@ Proposition* invertForallAroundGoal(Proposition* forallprop, Proposition* goal, 
   }
 }
 
-Object* constructDescriptionFromForallProposition(Proposition* forallprop, Keyword* headortail) {
+Description* constructDescriptionFromForallProposition(Proposition* forallprop, Keyword* headortail) {
   { Description* description = newDescription();
 
     description->proposition = ((Proposition*)((forallprop->arguments->theArray)[(((headortail == KWD_RULES_HEAD) ? 1 : 0))]));
     description->ioVariables = ((Vector*)(dynamicSlotValue(forallprop->dynamicSlots, SYM_RULES_LOGIC_IO_VARIABLES, NULL)))->copy();
     { 
       BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_RULES_DESCRIPTION);
-      return (finishBuildingDescription(description, true));
+      return (finishBuildingDescription(description, true, headortail));
     }
   }
 }
@@ -743,7 +743,7 @@ void markAsForwardRule(Proposition* impliesprop) {
 
     if ((!namedDescriptionP(head)) &&
         (!((boolean)(((Description*)(dynamicSlotValue(head->dynamicSlots, SYM_RULES_LOGIC_COMPLEMENT_DESCRIPTION, NULL))))))) {
-      setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_FORWARD_ONLYp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+      setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_FORWARD_ONLYp, TRUE_WRAPPER, FALSE_WRAPPER);
     }
   }
 }
@@ -785,11 +785,11 @@ void deriveOneSatelliteRule(Proposition* masterforall, Proposition* goal, Keywor
     }
     if (headortail == KWD_RULES_HEAD) {
       head = extractGoalDescription(((Proposition*)((invertedforall->arguments->theArray)[1])), NULL);
-      tail = ((Description*)(constructDescriptionFromForallProposition(invertedforall, KWD_RULES_TAIL)));
+      tail = constructDescriptionFromForallProposition(invertedforall, KWD_RULES_TAIL);
     }
     else if (headortail == KWD_RULES_TAIL) {
       tail = extractGoalDescription(((Proposition*)((invertedforall->arguments->theArray)[0])), NULL);
-      head = ((Description*)(constructDescriptionFromForallProposition(invertedforall, KWD_RULES_HEAD)));
+      head = constructDescriptionFromForallProposition(invertedforall, KWD_RULES_HEAD);
     }
     else {
       { OutputStringStream* stream001 = newOutputStringStream();
@@ -829,29 +829,29 @@ void deriveOneSatelliteRule(Proposition* masterforall, Proposition* goal, Keywor
       if (((BooleanWrapper*)(dynamicSlotValue(masterforall->dynamicSlots, SYM_RULES_LOGIC_FORWARD_ONLYp, FALSE_WRAPPER)))->wrapperValue &&
           (!overrideforwardonlyP)) {
         if (contrapositiveP) {
-          setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_BACKWARD_ONLYp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+          setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_BACKWARD_ONLYp, TRUE_WRAPPER, FALSE_WRAPPER);
         }
         else {
-          setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_FORWARD_ONLYp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+          setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_FORWARD_ONLYp, TRUE_WRAPPER, FALSE_WRAPPER);
         }
       }
       if (((BooleanWrapper*)(dynamicSlotValue(masterforall->dynamicSlots, SYM_RULES_LOGIC_BACKWARD_ONLYp, FALSE_WRAPPER)))->wrapperValue) {
         if (contrapositiveP) {
-          setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_FORWARD_ONLYp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+          setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_FORWARD_ONLYp, TRUE_WRAPPER, FALSE_WRAPPER);
         }
         else {
-          setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_BACKWARD_ONLYp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+          setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_BACKWARD_ONLYp, TRUE_WRAPPER, FALSE_WRAPPER);
         }
       }
       if (((BooleanWrapper*)(dynamicSlotValue(masterforall->dynamicSlots, SYM_RULES_LOGIC_DONT_OPTIMIZEp, FALSE_WRAPPER)))->wrapperValue) {
-        setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_DONT_OPTIMIZEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+        setDynamicSlotValue(impliesprop->dynamicSlots, SYM_RULES_LOGIC_DONT_OPTIMIZEp, TRUE_WRAPPER, FALSE_WRAPPER);
         tail = ((Description*)((impliesprop->arguments->theArray)[0]));
         if (!((boolean)(tail->nativeRelation()))) {
-          setDynamicSlotValue(tail->dynamicSlots, SYM_RULES_LOGIC_DONT_OPTIMIZEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+          setDynamicSlotValue(tail->dynamicSlots, SYM_RULES_LOGIC_DONT_OPTIMIZEp, TRUE_WRAPPER, FALSE_WRAPPER);
         }
         head = ((Description*)((impliesprop->arguments->theArray)[1]));
         if (!((boolean)(head->nativeRelation()))) {
-          setDynamicSlotValue(head->dynamicSlots, SYM_RULES_LOGIC_DONT_OPTIMIZEp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+          setDynamicSlotValue(head->dynamicSlots, SYM_RULES_LOGIC_DONT_OPTIMIZEp, TRUE_WRAPPER, FALSE_WRAPPER);
         }
       }
     }
@@ -1180,12 +1180,13 @@ Cons* deconstructForallTree(Cons* foralltree, Object*& _Return1, Cons*& _Return2
 
 ForwardChainingIndex* createForwardChainingIndex(Proposition* goal, Proposition* masterforall) {
   { ForwardChainingIndex* index = newForwardChainingIndex();
-    KeyValueList* mapping = newKeyValueList();
+    KeyValueMap* mapping = newKeyValueMap();
     Proposition* forallcopy = copyProposition(masterforall, mapping);
     Object* goalcopy = mapping->lookup(goal);
 
     forallcopy = substituteProposition(forallcopy, ((Proposition*)(goalcopy)), TRUE_PROPOSITION);
-    { Cons* iovariablenames = NULL;
+    { Vector* iovariables = ((Vector*)(dynamicSlotValue(forallcopy->dynamicSlots, SYM_RULES_LOGIC_IO_VARIABLES, NULL)));
+      Cons* iovariablenames = NULL;
       List* goalvariablelist = list(0);
       Cons* goalvariablenames = NIL;
       Cons* existvariablenames = NIL;
@@ -1237,13 +1238,18 @@ ForwardChainingIndex* createForwardChainingIndex(Proposition* goal, Proposition*
       }
       { Object* v = NULL;
         Cons* iter001 = iovariablenames;
+        int i = NULL_INTEGER;
+        int iter002 = 0;
         Cons* collect001 = NULL;
 
-        for  (v, iter001, collect001; 
+        for  (v, iter001, i, iter002, collect001; 
               !(iter001 == NIL); 
-              iter001 = iter001->rest) {
+              iter001 = iter001->rest,
+              iter002 = iter002 + 1) {
           v = iter001->value;
+          i = iter002;
           if (!searchConsTreeP(consequenttree, v)) {
+            (iovariables->theArray)[i] = NULL;
             if (!((boolean)(collect001))) {
               {
                 collect001 = cons(v, NIL);
@@ -1265,7 +1271,9 @@ ForwardChainingIndex* createForwardChainingIndex(Proposition* goal, Proposition*
         }
       }
       iovariablenames = iovariablenames->subtract(existvariablenames);
-      index->consequent = ((Description*)(valueOf(conceiveTerm(listO(3, SYM_RULES_LOGIC_KAPPA, ((Cons*)(copyConsTree(iovariablenames))), cons(consequenttree, NIL))))));
+      iovariables = removeNullsInVariablesVector(iovariables);
+      setDynamicSlotValue(forallcopy->dynamicSlots, SYM_RULES_LOGIC_IO_VARIABLES, iovariables, NULL);
+      index->consequent = constructDescriptionFromForallProposition(forallcopy, KWD_RULES_HEAD);
       existvariablenames = existvariablenames->subtract(goalvariablenames);
       if (!(existvariablenames == NIL)) {
         querybody = listO(3, SYM_RULES_STELLA_EXISTS, existvariablenames, cons(querybody, NIL));
@@ -1276,13 +1284,13 @@ ForwardChainingIndex* createForwardChainingIndex(Proposition* goal, Proposition*
       { Cons* value004 = NIL;
 
         { Object* v = NULL;
-          Cons* iter002 = iovariablenames;
+          Cons* iter003 = iovariablenames;
           Cons* collect002 = NULL;
 
-          for  (v, iter002, collect002; 
-                !(iter002 == NIL); 
-                iter002 = iter002->rest) {
-            v = iter002->value;
+          for  (v, iter003, collect002; 
+                !(iter003 == NIL); 
+                iter003 = iter003->rest) {
+            v = iter003->value;
             if (((boolean)(v))) {
               if (!((boolean)(collect002))) {
                 {
@@ -1319,7 +1327,7 @@ void deriveComplexForwardRule(Proposition* goal, Proposition* masterforall) {
     ForwardChainingIndex* duplicate = NULL;
 
     { ForwardChainingIndex* idx = NULL;
-      Cons* iter000 = goaldescription->forwardChainingIndices_reader()->theConsList;
+      Cons* iter000 = goaldescription->forwardChainingIndices_reader()->removeDeletedMembers()->theConsList;
 
       for (idx, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         idx = ((ForwardChainingIndex*)(iter000->value));
@@ -1602,7 +1610,6 @@ void helpStartupRules1() {
     SYM_RULES_LOGIC_DEFERRED_CONTRAPOSITIVESp = ((Symbol*)(internRigidSymbolWrtModule("DEFERRED-CONTRAPOSITIVES?", NULL, 0)));
     KWD_RULES_POSITIVE_AND_CONTRAPOSITIVE = ((Keyword*)(internRigidSymbolWrtModule("POSITIVE-AND-CONTRAPOSITIVE", NULL, 2)));
     SYM_RULES_STELLA_TRUE = ((Symbol*)(internRigidSymbolWrtModule("TRUE", getStellaModule("/STELLA", true), 0)));
-    SYM_RULES_LOGIC_KAPPA = ((Symbol*)(internRigidSymbolWrtModule("KAPPA", NULL, 0)));
     SYM_RULES_STELLA_EXISTS = ((Symbol*)(internRigidSymbolWrtModule("EXISTS", getStellaModule("/STELLA", true), 0)));
     SYM_RULES_LOGIC_FORWARD_CHAINING_INDICES = ((Symbol*)(internRigidSymbolWrtModule("FORWARD-CHAINING-INDICES", NULL, 0)));
     SGT_RULES_LOGIC_NAMED_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("NAMED-DESCRIPTION", NULL, 1)));
@@ -1639,7 +1646,7 @@ void startupRules() {
       defineFunctionObject("SUBSTITUTE-PROPOSITION", "(DEFUN (SUBSTITUTE-PROPOSITION PROPOSITION) ((PROPOSITION PROPOSITION) (OUTPROP PROPOSITION) (INPROP PROPOSITION)))", ((cpp_function_code)(&substituteProposition)), NULL);
       defineFunctionObject("EXTRACT-INVERTED-GOAL", "(DEFUN (EXTRACT-INVERTED-GOAL PROPOSITION) ((PROPOSITION PROPOSITION) (GOAL PROPOSITION)))", ((cpp_function_code)(&extractInvertedGoal)), NULL);
       defineFunctionObject("INVERT-FORALL-AROUND-GOAL", "(DEFUN (INVERT-FORALL-AROUND-GOAL PROPOSITION) ((FORALLPROP PROPOSITION) (GOAL PROPOSITION) (HEADORTAIL KEYWORD) (CONTRAPOSITIVE? BOOLEAN)))", ((cpp_function_code)(&invertForallAroundGoal)), NULL);
-      defineFunctionObject("CONSTRUCT-DESCRIPTION-FROM-FORALL-PROPOSITION", "(DEFUN (CONSTRUCT-DESCRIPTION-FROM-FORALL-PROPOSITION OBJECT) ((FORALLPROP PROPOSITION) (HEADORTAIL KEYWORD)))", ((cpp_function_code)(&constructDescriptionFromForallProposition)), NULL);
+      defineFunctionObject("CONSTRUCT-DESCRIPTION-FROM-FORALL-PROPOSITION", "(DEFUN (CONSTRUCT-DESCRIPTION-FROM-FORALL-PROPOSITION DESCRIPTION) ((FORALLPROP PROPOSITION) (HEADORTAIL KEYWORD)))", ((cpp_function_code)(&constructDescriptionFromForallProposition)), NULL);
       defineFunctionObject("MARK-AS-FORWARD-RULE", "(DEFUN MARK-AS-FORWARD-RULE ((IMPLIESPROP PROPOSITION)))", ((cpp_function_code)(&markAsForwardRule)), NULL);
       defineFunctionObject("DERIVE-ONE-SATELLITE-RULE", "(DEFUN DERIVE-ONE-SATELLITE-RULE ((MASTERFORALL PROPOSITION) (GOAL PROPOSITION) (HEADORTAIL KEYWORD) (CONTRAPOSITIVE? BOOLEAN)))", ((cpp_function_code)(&deriveOneSatelliteRule)), NULL);
       defineFunctionObject("DERIVE-SATELLITE-RULES-FOR-GOAL?", "(DEFUN (DERIVE-SATELLITE-RULES-FOR-GOAL? BOOLEAN) ((FORALLPROP PROPOSITION) (GOALDESCRIPTION DESCRIPTION) (DIRECTION KEYWORD) (LAZYSATELLITES? BOOLEAN)))", ((cpp_function_code)(&deriveSatelliteRulesForGoalP)), NULL);
@@ -1674,6 +1681,7 @@ void startupRules() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LAZY-SATELLITE-RULES?* BOOLEAN FALSE :DOCUMENTATION \"If true, inversion of forall propositions happens lazily.\nI.e., satellite rules are generated on-demand during inference only if they\nare actually needed.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *DERIVE-DEFERRED-SATELLITE-RULES-INVOCATIONS* (LIST OF DESCRIPTION) NULL)");
     }
@@ -1749,8 +1757,6 @@ Symbol* SYM_RULES_LOGIC_DEFERRED_CONTRAPOSITIVESp = NULL;
 Keyword* KWD_RULES_POSITIVE_AND_CONTRAPOSITIVE = NULL;
 
 Symbol* SYM_RULES_STELLA_TRUE = NULL;
-
-Symbol* SYM_RULES_LOGIC_KAPPA = NULL;
 
 Symbol* SYM_RULES_STELLA_EXISTS = NULL;
 

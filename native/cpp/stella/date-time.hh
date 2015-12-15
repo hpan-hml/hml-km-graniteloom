@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -147,6 +147,7 @@ public:
 // Global declarations:
 extern int MILLIS_PER_DAY;
 extern int MILLIS_PER_HOUR;
+extern Vector* oMONTH_NAME_VECTORo;
 extern Vector* oMONTH_ABBREVIATION_VECTORo;
 extern DecodedDateTime* oDEFAULT_DECODED_DATE_TIMEo;
 extern DecodedDateTime* oNULL_DECODED_DATE_TIMEo;
@@ -163,7 +164,7 @@ int getCurrentDateTime(int& _Return1, int& _Return2, Keyword*& _Return3, int& _R
 double getLocalTimeZone();
 double getLocalStandardTimeZone();
 double getLocalTimeZoneForDate(int year, int month, int day, int hour, int minute, int second);
-char* timeZoneFormat60(double timezone);
+char* timeZoneFormat60(double timezone, boolean includeColonP);
 DecodedDateTime* newDecodedDateTime();
 Object* accessDecodedDateTimeSlotValue(DecodedDateTime* self, Symbol* slotname, Object* value, boolean setvalueP);
 DecodedTimeDuration* newDecodedTimeDuration();
@@ -185,6 +186,8 @@ TimeDuration* timeMultiply(Object* t1, Object* t2);
 Object* timeDivide(TimeDuration* t1, Object* t2);
 Object* defineTimeComparison(Symbol* name, Symbol* operatoR, Symbol* errorP);
 void fillInDateSubstitution(KeyValueList* substitutionList);
+void addDateSubstitution(CalendarDate* date, KeyValueList* substitutionList);
+void addCurrentDateSubstitution(KeyValueList* substitutionList);
 void helpStartupDateTime1();
 void helpStartupDateTime2();
 void startupDateTime();

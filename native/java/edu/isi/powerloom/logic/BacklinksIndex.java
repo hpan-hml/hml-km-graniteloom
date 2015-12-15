@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -124,7 +124,7 @@ public class BacklinksIndex extends StandardObject {
       }
       if (proposition.kind == Logic.KWD_ISA) {
         if (index.dependentIsaPropositionsList == null) {
-          index.dependentIsaPropositionsList = Logic.createSequenceIndex(((Module)(Stella.$MODULE$.get())), Stella_Object.cons(Logic.KWD_ISA, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(argument, Stella.NIL))));
+          index.dependentIsaPropositionsList = Logic.createSequenceIndex(((Module)(Stella.$MODULE$.get())), Cons.cons(Logic.KWD_ISA, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(argument, Stella.NIL))));
         }
         index.dependentIsaPropositionsList.insert(proposition);
       }
@@ -134,7 +134,7 @@ public class BacklinksIndex extends StandardObject {
 
           bucket = ((SequenceIndex)(table.lookup(surrogate)));
           if (bucket == null) {
-            bucket = Logic.createSequenceIndex(((Module)(Stella.$MODULE$.get())), Stella_Object.cons(Logic.KWD_RELATION, Stella_Object.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Stella_Object.cons(surrogate, Stella_Object.cons(argument, Stella.NIL)))));
+            bucket = Logic.createSequenceIndex(((Module)(Stella.$MODULE$.get())), Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(surrogate, Cons.cons(argument, Stella.NIL)))));
             table.insertAt(surrogate, bucket);
           }
           bucket.insert(proposition);

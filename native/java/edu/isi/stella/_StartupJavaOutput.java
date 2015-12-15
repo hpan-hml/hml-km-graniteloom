@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -50,13 +50,13 @@ import edu.isi.stella.javalib.*;
 public class _StartupJavaOutput {
   static void helpStartupJavaOutput1() {
     {
-      Stella.SYM_STELLA_JAVA_THROW = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_THROW", null, 0)));
-      Stella.SYM_STELLA_JAVA_ARRAY_INITIALIZER = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_ARRAY_INITIALIZER", null, 0)));
-      Stella.SYM_STELLA_JAVA_FUNCTION_POINTER = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_FUNCTION_POINTER", null, 0)));
-      Stella.SYM_STELLA_JAVA_METHOD_POINTER = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_METHOD_POINTER", null, 0)));
-      Stella.SYM_STELLA_JAVA_METHOD_SETTER_CALL = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_METHOD_SETTER_CALL", null, 0)));
-      Stella.SYM_STELLA_JAVA_NEW = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_NEW", null, 0)));
-      Stella.SYM_STELLA_STARTUP_JAVA_OUTPUT = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-JAVA-OUTPUT", null, 0)));
+      Stella.SYM_STELLA_JAVA_THROW = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_THROW", null, 0)));
+      Stella.SYM_STELLA_JAVA_ARRAY_INITIALIZER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_ARRAY_INITIALIZER", null, 0)));
+      Stella.SYM_STELLA_JAVA_FUNCTION_POINTER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_FUNCTION_POINTER", null, 0)));
+      Stella.SYM_STELLA_JAVA_METHOD_POINTER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_METHOD_POINTER", null, 0)));
+      Stella.SYM_STELLA_JAVA_METHOD_SETTER_CALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_METHOD_SETTER_CALL", null, 0)));
+      Stella.SYM_STELLA_JAVA_NEW = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_NEW", null, 0)));
+      Stella.SYM_STELLA_STARTUP_JAVA_OUTPUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-JAVA-OUTPUT", null, 0)));
     }
   }
 
@@ -76,6 +76,7 @@ public class _StartupJavaOutput {
       Stella.defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((STRING MUTABLE-STRING-WRAPPER)))", Native.find_java_method("edu.isi.stella.MutableStringWrapper", "javaOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((CHARACTER CHARACTER-WRAPPER)))", Native.find_java_method("edu.isi.stella.CharacterWrapper", "javaOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((INT INTEGER-WRAPPER)))", Native.find_java_method("edu.isi.stella.IntegerWrapper", "javaOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+      Stella.defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((INT LONG-INTEGER-WRAPPER)))", Native.find_java_method("edu.isi.stella.LongIntegerWrapper", "javaOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((FLOAT FLOAT-WRAPPER)))", Native.find_java_method("edu.isi.stella.FloatWrapper", "javaOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD JAVA-OUTPUT-LITERAL ((BOOLEAN BOOLEAN-WRAPPER)))", Native.find_java_method("edu.isi.stella.BooleanWrapper", "javaOutputLiteral", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("JAVA-OUTPUT-MAKE-ARRAY", "(DEFUN JAVA-OUTPUT-MAKE-ARRAY ((STATEMENT CONS)))", Native.find_java_method("edu.isi.stella.Cons", "javaOutputMakeArray", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
@@ -121,7 +122,6 @@ public class _StartupJavaOutput {
       Stella.defineFunctionObject("JAVA-OUTPUT-RETURN", "(DEFUN JAVA-OUTPUT-RETURN ((RETURNSTATEMENT CONS)))", Native.find_java_method("edu.isi.stella.Cons", "javaOutputReturn", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("JAVA-OUTPUT-THROW", "(DEFUN JAVA-OUTPUT-THROW ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "javaOutputThrow", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("JAVA-OUTPUT-CATCH", "(DEFUN JAVA-OUTPUT-CATCH ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "javaOutputCatch", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
-      Stella.defineFunctionObject("JAVA-OUTPUT-UNWIND-PROTECT", "(DEFUN JAVA-OUTPUT-UNWIND-PROTECT ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "javaOutputUnwindProtect", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
     }
   }
 
@@ -138,13 +138,14 @@ public class _StartupJavaOutput {
         if (Stella.currentStartupTimePhaseP(4)) {
           Stella.$JAVA_INDENT_CHARS$.setDefaultValue(new Integer(0));
           Stella.$JAVA_STELLA_PACKAGE_MAPPING$ = KeyValueList.newKeyValueList();
-          Stella.$JAVA_SEMICOLON_STATEMENTS$ = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_ASSIGN, Stella_Object.cons(Stella.SYM_STELLA_JAVA_UNARY_OP, Stella_Object.cons(Stella.SYM_STELLA_JAVA_BINARY_OP, Stella_Object.cons(Stella.SYM_STELLA_JAVA_TERNARY_OP, Stella_Object.cons(Stella.SYM_STELLA_JAVA_CAST, Stella_Object.cons(Stella.SYM_STELLA_JAVA_FUNCALL, Stella_Object.cons(Stella.SYM_STELLA_JAVA_FUNCTION_CALL, Stella_Object.cons(Stella.SYM_STELLA_JAVA_FUNCTION_POINTER, Stella_Object.cons(Stella.SYM_STELLA_JAVA_MAKE, Stella_Object.cons(Stella.SYM_STELLA_JAVA_METHOD_CALL, Stella_Object.cons(Stella.SYM_STELLA_JAVA_METHOD_CODE_CALL, Stella_Object.cons(Stella.SYM_STELLA_JAVA_METHOD_POINTER, Stella_Object.cons(Stella.SYM_STELLA_JAVA_METHOD_SETTER_CALL, Stella_Object.cons(Stella.SYM_STELLA_JAVA_NEW, Stella_Object.cons(Stella.SYM_STELLA_JAVA_PRINT_NATIVE_STREAM, Stella_Object.cons(Stella.SYM_STELLA_JAVA_PRINT_STREAM, Stella_Object.cons(Stella.SYM_STELLA_JAVA_RETURN, Stella_Object.cons(Stella.SYM_STELLA_JAVA_SIGNAL, Stella_Object.cons(Stella.SYM_STELLA_JAVA_SLOT_VALUE_SETTER, Stella_Object.cons(Stella.SYM_STELLA_JAVA_THROW, Stella_Object.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Stella_Object.cons(Stella.NIL, Stella.NIL)))))))))))))))))))))));
+          Stella.$JAVA_SEMICOLON_STATEMENTS$ = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_ASSIGN, Cons.cons(Stella.SYM_STELLA_JAVA_UNARY_OP, Cons.cons(Stella.SYM_STELLA_JAVA_BINARY_OP, Cons.cons(Stella.SYM_STELLA_JAVA_TERNARY_OP, Cons.cons(Stella.SYM_STELLA_JAVA_CAST, Cons.cons(Stella.SYM_STELLA_JAVA_FUNCALL, Cons.cons(Stella.SYM_STELLA_JAVA_FUNCTION_CALL, Cons.cons(Stella.SYM_STELLA_JAVA_FUNCTION_POINTER, Cons.cons(Stella.SYM_STELLA_JAVA_MAKE, Cons.cons(Stella.SYM_STELLA_JAVA_METHOD_CALL, Cons.cons(Stella.SYM_STELLA_JAVA_METHOD_CODE_CALL, Cons.cons(Stella.SYM_STELLA_JAVA_METHOD_POINTER, Cons.cons(Stella.SYM_STELLA_JAVA_METHOD_SETTER_CALL, Cons.cons(Stella.SYM_STELLA_JAVA_NEW, Cons.cons(Stella.SYM_STELLA_JAVA_PRINT_NATIVE_STREAM, Cons.cons(Stella.SYM_STELLA_JAVA_PRINT_STREAM, Cons.cons(Stella.SYM_STELLA_JAVA_RETURN, Cons.cons(Stella.SYM_STELLA_JAVA_SIGNAL, Cons.cons(Stella.SYM_STELLA_JAVA_SLOT_VALUE_SETTER, Cons.cons(Stella.SYM_STELLA_JAVA_THROW, Cons.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Cons.cons(Stella.NIL, Stella.NIL)))))))))))))))))))))));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupJavaOutput.helpStartupJavaOutput2();
+          Stella.defineFunctionObject("JAVA-OUTPUT-UNWIND-PROTECT", "(DEFUN JAVA-OUTPUT-UNWIND-PROTECT ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "javaOutputUnwindProtect", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("JAVA-OUTPUT-HANDLER-CASE", "(DEFUN JAVA-OUTPUT-HANDLER-CASE ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "javaOutputHandlerCase", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("JAVA-OUTPUT-SIGNAL", "(DEFUN JAVA-OUTPUT-SIGNAL ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "javaOutputSignal", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("JAVA-OUTPUT-GLOBAL-DEFINITION", "(DEFUN JAVA-OUTPUT-GLOBAL-DEFINITION ((GLOBAL CONS)))", Native.find_java_method("edu.isi.stella.Cons", "javaOutputGlobalDefinition", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
@@ -194,6 +195,7 @@ public class _StartupJavaOutput {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *JAVA-INDENT-CHARS* INTEGER 0)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *JAVA-STELLA-PACKAGE-MAPPING* (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER) (NEW (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER)))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *JAVA-SEMICOLON-STATEMENTS* (CONS OF SYMBOL) (BQUOTE (JAVA_ASSIGN JAVA_UNARY_OP JAVA_BINARY_OP JAVA_TERNARY_OP JAVA_CAST JAVA_FUNCALL JAVA_FUNCTION_CALL JAVA_FUNCTION_POINTER JAVA_MAKE JAVA_METHOD_CALL JAVA_METHOD_CODE_CALL JAVA_METHOD_POINTER JAVA_METHOD_SETTER_CALL JAVA_NEW JAVA_PRINT_NATIVE_STREAM JAVA_PRINT_STREAM JAVA_RETURN JAVA_SIGNAL JAVA_SLOT_VALUE_SETTER JAVA_THROW JAVA_VERBATIM)))");

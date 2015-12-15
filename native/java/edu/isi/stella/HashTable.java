@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -63,10 +63,10 @@ public class HashTable extends AbstractHashTable {
     { Cons value = ((Cons)(ht.lookup(key)));
 
       if (value != null) {
-        ht.insertAt(key, Stella_Object.cons(renamed_Object, value));
+        ht.insertAt(key, Cons.cons(renamed_Object, value));
       }
       else {
-        ht.insertAt(key, Stella_Object.cons(renamed_Object, Stella.NIL));
+        ht.insertAt(key, Cons.cons(renamed_Object, Stella.NIL));
       }
     }
   }
@@ -92,7 +92,7 @@ public class HashTable extends AbstractHashTable {
               if (flotsamFiles.memberP(StringWrapper.wrapString(filename))) {
                 Stella.STANDARD_WARNING.nativeStream.println("Warning: Overwriting Flotsam file `" + filename + "'.  This is surely bad.");
               }
-              flotsamFiles = Stella_Object.cons(StringWrapper.wrapString(filename), flotsamFiles);
+              flotsamFiles = Cons.cons(StringWrapper.wrapString(filename), flotsamFiles);
               globals = ((Cons)(globalsht.lookup(module)));
               if (!(globals != null)) {
                 globals = Stella.NIL;

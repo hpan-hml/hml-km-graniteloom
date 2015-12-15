@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -287,7 +287,7 @@ public abstract class PartialMatchFrame extends StandardObject {
 
         if (targetpmf == null) {
           if (flippolarityP) {
-            targetpmf = ((PartialMatchFrame)(Surrogate.createObject(source.primaryType(), Stella_Object.cons(Logic.KWD_CONTROL_FRAME, Stella_Object.cons(target, Stella_Object.cons(Logic.KWD_KIND, Stella_Object.cons(target.state, Stella.NIL)))))));
+            targetpmf = ((PartialMatchFrame)(Surrogate.createObject(source.primaryType(), Cons.cons(Logic.KWD_CONTROL_FRAME, Cons.cons(target, Cons.cons(Logic.KWD_KIND, Cons.cons(target.state, Stella.NIL)))))));
             targetpmf.parent = source.parent;
             targetpmf.child = source;
           }

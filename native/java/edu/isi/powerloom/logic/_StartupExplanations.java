@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,32 +52,32 @@ import edu.isi.stella.*;
 public class _StartupExplanations {
   static void helpStartupExplanations1() {
     {
-      Logic.KWD_ASCII = ((Keyword)(Stella.internRigidSymbolWrtModule("ASCII", null, 2)));
-      Logic.KWD_BRIEF = ((Keyword)(Stella.internRigidSymbolWrtModule("BRIEF", null, 2)));
-      Logic.KWD_CUTOFF = ((Keyword)(Stella.internRigidSymbolWrtModule("CUTOFF", null, 2)));
-      Logic.KWD_INFERENCE = ((Keyword)(Stella.internRigidSymbolWrtModule("INFERENCE", null, 2)));
-      Logic.KWD_HTML = ((Keyword)(Stella.internRigidSymbolWrtModule("HTML", null, 2)));
-      Logic.SYM_LOGIC_EXPLANATION_VOCABULARY = ((Symbol)(Stella.internRigidSymbolWrtModule("EXPLANATION-VOCABULARY", null, 0)));
-      Logic.KWD_UNKNOWN_RULE = ((Keyword)(Stella.internRigidSymbolWrtModule("UNKNOWN-RULE", null, 2)));
-      Logic.KWD_FOLLOWS = ((Keyword)(Stella.internRigidSymbolWrtModule("FOLLOWS", null, 2)));
-      Logic.KWD_HOLDS = ((Keyword)(Stella.internRigidSymbolWrtModule("HOLDS", null, 2)));
-      Logic.KWD_DEFINITION = ((Keyword)(Stella.internRigidSymbolWrtModule("DEFINITION", null, 2)));
-      Logic.KWD_FAILED = ((Keyword)(Stella.internRigidSymbolWrtModule("FAILED", null, 2)));
-      Logic.KWD_NOT_ASSERTED = ((Keyword)(Stella.internRigidSymbolWrtModule("NOT-ASSERTED", null, 2)));
-      Logic.KWD_NO_RULES = ((Keyword)(Stella.internRigidSymbolWrtModule("NO-RULES", null, 2)));
-      Logic.SGT_LOGIC_EXPLANATION_INFO = ((Surrogate)(Stella.internRigidSymbolWrtModule("EXPLANATION-INFO", null, 1)));
-      Logic.SYM_STELLA_LABEL = ((Symbol)(Stella.internRigidSymbolWrtModule("LABEL", Stella.getStellaModule("/STELLA", true), 0)));
-      Logic.SYM_LOGIC_EXPLAINEDp = ((Symbol)(Stella.internRigidSymbolWrtModule("EXPLAINED?", null, 0)));
-      Logic.SYM_LOGIC_EXPLANATION_MAPPING = ((Symbol)(Stella.internRigidSymbolWrtModule("EXPLANATION-MAPPING", null, 0)));
-      Logic.KWD_XML = ((Keyword)(Stella.internRigidSymbolWrtModule("XML", null, 2)));
-      Logic.KWD_CYC_NL = ((Keyword)(Stella.internRigidSymbolWrtModule("CYC-NL", null, 2)));
-      Logic.KWD_KIF_ONTOSAURUS = ((Keyword)(Stella.internRigidSymbolWrtModule("KIF-ONTOSAURUS", null, 2)));
-      Logic.KWD_JAVA_GUI_HTML = ((Keyword)(Stella.internRigidSymbolWrtModule("JAVA-GUI-HTML", null, 2)));
-      Logic.SGT_LOGIC_ALTERNATIVE_BINDINGS_SET = ((Surrogate)(Stella.internRigidSymbolWrtModule("ALTERNATIVE-BINDINGS-SET", null, 1)));
-      Logic.KWD_DIGIT = ((Keyword)(Stella.internRigidSymbolWrtModule("DIGIT", null, 2)));
-      Logic.KWD_VERBOSE = ((Keyword)(Stella.internRigidSymbolWrtModule("VERBOSE", null, 2)));
-      Logic.KWD_DEPTH = ((Keyword)(Stella.internRigidSymbolWrtModule("DEPTH", null, 2)));
-      Logic.SYM_LOGIC_STARTUP_EXPLANATIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-EXPLANATIONS", null, 0)));
+      Logic.KWD_ASCII = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ASCII", null, 2)));
+      Logic.KWD_BRIEF = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("BRIEF", null, 2)));
+      Logic.KWD_CUTOFF = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CUTOFF", null, 2)));
+      Logic.KWD_INFERENCE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("INFERENCE", null, 2)));
+      Logic.KWD_HTML = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("HTML", null, 2)));
+      Logic.SYM_LOGIC_EXPLANATION_VOCABULARY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EXPLANATION-VOCABULARY", null, 0)));
+      Logic.KWD_UNKNOWN_RULE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UNKNOWN-RULE", null, 2)));
+      Logic.KWD_FOLLOWS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FOLLOWS", null, 2)));
+      Logic.KWD_HOLDS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("HOLDS", null, 2)));
+      Logic.KWD_DEFINITION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFINITION", null, 2)));
+      Logic.KWD_FAILED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FAILED", null, 2)));
+      Logic.KWD_NOT_ASSERTED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NOT-ASSERTED", null, 2)));
+      Logic.KWD_NO_RULES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("NO-RULES", null, 2)));
+      Logic.SGT_LOGIC_EXPLANATION_INFO = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("EXPLANATION-INFO", null, 1)));
+      Logic.SYM_STELLA_LABEL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("LABEL", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_EXPLAINEDp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EXPLAINED?", null, 0)));
+      Logic.SYM_LOGIC_EXPLANATION_MAPPING = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EXPLANATION-MAPPING", null, 0)));
+      Logic.KWD_XML = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("XML", null, 2)));
+      Logic.KWD_CYC_NL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CYC-NL", null, 2)));
+      Logic.KWD_KIF_ONTOSAURUS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("KIF-ONTOSAURUS", null, 2)));
+      Logic.KWD_JAVA_GUI_HTML = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA-GUI-HTML", null, 2)));
+      Logic.SGT_LOGIC_ALTERNATIVE_BINDINGS_SET = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("ALTERNATIVE-BINDINGS-SET", null, 1)));
+      Logic.KWD_DIGIT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DIGIT", null, 2)));
+      Logic.KWD_VERBOSE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("VERBOSE", null, 2)));
+      Logic.KWD_DEPTH = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEPTH", null, 2)));
+      Logic.SYM_LOGIC_STARTUP_EXPLANATIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-EXPLANATIONS", null, 0)));
     }
   }
 
@@ -198,6 +198,7 @@ public class _StartupExplanations {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *EXPLANATION-FORMAT* KEYWORD :ASCII :DOCUMENTATION \"Keyword to control the explanation format.\nValid values are :ASCII, :HTML and :XML\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *EXPLANATION-STYLE* KEYWORD :BRIEF :DOCUMENTATION \"Keywords that controls how detailed explanations will be.\nValid values are :VERBOSE and :BRIEF.\" :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *EXPLANATION-AUDIENCE* KEYWORD :TECHNICAL :DOCUMENTATION \"Keywords that controls the language for justifications.\nValid values are :TECHNICAL and :LAY\" :PUBLIC? TRUE)");
@@ -213,8 +214,8 @@ public class _StartupExplanations {
           Logic.defineExplanationPhrase(Logic.KWD_UNKNOWN_RULE, Logic.KWD_TECHNICAL, "because of an inference PowerLoom can't explain yet", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_FOLLOWS, Logic.KWD_TECHNICAL, "follows", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_FOLLOWS, Logic.KWD_LAY, "is true", Stella.NIL);
-          Logic.defineExplanationPhrase(Logic.KWD_FOLLOWS, Logic.KWD_TECHNICAL, "is partially true", Stella_Object.cons(Logic.KWD_PARTIAL, Stella.NIL));
-          Logic.defineExplanationPhrase(Logic.KWD_FOLLOWS, Logic.KWD_LAY, "is true to some part", Stella_Object.cons(Logic.KWD_PARTIAL, Stella.NIL));
+          Logic.defineExplanationPhrase(Logic.KWD_FOLLOWS, Logic.KWD_TECHNICAL, "is partially true", Cons.cons(Logic.KWD_PARTIAL, Stella.NIL));
+          Logic.defineExplanationPhrase(Logic.KWD_FOLLOWS, Logic.KWD_LAY, "is true to some part", Cons.cons(Logic.KWD_PARTIAL, Stella.NIL));
           Logic.defineExplanationPhrase(Logic.KWD_HOLDS, Logic.KWD_TECHNICAL, "holds", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_HOLDS, Logic.KWD_LAY, "is true", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_DEFINITION, Logic.KWD_TECHNICAL, "by the definition of", Stella.NIL);

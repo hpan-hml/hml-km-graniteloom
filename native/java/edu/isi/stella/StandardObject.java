@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -115,38 +115,38 @@ public abstract class StandardObject extends Stella_Object {
         }
       }
       if (classtype == Stella.SGT_STELLA_VOID) {
-        otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Stella_Object.cons(StringWrapper.wrapString("java.lang.Void.TYPE"), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Cons.cons(StringWrapper.wrapString("java.lang.Void.TYPE"), Cons.cons(Stella.NIL, Stella.NIL))));
       }
       else if (classtype == Stella.SGT_STELLA_BOOLEAN) {
-        otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Stella_Object.cons(StringWrapper.wrapString("java.lang.Boolean.TYPE"), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Cons.cons(StringWrapper.wrapString("java.lang.Boolean.TYPE"), Cons.cons(Stella.NIL, Stella.NIL))));
       }
       else if ((classtype == Stella.SGT_STELLA_INTEGER) ||
           (classtype == Stella.SGT_STELLA_THIRTY_TWO_BIT_VECTOR)) {
-        otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Stella_Object.cons(StringWrapper.wrapString("java.lang.Integer.TYPE"), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Cons.cons(StringWrapper.wrapString("java.lang.Integer.TYPE"), Cons.cons(Stella.NIL, Stella.NIL))));
       }
       else if (classtype == Stella.SGT_STELLA_CHARACTER) {
-        otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Stella_Object.cons(StringWrapper.wrapString("java.lang.Character.TYPE"), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Cons.cons(StringWrapper.wrapString("java.lang.Character.TYPE"), Cons.cons(Stella.NIL, Stella.NIL))));
       }
       else if ((classtype == Stella.SGT_STELLA_BYTE) ||
           (classtype == Stella.SGT_STELLA_OCTET)) {
-        otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Stella_Object.cons(StringWrapper.wrapString("java.lang.Byte.TYPE"), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Cons.cons(StringWrapper.wrapString("java.lang.Byte.TYPE"), Cons.cons(Stella.NIL, Stella.NIL))));
       }
       else if ((classtype == Stella.SGT_STELLA_FLOAT) ||
           (classtype == Stella.SGT_STELLA_DOUBLE_FLOAT)) {
-        otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Stella_Object.cons(StringWrapper.wrapString("java.lang.Double.TYPE"), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Cons.cons(StringWrapper.wrapString("java.lang.Double.TYPE"), Cons.cons(Stella.NIL, Stella.NIL))));
       }
       else if ((classtype == Stella.SGT_STELLA_SHORT_INTEGER) ||
           (classtype == Stella.SGT_STELLA_UNSIGNED_SHORT_INTEGER)) {
-        otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Stella_Object.cons(StringWrapper.wrapString("java.lang.Short.TYPE"), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Cons.cons(StringWrapper.wrapString("java.lang.Short.TYPE"), Cons.cons(Stella.NIL, Stella.NIL))));
       }
       else if ((classtype == Stella.SGT_STELLA_LONG_INTEGER) ||
           ((classtype == Stella.SGT_STELLA_UNSIGNED_LONG_INTEGER) ||
            ((classtype == Stella.SGT_STELLA_TICKTOCK) ||
             (classtype == Stella.SGT_STELLA_NATIVE_DATE_TIME)))) {
-        otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Stella_Object.cons(StringWrapper.wrapString("java.lang.Long.TYPE"), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Cons.cons(StringWrapper.wrapString("java.lang.Long.TYPE"), Cons.cons(Stella.NIL, Stella.NIL))));
       }
       else if (classtype == Stella.SGT_STELLA_SINGLE_FLOAT) {
-        otree = Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Stella_Object.cons(StringWrapper.wrapString("java.lang.Float.TYPE"), Stella_Object.cons(Stella.NIL, Stella.NIL))));
+        otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_VERBATIM, Cons.cons(StringWrapper.wrapString("java.lang.Float.TYPE"), Cons.cons(Stella.NIL, Stella.NIL))));
       }
       else if (classtype == Stella.SGT_STELLA_STRING) {
         otree = Stella.javaTranslateClassObjectLookup("java.lang.String");
@@ -538,6 +538,63 @@ public abstract class StandardObject extends Stella_Object {
     }
   }
 
+  public static boolean cppTypeWithoutInteriorPointersP(StandardObject typespec) {
+    { Surrogate basetype = StandardObject.typeSpecToBaseType(typespec);
+      Stella_Class renamed_Class = ((Stella_Class)(basetype.surrogateValue));
+
+      if (StandardObject.arrayTypeSpecifierP(typespec)) {
+        return (StandardObject.cppNonPointerTypeP(StandardObject.extractParameterType(typespec, Stella.SYM_STELLA_ANY_VALUE, new Object[1])));
+      }
+      if (Stella_Class.createNativeClassP(renamed_Class) &&
+          (!Surrogate.subtypeOfP(basetype, Stella.SGT_STELLA_NATIVE_EXCEPTION))) {
+        { boolean alwaysP000 = true;
+
+          { Slot slot = null;
+            Iterator iter000 = renamed_Class.classSlots();
+
+            loop000 : while (iter000.nextP()) {
+              slot = ((Slot)(iter000.value));
+              if (Stella_Object.storageSlotP(slot) &&
+                  (StorageSlot.nativeSlotP(((StorageSlot)(slot))) &&
+                   (!StorageSlot.slotHasUnknownTypeP(((StorageSlot)(slot)), renamed_Class)))) {
+                if (!StandardObject.cppNonPointerTypeP(slot.slotBaseType)) {
+                  alwaysP000 = false;
+                  break loop000;
+                }
+              }
+            }
+          }
+          { boolean value000 = alwaysP000;
+
+            return (value000);
+          }
+        }
+      }
+      return (false);
+    }
+  }
+
+  public static boolean cppNonPointerTypeP(StandardObject typespec) {
+    { Surrogate basetype = StandardObject.typeSpecToBaseType(typespec);
+
+      if ((basetype == Stella.SGT_STELLA_INTEGER) ||
+          ((basetype == Stella.SGT_STELLA_SHORT_INTEGER) ||
+           ((basetype == Stella.SGT_STELLA_LONG_INTEGER) ||
+            ((basetype == Stella.SGT_STELLA_UNSIGNED_LONG_INTEGER) ||
+             ((basetype == Stella.SGT_STELLA_FLOAT) ||
+              ((basetype == Stella.SGT_STELLA_SINGLE_FLOAT) ||
+               ((basetype == Stella.SGT_STELLA_DOUBLE_FLOAT) ||
+                ((basetype == Stella.SGT_STELLA_CHARACTER) ||
+                 ((basetype == Stella.SGT_STELLA_BYTE) ||
+                  (basetype == Stella.SGT_STELLA_OCTET)))))))))) {
+        return (true);
+      }
+      else {
+        return (false);
+      }
+    }
+  }
+
   public static void inverseSlotDemon(StandardObject self, StorageSlot slot, StandardObject oldvalue, StandardObject newvalue) {
     { Slot inverseslot = ((Slot)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_INVERSE, null)));
 
@@ -778,7 +835,7 @@ public abstract class StandardObject extends Stella_Object {
                       dim = ((IntegerWrapper)(iter000.value));
                       if (collect000 == null) {
                         {
-                          collect000 = Stella_Object.cons(((dim == null) ? ((Stella_Object)(Stella.internCommonLispSymbol("*"))) : ((Stella_Object)(dim))), Stella.NIL);
+                          collect000 = Cons.cons(((dim == null) ? ((Stella_Object)(Stella.internCommonLispSymbol("*"))) : ((Stella_Object)(dim))), Stella.NIL);
                           if (dimensions == Stella.NIL) {
                             dimensions = collect000;
                           }
@@ -789,13 +846,13 @@ public abstract class StandardObject extends Stella_Object {
                       }
                       else {
                         {
-                          collect000.rest = Stella_Object.cons(((dim == null) ? ((Stella_Object)(Stella.internCommonLispSymbol("*"))) : ((Stella_Object)(dim))), Stella.NIL);
+                          collect000.rest = Cons.cons(((dim == null) ? ((Stella_Object)(Stella.internCommonLispSymbol("*"))) : ((Stella_Object)(dim))), Stella.NIL);
                           collect000 = collect000.rest;
                         }
                       }
                     }
                   }
-                  return (Stella.list$(Stella_Object.cons(Stella.internCommonLispSymbol("ARRAY"), Stella_Object.cons(Stella.internCommonLispSymbol("T"), Stella_Object.cons(dimensions, Stella_Object.cons(Stella.NIL, Stella.NIL))))));
+                  return (Cons.list$(Cons.cons(Stella.internCommonLispSymbol("ARRAY"), Cons.cons(Stella.internCommonLispSymbol("T"), Cons.cons(dimensions, Cons.cons(Stella.NIL, Stella.NIL))))));
                 }
               }
             break;
@@ -885,10 +942,10 @@ public abstract class StandardObject extends Stella_Object {
 
   public static List listifyTypeSpec(StandardObject typespec) {
     if (StandardObject.voidP(typespec)) {
-      return (Stella.list(Stella.NIL));
+      return (List.list(Stella.NIL));
     }
     else {
-      return (Stella.list(Stella_Object.cons(typespec, Stella.NIL)));
+      return (List.list(Cons.cons(typespec, Stella.NIL)));
     }
   }
 
@@ -898,8 +955,9 @@ public abstract class StandardObject extends Stella_Object {
       if (!(nullvalue == Stella.SYM_STELLA_NULL)) {
         nullvalue = Stella_Object.walkExpressionTree(nullvalue, type, Stella.SYM_STELLA_NULL, false, new Object[1]);
       }
-      if (StandardObject.arrayTypeSpecifierP(typespec)) {
-        return (Stella_Object.walkExpressionTree(Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_VERBATIM, Stella_Object.cons(Stella.KWD_COMMON_LISP, Stella_Object.cons(StringWrapper.wrapString(Stella.lispNullArraySymbolString(ParametricTypeSpecifier.arrayTypeRank(((ParametricTypeSpecifier)(typespec))))), Stella_Object.cons(Stella.list$(Stella_Object.cons(Stella.KWD_OTHERWISE, Stella_Object.cons(nullvalue, Stella_Object.cons(Stella.NIL, Stella.NIL)))), Stella.NIL))))), type, Stella.SYM_STELLA_NULL, false, new Object[1]));
+      if (StandardObject.arrayTypeSpecifierP(typespec) &&
+          (((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_COMMON_LISP)) {
+        return (Stella_Object.walkExpressionTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_VERBATIM, Cons.cons(Stella.KWD_COMMON_LISP, Cons.cons(StringWrapper.wrapString(Stella.lispNullArraySymbolString(ParametricTypeSpecifier.arrayTypeRank(((ParametricTypeSpecifier)(typespec))))), Cons.cons(Stella.NIL, Stella.NIL))))), type, Stella.SYM_STELLA_NULL, false, new Object[1]));
       }
       else {
         return (nullvalue);
@@ -913,7 +971,7 @@ public abstract class StandardObject extends Stella_Object {
       if (Surrogate.subtypeOfSurrogateP(testValue000)) {
         { Surrogate self000 = ((Surrogate)(self));
 
-          return (Stella.internSymbolInModule(self000.symbolName, ((Module)(self000.homeContext)), true));
+          return (Symbol.internSymbolInModule(self000.symbolName, ((Module)(self000.homeContext)), true));
         }
       }
       else if (Surrogate.subtypeOfParametricTypeSpecifierP(testValue000)) {
@@ -929,7 +987,7 @@ public abstract class StandardObject extends Stella_Object {
                 ts = ((StandardObject)(iter000.value));
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(StandardObject.yieldTypeSpecTree(ts), Stella.NIL);
+                    collect000 = Cons.cons(StandardObject.yieldTypeSpecTree(ts), Stella.NIL);
                     if (listoftypes == Stella.NIL) {
                       listoftypes = collect000;
                     }
@@ -940,13 +998,13 @@ public abstract class StandardObject extends Stella_Object {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(StandardObject.yieldTypeSpecTree(ts), Stella.NIL);
+                    collect000.rest = Cons.cons(StandardObject.yieldTypeSpecTree(ts), Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
               }
             }
-            return (Stella_Object.cons(Stella.internSymbolInModule(self000.specifierBaseType.symbolName, ((Module)(self000.specifierBaseType.homeContext)), true), ((StandardObject.arrayTypeSpecifierP(self000) ? Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_SIZE, Stella_Object.cons(ParametricTypeSpecifier.yieldArrayDimensionsTree(self000), Stella_Object.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate(Stella_Object.cons(Stella.SYM_STELLA_OF, listoftypes.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL)));
+            return (Cons.cons(Symbol.internSymbolInModule(self000.specifierBaseType.symbolName, ((Module)(self000.specifierBaseType.homeContext)), true), ((StandardObject.arrayTypeSpecifierP(self000) ? Cons.list$(Cons.cons(Stella.SYM_STELLA_SIZE, Cons.cons(ParametricTypeSpecifier.yieldArrayDimensionsTree(self000), Cons.cons(Stella.NIL, Stella.NIL)))) : Stella.NIL)).concatenate(Cons.cons(Stella.SYM_STELLA_OF, listoftypes.concatenate(Stella.NIL, Stella.NIL)), Stella.NIL)));
           }
         }
       }
@@ -954,10 +1012,10 @@ public abstract class StandardObject extends Stella_Object {
         { AnchoredTypeSpecifier self000 = ((AnchoredTypeSpecifier)(self));
 
           if (self000.specifierParameterName != null) {
-            return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LIKE, Stella_Object.cons(Stella_Object.cons(self000.specifierParameterName, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+            return (Cons.list$(Cons.cons(Stella.SYM_STELLA_LIKE, Cons.cons(Cons.cons(self000.specifierParameterName, Cons.cons(Stella.SYM_STELLA_SELF, Stella.NIL)), Cons.cons(Stella.NIL, Stella.NIL)))));
           }
           else {
-            return (Stella.list$(Stella_Object.cons(Stella.SYM_STELLA_LIKE, Stella_Object.cons(Stella.SYM_STELLA_SELF, Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+            return (Cons.list$(Cons.cons(Stella.SYM_STELLA_LIKE, Cons.cons(Stella.SYM_STELLA_SELF, Cons.cons(Stella.NIL, Stella.NIL)))));
           }
         }
       }
@@ -1010,7 +1068,7 @@ public abstract class StandardObject extends Stella_Object {
                 }
                 if (collect000 == null) {
                   {
-                    collect000 = Stella_Object.cons(relativets, Stella.NIL);
+                    collect000 = Cons.cons(relativets, Stella.NIL);
                     if (typeslist.theConsList == Stella.NIL) {
                       typeslist.theConsList = collect000;
                     }
@@ -1021,7 +1079,7 @@ public abstract class StandardObject extends Stella_Object {
                 }
                 else {
                   {
-                    collect000.rest = Stella_Object.cons(relativets, Stella.NIL);
+                    collect000.rest = Cons.cons(relativets, Stella.NIL);
                     collect000 = collect000.rest;
                   }
                 }
@@ -1032,6 +1090,7 @@ public abstract class StandardObject extends Stella_Object {
 
                 newts.specifierBaseType = relativetype000.specifierBaseType;
                 newts.specifierParameterTypes = typeslist;
+                newts.specifierDimensions = relativetype000.specifierDimensions;
                 return (newts);
               }
             }
@@ -1100,7 +1159,7 @@ public abstract class StandardObject extends Stella_Object {
               }
               return (Stella.SGT_STELLA_OBJECT);
             }
-            return (slot.slotBaseType);
+            return (((((CompoundTypeSpecifier)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, null))) != null) ? ((StandardObject)(StandardObject.computeRelativeTypeSpec(((CompoundTypeSpecifier)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_TYPE_SPECIFIER, null))), ownertype000))) : slot.slotBaseType));
           }
         }
       }
@@ -1440,7 +1499,7 @@ public abstract class StandardObject extends Stella_Object {
                   }
                   if (collect000 == null) {
                     {
-                      collect000 = Stella_Object.cons(parametertype, Stella.NIL);
+                      collect000 = Cons.cons(parametertype, Stella.NIL);
                       if (parametertypes.theConsList == Stella.NIL) {
                         parametertypes.theConsList = collect000;
                       }
@@ -1451,7 +1510,7 @@ public abstract class StandardObject extends Stella_Object {
                   }
                   else {
                     {
-                      collect000.rest = Stella_Object.cons(parametertype, Stella.NIL);
+                      collect000.rest = Cons.cons(parametertype, Stella.NIL);
                       collect000 = collect000.rest;
                     }
                   }
@@ -1698,7 +1757,7 @@ public abstract class StandardObject extends Stella_Object {
               parameterexistsP = ((boolean)(((BooleanWrapper)(caller_MV_returnarray[0])).wrapperValue));
             }
             if ((!parameterexistsP) ||
-                Surrogate.unknownTypeP(((Surrogate)(ptype1)))) {
+                Surrogate.unknownTypeP(StandardObject.typeSpecToBaseType(ptype1))) {
               return (supertype);
             }
             { Object [] caller_MV_returnarray = new Object[1];
@@ -1707,7 +1766,7 @@ public abstract class StandardObject extends Stella_Object {
               parameterexistsP = ((boolean)(((BooleanWrapper)(caller_MV_returnarray[0])).wrapperValue));
             }
             if ((!parameterexistsP) ||
-                Surrogate.unknownTypeP(((Surrogate)(ptype2)))) {
+                Surrogate.unknownTypeP(StandardObject.typeSpecToBaseType(ptype2))) {
               return (supertype);
             }
             sptype = StandardObject.twoArgumentLeastCommonSupertype(ptype1, ptype2);
@@ -1717,7 +1776,7 @@ public abstract class StandardObject extends Stella_Object {
             }
             if (collect000 == null) {
               {
-                collect000 = Stella_Object.cons(sptype, Stella.NIL);
+                collect000 = Cons.cons(sptype, Stella.NIL);
                 if (parametertypes.theConsList == Stella.NIL) {
                   parametertypes.theConsList = collect000;
                 }
@@ -1728,7 +1787,7 @@ public abstract class StandardObject extends Stella_Object {
             }
             else {
               {
-                collect000.rest = Stella_Object.cons(sptype, Stella.NIL);
+                collect000.rest = Cons.cons(sptype, Stella.NIL);
                 collect000 = collect000.rest;
               }
             }

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -118,13 +118,13 @@ public class TimeDuration extends DateTimeObject {
         return (null);
       }
       else {
-        nDays = Native.stringToInteger(Native.string_subsequence(duration, dayStartPosition, dayEndPosition - 1));
+        nDays = ((int)(Native.stringToInteger(Native.string_subsequence(duration, dayStartPosition, dayEndPosition - 1))));
       }
       msStartPosition = Native.string_position(duration, ' ', dayEndPosition);
       if (msStartPosition != Stella.NULL_INTEGER) {
         msEndPosition = Native.stringSearch(duration, "ms", msStartPosition);
         if (msEndPosition != Stella.NULL_INTEGER) {
-          nMillis = Native.stringToInteger(Native.string_subsequence(duration, msStartPosition, msEndPosition - 1));
+          nMillis = ((int)(Native.stringToInteger(Native.string_subsequence(duration, msStartPosition + 1, msEndPosition - 1))));
         }
       }
       if (negativeP) {
@@ -363,23 +363,23 @@ public class TimeDuration extends DateTimeObject {
 
         if (nDays < 0) {
           if (nMillis <= 0) {
-            return ("minus " + Native.integerToString(0 - nDays) + " days; " + Native.integerToString(0 - nMillis) + " ms");
+            return ("minus " + Native.integerToString(((long)(0 - nDays))) + " days; " + Native.integerToString(((long)(0 - nMillis))) + " ms");
           }
           else {
-            return ("minus " + Native.integerToString(0 - (nDays + 1)) + " days; " + Native.integerToString(Stella.MILLIS_PER_DAY - nMillis) + " ms");
+            return ("minus " + Native.integerToString(((long)(0 - (nDays + 1)))) + " days; " + Native.integerToString(((long)(Stella.MILLIS_PER_DAY - nMillis))) + " ms");
           }
         }
         else {
           if (nMillis < 0) {
             if (nDays > 0) {
-              return ("plus " + Native.integerToString(nDays - 1) + " days; " + Native.integerToString(Stella.MILLIS_PER_DAY + nMillis) + " ms");
+              return ("plus " + Native.integerToString(((long)(nDays - 1))) + " days; " + Native.integerToString(((long)(Stella.MILLIS_PER_DAY + nMillis))) + " ms");
             }
             else {
-              return ("minus 0 days; " + Native.integerToString(0 - nMillis) + " ms");
+              return ("minus 0 days; " + Native.integerToString(((long)(0 - nMillis))) + " ms");
             }
           }
           else {
-            return ("plus " + Native.integerToString(nDays) + " days; " + Native.integerToString(nMillis) + " ms");
+            return ("plus " + Native.integerToString(((long)(nDays))) + " days; " + Native.integerToString(((long)(nMillis))) + " ms");
           }
         }
       }

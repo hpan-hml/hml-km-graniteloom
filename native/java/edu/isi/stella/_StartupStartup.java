@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,12 +56,12 @@ public class _StartupStartup {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.KWD_QUOTED_CONSTANTS = ((Keyword)(Stella.internRigidSymbolWrtModule("QUOTED-CONSTANTS", null, 2)));
-          Stella.SYM_STELLA_STARTUP_STARTUP = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-STARTUP", null, 0)));
+          Stella.KWD_QUOTED_CONSTANTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("QUOTED-CONSTANTS", null, 2)));
+          Stella.SYM_STELLA_STARTUP_STARTUP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-STARTUP", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Stella.$STELLA_VERSION_STRING$ = Stella.stellaVersionString();
-          Stella.$STARTUP_TIME_PHASES$ = ((List)(Stella.list(Stella_Object.cons(Stella.KWD_EARLY_INITS, Stella_Object.cons(Stella.KWD_MODULES, Stella_Object.cons(Stella.KWD_SYMBOLS, Stella_Object.cons(Stella.KWD_QUOTED_CONSTANTS, Stella_Object.cons(Stella.KWD_GLOBALS, Stella_Object.cons(Stella.KWD_CLASSES, Stella_Object.cons(Stella.KWD_FINALIZE_CLASSES, Stella_Object.cons(Stella.KWD_METHODS, Stella_Object.cons(Stella.KWD_FINALIZE_METHODS, Stella_Object.cons(Stella.KWD_FINAL, Stella.NIL)))))))))))));
+          Stella.$STARTUP_TIME_PHASES$ = ((List)(List.list(Cons.cons(Stella.KWD_EARLY_INITS, Cons.cons(Stella.KWD_MODULES, Cons.cons(Stella.KWD_SYMBOLS, Cons.cons(Stella.KWD_QUOTED_CONSTANTS, Cons.cons(Stella.KWD_GLOBALS, Cons.cons(Stella.KWD_CLASSES, Cons.cons(Stella.KWD_FINALIZE_CLASSES, Cons.cons(Stella.KWD_METHODS, Cons.cons(Stella.KWD_FINALIZE_METHODS, Cons.cons(Stella.KWD_FINAL, Stella.NIL)))))))))))));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -76,7 +76,7 @@ public class _StartupStartup {
           Stella.defineFunctionObject("STARTUP-JAVA-TRANSLATOR", "(DEFUN STARTUP-JAVA-TRANSLATOR ())", Native.find_java_method("edu.isi.stella.Stella", "startupJavaTranslator", new java.lang.Class [] {}), null);
           Stella.defineFunctionObject("STARTUP-IDL-TRANSLATOR", "(DEFUN STARTUP-IDL-TRANSLATOR ())", Native.find_java_method("edu.isi.stella.Stella", "startupIdlTranslator", new java.lang.Class [] {}), null);
           Stella.defineFunctionObject("STARTUP", "(DEFUN STARTUP ((VERBOSE? BOOLEAN)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "startup", new java.lang.Class [] {java.lang.Boolean.TYPE}), null);
-          Stella.defineFunctionObject("INTERPRET-COMMAND-LINE-ARGUMENTS", "(DEFUN INTERPRET-COMMAND-LINE-ARGUMENTS ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :DOCUMENTATION \"Interpret any STELLA-relevant command line `arguments'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "interpretCommandLineArguments", new java.lang.Class [] {java.lang.Integer.TYPE, Native.find_java_class("[Ljava.lang.String;")}), null);
+          Stella.defineFunctionObject("INTERPRET-COMMAND-LINE-ARGUMENTS", "(DEFUN INTERPRET-COMMAND-LINE-ARGUMENTS ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :DOCUMENTATION \"Old name for `process-command-line-arguments' (which see).\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "interpretCommandLineArguments", new java.lang.Class [] {java.lang.Integer.TYPE, Native.find_java_class("[Ljava.lang.String;")}), null);
           Stella.defineFunctionObject("CONSIFY-COMMAND-LINE-ARGUMENTS", "(DEFUN (CONSIFY-COMMAND-LINE-ARGUMENTS (CONS OF STRING-WRAPPER)) ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :DOCUMENTATION \"Convert `count' command line `arguments' into a CONS list.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "consifyCommandLineArguments", new java.lang.Class [] {java.lang.Integer.TYPE, Native.find_java_class("[Ljava.lang.String;")}), null);
           Stella.defineFunctionObject("MAIN", "(DEFUN MAIN ((ARGUMENTS (ARRAY () OF STRING))) :PUBLIC? TRUE)", null, null);
           Stella.defineFunctionObject("STARTUP-STARTUP", "(DEFUN STARTUP-STARTUP () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella._StartupStartup", "startupStartup", new java.lang.Class [] {}), null);
@@ -90,10 +90,11 @@ public class _StartupStartup {
           Stella.cleanupUnfinalizedClasses();
         }
         if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-MAJOR-VERSION-NUMBER* INTEGER 3 :PUBLIC? TRUE)");
-          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-MINOR-VERSION-NUMBER* INTEGER 4 :PUBLIC? TRUE)");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-MINOR-VERSION-NUMBER* INTEGER 5 :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-RELEASE-STATE* STRING \"\" :PUBLIC? TRUE)");
-          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-PATCH-LEVEL* INTEGER 0 :PUBLIC? TRUE)");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-PATCH-LEVEL* INTEGER 20 :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-VERSION-STRING* STRING (STELLA-VERSION-STRING) :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STARTUP-TIME-PHASES* (LIST OF KEYWORD) (CAST (LIST :EARLY-INITS :MODULES :SYMBOLS :QUOTED-CONSTANTS :GLOBALS :CLASSES :FINALIZE-CLASSES :METHODS :FINALIZE-METHODS :FINAL) (LIST OF KEYWORD)) :DOCUMENTATION \"List of phases that can be legally used as an optional\nphase argument to a `startup-time-progn' form.  The corresponding code\nwill be executed during the execution of a startup-time-code function only\nif the position of the keyword in the list corresponds to the current value of\n`*STARTUP-TIME-PHASE*', or if phasing of startup-time code is disabled.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STARTUP-TIME-PHASE* INTEGER 999 :PUBLIC? TRUE :DOCUMENTATION \"The current phase during 'phased startup'.\nThe value has to correspond to the position of one of the keywords\nin `*STARTUP-TIME-PHASES*'.  999 means no phasing at all.\")");

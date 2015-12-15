@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -73,12 +73,15 @@ void setPowerloomFeature(Keyword* feature) {
   // Enable the PowerLoom environment feature `feature'.
   if (!(oCURRENT_POWERLOOM_FEATURESo->memberP(feature))) {
     if (feature == KWD_LOGIC_IN_TRACE_SUBGOALS) {
+      clearCaches();
       addTrace(consList(1, KWD_LOGIC_IN_GOAL_TREE));
     }
     else if (feature == KWD_LOGIC_IN_TRACE_SOLUTIONS) {
+      clearCaches();
       addTrace(consList(1, KWD_LOGIC_IN_TRACE_SOLUTIONS));
     }
     else if (feature == KWD_LOGIC_IN_TRACE_CLASSIFIER) {
+      clearCaches();
       addTrace(consList(1, KWD_LOGIC_IN_CLASSIFIER_INFERENCES));
     }
     else if (feature == KWD_LOGIC_IN_CLOSED_WORLD) {
@@ -261,248 +264,8 @@ boolean disabledPowerloomFeatureP(Keyword* feature) {
   return (!oCURRENT_POWERLOOM_FEATURESo->membP(feature));
 }
 
-Object* coerceOptionValue(Object* value, Surrogate* type) {
-  if (type == SGT_LOGIC_IN_STELLA_INTEGER) {
-    { Surrogate* testValue000 = safePrimaryType(value);
-
-      if (subtypeOfIntegerP(testValue000)) {
-        { Object* value000 = value;
-          IntegerWrapper* value = ((IntegerWrapper*)(value000));
-
-          return (value);
-        }
-      }
-      else if (subtypeOfFloatP(testValue000)) {
-        { Object* value001 = value;
-          FloatWrapper* value = ((FloatWrapper*)(value001));
-
-          return (wrapInteger(stella::floor(value->wrapperValue)));
-        }
-      }
-      else {
-      }
-    }
-  }
-  else if (type == SGT_LOGIC_IN_STELLA_FLOAT) {
-    { Surrogate* testValue001 = safePrimaryType(value);
-
-      if (subtypeOfIntegerP(testValue001)) {
-        { Object* value002 = value;
-          IntegerWrapper* value = ((IntegerWrapper*)(value002));
-
-          return (wrapFloat(value->wrapperValue * 1.0));
-        }
-      }
-      else if (subtypeOfFloatP(testValue001)) {
-        { Object* value003 = value;
-          FloatWrapper* value = ((FloatWrapper*)(value003));
-
-          return (wrapFloat(value->wrapperValue * 1.0));
-        }
-      }
-      else {
-      }
-    }
-  }
-  else if (type == SGT_LOGIC_IN_STELLA_NUMBER) {
-    { Surrogate* testValue002 = safePrimaryType(value);
-
-      if (subtypeOfIntegerP(testValue002)) {
-        { Object* value004 = value;
-          IntegerWrapper* value = ((IntegerWrapper*)(value004));
-
-          return (value);
-        }
-      }
-      else if (subtypeOfFloatP(testValue002)) {
-        { Object* value005 = value;
-          FloatWrapper* value = ((FloatWrapper*)(value005));
-
-          return (value);
-        }
-      }
-      else {
-      }
-    }
-  }
-  else if (type == SGT_LOGIC_IN_STELLA_KEYWORD) {
-    { Surrogate* testValue003 = safePrimaryType(value);
-
-      if (subtypeOfP(testValue003, SGT_LOGIC_IN_STELLA_GENERALIZED_SYMBOL)) {
-        { Object* value006 = value;
-          GeneralizedSymbol* value = ((GeneralizedSymbol*)(value006));
-
-          return (value->keywordify());
-        }
-      }
-      else if (subtypeOfStringP(testValue003)) {
-        { Object* value007 = value;
-          StringWrapper* value = ((StringWrapper*)(value007));
-
-          return (value->keywordify());
-        }
-      }
-      else {
-      }
-    }
-  }
-  else if (type == SGT_LOGIC_IN_STELLA_SYMBOL) {
-    { Surrogate* testValue004 = safePrimaryType(value);
-
-      if (subtypeOfKeywordP(testValue004)) {
-        { Object* value008 = value;
-          Keyword* value = ((Keyword*)(value008));
-
-          return (internSymbol(value->symbolName));
-        }
-      }
-      else if (subtypeOfSurrogateP(testValue004)) {
-        { Object* value009 = value;
-          Surrogate* value = ((Surrogate*)(value009));
-
-          return (internDerivedSymbol(value, value->symbolName));
-        }
-      }
-      else if (subtypeOfSymbolP(testValue004)) {
-        { Object* value010 = value;
-          Symbol* value = ((Symbol*)(value010));
-
-          return (value);
-        }
-      }
-      else if (subtypeOfStringP(testValue004)) {
-        { Object* value011 = value;
-          StringWrapper* value = ((StringWrapper*)(value011));
-
-          return (internSymbol(value->wrapperValue));
-        }
-      }
-      else {
-      }
-    }
-  }
-  else if (type == SGT_LOGIC_IN_STELLA_BOOLEAN) {
-    return (coerceToBoolean(value));
-  }
-  else if (type == SGT_LOGIC_IN_STELLA_MODULE) {
-    return (coerceToModule(value, false));
-  }
-  else if ((type == SGT_LOGIC_IN_LOGIC_DESCRIPTION) ||
-      (type == SGT_LOGIC_IN_LOGIC_NAMED_DESCRIPTION)) {
-    return (coerceToDescription(value, NULL));
-  }
-  else {
-    if (!((boolean)(type))) {
-      return (value);
-    }
-    else if (isaP(value, type)) {
-      return (value);
-    }
-    else if (isaP(value, type->typeToWrappedType())) {
-      return (value);
-    }
-  }
-  return (NULL);
-}
-
 PropertyList* parseLogicCommandOptions(Object* options, Cons* legaloptionsAtypes, boolean coercionerrorP, boolean allowotherkeysP) {
-  { PropertyList* self000 = newPropertyList();
-
-    self000->thePlist = legaloptionsAtypes;
-    { PropertyList* legaloptions = self000;
-      PropertyList* parsedoptions = NULL;
-      Surrogate* type = NULL;
-      Object* corecedvalue = NULL;
-
-      { Surrogate* testValue000 = safePrimaryType(options);
-
-        if (testValue000 == SGT_LOGIC_IN_STELLA_CONS) {
-          { Object* options000 = options;
-            Cons* options = ((Cons*)(options000));
-
-            if (((options->length()) % 2)) {
-              { OutputStringStream* stream000 = newOutputStringStream();
-
-                { 
-                  BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-                  *(stream000->nativeStream) << "PARSING ERROR: " << "Odd-length command options list: " << "`" << options << "'" << "." << std::endl;
-                  helpSignalPropositionError(stream000, KWD_LOGIC_IN_ERROR);
-                }
-                throw *newParsingError(stream000->theStringReader());
-              }
-            }
-            { PropertyList* self003 = newPropertyList();
-
-              self003->thePlist = options;
-              parsedoptions = self003;
-            }
-          }
-        }
-        else if (subtypeOfP(testValue000, SGT_LOGIC_IN_STELLA_PROPERTY_LIST)) {
-          { Object* options001 = options;
-            PropertyList* options = ((PropertyList*)(options001));
-
-            parsedoptions = options;
-          }
-        }
-        else {
-          { OutputStringStream* stream001 = newOutputStringStream();
-
-            { 
-              BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-              *(stream001->nativeStream) << "PARSING ERROR: " << "Illegal command options specification: " << "`" << options << "'" << "." << std::endl;
-              helpSignalPropositionError(stream001, KWD_LOGIC_IN_ERROR);
-            }
-            throw *newParsingError(stream001->theStringReader());
-          }
-        }
-      }
-      if (((boolean)(legaloptions))) {
-        { Object* key = NULL;
-          Object* value = NULL;
-          Cons* iter000 = parsedoptions->thePlist;
-
-          for  (key, value, iter000; 
-                !(iter000 == NIL); 
-                iter000 = iter000->rest->rest) {
-            key = iter000->value;
-            value = iter000->rest->value;
-            type = ((Surrogate*)(legaloptions->lookup(key)));
-            if ((!((boolean)(type))) &&
-                (!allowotherkeysP)) {
-              { OutputStringStream* stream002 = newOutputStringStream();
-
-                { 
-                  BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-                  *(stream002->nativeStream) << "PARSING ERROR: " << "Illegal option: " << "`" << key << "'" << "." << std::endl;
-                  helpSignalPropositionError(stream002, KWD_LOGIC_IN_ERROR);
-                }
-                throw *newParsingError(stream002->theStringReader());
-              }
-            }
-            if (!((type == SGT_LOGIC_IN_LOGIC_IDENTITY) ||
-                (!((boolean)(value))))) {
-              corecedvalue = coerceOptionValue(value, type);
-              if (coercionerrorP &&
-                  (!((boolean)(corecedvalue)))) {
-                { OutputStringStream* stream003 = newOutputStringStream();
-
-                  { 
-                    BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-                    *(stream003->nativeStream) << "PARSING ERROR: " << "Can't corerce " << "`" << value << "'" << " to type " << "`" << type << "'" << "." << std::endl;
-                    helpSignalPropositionError(stream003, KWD_LOGIC_IN_ERROR);
-                  }
-                  throw *newParsingError(stream003->theStringReader());
-                }
-              }
-              parsedoptions->insertAt(key, corecedvalue);
-            }
-          }
-        }
-      }
-      return (parsedoptions);
-    }
-  }
+  return (parseOptions(options, legaloptionsAtypes, coercionerrorP, allowotherkeysP));
 }
 
 // The prompt used by the PowerLoom listener.
@@ -603,37 +366,45 @@ boolean logicCommandLoopExitP(Object* command, boolean& _Return1) {
 }
 
 void logicCommandLoop(Module* module) {
-  { boolean dummy1;
+  { Object* command = NULL;
+    Object* result = NULL;
+    boolean eofP = false;
+    boolean exitP = false;
+    boolean exitcommandP = false;
 
-    { Object* command = NULL;
-      Object* result = NULL;
-      boolean exitP = false;
-      boolean exitcommandP = false;
-
-      { 
-        BIND_STELLA_SPECIAL(oMODULEo, Module*, (((boolean)(module)) ? module : oMODULEo.get()));
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
-        for (;;) {
-          try {
-            std::cout << std::endl;
-            printLogicPrompt();
-            command = readSExpression(STANDARD_INPUT, dummy1);
-            std::cout << std::endl;
-            exitP = logicCommandLoopExitP(command, exitcommandP);
-            if (exitP) {
-              break;
-            }
-            if (exitcommandP) {
-              continue;
-            }
-            result = evaluateLogicCommand(command, false);
-            printLogicCommandResult(result);
+    { 
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, (((boolean)(module)) ? module : oMODULEo.get()));
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      for (;;) {
+        try {
+          std::cout << std::endl;
+          printLogicPrompt();
+          command = readSExpression(STANDARD_INPUT, eofP);
+          if (eofP) {
+            std::cout << "End of File encountered.  Exiting." << std::endl;
+            break;
           }
-          catch (StellaException& _e) {
-            StellaException* e = &_e;
-
-            *(STANDARD_ERROR->nativeStream) << ">> Error: " << exceptionMessage(e);
+          std::cout << std::endl;
+          exitP = logicCommandLoopExitP(command, exitcommandP);
+          if (exitP) {
+            break;
           }
+          if (exitcommandP) {
+            continue;
+          }
+          result = evaluateLogicCommand(command, false);
+          printLogicCommandResult(result);
+        }
+        catch (LogicException& _le) {
+          LogicException* le = &_le;
+
+          *(STANDARD_ERROR->nativeStream) << ">> Error: " << exceptionMessage(le);
+        }
+        catch (StellaException& _e) {
+          StellaException* e = &_e;
+
+          *(STANDARD_ERROR->nativeStream) << ">> Internal Error: " << exceptionMessage(e);
+          printExceptionContext(e, STANDARD_ERROR);
         }
       }
     }
@@ -671,7 +442,7 @@ Object* evaluateLogicCommand(Object* command, boolean finalizeP) {
                     command->value = operatoR;
                   }
                   if (stringEqualP(operatorname, "IN-MODULE")) {
-                    handleInModuleTree(command, false, dummy1);
+                    handleInModuleTree(command, false, false, dummy1);
                   }
                   else if (stringEqualP(operatorname, "IN-PACKAGE")) {
                   }
@@ -772,154 +543,6 @@ Object* evaluateLogicCommand(Object* command, boolean finalizeP) {
   }
 }
 
-Cons* oFILE_LOAD_PATHo = NULL;
-
-Cons* parseDirectoryPath(char* path) {
-  { char separator = '|';
-    int length = strlen(path);
-    int start = 0;
-    int end = 0;
-    Cons* parsedpath = NIL;
-
-    for (;;) {
-      end = stringPosition(path, separator, start);
-      parsedpath = cons(wrapString(fileNameAsDirectory(stringSubsequence(path, start, end))), parsedpath);
-      if ((end != NULL_INTEGER) &&
-          (end < (length - 1))) {
-        start = end + 1;
-      }
-      else {
-        break;
-      }
-    }
-    return (parsedpath->reverse());
-  }
-}
-
-Cons* setLoadPath(char* path) {
-  // Set the PowerLoom load path to the |-separated
-  // directories listed in `path'.  Return the resulting load path.
-  oFILE_LOAD_PATHo = parseDirectoryPath(path);
-  return (oFILE_LOAD_PATHo);
-}
-
-Cons* setLoadPathEvaluatorWrapper(Cons* arguments) {
-  return (setLoadPath(((StringWrapper*)(arguments->value))->wrapperValue));
-}
-
-Cons* getLoadPath() {
-  // Return the current PowerLoom load path.
-  return (oFILE_LOAD_PATHo);
-}
-
-Cons* pushLoadPath(char* path) {
-  // Add the directories listed in the |-separated
-  // `path' to the front of the PowerLoom load path.  Return the
-  // resulting load path.
-  oFILE_LOAD_PATHo = parseDirectoryPath(path)->concatenate(oFILE_LOAD_PATHo, 0);
-  return (oFILE_LOAD_PATHo);
-}
-
-Cons* pushLoadPathEvaluatorWrapper(Cons* arguments) {
-  return (pushLoadPath(((StringWrapper*)(arguments->value))->wrapperValue));
-}
-
-char* popLoadPath() {
-  // Remove the first element from the PowerLoom load path
-  // and return the removed element.
-  { StringWrapper* head000 = ((StringWrapper*)(oFILE_LOAD_PATHo->value));
-
-    oFILE_LOAD_PATHo = oFILE_LOAD_PATHo->rest;
-    { StringWrapper* value000 = head000;
-
-      return (value000->wrapperValue);
-    }
-  }
-}
-
-StringWrapper* popLoadPathEvaluatorWrapper(Cons* arguments) {
-  arguments = arguments;
-  { char* result = popLoadPath();
-
-    if (result != NULL) {
-      return (wrapString(result));
-    }
-    else {
-      return (NULL);
-    }
-  }
-}
-
-Cons* addLoadPath(char* path) {
-  // Append the directories listed in the |-separated
-  // `path' to the end of the PowerLoom load path.  Return the
-  // resulting load path.
-  oFILE_LOAD_PATHo = oFILE_LOAD_PATHo->concatenate(parseDirectoryPath(path), 0);
-  return (oFILE_LOAD_PATHo);
-}
-
-Cons* addLoadPathEvaluatorWrapper(Cons* arguments) {
-  return (addLoadPath(((StringWrapper*)(arguments->value))->wrapperValue));
-}
-
-Cons* dropLoadPath(char* path) {
-  // Remove the directories listed in the |-separated
-  // `path' from the PowerLoom load path.
-  { StringWrapper* dir = NULL;
-    Cons* iter000 = parseDirectoryPath(path);
-
-    for (dir, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-      dir = ((StringWrapper*)(iter000->value));
-      oFILE_LOAD_PATHo = oFILE_LOAD_PATHo->remove(dir);
-    }
-  }
-  return (oFILE_LOAD_PATHo);
-}
-
-Cons* dropLoadPathEvaluatorWrapper(Cons* arguments) {
-  return (dropLoadPath(((StringWrapper*)(arguments->value))->wrapperValue));
-}
-
-char* findFileInLoadPath(char* file, Cons* extensions) {
-  // Try to find `file' in the current load path and, if found,
-  // return its full name.  If `file' doesn't have its own extension try to find
-  // it with any of the listed `extensions'.  If `extensions' is NULL it defaults
-  // to `*powerloom-kb-file-extensions*', therefore, to not default to any extensions
-  // the value has to be supplied as NIL.
-  { char* type = fileExtension(file);
-    char* expandedfile = file;
-
-    if (!((boolean)(extensions))) {
-      extensions = oPOWERLOOM_KB_FILE_EXTENSIONSo;
-    }
-    { Object* dir = NULL;
-      Cons* iter000 = cons(wrapString(""), oFILE_LOAD_PATHo);
-
-      for (dir, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-        dir = iter000->value;
-        expandedfile = stringConcatenate(unwrapString(((StringWrapper*)(dir))), file, 0);
-        if (probeFileP(expandedfile)) {
-          return (expandedfile);
-        }
-        if (type == NULL) {
-          { StringWrapper* ext = NULL;
-            Cons* iter001 = extensions;
-
-            for (ext, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
-              ext = ((StringWrapper*)(iter001->value));
-              expandedfile = stringConcatenate(unwrapString(((StringWrapper*)(dir))), file, 1, ext->wrapperValue);
-              if (probeFileP(expandedfile)) {
-                return (expandedfile);
-              }
-            }
-          }
-        }
-      }
-    }
-    return (NULL);
-  }
-}
-
 // If the extension of a KB file is unspecified in a
 // `load' or `demo' command, try to find it with one of these extensions.
 Cons* oPOWERLOOM_KB_FILE_EXTENSIONSo = NULL;
@@ -932,12 +555,18 @@ void load(char* file, Cons* options) {
   // can be skipped by setting the option :check-duplicates? to false.
   // This can save time when loading large KBs where it is known that no
   // duplicate assertions exist in a file.
+  // 
+  // Also, by setting the option :module, the module in which the file
+  // contents will be loaded will be set.  This will only affect files
+  // that do NOT have an `in-module' declaration as part of the file.
+  // If this is not set, and no `in-module' declaration is in the file,
+  // then an error will be signaled.
   { char* temp000 = findFileInLoadPath(file, oPOWERLOOM_KB_FILE_EXTENSIONSo);
 
     file = ((temp000 != NULL) ? temp000 : file);
   }
   ensureFileExists(file, "load");
-  { PropertyList* theoptions = parseLogicCommandOptions(options, listO(3, KWD_LOGIC_IN_CHECK_DUPLICATESp, SGT_LOGIC_IN_STELLA_BOOLEAN, NIL), true, false);
+  { PropertyList* theoptions = parseLogicCommandOptions(options, listO(5, KWD_LOGIC_IN_CHECK_DUPLICATESp, SGT_LOGIC_IN_STELLA_BOOLEAN, KWD_LOGIC_IN_MODULE, SGT_LOGIC_IN_STELLA_MODULE, NIL), true, false);
     boolean toplevelinvocationP = oCURRENTFILEo.get() == NULL;
     InputFileStream* inputstream = NULL;
 
@@ -946,7 +575,7 @@ void load(char* file, Cons* options) {
         BIND_STELLA_SPECIAL(oCURRENTFILEo, char*, fileBaseName(file));
         BIND_STELLA_SPECIAL(oDONT_CHECK_FOR_DUPLICATE_PROPOSITIONSpo, boolean, !coerceWrappedBooleanToBoolean(((BooleanWrapper*)(theoptions->lookupWithDefault(KWD_LOGIC_IN_CHECK_DUPLICATESp, TRUE_WRAPPER)))));
         inputstream = newInputFileStream(file);
-        loadStream(inputstream);
+        loadStreamInModule(inputstream, ((Module*)(theoptions->lookup(KWD_LOGIC_IN_MODULE))));
       }
     }
 catch (...) {
@@ -983,15 +612,28 @@ boolean definitionNameP(Symbol* name) {
 
 void loadStream(InputStream* stream) {
   // Read logic commands from `stream' and evaluate them.
+  loadStreamInModule(stream, NULL);
+}
+
+void loadStreamInModule(InputStream* stream, Module* defaultModule) {
+  // Read logic commands from `stream' and evaluate them.  If `default-module'
+  // is not `null', then any commands will be read into that module unless
+  // an `in-module' declaration is encountered which will over-ride the default
+  // value.  If noe `default-module' is specified, and the input stream does
+  // not have an `in-module' form, an error is signaled.
   { Keyword* currentdialect = oLOGIC_DIALECTo.get();
     boolean skipcommandP = false;
-    boolean seeninmoduleP = false;
+    boolean seeninmoduleP = ((boolean)(defaultModule));
     Cons* commands = NIL;
+    Module* loadModule = (seeninmoduleP ? defaultModule : oMODULEo.get());
 
     { 
       BIND_STELLA_SPECIAL(oLOGIC_DIALECTo, Keyword*, currentdialect);
+      BIND_STELLA_SPECIAL(oTRANSLATIONERRORSo, int, 0);
+      BIND_STELLA_SPECIAL(oTRANSLATIONWARNINGSo, int, 0);
+      BIND_STELLA_SPECIAL(oTRANSLATIONNOTESo, int, 0);
       { 
-        BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oMODULEo, Module*, loadModule);
         BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
         { Object* tree = NULL;
           SExpressionIterator* iter000 = sExpressions(stream);
@@ -1002,7 +644,7 @@ void loadStream(InputStream* stream) {
               { Object* tree000 = tree;
                 Cons* tree = ((Cons*)(tree000));
 
-                skipcommandP = handleInModuleTree(tree, seeninmoduleP, seeninmoduleP);
+                skipcommandP = handleInModuleTree(tree, seeninmoduleP, false, seeninmoduleP);
                 if (skipcommandP) {
                   continue;
                 }
@@ -1064,6 +706,123 @@ void loadStream(InputStream* stream) {
           }
         }
       }
+      if (!(ignoreTranslationErrorsP())) {
+        summarizeTranslationErrors();
+      }
+    }
+  }
+}
+
+void loadDirectory(char* directory) {
+  // Load all PowerLoom files (*.plm) in `directory' in alphabetic sort order.
+  plLog(KWD_LOGIC_IN_LOW, 3, wrapString("Loading PowerLoom files from directory "), wrapString(directory), wrapString("..."));
+  bumpLogIndent();
+  directory = fileNameAsDirectory(directory);
+  { StringWrapper* file = NULL;
+    Cons* iter000 = listDirectoryFiles(directory);
+
+    for (file, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+      file = ((StringWrapper*)(iter000->value));
+      { boolean foundP000 = false;
+
+        { Object* ext = NULL;
+          Cons* iter001 = oPOWERLOOM_KB_FILE_EXTENSIONSo;
+
+          for (ext, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+            ext = iter001->value;
+            if (endsWithP(file->wrapperValue, ((StringWrapper*)(ext))->wrapperValue, NULL_INTEGER)) {
+              foundP000 = true;
+              break;
+            }
+          }
+        }
+        if (foundP000) {
+          plLog(KWD_LOGIC_IN_MEDIUM, 2, wrapString("Loading file "), file);
+          load(stringConcatenate(directory, file->wrapperValue, 0), NIL);
+        }
+      }
+    }
+  }
+  unbumpLogIndent();
+  processDefinitions();
+}
+
+void loadDirectoryEvaluatorWrapper(Cons* arguments) {
+  loadDirectory(((StringWrapper*)(arguments->value))->wrapperValue);
+}
+
+void loadCmdLineFiles() {
+  // Loads all PowerLoom files specified on the command line.
+  // If directories are listed, all PowerLoom files in those directories are loaded.
+  // Since when this is called we might still have unprocessed command line args,
+  // this only looks at files which are to the right of the last argument that
+  // starts with a `-' character.
+  { Cons* unprocessedargs = unprocessedCommandLineArguments();
+    char* file = NULL;
+
+    if (((boolean)(unprocessedargs))) {
+      unprocessedargs = copyConsList(unprocessedCommandLineArguments())->reverse();
+      { StringWrapper* arg = NULL;
+        Cons* iter000 = unprocessedargs;
+        int i = NULL_INTEGER;
+        int iter001 = 0;
+
+        for  (arg, iter000, i, iter001; 
+              !(iter000 == NIL); 
+              iter000 = iter000->rest,
+              iter001 = iter001 + 1) {
+          arg = ((StringWrapper*)(iter000->value));
+          i = iter001;
+          if (startsWithP(arg->wrapperValue, "-", NULL_INTEGER)) {
+            if (i == 0) {
+              unprocessedargs = NIL;
+            }
+            else {
+              unprocessedargs->nthRestSetter(NIL, i);
+            }
+            break;
+          }
+        }
+      }
+      plLog(KWD_LOGIC_IN_LOW, 1, wrapString("Loading command line PowerLoom files..."));
+      bumpLogIndent();
+      { StringWrapper* arg = NULL;
+        Cons* iter002 = unprocessedargs->reverse();
+
+        for (arg, iter002; !(iter002 == NIL); iter002 = iter002->rest) {
+          arg = ((StringWrapper*)(iter002->value));
+          { boolean foundP000 = false;
+
+            { Object* ext = NULL;
+              Cons* iter003 = oPOWERLOOM_KB_FILE_EXTENSIONSo;
+
+              for (ext, iter003; !(iter003 == NIL); iter003 = iter003->rest) {
+                ext = iter003->value;
+                if (endsWithP(arg->wrapperValue, ((StringWrapper*)(ext))->wrapperValue, NULL_INTEGER)) {
+                  foundP000 = true;
+                  break;
+                }
+              }
+            }
+            if (foundP000) {
+              {
+                { char* temp000 = findFileInLoadPath(arg->wrapperValue, NULL);
+
+                  file = ((temp000 != NULL) ? temp000 : arg->wrapperValue);
+                }
+                plLog(KWD_LOGIC_IN_MEDIUM, 2, wrapString("Loading file "), wrapString(file));
+                load(file, NIL);
+              }
+            }
+            else {
+              if (probeFileP(fileNameAsDirectory(arg->wrapperValue))) {
+                loadDirectory(arg->wrapperValue);
+              }
+            }
+          }
+        }
+      }
+      unbumpLogIndent();
     }
   }
 }
@@ -1226,7 +985,7 @@ Cons* oDEMO_FILESo = NULL;
 char* demoEntryFile(Cons* demoentry) {
   { char* demobasefile = ((StringWrapper*)(demoentry->value))->wrapperValue;
 
-    { char* temp000 = findFileInLoadPath(demobasefile, NULL);
+    { char* temp000 = findFileInLoadPath(demobasefile, oPOWERLOOM_KB_FILE_EXTENSIONSo);
 
       { char* value000 = ((temp000 != NULL) ? temp000 : demobasefile);
 
@@ -1331,7 +1090,7 @@ void demo(Cons* fileandpause) {
   // Typing `?' at the pause prompt prints a list of available commands.
   { Cons* thefileandpause = fileandpause;
     Object* filespec = thefileandpause->value;
-    boolean pauseP = !(thefileandpause->rest->value == SYM_LOGIC_IN_STELLA_FALSE);
+    boolean pauseP = !eqlP(thefileandpause->rest->value, FALSE_WRAPPER);
     char* file = NULL;
 
     if (integerP(filespec)) {
@@ -1427,7 +1186,7 @@ void runPowerloomTests() {
     CalendarDate* finishTime = NULL;
     Object* loglevel = lookupLoggingParameter("PowerLoom", KWD_LOGIC_IN_LEVEL, KWD_LOGIC_IN_LOW);
 
-    setLoggingParameters("PowerLoom", 2, KWD_LOGIC_IN_LEVEL, KWD_LOGIC_IN_NONE);
+    setLoggingParameters("PowerLoom", consList(2, KWD_LOGIC_IN_LEVEL, KWD_LOGIC_IN_NONE));
     std::cout << "RUNNING POWERLOOM TEST SUITE" << std::endl << "============================" << std::endl << std::endl;
     std::cout << "STELLA version:    " << oSTELLA_VERSION_STRINGo << std::endl << "PowerLoom version: " << oPOWERLOOM_VERSION_STRINGo << std::endl << "Start time:        " << startTime->calendarDateToString(getLocalTimeZone(), false, true) << std::endl << std::endl;
     clearContext(pluser);
@@ -1452,7 +1211,7 @@ void runPowerloomTests() {
     }
     finishTime = makeCurrentDateTime();
     std::cout << std::endl << "FINISHED RUNNING POWERLOOM TEST SUITE" << std::endl << "=====================================" << std::endl << "Finish time:   " << finishTime->calendarDateToString(getLocalTimeZone(), false, true) << std::endl << "Elapsed time:  " << ((TimeDuration*)(timeSubtract(finishTime, startTime)))->timeDurationToString() << std::endl << std::endl;
-    setLoggingParameters("PowerLoom", 2, KWD_LOGIC_IN_LEVEL, loglevel);
+    setLoggingParameters("PowerLoom", consList(2, KWD_LOGIC_IN_LEVEL, loglevel));
   }
 }
 
@@ -1470,8 +1229,116 @@ Object* timeCommand(Cons* command) {
     if (elapsedtime->days > 0) {
       std::cout << elapsedtime->days << " days, ";
     }
-    std::cout << (elapsedtime->millis / 1000.0) << " secs" << std::endl;
+    std::cout << stella::round(elapsedtime->millis / 1000.0) << " secs" << std::endl;
     return (result);
+  }
+}
+
+char* getHttpServerSystem() {
+  return ("webtools");
+}
+
+void startOntosaurus(Cons* options) {
+  // Start the PowerLoom HTTP server at :port (defaults to 9090).  Loads
+  // the required support systems in Lisp and Java if necessary (C++ is not yet supported).
+  { PropertyList* theoptions = parseLogicCommandOptions(options, listO(3, KWD_LOGIC_IN_PORT, SGT_LOGIC_IN_STELLA_INTEGER, NIL), true, false);
+    int port = ((IntegerWrapper*)(theoptions->lookupWithDefault(KWD_LOGIC_IN_PORT, wrapInteger(0))))->wrapperValue;
+    char* address = NULL;
+
+    autoload("ONTOSAURUS/CONTROL-PANEL-HANDLER", "ontosaurus", NULL, true);
+    address = ((char*  (*) (int))autoload("HTTP/START-HTTP-SERVER", getHttpServerSystem(), NULL, true))(port);
+    plLog(KWD_LOGIC_IN_LOW, 3, wrapString("Started Ontosaurus, point your browser to `"), wrapString(address), wrapString("ploom/ontosaurus/'"));
+  }
+}
+
+void startOntosaurusEvaluatorWrapper(Cons* arguments) {
+  startOntosaurus(arguments);
+}
+
+void stopOntosaurus() {
+  // Stop the PowerLoom HTTP server and free up any bound ports.
+  // This is a no-op if no server is running or the server is not supported.
+  ((void  (*) ())autoload("HTTP/STOP-HTTP-SERVER", getHttpServerSystem(), NULL, true))();
+}
+
+void startPowerloomServer(Cons* options) {
+  // Start the PowerLoom HTTP server at :port (defaults to 9090).  Loads
+  // the required support systems in Lisp and Java if necessary (C++ is not yet supported).
+  { PropertyList* theoptions = parseLogicCommandOptions(options, listO(3, KWD_LOGIC_IN_PORT, SGT_LOGIC_IN_STELLA_INTEGER, NIL), true, false);
+    int port = ((IntegerWrapper*)(theoptions->lookupWithDefault(KWD_LOGIC_IN_PORT, wrapInteger(0))))->wrapperValue;
+    char* address = NULL;
+
+    autoload("GUI-SERVER/GUI-REQUEST-HANDLER", "powerloom-server", NULL, true);
+    address = ((char*  (*) (int))autoload("HTTP/START-HTTP-SERVER", getHttpServerSystem(), NULL, true))(port);
+    plLog(KWD_LOGIC_IN_LOW, 3, wrapString("Started PowerLoom server at `"), wrapString(address), wrapString("ploom/soap-rpc/...'"));
+  }
+}
+
+void startPowerloomServerEvaluatorWrapper(Cons* arguments) {
+  startPowerloomServer(arguments);
+}
+
+void stopPowerloomServer() {
+  // Stop the PowerLoom HTTP server and free up any bound ports.
+  // This is a no-op if no server is running or the server is not supported.
+  ((void  (*) ())autoload("HTTP/STOP-HTTP-SERVER", getHttpServerSystem(), NULL, true))();
+}
+
+void startPowerloomGui(Cons* options) {
+  // Start the PowerLoom server at :port (defaults to 9090) and launches
+  // the GUI which will communicate with the server at that port.  If :host is specified,
+  // the GUI will try to communicate with a server at `host:port' instead of the local
+  // embedded server (note, you can always point the GUI manually to a different server
+  // from its `Connect to Server' menu item).  Loads the required support systems if necessary.
+  // Embedded calls to the GUI are currently only supported in Java; however, when the GUI is
+  // run in standalone mode, it can communicate with any PowerLoom installation that supports
+  // an HTTP server (currently Lisp and Java).
+  { PropertyList* theoptions = parseLogicCommandOptions(options, listO(7, KWD_LOGIC_IN_HOST, SGT_LOGIC_IN_STELLA_STRING, KWD_LOGIC_IN_PORT, SGT_LOGIC_IN_STELLA_INTEGER, KWD_LOGIC_IN_DEBUG_LEVEL, SGT_LOGIC_IN_STELLA_INTEGER, NIL), true, false);
+    char* host = ((StringWrapper*)(theoptions->lookupWithDefault(KWD_LOGIC_IN_HOST, wrapString("localhost"))))->wrapperValue;
+    int port = ((IntegerWrapper*)(theoptions->lookupWithDefault(KWD_LOGIC_IN_PORT, wrapInteger(9090))))->wrapperValue;
+    int debuglevel = ((IntegerWrapper*)(theoptions->lookupWithDefault(KWD_LOGIC_IN_DEBUG_LEVEL, wrapInteger(1))))->wrapperValue;
+    char* guiclass = "edu.isi.powerloom.gui.components.PowerloomApp";
+    cpp_function_code guifn = NULL;
+    char** guifnargs = new (GC)(char*[6]);
+
+    {
+      {
+        host = host;
+        port = port;
+        debuglevel = debuglevel;
+        guiclass = guiclass;
+        guifn = guifn;
+        guifnargs = guifnargs;
+      }
+      throw *newLogicException("PowerLoom GUI only available in Java version of PowerLoom");
+    }
+  }
+}
+
+void startPowerloomGuiEvaluatorWrapper(Cons* arguments) {
+  startPowerloomGui(arguments);
+}
+
+void stopPowerloomGui() {
+  // Closes the PowerLoom GUI application if it is currently visible.
+  // This is a no-op if the GUI is not running or if it is not supported.
+  { char* guiclass = "edu.isi.powerloom.gui.components.PowerloomApp";
+    cpp_function_code exitfn = NULL;
+
+    guiclass = guiclass;
+    if (exitfn != NULL) {
+      ((void  (*) ())exitfn)();
+    }
+  }
+}
+
+void powerloomGuiExitHook(Object* ignore) {
+  // Exit hook to stop the PowerLoom GUI if it is running.
+  ignore = ignore;
+  try {
+    stopPowerloomGui();
+  }
+  catch (std::exception ) {
   }
 }
 
@@ -2134,7 +2001,7 @@ Cons* yieldRelationParametersTree(NamedDescription* self, boolean dropfunctionpa
         parameter = pname;
         if (typedP &&
             (!(ptype == SGT_LOGIC_IN_STELLA_THING))) {
-          parameter = cons(parameter, cons(surrogateToSymbol(ptype), NIL));
+          parameter = cons(parameter, cons(internSymbolInModule(ptype->symbolName, ((Module*)(ptype->homeContext)), true), NIL));
         }
         parameterlist = cons(parameter, parameterlist);
       }
@@ -2170,7 +2037,8 @@ Cons* helpDefineKeywordAxioms(Symbol* selfname, Keyword* key, Object* value) {
         stringEqualP(((Symbol*)(value))->symbolName, "FALSE")) {
       axioms = listO(3, SYM_LOGIC_IN_STELLA_NOT, cons(relationname, cons(selfname, NIL)), NIL);
     }
-    else if (consP(value)) {
+    else if (consP(value) &&
+        (!getQuotedTree("((SETOFALL KAPPA) \"/LOGIC\")", "/LOGIC")->membP(((Cons*)(value))->value))) {
       { Object* val = NULL;
         Cons* iter000 = ((Cons*)(value));
         Cons* collect000 = NULL;
@@ -3280,10 +3148,27 @@ LogicObject* callDefobject(Cons* arguments) {
     { 
       BIND_STELLA_SPECIAL(oTERMSOURCEBEINGPARSEDo, char*, stringify(definition));
       arguments = normalizeDefobjectArguments(arguments);
-      name = ((Symbol*)(arguments->value));
       options = arguments->rest;
-      internLogicObjectSurrogate(name);
-      term = createLogicInstance(NULL, NULL);
+      if (consP(arguments->value)) {
+        name = internSymbol(stringify(arguments->value));
+        term = conceiveTerm(arguments->value);
+        if (!((boolean)(term))) {
+          { OutputStringStream* stream000 = newOutputStringStream();
+
+            { 
+              BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+              *(stream000->nativeStream) << "ERROR: " << "Illegal object name or term: " << "`" << name << "'" << "." << std::endl;
+              helpSignalPropositionError(stream000, KWD_LOGIC_IN_ERROR);
+            }
+            throw *newPropositionError(stream000->theStringReader());
+          }
+        }
+      }
+      else {
+        name = ((Symbol*)(arguments->value));
+        internLogicObjectSurrogate(name);
+        term = createLogicInstance(NULL, NULL);
+      }
       if (subtypeOfP(safePrimaryType(term), SGT_LOGIC_IN_LOGIC_LOGIC_OBJECT)) {
         { Object* term000 = term;
           LogicObject* term = ((LogicObject*)(term000));
@@ -3318,12 +3203,13 @@ Cons* normalizeDefobjectArguments(Cons* arguments) {
   { Object* name = arguments->value;
     Cons* options = arguments->rest;
 
-    if (!(symbolP(name))) {
+    if (!(symbolP(name) ||
+        consP(name))) {
       { OutputStringStream* stream000 = newOutputStringStream();
 
         { 
           BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-          *(stream000->nativeStream) << "ERROR: " << "Illegal object name where symbol expected: " << "`" << name << "'" << "." << std::endl;
+          *(stream000->nativeStream) << "ERROR: " << "Illegal object name where symbol or function term expected: " << "`" << name << "'" << "." << std::endl;
           helpSignalPropositionError(stream000, KWD_LOGIC_IN_ERROR);
         }
         throw *newPropositionError(stream000->theStringReader());
@@ -3533,15 +3419,6 @@ Cons* normalizeDefpropositionArguments(Cons* arguments) {
 void Proposition::processDefinitionOptions(Object* options) {
   { Proposition* self = this;
 
-    if (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_LOGIC_IN_LOGIC_FORWARD_ONLYp, FALSE_WRAPPER)))->wrapperValue) {
-      setDynamicSlotValue(self->dynamicSlots, SYM_LOGIC_IN_LOGIC_FORWARD_ONLYp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
-    }
-    if (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_LOGIC_IN_LOGIC_BACKWARD_ONLYp, FALSE_WRAPPER)))->wrapperValue) {
-      setDynamicSlotValue(self->dynamicSlots, SYM_LOGIC_IN_LOGIC_BACKWARD_ONLYp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
-    }
-    if (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_LOGIC_IN_LOGIC_DONT_OPTIMIZEp, FALSE_WRAPPER)))->wrapperValue) {
-      setDynamicSlotValue(self->dynamicSlots, SYM_LOGIC_IN_LOGIC_DONT_OPTIMIZEp, (false ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
-    }
     axiomsSetter(self, NULL);
     { Object* key = NULL;
       Object* value = NULL;
@@ -3563,7 +3440,7 @@ void Proposition::processDefinitionOptions(Object* options) {
 Cons* oLOGIC_RELEVANT_STELLA_COMMANDSo = NULL;
 
 boolean commandL(MethodSlot* command1, MethodSlot* command2) {
-  return (stringL(command1->slotName->visibleName(), command2->slotName->visibleName()));
+  return (stringLessP(command1->slotName->visibleName(false), command2->slotName->visibleName(false)));
 }
 
 List* listLogicCommands() {
@@ -3697,20 +3574,6 @@ void helpStartupLogicIn1() {
     KWD_LOGIC_IN_GOAL_TREE = ((Keyword*)(internRigidSymbolWrtModule("GOAL-TREE", NULL, 2)));
     KWD_LOGIC_IN_CLASSIFIER_INFERENCES = ((Keyword*)(internRigidSymbolWrtModule("CLASSIFIER-INFERENCES", NULL, 2)));
     KWD_LOGIC_IN_CLOSED_WORLD = ((Keyword*)(internRigidSymbolWrtModule("CLOSED-WORLD", NULL, 2)));
-    SGT_LOGIC_IN_STELLA_INTEGER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER", getStellaModule("/STELLA", true), 1)));
-    SGT_LOGIC_IN_STELLA_FLOAT = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT", getStellaModule("/STELLA", true), 1)));
-    SGT_LOGIC_IN_STELLA_NUMBER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER", getStellaModule("/STELLA", true), 1)));
-    SGT_LOGIC_IN_STELLA_KEYWORD = ((Surrogate*)(internRigidSymbolWrtModule("KEYWORD", getStellaModule("/STELLA", true), 1)));
-    SGT_LOGIC_IN_STELLA_GENERALIZED_SYMBOL = ((Surrogate*)(internRigidSymbolWrtModule("GENERALIZED-SYMBOL", getStellaModule("/STELLA", true), 1)));
-    SGT_LOGIC_IN_STELLA_SYMBOL = ((Surrogate*)(internRigidSymbolWrtModule("SYMBOL", getStellaModule("/STELLA", true), 1)));
-    SGT_LOGIC_IN_STELLA_BOOLEAN = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN", getStellaModule("/STELLA", true), 1)));
-    SGT_LOGIC_IN_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 1)));
-    SGT_LOGIC_IN_LOGIC_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 1)));
-    SGT_LOGIC_IN_LOGIC_NAMED_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("NAMED-DESCRIPTION", NULL, 1)));
-    SGT_LOGIC_IN_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", getStellaModule("/STELLA", true), 1)));
-    KWD_LOGIC_IN_ERROR = ((Keyword*)(internRigidSymbolWrtModule("ERROR", NULL, 2)));
-    SGT_LOGIC_IN_STELLA_PROPERTY_LIST = ((Surrogate*)(internRigidSymbolWrtModule("PROPERTY-LIST", getStellaModule("/STELLA", true), 1)));
-    SGT_LOGIC_IN_LOGIC_IDENTITY = ((Surrogate*)(internRigidSymbolWrtModule("IDENTITY", NULL, 1)));
     KWD_LOGIC_IN_REALISTIC = ((Keyword*)(internRigidSymbolWrtModule("REALISTIC", NULL, 2)));
     KWD_LOGIC_IN_BYE = ((Keyword*)(internRigidSymbolWrtModule("BYE", NULL, 2)));
     KWD_LOGIC_IN_EXIT = ((Keyword*)(internRigidSymbolWrtModule("EXIT", NULL, 2)));
@@ -3718,9 +3581,13 @@ void helpStartupLogicIn1() {
     KWD_LOGIC_IN_QUIT = ((Keyword*)(internRigidSymbolWrtModule("QUIT", NULL, 2)));
     KWD_LOGIC_IN_STOP = ((Keyword*)(internRigidSymbolWrtModule("STOP", NULL, 2)));
     KWD_LOGIC_IN_DEFINE = ((Keyword*)(internRigidSymbolWrtModule("DEFINE", NULL, 2)));
+    SGT_LOGIC_IN_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", getStellaModule("/STELLA", true), 1)));
     SYM_LOGIC_IN_STELLA_DEFMODULE = ((Symbol*)(internRigidSymbolWrtModule("DEFMODULE", getStellaModule("/STELLA", true), 0)));
     KWD_LOGIC_IN_FINALIZE = ((Keyword*)(internRigidSymbolWrtModule("FINALIZE", NULL, 2)));
     KWD_LOGIC_IN_CHECK_DUPLICATESp = ((Keyword*)(internRigidSymbolWrtModule("CHECK-DUPLICATES?", NULL, 2)));
+    SGT_LOGIC_IN_STELLA_BOOLEAN = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN", getStellaModule("/STELLA", true), 1)));
+    KWD_LOGIC_IN_MODULE = ((Keyword*)(internRigidSymbolWrtModule("MODULE", NULL, 2)));
+    SGT_LOGIC_IN_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 1)));
     SYM_LOGIC_IN_STELLA_CLEAR_MODULE = ((Symbol*)(internRigidSymbolWrtModule("CLEAR-MODULE", getStellaModule("/STELLA", true), 0)));
     SYM_LOGIC_IN_STELLA_DEFCLASS = ((Symbol*)(internRigidSymbolWrtModule("DEFCLASS", getStellaModule("/STELLA", true), 0)));
     SYM_LOGIC_IN_STELLA_DEFSLOT = ((Symbol*)(internRigidSymbolWrtModule("DEFSLOT", getStellaModule("/STELLA", true), 0)));
@@ -3732,13 +3599,21 @@ void helpStartupLogicIn1() {
     SYM_LOGIC_IN_LOGIC_DEFOBJECT = ((Symbol*)(internRigidSymbolWrtModule("DEFOBJECT", NULL, 0)));
     SYM_LOGIC_IN_LOGIC_DEFINSTANCE = ((Symbol*)(internRigidSymbolWrtModule("DEFINSTANCE", NULL, 0)));
     SYM_LOGIC_IN_LOGIC_IN_DIALECT = ((Symbol*)(internRigidSymbolWrtModule("IN-DIALECT", NULL, 0)));
-    KWD_LOGIC_IN_WHITE_SPACE = ((Keyword*)(internRigidSymbolWrtModule("WHITE-SPACE", NULL, 2)));
-    SYM_LOGIC_IN_STELLA_FALSE = ((Symbol*)(internRigidSymbolWrtModule("FALSE", getStellaModule("/STELLA", true), 0)));
-    KWD_LOGIC_IN_LEVEL = ((Keyword*)(internRigidSymbolWrtModule("LEVEL", NULL, 2)));
     KWD_LOGIC_IN_LOW = ((Keyword*)(internRigidSymbolWrtModule("LOW", NULL, 2)));
+    KWD_LOGIC_IN_MEDIUM = ((Keyword*)(internRigidSymbolWrtModule("MEDIUM", NULL, 2)));
+    KWD_LOGIC_IN_WHITE_SPACE = ((Keyword*)(internRigidSymbolWrtModule("WHITE-SPACE", NULL, 2)));
+    KWD_LOGIC_IN_LEVEL = ((Keyword*)(internRigidSymbolWrtModule("LEVEL", NULL, 2)));
     KWD_LOGIC_IN_NONE = ((Keyword*)(internRigidSymbolWrtModule("NONE", NULL, 2)));
+    KWD_LOGIC_IN_PORT = ((Keyword*)(internRigidSymbolWrtModule("PORT", NULL, 2)));
+    SGT_LOGIC_IN_STELLA_INTEGER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER", getStellaModule("/STELLA", true), 1)));
+    KWD_LOGIC_IN_HOST = ((Keyword*)(internRigidSymbolWrtModule("HOST", NULL, 2)));
+    SGT_LOGIC_IN_STELLA_STRING = ((Surrogate*)(internRigidSymbolWrtModule("STRING", getStellaModule("/STELLA", true), 1)));
+    KWD_LOGIC_IN_DEBUG_LEVEL = ((Keyword*)(internRigidSymbolWrtModule("DEBUG-LEVEL", NULL, 2)));
+    KWD_LOGIC_IN_ERROR = ((Keyword*)(internRigidSymbolWrtModule("ERROR", NULL, 2)));
     KWD_LOGIC_IN_WARNING = ((Keyword*)(internRigidSymbolWrtModule("WARNING", NULL, 2)));
+    SGT_LOGIC_IN_LOGIC_NAMED_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("NAMED-DESCRIPTION", NULL, 1)));
     SGT_LOGIC_IN_LOGIC_PROPOSITION = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 1)));
+    SGT_LOGIC_IN_LOGIC_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 1)));
     SGT_LOGIC_IN_STELLA_RELATION = ((Surrogate*)(internRigidSymbolWrtModule("RELATION", getStellaModule("/STELLA", true), 1)));
     SYM_LOGIC_IN_LOGIC_MODULE_LOGIC_DIALECT = ((Symbol*)(internRigidSymbolWrtModule("MODULE-LOGIC-DIALECT", NULL, 0)));
     KWD_LOGIC_IN_KIF = ((Keyword*)(internRigidSymbolWrtModule("KIF", NULL, 2)));
@@ -3747,13 +3622,13 @@ void helpStartupLogicIn1() {
     KWD_LOGIC_IN_REDEFINITION = ((Keyword*)(internRigidSymbolWrtModule("REDEFINITION", NULL, 2)));
     KWD_LOGIC_IN_PROPER_DEFINITION = ((Keyword*)(internRigidSymbolWrtModule("PROPER-DEFINITION", NULL, 2)));
     SYM_LOGIC_IN_LOGIC_OBJECT_AXIOMS = ((Symbol*)(internRigidSymbolWrtModule("OBJECT-AXIOMS", NULL, 0)));
+    SYM_LOGIC_IN_LOGIC_PROPOSITION_AXIOMS = ((Symbol*)(internRigidSymbolWrtModule("PROPOSITION-AXIOMS", NULL, 0)));
+    SYM_LOGIC_IN_STELLA_SLOT_OPTION_KEYWORD = ((Symbol*)(internRigidSymbolWrtModule("SLOT-OPTION-KEYWORD", getStellaModule("/STELLA", true), 0)));
   }
 }
 
 void helpStartupLogicIn2() {
   {
-    SYM_LOGIC_IN_LOGIC_PROPOSITION_AXIOMS = ((Symbol*)(internRigidSymbolWrtModule("PROPOSITION-AXIOMS", NULL, 0)));
-    SYM_LOGIC_IN_STELLA_SLOT_OPTION_KEYWORD = ((Symbol*)(internRigidSymbolWrtModule("SLOT-OPTION-KEYWORD", getStellaModule("/STELLA", true), 0)));
     SYM_LOGIC_IN_STELLA_AND = ((Symbol*)(internRigidSymbolWrtModule("AND", getStellaModule("/STELLA", true), 0)));
     SGT_LOGIC_IN_STELLA_THING = ((Surrogate*)(internRigidSymbolWrtModule("THING", getStellaModule("/STELLA", true), 1)));
     SYM_LOGIC_IN_STELLA_FORALL = ((Symbol*)(internRigidSymbolWrtModule("FORALL", getStellaModule("/STELLA", true), 0)));
@@ -3779,9 +3654,6 @@ void helpStartupLogicIn2() {
     KWD_LOGIC_IN_BACKWARD_ONLYp = ((Keyword*)(internRigidSymbolWrtModule("BACKWARD-ONLY?", NULL, 2)));
     KWD_LOGIC_IN_WEIGHT = ((Keyword*)(internRigidSymbolWrtModule("WEIGHT", NULL, 2)));
     SYM_LOGIC_IN_LOGIC_ABOUT = ((Symbol*)(internRigidSymbolWrtModule("ABOUT", NULL, 0)));
-    SYM_LOGIC_IN_LOGIC_FORWARD_ONLYp = ((Symbol*)(internRigidSymbolWrtModule("FORWARD-ONLY?", NULL, 0)));
-    SYM_LOGIC_IN_LOGIC_BACKWARD_ONLYp = ((Symbol*)(internRigidSymbolWrtModule("BACKWARD-ONLY?", NULL, 0)));
-    SYM_LOGIC_IN_LOGIC_DONT_OPTIMIZEp = ((Symbol*)(internRigidSymbolWrtModule("DONT-OPTIMIZE?", NULL, 0)));
     SYM_LOGIC_IN_STELLA_CC = ((Symbol*)(internRigidSymbolWrtModule("CC", getStellaModule("/STELLA", true), 0)));
     SYM_LOGIC_IN_STELLA_IN_MODULE = ((Symbol*)(internRigidSymbolWrtModule("IN-MODULE", getStellaModule("/STELLA", true), 0)));
     SYM_LOGIC_IN_STELLA_LIST_MODULES = ((Symbol*)(internRigidSymbolWrtModule("LIST-MODULES", getStellaModule("/STELLA", true), 0)));
@@ -3798,9 +3670,9 @@ void helpStartupLogicIn3() {
     oCURRENT_POWERLOOM_FEATURESo = list(0);
     oDEFAULT_POWERLOOM_FEATURESo = list(2, KWD_LOGIC_IN_JUST_IN_TIME_INFERENCE, KWD_LOGIC_IN_EMIT_THINKING_DOTS);
     resetFeatures();
-    oFILE_LOAD_PATHo = NIL;
     oPOWERLOOM_KB_FILE_EXTENSIONSo = getQuotedTree("((\".plm\" \".ploom\") \"/LOGIC\")", "/LOGIC");
     oDEMO_FILESo = listO(22, listO(4, wrapString("basics"), wrapString("Basic PowerLoom commands"), wrapString("test-suite"), NIL), listO(4, wrapString("classes"), wrapString("Primitive and defined classes"), wrapString("test-suite"), NIL), listO(4, wrapString("collections"), wrapString("Reasoning with collections"), wrapString("test-suite"), NIL), listO(4, wrapString("append"), wrapString("Prolog-style `append'"), wrapString("test-suite"), NIL), listO(4, wrapString("inequalities"), wrapString("Reasoning with inequalities"), wrapString("test-suite"), NIL), listO(4, wrapString("recursion"), wrapString("Reasoning with recursive rules"), wrapString("test-suite"), NIL), listO(4, wrapString("negation"), wrapString("Reasoning with negation"), wrapString("test-suite"), NIL), listO(4, wrapString("constraints"), wrapString("Constraint propagation"), wrapString("test-suite"), NIL), listO(4, wrapString("equations"), wrapString("Simple equational reasoning"), wrapString("test-suite"), NIL), listO(4, wrapString("subsumption"), wrapString("Simple subsumption reasoning"), wrapString("test-suite"), NIL), listO(4, wrapString("family"), wrapString("Subsumption reasoning within a family ontology"), wrapString("test-suite"), NIL), listO(4, wrapString("relation-hierarchy"), wrapString("Finding sub, super and equivalent concepts and relations"), wrapString("test-suite"), NIL), listO(4, wrapString("defaults"), wrapString("Default reasoning with Tweety and friends"), wrapString("test-suite"), NIL), listO(4, wrapString("defaults2"), wrapString("More default reasoning"), wrapString("test-suite"), NIL), listO(4, wrapString("definition-syntax"), wrapString("The whole scoop on relation definition, funny arrows, etc."), wrapString("test-suite"), NIL), listO(4, wrapString("meta-relations"), wrapString("Using meta-properties and relations"), wrapString("test-suite"), NIL), listO(4, wrapString("partial-match"), wrapString("Reasoning with partial information"), wrapString("test-suite"), NIL), listO(4, wrapString("probability-learning"), wrapString("Learning to answer probabilistic queries"), wrapString("test-suite"), NIL), listO(3, wrapString("regression-demo"), wrapString("Learning to predict functions"), NIL), listO(3, wrapString("rule-induction-demo"), wrapString("Learning inference rules"), NIL), listO(4, wrapString("test-suite"), wrapString("PowerLoom test suite"), wrapString("test-suite"), NIL), NIL);
+    oTERMSOURCEBEINGPARSEDo.set(NULL);
     oUNFINALIZED_OBJECTSo = list(0);
     oLOGIC_RELEVANT_STELLA_COMMANDSo = listO(6, SYM_LOGIC_IN_STELLA_CC, SYM_LOGIC_IN_STELLA_CLEAR_MODULE, SYM_LOGIC_IN_STELLA_DEFMODULE, SYM_LOGIC_IN_STELLA_IN_MODULE, SYM_LOGIC_IN_STELLA_LIST_MODULES, NIL);
   }
@@ -3817,24 +3689,18 @@ void helpStartupLogicIn4() {
     defineFunctionObject("RESET-FEATURES", "(DEFUN (RESET-FEATURES (LIST OF KEYWORD)) () :COMMAND? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Reset the PowerLoom environment features to their default settings.\")", ((cpp_function_code)(&resetFeatures)), NULL);
     defineFunctionObject("ENABLED-POWERLOOM-FEATURE?", "(DEFUN (ENABLED-POWERLOOM-FEATURE? BOOLEAN) ((FEATURE KEYWORD)) :DOCUMENTATION \"Return true if the STELLA `feature' is currently enabled.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (MEMB? *CURRENT-POWERLOOM-FEATURES* FEATURE)))", ((cpp_function_code)(&enabledPowerloomFeatureP)), NULL);
     defineFunctionObject("DISABLED-POWERLOOM-FEATURE?", "(DEFUN (DISABLED-POWERLOOM-FEATURE? BOOLEAN) ((FEATURE KEYWORD)) :DOCUMENTATION \"Return true if the STELLA `feature' is currently disabled.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NOT (MEMB? *CURRENT-POWERLOOM-FEATURES* FEATURE))))", ((cpp_function_code)(&disabledPowerloomFeatureP)), NULL);
-    defineFunctionObject("COERCE-OPTION-VALUE", "(DEFUN (COERCE-OPTION-VALUE OBJECT) ((VALUE OBJECT) (TYPE TYPE)))", ((cpp_function_code)(&coerceOptionValue)), NULL);
     defineFunctionObject("PARSE-LOGIC-COMMAND-OPTIONS", "(DEFUN (PARSE-LOGIC-COMMAND-OPTIONS PROPERTY-LIST) ((OPTIONS OBJECT) (|LEGALOPTIONS&TYPES| CONS) (COERCIONERROR? BOOLEAN) (ALLOWOTHERKEYS? BOOLEAN)))", ((cpp_function_code)(&parseLogicCommandOptions)), NULL);
     defineFunctionObject("PRINT-LOGIC-PROMPT", "(DEFUN PRINT-LOGIC-PROMPT ())", ((cpp_function_code)(&printLogicPrompt)), NULL);
     defineFunctionObject("PRINT-LOGIC-COMMAND-RESULT", "(DEFUN PRINT-LOGIC-COMMAND-RESULT ((RESULT OBJECT)))", ((cpp_function_code)(&printLogicCommandResult)), NULL);
     defineFunctionObject("LOGIC-COMMAND-LOOP-EXIT?", "(DEFUN (LOGIC-COMMAND-LOOP-EXIT? BOOLEAN BOOLEAN) ((COMMAND OBJECT)))", ((cpp_function_code)(&logicCommandLoopExitP)), NULL);
     defineFunctionObject("LOGIC-COMMAND-LOOP", "(DEFUN LOGIC-COMMAND-LOOP ((MODULE MODULE)))", ((cpp_function_code)(&logicCommandLoop)), NULL);
     defineFunctionObject("EVALUATE-LOGIC-COMMAND", "(DEFUN (EVALUATE-LOGIC-COMMAND OBJECT) ((COMMAND OBJECT) (FINALIZE? BOOLEAN)))", ((cpp_function_code)(&evaluateLogicCommand)), NULL);
-    defineFunctionObject("PARSE-DIRECTORY-PATH", "(DEFUN (PARSE-DIRECTORY-PATH (CONS OF STRING-WRAPPER)) ((PATH STRING)))", ((cpp_function_code)(&parseDirectoryPath)), NULL);
-    defineFunctionObject("SET-LOAD-PATH", "(DEFUN (SET-LOAD-PATH (CONS OF STRING-WRAPPER)) ((PATH STRING)) :DOCUMENTATION \"Set the PowerLoom load path to the |-separated\ndirectories listed in `path'.  Return the resulting load path.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&setLoadPath)), ((cpp_function_code)(&setLoadPathEvaluatorWrapper)));
-    defineFunctionObject("GET-LOAD-PATH", "(DEFUN (GET-LOAD-PATH (CONS OF STRING-WRAPPER)) () :DOCUMENTATION \"Return the current PowerLoom load path.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&getLoadPath)), NULL);
-    defineFunctionObject("PUSH-LOAD-PATH", "(DEFUN (PUSH-LOAD-PATH (CONS OF STRING-WRAPPER)) ((PATH STRING)) :DOCUMENTATION \"Add the directories listed in the |-separated\n`path' to the front of the PowerLoom load path.  Return the\nresulting load path.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&pushLoadPath)), ((cpp_function_code)(&pushLoadPathEvaluatorWrapper)));
-    defineFunctionObject("POP-LOAD-PATH", "(DEFUN (POP-LOAD-PATH STRING) () :DOCUMENTATION \"Remove the first element from the PowerLoom load path\nand return the removed element.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&popLoadPath)), ((cpp_function_code)(&popLoadPathEvaluatorWrapper)));
-    defineFunctionObject("ADD-LOAD-PATH", "(DEFUN (ADD-LOAD-PATH (CONS OF STRING-WRAPPER)) ((PATH STRING)) :DOCUMENTATION \"Append the directories listed in the |-separated\n`path' to the end of the PowerLoom load path.  Return the\nresulting load path.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&addLoadPath)), ((cpp_function_code)(&addLoadPathEvaluatorWrapper)));
-    defineFunctionObject("DROP-LOAD-PATH", "(DEFUN (DROP-LOAD-PATH (CONS OF STRING-WRAPPER)) ((PATH STRING)) :DOCUMENTATION \"Remove the directories listed in the |-separated\n`path' from the PowerLoom load path.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&dropLoadPath)), ((cpp_function_code)(&dropLoadPathEvaluatorWrapper)));
-    defineFunctionObject("FIND-FILE-IN-LOAD-PATH", "(DEFUN (FIND-FILE-IN-LOAD-PATH STRING) ((FILE STRING) (EXTENSIONS (CONS OF STRING-WRAPPER))) :DOCUMENTATION \"Try to find `file' in the current load path and, if found,\nreturn its full name.  If `file' doesn't have its own extension try to find\nit with any of the listed `extensions'.  If `extensions' is NULL it defaults\nto `*powerloom-kb-file-extensions*', therefore, to not default to any extensions\nthe value has to be supplied as NIL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&findFileInLoadPath)), NULL);
-    defineFunctionObject("LOAD", "(DEFUN LOAD ((FILE STRING) |&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Read logic commands from `file' and evaluate them.\nBy default, this will check for each asserted proposition whether an\nequivalent proposition already exists and, if so, not assert the\nduplicate.  These duplicate checks are somewhat expensive though and\ncan be skipped by setting the option :check-duplicates? to false.\nThis can save time when loading large KBs where it is known that no\nduplicate assertions exist in a file.\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&load)), ((cpp_function_code)(&loadEvaluatorWrapper)));
+    defineFunctionObject("LOAD", "(DEFUN LOAD ((FILE STRING) |&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Read logic commands from `file' and evaluate them.\nBy default, this will check for each asserted proposition whether an\nequivalent proposition already exists and, if so, not assert the\nduplicate.  These duplicate checks are somewhat expensive though and\ncan be skipped by setting the option :check-duplicates? to false.\nThis can save time when loading large KBs where it is known that no\nduplicate assertions exist in a file.\n\nAlso, by setting the option :module, the module in which the file\ncontents will be loaded will be set.  This will only affect files\nthat do NOT have an `in-module' declaration as part of the file.\nIf this is not set, and no `in-module' declaration is in the file,\nthen an error will be signaled.\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&load)), ((cpp_function_code)(&loadEvaluatorWrapper)));
     defineFunctionObject("DEFINITION-NAME?", "(DEFUN (DEFINITION-NAME? BOOLEAN) ((NAME SYMBOL)) :PUBLIC? FALSE)", ((cpp_function_code)(&definitionNameP)), NULL);
     defineFunctionObject("LOAD-STREAM", "(DEFUN LOAD-STREAM ((STREAM INPUT-STREAM)) :DOCUMENTATION \"Read logic commands from `stream' and evaluate them.\" :PUBLIC? TRUE)", ((cpp_function_code)(&loadStream)), NULL);
+    defineFunctionObject("LOAD-STREAM-IN-MODULE", "(DEFUN LOAD-STREAM-IN-MODULE ((STREAM INPUT-STREAM) (DEFAULT-MODULE MODULE)) :DOCUMENTATION \"Read logic commands from `stream' and evaluate them.  If `default-module'\nis not `null', then any commands will be read into that module unless\nan `in-module' declaration is encountered which will over-ride the default\nvalue.  If noe `default-module' is specified, and the input stream does\nnot have an `in-module' form, an error is signaled.\" :PUBLIC? TRUE)", ((cpp_function_code)(&loadStreamInModule)), NULL);
+    defineFunctionObject("LOAD-DIRECTORY", "(DEFUN LOAD-DIRECTORY ((DIRECTORY STRING)) :DOCUMENTATION \"Load all PowerLoom files (*.plm) in `directory' in alphabetic sort order.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&loadDirectory)), ((cpp_function_code)(&loadDirectoryEvaluatorWrapper)));
+    defineFunctionObject("LOAD-CMD-LINE-FILES", "(DEFUN LOAD-CMD-LINE-FILES () :DOCUMENTATION \"Loads all PowerLoom files specified on the command line.\nIf directories are listed, all PowerLoom files in those directories are loaded.\nSince when this is called we might still have unprocessed command line args,\nthis only looks at files which are to the right of the last argument that\nstarts with a `-' character.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&loadCmdLineFiles)), NULL);
     defineFunctionObject("PRINT-DEMO-PROMPT", "(DEFUN PRINT-DEMO-PROMPT ())", ((cpp_function_code)(&printDemoPrompt)), NULL);
     defineFunctionObject("DEMO-SKIP-TO-COMMAND", "(DEFUN (DEMO-SKIP-TO-COMMAND BOOLEAN) ((STREAM INPUT-STREAM)))", ((cpp_function_code)(&demoSkipToCommand)), NULL);
     defineFunctionObject("DEMO-PAUSE?", "(DEFUN (DEMO-PAUSE? BOOLEAN BOOLEAN) ((PAUSE? BOOLEAN)))", ((cpp_function_code)(&demoPauseP)), NULL);
@@ -3845,11 +3711,19 @@ void helpStartupLogicIn4() {
     defineFunctionObject("SELECT-EXAMPLE-DEMO", "(DEFUN (SELECT-EXAMPLE-DEMO STRING) ((INDEX INTEGER)))", ((cpp_function_code)(&selectExampleDemo)), NULL);
     defineFunctionObject("SELECT-EXAMPLE-DEMO-FROM-MENU", "(DEFUN (SELECT-EXAMPLE-DEMO-FROM-MENU STRING) ())", ((cpp_function_code)(&selectExampleDemoFromMenu)), NULL);
     defineFunctionObject("DEMO-EXAMPLE-DEMOS", "(DEFUN DEMO-EXAMPLE-DEMOS ())", ((cpp_function_code)(&demoExampleDemos)), NULL);
-    defineFunctionObject("DEMO", "(DEFUN DEMO (|&REST| (FILEANDPAUSE OBJECT)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Read logic commands from a file, echo them verbatimly to standard output,\nand evaluate them just as if they had been typed in interactively.\nWhen called with no arguments, present a menu of example demos, otherwise,\nuse the first argument as the name of the file to demo.\nPause for user confirmation after each expression has been read but\nbefore it is evaluated.  Pausing can be turned off by suppling FALSE\nas the optional second argument, or by typing `c' at the pause prompt.\nTyping `?' at the pause prompt prints a list of available commands.\")", ((cpp_function_code)(&demo)), ((cpp_function_code)(&demoEvaluatorWrapper)));
+    defineFunctionObject("DEMO", "(DEFUN DEMO (|&REST| (FILEANDPAUSE OBJECT)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? TRUE :DOCUMENTATION \"Read logic commands from a file, echo them verbatimly to standard output,\nand evaluate them just as if they had been typed in interactively.\nWhen called with no arguments, present a menu of example demos, otherwise,\nuse the first argument as the name of the file to demo.\nPause for user confirmation after each expression has been read but\nbefore it is evaluated.  Pausing can be turned off by suppling FALSE\nas the optional second argument, or by typing `c' at the pause prompt.\nTyping `?' at the pause prompt prints a list of available commands.\")", ((cpp_function_code)(&demo)), ((cpp_function_code)(&demoEvaluatorWrapper)));
     defineFunctionObject("TEST-LOGIC-FILE", "(DEFUN TEST-LOGIC-FILE ((FILE FILE-NAME)))", ((cpp_function_code)(&testLogicFile)), NULL);
     defineFunctionObject("GET-FORMATTED-DATE-AND-TIME", "(DEFUN (GET-FORMATTED-DATE-AND-TIME STRING) ())", ((cpp_function_code)(&getFormattedDateAndTime)), NULL);
     defineFunctionObject("RUN-POWERLOOM-TESTS", "(DEFUN RUN-POWERLOOM-TESTS () :COMMAND? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Run the PowerLoom test suite.  Currently this simply runs all demos and\nechos commands and their results to standard output.  The output can then\nbe diffed with previously validated runs to find deviations.\")", ((cpp_function_code)(&runPowerloomTests)), NULL);
     defineFunctionObject("TIME-COMMAND", "(DEFUN (TIME-COMMAND OBJECT) ((COMMAND CONS)) :DOCUMENTATION \"Execute `command', measure and report its CPU and elapsed time\nneeded for its execution, and then return its result.\" :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&timeCommand)), NULL);
+    defineFunctionObject("GET-HTTP-SERVER-SYSTEM", "(DEFUN (GET-HTTP-SERVER-SYSTEM STRING) ())", ((cpp_function_code)(&getHttpServerSystem)), NULL);
+    defineFunctionObject("START-ONTOSAURUS", "(DEFUN START-ONTOSAURUS (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Start the PowerLoom HTTP server at :port (defaults to 9090).  Loads\nthe required support systems in Lisp and Java if necessary (C++ is not yet supported).\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&startOntosaurus)), ((cpp_function_code)(&startOntosaurusEvaluatorWrapper)));
+    defineFunctionObject("STOP-ONTOSAURUS", "(DEFUN STOP-ONTOSAURUS () :DOCUMENTATION \"Stop the PowerLoom HTTP server and free up any bound ports.\nThis is a no-op if no server is running or the server is not supported.\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&stopOntosaurus)), NULL);
+    defineFunctionObject("START-POWERLOOM-SERVER", "(DEFUN START-POWERLOOM-SERVER (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Start the PowerLoom HTTP server at :port (defaults to 9090).  Loads\nthe required support systems in Lisp and Java if necessary (C++ is not yet supported).\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&startPowerloomServer)), ((cpp_function_code)(&startPowerloomServerEvaluatorWrapper)));
+    defineFunctionObject("STOP-POWERLOOM-SERVER", "(DEFUN STOP-POWERLOOM-SERVER () :DOCUMENTATION \"Stop the PowerLoom HTTP server and free up any bound ports.\nThis is a no-op if no server is running or the server is not supported.\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&stopPowerloomServer)), NULL);
+    defineFunctionObject("START-POWERLOOM-GUI", "(DEFUN START-POWERLOOM-GUI (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Start the PowerLoom server at :port (defaults to 9090) and launches\nthe GUI which will communicate with the server at that port.  If :host is specified,\nthe GUI will try to communicate with a server at `host:port' instead of the local\nembedded server (note, you can always point the GUI manually to a different server\nfrom its `Connect to Server' menu item).  Loads the required support systems if necessary.\nEmbedded calls to the GUI are currently only supported in Java; however, when the GUI is\nrun in standalone mode, it can communicate with any PowerLoom installation that supports\nan HTTP server (currently Lisp and Java).\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&startPowerloomGui)), ((cpp_function_code)(&startPowerloomGuiEvaluatorWrapper)));
+    defineFunctionObject("STOP-POWERLOOM-GUI", "(DEFUN STOP-POWERLOOM-GUI () :DOCUMENTATION \"Closes the PowerLoom GUI application if it is currently visible.\nThis is a no-op if the GUI is not running or if it is not supported.\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&stopPowerloomGui)), NULL);
+    defineFunctionObject("POWERLOOM-GUI-EXIT-HOOK", "(DEFUN POWERLOOM-GUI-EXIT-HOOK ((IGNORE OBJECT)) :DOCUMENTATION \"Exit hook to stop the PowerLoom GUI if it is running.\" :PUBLIC? TRUE)", ((cpp_function_code)(&powerloomGuiExitHook)), NULL);
     defineFunctionObject("PRINT-FORMULA-CONTAINING-ERROR", "(DEFUN PRINT-FORMULA-CONTAINING-ERROR ((SELF OBJECT) (STREAM OUTPUT-STREAM)))", ((cpp_function_code)(&printFormulaContainingError)), NULL);
     defineFunctionObject("HELP-SIGNAL-PROPOSITION-ERROR", "(DEFUN HELP-SIGNAL-PROPOSITION-ERROR ((STREAM OUTPUT-STREAM) (WARNINGORERROR KEYWORD)))", ((cpp_function_code)(&helpSignalPropositionError)), NULL);
     defineExternalSlotFromStringifiedSource("(DEFSLOT NAMED-DESCRIPTION PERMUTATION-TABLE :TYPE (KEY-VALUE-LIST OF VECTOR SLOT) :OPTION-KEYWORD :PERMUTATION-TABLE :ALLOCATION :DYNAMIC)");
@@ -3866,13 +3740,13 @@ void helpStartupLogicIn4() {
     defineFunctionObject("COERCE-TO-BOUND-OR-LOCAL-SURROGATE", "(DEFUN (COERCE-TO-BOUND-OR-LOCAL-SURROGATE SURROGATE) ((SELF GENERALIZED-SYMBOL)))", ((cpp_function_code)(&coerceToBoundOrLocalSurrogate)), NULL);
     defineExternalSlotFromStringifiedSource("(DEFSLOT LOGIC-OBJECT OBJECT-AXIOMS :TYPE CONS :DEFAULT NULL :READER AXIOMS :OPTION-KEYWORD :AXIOMS :OPTION-HANDLER DEFINITION-AXIOMS-HANDLER :ALLOCATION :DYNAMIC)");
     defineExternalSlotFromStringifiedSource("(DEFSLOT PROPOSITION PROPOSITION-AXIOMS :TYPE CONS :DEFAULT NULL :WRITER AXIOMS-SETTER :OPTION-KEYWORD :AXIOMS :OPTION-HANDLER DEFINITION-AXIOMS-HANDLER :ALLOCATION :DYNAMIC)");
-    defineFunctionObject("AXIOMS", "(DEFUN (AXIOMS CONS) ((SELF OBJECT)))", ((cpp_function_code)(&axioms)), NULL);
-    defineFunctionObject("AXIOMS-SETTER", "(DEFUN (AXIOMS-SETTER OBJECT) ((SELF OBJECT) (AXIOMS CONS)))", ((cpp_function_code)(&axiomsSetter)), NULL);
   }
 }
 
 void helpStartupLogicIn5() {
   {
+    defineFunctionObject("AXIOMS", "(DEFUN (AXIOMS CONS) ((SELF OBJECT)))", ((cpp_function_code)(&axioms)), NULL);
+    defineFunctionObject("AXIOMS-SETTER", "(DEFUN (AXIOMS-SETTER OBJECT) ((SELF OBJECT) (AXIOMS CONS)))", ((cpp_function_code)(&axiomsSetter)), NULL);
     defineExternalSlotFromStringifiedSource("(DEFSLOT NAMED-DESCRIPTION AXIOMS-ALIAS1 :RENAMES OBJECT-AXIOMS :OPTION-KEYWORD :<= :OPTION-HANDLER DEFINITION-HALF-RULE-HANDLER)");
     defineExternalSlotFromStringifiedSource("(DEFSLOT NAMED-DESCRIPTION AXIOMS-ALIAS2 :RENAMES OBJECT-AXIOMS :OPTION-KEYWORD :=> :OPTION-HANDLER DEFINITION-HALF-RULE-HANDLER)");
     defineExternalSlotFromStringifiedSource("(DEFSLOT NAMED-DESCRIPTION AXIOMS-ALIAS3 :RENAMES OBJECT-AXIOMS :OPTION-KEYWORD :<<= :OPTION-HANDLER DEFINITION-HALF-RULE-HANDLER)");
@@ -3931,8 +3805,6 @@ void helpStartupLogicIn5() {
     defineFunctionObject("CALL-DEFPROPOSITION", "(DEFUN (CALL-DEFPROPOSITION PROPOSITION) ((ARGUMENTS CONS)) :DOCUMENTATION \"Callable version of the `defproposition' command (which see).\nExpects the same arguments as `defproposition' but supplied as a list.\" :PUBLIC? TRUE)", ((cpp_function_code)(&callDefproposition)), NULL);
     defineFunctionObject("NORMALIZE-DEFPROPOSITION-ARGUMENTS", "(DEFUN (NORMALIZE-DEFPROPOSITION-ARGUMENTS CONS) ((ARGUMENTS CONS)))", ((cpp_function_code)(&normalizeDefpropositionArguments)), NULL);
     defineMethodObject("(DEFMETHOD PROCESS-DEFINITION-OPTIONS ((SELF PROPOSITION) (OPTIONS OBJECT)))", ((cpp_method_code)(&Proposition::processDefinitionOptions)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("COMMAND<", "(DEFUN (COMMAND< BOOLEAN) ((COMMAND1 METHOD-SLOT) (COMMAND2 METHOD-SLOT)))", ((cpp_function_code)(&commandL)), NULL);
-    defineFunctionObject("LIST-LOGIC-COMMANDS", "(DEFUN (LIST-LOGIC-COMMANDS (LIST OF METHOD-SLOT)) ())", ((cpp_function_code)(&listLogicCommands)), NULL);
   }
 }
 
@@ -3953,6 +3825,8 @@ void startupLogicIn() {
     if (currentStartupTimePhaseP(7)) {
       helpStartupLogicIn4();
       helpStartupLogicIn5();
+      defineFunctionObject("COMMAND<", "(DEFUN (COMMAND< BOOLEAN) ((COMMAND1 METHOD-SLOT) (COMMAND2 METHOD-SLOT)))", ((cpp_function_code)(&commandL)), NULL);
+      defineFunctionObject("LIST-LOGIC-COMMANDS", "(DEFUN (LIST-LOGIC-COMMANDS (LIST OF METHOD-SLOT)) ())", ((cpp_function_code)(&listLogicCommands)), NULL);
       defineFunctionObject("HELP", "(DEFUN HELP (|&REST| (COMMANDS SYMBOL)) :COMMAND? TRUE :PUBLIC? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Describe specific commands, or print a list of available commands.\")", ((cpp_function_code)(&help)), ((cpp_function_code)(&helpEvaluatorWrapper)));
       defineFunctionObject("STARTUP-LOGIC-IN", "(DEFUN STARTUP-LOGIC-IN () :PUBLIC? TRUE)", ((cpp_function_code)(&startupLogicIn)), NULL);
       { MethodSlot* function = lookupFunction(SYM_LOGIC_IN_LOGIC_STARTUP_LOGIC_IN);
@@ -3965,6 +3839,7 @@ void startupLogicIn() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AVAILABLE-POWERLOOM-FEATURES* (LIST OF KEYWORD) (LIST :TRACE-SUBGOALS :TRACE-SOLUTIONS :TRACE-CLASSIFIER :ITERATIVE-DEEPENING :JUSTIFICATIONS :JUST-IN-TIME-INFERENCE :EMIT-THINKING-DOTS) :DOCUMENTATION \"List of PowerLoom environment features.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CURRENT-POWERLOOM-FEATURES* (LIST OF KEYWORD) (LIST) :DOCUMENTATION \"List of currently enabled PowerLoom environment features.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEFAULT-POWERLOOM-FEATURES* (LIST OF KEYWORD) (LIST :JUST-IN-TIME-INFERENCE :EMIT-THINKING-DOTS) :DOCUMENTATION \"List of PowerLoom environment features enabled upon call to\n'reset-features'.\")");
@@ -3972,7 +3847,6 @@ void startupLogicIn() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PROMPT-SHOW-MODULE?* BOOLEAN TRUE :DOCUMENTATION \"Flag to control whether the logic prompt shows the module name.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOGIC-COMMAND-RESULT-INDENT* STRING \"\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CAREFUL-LOGIC-COMMAND-LOOP-EXIT*? BOOLEAN (VERBATIM :COMMON-LISP FALSE :OTHERWISE TRUE) :DOCUMENTATION \"If TRUE exiting from the logic-command loop (or PowerLoom\nlistener) will be protected by a confirmation dialog.  This is mainly useful\nfor C++ where exiting the listener will also exit the program.\" :PUBLIC? TRUE)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *FILE-LOAD-PATH* (CONS OF STRING-WRAPPER) NIL)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-KB-FILE-EXTENSIONS* CONS (QUOTE (\".plm\" \".ploom\")) :DOCUMENTATION \"If the extension of a KB file is unspecified in a\n`load' or `demo' command, try to find it with one of these extensions.\" :PUBLIC? TRUE)");
       addLoadPath("PL:kbs;");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *DEMO-LEVEL* INTEGER 0)");
@@ -4011,34 +3885,6 @@ Keyword* KWD_LOGIC_IN_CLASSIFIER_INFERENCES = NULL;
 
 Keyword* KWD_LOGIC_IN_CLOSED_WORLD = NULL;
 
-Surrogate* SGT_LOGIC_IN_STELLA_INTEGER = NULL;
-
-Surrogate* SGT_LOGIC_IN_STELLA_FLOAT = NULL;
-
-Surrogate* SGT_LOGIC_IN_STELLA_NUMBER = NULL;
-
-Surrogate* SGT_LOGIC_IN_STELLA_KEYWORD = NULL;
-
-Surrogate* SGT_LOGIC_IN_STELLA_GENERALIZED_SYMBOL = NULL;
-
-Surrogate* SGT_LOGIC_IN_STELLA_SYMBOL = NULL;
-
-Surrogate* SGT_LOGIC_IN_STELLA_BOOLEAN = NULL;
-
-Surrogate* SGT_LOGIC_IN_STELLA_MODULE = NULL;
-
-Surrogate* SGT_LOGIC_IN_LOGIC_DESCRIPTION = NULL;
-
-Surrogate* SGT_LOGIC_IN_LOGIC_NAMED_DESCRIPTION = NULL;
-
-Surrogate* SGT_LOGIC_IN_STELLA_CONS = NULL;
-
-Keyword* KWD_LOGIC_IN_ERROR = NULL;
-
-Surrogate* SGT_LOGIC_IN_STELLA_PROPERTY_LIST = NULL;
-
-Surrogate* SGT_LOGIC_IN_LOGIC_IDENTITY = NULL;
-
 Keyword* KWD_LOGIC_IN_REALISTIC = NULL;
 
 Keyword* KWD_LOGIC_IN_BYE = NULL;
@@ -4053,11 +3899,19 @@ Keyword* KWD_LOGIC_IN_STOP = NULL;
 
 Keyword* KWD_LOGIC_IN_DEFINE = NULL;
 
+Surrogate* SGT_LOGIC_IN_STELLA_CONS = NULL;
+
 Symbol* SYM_LOGIC_IN_STELLA_DEFMODULE = NULL;
 
 Keyword* KWD_LOGIC_IN_FINALIZE = NULL;
 
 Keyword* KWD_LOGIC_IN_CHECK_DUPLICATESp = NULL;
+
+Surrogate* SGT_LOGIC_IN_STELLA_BOOLEAN = NULL;
+
+Keyword* KWD_LOGIC_IN_MODULE = NULL;
+
+Surrogate* SGT_LOGIC_IN_STELLA_MODULE = NULL;
 
 Symbol* SYM_LOGIC_IN_STELLA_CLEAR_MODULE = NULL;
 
@@ -4081,19 +3935,35 @@ Symbol* SYM_LOGIC_IN_LOGIC_DEFINSTANCE = NULL;
 
 Symbol* SYM_LOGIC_IN_LOGIC_IN_DIALECT = NULL;
 
-Keyword* KWD_LOGIC_IN_WHITE_SPACE = NULL;
+Keyword* KWD_LOGIC_IN_LOW = NULL;
 
-Symbol* SYM_LOGIC_IN_STELLA_FALSE = NULL;
+Keyword* KWD_LOGIC_IN_MEDIUM = NULL;
+
+Keyword* KWD_LOGIC_IN_WHITE_SPACE = NULL;
 
 Keyword* KWD_LOGIC_IN_LEVEL = NULL;
 
-Keyword* KWD_LOGIC_IN_LOW = NULL;
-
 Keyword* KWD_LOGIC_IN_NONE = NULL;
+
+Keyword* KWD_LOGIC_IN_PORT = NULL;
+
+Surrogate* SGT_LOGIC_IN_STELLA_INTEGER = NULL;
+
+Keyword* KWD_LOGIC_IN_HOST = NULL;
+
+Surrogate* SGT_LOGIC_IN_STELLA_STRING = NULL;
+
+Keyword* KWD_LOGIC_IN_DEBUG_LEVEL = NULL;
+
+Keyword* KWD_LOGIC_IN_ERROR = NULL;
 
 Keyword* KWD_LOGIC_IN_WARNING = NULL;
 
+Surrogate* SGT_LOGIC_IN_LOGIC_NAMED_DESCRIPTION = NULL;
+
 Surrogate* SGT_LOGIC_IN_LOGIC_PROPOSITION = NULL;
+
+Surrogate* SGT_LOGIC_IN_LOGIC_DESCRIPTION = NULL;
 
 Surrogate* SGT_LOGIC_IN_STELLA_RELATION = NULL;
 
@@ -4164,12 +4034,6 @@ Keyword* KWD_LOGIC_IN_BACKWARD_ONLYp = NULL;
 Keyword* KWD_LOGIC_IN_WEIGHT = NULL;
 
 Symbol* SYM_LOGIC_IN_LOGIC_ABOUT = NULL;
-
-Symbol* SYM_LOGIC_IN_LOGIC_FORWARD_ONLYp = NULL;
-
-Symbol* SYM_LOGIC_IN_LOGIC_BACKWARD_ONLYp = NULL;
-
-Symbol* SYM_LOGIC_IN_LOGIC_DONT_OPTIMIZEp = NULL;
 
 Symbol* SYM_LOGIC_IN_STELLA_CC = NULL;
 

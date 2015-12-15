@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,10 +56,10 @@ public class _StartupJavaClassOut {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Stella.SYM_STELLA_JAVA_EXCEPTION_CLASS = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_EXCEPTION_CLASS", null, 0)));
-          Stella.SYM_STELLA_JAVA_CLASS = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_CLASS", null, 0)));
-          Stella.SYM_STELLA_JAVA_DECLARATIONS = ((Symbol)(Stella.internRigidSymbolWrtModule("JAVA_DECLARATIONS", null, 0)));
-          Stella.SYM_STELLA_STARTUP_JAVA_CLASS_OUT = ((Symbol)(Stella.internRigidSymbolWrtModule("STARTUP-JAVA-CLASS-OUT", null, 0)));
+          Stella.SYM_STELLA_JAVA_EXCEPTION_CLASS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_EXCEPTION_CLASS", null, 0)));
+          Stella.SYM_STELLA_JAVA_CLASS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_CLASS", null, 0)));
+          Stella.SYM_STELLA_JAVA_DECLARATIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_DECLARATIONS", null, 0)));
+          Stella.SYM_STELLA_STARTUP_JAVA_CLASS_OUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-JAVA-CLASS-OUT", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -79,6 +79,9 @@ public class _StartupJavaClassOut {
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
           Stella.cleanupUnfinalizedClasses();
+        }
+        if (Stella.currentStartupTimePhaseP(9)) {
+          Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
         }
 
       } finally {

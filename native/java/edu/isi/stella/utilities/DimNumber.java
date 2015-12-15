@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2006      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -169,7 +169,7 @@ public class DimNumber extends Quantity {
       DimNumber minuteValue = DimNumber.makeDimNumber(((double)(minuteMagnitude)), "min");
       int secondMagnitude = Native.truncate(d.subtract(hourValue).subtract(minuteValue).getMagnitude("s"));
 
-      return (Stella.consList(Stella_Object.cons(hourValue, Stella_Object.cons(minuteValue, Stella_Object.cons(DimNumber.makeDimNumber(((double)(secondMagnitude)), "s"), Stella.NIL)))));
+      return (Cons.consList(Cons.cons(hourValue, Cons.cons(minuteValue, Cons.cons(DimNumber.makeDimNumber(((double)(secondMagnitude)), "s"), Stella.NIL)))));
     }
   }
 
@@ -185,7 +185,7 @@ public class DimNumber extends Quantity {
       DimNumber minuteValue = DimNumber.makeDimNumber(((double)(minuteMagnitude)), "arcmin");
       int secondMagnitude = Native.truncate(d.subtract(degreeValue).subtract(minuteValue).getMagnitude("arcsec"));
 
-      return (Stella.consList(Stella_Object.cons(degreeValue, Stella_Object.cons(minuteValue, Stella_Object.cons(DimNumber.makeDimNumber(((double)(secondMagnitude)), "arcsec"), Stella.NIL)))));
+      return (Cons.consList(Cons.cons(degreeValue, Cons.cons(minuteValue, Cons.cons(DimNumber.makeDimNumber(((double)(secondMagnitude)), "arcsec"), Stella.NIL)))));
     }
   }
 
@@ -196,9 +196,20 @@ public class DimNumber extends Quantity {
    * @return TimeDuration
    */
   public static TimeDuration dimToTimeDuration(DimNumber timeValue) {
-    { int days = Native.floor(timeValue.getMagnitude("days"));
+    if (timeValue.signum() == -1) {
+      {
+        timeValue = timeValue.negate();
+        { int days = Native.floor(timeValue.getMagnitude("days"));
 
-      return (TimeDuration.makeTimeDuration(days, Native.floor(timeValue.subtract(DimNumber.makeDimNumber(((double)(days)), "days")).getMagnitude("ms"))));
+          return (TimeDuration.makeTimeDuration(0 - days, 0 - Native.floor(timeValue.subtract(DimNumber.makeDimNumber(((double)(days)), "days")).getMagnitude("ms"))));
+        }
+      }
+    }
+    else {
+      { int days = Native.floor(timeValue.getMagnitude("days"));
+
+        return (TimeDuration.makeTimeDuration(days, Native.floor(timeValue.subtract(DimNumber.makeDimNumber(((double)(days)), "days")).getMagnitude("ms"))));
+      }
     }
   }
 

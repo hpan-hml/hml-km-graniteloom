@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,6 +56,7 @@ extern HashTable* oGLOBAL_VARIABLE_LOOKUP_TABLEo;
 Object* apply(cpp_function_code code, Cons* arguments);
 Object* applyMethod(cpp_method_code code, Cons* arguments);
 int applyIntegerMethod(cpp_method_code code, Cons* arguments);
+long long int applyLongIntegerMethod(cpp_method_code code, Cons* arguments);
 char* applyStringMethod(cpp_method_code code, Cons* arguments);
 boolean applyBooleanMethod(cpp_method_code code, Cons* arguments);
 double applyFloatMethod(cpp_method_code code, Cons* arguments);

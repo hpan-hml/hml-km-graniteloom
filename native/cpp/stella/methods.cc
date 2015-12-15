@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -48,24 +48,87 @@
 namespace stella {
 
 Object* apply(cpp_function_code code, Cons* arguments) {
-  // Apply `code' to `arguments', returning a value of type
-  // OBJECT.
-  switch (arguments->length()) {
-    case 0: 
-      return (((Object*  (*) ())code)());
-    case 1: 
-      return (((Object*  (*) (Object*))code)(arguments->value));
-    case 2: 
-      return (((Object*  (*) (Object*, Object*))code)(arguments->value, arguments->rest->value));
-    case 3: 
-      return (((Object*  (*) (Object*, Object*, Object*))code)(arguments->value, arguments->rest->value, arguments->nth(2)));
-    case 4: 
-      return (((Object*  (*) (Object*, Object*, Object*, Object*))code)(arguments->value, arguments->rest->value, arguments->nth(2), arguments->nth(3)));
-    case 5: 
-      return (((Object*  (*) (Object*, Object*, Object*, Object*, Object*))code)(arguments->value, arguments->rest->value, arguments->nth(2), arguments->nth(3), arguments->nth(4)));
-    default:
-      throw *newStellaException("Too many function arguments in `apply'.  Max is 5.");
-    break;
+  // Apply `code' to `arguments', returning a value of type OBJECT.
+  // Currently limited to at most 10 `arguments'.
+  if (arguments == NIL) {
+    return (((Object*  (*) ())code)());
+  }
+  else {
+    { Object* arg1 = arguments->value;
+
+      arguments = arguments->rest;
+      if (arguments == NIL) {
+        return (((Object*  (*) (Object*))code)(arg1));
+      }
+      { Object* arg2 = arguments->value;
+
+        arguments = arguments->rest;
+        if (arguments == NIL) {
+          return (((Object*  (*) (Object*, Object*))code)(arg1, arg2));
+        }
+        { Object* arg3 = arguments->value;
+
+          arguments = arguments->rest;
+          if (arguments == NIL) {
+            return (((Object*  (*) (Object*, Object*, Object*))code)(arg1, arg2, arg3));
+          }
+          { Object* arg4 = arguments->value;
+
+            arguments = arguments->rest;
+            if (arguments == NIL) {
+              return (((Object*  (*) (Object*, Object*, Object*, Object*))code)(arg1, arg2, arg3, arg4));
+            }
+            { Object* arg5 = arguments->value;
+
+              arguments = arguments->rest;
+              if (arguments == NIL) {
+                return (((Object*  (*) (Object*, Object*, Object*, Object*, Object*))code)(arg1, arg2, arg3, arg4, arg5));
+              }
+              { Object* arg6 = arguments->value;
+
+                arguments = arguments->rest;
+                if (arguments == NIL) {
+                  return (((Object*  (*) (Object*, Object*, Object*, Object*, Object*, Object*))code)(arg1, arg2, arg3, arg4, arg5, arg6));
+                }
+                { Object* arg7 = arguments->value;
+
+                  arguments = arguments->rest;
+                  if (arguments == NIL) {
+                    return (((Object*  (*) (Object*, Object*, Object*, Object*, Object*, Object*, Object*))code)(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
+                  }
+                  { Object* arg8 = arguments->value;
+
+                    arguments = arguments->rest;
+                    if (arguments == NIL) {
+                      return (((Object*  (*) (Object*, Object*, Object*, Object*, Object*, Object*, Object*, Object*))code)(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
+                    }
+                    { Object* arg9 = arguments->value;
+
+                      arguments = arguments->rest;
+                      if (arguments == NIL) {
+                        return (((Object*  (*) (Object*, Object*, Object*, Object*, Object*, Object*, Object*, Object*, Object*))code)(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9));
+                      }
+                      { Object* arg10 = arguments->value;
+
+                        arguments = arguments->rest;
+                        if (arguments == NIL) {
+                          return (((Object*  (*) (Object*, Object*, Object*, Object*, Object*, Object*, Object*, Object*, Object*, Object*))code)(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10));
+                        }
+                        { OutputStringStream* stream000 = newOutputStringStream();
+
+                          *(stream000->nativeStream) << "Too many function arguments in `apply'." << "Maximum is 10.";
+                          throw *newStellaException(stream000->theStringReader());
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -109,6 +172,29 @@ int applyIntegerMethod(cpp_method_code code, Cons* arguments) {
       return ((arguments->value->*((int  (Object::*) (Object*, Object*, Object*)) code)) (arguments->rest->value, arguments->nth(2), arguments->nth(3)));
     case 5: 
       return ((arguments->value->*((int  (Object::*) (Object*, Object*, Object*, Object*)) code)) (arguments->rest->value, arguments->nth(2), arguments->nth(3), arguments->nth(4)));
+    default:
+      throw *newStellaException("Too many function arguments in `apply'.  Max is 5.");
+    break;
+  }
+}
+
+long long int applyLongIntegerMethod(cpp_method_code code, Cons* arguments) {
+  // Apply `code' to `arguments', returning a value of type
+  // LONG-INTEGER.
+  switch (arguments->length()) {
+    case 0: 
+      throw *newStellaException("Can't call method code on 0 arguments.");
+    break;
+    case 1: 
+      return ((arguments->value->*((long long int  (Object::*) ()) code)) ());
+    case 2: 
+      return ((arguments->value->*((long long int  (Object::*) (Object*)) code)) (arguments->rest->value));
+    case 3: 
+      return ((arguments->value->*((long long int  (Object::*) (Object*, Object*)) code)) (arguments->rest->value, arguments->nth(2)));
+    case 4: 
+      return ((arguments->value->*((long long int  (Object::*) (Object*, Object*, Object*)) code)) (arguments->rest->value, arguments->nth(2), arguments->nth(3)));
+    case 5: 
+      return ((arguments->value->*((long long int  (Object::*) (Object*, Object*, Object*, Object*)) code)) (arguments->rest->value, arguments->nth(2), arguments->nth(3), arguments->nth(4)));
     default:
       throw *newStellaException("Too many function arguments in `apply'.  Max is 5.");
     break;
@@ -706,12 +792,12 @@ void incorporateInputParameters(MethodSlot* method, Cons* parameters) {
               Symbol* p = ((Symbol*)(p001));
 
               if (p == SYM_METHODS_STELLA_aREST) {
-                setDynamicSlotValue(method->dynamicSlots, SYM_METHODS_STELLA_METHOD_VARIABLE_ARGUMENTSp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+                setDynamicSlotValue(method->dynamicSlots, SYM_METHODS_STELLA_METHOD_VARIABLE_ARGUMENTSp, TRUE_WRAPPER, FALSE_WRAPPER);
                 variableargsP = true;
                 continue;
               }
               else if (p == SYM_METHODS_STELLA_aBODY) {
-                setDynamicSlotValue(method->dynamicSlots, SYM_METHODS_STELLA_METHOD_BODY_ARGUMENTp, (true ? TRUE_WRAPPER : FALSE_WRAPPER), FALSE_WRAPPER);
+                setDynamicSlotValue(method->dynamicSlots, SYM_METHODS_STELLA_METHOD_BODY_ARGUMENTp, TRUE_WRAPPER, FALSE_WRAPPER);
                 continue;
               }
               else {
@@ -1797,7 +1883,7 @@ StandardObject* computeAnchoredTypeSpec(StandardObject* ownertype, AnchoredTypeS
             }
             return (SGT_METHODS_STELLA_OBJECT);
           }
-          return (slot->slotBaseType);
+          return ((((boolean)(((CompoundTypeSpecifier*)(dynamicSlotValue(slot->dynamicSlots, SYM_METHODS_STELLA_SLOT_TYPE_SPECIFIER, NULL))))) ? ((StandardObject*)(computeRelativeTypeSpec(((CompoundTypeSpecifier*)(dynamicSlotValue(slot->dynamicSlots, SYM_METHODS_STELLA_SLOT_TYPE_SPECIFIER, NULL))), ownertype))) : slot->slotBaseType));
         }
       }
     }
@@ -1902,6 +1988,7 @@ StandardObject* computeRelativeTypeSpec(StandardObject* relativetype, StandardOb
 
               newts->specifierBaseType = relativetype->specifierBaseType;
               newts->specifierParameterTypes = typeslist;
+              newts->specifierDimensions = relativetype->specifierDimensions;
               return (newts);
             }
           }
@@ -2235,7 +2322,7 @@ boolean undefineConflictingDefinitionsP(MethodSlot* newslot) {
 void defineFunctionObject(char* name, char* definition, cpp_function_code code, cpp_function_code wrappercode) {
   { Object* namesymbol = ((name[0] == ' ') ? readSExpressionFromString(name) : internSymbolInModule(name, NULL, false));
     StandardObject* oldfunction = ((StandardObject*)(oFUNCTION_LOOKUP_TABLEo->lookup(((Symbol*)(namesymbol)))));
-    Vector* record = newVector(((wrappercode != NULL) ? 5 : 4));
+    Vector* record = stella::newVector(((wrappercode != NULL) ? 5 : 4));
 
     if (((boolean)(oldfunction)) &&
         (oldfunction->primaryType() == SGT_METHODS_STELLA_VECTOR)) {
@@ -2426,10 +2513,15 @@ GlobalVariable* defineStellaGlobalVariableFromParseTree(Cons* tree, char* string
                 global->variableAuxiliaryP = coerceWrappedBooleanToBoolean(coerceToBoolean(value));
               }
               else {
-                { OutputStringStream* stream000 = newOutputStringStream();
-
-                  *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
-                  throw *newStellaException(stream000->theStringReader());
+                if (!(runOptionHandlerP(global, ((Keyword*)(key)), value))) {
+                  { 
+                    BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+                    signalTranslationWarning();
+                    if (!(suppressWarningsP())) {
+                      printErrorContext(">> WARNING: ", STANDARD_WARNING);
+                      *(STANDARD_WARNING->nativeStream) << std::endl << " " << "Skipping invalid variable option " << "`" << deUglifyParseTree(key) << "'" << std::endl << "in the definition of variable " << "`" << global->variableName << "'" << "." << std::endl;
+                    }
+                  }
                 }
               }
             }
@@ -2639,9 +2731,10 @@ void helpStartupMethods2() {
 
 void helpStartupMethods3() {
   {
-    defineFunctionObject("APPLY", "(DEFUN (APPLY OBJECT) ((CODE FUNCTION-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nOBJECT.\" :PUBLIC? TRUE)", ((cpp_function_code)(&apply)), NULL);
+    defineFunctionObject("APPLY", "(DEFUN (APPLY OBJECT) ((CODE FUNCTION-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type OBJECT.\nCurrently limited to at most 10 `arguments'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&apply)), NULL);
     defineFunctionObject("APPLY-METHOD", "(DEFUN (APPLY-METHOD OBJECT) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nOBJECT.\" :PUBLIC? TRUE)", ((cpp_function_code)(&applyMethod)), NULL);
     defineFunctionObject("APPLY-INTEGER-METHOD", "(DEFUN (APPLY-INTEGER-METHOD INTEGER) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nINTEGER.\" :PUBLIC? TRUE)", ((cpp_function_code)(&applyIntegerMethod)), NULL);
+    defineFunctionObject("APPLY-LONG-INTEGER-METHOD", "(DEFUN (APPLY-LONG-INTEGER-METHOD LONG-INTEGER) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nLONG-INTEGER.\" :PUBLIC? TRUE)", ((cpp_function_code)(&applyLongIntegerMethod)), NULL);
     defineFunctionObject("APPLY-STRING-METHOD", "(DEFUN (APPLY-STRING-METHOD STRING) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nSTRING.\" :PUBLIC? TRUE)", ((cpp_function_code)(&applyStringMethod)), NULL);
     defineFunctionObject("APPLY-BOOLEAN-METHOD", "(DEFUN (APPLY-BOOLEAN-METHOD BOOLEAN) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nBOOLEAN.\" :PUBLIC? TRUE)", ((cpp_function_code)(&applyBooleanMethod)), NULL);
     defineFunctionObject("APPLY-FLOAT-METHOD", "(DEFUN (APPLY-FLOAT-METHOD FLOAT) ((CODE METHOD-CODE) (ARGUMENTS (CONS OF OBJECT))) :DOCUMENTATION \"Apply `code' to `arguments', returning a value of type\nFLOAT.\" :PUBLIC? TRUE)", ((cpp_function_code)(&applyFloatMethod)), NULL);
@@ -2698,7 +2791,6 @@ void helpStartupMethods3() {
     defineFunctionObject("COMPUTE-ANCHORED-TYPE-SPEC", "(DEFUN (COMPUTE-ANCHORED-TYPE-SPEC TYPE-SPEC) ((OWNERTYPE TYPE-SPEC) (RELTYPE ANCHORED-TYPE-SPECIFIER)))", ((cpp_function_code)(&computeAnchoredTypeSpec)), NULL);
     defineFunctionObject("COMPUTE-RELATIVE-TYPE-SPEC", "(DEFUN (COMPUTE-RELATIVE-TYPE-SPEC TYPE-SPEC) ((RELATIVETYPE TYPE-SPEC) (OWNERTYPE TYPE-SPEC)))", ((cpp_function_code)(&computeRelativeTypeSpec)), NULL);
     defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF SLOT) (FIRSTARGTYPE TYPE-SPEC)))", ((cpp_method_code)(&Slot::computeReturnTypeSpec)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF METHOD-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", ((cpp_method_code)(&MethodSlot::computeReturnTypeSpec)), ((cpp_method_code)(NULL)));
   }
 }
 
@@ -2719,6 +2811,7 @@ void startupMethods() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupMethods3();
+      defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF METHOD-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", ((cpp_method_code)(&MethodSlot::computeReturnTypeSpec)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF STORAGE-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", ((cpp_method_code)(&StorageSlot::computeReturnTypeSpec)), ((cpp_method_code)(NULL)));
       defineFunctionObject("YIELD-TYPE-SPEC-TREE", "(DEFUN (YIELD-TYPE-SPEC-TREE OBJECT) ((SELF TYPE-SPEC)))", ((cpp_function_code)(&yieldTypeSpecTree)), NULL);
       defineFunctionObject("ATTACH-FUNCTION", "(DEFUN (ATTACH-FUNCTION METHOD-SLOT) ((NEWFUNCTION METHOD-SLOT)))", ((cpp_function_code)(&attachFunction)), NULL);
@@ -2755,6 +2848,7 @@ void startupMethods() {
       cleanupUnfinalizedClasses();
     }
     if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAXIMUM-STRING-CONSTANT-SIZE* INTEGER 4000 :DOCUMENTATION \"Maximum size for a string constant in the target language.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *FUNCTION-LOOKUP-TABLE* (HASH-TABLE OF SYMBOL STANDARD-OBJECT) (NEW (HASH-TABLE OF SYMBOL FUNCTION)) :DOCUMENTATION \"Lookup table for functions.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *GLOBAL-VARIABLE-LOOKUP-TABLE* (HASH-TABLE OF SYMBOL GLOBAL-VARIABLE) (NEW (HASH-TABLE OF SYMBOL GLOBAL-VARIABLE)) :DOCUMENTATION \"Lookup table for global variables.\" :PUBLIC? TRUE)");

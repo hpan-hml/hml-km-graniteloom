@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -139,7 +139,7 @@ public class Skolem extends LogicObject {
       return (Logic.generateTerm(Logic.innermostOf(self)));
     }
     else if (LogicObject.conceptPrototypeP(self)) {
-      return (Stella.list$(Stella_Object.cons(Logic.SYM_PL_KERNEL_KB_CONCEPT_PROTOTYPE, Stella_Object.cons(Logic.generateTerm(LogicObject.conceptPrototypeOf(self)), Stella_Object.cons(Stella.NIL, Stella.NIL)))));
+      return (Cons.list$(Cons.cons(Logic.SYM_PL_KERNEL_KB_CONCEPT_PROTOTYPE, Cons.cons(Logic.generateTerm(LogicObject.conceptPrototypeOf(self)), Cons.cons(Stella.NIL, Stella.NIL)))));
     }
     else {
       {
@@ -287,8 +287,8 @@ public class Skolem extends LogicObject {
   }
 
   public static String getSkolemPrintName(Skolem self) {
-    if (((KeyValueList)(Logic.$SKOLEMNAMEMAPPINGTABLE$.get())) != null) {
-      { Skolem substituteskolem = ((Skolem)(((KeyValueList)(Logic.$SKOLEMNAMEMAPPINGTABLE$.get())).lookup(self)));
+    if (((KeyValueMap)(Logic.$SKOLEMNAMEMAPPINGTABLE$.get())) != null) {
+      { Skolem substituteskolem = ((Skolem)(((KeyValueMap)(Logic.$SKOLEMNAMEMAPPINGTABLE$.get())).lookup(self)));
 
         return (((substituteskolem != null) ? substituteskolem.skolemName.symbolName : self.skolemName.symbolName));
       }
@@ -336,8 +336,8 @@ public class Skolem extends LogicObject {
         arity = proposition.arguments.length() - 1;
       }
       if (arity == -1) {
-        argumentnames = Stella.list(Stella_Object.cons(Logic.yieldSystemDefinedParameterName(1, skolem), Stella.NIL));
-        argumenttypes = Stella.list(Stella_Object.cons(Logic.SGT_STELLA_THING, Stella.NIL));
+        argumentnames = List.list(Cons.cons(Logic.yieldSystemDefinedParameterName(1, skolem), Stella.NIL));
+        argumenttypes = List.list(Cons.cons(Logic.SGT_STELLA_THING, Stella.NIL));
       }
       else {
         argumentnames = List.newList();
@@ -388,7 +388,7 @@ public class Skolem extends LogicObject {
         throw ((PropositionError)(PropositionError.newPropositionError(stream000.theStringReader()).fillInStackTrace()));
       }
     }
-    Native.setSpecial(Logic.$LOGICVARIABLETABLE$, Stella_Object.cons(variable, ((Cons)(Logic.$LOGICVARIABLETABLE$.get()))));
+    Native.setSpecial(Logic.$LOGICVARIABLETABLE$, Cons.cons(variable, ((Cons)(Logic.$LOGICVARIABLETABLE$.get()))));
   }
 
   public static void inheritVariableValueUpdate(Skolem skolem, World toworld) {
@@ -442,7 +442,7 @@ public class Skolem extends LogicObject {
 
           while (iter000.nextP()) {
             prop = ((Proposition)(iter000.value));
-            Proposition.postForEvaluation(prop);
+            Proposition.postForEvaluation(prop, ((Context)(Stella.$CONTEXT$.get())));
           }
         }
         if (((Boolean)(Logic.$FILLINGCONSTRAINTPROPAGATIONQUEUESp$.get())).booleanValue()) {
@@ -452,6 +452,21 @@ public class Skolem extends LogicObject {
               Proposition.postToForwardChainingQueue(definingproposition, ((World)(((Context)(Stella.$CONTEXT$.get())))));
             }
           }
+        }
+      }
+    }
+  }
+
+  public int skolemGenerationCount() {
+    { Skolem self = this;
+
+      { int answer = ((IntegerWrapper)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_SKOLEM_GENERATION_COUNT, Stella.NULL_INTEGER_WRAPPER))).wrapperValue;
+
+        if (answer == Stella.NULL_INTEGER) {
+          return (0);
+        }
+        else {
+          return (answer);
         }
       }
     }
@@ -624,7 +639,7 @@ public class Skolem extends LogicObject {
             }
           }
           { Skolem object002 = tovalue000;
-            Cons value002 = Stella_Object.cons(fromskolem, tovalue000.variableValueInverse());
+            Cons value002 = Cons.cons(fromskolem, tovalue000.variableValueInverse());
             Stella_Object oldValue004 = object002.variableValueInverse;
             Stella_Object newValue002 = Stella_Object.updateInContext(oldValue004, value002, object002.homeContext, false);
 
@@ -642,7 +657,7 @@ public class Skolem extends LogicObject {
         { LogicObject tovalue000 = ((LogicObject)(tovalue));
 
           { LogicObject object003 = tovalue000;
-            Cons value003 = Stella_Object.cons(fromskolem, tovalue000.variableValueInverse());
+            Cons value003 = Cons.cons(fromskolem, tovalue000.variableValueInverse());
             Stella_Object oldValue005 = object003.variableValueInverse;
             Stella_Object newValue003 = Stella_Object.updateInContext(oldValue005, value003, object003.homeContext, false);
 

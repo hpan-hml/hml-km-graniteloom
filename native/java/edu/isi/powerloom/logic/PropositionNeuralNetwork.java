@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -56,12 +56,12 @@ public class PropositionNeuralNetwork extends StandardObject {
     public double output;
     public Vector inputError;
     public Vector hiddenError;
-    public twoDArray ih;
-    public twoDArray ihDelta;
+    public two_D_array ih;
+    public two_D_array ihDelta;
     public Vector ho;
     public Vector hoDelta;
-    public twoDArray ihSlope;
-    public twoDArray ihPrevSlope;
+    public two_D_array ihSlope;
+    public two_D_array ihPrevSlope;
     public Vector hoSlope;
     public Vector hoPrevSlope;
 
@@ -144,7 +144,7 @@ public class PropositionNeuralNetwork extends StandardObject {
       int stop = numIn - 1;
       Vector input = net.input;
       Vector hidden = net.hidden;
-      twoDArray ih = net.ih;
+      two_D_array ih = net.ih;
       Vector ho = net.ho;
       double score = 0.0;
       double sum = 0.0;
@@ -314,7 +314,7 @@ public class PropositionNeuralNetwork extends StandardObject {
     }
     else if (slotname == Logic.SYM_LOGIC_IH) {
       if (setvalueP) {
-        self.ih = ((twoDArray)(value));
+        self.ih = ((two_D_array)(value));
       }
       else {
         value = self.ih;
@@ -322,7 +322,7 @@ public class PropositionNeuralNetwork extends StandardObject {
     }
     else if (slotname == Logic.SYM_LOGIC_IH_DELTA) {
       if (setvalueP) {
-        self.ihDelta = ((twoDArray)(value));
+        self.ihDelta = ((two_D_array)(value));
       }
       else {
         value = self.ihDelta;
@@ -346,7 +346,7 @@ public class PropositionNeuralNetwork extends StandardObject {
     }
     else if (slotname == Logic.SYM_LOGIC_IH_SLOPE) {
       if (setvalueP) {
-        self.ihSlope = ((twoDArray)(value));
+        self.ihSlope = ((two_D_array)(value));
       }
       else {
         value = self.ihSlope;
@@ -354,7 +354,7 @@ public class PropositionNeuralNetwork extends StandardObject {
     }
     else if (slotname == Logic.SYM_LOGIC_IH_PREV_SLOPE) {
       if (setvalueP) {
-        self.ihPrevSlope = ((twoDArray)(value));
+        self.ihPrevSlope = ((two_D_array)(value));
       }
       else {
         value = self.ihPrevSlope;

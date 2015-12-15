@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -77,7 +77,7 @@ public class SupportedClosureIterator extends TransitiveClosureIterator {
     { SupportedClosureIterator self = this;
 
       if (TransitiveClosureIterator.transitiveClosureIteratorDnextP(self)) {
-        self.value = Stella_Object.cons(self.value, Stella_Object.cons(((TruePropositionsIterator)(self.adjacencyIteratorStack.value)).truthValue, Stella.NIL));
+        self.value = Cons.cons(self.value, Cons.cons(((TruePropositionsIterator)(self.adjacencyIteratorStack.value)).truthValue, Stella.NIL));
         return (true);
       }
       else {

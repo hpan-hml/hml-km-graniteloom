@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -55,7 +55,7 @@ Object* loomArgumentDescriptionToKif(Object* tree, Keyword* arity) {
 
       if ((tree->value == SYM_LOOM_TO_KIF_STELLA_INVERSE) ||
           (tree->value == SYM_LOOM_TO_KIF_PL_KERNEL_KB_INVERSE)) {
-        return (listO(3, SYM_LOOM_TO_KIF_STELLA_INVERSE, loomArgumentDescriptionToKif(tree->rest->value, KWD_LOOM_TO_KIF_BINARY), NIL));
+        return (listO(3, SYM_LOOM_TO_KIF_PL_KERNEL_KB_INVERSE, loomArgumentDescriptionToKif(tree->rest->value, KWD_LOOM_TO_KIF_BINARY), NIL));
       }
       { Symbol* x = ((Symbol*)(SYSTEM_DEFINED_ARGUMENT_NAMES->nth(0)));
         Symbol* y = ((Symbol*)(SYSTEM_DEFINED_ARGUMENT_NAMES->nth(1)));
@@ -95,13 +95,13 @@ Cons* loomRestrictionToKif(Cons* tree, Symbol* implicitvariable) {
          (operatoR == SYM_LOOM_TO_KIF_LOGIC_EXACTLY))) {
       if (((boolean)(qualification))) {
         if (operatoR == SYM_LOOM_TO_KIF_LOGIC_AT_LEAST) {
-          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND;
+          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_LOWER_BOUND;
         }
         else if (operatoR == SYM_LOOM_TO_KIF_LOGIC_AT_MOST) {
-          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND;
+          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_UPPER_BOUND;
         }
         else if (operatoR == SYM_LOOM_TO_KIF_LOGIC_EXACTLY) {
-          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY;
+          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY;
         }
         else {
           { OutputStringStream* stream000 = newOutputStringStream();
@@ -113,13 +113,13 @@ Cons* loomRestrictionToKif(Cons* tree, Symbol* implicitvariable) {
       }
       else {
         if (operatoR == SYM_LOOM_TO_KIF_LOGIC_AT_LEAST) {
-          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_LOWER_BOUND;
+          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND;
         }
         else if (operatoR == SYM_LOOM_TO_KIF_LOGIC_AT_MOST) {
-          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_UPPER_BOUND;
+          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND;
         }
         else if (operatoR == SYM_LOOM_TO_KIF_LOGIC_EXACTLY) {
-          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY;
+          operatoR = SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY;
         }
         else {
           { OutputStringStream* stream001 = newOutputStringStream();
@@ -305,7 +305,11 @@ void substituteVariablesInTree(Cons* tree, Cons* substitution) {
     { GeneralizedSymbol* testValue000 = ((GeneralizedSymbol*)(operatoR));
 
       if ((testValue000 == SYM_LOOM_TO_KIF_STELLA_EXISTS) ||
-          (testValue000 == SYM_LOOM_TO_KIF_STELLA_FORALL)) {
+          ((testValue000 == SYM_LOOM_TO_KIF_LOGIC_FOR_SOME) ||
+           (testValue000 == SYM_LOOM_TO_KIF_STELLA_FORALL))) {
+        if (operatoR == SYM_LOOM_TO_KIF_LOGIC_FOR_SOME) {
+          tree->firstSetter(SYM_LOOM_TO_KIF_STELLA_EXISTS);
+        }
         { Object* variables = tree->rest->value;
 
           if (!consP(variables)) {
@@ -572,10 +576,10 @@ Cons* loomDescriptionToKif(Object* tree, Cons* implicitvariables) {
             return (loomRelatesToKif(tree, implicitvariables));
           }
           else if (testValue000 == SYM_LOOM_TO_KIF_LOGIC_ONE_OF) {
-            return (cons(SYM_LOOM_TO_KIF_LOGIC_MEMBER_OF, copyConsList(implicitvariables)->concatenate(cons(cons(SYM_LOOM_TO_KIF_STELLA_SETOF, tree->rest->concatenate(NIL, 0)), NIL), 0)));
+            return (cons(SYM_LOOM_TO_KIF_PL_KERNEL_KB_MEMBER_OF, copyConsList(implicitvariables)->concatenate(cons(cons(SYM_LOOM_TO_KIF_STELLA_SETOF, tree->rest->concatenate(NIL, 0)), NIL), 0)));
           }
           else if (testValue000 == SYM_LOOM_TO_KIF_LOGIC_THE_ORDERED_SET) {
-            return (cons(SYM_LOOM_TO_KIF_LOGIC_MEMBER_OF, copyConsList(implicitvariables)->concatenate(cons(cons(SYM_LOOM_TO_KIF_LOGIC_LISTOF, tree->rest->concatenate(NIL, 0)), NIL), 0)));
+            return (cons(SYM_LOOM_TO_KIF_PL_KERNEL_KB_MEMBER_OF, copyConsList(implicitvariables)->concatenate(cons(cons(SYM_LOOM_TO_KIF_LOGIC_LISTOF, tree->rest->concatenate(NIL, 0)), NIL), 0)));
           }
           else if ((testValue000 == SYM_LOOM_TO_KIF_LOGIC_THROUGH) ||
               ((testValue000 == SYM_LOOM_TO_KIF_LOGIC_INTERVALii) ||
@@ -1369,12 +1373,12 @@ Cons* translateLoomPartitions(Object* partitions, boolean exhaustiveP, Symbol* p
           Cons* concepts = ((Cons*)(clause->rest->value));
           Cons* localaxioms = NIL;
 
-          localaxioms = cons(listO(3, SYM_LOOM_TO_KIF_LOGIC_MUTUALLY_DISJOINT_COLLECTION, name, NIL), localaxioms);
+          localaxioms = cons(listO(3, SYM_LOOM_TO_KIF_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION, name, NIL), localaxioms);
           if (((boolean)(concepts))) {
-            localaxioms = cons(listO(3, SYM_LOOM_TO_KIF_STELLA_e, name, cons(cons(SYM_LOOM_TO_KIF_STELLA_SETOF, concepts->concatenate(NIL, 0)), NIL)), localaxioms);
+            localaxioms = cons(listO(3, SYM_LOOM_TO_KIF_STELLA_e, name, cons(cons(SYM_LOOM_TO_KIF_PL_KERNEL_KB_SETOF, concepts->concatenate(NIL, 0)), NIL)), localaxioms);
           }
           if (exhaustiveP) {
-            localaxioms = cons(listO(3, SYM_LOOM_TO_KIF_LOGIC_COVERING, name, cons(parentconcept, NIL)), localaxioms);
+            localaxioms = cons(listO(3, SYM_LOOM_TO_KIF_PL_KERNEL_KB_COVERING, name, cons(parentconcept, NIL)), localaxioms);
           }
           axioms = cons(conjoinSentences(localaxioms->reverse()), axioms);
         }
@@ -1400,13 +1404,13 @@ Cons* translateLoomCharacteristics(Object* characteristics, Symbol* name) {
           if (testValue000 == KWD_LOOM_TO_KIF_SINGLE_VALUED) {
           }
           else if (testValue000 == KWD_LOOM_TO_KIF_CLOSED_WORLD) {
-            axioms = cons(listO(3, SYM_LOOM_TO_KIF_LOGIC_CLOSED, name, NIL), axioms);
+            axioms = cons(listO(3, SYM_LOOM_TO_KIF_PL_KERNEL_KB_CLOSED, name, NIL), axioms);
           }
           else if (testValue000 == KWD_LOOM_TO_KIF_COMMUTATIVE) {
-            axioms = cons(listO(3, SYM_LOOM_TO_KIF_LOGIC_COMMUTATIVE, name, NIL), axioms);
+            axioms = cons(listO(3, SYM_LOOM_TO_KIF_PL_KERNEL_KB_COMMUTATIVE, name, NIL), axioms);
           }
           else if (testValue000 == KWD_LOOM_TO_KIF_SYMMETRIC) {
-            axioms = cons(listO(3, SYM_LOOM_TO_KIF_LOGIC_SYMMETRIC, name, NIL), axioms);
+            axioms = cons(listO(3, SYM_LOOM_TO_KIF_PL_KERNEL_KB_SYMMETRIC, name, NIL), axioms);
           }
           else if ((testValue000 == KWD_LOOM_TO_KIF_CLOS_CLASS) ||
               ((testValue000 == KWD_LOOM_TO_KIF_MULTIPLE_VALUED) ||
@@ -1571,7 +1575,7 @@ Cons* translateLoomDefinition(Cons* tree) {
             }
           }
           else if (testValue000 == KWD_LOOM_TO_KIF_IN_PARTITION) {
-            axioms = cons(listO(3, SYM_LOOM_TO_KIF_LOGIC_MEMBER_OF, name, cons(value, NIL)), axioms);
+            axioms = cons(listO(3, SYM_LOOM_TO_KIF_PL_KERNEL_KB_MEMBER_OF, name, cons(value, NIL)), axioms);
           }
           else if ((testValue000 == KWD_LOOM_TO_KIF_CHARACTERISTICS) ||
               (testValue000 == KWD_LOOM_TO_KIF_ATTRIBUTES)) {
@@ -1697,12 +1701,12 @@ void helpStartupLoomToKif1() {
     SYM_LOOM_TO_KIF_LOGIC_FILLED_BY = ((Symbol*)(internRigidSymbolWrtModule("FILLED-BY", NULL, 0)));
     SYM_LOOM_TO_KIF_LOGIC_FILLERS = ((Symbol*)(internRigidSymbolWrtModule("FILLERS", NULL, 0)));
     SYM_LOOM_TO_KIF_LOGIC_NOT_FILLED_BY = ((Symbol*)(internRigidSymbolWrtModule("NOT-FILLED-BY", NULL, 0)));
-    SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND = ((Symbol*)(internRigidSymbolWrtModule("RANGE-CARDINALITY-LOWER-BOUND", getStellaModule("/PL-KERNEL-KB", true), 0)));
-    SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND = ((Symbol*)(internRigidSymbolWrtModule("RANGE-CARDINALITY-UPPER-BOUND", getStellaModule("/PL-KERNEL-KB", true), 0)));
-    SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY = ((Symbol*)(internRigidSymbolWrtModule("RANGE-CARDINALITY", getStellaModule("/PL-KERNEL-KB", true), 0)));
     SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_LOWER_BOUND = ((Symbol*)(internRigidSymbolWrtModule("QUALIFIED-RANGE-CARDINALITY-LOWER-BOUND", getStellaModule("/PL-KERNEL-KB", true), 0)));
     SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_UPPER_BOUND = ((Symbol*)(internRigidSymbolWrtModule("QUALIFIED-RANGE-CARDINALITY-UPPER-BOUND", getStellaModule("/PL-KERNEL-KB", true), 0)));
     SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY = ((Symbol*)(internRigidSymbolWrtModule("QUALIFIED-RANGE-CARDINALITY", getStellaModule("/PL-KERNEL-KB", true), 0)));
+    SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND = ((Symbol*)(internRigidSymbolWrtModule("RANGE-CARDINALITY-LOWER-BOUND", getStellaModule("/PL-KERNEL-KB", true), 0)));
+    SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND = ((Symbol*)(internRigidSymbolWrtModule("RANGE-CARDINALITY-UPPER-BOUND", getStellaModule("/PL-KERNEL-KB", true), 0)));
+    SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY = ((Symbol*)(internRigidSymbolWrtModule("RANGE-CARDINALITY", getStellaModule("/PL-KERNEL-KB", true), 0)));
     SYM_LOOM_TO_KIF_STELLA_EXISTS = ((Symbol*)(internRigidSymbolWrtModule("EXISTS", getStellaModule("/STELLA", true), 0)));
     SYM_LOOM_TO_KIF_STELLA_eg = ((Symbol*)(internRigidSymbolWrtModule("=>", getStellaModule("/STELLA", true), 0)));
     SYM_LOOM_TO_KIF_STELLA_AND = ((Symbol*)(internRigidSymbolWrtModule("AND", getStellaModule("/STELLA", true), 0)));
@@ -1710,6 +1714,7 @@ void helpStartupLoomToKif1() {
     SYM_LOOM_TO_KIF_STELLA_NOT = ((Symbol*)(internRigidSymbolWrtModule("NOT", getStellaModule("/STELLA", true), 0)));
     SYM_LOOM_TO_KIF_LOGIC_RELATES = ((Symbol*)(internRigidSymbolWrtModule("RELATES", NULL, 0)));
     SGT_LOOM_TO_KIF_STELLA_NUMBER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER-WRAPPER", getStellaModule("/STELLA", true), 1)));
+    SYM_LOOM_TO_KIF_LOGIC_FOR_SOME = ((Symbol*)(internRigidSymbolWrtModule("FOR-SOME", NULL, 0)));
     SYM_LOOM_TO_KIF_STELLA_FORALL = ((Symbol*)(internRigidSymbolWrtModule("FORALL", getStellaModule("/STELLA", true), 0)));
     SYM_LOOM_TO_KIF_LOGIC_THROUGH = ((Symbol*)(internRigidSymbolWrtModule("THROUGH", NULL, 0)));
     SYM_LOOM_TO_KIF_LOGIC_INTERVALii = ((Symbol*)(internRigidSymbolWrtModule("INTERVAL++", NULL, 0)));
@@ -1732,7 +1737,7 @@ void helpStartupLoomToKif1() {
     SYM_LOOM_TO_KIF_LOGIC_DOMAINS = ((Symbol*)(internRigidSymbolWrtModule("DOMAINS", NULL, 0)));
     SYM_LOOM_TO_KIF_LOGIC_RANGE = ((Symbol*)(internRigidSymbolWrtModule("RANGE", NULL, 0)));
     SYM_LOOM_TO_KIF_LOGIC_COMPOSE = ((Symbol*)(internRigidSymbolWrtModule("COMPOSE", NULL, 0)));
-    SYM_LOOM_TO_KIF_LOGIC_MEMBER_OF = ((Symbol*)(internRigidSymbolWrtModule("MEMBER-OF", NULL, 0)));
+    SYM_LOOM_TO_KIF_PL_KERNEL_KB_MEMBER_OF = ((Symbol*)(internRigidSymbolWrtModule("MEMBER-OF", getStellaModule("/PL-KERNEL-KB", true), 0)));
     SYM_LOOM_TO_KIF_STELLA_SETOF = ((Symbol*)(internRigidSymbolWrtModule("SETOF", getStellaModule("/STELLA", true), 0)));
     SYM_LOOM_TO_KIF_LOGIC_LISTOF = ((Symbol*)(internRigidSymbolWrtModule("LISTOF", NULL, 0)));
     KWD_LOOM_TO_KIF_ERROR = ((Keyword*)(internRigidSymbolWrtModule("ERROR", NULL, 2)));
@@ -1741,12 +1746,12 @@ void helpStartupLoomToKif1() {
     SYM_LOOM_TO_KIF_LOGIC_SUPERRELATIONS = ((Symbol*)(internRigidSymbolWrtModule("SUPERRELATIONS", NULL, 0)));
     SYM_LOOM_TO_KIF_LOGIC_SUPERCONCEPTS = ((Symbol*)(internRigidSymbolWrtModule("SUPERCONCEPTS", NULL, 0)));
     SYM_LOOM_TO_KIF_PL_KERNEL_KB_SUBSET_OF = ((Symbol*)(internRigidSymbolWrtModule("SUBSET-OF", getStellaModule("/PL-KERNEL-KB", true), 0)));
-    SYM_LOOM_TO_KIF_STELLA_QUOTE = ((Symbol*)(internRigidSymbolWrtModule("QUOTE", getStellaModule("/STELLA", true), 0)));
   }
 }
 
 void helpStartupLoomToKif2() {
   {
+    SYM_LOOM_TO_KIF_STELLA_QUOTE = ((Symbol*)(internRigidSymbolWrtModule("QUOTE", getStellaModule("/STELLA", true), 0)));
     SYM_LOOM_TO_KIF_STELLA_RETRACT = ((Symbol*)(internRigidSymbolWrtModule("RETRACT", getStellaModule("/STELLA", true), 0)));
     SYM_LOOM_TO_KIF_STELLA_ASSERT = ((Symbol*)(internRigidSymbolWrtModule("ASSERT", getStellaModule("/STELLA", true), 0)));
     KWD_LOOM_TO_KIF_3_VALUED_P = ((Keyword*)(internRigidSymbolWrtModule("3-VALUED-P", NULL, 2)));
@@ -1778,15 +1783,16 @@ void helpStartupLoomToKif2() {
     KWD_LOOM_TO_KIF_KIF = ((Keyword*)(internRigidSymbolWrtModule("KIF", NULL, 2)));
     SYM_LOOM_TO_KIF_STELLA_IN_MODULE = ((Symbol*)(internRigidSymbolWrtModule("IN-MODULE", getStellaModule("/STELLA", true), 0)));
     SYM_LOOM_TO_KIF_STELLA_THING = ((Symbol*)(internRigidSymbolWrtModule("THING", getStellaModule("/STELLA", true), 0)));
-    SYM_LOOM_TO_KIF_LOGIC_MUTUALLY_DISJOINT_COLLECTION = ((Symbol*)(internRigidSymbolWrtModule("MUTUALLY-DISJOINT-COLLECTION", NULL, 0)));
-    SYM_LOOM_TO_KIF_LOGIC_COVERING = ((Symbol*)(internRigidSymbolWrtModule("COVERING", NULL, 0)));
+    SYM_LOOM_TO_KIF_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION = ((Symbol*)(internRigidSymbolWrtModule("MUTUALLY-DISJOINT-COLLECTION", getStellaModule("/PL-KERNEL-KB", true), 0)));
+    SYM_LOOM_TO_KIF_PL_KERNEL_KB_SETOF = ((Symbol*)(internRigidSymbolWrtModule("SETOF", getStellaModule("/PL-KERNEL-KB", true), 0)));
+    SYM_LOOM_TO_KIF_PL_KERNEL_KB_COVERING = ((Symbol*)(internRigidSymbolWrtModule("COVERING", getStellaModule("/PL-KERNEL-KB", true), 0)));
     KWD_LOOM_TO_KIF_SINGLE_VALUED = ((Keyword*)(internRigidSymbolWrtModule("SINGLE-VALUED", NULL, 2)));
     KWD_LOOM_TO_KIF_CLOSED_WORLD = ((Keyword*)(internRigidSymbolWrtModule("CLOSED-WORLD", NULL, 2)));
-    SYM_LOOM_TO_KIF_LOGIC_CLOSED = ((Symbol*)(internRigidSymbolWrtModule("CLOSED", NULL, 0)));
+    SYM_LOOM_TO_KIF_PL_KERNEL_KB_CLOSED = ((Symbol*)(internRigidSymbolWrtModule("CLOSED", getStellaModule("/PL-KERNEL-KB", true), 0)));
     KWD_LOOM_TO_KIF_COMMUTATIVE = ((Keyword*)(internRigidSymbolWrtModule("COMMUTATIVE", NULL, 2)));
-    SYM_LOOM_TO_KIF_LOGIC_COMMUTATIVE = ((Symbol*)(internRigidSymbolWrtModule("COMMUTATIVE", NULL, 0)));
+    SYM_LOOM_TO_KIF_PL_KERNEL_KB_COMMUTATIVE = ((Symbol*)(internRigidSymbolWrtModule("COMMUTATIVE", getStellaModule("/PL-KERNEL-KB", true), 0)));
     KWD_LOOM_TO_KIF_SYMMETRIC = ((Keyword*)(internRigidSymbolWrtModule("SYMMETRIC", NULL, 2)));
-    SYM_LOOM_TO_KIF_LOGIC_SYMMETRIC = ((Symbol*)(internRigidSymbolWrtModule("SYMMETRIC", NULL, 0)));
+    SYM_LOOM_TO_KIF_PL_KERNEL_KB_SYMMETRIC = ((Symbol*)(internRigidSymbolWrtModule("SYMMETRIC", getStellaModule("/PL-KERNEL-KB", true), 0)));
     KWD_LOOM_TO_KIF_CLOS_CLASS = ((Keyword*)(internRigidSymbolWrtModule("CLOS-CLASS", NULL, 2)));
     KWD_LOOM_TO_KIF_MULTIPLE_VALUED = ((Keyword*)(internRigidSymbolWrtModule("MULTIPLE-VALUED", NULL, 2)));
     KWD_LOOM_TO_KIF_HASH_ON_DOMAINS = ((Keyword*)(internRigidSymbolWrtModule("HASH-ON-DOMAINS", NULL, 2)));
@@ -1805,8 +1811,6 @@ void helpStartupLoomToKif2() {
     KWD_LOOM_TO_KIF_CONSTRAINTS = ((Keyword*)(internRigidSymbolWrtModule("CONSTRAINTS", NULL, 2)));
     KWD_LOOM_TO_KIF_EXHAUSTIVE_PARTITION = ((Keyword*)(internRigidSymbolWrtModule("EXHAUSTIVE-PARTITION", NULL, 2)));
     KWD_LOOM_TO_KIF_EXHAUSTIVE_PARTITIONS = ((Keyword*)(internRigidSymbolWrtModule("EXHAUSTIVE-PARTITIONS", NULL, 2)));
-    SGT_LOOM_TO_KIF_STELLA_STRING_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("STRING-WRAPPER", getStellaModule("/STELLA", true), 1)));
-    KWD_LOOM_TO_KIF_IS_PRIMITIVE = ((Keyword*)(internRigidSymbolWrtModule("IS-PRIMITIVE", NULL, 2)));
   }
 }
 
@@ -1817,6 +1821,8 @@ void startupLoomToKif() {
     if (currentStartupTimePhaseP(2)) {
       helpStartupLoomToKif1();
       helpStartupLoomToKif2();
+      SGT_LOOM_TO_KIF_STELLA_STRING_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("STRING-WRAPPER", getStellaModule("/STELLA", true), 1)));
+      KWD_LOOM_TO_KIF_IS_PRIMITIVE = ((Keyword*)(internRigidSymbolWrtModule("IS-PRIMITIVE", NULL, 2)));
       KWD_LOOM_TO_KIF_IS = ((Keyword*)(internRigidSymbolWrtModule("IS", NULL, 2)));
       KWD_LOOM_TO_KIF_DEFAULTS = ((Keyword*)(internRigidSymbolWrtModule("DEFAULTS", NULL, 2)));
       KWD_LOOM_TO_KIF_DOMAIN = ((Keyword*)(internRigidSymbolWrtModule("DOMAIN", NULL, 2)));
@@ -1884,6 +1890,9 @@ void startupLoomToKif() {
       finalizeSlots();
       cleanupUnfinalizedClasses();
     }
+    if (currentStartupTimePhaseP(9)) {
+      inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
+    }
   }
 }
 
@@ -1917,17 +1926,17 @@ Symbol* SYM_LOOM_TO_KIF_LOGIC_FILLERS = NULL;
 
 Symbol* SYM_LOOM_TO_KIF_LOGIC_NOT_FILLED_BY = NULL;
 
-Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND = NULL;
-
-Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND = NULL;
-
-Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY = NULL;
-
 Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_LOWER_BOUND = NULL;
 
 Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY_UPPER_BOUND = NULL;
 
 Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_QUALIFIED_RANGE_CARDINALITY = NULL;
+
+Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_LOWER_BOUND = NULL;
+
+Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY_UPPER_BOUND = NULL;
+
+Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_RANGE_CARDINALITY = NULL;
 
 Symbol* SYM_LOOM_TO_KIF_STELLA_EXISTS = NULL;
 
@@ -1942,6 +1951,8 @@ Symbol* SYM_LOOM_TO_KIF_STELLA_NOT = NULL;
 Symbol* SYM_LOOM_TO_KIF_LOGIC_RELATES = NULL;
 
 Surrogate* SGT_LOOM_TO_KIF_STELLA_NUMBER_WRAPPER = NULL;
+
+Symbol* SYM_LOOM_TO_KIF_LOGIC_FOR_SOME = NULL;
 
 Symbol* SYM_LOOM_TO_KIF_STELLA_FORALL = NULL;
 
@@ -1987,7 +1998,7 @@ Symbol* SYM_LOOM_TO_KIF_LOGIC_RANGE = NULL;
 
 Symbol* SYM_LOOM_TO_KIF_LOGIC_COMPOSE = NULL;
 
-Symbol* SYM_LOOM_TO_KIF_LOGIC_MEMBER_OF = NULL;
+Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_MEMBER_OF = NULL;
 
 Symbol* SYM_LOOM_TO_KIF_STELLA_SETOF = NULL;
 
@@ -2069,23 +2080,25 @@ Symbol* SYM_LOOM_TO_KIF_STELLA_IN_MODULE = NULL;
 
 Symbol* SYM_LOOM_TO_KIF_STELLA_THING = NULL;
 
-Symbol* SYM_LOOM_TO_KIF_LOGIC_MUTUALLY_DISJOINT_COLLECTION = NULL;
+Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_MUTUALLY_DISJOINT_COLLECTION = NULL;
 
-Symbol* SYM_LOOM_TO_KIF_LOGIC_COVERING = NULL;
+Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_SETOF = NULL;
+
+Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_COVERING = NULL;
 
 Keyword* KWD_LOOM_TO_KIF_SINGLE_VALUED = NULL;
 
 Keyword* KWD_LOOM_TO_KIF_CLOSED_WORLD = NULL;
 
-Symbol* SYM_LOOM_TO_KIF_LOGIC_CLOSED = NULL;
+Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_CLOSED = NULL;
 
 Keyword* KWD_LOOM_TO_KIF_COMMUTATIVE = NULL;
 
-Symbol* SYM_LOOM_TO_KIF_LOGIC_COMMUTATIVE = NULL;
+Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_COMMUTATIVE = NULL;
 
 Keyword* KWD_LOOM_TO_KIF_SYMMETRIC = NULL;
 
-Symbol* SYM_LOOM_TO_KIF_LOGIC_SYMMETRIC = NULL;
+Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_SYMMETRIC = NULL;
 
 Keyword* KWD_LOOM_TO_KIF_CLOS_CLASS = NULL;
 

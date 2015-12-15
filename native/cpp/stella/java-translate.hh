@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2006      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -202,7 +202,6 @@ void helpStartupJavaTranslate4();
 void helpStartupJavaTranslate5();
 void helpStartupJavaTranslate6();
 void helpStartupJavaTranslate7();
-void helpStartupJavaTranslate8();
 void startupJavaTranslate();
 
 // Auxiliary global declarations:
@@ -380,8 +379,8 @@ extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_WITH_PROCESS_LOCK;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_NAMED_STATEMENT;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_LOOP;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_FOREACH;
-extern Surrogate* SGT_JAVA_TRANSLATE_STELLA_INTEGER_WRAPPER;
-extern Surrogate* SGT_JAVA_TRANSLATE_STELLA_FLOAT_WRAPPER;
+extern Surrogate* SGT_JAVA_TRANSLATE_STELLA_NUMBER;
+extern Surrogate* SGT_JAVA_TRANSLATE_STELLA_NUMBER_WRAPPER;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_CAST;
 extern Keyword* KWD_JAVA_TRANSLATE_WRAP_FUNCTION;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_AREF;
@@ -432,14 +431,10 @@ extern Symbol* SYM_JAVA_TRANSLATE_STELLA_FALSE;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_NULL;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_METHOD_VARIABLE_ARGUMENTSp;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_GET_SYM;
+extern Surrogate* SGT_JAVA_TRANSLATE_STELLA_INTEGER_WRAPPER;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_SYMBOL;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_GET_KWD;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_GET_SGT;
-extern Surrogate* SGT_JAVA_TRANSLATE_STELLA_OBJECT;
-extern Symbol* SYM_JAVA_TRANSLATE_STELLA_NULL_INTEGER;
-extern Symbol* SYM_JAVA_TRANSLATE_STELLA_NULL_FLOAT;
-extern Symbol* SYM_JAVA_TRANSLATE_STELLA_NULL_SINGLE_FLOAT;
-extern Symbol* SYM_JAVA_TRANSLATE_STELLA_NULL_CHARACTER;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_DEFINEDp;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_NULLp;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_CONCATENATE;

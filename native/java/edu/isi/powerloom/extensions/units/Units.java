@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2006      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -934,7 +934,7 @@ public class Units {
               return (Units.KWD_TERMINAL_FAILURE);
             }
             else {
-              collection = Stella.consList(Stella_Object.cons(absargdim, Stella_Object.cons(Units.wrapDimNumber(((DimNumber)(absargdim.wrapperValue)).negate()), Stella.NIL)));
+              collection = Cons.consList(Cons.cons(absargdim, Cons.cons(Units.wrapDimNumber(((DimNumber)(absargdim.wrapperValue)).negate()), Stella.NIL)));
             }
           }
           else {
@@ -1267,26 +1267,31 @@ public class Units {
           }
         }
         else {
-          { Measure measure = ((DimNumber)(((DimNumberLogicWrapper)(mainargvalue)).wrapperValue)).getMeasure();
-            LogicObject measureInstance = ((measure != null) ? ((LogicObject)(Units.$MEASURE_INSTANCE_TABLE$.lookup(measure))) : ((LogicObject)(null)));
+          if (Stella_Object.isaP(mainargvalue, Units.SGT_UNIT_SUPPORT_DIM_NUMBER_LOGIC_WRAPPER)) {
+            { Measure measure = ((DimNumber)(((DimNumberLogicWrapper)(mainargvalue)).wrapperValue)).getMeasure();
+              LogicObject measureInstance = ((measure != null) ? ((LogicObject)(Units.$MEASURE_INSTANCE_TABLE$.lookup(measure))) : ((LogicObject)(null)));
 
-            if (measureInstance != null) {
-              if (measureargvalue == measureInstance) {
-                {
-                  ControlFrame.setFrameTruthValue(frame, Logic.TRUE_TRUTH_VALUE);
-                  return (Units.KWD_FINAL_SUCCESS);
+              if (measureInstance != null) {
+                if (measureargvalue == measureInstance) {
+                  {
+                    ControlFrame.setFrameTruthValue(frame, Logic.TRUE_TRUTH_VALUE);
+                    return (Units.KWD_FINAL_SUCCESS);
+                  }
+                }
+                else {
+                  {
+                    ControlFrame.setFrameTruthValue(frame, Logic.FALSE_TRUTH_VALUE);
+                    return (Units.KWD_TERMINAL_FAILURE);
+                  }
                 }
               }
               else {
-                {
-                  ControlFrame.setFrameTruthValue(frame, Logic.FALSE_TRUTH_VALUE);
-                  return (Units.KWD_TERMINAL_FAILURE);
-                }
+                return (Units.KWD_TERMINAL_FAILURE);
               }
             }
-            else {
-              return (Units.KWD_TERMINAL_FAILURE);
-            }
+          }
+          else {
+            return (Units.KWD_TERMINAL_FAILURE);
           }
         }
       }
@@ -1363,7 +1368,7 @@ public class Units {
           m = ((Measure)(iter000.value));
           if (collect000 == null) {
             {
-              collect000 = Stella_Object.cons(((LogicObject)(Units.$MEASURE_INSTANCE_TABLE$.lookup(m))), Stella.NIL);
+              collect000 = Cons.cons(((LogicObject)(Units.$MEASURE_INSTANCE_TABLE$.lookup(m))), Stella.NIL);
               if (measureslist.theConsList == Stella.NIL) {
                 measureslist.theConsList = collect000;
               }
@@ -1374,7 +1379,7 @@ public class Units {
           }
           else {
             {
-              collect000.rest = Stella_Object.cons(((LogicObject)(Units.$MEASURE_INSTANCE_TABLE$.lookup(m))), Stella.NIL);
+              collect000.rest = Cons.cons(((LogicObject)(Units.$MEASURE_INSTANCE_TABLE$.lookup(m))), Stella.NIL);
               collect000 = collect000.rest;
             }
           }

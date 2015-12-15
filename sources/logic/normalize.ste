@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: normalize.ste,v 1.42 2006/05/11 07:05:24 hans Exp
+;;; Version: normalize.ste,v 1.46 2010/09/09 23:59:27 hans Exp
 
 ;;; Normalization of propositions
 
@@ -510,6 +510,10 @@
   ;; If the relation argument of the HOLDS-proposition `self' is not a
   ;;    a variable (e.g., a relation name, ground function term or KAPPA),
   ;;    then convert 'self' into an ordinary proposition.
+  ;; PROBLEM: if we have an expression such as `(holds (f a) ?x ?y)' where
+  ;;    `(f a)' can dynamically infer descriptions, the approach of evaluating
+  ;;    the term to a surrogate at proposition building time is insufficient.
+  ;;    Figure out how to address this more generally.
   (let ((holdsArguments (arguments self))
         (relationTerm (nth holdsArguments 0))
         (nofArguments (1- (length holdsArguments)))
@@ -517,13 +521,20 @@
         (predicateArguments (new VECTOR :array-size nofArguments))
         (description DESCRIPTION NULL))
     (when (and (null? surrogate)
-               (not (isa? relationTerm @DESCRIPTION)))
+               (or (not (isa? relationTerm @DESCRIPTION))
+                   ;; check the KAPPA for any unbound external variables:
+                   (not (argument-bound? relationTerm))))
       (return))
     (foreach i in (interval 1 nofArguments)
         do (setf (nth predicateArguments (1- i)) (nth holdsArguments i)))
     (cond
      ((defined? surrogate)
       (setq description (evaluate-predicate surrogate (nth holdsArguments 1)))
+      (when (null? description)
+	;; This can happen if we get a HOLDS proposition with a first argument that
+	;;     isn't really a description.  This should normally only happen if the
+	;;     argument to the HOLDS has not been properly defined.
+	(signal-proposition-error "Relation argument " (symbol-name surrogate) " in HOLDS proposition is not defined as a relation: " self))
       (cond ((class? description)
              (setf (kind self) :ISA))
             ((function? description)
@@ -557,6 +568,14 @@
   (when (eql? (operator self) @THING)
     (overlay-proposition self TRUE-PROPOSITION)
     (return))
+  (foreach clause in (arguments self)
+      where (isa? clause @PROPOSITION)
+      do (normalize-proposition clause)) )
+
+(defun normalize-function-proposition ((self PROPOSITION))
+  ;; Normalize any proposition arguments of `self'.
+  ;; This primarily benefits `finish-creating-function-proposition', so it
+  ;; can properly deal with arguments that are propositions.
   (foreach clause in (arguments self)
       where (isa? clause @PROPOSITION)
       do (normalize-proposition clause)) )
@@ -742,63 +761,45 @@
     (:OR (normalize-OR-proposition self))
     (:NOT (normalize-NOT-proposition self))
     ((:ISA :PREDICATE) (normalize-predicate-proposition self))
-    (:FUNCTION
-     (foreach clause in (arguments self)
-              where (isa? clause @PROPOSITION)
-              do (normalize-proposition clause)))
+    (:FUNCTION (normalize-function-proposition self))
     (:EXISTS (normalize-EXISTS-proposition self))
     (:FORALL (normalize-FORALL-proposition self))
     (:EQUIVALENT (normalize-EQUIVALENT-proposition self))
     ((:IMPLIES :FAIL :COLLECT-INTO :CONSTANT)
      NULL)) )
 
-(defun normalize-top-level-proposition ((self PROPOSITION)
-                                        (ioVariables VARIABLES-VECTOR))
+(defun normalize-top-level-proposition ((self PROPOSITION))
   ;; Normalize a top-level proposition `self'.
-  ;; If `ioVariables' are given, it is assumed that they are from the
-  ;;    description that has `self' as its proposition.
+  ;; Performs additional normalization and optimization for
+  ;;   top-level forall propositions.
   (normalize-proposition self)
-  (when (or (eql? (kind self) :FORALL)
-            (defined? ioVariables))
-    (normalize-top-level-descriptive-proposition self ioVariables)))
+  (when (eql? (kind self) :FORALL)
+    (let ((ioVars (io-variables self))
+          (args (arguments self)))
+      (normalize-descriptive-proposition (first args) ioVars :TAIL)
+      (normalize-descriptive-proposition (second args) ioVars :HEAD))))
 
-(defun normalize-top-level-descriptive-proposition ((self PROPOSITION)
-                                                    (ioVariables VARIABLES-VECTOR))
-  ;; Normalize top-level descriptive propositions from a description (if
-  ;;   `ioVariables' is non-NULL) or a FORALL rule.
+(defun normalize-descriptive-proposition ((self PROPOSITION)
+                                          (ioVariables VARIABLES-VECTOR)
+                                          (kind KEYWORD))
+  ;; Normalize a descriptive propositions from a description or a FORALL rule.
   ;; Evaluates top-level equivalences, collapes resulting variable value chains
   ;;   and simplifies and re/normalizes the result if necessary.
-  ;; This used to be done after propositions were fastened down, however, since
-  ;;   it causes further structural changes it messes up the new duplicate
-  ;;   detection mechanism; so, now we do this as part of normalization so that
-  ;;   all structural changes are performed before we look for a duplicate.
-  ;;   This means that any evaluations done by `equate-top-level-equivalences'
-  ;;   that depend on backlinks will fail - however, this doesn't seem to hurt us.
-  (cond ((and (null? ioVariables)
-              (eql? (kind self) :FORALL))
-         (special ((*evaluationMode* :DESCRIPTION))
-           (let ((proposition PROPOSITION NULL))
-             (setq ioVariables (io-variables self))
-             (foreach i in (interval 0 1)
-                 do (setq proposition (nth (arguments self) i))
-                    (exception-case
-                        (equate-top-level-equivalences proposition)
-                      (CLASH (e)
-                        (print-stream STANDARD-ERROR (exception-message e) EOL)))
-                    (tighten-argument-bindings proposition ioVariables)
-                    (simplify-proposition proposition))))
-         ;; THIS IS STILL POTENTIALLY TOO RADICAL BUT SEEMS TO WORK SO FAR:
-         (collapse-value-of-chains-for-io-variables ioVariables))
-        ((defined? ioVariables)
-         ;; we have a top-level description proposition:
-         (special ((*evaluationMode* :DESCRIPTION))
-           (exception-case
-               (equate-top-level-equivalences self)
-             (CLASH (e)
-               (print-stream STANDARD-ERROR (exception-message e) EOL)))
-           (tighten-argument-bindings self ioVariables)
-           (simplify-proposition self)
-           (collapse-value-of-chains-for-io-variables ioVariables)))))
+  ;; The collapsing of equivalences is controlled by `kind', which has to be
+  ;;   one of :TOP-LEVEL, :TAIL or :HEAD.  For top-level propositions and rule
+  ;;   antecedents (tails) all equivalences are collapsed; for heads, only those
+  ;;   between internal exist variables are collapsed, since, otherwise, equating
+  ;;   of objects in forward chaining rule consequents will fail (we'd eliminate
+  ;;   the necessary equivalence propositions (e.g., we'd get (= ?x ?x) instead
+  ;;   of (= ?x ?y)).
+  (special ((*evaluationMode* :DESCRIPTION))
+    (exception-case
+        (equate-top-level-equivalences self ioVariables kind)
+      (CLASH (e)
+        (print-stream STANDARD-ERROR (exception-message e) EOL)))
+    (tighten-argument-bindings self ioVariables)
+    (simplify-proposition self)
+    (collapse-value-of-chains-for-io-variables ioVariables)))
 
 
   ;;
