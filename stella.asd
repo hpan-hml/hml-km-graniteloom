@@ -41,10 +41,14 @@
 
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  
-  (intern (symbol-name '#:*load-cl-struct-stella?*))
-  (intern (symbol-name '#:*stella-verbose?*))
-  
+
+  (let ((p (find-package '#:cl-user)))
+    (dolist (s '(#:*load-cl-struct-stella?*
+                 #:*stella-verbose?*
+                 #:*source-truename* ;; [new]
+                 #:*stella-system* ;; [new]
+                 ))
+      (intern (symbol-name s) p)))
   
   (defpackage #:stella-system
     (:use #:asdf #:cl)
@@ -61,7 +65,10 @@
     (:shadowing-import-from
      #:cl-user
      #:*load-cl-struct-stella?*
-     #:*stella-verbose?*))
+     #:*stella-verbose?*
+     #:*source-truename*
+     #:*stella-system*
+     ))
 
   #+NIL
   (pushnew :stella-struct *features*
@@ -111,6 +118,17 @@
 ;;   *STELLA-NATIVE-DIRECTORY* - cf "PL:" logical host
 
 (in-package #:stella-system)
+
+
+(defmacro setv (name value &optional docstring)
+  `(cond
+     ((boundp (quote ,name))
+      ,@(when docstring `(progn (setf (documentation (quote ,name) 'variable)
+                                      ,docstring)))
+      (setq ,name ,value))
+     (t
+      (defvar ,name ,value ,@(when docstring (list docstring))))))
+
 
 #+NIL ;; unused class definition, presently (FIXME)
 (defclass stella-source-file (source-file)
@@ -164,22 +182,41 @@ implementation ~(~D)~%is too small.  It must be at least 24 bits."
   ())
 
 
+(defvar *source-truename*)
+
+(defvar *stella-system*)
+
+
 (defmethod perform :around ((o compile-op) (c stella-lisp-file))
-  (let ((*compile-verbose* *stella-verbose?*))
+  (let ((*compile-verbose* *stella-verbose?*)
+        (*stella-system* (component-system c))
+        (*source-truename*
+         (truename (component-pathname c))))
     (stella::with-redefinition-warnings-suppressed
       (stella::with-undefined-function-warnings-suppressed
         (call-next-method)))))
 
 (defmethod perform :around ((o load-op) (c stella-lisp-file))
-  (let ((*load-verbose* *stella-verbose?*))
+  (let ((*load-verbose* *stella-verbose?*)
+        (*stella-system* (component-system c))
+        (*source-truename*
+         (truename (component-pathname c))))
     (stella::with-redefinition-warnings-suppressed
       (stella::with-undefined-function-warnings-suppressed
         (call-next-method)))))
 
 
+(defclass stella-system (system)
+  ())
+
+(defmethod perform :around ((op operation) (c stella-system))
+  (let ((*stella-system* c))
+    ;; NB: PERFORM might not be applied recursively onto system components
+    (call-next-method)))
 
 
 (defsystem #:stella ;; xref: ./load-stella.lisp , ...
+  :class stella-system
   :depends-on
   (#:usocket ;; portable sockets interface
    ;; ^ cf. socket handling in STELLA 
@@ -194,19 +231,12 @@ implementation ~(~D)~%is too small.  It must be at least 24 bits."
   
   :perform
   (compile-op :before (o c)
+              
               ;; [new] in COMPILE-OP :BEFORE
               #+stella-struct
-              (macrolet ((setv (name value)
-                           `(cond
-                              ((boundp (quote ,name))
-                               (setq ,name ,value))
-                              (t
-                               (defvar ,name ,value)))))
-                ;;
-                ;; set CL-USER::*load-cl-struct-stella?*
-                ;; per #+STELLA-STRUCT
-                ;;
-                (setv *load-cl-struct-stella?* t))
+              (setv *load-cl-struct-stella?* t)
+              ;; ^ set CL-USER::*load-cl-struct-stella?*
+              ;; per #+STELLA-STRUCT
               
               ) ;; :BEFORE COMPILE-OP
   
@@ -234,7 +264,7 @@ Type `(in-package \"STELLA\")' to execute STELLA commands."
              )) ;; :AFTER LOAD-OP
   
   :components
-  ((:file "translations")
+  ((stella-lisp-file "translations")
    ;; ^ LPN translations - "PL:" + {sorces|native|bin|kbs} + ";" ...
    (:module
     "native"
