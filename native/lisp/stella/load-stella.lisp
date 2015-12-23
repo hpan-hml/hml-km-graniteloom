@@ -211,6 +211,7 @@ hash tables grow large).")
       (declare (ignore options))
       `(progn ,@body))))
 
+#-asdf
 (cond
  ((and (find-package "STELLA")
        (fboundp (find-symbol "STARTUP" (find-package "STELLA"))))
