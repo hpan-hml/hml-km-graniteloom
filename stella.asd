@@ -186,6 +186,7 @@ implementation ~(~D)~%is too small.  It must be at least 24 bits."
 
 (defvar *stella-system*)
 
+(defvar *stella-verbose?* (or *compile-verbose* *load-verbose*))
 
 (defmethod perform :around ((o compile-op) (c stella-lisp-file))
   (let ((*compile-verbose* *stella-verbose?*)
