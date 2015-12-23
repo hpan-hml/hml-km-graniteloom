@@ -47,6 +47,7 @@
 (in-package "CL-USER")
 
 
+#-ASDF
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (unless (>= (eval '(integer-length most-positive-fixnum)) 24) ;; use `eval' to avoid unreachable code warns
     (error "The maximum fixnum size of this lisp implementation (~D)~%is too small.  It must be at least 24 bits."
@@ -57,6 +58,7 @@
   ;; from the Lisp prompt, by not requiring the double-float marker:
   (setq *READ-DEFAULT-FLOAT-FORMAT* 'DOUBLE-FLOAT))
 
+#-ASDF ;; defined also in ASDF system definition
 (loop for symbol
       in '(CL:SETQ CL:SETF
            CL:PRINT-OBJECT
@@ -77,19 +79,22 @@
 
 ;; Load support libraries for TCP/IP
 
-#+Allegro
-(ignore-errors (require :socket))
-#+(and MCL (not OPENMCL))
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (let ((ccl::*warn-if-redefine* nil)
+#-ASDF
+(progn
+  ;; when #+ASDF this is handled via the #:usocket system
+  #+Allegro
+  (ignore-errors (require :socket))
+  #+(and MCL (not OPENMCL))
+  (eval-when (:compile-toplevel :load-toplevel :execute)
+    (let ((ccl::*warn-if-redefine* nil)
 	(ccl::*warn-if-redefine-kernel* nil))
-    (require :OPENTRANSPORT)))
-#+Lispworks
-(require "comm")
-#+:SBCL
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (require :sb-bsd-sockets))
-
+      (require :OPENTRANSPORT)))
+  #+Lispworks
+  (require "comm")
+  #+:SBCL
+  (eval-when (:compile-toplevel :load-toplevel :execute)
+    (require :sb-bsd-sockets))) ;; PROGN #-ASDF
+  
 
 (in-package "STELLA")
 
@@ -966,6 +971,19 @@
 ;;;;;; Synchronization Support:
   ;;
 
+#+BORDEAUX-THREADS
+(cl:defun %make-process-lock ()
+  (bt:make-lock
+   (cl:format cl:nil "STELLA LOCK ~S"
+              (cl:get-universal-time))))
+
+#+BORDEAUX-THREADS
+(cl:defmacro with-process-lock (lock CL:&body forms)
+  `(bt:with-lock-held (,lock)
+     ,@forms))
+
+
+#-BORDEAUX-THREADS
 (cl:defun %make-process-lock ()
   ;; Returns a process lock object.  Conditionalized for supported Lisp
   ;; systems:
@@ -976,6 +994,7 @@
   #+SBCL      (SB-THREAD:MAKE-MUTEX)
   #-(or Allegro Lispworks MCL CMU SBCL) 'NO-LOCK)
 
+#-BORDEAUX-THREADS
 (cl:defmacro with-process-lock (lock CL:&body forms)
   ;; Macro to synchronize a body of code based on a lock.  Conditionalized
   ;; for supported Lisp systems:
