@@ -804,7 +804,7 @@
     #+:EXCL  (tpl::zoom-print-stack-1 stream 20)
     #+:MCL   (ccl:print-call-history)
     #+:CMU   (debug:backtrace)
-    #+:SBCL  (sb-debug:backtrace)
+    #+:SBCL  (sb-debug:print-backtrace)
     #+:CLISP (system::print-backtrace :out stream)
     #+:LISPWORKS (dbg:output-backtrace :stream stream)
     ))
