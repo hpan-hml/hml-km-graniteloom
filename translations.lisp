@@ -51,7 +51,10 @@
 ;;  handling of filenames across platforms.
 
 (defparameter *powerloom-root-directory*
-  (pathname-directory *load-truename*))
+  #-ASDF
+  (pathname-directory *load-truename*)
+  #+ASDF
+  (pathname-directory (asdf:component-pathname *stella-system*)))
 
 
 (defparameter *powerloom-binary-subdirectory*
@@ -95,7 +98,9 @@
 
 ;; ACL 5.0, for example, doesn't allow :wild as a version
 ;; value.
-(let* ((default-source *load-truename*)
+(let* ((default-source
+        #-ASDF *load-truename*
+         #+ASDF stella-system::*source-truename*)
        (wild-version-value
 	(if (ignore-errors (make-pathname :version :wild
 					  :defaults default-source))
@@ -118,6 +123,8 @@
 			   `(("sources;**;*.*.*" 
 			      ,(create-pathname-pattern
 				*powerloom-root-directory* "sources"))))
+                     ;; FIXME: "PL:" logical pathname translation differs
+                     ;; when this file is loaded from ASDF FASL cache
 		     (namestring (translate-logical-pathname "PL:sources;")))))
 	   (needs-directory-rule?
 	    (or (null directory-test-temp)
@@ -128,9 +135,17 @@
 				    *powerloom-root-directory* "sources"))
 	      ("native;**;*.*.*" ,(create-pathname-pattern
 				   *powerloom-root-directory* "native"))
-	      ("bin;**;*.*.*" ,(create-pathname-pattern
-				*powerloom-root-directory* "native" "lisp" "bin"
-				*powerloom-binary-subdirectory*))
+	      ("bin;**;*.*.*"
+               #+ASDF
+               ,(asdf:apply-output-translations
+                 (make-pathname :directory *powerloom-root-directory*
+                                :name nil :type nil
+                                :defaults *source-truename*))
+               #-ASDF
+               ,(create-pathname-pattern
+                 *powerloom-root-directory* "native" "lisp" "bin"
+                 *powerloom-binary-subdirectory*))
+              
 	      ("kbs;**;*.*.*" ,(create-pathname-pattern
 				*powerloom-root-directory* "kbs"))
 	      ("**;*.*.*" ,(create-pathname-pattern *powerloom-root-directory*))))
@@ -140,9 +155,16 @@
 					 *powerloom-root-directory* "sources"))
 			("native;**;" ,(create-directory-pattern
 					*powerloom-root-directory* "native"))
-			("bin;**;" ,(create-directory-pattern
-				     *powerloom-root-directory* "native" "lisp" "bin"
-				     *powerloom-binary-subdirectory*))
+			("bin;**;"
+                         #+ASDF
+                         ,(asdf:apply-output-translations
+                           (make-pathname :directory *powerloom-root-directory*
+                                          :name nil :type nil
+                                          :defaults *source-truename*))
+                         #-ASDF
+                         ,(create-directory-pattern
+                           *powerloom-root-directory* "native" "lisp" "bin"
+                           *powerloom-binary-subdirectory*))
 			("kbs;**;" ,(create-directory-pattern
 				     *powerloom-root-directory* "kbs"))
 			("**;" ,(create-directory-pattern *powerloom-root-directory*)))
