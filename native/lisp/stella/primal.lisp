@@ -206,9 +206,17 @@
 
 ;;; (DEFCONSTANT MOST-NEGATIVE-FLOAT ...)
 
-(CL:DEFVAR MOST-NEGATIVE-FLOAT (cl:multiple-value-bind (signif expon)
-                (cl:integer-decode-float cl:most-positive-double-float)
-              (cl:- (cl:scale-float (CL:- signif 1.0) expon))))
+(CL:DEFVAR MOST-NEGATIVE-FLOAT
+  #-(or SBCL CMUCL)
+  (cl:multiple-value-bind (signif expon)
+      (cl:integer-decode-float cl:most-positive-double-float)
+    (cl:- (cl:scale-float (CL:- signif 1.0) expon)))
+  #+(or SBCL CMUCL)
+  (cl:min cl:most-negative-double-float
+          cl:most-negative-long-float 
+          cl:most-negative-short-float
+          cl:most-negative-single-float 
+          ))
 (CL:DECLAIM (CL:TYPE CL:DOUBLE-FLOAT MOST-NEGATIVE-FLOAT))
 
 ;;; (DEFCONSTANT LEAST-POSITIVE-FLOAT ...)
