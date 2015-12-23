@@ -39,7 +39,12 @@
 
 (in-package #:cl-user)
 
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
+  
+  (intern (symbol-name '#:*load-cl-struct-stella?*))
+  (intern (symbol-name '#:*stella-verbose?*))
+  
   
   (defpackage #:stella-system
     (:use #:asdf #:cl)
@@ -160,9 +165,18 @@ implementation ~(~D)~%is too small.  It must be at least 24 bits."
 
 
 (defmethod perform :around ((o compile-op) (c stella-lisp-file))
-  (stella::with-redefinition-warnings-suppressed
-    (stella::with-undefined-function-warnings-suppressed
-      (call-next-method))))
+  (let ((*compile-verbose* *stella-verbose?*))
+    (stella::with-redefinition-warnings-suppressed
+      (stella::with-undefined-function-warnings-suppressed
+        (call-next-method)))))
+
+(defmethod perform :around ((o load-op) (c stella-lisp-file))
+  (let ((*load-verbose* *stella-verbose?*))
+    (stella::with-redefinition-warnings-suppressed
+      (stella::with-undefined-function-warnings-suppressed
+        (call-next-method)))))
+
+
 
 
 (defsystem #:stella ;; xref: ./load-stella.lisp , ...
