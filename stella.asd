@@ -101,21 +101,10 @@
   ) ;; EVAL-WHEN
 
 
-;; note: Variables in CL-USER defined/used in STELLA during compile/load/eval:
-;;
-;;  *load-cl-struct-stella?* => T
-;;   ^ effects TBD - see src, new feature #:STELLA-STRUCT
-;; 
-;;  *stella-verbose?*
-;;   ^ results in *LOAD-VERBOSE*, *COMPILE-VERBOSE* => T 
-;;     and some additional messages being printed on standard output
-;;
-;;   CL:*READ-DEFAULT-FLOAT-FORMAT*
-;;   see native/lisp/stella/cl-lib/cl-setup.lisp
+;; n.b
 ;;
 ;;   *STELLA-SOURCE-EXTENSION* =default=> ".ste" 
 ;;   *STELLA-TRANSLATED-EXTENSION*  =default=> ".lisp"
-;;   *STELLA-NATIVE-DIRECTORY* - cf "PL:" logical host
 
 (in-package #:stella-system)
 
@@ -130,10 +119,34 @@
       (defvar ,name ,value ,@(when docstring (list docstring))))))
 
 
-#+NIL ;; unused class definition, presently (FIXME)
 (defclass stella-source-file (source-file)
+  ;; intermediay source file
+  ;; may be processed to generate a c++, java,
+  ;; or lisp source file
   ()
   (:default-initargs :type "ste"))
+
+(defclass java-source-file (source-file)
+  ()
+  (:default-initargs :type "java"))
+
+(defclass c++-header-file (source-file)
+  ()
+  (:default-initargs :type "hh"))
+
+(defclass c-header-file (source-file)
+  ()
+  (:default-initargs :type "h"))
+
+(defclass c++-source-file (source-file)
+  ()
+  (:default-initargs :type "cc"))
+
+(defclass makefile (source-file)
+  ()
+  ;; e.g. ./native/cpp/stella/cpp-lib/Makefile
+  (:default-initargs :type nil))
+
 
 
 ;; emulating forms defined in
@@ -240,6 +253,12 @@ implementation ~(~D)~%is too small.  It must be at least 24 bits."
               ;; per #+STELLA-STRUCT
               
               ) ;; :BEFORE COMPILE-OP
+
+  ;; :perform
+  ;; (compile-op :after (o c)
+  ;;             (trace STELLA::DEFINE-SYSTEM)
+  ;;             #+NIL (trace STELLA::%MAKE_SYSTEM))
+  
   
   :perform
   (load-op :after (o c)
