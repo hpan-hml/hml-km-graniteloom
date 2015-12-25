@@ -1847,11 +1847,14 @@ specifications below:
      the pre-existing value of the current context.  `cc' is a no-op if
      the context reference cannot be successfully evaluated.
 
- -- N-Command: classify-relations ((module NAME) (local? BOOLEAN)) :
-     Classify named relations visible in MODULE.  If LOCAL?, only
-     classify descriptions defined within MODULE, i.e., don't classify
-     descriptions inherited from ancestor modules.  If MODULE is NULL,
-     classify relations in all modules.
+ -- N-Command: classify-relations (&rest (options OBJECT)) :
+     Classify relations visible in the module defined by the :module
+     option (which defaults to the current module).  If :module was
+     explicitly specified as NULL, classify relations in all modules.
+     If `:local?' is specified as TRUE only classify relations that
+     belong to the specified module but not any modules it inherits.
+     For backwards compatibility, this command also supports the old
+     <module> <local?> arguments specified without keywords.
 
      Conceptually, the classifier operates by comparing each concept or
      relation with all other concepts/relations, searching for a proof
@@ -1864,11 +1867,14 @@ specifications below:
      need to be checked for possible subsumption relationships.
 
 
- -- N-Command: classify-instances ((module NAME) (local? BOOLEAN)) :
-     Classify instances visible in MODULE.  If LOCAL?, only classify
-     instances that belong to MODULE, i.e., don't classify instances
-     inherited from ancestor modules.  If MODULE is NULL, classify
-     instances in all modules.
+ -- N-Command: classify-instances (&rest (options OBJECT)) :
+     Classify instances visible in the module defined by the :module
+     option (which defaults to the current module).  If :module was
+     explicitly specified as NULL, classify instances in all modules.
+     If `:local?' is specified as TRUE only classify instances that
+     belong to the specified module but not any modules it inherits.
+     For backwards compatibility, this command also supports the old
+     <module> <local?> arguments specified without keywords.
 
      Conceptually, the classifier operates by comparing each instance
      with all concepts in the hierarchy, searching for a proof for each
@@ -1876,8 +1882,8 @@ specifications below:
      Whenever a new `is-a' relation is discovered, the classifier adds
      an `is-a' link between the instance and the concept, thereby
      recording an additional fact about the instance.  The implemented
-     classification algorithm is relatively efficient - it works hard
-     at limiting the number of concepts or relations that need to be
+     classification algorithm is relatively efficient - it works hard at
+     limiting the number of concepts or relations that need to be
      checked for possible is-a relationships.
 
 
@@ -2174,10 +2180,54 @@ specifications below:
  -- N-Command: in-module ((name NAME)) : MODULE
      Change the current module to the module named NAME.
 
+ -- N-Command: list-inconsistent-propositions (&rest (options OBJECT))
+          : (CONS OF PROPOSITION)
+     Return a list of all currently known inconsistent proposition in
+     the module defined by the :module option (which defaults to the
+     current module).  If `:local?' is specified as TRUE only look in
+     the specified module but not any modules it inherits.  Note, that
+     this simply reports propositions that have been assigned an
+     inconsistent truth value so far (e.g., in clash exceptions), it
+     will not try to detect any new or all inconsistencies in a module.
+
  -- Command: list-modules ((kb-only? BOOLEAN)) : (CONS OF MODULE)
      Returns a cons of all modules defined in PowerLoom.  If KB-ONLY?
      is `true', then any modules which are code only or just namespaces
      are not returned.
+
+ -- N-Command: list-unclassified-instances (&rest (options OBJECT)) :
+          (CONS OF LOGIC-OBJECT)
+     Collect all instances in the module defined by the :module option
+     (which defaults to the current module) that were not (or will not
+     be) classified due to their lack of non-inferable/primitive type
+     assertions.  If :module was explicitly specified as NULL, look in
+     all currently defined modules.  If `:local?' is specified as TRUE
+     only look in the specified module but not any modules it inherits.
+     For backwards compatibility, this command also supports the old
+     <module> <local?> arguments specified without keywords.
+
+ -- N-Command: list-unclassified-relations (&rest (options OBJECT)) :
+          (CONS OF NAMED-DESCRIPTION)
+     Collect all named description in the module defined by the :module
+     option (which defaults to the current module) that were not (or
+     will not be) classified due to their lack of
+     non-inferable/primitive ancestor relations.  If :module was
+     explicitly specified as NULL, look in all currently defined
+     modules.  If `:local?' is specified as TRUE only look in the
+     specified module but not any modules it inherits.  For backwards
+     compatibility, this command also supports the old <module>
+     <local?> arguments specified without keywords.
+
+ -- N-Command: list-undefined-relations (&rest (options OBJECT)) :
+          (CONS OF NAMED-DESCRIPTION)
+     Return a list of as yet undefined concepts and relations in the
+     module defined by the :module option (which defaults to the
+     current module).  These relations were defined by the system,
+     since they were referenced but have not yet been defined by the
+     user.  If `:local?' is specified as TRUE only look in the
+     specified module but not any modules it inherits.  For backwards
+     compatibility, this command also supports the old <module>
+     <local?> arguments specified without keywords.
 
  -- Command: load ((file STRING) &rest (options OBJECT)) :
      Read logic commands from FILE and evaluate them.  By default, this
@@ -2292,7 +2342,8 @@ specifications below:
 
             (retrieve [<integer> | all]
                       [[{<vardecl> | (<vardecl>+)}]
-                      <proposition>])
+                       <proposition>
+                       [<option-keyword> <option-value>]])
 
      The variables and proposition are similar to an `exists' sentence
      or `kappa' term without the explicit quantifier.  If variables are
@@ -2315,6 +2366,27 @@ specifications below:
      of solutions collected so far.  Calling `retrieve' without any
      arguments (or only with the first argument) will generate one (or
      more) solutions to the most recently asked query.
+
+     `retrieve' supports the following options:   :TIMEOUT Time limit
+     on query effort in seconds.    :MAXIMUM-DEPTH Inference depth
+     cutoff in goal depth.    :INFERENCE-LEVEL Level of inference to
+     use.  The values in order of effort      and power are ASSERTION,
+     SHALLOW, SUBSUMPTION, BACKTRACKING, NORMAL      and REFUTATION.
+     Default is NORMAL.    :FOUR-VALUED? Will attempt to disprove
+     values and find conflicts.    :ITERATIVE-DEEPENING? Controls
+     whether the search strategy will use      depth-first or
+     breadth-first search.    :DONT-OPTIMIZE? Option to disable
+     re-arrangement of clauses by the query      optimizer.  If TRUE,
+     then use the order of clauses as given in the query.    :SORT-BY
+     one of SCORE, VALUES, VALUES-DESCENDING, VALUES-ASCENDING.
+     SCORE is only meaningful for partial match mode.  The value sorting
+         is done by values in order in the tuple.  Default is ascending.
+      :MATCH-MODE Allows choice of matching mode.  One of STRICT,
+     INCREMENTAL,      NEURAL-NETWORK, or other plug-in partial-match
+     mode.       The default is STRICT.    :MINIMUM-SCORE The minimum
+     score to return.  Only useful in partial match     mode.
+     :MAXIMUM-UNKNOWNS The maximum number of unknown values to allow.
+     Only useful     for whynot matching.
 
      KIF examples:
 
@@ -2374,8 +2446,17 @@ specifications below:
      Use `(set/unset-feature trace-subgoals)' to en/disable goal
      tracing of the inference engine.
 
- -- Command: save-module ((name NAME) (file STRING)) :
-     Save all definitions and assertions of module NAME to FILE.
+ -- Command: save-module (&rest (options OBJECT)) :
+     Save all definitions and assertions of the specified :module (which
+     defaults to the current module) to a file or persistent store.  If
+     :file is specified, the KB is saved to that file.  If no :file is
+     specified but the specified :module is associated with a
+     persistent store, the KB will saved to that store, otherwise, an
+     error will be signalled.  The specifics on how a save operation
+     will proceed for a persistent store depends on the particular type
+     of store (see respective documentation).  For backwards
+     compatibility, this command also supports the old <module> <file>
+     arguments specified without keywords.
 
  -- N-Command: set-feature (&rest (features NAME)) : (LIST OF KEYWORD)
      Enable the PowerLoom environment feature(s) named by FEATURES.
@@ -4609,10 +4690,9 @@ their own modules.
 
  -- Function: LENGTH ((?x THING)) :-> (?z INTEGER)
      Function that returns the length of a string or a logical list.
-     NOT YET IMPLEMENTED FOR LISTS.
 
- -- Relation: LENGTH-OF-LIST ((?l COLLECTION) (?length INTEGER))
-     Computes the length of the list or set ?l.
+ -- Function: LENGTH ((?x THING)) :-> (?z INTEGER)
+     Function that returns the length of a string or a logical list.
 
  -- Relation: LEXEME ((?r THING) (?s STRING))
      ?s is a lexeme for the relation or individual ?r.  A relation or
@@ -4976,21 +5056,17 @@ their own modules.
      Match ?pattern against ?object between ?start and ?end
      (zero-based), and return the position of the first match or fail
      if no match exists.  Supplying -1 for ?end indicates the end of
-     ?object.  ?object can be a named logic object or a string.
-     ?pattern will eventually allow support regular expressions,
-     currently it only handles string literals.  Apart from doing
-     to-string coercion on ?object this is somewhat redundant, since
-     `substring' can generate ?start/?end pairs if its string and
-     substring arguments are bound.
+     ?object, -2 is one character from the end, etc.  ?object can be a
+     named logic object or a string.  ?pattern will eventually support
+     regular expressions, currently it only handles string literals.
+     Apart from doing to-string coercion on ?object this is somewhat
+     redundant, since `substring' can generate ?start/?end pairs if its
+     string and substring arguments are bound.
 
  -- Function: STRING-MATCH-IGNORE-CASE ((?pattern STRING)
           (?object THING) (?start INTEGER) (?end INTEGER)) :->
           (?match-position INTEGER)
-     Match ?pattern against ?object between ?start and ?end
-     (zero-based), and return the position of the first match or fail
-     if no match exists.  Supplying -1 for ?end indicates the end of
-     ?object.  ?object can be a named logic object or a string.  This
-     match compares the strings ignoring differences in letter case.
+     Case-insensitive version of `string-match' (which see).
 
  -- Relation: SUBRELATION ((?r RELATION) (?sub RELATION))
      True iff ?sub is a subrelation of ?r; written in set notation,
@@ -5006,17 +5082,23 @@ their own modules.
      inference rules.  In otherwords, `subset-of' behaves semantically
      like an operator instead of a relation.
 
- -- Function: SUBSTRING ((?s STRING) (?start INTEGER) (?end INTEGER))
-          :-> (?sub STRING)
-     Generate the substring of ?s starting at position ?start
-     (zero-based), ending just before position ?end and bind ?sub to
-     the result.  This is the PowerLoom equivalent to the STELLA method
-     `subsequence'.  In addition, this function can be used to locate
-     substrings in strings by supplying values for ?s and ?sub and
-     allowing ?start and ?end to be bound by the function specialist.
-     In other words,       (retrieve all (?start ?end) (substring "foo"
-     ?start ?end "o"))  ==>  ?start = 1, ?end = 2,       ?start = 2,
-     ?end = 3.
+ -- Function: SUBSTRING ((?s THING) (?start INTEGER) (?end INTEGER))
+          :-> (?sub THING)
+     Generate the substring ?sub of ?s starting at position ?start
+     (zero-based) and ending just before position ?end.  This is the
+     PowerLoom equivalent to the STELLA method `subsequence'.
+     Supplying -1 for ?end indicates the end of ?s, -2 is one character
+     from the end, etc.  If ?s and/or ?sub are not strings, they will
+     be coerced first if possible.  This function supports any binding
+     pattern where at most one input is unbound (except for ?s), or
+     where both ?start and ?end are unbound in which case it can locate
+     all occurrences of the ?sub string in ?s.  For example:
+
+                (retrieve all (?start ?end) (substring "foo" ?start ?end "o"))
+             ==>  ?start = 1, ?end = 2,
+                  ?start = 2, ?end = 3
+
+     Additional examples can be found in the test suite.
 
  -- Relation: SUBSUMPTION-QUERY ((?prop PROPOSITION))
      Query ?prop with :inference-level set to :subsumption.  Equivalent
@@ -6163,18 +6245,18 @@ Files::.
    To run the Lisp version of PowerLoom, you will need an ANSI
 Common-Lisp (or at least one that supports CLOS and logical pathnames).
 We have successfully tested PowerLoom with Allegro-CL 4.2, 4.3, 5.0,
-6.0 and 7.0, Macintosh MCL 3.0, 4.0 and 5.1, OpenMCL 1.0, SBCL 0.9.4,
-CMUCL 19c, LispWorks 4.4.6, CLisp 2.37, Lucid CL 4.1 (plus the
-necessary ANSI extensions and Mark Kantrowitz's logical pathnames
-implementation), and various others.  Our main development platform is
-Allegro CL running under Sun Solaris and Linux.  The closer your
-environment is to ours, the higher are the chances that everything will
-work right out of the box.  Lisp development under Windows should also
-be no problem.
+6.0 and 7.0, Macintosh MCL 3.0, 4.0 and 5.1, OpenMCL 1.0, Clozure CL
+1.5, SBCL 0.9.4, 1.0.47, CMUCL 19c, 19e, LispWorks 4.4.6, CLisp 2.37,
+Lucid CL 4.1 (plus the necessary ANSI extensions and Mark Kantrowitz's
+logical pathnames implementation), and various others.  Our main
+development platform is Allegro CL running under Sun Solaris and Linux
+or SBCL with Mac OS X.  The closer your environment is to ours, the
+higher are the chances that everything will work right out of the box.
+Lisp development under Windows should also be no problem.
 
    To run the C++ version of PowerLoom, you will need a C++ compiler
 (such as g++) that supports templates and exception handling.  We have
-successfully compiled and run PowerLoom with g++ 3.2 and later under
+successfully compiled and run PowerLoom with g++ 4.0 and later under
 Linux Redhat 8.0 & 9.0, SunOS and MacOS X, and with CygWin 5.0 and MinGW
 5.0 under Windows 2000 and XP.  Both CygWin and MinGW provide a GNU Unix
 environment, but MinGW can generate Windows executables that are fully
@@ -6183,10 +6265,10 @@ C++, however, we never got the Boehm garbage collector to work.  The GC
 claims to be very portable, so this should be solvable for somebody with
 good knowledge of MS Visual C++.
 
-   For the Java version, you will need Java JDK 1.2 or later. To get
-reasonable performance, you should use J2SDK 1.4 or 1.5.  We've run the
-Java version of PowerLoom on a variety of platforms without any
-problems.
+   For the Java version, you will need Java JDK 1.6 or later. This is
+required to support the embedded server architecture for PowerLoom 4.x.
+We've run the Java version of PowerLoom on a variety of platforms
+without any problems.
 
    Any one of the Lisp, C++, or Java implementations of PowerLoom can be
 used to develop your own PowerLoom-based applications.  Which one you

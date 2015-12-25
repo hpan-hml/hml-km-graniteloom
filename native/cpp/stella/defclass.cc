@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -74,7 +74,7 @@ Object* typeToWalkedNullValueTree(StandardObject* typespec, Surrogate* type) {
         nullvalue = walkExpressionTree(nullvalue, type, SYM_DEFCLASS_STELLA_NULL, false, dummy1);
       }
       if (arrayTypeSpecifierP(typespec) &&
-          (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_COMMON_LISP)) {
+          (oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_COMMON_LISP)) {
         return (walkExpressionTree(listO(4, SYM_DEFCLASS_STELLA_VERBATIM, KWD_DEFCLASS_COMMON_LISP, wrapString(lispNullArraySymbolString(arrayTypeRank(((ParametricTypeSpecifier*)(typespec))))), NIL), type, SYM_DEFCLASS_STELLA_NULL, false, dummy2));
       }
       else {
@@ -126,23 +126,23 @@ Cons* yieldDefineStellaClass(Class* clasS) {
 boolean createNativeClassP(Class* clasS) {
   { char* classnativetype = NULL;
 
-    if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_COMMON_LISP) {
+    if (oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_COMMON_LISP) {
       classnativetype = ((StringWrapper*)(dynamicSlotValue(clasS->dynamicSlots, SYM_DEFCLASS_STELLA_CLASS_CL_NATIVE_TYPE, NULL_STRING_WRAPPER)))->wrapperValue;
     }
-    else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_IDL) {
+    else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_IDL) {
       classnativetype = ((StringWrapper*)(dynamicSlotValue(clasS->dynamicSlots, SYM_DEFCLASS_STELLA_CLASS_IDL_NATIVE_TYPE, NULL_STRING_WRAPPER)))->wrapperValue;
     }
-    else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_JAVA) {
+    else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_JAVA) {
       classnativetype = ((StringWrapper*)(dynamicSlotValue(clasS->dynamicSlots, SYM_DEFCLASS_STELLA_CLASS_JAVA_NATIVE_TYPE, NULL_STRING_WRAPPER)))->wrapperValue;
     }
-    else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_CPP) ||
-        (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_CPP_STANDALONE)) {
+    else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_CPP) ||
+        (oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_CPP_STANDALONE)) {
       classnativetype = ((StringWrapper*)(dynamicSlotValue(clasS->dynamicSlots, SYM_DEFCLASS_STELLA_CLASS_CPP_NATIVE_TYPE, NULL_STRING_WRAPPER)))->wrapperValue;
     }
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
 
-        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
         throw *newStellaException(stream000->theStringReader());
       }
     }
@@ -160,12 +160,12 @@ boolean exceptionClassP(Class* clasS) {
 void warnAboutMultipleParents(Class* clasS) {
   if (clasS->multipleParentsP() &&
       createNativeClassP(clasS)) {
-    if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_CPP_STANDALONE) ||
-        (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_IDL)) {
+    if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_CPP_STANDALONE) ||
+        (oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_IDL)) {
     }
-    else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_COMMON_LISP) ||
-        ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_CPP) ||
-         (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_JAVA))) {
+    else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_COMMON_LISP) ||
+        ((oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_CPP) ||
+         (oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_JAVA))) {
       { int nofsupers = 0;
         int nofmixinsupers = 0;
 
@@ -195,7 +195,7 @@ void warnAboutMultipleParents(Class* clasS) {
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
 
-        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
         throw *newStellaException(stream000->theStringReader());
       }
     }
@@ -564,25 +564,25 @@ int computeRecycledItemSize(Class* clasS) {
   { int size = NULL_INTEGER;
 
     if (((boolean)(clasS))) {
-      if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_COMMON_LISP) {
-        if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_DEFCLASS_USE_COMMON_LISP_STRUCTS) ||
-            oCURRENT_STELLA_FEATURESo.get()->membP(KWD_DEFCLASS_USE_COMMON_LISP_VECTOR_STRUCTS)) {
+      if (oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_COMMON_LISP) {
+        if (oCURRENT_STELLA_FEATURESo->membP(KWD_DEFCLASS_USE_COMMON_LISP_STRUCTS) ||
+            oCURRENT_STELLA_FEATURESo->membP(KWD_DEFCLASS_USE_COMMON_LISP_VECTOR_STRUCTS)) {
           size = 4;
         }
         else {
           size = 10;
         }
       }
-      else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_CPP) {
+      else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_CPP) {
         size = 1;
       }
-      else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_JAVA) {
+      else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_JAVA) {
         size = 2;
       }
       else {
         { OutputStringStream* stream000 = newOutputStringStream();
 
-          *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+          *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
           throw *newStellaException(stream000->theStringReader());
         }
       }
@@ -1040,7 +1040,7 @@ Cons* yieldDestructorDefinitions(Class* clasS) {
 }
 
 void createConstructorAndDestructorUnits(Class* clasS) {
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DEFCLASS_CPP_STANDALONE) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_DEFCLASS_CPP_STANDALONE) {
     createCppConstructorUnit(clasS);
     return;
   }
@@ -1352,7 +1352,7 @@ void reduceRecycleListSize(RecycleList* list, double fraction) {
       clearRecycleList(list);
       return;
     }
-    oRECYCLING_ENABLEDpo.set(false);
+    oRECYCLING_ENABLEDpo = false;
     if (((boolean)(list->allItems))) {
       cursor = list->allItems;
       unused = list->unusedItems;
@@ -1414,7 +1414,7 @@ void reduceRecycleListSize(RecycleList* list, double fraction) {
       }
     }
     list->currentLength = reducedlength;
-    oRECYCLING_ENABLEDpo.set(true);
+    oRECYCLING_ENABLEDpo = true;
   }
 }
 
@@ -2199,7 +2199,7 @@ void startupDefclass() {
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupDefclass1();
       helpStartupDefclass2();

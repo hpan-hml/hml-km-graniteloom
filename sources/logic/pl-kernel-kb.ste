@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: pl-kernel-kb.ste,v 1.72 2010/09/11 02:20:55 hans Exp
+;;; Version: pl-kernel-kb.ste,v 1.76 2014/04/30 17:55:35 hans Exp
 
 ;;; Support to bootstrap the built-in PL-KERNEL KB that defines a fairly
 ;;; minimal set of mathematical and logical definitions.
@@ -458,10 +458,18 @@ relates `Fred' to that relation."
   :documentation "True if applying '?function' to '?arguments'
 yields the value '?value'.  The `value' predicate is the analog
 of `holds', except that it applies to functions instead of relations."
-  :axioms (and (variable-arity VALUE)
-               ;; VALUE-SPECIALIST doesn't exist yet!
-               ; (relation-specialist VALUE value-specialist)
-               ))
+  :variable-arity TRUE
+  ;; it seems that the `holds-specialist' should generally do the right thing here:
+  :relation-specialist holds-specialist)
+
+(deffunction TOTAL-VALUE ((?function FUNCTION) ?arguments) :-> ?value
+  :documentation "Identical to `value' but treats ?function as a total function even if
+it isn't.  For the case where ?function and all its inputs are bound and no existing
+value could be found for the unbound ?value argument, a skolem term will be created and
+bound to ?value.  This is useful sometimes to create function terms on the fly in queries
+for functions where it isn't generally warranted to mark them as total."
+  :variable-arity TRUE
+  :relation-specialist total-value-specialist)
 
 (defrelation IST ((?context CONTEXT) (?p PROPOSITION))
   :documentation "True if proposition '?p' is true in context '?context'.
@@ -481,7 +489,16 @@ a rule that accesses a `patient-record' relation in a module called
   :axioms (and (relation-specialist IST IST-specialist)
                (handles-reverse-polarity IST-specialist)))
 
-;;; Accessors to deconstruct propositions:
+(defrelation INCOHERENT ((?context CONTEXT) (?p PROPOSITION))
+  :documentation "True if proposition ?p is inconsistent or otherwise
+incoherent in ?context.  This is a system-asserted relation that is
+used when inconsistencies are detected during forward inference.  The
+main purpose of this relation is to allow one to find inconsistent propositions
+via queries and/or to attach a goes-true-demon in case special-purpose handling
+of contradictions is needed.")
+
+
+;;; Accessors to deconstruct propositions and function terms:
 
 (deffunction proposition-relation ((?p PROPOSITION) (?op RELATION))
   :documentation "Return the predicate operator ?op of ?p."
@@ -503,6 +520,31 @@ a rule that accesses a `patient-record' relation in a module called
 
 (deffunction proposition-arity ((?p PROPOSITION) (?arity INTEGER))
   :documentation "Return the number of arguments in ?p."
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation proposition-arity-computation)
+
+
+(deffunction term-relation (?term (?op RELATION))
+  :documentation "Return the function operator ?op defining this function ?term."
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation proposition-relation-computation)
+
+(deffunction term-argument (?term (?i INTEGER) ?arg)
+  :documentation "Return the ?i-th ?arg defining this function ?term (zero-based)."
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation proposition-argument-computation)
+
+(deffunction term-arguments (?term (?args LIST))
+  :documentation "Return all arguments defining this function ?term as a list ?args."
+  :computed TRUE
+  :relation-specialist computation-specialist
+  :relation-computation proposition-arguments-computation)
+
+(deffunction term-arity (?term (?arity INTEGER))
+  :documentation "Return the number of arguments defining this function ?term."
   :computed TRUE
   :relation-specialist computation-specialist
   :relation-computation proposition-arity-computation)
@@ -614,6 +656,13 @@ directly accessed by some query."
   :documentation "True if ?x is an instance of ?c.  Can
 be used to generate concept values of ?c, given an instance ?x."
   :axioms (relation-specialist instance-of instance-of-specialist))
+
+(defrelation direct-instance-of ((?x THING) (?c COLLECTION))
+  :documentation
+  "True if ?x is a direct instance of ?c which means that ?c is a most specific type of ?x.
+BUGGY, USE AT YOUR OWN RISK.  Currently this implements a mixture of asserted instance
+and direct instance semantics."
+  :axioms (relation-specialist direct-instance-of direct-instance-of-specialist))
 
 (defrelation type-of ((?c COLLECTION) (?x THING))
   :documentation "True if ?x is a member of the concept ?c."
@@ -751,10 +800,20 @@ intensional fillers such as skolems that might be identical extensionally."
             (collect-into-set (setofall ?v (holds ?r ?i ?v)) ?members))
   :axioms (computed FILLERS))
 
+(deffunction filler ((?r RELATION) ?i) :-> ?v
+  :documentation "Special-purpose version of `fillers' which accesses the single
+filler ?v for the single-valued relation ?r applied to ?i.  This is primarily useful
+to enable a functional notation to access the value of a single-valued relation that
+is not a function."
+  :<<= (and (bound-variables ?r ?i)
+            (single-valued ?r) ;; be paranoid to avoid random values for multi-valued relations
+            (holds ?r ?i ?v))
+  :computed TRUE)
+
 (deffunction cardinality ((?c SET)) :-> (?card INTEGER)
   :documentation "Function that returns the cardinality of a set."
   :<<=  (and (closed ?c)
-             (length-of-list (collect-into-set ?c) ?card)))
+             (length (collect-into-set ?c) ?card)))
 
 (defconcept frame-predicate ((?c RELATION))
   :documentation "A frame predicate is a second-order relation that
@@ -871,7 +930,7 @@ cardinality of the set of fillers of the relation ?r applied to ?i.
              (setofall 
               ?m (or (>= (cardinality (the-roleset ?r ?i)) ?m)
                      (= ?m 0)
-                     (length-of-list (fillers ?r ?i) ?m)
+                     (length (fillers ?r ?i) ?m)
                      (exists ?subR
                              (and (subset-of ?subR ?r)
                                   (>= (cardinality (the-roleset ?subR ?i))
@@ -1194,6 +1253,36 @@ magnitude of ?y."
 	       (relation-constraint NEGATE negate-constraint)
                (relation-specialist NEGATE constraint-specialist)))
 
+(deffunction FLOOR ((?x NUMBER) (?y INTEGER))
+  :documentation "Compute the biggest integer ?y <= ?x."
+  :relation-specialist computation-specialist
+  :relation-computation floor-computation)
+
+(deffunction CEILING ((?x NUMBER) (?y INTEGER))
+  :documentation "Compute the smallest integer ?y >= ?x."
+  :relation-specialist computation-specialist
+  :relation-computation ceiling-computation)
+
+(deffunction LOG ((?x NUMBER) (?log NUMBER))
+  :documentation "Compute the natural logarithm (base e) of ?x."
+  :relation-constraint LOG-constraint
+  :relation-specialist constraint-specialist)
+
+(deffunction LOG10 ((?x NUMBER) (?log NUMBER))
+  :documentation "Compute the base-10 logarithm of ?x."
+  :relation-constraint LOG10-constraint
+  :relation-specialist constraint-specialist)
+
+(deffunction EXP ((?x NUMBER) (?y NUMBER))
+  :documentation "Compute ?y = e to the power ?x."
+  :relation-constraint EXP-constraint
+  :relation-specialist constraint-specialist)
+
+(deffunction EXPT ((?x NUMBER) (?n NUMBER) (?y NUMBER))
+  :documentation "Compute ?y = ?x to the power ?n."
+  :relation-computation EXPT-computation)
+
+
 ;;; Introduce 'INEQUALITY-specialist':
 (assert (handles-reverse-polarity INEQUALITY-specialist))
 
@@ -1298,7 +1387,7 @@ a `setofall' or an enumerated collection, and ?sortBy can be a named relation or
             (query (and (fail (bound-variables ?value)) ;; kludge to get output variable order right
                         (member-of ?element ?c)
                         (holds ?sortby ?element ?value))
-                   :how-many :all :sort-by :values-ascending)))
+                   :how-many :all :sort-by :values-ascending :maximum-depth :inherit)))
         ?orderedset)
   :computed TRUE)
 
@@ -1315,7 +1404,7 @@ a `setofall' or an enumerated collection, and ?sortBy can be a named relation or
             (query (and (fail (bound-variables ?value)) ;; kludge to get output variable order right
                         (member-of ?element ?c)
                         (holds ?sortBy ?element ?value))
-                   :how-many :all :sort-by :values-descending)))
+                   :how-many :all :sort-by :values-descending :maximum-depth :inherit)))
         ?orderedSet)
   :computed TRUE)
 
@@ -1330,7 +1419,7 @@ a `setofall' or an enumerated collection, and ?sortBy can be a named relation or
                     ;; if we might have multiple ?sortBy values for ?firstElement,
                     ;; we need another subquery to find the smallest one:
                     (and (query (holds ?sortBy ?firstElement ?minValue)
-                                :how-many :all :sort-by :values-ascending)
+                                :how-many :all :sort-by :values-ascending :maximum-depth :inherit)
                          (cut)))
               (member-of ?element ?orderedSet)
               (holds ?sortBy ?element ?minValue)))
@@ -1347,20 +1436,12 @@ a `setofall' or an enumerated collection, and ?sortBy can be a named relation or
                     ;; if we might have multiple ?sortBy values for ?firstElement,
                     ;; we need another subquery to find the largest one:
                     (and (query (holds ?sortBy ?firstElement ?maxValue)
-                                :how-many :all :sort-by :values-descending)
+                                :how-many :all :sort-by :values-descending :maximum-depth :inherit)
                          (cut)))
               (member-of ?element ?orderedSet)
               (holds ?sortBy ?element ?maxValue)))
   :computed TRUE)
 
-
-;;; TO DO: SHOULD BE REPLACED BY `LENGTH':
-(defrelation length-of-list ((?l COLLECTION) (?length INTEGER))
-  :documentation "Computes the length of the list or set ?l."
-  :axioms (and (computed length-of-list)
-               (relation-specialist
-                LENGTH-OF-LIST length-of-list-specialist)
-               (single-valued LENGTH-OF-LIST)))
 
 (deffunction nth-element ((?l COLLECTION) (?n INTEGER) (?e THING))
   :documentation "Return the ?n-th element ?e of ?l (zero-based).
@@ -1368,46 +1449,54 @@ Count from end of the list if ?n is negative.  If ?n is unbound
 and ?e is bound, this computes the position of ?e.  If both are
 unbound, collection elements and their respective positions will
 be enumerated."
-  :relation-specialist nth-element-specialist)
+  :relation-specialist nth-element-specialist
+  :closed TRUE)
 
 (deffunction first-element ((?l COLLECTION) (?e THING))
   :documentation "Return the first element ?e of ?l."
   :computed TRUE
-  :<=> (nth-element ?l 0 ?e))
+  :<<=>> (nth-element ?l 0 ?e)
+  :closed TRUE)
 
 (deffunction second-element ((?l COLLECTION) (?e THING))
   :documentation "Return the second element ?e of ?l."
   :computed TRUE
-  :<=> (nth-element ?l 1 ?e))
+  :<<=>> (nth-element ?l 1 ?e)
+  :closed TRUE)
 
 (deffunction third-element ((?l COLLECTION) (?e THING))
   :documentation "Return the third element ?e of ?l."
   :computed TRUE
-  :<=> (nth-element ?l 2 ?e))
+  :<<=>> (nth-element ?l 2 ?e)
+  :closed TRUE)
 
 (deffunction fourth-element ((?l COLLECTION) (?e THING))
   :documentation "Return the fourth element ?e of ?l."
   :computed TRUE
-  :<=> (nth-element ?l 3 ?e))
+  :<<=>> (nth-element ?l 3 ?e)
+  :closed TRUE)
 
 (deffunction fifth-element ((?l COLLECTION) (?e THING))
   :documentation "Return the fifth element ?e of ?l."
   :computed TRUE
-  :<=> (nth-element ?l 4 ?e))
+  :<<=>> (nth-element ?l 4 ?e)
+  :closed TRUE)
 
 (deffunction nth-head ((?l LIST) (?n INTEGER) (?h LIST))
   :documentation "Return the ?n head elements ?h of ?l.
 Count from end of the list if ?n is negative."
   :computed TRUE
   :relation-specialist computation-specialist
-  :relation-computation nth-head-computation)
+  :relation-computation nth-head-computation
+  :closed TRUE)
 
 (deffunction nth-rest ((?l LIST) (?n INTEGER) (?r LIST))
   :documentation "Return the ?n-th rest ?r of ?l (zero-based).
 Count from end of the list if ?n is negative."
   :computed TRUE
   :relation-specialist computation-specialist
-  :relation-computation nth-rest-computation)
+  :relation-computation nth-rest-computation
+  :closed TRUE)
 
 (deffunction insert-element ((?l LIST) (?n INTEGER) (?e THING) (?r LIST))
   :documentation "Add ?e at position ?n (zero-based) to ?l to construct ?r
@@ -1416,7 +1505,8 @@ left if ?n is  negative such that -1 inserts at the end of the list, -2 second
 to last, etc."
   :computed TRUE
   :relation-specialist computation-specialist
-  :relation-computation insert-element-computation)
+  :relation-computation insert-element-computation
+  :closed TRUE)
 
 (deffunction list-concatenate ((?x COLLECTION) (?y COLLECTION) (?r LIST))
   :documentation "Concatenate lists ?x and ?y into ?r.  If ?x and/or ?y
@@ -1430,30 +1520,35 @@ elements in the result list ?r will be arbitrary."
           (OR (MEMBER-OF ?e ?x)
               (MEMBER-OF ?e ?y)))
         ?r)
-  :computed TRUE)
+  :computed TRUE
+  :closed TRUE)
 
 (defrelation minimum-value ((?l COLLECTION) (?min NUMBER))
   :documentation "Binds ?min to the minimum of the numbers in the list ?l."
   :axioms (and (relation-specialist
                 MINIMUM-VALUE minimum-of-numbers-specialist)
-               (single-valued MINIMUM-VALUE)))
+               (single-valued MINIMUM-VALUE))
+  :closed TRUE)
 
 (defrelation maximum-value ((?l COLLECTION) (?max NUMBER))
   :documentation "Binds ?max to the maximum of the numbers in the list ?l."
   :axioms (and (relation-specialist
                 MAXIMUM-VALUE maximum-of-numbers-specialist)
-               (single-valued MAXIMUM-VALUE)))
+               (single-valued MAXIMUM-VALUE))
+  :closed TRUE)
 
 (defrelation sum ((?l COLLECTION) (?sum NUMBER))
   :documentation "Binds ?sum to the sum of the numbers in the list ?l."
   :axioms (and (relation-specialist
                 SUM sum-of-numbers-specialist)
-               (single-valued SUM)))
+               (single-valued SUM))
+  :closed TRUE)
 
 (deffunction project-column ((?i INTEGER) (?c COLLECTION)) :-> (?l LIST)
   :documentation "Project elements in column ?i (zero-based) of the tuples
 of ?c and collect them into a list ?l. "
-  :axioms (relation-specialist PROJECT-COLUMN project-column-specialist))
+  :axioms (relation-specialist PROJECT-COLUMN project-column-specialist)
+  :closed TRUE)
 
 
   ;;
@@ -1464,26 +1559,30 @@ of ?c and collect them into a list ?l. "
   :documentation "Binds ?mean to the mean of the numbers in ?l."
   :axioms (and (computed MEAN-VALUE)
                (relation-specialist MEAN-VALUE mean-of-numbers-specialist)
-               (single-valued MEAN-VALUE)))
+               (single-valued MEAN-VALUE))
+  :closed TRUE)
 
 (defrelation median-value ((?l COLLECTION) (?median NUMBER))
   :documentation "Binds ?median to the median of the numbers in ?l."
   :axioms (and (computed MEDIAN-VALUE)
                (relation-specialist MEDIAN-VALUE median-of-numbers-specialist)
-               (single-valued MEDIAN-VALUE)))
+               (single-valued MEDIAN-VALUE))
+  :closed TRUE)
 
 (defrelation standard-deviation ((?l COLLECTION) (?sd NUMBER))
   :documentation "Binds ?sd to the standard deviation of the numbers in ?l."
   :axioms (and (computed STANDARD-DEVIATION)
                (relation-specialist
                 STANDARD-DEVIATION standard-deviation-specialist)
-               (single-valued STANDARD-DEVIATION)))
+               (single-valued STANDARD-DEVIATION))
+  :closed TRUE)
 
 (defrelation variance ((?l COLLECTION) (?variance NUMBER))
   :documentation "Binds ?variance to the variance of the numbers in ?l."
   :axioms (and (computed VARIANCE)
                (relation-specialist VARIANCE variance-specialist)
-               (single-valued VARIANCE)))
+               (single-valued VARIANCE))
+  :closed TRUE)
 
 
   ;;
@@ -1496,59 +1595,125 @@ and bind ?z to the result.  Coerces any type argument to a string if necessary."
   :variable-arity TRUE
   :computed TRUE
   :relation-specialist computation-specialist
-  :relation-computation string-concatenate-computation)
+  :relation-computation string-concatenate-computation
+  :closed TRUE)
 
-(deffunction substring ((?s STRING) (?start INTEGER) (?end INTEGER))
-  :-> (?sub STRING)
-  :documentation "Generate the substring of ?s starting at position ?start (zero-based),
-ending just before position ?end and bind ?sub to the result.
-This is the PowerLoom equivalent to the STELLA method `subsequence'.  In
-addition, this function can be used to locate substrings in strings by
-supplying values for ?s and ?sub and allowing ?start and ?end to be
-bound by the function specialist.  In other words,
+(deffunction substring ((?s THING) (?start INTEGER) (?end INTEGER)) :-> (?sub THING)
+  :documentation "Generate the substring ?sub of ?s starting at position ?start (zero-based)
+and ending just before position ?end.  This is the PowerLoom equivalent to the STELLA method
+`subsequence'.  Supplying -1 for ?end indicates the end of ?s, -2 is one character from the
+end, etc.  If ?s and/or ?sub are not strings, they will be coerced first if possible.  This
+function supports any binding pattern where at most one input is unbound (except for ?s), or
+where both ?start and ?end are unbound in which case it can locate all occurrences of the
+?sub string in ?s.  For example:
+	 
       (retrieve all (?start ?end) (substring \"foo\" ?start ?end \"o\"))
- ==>  ?start = 1, ?end = 2,
-      ?start = 2, ?end = 3."
+   ==>  ?start = 1, ?end = 2,
+        ?start = 2, ?end = 3
+	
+Additional examples can be found in the test suite."
   :axioms (and (computed substring)
-               (relation-specialist substring subsequence-specialist)))
+               (relation-specialist substring subsequence-specialist))
+  :closed TRUE)
 
 (deffunction string-match ((?pattern STRING) (?object THING)
                            (?start INTEGER) (?end INTEGER))
   :-> (?match-position INTEGER)
   :documentation "Match ?pattern against ?object between ?start and ?end (zero-based),
-and return the position of the first match or fail if no match exists.
-Supplying -1 for ?end indicates the end of ?object.  ?object can be a
-named logic object or a string.  ?pattern will eventually allow
-support regular expressions, currently it only handles string
-literals.  Apart from doing to-string coercion on ?object this is
-somewhat redundant, since `substring' can generate ?start/?end pairs
-if its string and substring arguments are bound."
+and return the position of the first match or fail if no match exists.  Supplying -1 for
+?end indicates the end of ?object, -2 is one character from the end, etc.  ?object can be
+a named logic object or a string.  ?pattern will eventually support regular expressions,
+currently it only handles string literals.  Apart from doing to-string coercion on ?object
+this is somewhat redundant, since `substring' can generate ?start/?end pairs if its string
+and substring arguments are bound."
   :axioms (and (computed string-match)
                (relation-computation string-match string-match-computation)
-               (relation-specialist string-match computation-specialist)))
+               (relation-specialist string-match computation-specialist))
+  :closed TRUE)
 
 (deffunction string-match-ignore-case ((?pattern STRING) (?object THING)
 				       (?start INTEGER) (?end INTEGER))
   :-> (?match-position INTEGER)
-  :documentation "Match ?pattern against ?object between ?start and ?end (zero-based),
-and return the position of the first match or fail if no match exists.
-Supplying -1 for ?end indicates the end of ?object.  ?object can be a
-named logic object or a string.  This match compares the strings
-ignoring differences in letter case."
+  :documentation "Case-insensitive version of `string-match' (which see)."
   :axioms (and (computed string-match-ignore-case)
                (relation-computation string-match-ignore-case 
                                      string-match-ignore-case-computation)
                (relation-specialist string-match-ignore-case
-                                    computation-specialist)))
+                                    computation-specialist))
+  :closed TRUE)
 
-;;; TO DO: FOLD `LENGTH-OF-LIST' INTO THIS:
+(deffunction string-upcase ((?object THING) (?start INTEGER) (?end INTEGER)) :-> (?upcased-string STRING)
+  :documentation "Upcase all characers of ?object between ?start and ?end and return the result.
+Supplying -1 for ?end indicates the end of ?object, -2 is one character from the end, etc.  ?object can be
+a named logic object or a string.  Note that this function can also be used to test whether a string or
+one of its subsequences is all uppercase by binding ?upcased-string to ?object."
+  :computed TRUE
+  :relation-computation string-upcase-computation
+  :relation-specialist computation-specialist
+  :closed TRUE)
+
+(deffunction string-downcase ((?object THING) (?start INTEGER) (?end INTEGER)) :-> (?downcased-string STRING)
+  :documentation "Downcase all characers of ?object between ?start and ?end and return the result.
+Supplying -1 for ?end indicates the end of ?object, -2 is one character from the end, etc.  ?object can be
+a named logic object or a string.  Note that this function can also be used to test whether a string or
+one of its subsequences is all lowercase by binding ?downcased-string to ?object."
+  :computed TRUE
+  :relation-computation string-downcase-computation
+  :relation-specialist computation-specialist
+  :closed TRUE)
+
+(deffunction string-capitalize ((?object THING) (?start INTEGER) (?end INTEGER)) :-> (?capitalized-string STRING)
+  :documentation "Capitalize the substring of ?object between ?start and ?end and return the result.
+The first letter in the substring will be made uppercase and all others will be made lowercase.
+Supplying -1 for ?end indicates the end of ?object, -2 is one character from the end, etc.  ?object can be
+a named logic object or a string.  Note that this function can also be used to test whether a string or
+one of its subsequences is capitalized by binding ?capitalized-string to ?object."
+  :computed TRUE
+  :relation-computation string-capitalize-computation
+  :relation-specialist computation-specialist
+  :closed TRUE)
+
+(deffunction string-replace ((?object THING) (?from STRING) (?to STRING) (?start INTEGER) (?end INTEGER)) :-> (?result STRING)
+  :documentation "Replace all occurrances of ?from in ?object between ?start and ?end with ?to and return
+the ?result. Supplying -1 for ?end indicates the end of ?object, -2 is one character from the end, etc.
+?object can be a named logic object or a string."
+  :computed TRUE
+  :relation-computation string-replace-computation
+  :relation-specialist computation-specialist
+  :closed TRUE)
+
+(deffunction string-compare ((?o1 THING) (?o2 THING) (?start1 INTEGER) (?end1 INTEGER) (?start2 INTEGER) (?end2 INTEGER)) :-> (?result INTEGER)
+  :documentation "Perform a lexicographic comparison between ?o1 and ?o2 within their respective substrings
+?start1 to ?end1 and ?start2 to ?end2.  The ?result will be -1 if ?o1 comes before ?o2, 0 if they are equal,
+and 1 if ?o2 comes before ?o1.  Both ?o1 and ?o2 can be a named logic object or a string."
+  :computed TRUE
+  :relation-computation string-compare-computation
+  :relation-specialist computation-specialist
+  :closed TRUE)
+
+(deffunction string-compare-ignore-case ((?o1 THING) (?o2 THING) (?start1 INTEGER) (?end1 INTEGER) (?start2 INTEGER) (?end2 INTEGER)) :-> (?result INTEGER)
+  :documentation "Just like `string-compare' (which see) but ignores case."
+  :computed TRUE
+  :relation-computation string-compare-ignore-case-computation
+  :relation-specialist computation-specialist
+  :closed TRUE)
+
+(deffunction string-to-number ((?object THING) (?start INTEGER) (?end INTEGER)) :-> (?number NUMBER)
+  :documentation "If the part of ?object between ?start and ?end names a decimal number such as an integer
+or float, convert it (that part) into the number it names.  Supplying -1 for ?end indicates the end of ?object,
+-2 is one character from the end, etc.  ?object can be a named logic object or a string."
+  :computed TRUE
+  :relation-computation string-to-number-computation
+  :relation-specialist computation-specialist
+  :closed TRUE)
+
 (deffunction LENGTH ((?x THING)) :-> (?z INTEGER)
   :documentation
-  "Function that returns the length of a string or a logical list.
-NOT YET IMPLEMENTED FOR LISTS."
+  "Function that returns the length of a string or a logical list."
   :axioms (and (computed LENGTH)
                (relation-computation LENGTH LENGTH-computation)
-               (relation-specialist LENGTH computation-specialist)))
+               (relation-specialist LENGTH computation-specialist))
+  :synonym length-of-list) ;; for backwards compatibility
 
 
   ;;
@@ -1565,11 +1730,17 @@ NOT YET IMPLEMENTED FOR LISTS."
 (deffunction object-name (?x) :-> (?c STRING)
   :documentation "The name of the object ?X as a string.  This is just the
 name, with module prefixes NOT included."
-  :axioms (and (computed object-name)
-               (relation-computation object-name
-                                     object-name-computation)
-               (relation-specialist object-name
-                                    computation-specialist)))
+  :computed TRUE
+  :relation-computation object-name-computation
+  :relation-specialist computation-specialist)
+
+(deffunction object-print-name (?x) :-> (?c STRING)
+  :documentation "The print name of the object ?X as a string relative to the
+current module.  This will include module prefixes as well as escape characters
+if necessary."
+  :computed TRUE
+  :relation-computation object-print-name-computation
+  :relation-specialist computation-specialist)
 
 (deffunction name-to-object (?n) :-> ?o
   :documentation "Find or create the PowerLoom logic object ?o named by
@@ -1580,11 +1751,19 @@ this will coerce it to a string first.  We are intentionally
 using a separate function here (instead of folding this into `object-name'),
 since we might want to be able to look for an object with a certain name
 but not create one if it doesn't exist."
-  :axioms (and (computed name-to-object)
-               (relation-computation name-to-object
-                                     name-to-object-computation)
-               (relation-specialist name-to-object
-                                    computation-specialist)))
+  :computed TRUE
+  :relation-computation name-to-object-computation
+  :relation-specialist computation-specialist)
+
+(deffunction print-name-to-object (?n) :-> ?o
+  :documentation "Find or create the PowerLoom logic object ?o named by
+the print name ?n in the current module.  This is just like `name-to-object'
+but interprets ?n as a possibly qualified print name with escape characters.
+Note that this will simply fail when given a name with incorrect read syntax
+or a non-existing module."
+  :computed TRUE
+  :relation-computation print-name-to-object-computation
+  :relation-specialist computation-specialist)
 
 
 (deffunction arity ((?r RELATION)) :-> (?arity INTEGER)
@@ -1768,20 +1947,20 @@ and has no additional constraints."
 ;;;;;; 'member-of', 'instance-of' and 'subset-of' rules
   ;;
 
-;; PROBABLY A BAD IDEA:
+;; PROBABLY A BAD IDEA - YES - PERFORMANCE KILLERS...
 #|
 (defrule "'member-of' chained with 'subset-of' rule"
   (<= (member-of ?x ?c2)
       (and (bound-variables ?c2)
            (member-of ?x ?c1)
            (subset-of ?c1 ?c2))))
-|#
 
 (defrule "'Instance-of' chained with 'subset-of' rule"
   (<= (instance-of ?x ?c2)
       (and (bound-variables ?c2)
            (instance-of ?x ?c1)
            (subset-of ?c1 ?c2))))
+|#
 
 (defrule "'Not instance-of' rule"
   (<= (not (instance-of ?x ?c))

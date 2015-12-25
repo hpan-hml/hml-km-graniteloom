@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -95,6 +95,12 @@ public class Sdbc {
   public static Keyword KWD_SERVER_TYPE = null;
 
   public static Keyword KWD_LOW = null;
+
+  /** The maximum lifetime of a database connection (in seconds) after which
+   * it gets automatically renewed.  Auto-renewals avoid connection timeout errors which are
+   * otherwise tricky to catch, e.g., we might just see a <code>badHandlePassed</code> error.
+   */
+  public static int $DB_CONNECTION_RENEWAL_INTERVAL$ = 60;
 
   public static Keyword KWD_CONNECTION_STRING = null;
 
@@ -293,6 +299,10 @@ public class Sdbc {
         }
       }
     }
+  }
+
+  public static int $DbConnectionRenewalInterval$Setter(int value) {
+    return (Sdbc.$DB_CONNECTION_RENEWAL_INTERVAL$ = value);
   }
 
   public static boolean jdbcConnectionStringP(String string) {

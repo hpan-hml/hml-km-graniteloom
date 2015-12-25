@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -90,7 +90,7 @@ void setPowerloomFeature(Keyword* feature) {
       oITERATIVE_DEEPENING_MODEpo = true;
     }
     else if (feature == KWD_LOGIC_IN_JUSTIFICATIONS) {
-      oRECORD_JUSTIFICATIONSpo.set(true);
+      oRECORD_JUSTIFICATIONSpo = true;
     }
     else if (feature == KWD_LOGIC_IN_JUST_IN_TIME_INFERENCE) {
       oJUST_IN_TIME_FORWARD_INFERENCEpo = true;
@@ -177,7 +177,7 @@ void unsetPowerloomFeature(Keyword* feature) {
       oITERATIVE_DEEPENING_MODEpo = false;
     }
     else if (feature == KWD_LOGIC_IN_JUSTIFICATIONS) {
-      oRECORD_JUSTIFICATIONSpo.set(false);
+      oRECORD_JUSTIFICATIONSpo = false;
     }
     else if (feature == KWD_LOGIC_IN_JUST_IN_TIME_INFERENCE) {
       oJUST_IN_TIME_FORWARD_INFERENCEpo = false;
@@ -275,8 +275,8 @@ char* oLOGIC_PROMPTo = "|= ";
 DEFINE_STELLA_SPECIAL(oPROMPT_SHOW_MODULEpo, boolean , true);
 
 void printLogicPrompt() {
-  if (oPROMPT_SHOW_MODULEpo.get()) {
-    std::cout << oMODULEo.get()->moduleName << " ";
+  if (oPROMPT_SHOW_MODULEpo) {
+    std::cout << oMODULEo->moduleName << " ";
   }
   std::cout << oLOGIC_PROMPTo;
 }
@@ -284,9 +284,9 @@ void printLogicPrompt() {
 char* oLOGIC_COMMAND_RESULT_INDENTo = "";
 
 void printLogicCommandResult(Object* result) {
-  { World* temp000 = lookupConstraintPropagationWorld(oCONTEXTo.get());
+  { World* temp000 = lookupConstraintPropagationWorld(oCONTEXTo);
 
-    { Context* printcontext = (((boolean)(temp000)) ? temp000 : oCONTEXTo.get());
+    { Context* printcontext = (((boolean)(temp000)) ? temp000 : oCONTEXTo);
 
       { 
         BIND_STELLA_SPECIAL(oPRINTMODEo, Keyword*, KWD_LOGIC_IN_REALISTIC);
@@ -352,7 +352,7 @@ boolean logicCommandLoopExitP(Object* command, boolean& _Return1) {
       }
     }
     if (exitP &&
-        oCAREFUL_LOGIC_COMMAND_LOOP_EXITop.get()) {
+        oCAREFUL_LOGIC_COMMAND_LOOP_EXITop) {
       exitP = yesOrNoP("Really exit? (yes or no) ");
       if (exitP) {
         std::cout << std::endl;
@@ -373,8 +373,8 @@ void logicCommandLoop(Module* module) {
     boolean exitcommandP = false;
 
     { 
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, (((boolean)(module)) ? module : oMODULEo.get()));
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, (((boolean)(module)) ? module : oMODULEo));
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       for (;;) {
         try {
           std::cout << std::endl;
@@ -447,9 +447,9 @@ Object* evaluateLogicCommand(Object* command, boolean finalizeP) {
                   else if (stringEqualP(operatorname, "IN-PACKAGE")) {
                   }
                   else if (declarationTreeP(command)) {
-                    oTRANSLATIONUNITSo.set(list(0));
+                    oTRANSLATIONUNITSo = list(0);
                     walkTopLevelTree(command, false);
-                    switch (oTRANSLATIONUNITSo.get()->reverse()->length()) {
+                    switch (oTRANSLATIONUNITSo->reverse()->length()) {
                       case 0: 
                         { OutputStringStream* stream000 = newOutputStringStream();
 
@@ -458,13 +458,13 @@ Object* evaluateLogicCommand(Object* command, boolean finalizeP) {
                         }
                       break;
                       case 1: 
-                        result = ((TranslationUnit*)(oTRANSLATIONUNITSo.get()->first()))->theObject;
+                        result = ((TranslationUnit*)(oTRANSLATIONUNITSo->first()))->theObject;
                       break;
                       default:
                         { Cons* results = NIL;
 
                           { TranslationUnit* unit = NULL;
-                            Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+                            Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
                             Cons* collect000 = NULL;
 
                             for  (unit, iter000, collect000; 
@@ -534,7 +534,7 @@ Object* evaluateLogicCommand(Object* command, boolean finalizeP) {
         }
         if ((!translationErrorsP()) &&
             finalizeP) {
-          oTRANSLATIONPHASEo.set(KWD_LOGIC_IN_FINALIZE);
+          oTRANSLATIONPHASEo = KWD_LOGIC_IN_FINALIZE;
           finalizeObjects();
         }
         return (result);
@@ -567,7 +567,7 @@ void load(char* file, Cons* options) {
   }
   ensureFileExists(file, "load");
   { PropertyList* theoptions = parseLogicCommandOptions(options, listO(5, KWD_LOGIC_IN_CHECK_DUPLICATESp, SGT_LOGIC_IN_STELLA_BOOLEAN, KWD_LOGIC_IN_MODULE, SGT_LOGIC_IN_STELLA_MODULE, NIL), true, false);
-    boolean toplevelinvocationP = oCURRENTFILEo.get() == NULL;
+    boolean toplevelinvocationP = oCURRENTFILEo == NULL;
     InputFileStream* inputstream = NULL;
 
     try {
@@ -621,11 +621,11 @@ void loadStreamInModule(InputStream* stream, Module* defaultModule) {
   // an `in-module' declaration is encountered which will over-ride the default
   // value.  If noe `default-module' is specified, and the input stream does
   // not have an `in-module' form, an error is signaled.
-  { Keyword* currentdialect = oLOGIC_DIALECTo.get();
+  { Keyword* currentdialect = oLOGIC_DIALECTo;
     boolean skipcommandP = false;
     boolean seeninmoduleP = ((boolean)(defaultModule));
     Cons* commands = NIL;
-    Module* loadModule = (seeninmoduleP ? defaultModule : oMODULEo.get());
+    Module* loadModule = (seeninmoduleP ? defaultModule : oMODULEo);
 
     { 
       BIND_STELLA_SPECIAL(oLOGIC_DIALECTo, Keyword*, currentdialect);
@@ -634,7 +634,7 @@ void loadStreamInModule(InputStream* stream, Module* defaultModule) {
       BIND_STELLA_SPECIAL(oTRANSLATIONNOTESo, int, 0);
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, loadModule);
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         { Object* tree = NULL;
           SExpressionIterator* iter000 = sExpressions(stream);
 
@@ -916,7 +916,7 @@ void demoFile(char* file, boolean pauseP) {
       file = ((temp000 != NULL) ? temp000 : file);
     }
     ensureFileExists(file, "demo-file");
-    { int currentlevel = oDEMO_LEVELo.get();
+    { int currentlevel = oDEMO_LEVELo;
       Object* command = NULL;
       Object* result = NULL;
       boolean exitP = false;
@@ -930,8 +930,8 @@ void demoFile(char* file, boolean pauseP) {
             BIND_STELLA_SPECIAL(oDEMO_LEVELo, int, currentlevel + 1);
             inputstream->echoStream = STANDARD_OUTPUT;
             { 
-              BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo.get());
-              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+              BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo);
+              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
               if (pauseP) {
                 std::cout << "Now reading from `" << file << "'." << std::endl << "Type `?' at the pause prompt for a list of available commands." << std::endl;
               }
@@ -1128,7 +1128,7 @@ void testLogicFile(char* file) {
   { boolean dummy1;
 
     ensureFileExists(file, "test-logic-file");
-    { int currentlevel = oDEMO_LEVELo.get();
+    { int currentlevel = oDEMO_LEVELo;
       Object* command = NULL;
       Object* result = NULL;
       boolean exitP = false;
@@ -1141,8 +1141,8 @@ void testLogicFile(char* file) {
         BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
         BIND_STELLA_SPECIAL(oPRINTPRETTYpo, boolean, false);
         { 
-          BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo.get());
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+          BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo);
+          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
           std::cout << std::endl << "Now testing file `" << filebasename << "':" << std::endl;
           for (;;) {
             try {
@@ -1371,15 +1371,15 @@ void printFormulaContainingError(Object* self, OutputStream* stream) {
 }
 
 void helpSignalPropositionError(OutputStream* stream, Keyword* warningorerror) {
-  { Object* bestoutputobject = oTERMUNDERCONSTRUCTIONo.get();
+  { Object* bestoutputobject = oTERMUNDERCONSTRUCTIONo;
     char* typenamE = (((boolean)(bestoutputobject)) ? (char*)"proposition" : (char*)"relation");
 
     if (!((boolean)(bestoutputobject))) {
-      bestoutputobject = oDESCRIPTIONUNDERCONSTRUCTIONo.get();
+      bestoutputobject = oDESCRIPTIONUNDERCONSTRUCTIONo;
     }
     if ((!((boolean)(bestoutputobject))) &&
-        (oTERMSOURCEBEINGPARSEDo.get() != NULL)) {
-      bestoutputobject = wrapString(oTERMSOURCEBEINGPARSEDo.get());
+        (oTERMSOURCEBEINGPARSEDo != NULL)) {
+      bestoutputobject = wrapString(oTERMSOURCEBEINGPARSEDo);
     }
     if (((boolean)(bestoutputobject))) {
       *(stream->nativeStream) << "   ";
@@ -1412,7 +1412,7 @@ void helpSignalPropositionError(OutputStream* stream, Keyword* warningorerror) {
             Proposition* bestoutputobject = ((Proposition*)(bestoutputobject001));
 
             *(stream->nativeStream) << std::endl << "   ";
-            printFormulaContainingError(oTERMUNDERCONSTRUCTIONo.get(), stream);
+            printFormulaContainingError(oTERMUNDERCONSTRUCTIONo, stream);
           }
         }
         else if (subtypeOfP(testValue000, SGT_LOGIC_IN_LOGIC_DESCRIPTION)) {
@@ -1420,7 +1420,7 @@ void helpSignalPropositionError(OutputStream* stream, Keyword* warningorerror) {
             Description* bestoutputobject = ((Description*)(bestoutputobject002));
 
             *(stream->nativeStream) << std::endl << "   ";
-            printFormulaContainingError(oTERMUNDERCONSTRUCTIONo.get(), stream);
+            printFormulaContainingError(oTERMUNDERCONSTRUCTIONo, stream);
           }
         }
         else if (testValue000 == SGT_LOGIC_IN_STELLA_CONS) {
@@ -1428,7 +1428,7 @@ void helpSignalPropositionError(OutputStream* stream, Keyword* warningorerror) {
             Cons* bestoutputobject = ((Cons*)(bestoutputobject003));
 
             *(stream->nativeStream) << std::endl << "   ";
-            printFormulaContainingError(oTERMUNDERCONSTRUCTIONo.get(), stream);
+            printFormulaContainingError(oTERMUNDERCONSTRUCTIONo, stream);
           }
         }
         else if (subtypeOfStringP(testValue000)) {
@@ -1486,7 +1486,7 @@ Keyword* logicDialect(Object* self) {
 }
 
 Surrogate* lookupLogicObjectSurrogate(Symbol* name, Module* definitionmodule) {
-  definitionmodule = (((boolean)(definitionmodule)) ? definitionmodule : oMODULEo.get());
+  definitionmodule = (((boolean)(definitionmodule)) ? definitionmodule : oMODULEo);
   if (explicitlyQualifiedLogicObjectNameP(name, definitionmodule)) {
     return (lookupSurrogateInModule(name->symbolName, ((Module*)(name->homeContext)), true));
   }
@@ -1496,24 +1496,24 @@ Surrogate* lookupLogicObjectSurrogate(Symbol* name, Module* definitionmodule) {
 }
 
 Surrogate* internLogicObjectSurrogate(Symbol* name) {
-  if (!oMODULEo.get()->clearableP_reader()) {
+  if (!oMODULEo->clearableP_reader()) {
     { OutputStringStream* stream000 = newOutputStringStream();
 
       { 
         BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-        *(stream000->nativeStream) << "ERROR: " << "Can't define the term " << "`" << name << "'" << " in the unclearable module " << "`" << oMODULEo.get()->moduleFullName << "'" << "." << std::endl;
+        *(stream000->nativeStream) << "ERROR: " << "Can't define the term " << "`" << name << "'" << " in the unclearable module " << "`" << oMODULEo->moduleFullName << "'" << "." << std::endl;
         helpSignalPropositionError(stream000, KWD_LOGIC_IN_ERROR);
       }
       throw *newPropositionError(stream000->theStringReader());
     }
   }
-  { Surrogate* oldsurrogate = lookupLogicObjectSurrogate(name, oMODULEo.get());
+  { Surrogate* oldsurrogate = lookupLogicObjectSurrogate(name, oMODULEo);
     Object* oldvalue = (((boolean)(oldsurrogate)) ? oldsurrogate->surrogateValue : ((Object*)(NULL)));
     Module* oldmodule = (((boolean)(oldvalue)) ? oldvalue->homeModule() : ((Module*)(NULL)));
 
     if (((boolean)(oldvalue)) &&
-        (!(oldmodule == oMODULEo.get()))) {
-      if (oWARNIFREDEFINEpo.get()) {
+        (!(oldmodule == oMODULEo))) {
+      if (oWARNIFREDEFINEpo) {
         std::cout << "Defining " << "`" << name << "'" << " would cause a term with the same name" << std::endl << "   of type " << "`" << nameObjectMetaclass(oldvalue) << "'" << " in module " << "`" << oldmodule->moduleFullName << "'" << " to be shadowed." << std::endl;
         std::cout << "CAUTION: Automatic shadowing can be dangerous, because forward " << std::endl << "   references to a shadowed object may be bound to the now shadowed " << std::endl << "   object.  Suggestion: Explicitly shadow the name using" << std::endl << "   DEFMODULE's `:shadow' option." << std::endl;
         if (!(yesOrNoP("Do it anyway? "))) {
@@ -1521,7 +1521,7 @@ Surrogate* internLogicObjectSurrogate(Symbol* name) {
 
             { 
               BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-              *(stream001->nativeStream) << "ERROR: " << "Couldn't shadow name " << "`" << name << "'" << " in " << "`" << oMODULEo.get()->moduleFullName << "'" << "." << std::endl;
+              *(stream001->nativeStream) << "ERROR: " << "Couldn't shadow name " << "`" << name << "'" << " in " << "`" << oMODULEo->moduleFullName << "'" << "." << std::endl;
               helpSignalPropositionError(stream001, KWD_LOGIC_IN_ERROR);
             }
             throw *newPropositionError(stream001->theStringReader());
@@ -1529,10 +1529,10 @@ Surrogate* internLogicObjectSurrogate(Symbol* name) {
         }
       }
     }
-    if (explicitlyQualifiedLogicObjectNameP(name, oMODULEo.get())) {
+    if (explicitlyQualifiedLogicObjectNameP(name, oMODULEo)) {
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, ((Module*)(name->homeContext)));
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         return (shadowSurrogate(name->symbolName));
       }
     }
@@ -1689,7 +1689,7 @@ void bindLogicObjectToSurrogate(Symbol* name, Object* object) {
       oldobject = NULL;
       namesurrogate->surrogateValue = NULL;
     }
-    if (oWARNIFREDEFINEpo.get() &&
+    if (oWARNIFREDEFINEpo &&
         (((boolean)(objectsurrogate)) &&
          (!(objectsurrogate == namesurrogate)))) {
       std::cout << "The " << "`" << nameObjectMetaclass(object) << "'" << " now named " << "`" << name << "'" << " used to be named " << "`" << internSymbolInModule(objectsurrogate->symbolName, ((Module*)(objectsurrogate->homeContext)), false) << "'" << "." << std::endl << "    Unlinking it from its old name." << std::endl;
@@ -1745,7 +1745,7 @@ void bindLogicObjectToSurrogate(Symbol* name, Object* object) {
 }
 
 void redefineLogicObject(Symbol* name, Object* oldobject, Object* newobject) {
-  { List* originatedprops = originatedPropositions(oldobject);
+  { List* originatedprops = originatedPropositions(oldobject)->removeDeletedMembers();
     List* exceptprops = originatedprops->copy();
 
     { Proposition* prop = NULL;
@@ -1763,7 +1763,7 @@ void redefineLogicObject(Symbol* name, Object* oldobject, Object* newobject) {
         }
       }
     }
-    if (oWARNIFREDEFINEpo.get() &&
+    if (oWARNIFREDEFINEpo &&
         (!stringEqlP(stringifiedSource(oldobject), stringifiedSource(newobject)))) {
       plLog(KWD_LOGIC_IN_LOW, 4, wrapString("Redefining the "), wrapString(nameObjectMetaclass(oldobject)), wrapString(" named "), name);
     }
@@ -1790,7 +1790,7 @@ boolean oHANDLE_EXPLICITLY_QUALIFIED_LOGIC_OBJECTSpo = true;
 
 boolean explicitlyQualifiedLogicObjectNameP(GeneralizedSymbol* objectname, Module* definitionmodule) {
   if (oHANDLE_EXPLICITLY_QUALIFIED_LOGIC_OBJECTSpo) {
-    definitionmodule = (((boolean)(definitionmodule)) ? definitionmodule : oMODULEo.get());
+    definitionmodule = (((boolean)(definitionmodule)) ? definitionmodule : oMODULEo);
     return (!visibleFromP(((Module*)(objectname->homeContext)), definitionmodule));
   }
   return (false);
@@ -1799,10 +1799,10 @@ boolean explicitlyQualifiedLogicObjectNameP(GeneralizedSymbol* objectname, Modul
 Surrogate* coerceToBoundOrLocalSurrogate(GeneralizedSymbol* self) {
   { Surrogate* surrogate = NULL;
 
-    if (explicitlyQualifiedLogicObjectNameP(self, oMODULEo.get())) {
+    if (explicitlyQualifiedLogicObjectNameP(self, oMODULEo)) {
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, ((Module*)(self->homeContext)));
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         return (coerceToBoundOrLocalSurrogate(self));
       }
     }
@@ -1821,8 +1821,8 @@ Surrogate* coerceToBoundOrLocalSurrogate(GeneralizedSymbol* self) {
 
           surrogate = lookupSurrogateInModule(self->symbolName, ((Module*)(self->homeContext)), false);
           if ((!((boolean)(surrogate))) &&
-              (!(((Module*)(self->homeContext)) == oMODULEo.get()))) {
-            surrogate = lookupSurrogateInModule(self->symbolName, oMODULEo.get(), false);
+              (!(((Module*)(self->homeContext)) == oMODULEo))) {
+            surrogate = lookupSurrogateInModule(self->symbolName, oMODULEo, false);
           }
         }
       }
@@ -2146,7 +2146,7 @@ void registerUnfinalizedObject(Object* object) {
       }
     }
   }
-  if (oFINALIZEOBJECTSIMMEDIATELYpo.get()) {
+  if (oFINALIZEOBJECTSIMMEDIATELYpo) {
     finalizeObjects();
   }
 }
@@ -2220,14 +2220,14 @@ void finalizeObjectAxioms(Object* self) {
     BIND_STELLA_SPECIAL(oLOGIC_DIALECTo, Keyword*, KWD_LOGIC_IN_KIF);
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, self->homeModule());
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       { Surrogate* testValue000 = safePrimaryType(self);
 
         if (subtypeOfP(testValue000, SGT_LOGIC_IN_LOGIC_LOGIC_OBJECT)) {
           { Object* self000 = self;
             LogicObject* self = ((LogicObject*)(self000));
 
-            oTERMSOURCEBEINGPARSEDo.set(stringifiedSource(self));
+            oTERMSOURCEBEINGPARSEDo = stringifiedSource(self);
             if (!((boolean)(axioms(self)))) {
               return;
             }
@@ -2256,7 +2256,7 @@ void finalizeObjectAxioms(Object* self) {
           { Object* self001 = self;
             Proposition* self = ((Proposition*)(self001));
 
-            oTERMSOURCEBEINGPARSEDo.set(stringifiedSource(self));
+            oTERMSOURCEBEINGPARSEDo = stringifiedSource(self);
             if (!((boolean)(axioms(self)))) {
               return;
             }
@@ -2296,7 +2296,7 @@ void finalizeObjectAxioms(Object* self) {
 void checkDescriptionArgumentTypes(NamedDescription* self) {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, self->homeModule());
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     { Surrogate* type = NULL;
       Cons* iter000 = self->ioVariableTypes->theConsList;
 
@@ -2413,9 +2413,9 @@ DEFINE_STELLA_SPECIAL(oINHIBITOBJECTFINALIZATIONpo, boolean , false);
 void finalizeObjects() {
   // Finalize all currently unfinalized objects.
   // The user-level entry point for this is `(process-definitions)'.
-  if (oINHIBITOBJECTFINALIZATIONpo.get() ||
+  if (oINHIBITOBJECTFINALIZATIONpo ||
       ((oUNFINALIZED_OBJECTSo->theConsList == NIL) ||
-       (!worldStateP(oCONTEXTo.get())))) {
+       (!worldStateP(oCONTEXTo)))) {
     return;
   }
   { 
@@ -2454,8 +2454,8 @@ NamedDescription* helpDefineRelationFromParseTree(Cons* tree, char* stringifieds
       boolean variablearityP = false;
 
       parameternames = parseRelationParametersTree(parameters, parametertypes, variablearityP);
-      description = createPrimitiveDescription(parameternames, parametertypes, variablearityP, classP, functionP, oMODULEo.get());
-      oDESCRIPTIONUNDERCONSTRUCTIONo.set(description);
+      description = createPrimitiveDescription(parameternames, parametertypes, variablearityP, classP, functionP, oMODULEo);
+      oDESCRIPTIONUNDERCONSTRUCTIONo = description;
       stringifiedSourceSetter(description, stringifiedsource);
       setDynamicSlotValue(description->dynamicSlots, SYM_LOGIC_IN_STELLA_BADp, TRUE_WRAPPER, NULL);
       bindLogicObjectToSurrogate(name, description);
@@ -2609,7 +2609,7 @@ List* parseRelationParametersTree(Cons* parameters, List*& _Return1, boolean& _R
 }
 
 NamedDescription* getIdenticalRelation(Symbol* name, char* stringifiedsource) {
-  { Surrogate* surrogate = lookupLogicObjectSurrogate(name, oMODULEo.get());
+  { Surrogate* surrogate = lookupLogicObjectSurrogate(name, oMODULEo);
     Object* surrogatevalue = (((boolean)(surrogate)) ? surrogate->surrogateValue : ((Object*)(NULL)));
     NamedDescription* description = NULL;
 
@@ -2779,7 +2779,7 @@ NamedDescription* callDeffunction(Cons* arguments) {
       BIND_STELLA_SPECIAL(oDESCRIPTIONUNDERCONSTRUCTIONo, Object*, NULL);
       definition->rest = normalizeDeffunctionArguments(arguments);
       internLogicObjectSurrogate(((Symbol*)(definition->rest->value)));
-      return (helpDefineRelationFromParseTree(definition, oTERMSOURCEBEINGPARSEDo.get()));
+      return (helpDefineRelationFromParseTree(definition, oTERMSOURCEBEINGPARSEDo));
     }
   }
 }
@@ -2890,7 +2890,7 @@ NamedDescription* callDefrelation(Cons* arguments) {
       BIND_STELLA_SPECIAL(oDESCRIPTIONUNDERCONSTRUCTIONo, Object*, NULL);
       definition->rest = normalizeDefrelationArguments(arguments);
       internLogicObjectSurrogate(((Symbol*)(definition->rest->value)));
-      return (helpDefineRelationFromParseTree(definition, oTERMSOURCEBEINGPARSEDo.get()));
+      return (helpDefineRelationFromParseTree(definition, oTERMSOURCEBEINGPARSEDo));
     }
   }
 }
@@ -2994,7 +2994,7 @@ NamedDescription* callDefconcept(Cons* arguments) {
       BIND_STELLA_SPECIAL(oDESCRIPTIONUNDERCONSTRUCTIONo, Object*, NULL);
       definition->rest = normalizeDefconceptArguments(arguments);
       internLogicObjectSurrogate(((Symbol*)(definition->rest->value)));
-      return (helpDefineRelationFromParseTree(definition, oTERMSOURCEBEINGPARSEDo.get()));
+      return (helpDefineRelationFromParseTree(definition, oTERMSOURCEBEINGPARSEDo));
     }
   }
 }
@@ -3173,7 +3173,7 @@ LogicObject* callDefobject(Cons* arguments) {
         { Object* term000 = term;
           LogicObject* term = ((LogicObject*)(term000));
 
-          stringifiedSourceSetter(term, oTERMSOURCEBEINGPARSEDo.get());
+          stringifiedSourceSetter(term, oTERMSOURCEBEINGPARSEDo);
           bindLogicObjectToSurrogate(name, term);
           term->processDefinitionOptions(options);
           registerUnfinalizedObject(term);
@@ -3322,12 +3322,13 @@ Proposition* callDefproposition(Cons* arguments) {
       }
       else if (consP(conception)) {
         proposition = conjoinPropositions(((Cons*)(conception)));
+        proposition = fastenDownOneProposition(proposition, false);
       }
       else {
         proposition = ((Proposition*)(conception));
       }
       options = arguments->rest->rest;
-      stringifiedSourceSetter(proposition, oTERMSOURCEBEINGPARSEDo.get());
+      stringifiedSourceSetter(proposition, oTERMSOURCEBEINGPARSEDo);
       setDynamicSlotValue(proposition->dynamicSlots, SYM_LOGIC_IN_STELLA_BADp, TRUE_WRAPPER, NULL);
       bindLogicObjectToSurrogate(name, proposition);
       proposition->processDefinitionOptions(options);
@@ -3672,7 +3673,7 @@ void helpStartupLogicIn3() {
     resetFeatures();
     oPOWERLOOM_KB_FILE_EXTENSIONSo = getQuotedTree("((\".plm\" \".ploom\") \"/LOGIC\")", "/LOGIC");
     oDEMO_FILESo = listO(22, listO(4, wrapString("basics"), wrapString("Basic PowerLoom commands"), wrapString("test-suite"), NIL), listO(4, wrapString("classes"), wrapString("Primitive and defined classes"), wrapString("test-suite"), NIL), listO(4, wrapString("collections"), wrapString("Reasoning with collections"), wrapString("test-suite"), NIL), listO(4, wrapString("append"), wrapString("Prolog-style `append'"), wrapString("test-suite"), NIL), listO(4, wrapString("inequalities"), wrapString("Reasoning with inequalities"), wrapString("test-suite"), NIL), listO(4, wrapString("recursion"), wrapString("Reasoning with recursive rules"), wrapString("test-suite"), NIL), listO(4, wrapString("negation"), wrapString("Reasoning with negation"), wrapString("test-suite"), NIL), listO(4, wrapString("constraints"), wrapString("Constraint propagation"), wrapString("test-suite"), NIL), listO(4, wrapString("equations"), wrapString("Simple equational reasoning"), wrapString("test-suite"), NIL), listO(4, wrapString("subsumption"), wrapString("Simple subsumption reasoning"), wrapString("test-suite"), NIL), listO(4, wrapString("family"), wrapString("Subsumption reasoning within a family ontology"), wrapString("test-suite"), NIL), listO(4, wrapString("relation-hierarchy"), wrapString("Finding sub, super and equivalent concepts and relations"), wrapString("test-suite"), NIL), listO(4, wrapString("defaults"), wrapString("Default reasoning with Tweety and friends"), wrapString("test-suite"), NIL), listO(4, wrapString("defaults2"), wrapString("More default reasoning"), wrapString("test-suite"), NIL), listO(4, wrapString("definition-syntax"), wrapString("The whole scoop on relation definition, funny arrows, etc."), wrapString("test-suite"), NIL), listO(4, wrapString("meta-relations"), wrapString("Using meta-properties and relations"), wrapString("test-suite"), NIL), listO(4, wrapString("partial-match"), wrapString("Reasoning with partial information"), wrapString("test-suite"), NIL), listO(4, wrapString("probability-learning"), wrapString("Learning to answer probabilistic queries"), wrapString("test-suite"), NIL), listO(3, wrapString("regression-demo"), wrapString("Learning to predict functions"), NIL), listO(3, wrapString("rule-induction-demo"), wrapString("Learning inference rules"), NIL), listO(4, wrapString("test-suite"), wrapString("PowerLoom test suite"), wrapString("test-suite"), NIL), NIL);
-    oTERMSOURCEBEINGPARSEDo.set(NULL);
+    oTERMSOURCEBEINGPARSEDo = NULL;
     oUNFINALIZED_OBJECTSo = list(0);
     oLOGIC_RELEVANT_STELLA_COMMANDSo = listO(6, SYM_LOGIC_IN_STELLA_CC, SYM_LOGIC_IN_STELLA_CLEAR_MODULE, SYM_LOGIC_IN_STELLA_DEFMODULE, SYM_LOGIC_IN_STELLA_IN_MODULE, SYM_LOGIC_IN_STELLA_LIST_MODULES, NIL);
   }
@@ -3811,7 +3812,7 @@ void helpStartupLogicIn5() {
 void startupLogicIn() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupLogicIn1();
       helpStartupLogicIn2();

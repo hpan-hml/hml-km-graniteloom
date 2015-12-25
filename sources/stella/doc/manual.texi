@@ -2011,6 +2011,9 @@ Return the arc tangent of @var{x} / @var{y} in radians.
 
 @deffn Function random (@w{(n @sc{integer})}) : @sc{integer} 
 Generate a random integer in the interval [0..n-1].
+The random number generator is seeded based on the current time every
+time STELLA starts up; however, your mileage may vary depending on
+the native language implementation.
 @end deffn
 
 @deffn Function integer-to-string (@w{(i @sc{long-integer})}) : @sc{string} 
@@ -4489,6 +4492,10 @@ can be any that are legal for @code{open-output-file} (which see).
 @deffn Function probe-file? (@w{(fileName @sc{file-name})}) : @sc{boolean} 
 Return true if file @var{fileName} exists.  Note that this does
 not necessarily mean that the file can also be read.
+IMPORTANT Java idiosyncrasy: if file @code{foo/bar} exists and is not a directory,
+Java will also say @code{foo/bar/} exists, which is different behavior than in Lisp
+and C++.  For this reason, make sure to always use @code{probe-directory?} to test
+whether a directory exists.
 @end deffn
 
 @deffn Function file-write-date (@w{(fileName @sc{file-name})}) : @sc{calendar-date} 
@@ -5104,6 +5111,10 @@ If @var{local?}, return only variables bound to symbols interned in @var{module}
 If @var{module} is null, return all variables defined everywhere.
 @end deffn
 
+@deffn Function allocate-cross-product-iterator (@w{(domains @sc{(cons of cons)})}) : @sc{cross-product-iterator} 
+Allocate a cross product iterator for a list of @var{domains}.
+@end deffn
+
 @defmethod @sc{abstract-iterator} allocate-iterator (self) : @sc{(like self)} 
 Iterator objects return themselves when asked
 for an iterator (they occupy the same position as a collection
@@ -5408,6 +5419,15 @@ True if slot values are collections.
 Return @code{true} if @var{method} is an evaluable command.
 @end deffn
 
+@deffn Function compare-strings (@w{(x @sc{string})} @w{(y @sc{string})} @w{(collation @sc{keyword})}) : @sc{integer} 
+Compare @var{x} and @var{y} and return -1, 0, or 1, depending on whether
+@var{x} is less than, equal, or greater than @var{y} relative to @var{collation}.  Currently
+supported values for @var{collation} are :ascii-case-sensitive, :ascii-case-insensitive
+:ascii-case-normalized.  The first two correspond to @code{string-compare} called with
+the appropriate third argument.  :ascii-case-normalized calls the function
+@code{string-compare-case-normalized} (which see).
+@end deffn
+
 @defmethod @sc{storage-slot} component? (self) : @sc{boolean} 
 True if fillers of this slot are components of the
 owner slot, and therefore should be deleted if the owner is deleted.
@@ -5469,6 +5489,10 @@ Return a copy of the vector sequence @var{self}.
 
 @defmethod @sc{custom-vector-sequence} copy (self) : @sc{(custom-vector-sequence of (like (any-value self)))} 
 Return a copy of the vector sequence @var{self}.
+@end defmethod
+
+@defmethod @sc{heap} copy (self) : @sc{(heap of (like (any-value self)))} 
+Return a copy of the heap @var{self}.
 @end defmethod
 
 @deffn Function copy-stream-to-stream (@w{(in @sc{input-stream})} @w{(out @sc{output-stream})}) : 
@@ -5689,6 +5713,13 @@ Enable memoization and use of memoized expression results.
 Return true if the STELLA @var{feature} is currently disabled.
 @end deffn
 
+@defmethod @sc{cons} disjoint-sets? (self @w{(otherList @sc{cons})}) : @sc{boolean} 
+Return true if the intersection of @var{self} and @var{otherList} is empty.
+This is always true if at least one of the two sets is the empty set.
+Uses an @code{eql?} test and a simple quadratic-time algorithm.  Note that
+this does not check whether @var{self} and @var{otherList} actually are sets.
+@end defmethod
+
 @defmethod @sc{integer} div (x @w{(y @sc{integer})}) : @sc{integer} 
 Return the integer quotient from dividing @var{x} by @var{y}.
 @end defmethod
@@ -5813,6 +5844,16 @@ a PUBLIC or SYSTEM literal for an XML Elternal ID.  (See 4.2.2)
 @defmethod @sc{heap} fast-heap-root (self) : @sc{(like (any-value self))} 
 Return the root of @var{self} which is assumed to be non-empty.
 @end defmethod
+
+@deffn Function file-name-without-device (@w{(file @sc{file-name})}) : @sc{file-name} 
+Return the file name portion of @var{file} by removing any
+physical device components.  This is just like @code{logical-pathname-without-host}
+but only looks for one-character device strings as used in Windows.
+@end deffn
+
+@deffn Function file-to-string (@w{(file @sc{string})}) : @sc{string} 
+Read the content of @var{file} and return it as a string.
+@end deffn
 
 @deffn Function fill-in-date-substitution (@w{(substitution-list @sc{(key-value-list of string-wrapper string-wrapper)})}) : 
 Fill in @var{substitution-list} with template variable substitions
@@ -5993,6 +6034,13 @@ Return a class with name @var{class-name}.  If none exists, break
 if @var{error?}, else return @code{null}.
 @end defmethod
 
+@deffn Function get-temp-directory () : @sc{string} 
+Return a suitable directory for temporary files.
+Uses the value of @code{stella.tempDirectory} if defined; otherwise, it
+will use a suitable OS-specific default.  The returned directory will
+end in a separator for immediate concatenation with a physical filename.
+@end deffn
+
 @defmethod @sc{calendar-date} get-time (date @w{(timezone @sc{float})}) : @sc{integer} @sc{integer} @sc{integer} @sc{integer} 
 Returns multiple values of hours, minutes, seconds, milliseconds for
 the calendar date @var{date} in @var{timezone}.  @var{timezone} is the number of hours added to UTC
@@ -6037,6 +6085,7 @@ having to concatenate them.
 
 @defmethod @sc{heap} heap-root (self) : @sc{(like (any-value self))} 
 Return the root of @var{self} (NULL if @var{self} is empty).
+The root contains the minimum element of a min-heap with @code{<} predicate.
 @end defmethod
 
 @defmethod @sc{heap} heapify (self) : 
@@ -6164,12 +6213,19 @@ a Min-heap if @var{self}s @code{predicate} has @code{<} semantics; otherwise as 
 @defmethod @sc{heap} insert-if-better (self @w{(value @sc{(like (any-value self))})}) : 
 Insert @var{value} into @var{self} and restore the heap property.
 If @var{self} has available room, simply insert @var{value}.  If the heap is full, only
-insert @var{value} if it is better than the current root (i.e., the minimum of @var{self}
-if @var{self}s @code{predicate} has @code{<} semantics).  In that case, replace the root of
-@var{self} and restore the heap property.  This is useful to build and maintain a
+insert @var{value} if it is better than the current root (i.e., if @var{value} is
+greater than the minimum of @var{self} for the case of a min-heap where @var{self}s
+@code{predicate} has @code{<} semantics).  In that case, replace the root of @var{self}
+and restore the heap property.  This is useful to build and maintain a
 heap with some top-N elements (relative to @code{predicate}) where the root (or
 minimum) of @var{self} is the currently weakest element at the end of the list.
 @end defmethod
+
+@deffn Function int-to-string (@w{(i @sc{integer})}) : @sc{string} 
+Convert @var{i} to its string representation and return the result.
+This is a convenience function that expects regular integers as opposed to longs
+which is useful in contexts where we do automatic unwrapping based on the target.
+@end deffn
 
 @deffn Function integer-length (@w{(x @sc{long-integer})}) : @sc{integer} 
 Return the 1-based position of the left-most bit in @var{x}.
@@ -6230,6 +6286,11 @@ ordered keys and values.
 Return the last item in the vector @var{self}.
 @end defmethod
 
+@defmethod @sc{heap} last (self) : @sc{(like (any-value self))} 
+Return the last item in the heap @var{self} which will be the
+largest or best item if @var{self} is a sorted min-heap with a @code{<} predicate.
+@end defmethod
+
 @defmethod @sc{cons-iterator} length (self) : @sc{integer} 
 Iterate over @var{self}, and count how many items there are.
 @end defmethod
@@ -6261,11 +6322,20 @@ Stella boolean.
 
 @deffn Command list-directory-files (@w{(directory @sc{string})}) : @sc{(cons of string-wrapper)} 
 Return all the files and sub-directories in @var{directory} sorted by name.
-Each returned file is file name that has a @var{directory} component.  If a file is
-a directory, it will end with a directory separator.  This excludes . and .. dirs.
-Handles logical pathnames but resulting files will always use physical pathname syntax.
-This is mostly consistent across native languages, but some differences still exist -
+Each returned file is a bare file name without a @var{directory} component.  If a file is
+a directory, it will look just like a plain file.  This means consumers might have to
+explicitly test whether a file is a directory depending on what they do. Excludes . and ..
+directories.  Handles logical pathnames but resulting files will always use physical pathname
+syntax.  This is mostly consistent across native languages, but some differences still exist -
 e.g., Lisp will convert . or .. into absolute pathnames.
+@end deffn
+
+@deffn Command list-directory-files-recursively (@w{(directory @sc{string})}) : @sc{(cons of string-wrapper)} 
+Just like @code{list-directory-files} (which see) but also recurses into
+subdirectories.  Files at the top level of @var{directory} will be bare file names without
+a @var{directory} component.  Files in subdirectories will be prefixed with the relative
+subdirectory path starting right below @var{directory}.  The sort order is lexicographic
+within directories which results in a depth-first presentation order of files.
 @end deffn
 
 @deffn Command list-modules (@w{(kb-only? @sc{boolean})}) : @sc{(cons of module)} 
@@ -6343,6 +6413,10 @@ Log all elements of @var{message} to @var{module}s log stream if
 or :EOL to print a line terminator.
 @end deffn
 
+@deffn Function log2 (@w{(n @sc{float})}) : @sc{float} 
+Return the logarithm (base 2) of @var{n}.
+@end deffn
+
 @deffn Function logmsg (@w{(module @sc{string})} @w{(logLevel @sc{object})} @w{&rest (message @sc{object})}) : 
 Log all elements of @var{message} to @var{module}s log stream if
 @var{logLevel} is the same or lower than the @var{module}s log level.  Interprets @code{EOL}
@@ -6365,7 +6439,12 @@ command object;  otherwise, return @code{null}.  Currently, commands are not
 polymorphic, i.e., they can only be implemented by functions.
 @end deffn
 
-@deffn Function lookup-configuration-property (@w{(property @sc{string})} @w{(defaultValue @sc{wrapper})} @w{(configuration @sc{configuration-table})}) : @sc{object} 
+@deffn Function lookup-command-like-function (@w{(name @sc{symbol})}) : @sc{method-slot} 
+Look up a function with @var{name} that can be evaluated via @code{apply}
+just like a command, regardless of whether it was marked as such.
+@end deffn
+
+@deffn Function lookup-configuration-property (@w{(property @sc{string})} @w{(defaultValue @sc{object})} @w{(configuration @sc{configuration-table})}) : @sc{object} 
 Lookup @var{property} in @var{configuration} and return its value.
 Use the global system configuration table if @var{configuration} is NULL.  Return
 @var{defaultValue} if @var{property} is not defined.
@@ -6679,6 +6758,12 @@ NULL if that cannot be determined.  This does not handle any necessary pathname
 translations or error conditions.
 @end deffn
 
+@deffn Function native-probe-directory? (@w{(fileName @sc{file-name})}) : @sc{boolean} 
+Return true if file @var{fileName} exists and is a directory.
+Note that this does not necessarily mean that the directory can also be read.
+This does not handle any necessary pathname translations or error conditions.
+@end deffn
+
 @deffn Function native-probe-file? (@w{(fileName @sc{file-name})}) : @sc{boolean} 
 Return true if file @var{fileName} exists.  Note that this does
 not necessarily mean that the file can also be read.  This does not handle any
@@ -6928,6 +7013,11 @@ Iterate over all private storage-slots attached to @var{class}.
 Return @code{true} if @var{self} is not public.
 @end defmethod
 
+@deffn Function probe-directory? (@w{(fileName @sc{file-name})}) : @sc{boolean} 
+Return true if file @var{fileName} exists and is a directory.
+Note that this does not necessarily mean that the directory can also be read.
+@end deffn
+
 @deffn Function process-command-line-arguments (@w{(count @sc{integer})} @w{(arguments @sc{(array () of string)})} @w{(unhandledOptionAction @sc{keyword})}) : 
 Interpret any command line @var{arguments} for which handlers have been registered.
 Leave any remaining unprocessed arguments in @code{*unprocessed-command-line-arguments*}.
@@ -7020,6 +7110,12 @@ added to the specified configuration :property.  :error-action can be one of :ig
 :error to specify what to do in case an error is encountered during option processing.
 @end deffn
 
+@deffn Function register-property-demon (@w{(property @sc{string})} @w{(demonName @sc{symbol})}) : 
+Register the function named @var{demonName} as the demon for @var{property}.
+Demons will be run as after demons on every configuration table update.  Set the
+property @code{stella.test.propertyDemon} to see a test demon in action.
+@end deffn
+
 @deffn Function regular-integer-valued? (@w{(x @sc{long-integer})}) : @sc{boolean} 
 Return @code{true} if @var{x} can be represented by a regular integer.
 @end deffn
@@ -7050,6 +7146,8 @@ original order of the remaining members.
 
 @defmethod @sc{cons} remove-duplicates-equal (self) : @sc{(like self)} 
 @code{remove-duplicates} (which see) using an @code{equal?} test.
+IMPORTANT: since this uses hashing to speed things up, an @code{equal-hash-code}
+method needs to be defined for this to work.
 @end defmethod
 
 @defmethod @sc{list} remove-duplicates-equal (self) : @sc{(like self)} 
@@ -7069,6 +7167,11 @@ Returns a list of names of required slots for @var{self}.
 @defmethod @sc{storage-slot} required? (self) : @sc{boolean} 
 True if a value must be assigned to this slot at
 creation time.
+@end defmethod
+
+@defmethod @sc{cross-product-iterator} reset (self) : 
+Reset @var{self} to its initially allocated state.  Note, that
+this is somewhat expensive, costing almost as much as allocating the iterator.
 @end defmethod
 
 @deffn Command reset-stella-features () : 
@@ -7098,6 +7201,11 @@ Returns the keyword for the language the current implementation is running in.
 
 @deffn Function running-system-information () : @sc{string} 
 Returns an information string about the current running system environment.
+@end deffn
+
+@deffn Function safe-compare-strings (@w{(x @sc{string})} @w{(y @sc{string})} @w{(collation @sc{keyword})}) : @sc{integer} 
+Variant of @code{compare-strings} that also tolerates NULL values.
+NULL sorts after everything else in any collation.
 @end deffn
 
 @deffn Function safe-equal-hash-code (@w{(self @sc{object})}) : @sc{integer} 
@@ -7140,7 +7248,7 @@ If @var{self} is a string or a symbol, search for an object named
 @end deffn
 
 @deffn Function seed-random-number-generator () : 
-Seeds the random number generator with the current time.
+Seeds the random number generator based on the current time.
 @end deffn
 
 @deffn Function sequence (@w{(collectiontype @sc{type})} @w{&rest (values @sc{object})}) : @sc{(sequence of object)} 
@@ -7268,6 +7376,25 @@ sort due to the way HEAP's are maintained; however, the complexity is
 the same.
 @end defmethod
 
+@defmethod @sc{cons} sort-objects (self @w{(slot @sc{storage-slot})} @w{(predicate @sc{function-code})}) : @sc{(cons of (like (any-value self)))} 
+Just like @code{sort} but assumes each element of @var{self} has a @var{slot}
+whose value will be used for comparison.  Elements must be descendants of
+STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+it will cause value wrapping everytime @var{slot} is read.
+@end defmethod
+
+@defmethod @sc{vector} sort-objects (self @w{(slot @sc{storage-slot})} @w{(predicate @sc{function-code})}) : @sc{(vector of (like (any-value self)))} 
+Just like @code{sort} but assumes each element of @var{self} has a @var{slot}
+whose value will be used for comparison.  Elements must be descendants of
+STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+it will cause value wrapping everytime @var{slot} is read.
+@end defmethod
+
+@defmethod @sc{vector} sort-tuples (self @w{(n @sc{integer})} @w{(predicate @sc{function-code})}) : @sc{(vector of (like (any-value self)))} 
+Just like @code{sort} but assumes each element of @var{self} is a tuple (a cons)
+whose @var{n}-th element (0-based) will be used for comparison.
+@end defmethod
+
 @deffn Function split-string (@w{(input @sc{string})} @w{(separator @sc{character})}) : @sc{(cons of string-wrapper)} 
 Split @var{input} into separate strings based on the @var{separator} character.
 @end deffn
@@ -7288,6 +7415,11 @@ Return @code{true} if @var{self} is a native collection.
 @deffn Command stella-information () : @sc{string} 
 Returns information about the current Stella implementation.
 Useful when reporting problems.
+@end deffn
+
+@deffn Function stella-integer-to-string-in-base (@w{(integer @sc{long-integer})} @w{(base @sc{integer})}) : @sc{string} 
+STELLA version of @code{integer-to-string-in-base} which is faster than
+the C++ version we have but slower than the native Java version.
 @end deffn
 
 @deffn Function stella-object? (@w{(self @sc{object})}) : @sc{boolean} 
@@ -7337,6 +7469,14 @@ same as the one following the most recent token.
 Read all of the input from @code{stream} and return it as a string.
 @end defmethod
 
+@deffn Function string-compare-case-normalized (@w{(x @sc{string})} @w{(y @sc{string})}) : @sc{integer} 
+Compare @var{x} and @var{y} and return -1, 0, or 1, depending on whether
+@var{x} is less than, equal, or greater than @var{y} relative to the :ascii-case-normalized
+collation.  In this collation @code{a < A < b} which gives strings that only differ in case a
+definite order while otherwise behaving identically to :ascii-case-insensitive.  This is
+similar to using a Java Collator for Locale.US with strength set to TERTIARY (which see).
+@end deffn
+
 @deffn Function string-search-ignore-case (@w{(string @sc{string})} @w{(substring @sc{string})} @w{(start @sc{integer})}) : @sc{integer} 
 Return start position of the left-most occurrence of
 @var{substring} in @var{string}, beginning from @var{start}.  Return NULL if it is not
@@ -7356,6 +7496,12 @@ If no valid parse is found, @code{null} is returned.
 Returns a decoded date-time object representing the date
 and time parsed from the @var{input} string.  If no valid parse is found,
 @code{null} is returned.
+@end deffn
+
+@deffn Function string-to-int (@w{(string @sc{string})}) : @sc{integer} 
+Convert a @var{string} representation of an integer into an integer.
+This is a convenience function that ensures a regular integer return value.  If
+@var{string} represents a long integer, the behavior is undefined.
 @end deffn
 
 @deffn Function string-to-surrogate (@w{(self @sc{string})}) : @sc{surrogate} 
@@ -7465,6 +7611,10 @@ Return @code{true} if system @var{name} has been loaded.
 
 @deffn Function terminate-program () : 
 Terminate and exit the program with normal exit code.
+@end deffn
+
+@deffn Function test-property-demon (@w{(action @sc{keyword})} @w{(property @sc{string})} @w{(value @sc{object})} @w{(table @sc{configuration-table})}) : 
+A test demon for the property demon machinery which simply prints arguments.
 @end deffn
 
 @defmethod @sc{time-duration} time-duration-to-string (date) : @sc{string} 
@@ -7622,6 +7772,10 @@ Unregister all currently registered command line options.
 
 @deffn Function unregister-cmd-line-option (@w{(key @sc{string})}) : 
 Unregister the command line option identified by @var{key} under all its keys.
+@end deffn
+
+@deffn Function unregister-property-demon (@w{(property @sc{string})}) : 
+Unregister any demon for @var{property}.
 @end deffn
 
 @deffn Command unset-stella-feature (@w{&rest (features @sc{keyword})}) : 

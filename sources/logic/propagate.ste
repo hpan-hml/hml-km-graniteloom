@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: propagate.ste,v 1.61 2010/09/10 01:16:59 hans Exp
+;;; Version: propagate.ste,v 1.67 2014/04/16 19:53:56 hans Exp
 
 ;;; Evaluator routines that compute forward propagation for the
 ;;;    propositional calculus.
@@ -90,6 +90,15 @@
                                    :initially (new HASH-SET))
           (deferred-default-propositions :type (LIST OF PROPOSITION) :initially (list))
           (elaborated-objects :type HASH-SET :initially (new HASH-SET))))
+
+(defun print-propagation-environment-stats ((self PROPAGATION-ENVIRONMENT))
+  ;; Performance debugging aid.
+  (when (null? self)
+    (setq self (get-propagation-environment *context*)))
+  (print "Propagation environment stats:" EOL)
+  (print "  " (length (evaluation-queue self)) " propositions in evaluation-queue" EOL)
+  (print "  " (length (forward-chaining-set self)) " propositions in forward-chaining-queue" EOL)
+  (print "  " (length (elaborated-objects self)) " objects elaborated" EOL))
 
 (defslot CONTEXT propagation-environment :type PROPAGATION-ENVIRONMENT
          :public? TRUE
@@ -597,7 +606,8 @@ chaining.")
 ;             assertedValue EOL
 ;             "   but somehow they are both attached to the skolem " self EOL)
 ;      (yes-or-no? "STOP AND SEE HOW THIS CAME ABOUT, AND TELL BOB.")
-      (equate-values (value-of assertedValue) derivedValue))
+      ;; NOTE: Should this use (defining-proposition self) instead of NULL?
+      (equate-values NULL (value-of assertedValue) derivedValue))
     ;; Note, we include unknown propositions below, since they might
     ;;    depend on `self', and, hence, change their assertion status:
     (foreach prop in (unfiltered-dependent-propositions self NULL)
@@ -755,6 +765,42 @@ chaining.")
           (foreach prop in (dependent-propositions self)
               do (evaluate-proposition prop)))))))
 
+#|
+;;; EXPERIMENTAL FIX to deal with an issue with the RDBMS store, where new euqiv
+;;; propositions are built during forward inference which shouldn't be marked as
+;;; evaluated at the point where they don't have a truth value yet.  It seems,
+;;; this problem should also affect us in certain cases during regular forward
+;;; inference.
+
+(defun evaluate-new-proposition ((self PROPOSITION))
+  ;; Called immediately after 'self' is fastened down, or (if operator
+  ;;    resolution was delayed) after its operator reference was resolved.
+  ;; Evaluate the truth of 'self' if all of its arguments are known.
+  ;; Propagate a newly-inferred value to any dependent propositions.
+  ;; Strategy: With regard to parsing, we avoid calling 
+  ;;    'evaluate-new-proposition' for other than the first time that
+  ;;    a proposition is conceived.
+  (when (or (description-mode?)
+            (descriptive? self))
+    (return))
+  (let ((world (lookup-constraint-propagation-world *context*)))
+    (when (defined? world)
+      ;; 'self' should not have a truth value yet:
+      (safety 3 (or (unknown? self)
+                    (eql? (kind self) :CONSTANT))
+              "INTERNAL ERROR: Bad call to 'evaluate-new-proposition'")
+      (special ((*context* world))
+        (evaluate-proposition self)
+        (when (and (unknown? self)
+                   (eql? (evaluation-state self) :EVALUATED))
+          (setf (evaluation-state self) NULL))
+        (when (not (unknown? self))
+          (trace-if :PROPAGATE "evaluate-new-proposition:  " self EOL)
+          ;; propagate inference up:
+          (foreach prop in (dependent-propositions self)
+              do (evaluate-proposition prop)))))))
+|#
+
 
   ;;
 ;;;;;; Evaluation of propositions
@@ -891,7 +937,7 @@ chaining.")
       ;; NOTE: ONCE WE KNOW HOW TO DO THIS RIGHT, `all-clashing-propositions'
       ;;    AND ITS CALLERS NEED TO BE FIXED ACCORDINGLY!!!!
       (when (unequate-conflicting-default-values? self)
-        (equate-values firstArg secondArg))
+        (equate-values self firstArg secondArg))
       |#
 
       ;#|
@@ -907,10 +953,10 @@ chaining.")
         (foreach type1 in firstArgTypes
             where (exists type2 in secondArgTypes
                     where (disjoint-terms? type1 type2))
-            do (signal-unification-clash firstArg secondArg)))
+            do (signal-unification-clash self firstArg secondArg)))
       ;|#
       
-      (equate-values firstArg secondArg))
+      (equate-values self firstArg secondArg))
      ((eql? firstArg secondArg)
       (assign-truth-value self TRUE))
      ((and (not (skolem? firstArg))
@@ -929,6 +975,11 @@ chaining.")
   ;;
   ;; NOTE: THIS WON'T WORK WELL FOR DESCRIPTIONS, SINCE THEY HAVE
   ;;    SURROGATE CONSTANTS WHICH DON'T HAVE BACKPOINTERS.
+  ;; TO DO: FIGURE OUT WHETHER WE NEED TO ENABLE A SIMILAR INFERENCE
+  ;;    FOR SINGLE-VALUED RELATIONS, WHERE WE ASSERT EQUALITY BETWEEN
+  ;;    OUTPUTS IF ALL INTPUT ARGUMENTS ARE EQUAL - SOMETHING LIKE
+  ;;    THIS IS DONE VIA `clip-or-clash-with-old-predicate-value'
+  ;;    DURING ASSERTIONS
   (let ((relationRef (relationRef self))
         (nofArgs (length (arguments self)))
         (candidatePropositions (new (LIST OF PROPOSITION))))
@@ -968,7 +1019,8 @@ chaining.")
                   as i in (interval 1 NULL)
                   where (not (eql? i nofArgs))
                   always (eql? (innermost-of arg1) (innermost-of arg2)))
-        do (equate-values (innermost-of (last (arguments self)))
+        do (equate-values self
+                          (innermost-of (last (arguments self)))
                           (innermost-of (last (arguments prop)))))
     (free candidatePropositions)))
 
@@ -1011,7 +1063,7 @@ chaining.")
 ;                 ;; computation succeeded:
 ;                 (let ((storedValue (value-of (nth permutedArguments lastIndex))))
 ;                   (when (not (eql? computedValue storedValue))
-;                     (equate-values computedValue storedValue)))
+;                     (equate-values NULL computedValue storedValue)))
 ;                 ;; successful exit:
 ;                 (break)))) ))
 
@@ -1030,13 +1082,13 @@ chaining.")
   ;;    it seems like a kludge; figure out whether we can do it more elegantly:
   (equate-equivalent-FUNCTION-propositions self)
   (let ((description (get-description (relationRef self)))
-	(code (lookup-constraint description))
+	(computation (lookup-constraint-function description))
         (storedValue OBJECT NULL)
         (computedValue OBJECT NULL)
 	(missingValueIndex -1))
-    (when (defined? code)
+    (when (defined? computation)
       (mv-setq (computedValue missingValueIndex)
-        (compute-simple-relation-constraint self code FALSE))
+        (compute-simple-relation-constraint self computation FALSE))
       (when (defined? computedValue)
         (when (= missingValueIndex -1)
           ;; this seems to do the right thing for assertions like (+ 1 2 4),
@@ -1045,11 +1097,11 @@ chaining.")
           (return))
         (setq storedValue (value-of (nth (arguments self) missingValueIndex)))
         (when (not (eql? computedValue storedValue))
-          (equate-values computedValue storedValue)))
+          (equate-values self computedValue storedValue)))
       (return))
-    (setq code (lookup-computation description))
-    (when (defined? code)
-      (setq computedValue (compute-relation-value self code FALSE))
+    (setq computation (lookup-computation-function description))
+    (when (defined? computation)
+      (setq computedValue (compute-relation-value self computation FALSE))
       (when (defined? computedValue)
         ;; If we are in description mode, we must make sure to not bind
         ;;    to the actual object (which would then point back to a
@@ -1059,33 +1111,27 @@ chaining.")
       (setq storedValue (value-of (last-argument self)))
       (when (and (not (eql? computedValue storedValue))
                  (defined? computedValue))
-        (equate-values computedValue storedValue)))) )
+        (equate-values self computedValue storedValue)))) )
 
 (defun evaluate-PREDICATE-proposition ((self PROPOSITION))
-  :public? TRUE
   ;; The proposition 'self' may or may not have unbound arguments.
   ;; If enough arguments are bound, test for possible clash, or for
   ;;    possibility of binding the remaining unbound argument.
+  ;; NOTE: none of the kernel computations or constraints excercise
+  ;;    this, since they are all defined on functions.
+  :public? TRUE
   (let ((description (get-description (relationRef self)))
-	(code (lookup-constraint description))
-        (boundArguments NIL)
+	(computation (lookup-constraint-function description))
         (success? BOOLEAN NULL))
-    (when (defined? code)
-      (foreach arg in (arguments self)
-	  do (when (isa? (value-of arg) @SKOLEM)
-	       (return))
-	  collect arg into boundArguments)
-      (setq success? (apply code (cons -1 boundArguments)))
+    (when (defined? computation)
+      (setq success?
+        (eql? (compute-simple-relation-constraint self computation FALSE) TRUE-WRAPPER))
       (assign-truth-value self success?)
       (return))
-    (setq code (lookup-computation description))
-    (when (defined? code)
-      (foreach arg in (arguments self)
-               do
-               (when (isa? (value-of arg) @SKOLEM)
-                 (return))
-               collect arg into boundArguments)
-      (setq success? (apply code boundArguments))
+    (setq computation (lookup-computation-function description))
+    (when (defined? computation)
+      (setq success?
+        (eql? (compute-relation-value self computation FALSE) TRUE-WRAPPER))
       (assign-truth-value self success?)) ))
 
 (defun evaluate-proposition ((self PROPOSITION))
@@ -1136,8 +1182,32 @@ the setting or changing of its truth value."
   ;;
 
 (defglobal *just-in-time-forward-inference?* BOOLEAN TRUE
+  :public? TRUE
   :documentation "If TRUE, ensures that forward propagation has
 been applied to each instance 'touched' during a query.")
+
+;; TODO: Figure out when to reset this.
+(defglobal *clash-exceptions* (LIST OF EXCEPTION-RECORD) (new LIST)
+  :public? TRUE
+  :documentation "Collects clash exceptions that occur during inference.")
+
+(defun reset-clash-exceptions ()
+  :public? TRUE
+  :documentation "Resets the collection of clash exceptions"
+  (setq *clash-exceptions* (new LIST)))
+
+(defun (exception-record-matches-context? BOOLEAN) ((record EXCEPTION-RECORD))
+  (return (eql? (context record) *context*)))
+
+(defun cull-clash-exceptions ((self CONTEXT))
+  ;; Clear clash exceptions belonging to 'self'.
+  (within-context self
+     (remove-if *clash-exceptions* 
+                (the-code :function exception-record-matches-context?))))
+
+(startup-time-progn
+  (add-hook *destroy-context-hooks* (quote cull-clash-exceptions)))
+
 
 (defun recursively-react-to-inference-update ((self PROPOSITION))
   ;; Helping function for 'elaborate-instance'.  Call 
@@ -1187,6 +1257,10 @@ been applied to each instance 'touched' during a query.")
                    (clear (deferred-default-propositions environment))
                    (execute-constraint-propagation-queues)))
              (CLASH (e)
+               (push *clash-exceptions* (new EXCEPTION-RECORD
+                                              :exception e
+                                              :context *context*
+                                              :module *module*))
                (print-stream STANDARD-ERROR (exception-message e) EOL))))))
        ;; don't elaborate non-LOGIC-OBJECT:
       (otherwise NULL))) )
@@ -1258,6 +1332,21 @@ been applied to each instance 'touched' during a query.")
     (otherwise NULL))
   (return FALSE))
 
+;;; Experimental support to block elaboration for certain objects (e.g., document IDs coming from
+;;; an MRP persistent store which have a tendency to bring in the whole KB).  Maybe we can have a
+;;; more general scheme that looks at object backlinks relative to KB size or whatever.  For now,
+;;; we need to define a class DO-NOT-ELABORATE in PL-KERNEL and then make objects an instance or
+;;; one of their types a subset of that class.  Once this has proven its merit, we should clean
+;;; up the API for it and make it official, maybe add a couple of convenience commands.
+
+(defun (do-not-elaborate? BOOLEAN) ((self OBJECT) (environment PROPAGATION-ENVIRONMENT))
+  ;; Return TRUE if `self' should not be elaborated in `environment'.
+  (ignore environment)
+  (let ((doNotElaborateSurrogate
+         (lookup-surrogate-in-module "DO-NOT-ELABORATE" *pl-kernel-module* FALSE)))
+    (return (and (defined? doNotElaborateSurrogate)
+                 (test-isa? self doNotElaborateSurrogate)))))
+
 (defun post-related-facts ((self OBJECT) (environment PROPAGATION-ENVIRONMENT))
   ;; Post facts related to `self' to the evaluation and forward-chaining queues
   ;;    of `environment' (using `recursively-react-to-inference-update').
@@ -1269,9 +1358,11 @@ been applied to each instance 'touched' during a query.")
   ;;    once, and (2) the sets of `environment' are hash sets instead of lists.
   (typecase self
     (LOGIC-OBJECT
-     (if (member? (elaborated-objects environment) self)
-         (return)
-       (insert (elaborated-objects environment) self))
+     (when (member? (elaborated-objects environment) self)
+       (return))
+     (insert (elaborated-objects environment) self)
+     (when (do-not-elaborate? self environment)
+       (return))
      (foreach p in (unfiltered-dependent-propositions self NULL)
          do (post-related-facts p environment)
             (foreach arg in (arguments p)
@@ -1387,12 +1478,14 @@ forward chainer has been run then in one where it has not (see
       (return NULL))))
 
 (defun print-facts ((instanceRef OBJECT))
-  :documentation "Like ALL-FACTS-OF, but prints each fact on a separate 
-line on the standard output stream."
+  :documentation "Like `all-facts-of', but sorts and prints each fact
+on a separate line on the standard output stream."
   :command? TRUE :public? TRUE :evaluate-arguments? FALSE
   (let ((instance (coerce-to-instance instanceRef NULL)))
-    (foreach fact in (all-facts-of-instance instance false false)
-	do (print fact EOL))))
+    (foreach fact in (sort (all-facts-of-instance instance false false)
+                           (the-code :function proposition-less-than?))
+	do (pretty-print-logical-form fact STANDARD-OUTPUT)
+           (print EOL))))
 
 (defun (call-all-facts-of (LIST OF PROPOSITION)) ((instanceRef OBJECT))
   :command? TRUE :public? TRUE :evaluate-arguments? TRUE
@@ -1629,7 +1722,7 @@ that reference the instance `instanceRef'."
 (defun (all-facts-of-n (CONS OF PROPOSITION)) ((n INTEGER)
                                                &rest (instanceRefs NAME))
   :command? TRUE :public? TRUE :evaluate-arguments? FALSE
-  :documentation
+  :documentation 
   "This is a generalization of `all-facts-of' (which see).  With `n' = 0
 and only one instance this command behaves just like `all-facts-of'.
 Otherwise, returns a cons list of all definite (TRUE or FALSE) propositions

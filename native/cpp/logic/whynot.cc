@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -132,9 +132,9 @@ Surrogate* WhynotDeepPartialMatch::primaryType() {
 }
 
 boolean whynotPartialMatchModeP() {
-  return ((((boolean)(oQUERYITERATORo.get())) &&
-      ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) &&
-      isaP(oQUERYITERATORo.get()->partialMatchStrategy, SGT_WHYNOT_LOGIC_WHYNOT_PARTIAL_MATCH));
+  return ((((boolean)(oQUERYITERATORo)) &&
+      ((boolean)(oQUERYITERATORo->partialMatchStrategy))) &&
+      isaP(oQUERYITERATORo->partialMatchStrategy, SGT_WHYNOT_LOGIC_WHYNOT_PARTIAL_MATCH));
 }
 
 PartialMatchFrame* WhynotPartialMatch::createPartialMatchFrame(ControlFrame* frame, Keyword* kind) {
@@ -433,7 +433,7 @@ Keyword* WhynotPartialMatch::continuePartialAndProof(ControlFrame* frame, Keywor
           }
           if ((frame->allottedClockTicks != NULL_INTEGER) &&
               (result == KWD_WHYNOT_MOVE_DOWN)) {
-            frame->allottedClockTicks = ((int)(((double)(((IntegerWrapper*)(dynamicSlotValue(frame->dynamicSlots, SYM_WHYNOT_LOGIC_REAL_ALLOTTED_CLOCK_TICKS, NULL_INTEGER_WRAPPER)))->wrapperValue - (oQUERYITERATORo.get()->currentClockTicks - frame->startingClockTicks))) / ((Vector*)(dynamicSlotValue(frame->dynamicSlots, SYM_WHYNOT_STELLA_ARGUMENTS, NULL)))->length()));
+            frame->allottedClockTicks = ((int)(((double)(((IntegerWrapper*)(dynamicSlotValue(frame->dynamicSlots, SYM_WHYNOT_LOGIC_REAL_ALLOTTED_CLOCK_TICKS, NULL_INTEGER_WRAPPER)))->wrapperValue - (oQUERYITERATORo->currentClockTicks - frame->startingClockTicks))) / ((Vector*)(dynamicSlotValue(frame->dynamicSlots, SYM_WHYNOT_STELLA_ARGUMENTS, NULL)))->length()));
           }
         }
         else if (result == KWD_WHYNOT_FAILURE) {
@@ -504,7 +504,7 @@ Keyword* WhynotPartialMatch::continuePartialAntecedentsProof(Keyword* lastmove) 
       double score = NULL_FLOAT;
       Keyword* result = NULL;
       int allottedclockticks = frame->allottedClockTicks;
-      int currentclockticks = oQUERYITERATORo.get()->currentClockTicks;
+      int currentclockticks = oQUERYITERATORo->currentClockTicks;
 
       if (lastmove == KWD_WHYNOT_DOWN) {
         self->setDynamicCutoff();
@@ -705,7 +705,7 @@ double WhynotPartialMatch::computePartialTruth(QueryIterator* query) {
           if (!(query->nextP())) {
             break;
           }
-          oINFERENCELEVELo.set(initialinferencelevel);
+          oINFERENCELEVELo = initialinferencelevel;
           if (partialmatchframe->cutoffPartialMatchP(false)) {
             break;
           }
@@ -906,7 +906,7 @@ boolean insertWhynotProofToClassP(WhynotProofClass* clasS, Justification* proof)
     return (true);
   }
   { KeyValueList* deviations = newKeyValueList();
-    int founddeviations = computeProofDeviation(proof, clasS->representative, oMAX_WHYNOT_PROOF_CLASS_DEVIATIONSo.get(), deviations);
+    int founddeviations = computeProofDeviation(proof, clasS->representative, oMAX_WHYNOT_PROOF_CLASS_DEVIATIONSo, deviations);
 
     if (founddeviations != NULL_INTEGER) {
       { Justification* newdev = NULL;
@@ -1146,7 +1146,7 @@ QueryIterator* WhynotPartialMatch::retrievePartialSolutions(QueryIterator* query
               (!query->nextP())) {
             break;
           }
-          oINFERENCELEVELo.set(initialinferencelevel);
+          oINFERENCELEVELo = initialinferencelevel;
           if (partialmatchframe->cutoffPartialMatchP(false)) {
             break;
           }
@@ -1389,7 +1389,7 @@ QueryIterator* deriveJustifiedPartialQuery(QueryIterator* query) {
     return (query);
   }
   { QueryIterator* partialquery = createQueryIterator(query->baseControlFrame->patternRecord->description, ((QuerySolution*)(query->value))->bindings);
-    boolean recordjustificationsP = oRECORD_JUSTIFICATIONSpo.get();
+    boolean recordjustificationsP = oRECORD_JUSTIFICATIONSpo;
 
     partialquery->options->insertAt(KWD_WHYNOT_MATCH_MODE, KWD_WHYNOT_WHYNOT);
     setPowerloomFeature(KWD_WHYNOT_JUSTIFICATIONS);
@@ -1419,13 +1419,13 @@ void whynotEvaluatorWrapper(Cons* arguments) {
 void explainWhynot(char* label, Keyword* style, int maxdepth, boolean summaryP, OutputStream* stream) {
   // Programmer's interface to the WHYNOT function.
   if (label == NULL) {
-    oMOST_RECENT_EXPLANATION_MAPPINGo.set(newKeyValueList());
+    oMOST_RECENT_EXPLANATION_MAPPINGo = newKeyValueList();
   }
   try {
     { Cons* mappings = NIL;
 
       { Justification* justification = NULL;
-        Cons* iter000 = getWhynotJustifications(oMOST_RECENT_QUERYo, label, oMOST_RECENT_EXPLANATION_MAPPINGo.get())->theConsList;
+        Cons* iter000 = getWhynotJustifications(oMOST_RECENT_QUERYo, label, oMOST_RECENT_EXPLANATION_MAPPINGo)->theConsList;
         int i = NULL_INTEGER;
         int iter001 = 1;
 
@@ -1436,7 +1436,7 @@ void explainWhynot(char* label, Keyword* style, int maxdepth, boolean summaryP, 
           justification = ((Justification*)(iter000->value));
           i = iter001;
           if (label == NULL) {
-            { ExplanationInfo* info = registerJustification(visibleJustification(justification), oMOST_RECENT_EXPLANATION_MAPPINGo.get());
+            { ExplanationInfo* info = registerJustification(visibleJustification(justification), oMOST_RECENT_EXPLANATION_MAPPINGo);
 
               info->label = integerToString(((long long int)(i)));
               info->depth = 1;
@@ -1445,13 +1445,13 @@ void explainWhynot(char* label, Keyword* style, int maxdepth, boolean summaryP, 
           *(stream->nativeStream) << std::endl << "Explanation #" << i << " score=" << justification->positiveScore << ":" << std::endl << std::endl;
           printWhynotJustification(justification, stream, maxdepth, style, summaryP);
           if (label == NULL) {
-            mappings = cons(oMOST_RECENT_EXPLANATION_MAPPINGo.get(), mappings);
-            oMOST_RECENT_EXPLANATION_MAPPINGo.set(newKeyValueList());
+            mappings = cons(oMOST_RECENT_EXPLANATION_MAPPINGo, mappings);
+            oMOST_RECENT_EXPLANATION_MAPPINGo = newKeyValueList();
           }
         }
       }
       if (!(mappings == NIL)) {
-        oMOST_RECENT_EXPLANATION_MAPPINGo.set(newKeyValueList());
+        oMOST_RECENT_EXPLANATION_MAPPINGo = newKeyValueList();
         { KeyValueList* mapping = NULL;
           Cons* iter002 = mappings;
 
@@ -1466,7 +1466,7 @@ void explainWhynot(char* label, Keyword* style, int maxdepth, boolean summaryP, 
                     iter003 = iter003->rest) {
                 k = ((Justification*)(iter003->key));
                 v = ((ExplanationInfo*)(iter003->value));
-                oMOST_RECENT_EXPLANATION_MAPPINGo.get()->insertAt(k, v);
+                oMOST_RECENT_EXPLANATION_MAPPINGo->insertAt(k, v);
               }
             }
           }
@@ -1522,7 +1522,7 @@ void printWhynotJustification(Justification* justification, OutputStream* stream
       }
     }
     else {
-      printExplanation(justification, stream, oMOST_RECENT_EXPLANATION_MAPPINGo.get(), maxdepth, oEXPLANATION_AUDIENCEo.get());
+      printExplanation(justification, stream, oMOST_RECENT_EXPLANATION_MAPPINGo, maxdepth, oEXPLANATION_AUDIENCEo);
     }
   }
 }
@@ -1537,7 +1537,7 @@ List* getWhynotJustifications(QueryIterator* query, char* label, KeyValueList* m
       query = oMOST_RECENT_QUERYo;
     }
     if (!((boolean)(mapping))) {
-      mapping = oMOST_RECENT_EXPLANATION_MAPPINGo.get();
+      mapping = oMOST_RECENT_EXPLANATION_MAPPINGo;
     }
     if (!((boolean)(query))) {
       throw *newExplainNoQueryException("There is nothing to explain.");
@@ -1620,7 +1620,7 @@ void helpStartupWhynot1() {
 void startupWhynot() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupWhynot1();
     }

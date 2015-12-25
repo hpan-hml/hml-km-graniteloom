@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -73,6 +73,37 @@ public abstract class SequenceIndex extends StandardObject {
       }
     }
     return (false);
+  }
+
+  public static SequenceIndex maybeWrapSequenceIndex(SequenceIndex index, Cons pattern, Keyword kind, Stella_Object arg1, Stella_Object arg2) {
+    { ObjectStore store = ((ObjectStore)(KeyValueList.dynamicSlotValue(((Module)(Stella.$MODULE$.get())).dynamicSlots, Logic.SYM_LOGIC_OBJECT_STORE, null)));
+      SequenceIndex baseindex = index;
+
+      if ((store != null) &&
+          ((!Logic.descriptionModeP()) &&
+           (!Logic.variableP(arg1)))) {
+        if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(index), Logic.SGT_LOGIC_PAGING_INDEX)) {
+          { PagingIndex index000 = ((PagingIndex)(index));
+
+            if (index000.store == store) {
+              return (index000);
+            }
+            if (pattern == null) {
+              pattern = index000.selectionPattern;
+            }
+          }
+        }
+        else {
+        }
+        if (pattern == null) {
+          pattern = Cons.cons(kind, Cons.cons(((null == null) ? Stella.NIL : null), Cons.cons(arg1, ((arg2 == null) ? Stella.NIL : Cons.cons(arg2, Stella.NIL)))));
+        }
+        index = store.objectStoreDcreateSequenceIndex(pattern);
+        index.theSequence = baseindex.theSequence;
+        index.theSequenceLength = baseindex.theSequenceLength;
+      }
+      return (index);
+    }
   }
 
   public Iterator allocateIterator() {

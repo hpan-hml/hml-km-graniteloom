@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -92,6 +92,7 @@ Cons* buildQuantifiedProposition(Cons* tree, boolean converttypestoconstraintsP,
 Vector* copyConsListToVariablesVector(Cons* conslist);
 boolean equivalentHoldsPropositionP(Proposition* self, Proposition* other, KeyValueMap* mapping);
 boolean equivalentCommutativePropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping);
+boolean helpEquivalentPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping, boolean ignorelastargP);
 boolean equivalentPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping);
 boolean equivalentFunctionPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping);
 boolean equivalentDescriptionsP(Description* self, Description* other, KeyValueMap* mapping);
@@ -99,6 +100,8 @@ boolean equivalentEnumerationsP(Collection* self, Collection* other);
 boolean equivalentFormulaeP(Object* self, Object* other, KeyValueMap* mapping);
 boolean sameAndUniqueArgumentsP(Vector* variables, Vector* arguments);
 boolean unifyPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping);
+boolean descriptionP(Object* self);
+boolean unnamedDescriptionP(Object* self);
 boolean namedDescriptionP(Description* self);
 Description* findDuplicateComplexDescription(Description* self);
 Description* findDuplicateDescription(Description* self);
@@ -134,7 +137,7 @@ boolean resolveOneSlotReferenceP(Proposition* proposition, KeyValueList* variabl
 void resolveUnresolvedSlotReferences(Object* formula);
 void createDummyRelation(Proposition* waywardproposition);
 boolean definedRelationP(NamedDescription* self);
-Cons* listUndefinedRelations(Object* module, boolean localP);
+Cons* listUndefinedRelations(Cons* options);
 Cons* listUndefinedRelationsEvaluatorWrapper(Cons* arguments);
 Cons* callListUndefinedRelations(Module* module, boolean localP);
 void complainAboutUndeclaredReference(Proposition* waywardproposition);
@@ -258,6 +261,7 @@ extern Symbol* SYM_DESCRIPTIONS_STELLA_ISA;
 extern Symbol* SYM_DESCRIPTIONS_LOGIC_KAPPA;
 extern Keyword* KWD_DESCRIPTIONS_KIF;
 extern Keyword* KWD_DESCRIPTIONS_DESCRIPTION;
+extern Surrogate* SGT_DESCRIPTIONS_LOGIC_UNFINALIZED;
 extern Surrogate* SGT_DESCRIPTIONS_PL_KERNEL_KB_CONCEPT;
 extern Surrogate* SGT_DESCRIPTIONS_PL_KERNEL_KB_FUNCTION;
 extern Surrogate* SGT_DESCRIPTIONS_PL_KERNEL_KB_VARIABLE_ARITY;
@@ -304,6 +308,10 @@ extern Symbol* SYM_DESCRIPTIONS_LOGIC_VARIABLE_TYPE_TABLE;
 extern Surrogate* SGT_DESCRIPTIONS_LOGIC_LOGIC_OBJECT;
 extern Surrogate* SGT_DESCRIPTIONS_STELLA_SYMBOL;
 extern Symbol* SYM_DESCRIPTIONS_LOGIC_UNDECLAREDp;
+extern Keyword* KWD_DESCRIPTIONS_MODULE;
+extern Keyword* KWD_DESCRIPTIONS_LOCALp;
+extern Surrogate* SGT_DESCRIPTIONS_STELLA_MODULE;
+extern Surrogate* SGT_DESCRIPTIONS_STELLA_BOOLEAN;
 extern Symbol* SYM_DESCRIPTIONS_LOGIC_pX;
 extern Symbol* SYM_DESCRIPTIONS_PL_KERNEL_KB_RELATION;
 extern Symbol* SYM_DESCRIPTIONS_LOGIC_F_CALL_LIST_UNDEFINED_RELATIONS_QUERY_000;

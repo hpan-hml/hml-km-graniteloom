@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -63,12 +63,14 @@
     (DEFINE-MODULE-FROM-STRINGIFIED-SOURCE "/UTILITIES"
      "(:LISP-PACKAGE \"STELLA\" :JAVA-PACKAGE \"edu.isi.stella.utilities\" :USES (\"STELLA\") :NICKNAME \"UTIL\" :CODE-ONLY? TRUE)"))
    (CL:LET*
-    ((*MODULE* (GET-STELLA-MODULE "/UTILITIES" (> *STARTUP-TIME-PHASE* 1)))
+    ((*MODULE*
+      (GET-STELLA-MODULE "/UTILITIES" (> *STARTUP-TIME-PHASE* 1)))
      (*CONTEXT* *MODULE*))
     (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
     (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
      (CL:SETQ SYM-STARTUP-SYSTEM-UTILITIES-STARTUP-UTILITIES-SYSTEM
-      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-UTILITIES-SYSTEM" NULL 0))
+      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-UTILITIES-SYSTEM" NULL
+       0))
      (CL:SETQ SYM-STARTUP-SYSTEM-STELLA-METHOD-STARTUP-CLASSNAME
       (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME"
        (GET-STELLA-MODULE "/STELLA" CL:T) 0)))

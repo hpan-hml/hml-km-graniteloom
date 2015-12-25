@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -577,14 +577,22 @@
      (CL:IF
       (CL:EQ (SPECIAL-IMPLEMENTATION-STYLE)
        KWD-CPP-OUTPUT-UNBIND-WITH-DESTRUCTORS)
-      (CPP-OUTPUT-STATEMENT
-       (LIST* SYM-CPP-OUTPUT-STELLA-CPP_FUNCTION_CALL
-        (LIST* SYM-CPP-OUTPUT-STELLA-CPP_IDENT
-         (WRAP-STRING "DEFINE_STELLA_SPECIAL") NIL)
-        (LIST* SYM-CPP-OUTPUT-STELLA-CPP_ACTUALS
-         (LIST* SYM-CPP-OUTPUT-STELLA-CPP_IDENT NAME NIL) TYPE
-         (CONS INITIALVALUE NIL))
-        NIL))
+      (CL:IF (SUPPORT-UNEXEC?)
+       (CPP-OUTPUT-STATEMENT
+        (LIST* SYM-CPP-OUTPUT-STELLA-CPP_FUNCTION_CALL
+         (LIST* SYM-CPP-OUTPUT-STELLA-CPP_IDENT
+          (WRAP-STRING "DECLARE_STELLA_SPECIAL") NIL)
+         (LIST* SYM-CPP-OUTPUT-STELLA-CPP_ACTUALS
+          (LIST* SYM-CPP-OUTPUT-STELLA-CPP_IDENT NAME NIL) TYPE NIL)
+         NIL))
+       (CPP-OUTPUT-STATEMENT
+        (LIST* SYM-CPP-OUTPUT-STELLA-CPP_FUNCTION_CALL
+         (LIST* SYM-CPP-OUTPUT-STELLA-CPP_IDENT
+          (WRAP-STRING "DEFINE_STELLA_SPECIAL") NIL)
+         (LIST* SYM-CPP-OUTPUT-STELLA-CPP_ACTUALS
+          (LIST* SYM-CPP-OUTPUT-STELLA-CPP_IDENT NAME NIL) TYPE
+          (CONS INITIALVALUE NIL))
+         NIL)))
       (CPP-OUTPUT-TYPED-ENTITY TYPE NAME INITIALVALUE)))
     (CL:T (CPP-OUTPUT-TYPED-ENTITY TYPE NAME INITIALVALUE)))
    (%%PRINT-STREAM (%NATIVE-STREAM *CURRENT-STREAM*) ";" EOL EOL))

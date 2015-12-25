@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -126,12 +126,24 @@ public class Skolem extends LogicObject {
     }
   }
 
+  public static boolean boundComputationInputSkolemP(Skolem skolem) {
+    if (Logic.logicalCollectionP(skolem)) {
+      return (true);
+    }
+    else {
+      { Proposition prop = skolem.definingProposition;
+
+        return ((prop != null) &&
+            Logic.testPropertyP(Logic.getDescription(((Surrogate)(prop.operator))), Logic.SGT_PL_KERNEL_KB_TOTAL));
+      }
+    }
+  }
+
   public static Stella_Object generateSkolem(Skolem self) {
     if (Logic.nativeValueOf(self) != null) {
       return (Logic.generateTerm(Logic.nativeValueOf(self)));
     }
-    else if ((self.definingProposition != null) &&
-        (((Stella_Object)(Stella_Object.accessInContext(self.variableValue, self.homeContext, false))) == null)) {
+    else if (self.definingProposition != null) {
       return (Proposition.generateFunctionAsTerm(self.definingProposition));
     }
     else if ((Logic.innermostOf(self) != null) &&
@@ -301,7 +313,10 @@ public class Skolem extends LogicObject {
   public static void printKifSkolem(Skolem self, boolean suppressdefiningpropositionP) {
     { OutputStream stream = ((OutputStream)(Logic.$PRINTLOGICALFORMSTREAM$.get()));
 
-      if (suppressdefiningpropositionP) {
+      if (Skolem.quantifiedObjectVariableP(self)) {
+        Skolem.printSkolemName(self, stream);
+      }
+      else if (suppressdefiningpropositionP) {
         Skolem.printSkolem(self, stream, false);
       }
       else if (self.definingProposition != null) {
@@ -311,6 +326,65 @@ public class Skolem extends LogicObject {
         Skolem.printSkolem(self, stream, false);
       }
     }
+  }
+
+  public static boolean quantifiedObjectVariableP(Skolem var) {
+    if (((Cons)(Logic.$PRINTQUANTIFIEDOBJECTSSTACK$.get())) != null) {
+      { Stella_Object obj = null;
+        Cons iter000 = ((Cons)(Logic.$PRINTQUANTIFIEDOBJECTSSTACK$.get()));
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          obj = iter000.value;
+          { Surrogate testValue000 = Stella_Object.safePrimaryType(obj);
+
+            if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
+              { Proposition obj000 = ((Proposition)(obj));
+
+                if (((Vector)(KeyValueList.dynamicSlotValue(obj000.dynamicSlots, Logic.SYM_LOGIC_IO_VARIABLES, null))).memberP(var)) {
+                  return (true);
+                }
+              }
+            }
+            else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_DESCRIPTION)) {
+              { Description obj000 = ((Description)(obj));
+
+                if (obj000.ioVariables.memberP(var) ||
+                    obj000.internalVariables.memberP(var)) {
+                  return (true);
+                }
+              }
+            }
+            else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_STELLA_VECTOR)) {
+              { Vector obj000 = ((Vector)(obj));
+
+                if (obj000.memberP(var)) {
+                  return (true);
+                }
+              }
+            }
+            else if (testValue000 == Logic.SGT_STELLA_CONS) {
+              { Cons obj000 = ((Cons)(obj));
+
+                if (obj000.memberP(var)) {
+                  return (true);
+                }
+              }
+            }
+            else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_STELLA_LIST)) {
+              { List obj000 = ((List)(obj));
+
+                if (obj000.memberP(var)) {
+                  return (true);
+                }
+              }
+            }
+            else {
+            }
+          }
+        }
+      }
+    }
+    return (false);
   }
 
   public static Surrogate computeRelationTermSurrogate(Skolem skolem, Proposition proposition) {
@@ -435,7 +509,7 @@ public class Skolem extends LogicObject {
         }
         if ((assertedvalue != null) &&
             (!Stella_Object.eqlP(assertedvalue, derivedvalue))) {
-          Logic.equateValues(Logic.valueOf(assertedvalue), derivedvalue);
+          Proposition.equateValues(null, Logic.valueOf(assertedvalue), derivedvalue);
         }
         { Proposition prop = null;
           Iterator iter000 = Logic.unfilteredDependentPropositions(self, null).allocateIterator();
@@ -707,51 +781,6 @@ public class Skolem extends LogicObject {
     }
   }
 
-  public static void unifyTypes(Skolem term1, Stella_Object term2) {
-    { Surrogate type1 = Logic.logicalType(term1);
-      Surrogate type2 = Logic.logicalType(term2);
-
-      if ((type1 == type2) ||
-          (Logic.logicalSubtypeOfP(type1, type2) ||
-           Logic.logicalSubtypeOfP(type2, type1))) {
-      }
-      else if (type1 == Logic.SGT_STELLA_THING) {
-        if (Stella_Object.isaP(term1, Logic.SGT_LOGIC_SKOLEM)) {
-        }
-        ((Skolem)(term1)).skolemType = type2;
-      }
-      else if (type2 == Logic.SGT_STELLA_THING) {
-        if (Stella_Object.isaP(term2, Logic.SGT_LOGIC_SKOLEM)) {
-          ((Skolem)(term2)).skolemType = type1;
-        }
-      }
-      else {
-        if (Logic.bottomP(term2)) {
-          return;
-        }
-        Logic.signalUnificationClash(term1, term2);
-      }
-    }
-  }
-
-  public static void signalVariableValueClash(Skolem skolem, Stella_Object value1, Stella_Object value2) {
-    if ((value1 != null) &&
-        (value2 != null)) {
-      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
-
-        {
-          stream000.nativeStream.println("Skolem `" + skolem + "' is equated with multiple values:");
-          stream000.nativeStream.print("   `" + value1 + "' and `" + value2 + "'.");
-        }
-;
-        throw ((Clash)(Clash.newClash(stream000.theStringReader()).fillInStackTrace()));
-      }
-    }
-    else {
-      throw ((Clash)(Clash.newClash("Variable value clash.").fillInStackTrace()));
-    }
-  }
-
   public boolean objectEqualP(Stella_Object other) {
     { Skolem self = this;
 
@@ -799,7 +828,7 @@ public class Skolem extends LogicObject {
           Stella_Object nativefirstargvalue = Logic.valueOf((proposition.arguments.theArray)[0]);
 
           if (newvalue != null) {
-            Logic.assignNativeSlotValue(((Thing)(nativefirstargvalue)), ((StorageSlot)(slot)), newvalue);
+            Proposition.assignNativeSlotValue(proposition, ((Thing)(nativefirstargvalue)), ((StorageSlot)(slot)), newvalue);
           }
           else {
             Logic.dropNativeSlotValue(((Thing)(nativefirstargvalue)), ((StorageSlot)(slot)), oldvalue);

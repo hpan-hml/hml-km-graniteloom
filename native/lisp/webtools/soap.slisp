@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -59,7 +59,8 @@
 
 ;;; Forward declarations:
 
-(CL:DECLAIM (CL:SPECIAL *STARTUP-TIME-PHASE* *MODULE* STANDARD-OUTPUT EOL NIL))
+(CL:DECLAIM
+ (CL:SPECIAL *STARTUP-TIME-PHASE* *MODULE* STANDARD-OUTPUT EOL NIL))
 
 (CL:DEFUN NEW-SOAP-FAULT-EXCEPTION (MESSAGE)
   (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING MESSAGE))
@@ -68,7 +69,8 @@
   (CL:LET* ((SELF NULL))
    (CL:SETQ SELF
     (CL:MAKE-CONDITION (CL:QUOTE SOAP-FAULT-EXCEPTION)
-     *CONDITION-MESSAGE-KEYWORD* (REPLACE-SUBSTRINGS MESSAGE "~~" "~")))
+     *CONDITION-MESSAGE-KEYWORD*
+     (REPLACE-SUBSTRINGS MESSAGE "~~" "~")))
    (CL:SETF (%FAULT SELF) NULL) SELF))
 
 ;;; (DEFUN PROCESS-SOAP-RPC-REQUEST ...)
@@ -99,16 +101,19 @@ RPC request.  This functions writes a SOAP envelope containing a service respons
 
 (CL:DEFUN GET-RPC-ARGUMENTS (ENVELOPE)
   (CL:LET*
-   ((RESULT NIL) (CONTENTS (|%Body.contents| (|%Envelope.body| ENVELOPE))))
+   ((RESULT NIL)
+    (CONTENTS (|%Body.contents| (|%Envelope.body| ENVELOPE))))
    (CL:LET*
-    ((SLOT NULL) (ITER-000 (%LIST.THE-CONS-LIST (GET-MAPPED-SLOTS CONTENTS)))
+    ((SLOT NULL)
+     (ITER-000 (%LIST.THE-CONS-LIST (GET-MAPPED-SLOTS CONTENTS)))
      (COLLECT-000 NULL))
     (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
      (CL:SETQ SLOT (%%VALUE ITER-000))
      (CL:WHEN (ELEMENT-SLOT? SLOT)
       (CL:IF (CL:EQ COLLECT-000 NULL)
        (CL:PROGN
-        (CL:SETQ COLLECT-000 (CONS (GET-OBJECT-SLOT-VALUE CONTENTS SLOT) NIL))
+        (CL:SETQ COLLECT-000
+         (CONS (GET-OBJECT-SLOT-VALUE CONTENTS SLOT) NIL))
         (CL:IF (CL:EQ RESULT NIL) (CL:SETQ RESULT COLLECT-000)
          (ADD-CONS-TO-END-OF-CONS-LIST RESULT COLLECT-000)))
        (CL:PROGN
@@ -131,7 +136,8 @@ RPC request.  This functions writes a SOAP envelope containing a service respons
 
 (CL:DEFUN DISPATCH-CALL-WITH-METHOD-AND-ARGS (METHODNAME ARGUMENTS)
   (CL:LET*
-   ((FUNCTION (%METHOD-SLOT.FUNCTION-CODE (LOOKUP-FUNCTION METHODNAME)))
+   ((FUNCTION
+     (%METHOD-SLOT.FUNCTION-CODE (LOOKUP-FUNCTION METHODNAME)))
     (RAWRESULT (APPLY FUNCTION ARGUMENTS))
     (PACKAGEDRESULT (CREATE-SOAP-ENVELOPE RAWRESULT)))
    PACKAGEDRESULT))
@@ -161,20 +167,20 @@ RPC request.  This functions writes a SOAP envelope containing a service respons
   #+MCL
   (CL:CHECK-TYPE FACTOR CL:SIMPLE-STRING)
   (CL:LET* ((SELF-000 (|new-Fault|)))
-   (CL:LET* ((SELF-001 (|new-faultcode|)))
-    (CL:SETF (|%faultcode.textContent| SELF-001) FCODE)
+   (CL:LET* ((SELF-001 (|new-FaultCode|)))
+    (CL:SETF (|%FaultCode.textContent| SELF-001) FCODE)
     (CL:SETF (|%Fault.faultcode| SELF-000) SELF-001))
-   (CL:LET* ((SELF-002 (|new-faultstring|)))
-    (CL:SETF (|%faultstring.textContent| SELF-002) FSTRING)
+   (CL:LET* ((SELF-002 (|new-FaultString|)))
+    (CL:SETF (|%FaultString.textContent| SELF-002) FSTRING)
     (CL:SETF (|%Fault.faultstring| SELF-000) SELF-002))
    (CL:LET* ((FAULT SELF-000))
     (CL:WHEN (CL:NOT (CL:EQ FACTOR STELLA::NULL-STRING))
-     (CL:LET* ((SELF-003 (|new-faultactor|)))
-      (CL:SETF (|%faultactor.textContent| SELF-003) FACTOR)
+     (CL:LET* ((SELF-003 (|new-FaultActor|)))
+      (CL:SETF (|%FaultActor.textContent| SELF-003) FACTOR)
       (CL:SETF (|%Fault.faultactor| FAULT) SELF-003)))
     (CL:WHEN (CL:NOT (CL:EQ FDETAIL NULL))
-     (CL:LET* ((SELF-004 (|new-detail|)))
-      (CL:SETF (|%detail.contents| SELF-004) FDETAIL)
+     (CL:LET* ((SELF-004 (|new-Detail|)))
+      (CL:SETF (|%Detail.contents| SELF-004) FDETAIL)
       (CL:SETF (|%Fault.detail| FAULT) SELF-004)))
     FAULT)))
 
@@ -184,7 +190,8 @@ RPC request.  This functions writes a SOAP envelope containing a service respons
   "Handle a request encoded by a SOAP message envelope in the body of an HTTP POST
 command, unpack the envelope, dispatch the request, and return the result as SOAP envelope."
   (CL:LET* ((SELF-000 (NEW-OUTPUT-STREAM)))
-   (CL:SETF (%OUTPUT-STREAM.NATIVE-STREAM SELF-000) (GET-REPLY-STREAM XCHG))
+   (CL:SETF (%OUTPUT-STREAM.NATIVE-STREAM SELF-000)
+    (GET-REPLY-STREAM XCHG))
    (CL:LET* ((REPLY SELF-000))
     (PROCESS-SOAP-RPC-REQUEST (GET-REQUEST-BODY XCHG) CL:T REPLY))))
 
@@ -196,7 +203,8 @@ command, unpack the envelope, dispatch the request, and return the result as SOA
   #+MCL
   (CL:CHECK-TYPE URL CL:SIMPLE-STRING)
   (CL:LET*
-   ((DEBUG? CL:T) (REQUESTENVELOPEOBJECT (CREATE-SOAP-ENVELOPE CALLOBJECT))
+   ((DEBUG? CL:T)
+    (REQUESTENVELOPEOBJECT (CREATE-SOAP-ENVELOPE CALLOBJECT))
     (REQUESTSTRING (TO-XML-STRING REQUESTENVELOPEOBJECT))
     (HEADERS (MAKE-SOAP-RPC-REQUEST-HEADERS))
     (RESPONSEENVELOPESTRING
@@ -219,7 +227,8 @@ command, unpack the envelope, dispatch the request, and return the result as SOA
   (CL:LET* ((RESULT (NEW-KEY-VALUE-LIST)))
    (INSERT-AT RESULT (WRAP-STRING "content-type")
     (WRAP-STRING "text/xml; charset=utf-8"))
-   (INSERT-AT RESULT (WRAP-STRING "SoapAction") (WRAP-STRING "")) RESULT))
+   (INSERT-AT RESULT (WRAP-STRING "SoapAction") (WRAP-STRING ""))
+   RESULT))
 
 (CL:DEFUN STARTUP-SOAP ()
   (CL:LET*
@@ -229,11 +238,14 @@ command, unpack the envelope, dispatch the request, and return the result as SOA
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
     (CL:SETQ KWD-SOAP-CONTENT-TYPE
      (INTERN-RIGID-SYMBOL-WRT-MODULE "CONTENT-TYPE" NULL 2))
-    (CL:SETQ KWD-SOAP-XML (INTERN-RIGID-SYMBOL-WRT-MODULE "XML" NULL 2))
+    (CL:SETQ KWD-SOAP-XML
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "XML" NULL 2))
     (CL:SETQ KWD-SOAP-DOCUMENTATION
      (INTERN-RIGID-SYMBOL-WRT-MODULE "DOCUMENTATION" NULL 2))
-    (CL:SETQ KWD-SOAP-METHOD (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD" NULL 2))
-    (CL:SETQ KWD-SOAP-POST (INTERN-RIGID-SYMBOL-WRT-MODULE "POST" NULL 2))
+    (CL:SETQ KWD-SOAP-METHOD
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD" NULL 2))
+    (CL:SETQ KWD-SOAP-POST
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "POST" NULL 2))
     (CL:SETQ KWD-SOAP-HEADERS
      (INTERN-RIGID-SYMBOL-WRT-MODULE "HEADERS" NULL 2))
     (CL:SETQ KWD-SOAP-CONTENT
@@ -288,11 +300,12 @@ command, unpack the envelope, dispatch the request, and return the result as SOA
      "(DEFUN (MAKE-SOAP-RPC-REQUEST-HEADERS HTTP-HEADERS) ())"
      (CL:FUNCTION MAKE-SOAP-RPC-REQUEST-HEADERS) NULL)
     (DEFINE-FUNCTION-OBJECT "STARTUP-SOAP"
-     "(DEFUN STARTUP-SOAP () :PUBLIC? TRUE)" (CL:FUNCTION STARTUP-SOAP) NULL)
+     "(DEFUN STARTUP-SOAP () :PUBLIC? TRUE)" (CL:FUNCTION STARTUP-SOAP)
+     NULL)
     (CL:LET* ((FUNCTION (LOOKUP-FUNCTION SYM-SOAP-SOAP-STARTUP-SOAP)))
      (SET-DYNAMIC-SLOT-VALUE (%METHOD-SLOT.DYNAMIC-SLOTS FUNCTION)
-      SYM-SOAP-STELLA-METHOD-STARTUP-CLASSNAME (WRAP-STRING "_StartupSoap")
-      NULL-STRING-WRAPPER)))
+      SYM-SOAP-STELLA-METHOD-STARTUP-CLASSNAME
+      (WRAP-STRING "_StartupSoap") NULL-STRING-WRAPPER)))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 8) (FINALIZE-SLOTS)
     (CLEANUP-UNFINALIZED-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 9)

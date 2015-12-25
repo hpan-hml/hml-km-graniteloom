@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -62,6 +62,7 @@ public class _StartupTimepointSupport {
         if (Stella.currentStartupTimePhaseP(2)) {
           Timepoint.SGT_TIMEPOINT_KB_TIMEPOINT_OF = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("TIMEPOINT-OF", Stella.getStellaModule("/TIMEPOINT-KB", true), 1)));
           Timepoint.SGT_TIMEPOINT_KB_DURATION_OF = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DURATION-OF", Stella.getStellaModule("/TIMEPOINT-KB", true), 1)));
+          Timepoint.SYM_TIMEPOINT_SUPPORT_TIMEPOINT_OF$_COMPUTATION = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("TIMEPOINT-OF*-COMPUTATION", null, 0)));
           Timepoint.KWD_MONDAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MONDAY", null, 2)));
           Timepoint.SGT_TIMEPOINT_KB_MONDAY = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("MONDAY", Stella.getStellaModule("/TIMEPOINT-KB", true), 1)));
           Timepoint.KWD_TUESDAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TUESDAY", null, 2)));

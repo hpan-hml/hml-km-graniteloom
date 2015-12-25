@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -96,12 +96,12 @@ public class _StartupPrint {
         }
         if (Stella.currentStartupTimePhaseP(9)) {
           Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("LOGIC")))));
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEBUG-PRINT-MODE?* BOOLEAN FALSE :DOCUMENTATION \"If set to TRUE, modify printing so that it\ndoesn't break and is more informative during a debugging session.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTMODE* KEYWORD :FLAT :DOCUMENTATION \"Controls the kind of detail that gets printed about\nindividual objects.  Values are :ORIGINAL, :REALISTIC, :FLAT, :DEBUG-LOW, and\n :DEBUG-HIGH.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTFUNCTIONSASRELATIONS?* BOOLEAN FALSE :DOCUMENTATION \"Controls whether functions are printed as relations (F i v) or\nas functions (= (F i) v).\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT VARIABLE-BINDING-SEPARATOR STRING \"/\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT VALUE-OF-SEPARATOR STRING \"//\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SKOLEMNAMEMAPPINGTABLE* (ENTITY-MAPPING OF SKOLEM SKOLEM) NULL :DOCUMENTATION \"If set, maps some skolems to names other than\ntheir own.\")");
-          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEBUG-MODE?* BOOLEAN FALSE :DOCUMENTATION \"If set to TRUE, simplify printing so that it\ndoesn't break during a debugging session.\")");
         }
 
       } finally {

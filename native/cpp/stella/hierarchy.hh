@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -244,6 +244,9 @@ public:
   Object* key;
   // The current value of this iterator
   Object* value;
+public:
+  virtual Object* valueSetter(Object* value);
+  virtual Object* keySetter(Object* key);
 };
 
 class PropertyListIterator : public DictionaryIterator {
@@ -431,12 +434,14 @@ public:
   virtual List* listify();
   virtual int equalHashCode();
   virtual boolean objectEqualP(Object* tree2);
+  virtual Cons* sortObjects(StorageSlot* slot, cpp_function_code predicate);
   virtual Cons* sortTuples(int n, cpp_function_code predicate);
   virtual Cons* sort(cpp_function_code predicate);
   virtual Cons* subtract(Cons* otherlist);
   virtual Cons* difference(Cons* otherlist);
   virtual Cons* unioN(Cons* otherlist);
   virtual Cons* intersection(Cons* otherlist);
+  virtual boolean disjointSetsP(Cons* otherlist);
   virtual boolean equivalentSetsP(Cons* otherlist);
   virtual boolean subsetP(Cons* otherlist);
   virtual Cons* removeDeletedMembers();
@@ -624,6 +629,8 @@ public:
   Object** theArray;
 public:
   virtual void printObject(std::ostream* stream);
+  virtual Vector* sortObjects(StorageSlot* slot, cpp_function_code predicate);
+  virtual Vector* sortTuples(int n, cpp_function_code predicate);
   virtual Vector* sort(cpp_function_code predicate);
   virtual Iterator* butLast();
   virtual AbstractIterator* allocateIterator();

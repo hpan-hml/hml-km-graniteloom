@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -104,7 +104,7 @@ Context* computeContextOrModuleFromPathname(char* pathname, boolean moduleP, boo
       }
       if (symbolnameP &&
           (componentend > lastcharpos)) {
-        { Context* _Return0 = (((boolean)(context)) ? context : ((moduleP ? oMODULEo.get() : oCONTEXTo.get())));
+        { Context* _Return0 = (((boolean)(context)) ? context : ((moduleP ? oMODULEo : oCONTEXTo)));
 
           _Return1 = componentstart;
           return (_Return0);
@@ -189,30 +189,33 @@ Context* computeContextOrModuleFromPathname(char* pathname, boolean moduleP, boo
 boolean componentMatchP(char* component, char* string, int start, int end) {
   { boolean testValue000 = false;
 
-    testValue000 = strlen(component) == (end - start);
+    testValue000 = component != NULL;
     if (testValue000) {
-      { boolean alwaysP000 = true;
+      testValue000 = strlen(component) == (end - start);
+      if (testValue000) {
+        { boolean alwaysP000 = true;
 
-        { char chaR = NULL_CHARACTER;
-          char* vector000 = component;
-          int index000 = 0;
-          int length000 = strlen(vector000);
-          int i = NULL_INTEGER;
-          int iter000 = start;
+          { char chaR = NULL_CHARACTER;
+            char* vector000 = component;
+            int index000 = 0;
+            int length000 = strlen(vector000);
+            int i = NULL_INTEGER;
+            int iter000 = start;
 
-          for  (chaR, vector000, index000, length000, i, iter000; 
-                index000 < length000; 
-                index000 = index000 + 1,
-                iter000 = iter000 + 1) {
-            chaR = vector000[index000];
-            i = iter000;
-            if (!(chaR == string[i])) {
-              alwaysP000 = false;
-              break;
+            for  (chaR, vector000, index000, length000, i, iter000; 
+                  index000 < length000; 
+                  index000 = index000 + 1,
+                  iter000 = iter000 + 1) {
+              chaR = vector000[index000];
+              i = iter000;
+              if (!(chaR == string[i])) {
+                alwaysP000 = false;
+                break;
+              }
             }
           }
+          testValue000 = alwaysP000;
         }
-        testValue000 = alwaysP000;
       }
     }
     { boolean value000 = testValue000;
@@ -228,7 +231,7 @@ Module* computeModuleAndBareName(char* name, char*& _Return1) {
   // value.  `name' does not necessarily have to be qualified in which
   // case the current module is returned.  `name' is assumed to be the
   // printed representation of a STELLA symbol, surrogate or keyword.
-  { Module* module = oMODULEo.get();
+  { Module* module = oMODULEo;
 
     { char* barename = NULL;
       char* modulename = NULL;
@@ -344,8 +347,8 @@ Module* helpGetStellaModule(char* pathname, boolean errorP) {
   // if no such module exists.  The search looks at ancestors and top-most
   //  (cardinal) modules.  If `error?' is `true', throw an exception if no
   //  module is found.
-  if (stringEqlP(pathname, oMODULEo.get()->moduleFullName)) {
-    return (oMODULEo.get());
+  if (stringEqlP(pathname, oMODULEo->moduleFullName)) {
+    return (oMODULEo);
   }
   { Context* context = NULL;
 
@@ -441,7 +444,7 @@ char* coerceToModuleName(Object* namespec, boolean warnP) {
 
 Module* coerceToModule(Object* object, boolean warnP) {
   if (!((boolean)(object))) {
-    return (oMODULEo.get());
+    return (oMODULEo);
   }
   if (subtypeOfP(safePrimaryType(object), SGT_MODULES_STELLA_MODULE)) {
     { Object* object000 = object;
@@ -477,17 +480,17 @@ Module* findOrCreateModule(char* pathname) {
 }
 
 Module* changeCurrentModule(Module* module) {
-  oMODULEo.set(module);
-  oCONTEXTo.set(module);
+  oMODULEo = module;
+  oCONTEXTo = module;
   runHooks(oCHANGE_MODULE_HOOKSo, module);
   return (module);
 }
 
 Context* changeCurrentContext(Context* context) {
-  if (!(context->baseModule == oMODULEo.get())) {
+  if (!(context->baseModule == oMODULEo)) {
     changeCurrentModule(context->baseModule);
   }
-  oCONTEXTo.set(context);
+  oCONTEXTo = context;
   return (context);
 }
 
@@ -496,7 +499,7 @@ Context* Context::changeContext() {
   // 'context'.
   { Context* context = this;
 
-    if (context == oCONTEXTo.get()) {
+    if (context == oCONTEXTo) {
       return (context);
     }
     else {
@@ -511,7 +514,7 @@ Context* stringChangeContext(char* contextname) {
   { Context* context = getStellaContext(contextname, true);
 
     if (!((boolean)(context))) {
-      return (oCONTEXTo.get());
+      return (oCONTEXTo);
     }
     else {
       return (changeCurrentContext(context));
@@ -534,7 +537,7 @@ Module* stringChangeModule(char* modulename) {
   { Module* module = getStellaModule(modulename, true);
 
     if (!((boolean)(module))) {
-      return (oMODULEo.get());
+      return (oMODULEo);
     }
     else {
       return (changeCurrentModule(module));
@@ -749,12 +752,12 @@ void finalizeModule(Module* self) {
   self->cardinalModule = ((!((boolean)(self->parentModule()))) ? self : self->parentModule()->cardinalModule);
   self->symbolOffsetTable = newStringToIntegerHashTable();
   self->surrogateOffsetTable = newStringToIntegerHashTable();
-  if (!(oSHADOWEDSURROGATESo.get() == NIL)) {
+  if (!(oSHADOWEDSURROGATESo == NIL)) {
     setDynamicSlotValue(self->dynamicSlots, SYM_MODULES_STELLA_SHADOWED_SURROGATES, newList(), NULL);
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, self);
       { Symbol* sym = NULL;
-        Cons* iter000 = oSHADOWEDSURROGATESo.get();
+        Cons* iter000 = oSHADOWEDSURROGATESo;
 
         for (sym, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
           sym = ((Symbol*)(iter000->value));
@@ -854,7 +857,7 @@ void helpDestroyModule(Module* self) {
     }
     self->unfinalizeModule();
     bumpMemoizationTimestamp(KWD_MODULES_MODULE_UPDATE);
-    if (self == oMODULEo.get()) {
+    if (self == oMODULEo) {
       parentmodule->changeModule();
     }
   }
@@ -877,8 +880,8 @@ void destroyWorld(World* self) {
 
     runHooks(oDESTROY_CONTEXT_HOOKSo, self);
     self->unfinalizeWorld();
-    if (self == oCONTEXTo.get()) {
-      oCONTEXTo.set(parentcontext);
+    if (self == oCONTEXTo) {
+      oCONTEXTo = parentcontext;
     }
   }
 }
@@ -1144,7 +1147,7 @@ void incorporateModuleOptions(Module* self, Cons* options) {
               incorporateUsesModules(self, value);
             }
             else if (testValue000 == KWD_MODULES_SHADOW) {
-              oSHADOWEDSURROGATESo.set(((Cons*)(value)));
+              oSHADOWEDSURROGATESo = ((Cons*)(value));
             }
             else {
               value = permanentCopy(value);
@@ -1338,7 +1341,7 @@ Module* defineModule(char* name, Cons* options) {
           module->unfinalizeModule();
           return (oldmodule);
         }
-        if (oldmodule == oMODULEo.get()) {
+        if (oldmodule == oMODULEo) {
           *(STANDARD_WARNING->nativeStream) << "Warning: " << "Can't define a module inside of itself." << std::endl;
           std::cout << "Skipping redefinition of module " << name << "." << std::endl;
           module->unfinalizeModule();
@@ -1631,8 +1634,8 @@ Module* inModule(Object* name) {
     Module* module = ((modulename != NULL) ? getStellaModule(modulename, false) : ((Module*)(NULL)));
 
     if (((boolean)(module))) {
-      oMODULEo.set(module);
-      oCONTEXTo.set(module);
+      oMODULEo = module;
+      oCONTEXTo = module;
     }
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
@@ -1641,7 +1644,7 @@ Module* inModule(Object* name) {
         throw *newStellaException(stream000->theStringReader());
       }
     }
-    return (oMODULEo.get());
+    return (oMODULEo);
   }
 }
 
@@ -1690,21 +1693,21 @@ boolean World::multipleParentsP() {
 World* pushWorld() {
   // Spawn a new world that is a child of the current context,
   // and change the current context to the new world.
-  return (((World*)(oCONTEXTo.set(createWorld(oCONTEXTo.get(), NULL)))));
+  return (((World*)(oCONTEXTo = createWorld(oCONTEXTo, NULL))));
 }
 
 Context* popWorld() {
   // Destroy the current world and change the current
   // context to be its parent.  Return the current context. Nothing happens
   // if there is no current world.
-  if (!(oCONTEXTo.get() == oMODULEo.get())) {
-    { World* world = ((World*)(oCONTEXTo.get()));
+  if (!(oCONTEXTo == oMODULEo)) {
+    { World* world = ((World*)(oCONTEXTo));
 
-      oCONTEXTo.set(world->parentContext);
+      oCONTEXTo = world->parentContext;
       destroyWorld(world);
     }
   }
-  return (oCONTEXTo.get());
+  return (oCONTEXTo);
 }
 
 AllPurposeIterator* allSubcontexts(Context* context, Keyword* traversal) {
@@ -2071,7 +2074,7 @@ Cons* visibleModules(Module* from) {
   // if `from' is NULL.  The generated modules are generated from most to
   // least-specific and will start with the module `from'.
   if (!((boolean)(from))) {
-    from = oMODULEo.get();
+    from = oMODULEo;
   }
   { MemoizationTable* memoTable000 = NULL;
     Cons* memoizedEntry000 = NULL;
@@ -2432,7 +2435,7 @@ void helpStartupModules2() {
 void startupModules() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupModules1();
     }

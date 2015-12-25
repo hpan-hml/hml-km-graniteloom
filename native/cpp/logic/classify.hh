@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -155,14 +155,14 @@ void evaporateVirgin(Description* self);
 Cons* findDirectSupersAndSubs(Description* self, boolean onlysupersP, Cons*& _Return1, Cons*& _Return2);
 Cons* findDirectSupersOfInstance(Object* self);
 void upclassifyNamedDescriptions(Module* module, boolean localP);
-void classifyRelations(Object* module, boolean localP);
+void classifyRelations(Cons* options);
 void classifyRelationsEvaluatorWrapper(Cons* arguments);
-Cons* listUnclassifiedRelations(Object* module, boolean localP);
+Cons* listUnclassifiedRelations(Cons* options);
 Cons* listUnclassifiedRelationsEvaluatorWrapper(Cons* arguments);
 void upclassifyInstances(Module* module, boolean localP);
-void classifyInstances(Object* module, boolean localP);
+void classifyInstances(Cons* options);
 void classifyInstancesEvaluatorWrapper(Cons* arguments);
-Cons* listUnclassifiedInstances(Object* module, boolean localP);
+Cons* listUnclassifiedInstances(Cons* options);
 Cons* listUnclassifiedInstancesEvaluatorWrapper(Cons* arguments);
 void upclassifyAllDescriptions();
 void upclassifyAllInstances();
@@ -217,6 +217,10 @@ extern Keyword* KWD_CLASSIFY_UPCLASSIFY;
 extern Keyword* KWD_CLASSIFY_DOWNCLASSIFY;
 extern Symbol* SYM_CLASSIFY_LOGIC_SUBRELATION_LINKp;
 extern Keyword* KWD_CLASSIFY_ASSERT_TRUE;
+extern Keyword* KWD_CLASSIFY_MODULE;
+extern Keyword* KWD_CLASSIFY_LOCALp;
+extern Surrogate* SGT_CLASSIFY_STELLA_MODULE;
+extern Surrogate* SGT_CLASSIFY_STELLA_BOOLEAN;
 extern Symbol* SYM_CLASSIFY_LOGIC_STARTUP_CLASSIFY;
 extern Symbol* SYM_CLASSIFY_STELLA_METHOD_STARTUP_CLASSNAME;
 

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -54,6 +54,7 @@ extern DECLARE_STELLA_SPECIAL(oPRETTYPRINTKIFpo, boolean );
 extern DECLARE_STELLA_SPECIAL(oPRINTLOGICALFORMSTREAMo, OutputStream* );
 extern DECLARE_STELLA_SPECIAL(oDOWNCASEOPERATORSpo, boolean );
 extern KeyValueList* oLOGIC_DIALECT_PRINT_FUNCTIONSo;
+extern DECLARE_STELLA_SPECIAL(oPRINTQUANTIFIEDOBJECTSSTACKo, Cons* );
 extern DECLARE_STELLA_SPECIAL(oINDENTCOUNTERo, int );
 extern int oINDENT_QUANTUMo;
 extern DECLARE_STELLA_SPECIAL(oTOPLEVELPRINTKIFPROPOSITIONpo, boolean );
@@ -62,6 +63,9 @@ extern Cons* oBUILT_IN_MODULE_NAMESo;
 
 // Function signatures:
 void registerLogicDialectPrintFunction(Keyword* dialect, FunctionCodeWrapper* fn);
+void pushQuantifiedObject(Object* object);
+void popQuantifiedObject();
+boolean quantifiedObjectVariableP(Skolem* var);
 char* maybeDowncase(char* string);
 void increaseIndent(int indent);
 void decreaseIndent(int indent);
@@ -99,7 +103,7 @@ KeyValueMap* createSkolemMappingTable(Vector* oldvars, Vector* newvars);
 void printDescriptionsAsKifRule(Description* head, Description* tail, Proposition* rule, boolean reversepolarityP);
 void excludeOriginatedPropositions();
 boolean hiddenRelationP(Surrogate* relationRef);
-boolean excludedPropositionP(Proposition* proposition);
+boolean excludedPropositionP(Proposition* proposition, Module* module);
 void prettyPrintNamedDescription(NamedDescription* self, OutputStream* stream);
 char* stellaRelationStringifiedSource(Relation* self);
 void prettyPrintRelationDefinition(Relation* self, OutputStream* stream);
@@ -111,7 +115,7 @@ void printModuleFileHeader(Module* module, OutputStream* stream);
 void printModuleFileTrailer(Module* module, OutputStream* stream);
 void saveObject(Object* object, Object* store);
 void doSaveModule(Module* module, Object* store);
-void saveModule(Object* name, char* file);
+void saveModule(Cons* options);
 void saveModuleEvaluatorWrapper(Cons* arguments);
 void helpStartupKifOut1();
 void helpStartupKifOut2();
@@ -119,12 +123,16 @@ void helpStartupKifOut3();
 void startupKifOut();
 
 // Auxiliary global declarations:
+extern Surrogate* SGT_KIF_OUT_LOGIC_PROPOSITION;
+extern Symbol* SYM_KIF_OUT_LOGIC_IO_VARIABLES;
+extern Surrogate* SGT_KIF_OUT_LOGIC_DESCRIPTION;
+extern Surrogate* SGT_KIF_OUT_STELLA_VECTOR;
+extern Surrogate* SGT_KIF_OUT_STELLA_CONS;
+extern Surrogate* SGT_KIF_OUT_STELLA_LIST;
 extern Keyword* KWD_KIF_OUT_KIF;
 extern Keyword* KWD_KIF_OUT_STELLA;
 extern Keyword* KWD_KIF_OUT_PREFIX_STELLA;
 extern Keyword* KWD_KIF_OUT_SQL;
-extern Surrogate* SGT_KIF_OUT_LOGIC_PROPOSITION;
-extern Surrogate* SGT_KIF_OUT_LOGIC_DESCRIPTION;
 extern Surrogate* SGT_KIF_OUT_LOGIC_PATTERN_VARIABLE;
 extern Surrogate* SGT_KIF_OUT_LOGIC_SKOLEM;
 extern Surrogate* SGT_KIF_OUT_LOGIC_LOGIC_OBJECT;
@@ -159,7 +167,6 @@ extern Symbol* SYM_KIF_OUT_LOGIC_FORWARD_ONLYp;
 extern Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_le;
 extern Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_FORALL;
 extern Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_EXISTS;
-extern Symbol* SYM_KIF_OUT_LOGIC_IO_VARIABLES;
 extern Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_SETOF;
 extern Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_LISTOF;
 extern Symbol* SYM_KIF_OUT_LOGIC_COMPLEMENT_DESCRIPTION;
@@ -182,9 +189,10 @@ extern Keyword* KWD_KIF_OUT_SLOTS;
 extern Keyword* KWD_KIF_OUT_PUBLIC_SLOTS;
 extern Keyword* KWD_KIF_OUT_METHODS;
 extern Keyword* KWD_KIF_OUT_PUBLIC_METHODS;
-extern Symbol* SYM_KIF_OUT_LOGIC_PRESUME;
 extern Symbol* SYM_KIF_OUT_STELLA_ASSERT;
 extern Symbol* SYM_KIF_OUT_STELLA_SURROGATE_VALUE_INVERSE;
+extern Symbol* SYM_KIF_OUT_LOGIC_PRESUME;
+extern Symbol* SYM_KIF_OUT_STELLA_RETRACT;
 extern Symbol* SYM_KIF_OUT_LOGIC_DEFRULE;
 extern Symbol* SYM_KIF_OUT_LOGIC_IN_DIALECT;
 extern Surrogate* SGT_KIF_OUT_STELLA_RELATION;
@@ -192,6 +200,12 @@ extern Surrogate* SGT_KIF_OUT_STELLA_OUTPUT_STREAM;
 extern Surrogate* SGT_KIF_OUT_LOGIC_OBJECT_STORE;
 extern Surrogate* SGT_KIF_OUT_LOGIC_NAMED_DESCRIPTION;
 extern Symbol* SYM_KIF_OUT_LOGIC_UNDECLAREDp;
+extern Keyword* KWD_KIF_OUT_MODULE;
+extern Keyword* KWD_KIF_OUT_FILE;
+extern Surrogate* SGT_KIF_OUT_STELLA_MODULE;
+extern Surrogate* SGT_KIF_OUT_STELLA_STRING;
+extern Keyword* KWD_KIF_OUT_MEDIUM;
+extern Symbol* SYM_KIF_OUT_LOGIC_OBJECT_STORE;
 extern Symbol* SYM_KIF_OUT_LOGIC_STARTUP_KIF_OUT;
 extern Symbol* SYM_KIF_OUT_STELLA_METHOD_STARTUP_CLASSNAME;
 

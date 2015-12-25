@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -58,7 +58,6 @@ public class _StartupPowerloom {
         Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/LOGIC", Stella.$STARTUP_TIME_PHASE$ > 1));
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
-          Logic.KWD_RELEASE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RELEASE", null, 2)));
           Logic.KWD_LOG_LEVELS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LOG-LEVELS", null, 2)));
           Logic.KWD_PREFIX = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PREFIX", null, 2)));
           Logic.KWD_MAX_WIDTH = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MAX-WIDTH", null, 2)));
@@ -94,7 +93,7 @@ public class _StartupPowerloom {
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-MAJOR-VERSION-NUMBER* INTEGER 4)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-MINOR-VERSION-NUMBER* INTEGER 0)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-RELEASE-STATE* STRING \".beta\")");
-          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-PATCH-LEVEL* INTEGER 0)");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-PATCH-LEVEL* INTEGER 9)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-VERSION-STRING* STRING (CONCATENATE \"PowerLoom \" (INTEGER-TO-STRING *POWERLOOM-MAJOR-VERSION-NUMBER*) \".\" (INTEGER-TO-STRING *POWERLOOM-MINOR-VERSION-NUMBER*) \".\" (INTEGER-TO-STRING *POWERLOOM-PATCH-LEVEL*) *POWERLOOM-RELEASE-STATE*))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *POWERLOOM-EXECUTION-MODE* KEYWORD :RELEASE :DOCUMENTATION \"Either :development, :debugging or :release (so far) which controls\nwhether certain internal error and warning messages are surfaced to the user.\")");
           Stella.setLoggingParameters("PowerLoom", Cons.cons(Logic.KWD_LOG_LEVELS, Cons.cons(Stella.getQuotedTree("((:NONE :LOW :MEDIUM :HIGH) \"/LOGIC\")", "/LOGIC"), Cons.cons(Logic.KWD_LEVEL, Cons.cons(((Logic.$POWERLOOM_EXECUTION_MODE$ == Logic.KWD_DEVELOPMENT) ? Logic.KWD_MEDIUM : Logic.KWD_LOW), Cons.cons(Logic.KWD_PREFIX, Cons.cons(StringWrapper.wrapString("PL"), Cons.cons(Logic.KWD_MAX_WIDTH, Cons.cons(IntegerWrapper.wrapInteger(250), Stella.NIL)))))))));

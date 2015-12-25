@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2012      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -42,7 +42,7 @@
 
 ;;; Code for case-based reasoning
 
-;;; Version: case-based.ste,v 1.27 2006/05/11 07:05:06 hans Exp
+;;; Version: case-based.ste,v 1.29 2012/05/07 23:57:51 hans Exp
 
 (in-package "STELLA")
 

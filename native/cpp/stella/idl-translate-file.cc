@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -58,7 +58,7 @@ void idlTranslateClassToStream(Class* clasS, std::ostream* nativeStream) {
         { OutputStream* self001 = newOutputStream();
 
           self001->nativeStream = nativeStream;
-          oCURRENT_STREAMo.set(self001);
+          oCURRENT_STREAMo = self001;
         }
         idlOutputStatement(idlTranslateDefineNativeClassUnit(tempunit));
       }
@@ -82,9 +82,9 @@ void idlOutputAllUnitsToFile(char* sourcefile) {
 
     { 
       BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, codeoutputstream);
-      oTRANSLATIONUNITSo.set(oTRANSLATIONUNITSo.get()->reverse());
+      oTRANSLATIONUNITSo = oTRANSLATIONUNITSo->reverse();
       { TranslationUnit* unit = NULL;
-        Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+        Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
 
         for (unit, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
           unit = ((TranslationUnit*)(iter000->value));
@@ -108,9 +108,9 @@ void idlOutputAllUnitsToFile(char* sourcefile) {
         }
       }
       std::cout << "Writing " << "`" << codeoutputfile << "'" << "..." << std::endl;
-      *(oCURRENT_STREAMo.get()->nativeStream) << "// " << codeoutputfile << std::endl << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << "// " << codeoutputfile << std::endl << std::endl;
       if (translateWithCopyrightHeaderP()) {
-        outputCopyrightHeader(oCURRENT_STREAMo.get());
+        outputCopyrightHeader(oCURRENT_STREAMo);
       }
       { Object* form = NULL;
         Cons* iter001 = forms;
@@ -132,7 +132,7 @@ void idlTranslateFile(char* filename) {
 void startupIdlTranslateFile() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SYM_IDL_TRANSLATE_FILE_STELLA_METHOD = ((Symbol*)(internRigidSymbolWrtModule("METHOD", NULL, 0)));
       SYM_IDL_TRANSLATE_FILE_STELLA_PRINT_METHOD = ((Symbol*)(internRigidSymbolWrtModule("PRINT-METHOD", NULL, 0)));

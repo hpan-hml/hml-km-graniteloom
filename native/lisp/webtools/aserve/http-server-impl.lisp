@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2003-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -102,7 +102,8 @@
 ;;; (DEFUN (COERCE-LISP-VALUE-TO-STRING STRING) ...)
 
 (CL:DECLAIM
- (CL:FTYPE (CL:FUNCTION (CL:T) CL:SIMPLE-STRING) COERCE-LISP-VALUE-TO-STRING))
+ (CL:FTYPE (CL:FUNCTION (CL:T) CL:SIMPLE-STRING)
+  COERCE-LISP-VALUE-TO-STRING))
 (CL:DEFUN COERCE-LISP-VALUE-TO-STRING (LVALUE)
   (CL:COND ((CL:EQ LVALUE NIL) STELLA::NULL-STRING)
    ((CL:STRINGP LVALUE) LVALUE) (CL:T (CL:PRINC-TO-STRING LVALUE))))
@@ -111,7 +112,8 @@
 
 (CL:DEFMETHOD GET-HEADER-VALUE-IMPL ((SERVER HTTP-SERVER-ASERVE) XCHG KEY)
   (CL:LET* ((LXCHG XCHG) (LREQ (%REQUEST LXCHG)) (LKEY (LISPIFY KEY)))
-   (COERCE-LISP-VALUE-TO-STRING (net.aserve:header-slot-value lreq lkey))))
+   (COERCE-LISP-VALUE-TO-STRING
+    (net.aserve:header-slot-value lreq lkey))))
 
 ;;; (DEFMETHOD (GET-REPLY-HEADER-VALUE-IMPL STRING) ...)
 
@@ -176,7 +178,8 @@
     (HOST (CL:or (socket:ipaddr-to-hostname (socket:local-host lsocket))
                                                     (socket:ipaddr-to-dotted (socket:local-host lsocket))))
     (PORT (socket:local-port lsocket)))
-   (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING HOST) (CL:TYPE CL:FIXNUM PORT))
+   (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING HOST)
+    (CL:TYPE CL:FIXNUM PORT))
    (CONCATENATE HOST ":" (INTEGER-TO-STRING (CL:TRUNCATE PORT)))))
 
 ;;; (DEFMETHOD (GET-REQUEST-REMOTE-ADDRESS-IMPL STRING) ...)
@@ -185,17 +188,20 @@
   (CL:LET*
    ((LXCHG XCHG) (LREQ (%REQUEST LXCHG))
     (LSOCKET (net.aserve:request-socket lreq))
-    (HOST (CL:or (socket:ipaddr-to-hostname (socket:remote-host lsocket))
+    (HOST
+     (CL:or (socket:ipaddr-to-hostname (socket:remote-host lsocket))
                                                     (socket:ipaddr-to-dotted (socket:remote-host lsocket))))
     (PORT (socket:remote-port lsocket)))
-   (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING HOST) (CL:TYPE CL:FIXNUM PORT))
+   (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING HOST)
+    (CL:TYPE CL:FIXNUM PORT))
    (CONCATENATE HOST ":" (INTEGER-TO-STRING (CL:TRUNCATE PORT)))))
 
 ;;; (DEFMETHOD (GET-REPLY-STREAM-IMPL NATIVE-OUTPUT-STREAM) ...)
 
 (CL:DEFMETHOD GET-REPLY-STREAM-IMPL ((SERVER HTTP-SERVER-ASERVE) XCHG)
   (CL:LET* ((LXCHG XCHG) (LSTREAM (%STREAM LXCHG)))
-   (CL:WHEN (NULL? LSTREAM) (CL:SETQ LSTREAM (CL:make-string-output-stream))
+   (CL:WHEN (NULL? LSTREAM)
+    (CL:SETQ LSTREAM (CL:make-string-output-stream))
     (CL:SETF (%STREAM LXCHG) LSTREAM))
    LSTREAM))
 
@@ -206,7 +212,8 @@
    ((NCODE (GET-HTTP-RESPONSE-CODE CODE NULL))
     (LCODE (net.aserve::code-to-response ncode))
     (LCODEDESC (net.aserve::response-desc lcode)))
-   (CL:DECLARE (CL:TYPE CL:FIXNUM NCODE) (CL:TYPE CL:SIMPLE-STRING LCODEDESC))
+   (CL:DECLARE (CL:TYPE CL:FIXNUM NCODE)
+    (CL:TYPE CL:SIMPLE-STRING LCODEDESC))
    (CL:WHEN (STRING-EQL? LCODEDESC "unknown code")
     (CL:SETQ LCODEDESC (GET-HTTP-RESPONSE-DESC CODE NULL))
     (CL:setf (net.aserve::response-desc lcode) lcodedesc))
@@ -229,7 +236,8 @@
   #+MCL
   (CL:CHECK-TYPE FILE CL:SIMPLE-STRING)
   (CL:LET*
-   ((CTYPE (LISPIFY (LOOKUP OPTIONS KWD-HTTP-SERVER-IMPL-CONTENT-TYPE))))
+   ((CTYPE
+     (LISPIFY (LOOKUP OPTIONS KWD-HTTP-SERVER-IMPL-CONTENT-TYPE))))
    (net.aserve:publish-file
          :path path
          :file file
@@ -257,7 +265,8 @@
   #+MCL
   (CL:CHECK-TYPE PATH CL:SIMPLE-STRING)
   (CL:LET*
-   ((CTYPE (LISPIFY (LOOKUP OPTIONS KWD-HTTP-SERVER-IMPL-CONTENT-TYPE))))
+   ((CTYPE
+     (LISPIFY (LOOKUP OPTIONS KWD-HTTP-SERVER-IMPL-CONTENT-TYPE))))
    (net.aserve:publish
          :path path
          :content-type ctype
@@ -274,7 +283,8 @@
 
 (CL:DEFUN GENERIC-RESPONSE-HANDLER (LREQ LENT)
   (CL:LET*
-   ((HANDLER (CL:getf (net.aserve:entity-plist lent) 'response-handler))
+   ((HANDLER
+     (CL:getf (net.aserve:entity-plist lent) 'response-handler))
     (XCHG (NEW-HTTP-EXCHANGE-ASERVE LREQ LENT)))
    (CL:FUNCALL HANDLER XCHG)
    (CL:LET* ((STREAM (%STREAM XCHG)) (OUTPUT ""))
@@ -287,7 +297,8 @@
 
 (CL:DEFUN STARTUP-HTTP-SERVER-IMPL ()
   (CL:LET*
-   ((*MODULE* (GET-STELLA-MODULE "/HTTP/ASERVE" (> *STARTUP-TIME-PHASE* 1)))
+   ((*MODULE*
+     (GET-STELLA-MODULE "/HTTP/ASERVE" (> *STARTUP-TIME-PHASE* 1)))
     (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
@@ -298,7 +309,8 @@
     (CL:SETQ KWD-HTTP-SERVER-IMPL-CONTENT-TYPE
      (INTERN-RIGID-SYMBOL-WRT-MODULE "CONTENT-TYPE" NULL 2))
     (CL:SETQ SYM-HTTP-SERVER-IMPL-ASERVE-STARTUP-HTTP-SERVER-IMPL
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-HTTP-SERVER-IMPL" NULL 0))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-HTTP-SERVER-IMPL" NULL
+      0))
     (CL:SETQ SYM-HTTP-SERVER-IMPL-STELLA-METHOD-STARTUP-CLASSNAME
      (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME"
       (GET-STELLA-MODULE "/STELLA" CL:T) 0)))

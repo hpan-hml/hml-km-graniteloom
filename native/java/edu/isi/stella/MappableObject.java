@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -54,6 +54,11 @@ import edu.isi.stella.javalib.*;
  */
 public abstract class MappableObject extends StandardObject {
     public KeyValueList dynamicSlots;
+
+  public static void demonPropertyHandler(MappableObject demon, StorageSlot slot, Stella_Object property) {
+    Stella_Object.defaultOptionHandler(demon, slot, property);
+    Stella.$REGISTERED_PROPERTY_DEMONS$.insertAt(StringWrapper.wrapString(Stella_Object.coerceToString(property)), demon);
+  }
 
   public boolean deletedPSetter(boolean value) {
     { MappableObject self = this;

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -112,7 +112,8 @@
      (INTERN-RIGID-SYMBOL-WRT-MODULE "SQL-DATABASE" NULL 0))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-PROTOCOL
      (INTERN-RIGID-SYMBOL-WRT-MODULE "PROTOCOL" NULL 0))
-    (CL:SETQ KWD-ONTOLOGY--> (INTERN-RIGID-SYMBOL-WRT-MODULE "->" NULL 2))
+    (CL:SETQ KWD-ONTOLOGY-->
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "->" NULL 2))
     (CL:SETQ KWD-ONTOLOGY-GOES-TRUE-DEMON
      (INTERN-RIGID-SYMBOL-WRT-MODULE "GOES-TRUE-DEMON" NULL 2))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-DB-UPDATE-DEMON
@@ -150,10 +151,11 @@
     (CL:SETQ SYM-ONTOLOGY-RDBMS-RELATION-COLUMN-NAME
      (INTERN-RIGID-SYMBOL-WRT-MODULE "RELATION-COLUMN-NAME" NULL 0))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-RELATION-COLUMN-MODULE-NAME
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "RELATION-COLUMN-MODULE-NAME" NULL 0))
-    (CL:SETQ SYM-ONTOLOGY-RDBMS-RELATION-COLUMN-MODULE-REFERENCE
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "RELATION-COLUMN-MODULE-REFERENCE" NULL
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "RELATION-COLUMN-MODULE-NAME" NULL
       0))
+    (CL:SETQ SYM-ONTOLOGY-RDBMS-RELATION-COLUMN-MODULE-REFERENCE
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "RELATION-COLUMN-MODULE-REFERENCE"
+      NULL 0))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-QUERY-EVALUATOR
      (INTERN-RIGID-SYMBOL-WRT-MODULE "QUERY-EVALUATOR" NULL 0))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-SUPPORTS-DB-TYPE
@@ -161,8 +163,8 @@
     (CL:SETQ KWD-ONTOLOGY-CLOSED
      (INTERN-RIGID-SYMBOL-WRT-MODULE "CLOSED" NULL 2))
     (CL:SETQ SYM-ONTOLOGY-STELLA-TRUE
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "TRUE" (GET-STELLA-MODULE "/STELLA" CL:T)
-      0))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "TRUE"
+      (GET-STELLA-MODULE "/STELLA" CL:T) 0))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-QUERY-PATTERN
      (INTERN-RIGID-SYMBOL-WRT-MODULE "QUERY-PATTERN" NULL 0))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-QUERY-SQL-DATABASE
@@ -172,11 +174,13 @@
     (CL:SETQ KWD-ONTOLOGY-RELATION-SPECIALIST
      (INTERN-RIGID-SYMBOL-WRT-MODULE "RELATION-SPECIALIST" NULL 2))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-QUERY-SQL-DATABASE-SPECIALIST
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "QUERY-SQL-DATABASE-SPECIALIST" NULL 0))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "QUERY-SQL-DATABASE-SPECIALIST"
+      NULL 0))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-QUERY-DATABASE
      (INTERN-RIGID-SYMBOL-WRT-MODULE "QUERY-DATABASE" NULL 0))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-QUERY-DATABASE-SPECIALIST
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "QUERY-DATABASE-SPECIALIST" NULL 0))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "QUERY-DATABASE-SPECIALIST" NULL
+      0))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-FETCH-EDB-DATABASE
      (INTERN-RIGID-SYMBOL-WRT-MODULE "FETCH-EDB-DATABASE" NULL 0))
     (CL:SETQ SYM-ONTOLOGY-RDBMS-TASK-ID
@@ -213,7 +217,8 @@
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 9)
     (%IN-MODULE (COPY-CONS-TREE (WRAP-STRING "RDBMS")))
     (CL:LET*
-     ((*MODULE* (GET-STELLA-MODULE "PL-KERNEL-KB" CL:T)) (*CONTEXT* *MODULE*))
+     ((*MODULE* (GET-STELLA-MODULE "PL-KERNEL-KB" CL:T))
+      (*CONTEXT* *MODULE*))
      (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
      (%DEFCONCEPT
       (CONS-LIST (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-DATABASE)
@@ -223,7 +228,8 @@
          "Information defining a database.  The connection relation is transient."))))
      (%DEFCONCEPT
       (CONS-LIST (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-SQL-DATABASE)
-       (COPY-CONS-TREE (GET-QUOTED-TREE "((DATABASE) \"/RDBMS\")" "/RDBMS"))
+       (COPY-CONS-TREE
+        (GET-QUOTED-TREE "((DATABASE) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
         (WRAP-STRING
@@ -233,7 +239,8 @@
        (COPY-CONS-TREE
         (GET-QUOTED-TREE "(((?DB DATABASE)) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-->
-       (COPY-CONS-TREE (GET-QUOTED-TREE "((?CS STRING) \"/RDBMS\")" "/RDBMS"))
+       (COPY-CONS-TREE
+        (GET-QUOTED-TREE "((?CS STRING) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
         (WRAP-STRING
@@ -250,7 +257,8 @@ For example, in Lisp and C++ we could use either \"ODBC\" or the \"MySQL\" API
        (COPY-CONS-TREE
         (GET-QUOTED-TREE "(((?DB DATABASE)) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-->
-       (COPY-CONS-TREE (GET-QUOTED-TREE "((?CS STRING) \"/RDBMS\")" "/RDBMS"))
+       (COPY-CONS-TREE
+        (GET-QUOTED-TREE "((?CS STRING) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
         (WRAP-STRING
@@ -284,7 +292,8 @@ source, all connection information can be kept in some external file such as
        (COPY-CONS-TREE
         (GET-QUOTED-TREE "(((?DB DATABASE)) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-->
-       (COPY-CONS-TREE (GET-QUOTED-TREE "((?CS STRING) \"/RDBMS\")" "/RDBMS"))
+       (COPY-CONS-TREE
+        (GET-QUOTED-TREE "((?CS STRING) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
         (WRAP-STRING
@@ -294,27 +303,33 @@ source, all connection information can be kept in some external file such as
        KWD-ONTOLOGY-GOES-UNKNOWN-DEMON
        (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-DB-UPDATE-DEMON)))
      (%DEFFUNCTION
-      (CONS-LIST (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-ODBC-CONNECTION-STRING)
+      (CONS-LIST
+       (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-ODBC-CONNECTION-STRING)
        (COPY-CONS-TREE
         (GET-QUOTED-TREE "(((?DB DATABASE)) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-->
-       (COPY-CONS-TREE (GET-QUOTED-TREE "((?CS STRING) \"/RDBMS\")" "/RDBMS"))
+       (COPY-CONS-TREE
+        (GET-QUOTED-TREE "((?CS STRING) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
-        (WRAP-STRING "The connection string used for a ODBC connection."))
+        (WRAP-STRING
+         "The connection string used for a ODBC connection."))
        KWD-ONTOLOGY-GOES-TRUE-DEMON
        (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-DB-UPDATE-DEMON)
        KWD-ONTOLOGY-GOES-UNKNOWN-DEMON
        (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-DB-UPDATE-DEMON)))
      (%DEFFUNCTION
-      (CONS-LIST (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-JDBC-CONNECTION-STRING)
+      (CONS-LIST
+       (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-JDBC-CONNECTION-STRING)
        (COPY-CONS-TREE
         (GET-QUOTED-TREE "(((?DB DATABASE)) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-->
-       (COPY-CONS-TREE (GET-QUOTED-TREE "((?CS STRING) \"/RDBMS\")" "/RDBMS"))
+       (COPY-CONS-TREE
+        (GET-QUOTED-TREE "((?CS STRING) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
-        (WRAP-STRING "The connection string used for a JDBC connection."))
+        (WRAP-STRING
+         "The connection string used for a JDBC connection."))
        KWD-ONTOLOGY-GOES-TRUE-DEMON
        (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-DB-UPDATE-DEMON)
        KWD-ONTOLOGY-GOES-UNKNOWN-DEMON
@@ -393,8 +408,8 @@ source, all connection information can be kept in some external file such as
         (GET-QUOTED-TREE "(((?DB DATABASE)) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-->
        (COPY-CONS-TREE
-        (GET-QUOTED-TREE "((?CONNECTION CONNECTION-WRAPPER) \"/RDBMS\")"
-         "/RDBMS"))
+        (GET-QUOTED-TREE
+         "((?CONNECTION CONNECTION-WRAPPER) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
         (WRAP-STRING
@@ -426,7 +441,8 @@ reset dynamically, whereas the other relations should not change."))
         (WRAP-STRING
          "Associates a PowerLoom ?relation with an RDBMS ?database."))))
      (%DEFFUNCTION
-      (CONS-LIST (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-RELATION-COLUMN-NAME)
+      (CONS-LIST
+       (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-RELATION-COLUMN-NAME)
        (COPY-CONS-TREE
         (GET-QUOTED-TREE
          "(((?DBRELATION /PL-KERNEL-KB/RELATION) (?COL INTEGER)) \"/RDBMS\")"
@@ -456,7 +472,8 @@ associated with the database relation ?dbrelation."))))
 associated with the database relation ?dbrelation."))))
      (%DEFFUNCTION
       (CONS-LIST
-       (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-RELATION-COLUMN-MODULE-REFERENCE)
+       (COPY-CONS-TREE
+        SYM-ONTOLOGY-RDBMS-RELATION-COLUMN-MODULE-REFERENCE)
        (COPY-CONS-TREE
         (GET-QUOTED-TREE
          "(((?DBRELATION /PL-KERNEL-KB/RELATION) (?COL INTEGER)) \"/RDBMS\")"
@@ -472,7 +489,8 @@ to import the logic objects defined at table column at position ?col (1-based)
 associated with the database relation ?dbrelation."))))
      (%ASSERT
       (COPY-CONS-TREE
-       (GET-QUOTED-TREE "((COMPUTED-PROCEDURE DBTABLE-SPECIALIST) \"/RDBMS\")"
+       (GET-QUOTED-TREE
+        "((COMPUTED-PROCEDURE DBTABLE-SPECIALIST) \"/RDBMS\")"
         "/RDBMS")))
      (%DEFCONCEPT
       (CONS-LIST (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-QUERY-EVALUATOR)
@@ -537,13 +555,15 @@ simple joins on an RDBMS/SQL-Database.\") (QUERY-EVALUATOR SQL-JOIN) (SUPPORTS-D
         "/RDBMS")))
      (%ASSERT
       (COPY-CONS-TREE
-       (GET-QUOTED-TREE "((COMPUTED-PROCEDURE QUERY-SPECIALIST) \"/RDBMS\")"
+       (GET-QUOTED-TREE
+        "((COMPUTED-PROCEDURE QUERY-SPECIALIST) \"/RDBMS\")"
         "/RDBMS")))
      (%ASSERT
       (COPY-CONS-TREE
        (GET-QUOTED-TREE
         "((DOCUMENTATION QUERY-SPECIALIST \"Top-level specialist that can dispatch generic query
-evaluation specialists such as RDBMS/SQL-join.\") \"/RDBMS\")" "/RDBMS")))
+evaluation specialists such as RDBMS/SQL-join.\") \"/RDBMS\")"
+        "/RDBMS")))
      (%ASSERT
       (COPY-CONS-TREE
        (GET-QUOTED-TREE
@@ -562,9 +582,11 @@ one or more ?output arguments to the columns in the resulting tuples.
 This can be turned into a T/F query either by binding ?output's or by
 wrapping an EXISTS around this.  Result coercion is performed based on
 the types of the ?output variables."))
-       KWD-ONTOLOGY-VARIABLE-ARITY (COPY-CONS-TREE SYM-ONTOLOGY-STELLA-TRUE)
+       KWD-ONTOLOGY-VARIABLE-ARITY
+       (COPY-CONS-TREE SYM-ONTOLOGY-STELLA-TRUE)
        KWD-ONTOLOGY-RELATION-SPECIALIST
-       (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-QUERY-SQL-DATABASE-SPECIALIST)))
+       (COPY-CONS-TREE
+        SYM-ONTOLOGY-RDBMS-QUERY-SQL-DATABASE-SPECIALIST)))
      (%ASSERT
       (COPY-CONS-TREE
        (GET-QUOTED-TREE
@@ -578,7 +600,8 @@ the types of the ?output variables."))
          "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
-        (WRAP-STRING "Run the relational ?query against ?database and bind
+        (WRAP-STRING
+         "Run the relational ?query against ?database and bind
 one or more ?output arguments to the columns in the resulting tuples.
 If there are more result columns than ?output variables, they will be
 ignored.  If there are fewer, that's ok as long as the remaining ?output's
@@ -591,12 +614,14 @@ the types of the ?output variables.  For known database types such
 as `RDBMS/SQL-Database' this dispatches to the appropriate specialist.
 Otherwise, this relation serves as a top-level interface that can be
 linked to other database query interfaces via appropriate rules."))
-       KWD-ONTOLOGY-VARIABLE-ARITY (COPY-CONS-TREE SYM-ONTOLOGY-STELLA-TRUE)
+       KWD-ONTOLOGY-VARIABLE-ARITY
+       (COPY-CONS-TREE SYM-ONTOLOGY-STELLA-TRUE)
        KWD-ONTOLOGY-RELATION-SPECIALIST
        (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-QUERY-DATABASE-SPECIALIST)))
      (%DEFCONCEPT
       (CONS-LIST (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-FETCH-EDB-DATABASE)
-       (COPY-CONS-TREE (GET-QUOTED-TREE "((DATABASE) \"/RDBMS\")" "/RDBMS"))
+       (COPY-CONS-TREE
+        (GET-QUOTED-TREE "((DATABASE) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
         (WRAP-STRING
@@ -604,9 +629,11 @@ linked to other database query interfaces via appropriate rules."))
      (%DEFFUNCTION
       (CONS-LIST (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-TASK-ID)
        (COPY-CONS-TREE
-        (GET-QUOTED-TREE "(((?DB FETCH-EDB-DATABASE)) \"/RDBMS\")" "/RDBMS"))
+        (GET-QUOTED-TREE "(((?DB FETCH-EDB-DATABASE)) \"/RDBMS\")"
+         "/RDBMS"))
        KWD-ONTOLOGY-->
-       (COPY-CONS-TREE (GET-QUOTED-TREE "((?ID STRING) \"/RDBMS\")" "/RDBMS"))
+       (COPY-CONS-TREE
+        (GET-QUOTED-TREE "((?ID STRING) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
         (WRAP-STRING "The task-id used for each access to ?db."))
@@ -617,9 +644,11 @@ linked to other database query interfaces via appropriate rules."))
      (%DEFFUNCTION
       (CONS-LIST (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-SUBTASK-ID)
        (COPY-CONS-TREE
-        (GET-QUOTED-TREE "(((?DB FETCH-EDB-DATABASE)) \"/RDBMS\")" "/RDBMS"))
+        (GET-QUOTED-TREE "(((?DB FETCH-EDB-DATABASE)) \"/RDBMS\")"
+         "/RDBMS"))
        KWD-ONTOLOGY-->
-       (COPY-CONS-TREE (GET-QUOTED-TREE "((?ID STRING) \"/RDBMS\")" "/RDBMS"))
+       (COPY-CONS-TREE
+        (GET-QUOTED-TREE "((?ID STRING) \"/RDBMS\")" "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
         (WRAP-STRING "The subtask-id used for each access to ?db."))
@@ -629,8 +658,8 @@ linked to other database query interfaces via appropriate rules."))
        (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-DB-UPDATE-DEMON)))
      (%ASSERT
       (COPY-CONS-TREE
-       (GET-QUOTED-TREE "((COMPUTED-PROCEDURE FETCH-EDB-QUERY) \"/RDBMS\")"
-        "/RDBMS")))
+       (GET-QUOTED-TREE
+        "((COMPUTED-PROCEDURE FETCH-EDB-QUERY) \"/RDBMS\")" "/RDBMS")))
      (%ASSERT
       (COPY-CONS-TREE
        (GET-QUOTED-TREE
@@ -658,12 +687,14 @@ queries via the Fetch HTTP/XML interface.\") (QUERY-EVALUATOR FETCH-EDB-QUERY) (
          "/RDBMS"))
        KWD-ONTOLOGY-DOCUMENTATION
        (COPY-CONS-TREE
-        (WRAP-STRING "Database table referenced by this query.  The current set
+        (WRAP-STRING
+         "Database table referenced by this query.  The current set
 of queries each reference only one DB table, but this is a relation
 to allow for future expansion."))
        KWD-ONTOLOGY-CLOSED (COPY-CONS-TREE SYM-ONTOLOGY-STELLA-TRUE)))
      (%DEFRELATION
-      (CONS-LIST (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-QUERY-PARAMETER-NAME)
+      (CONS-LIST
+       (COPY-CONS-TREE SYM-ONTOLOGY-RDBMS-QUERY-PARAMETER-NAME)
        (COPY-CONS-TREE
         (GET-QUOTED-TREE "(((?Q FETCH-QUERY) (?N STRING)) \"/RDBMS\")"
          "/RDBMS"))

@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: arithmetic.ste,v 1.45 2010/09/09 22:53:29 hans Exp
+;;; Version: arithmetic.ste,v 1.49 2014/04/15 22:47:08 hans Exp
 
 ;;; Evaluators perform computations (e.g., '+', '>') during constraint
 ;;;    propagation, and may side-effect, causing additional propagations.
@@ -132,6 +132,24 @@
        (return (wrap-float (/stella/- 0.0 (unwrap-float x))))
        (return x)))))
 
+(defun (floor-computation INTEGER-WRAPPER) ((x NUMBER-WRAPPER))
+  ;; See relation `floor'.
+  :public? TRUE
+  (typecase x
+    (INTEGER-WRAPPER
+     (return (stella/floor x)))
+    (FLOAT-WRAPPER
+     (return (stella/floor x)))))
+
+(defun (ceiling-computation INTEGER-WRAPPER) ((x NUMBER-WRAPPER))
+  ;; See relation `ceiling'.
+  :public? TRUE
+  (typecase x
+    (INTEGER-WRAPPER
+     (return (stella/ceiling x)))
+    (FLOAT-WRAPPER
+     (return (stella/ceiling x)))))
+
 (define-computed-constraint plus-constraint ((x1 NUMBER-WRAPPER)
 					     (x2 NUMBER-WRAPPER)
 					     (x3 NUMBER-WRAPPER))
@@ -198,6 +216,69 @@
   (if (arithmetic-less-test x1 0)
       (setq value NULL)
     (setq value (sqrt-computation x1))))
+
+(defun (log-computation FLOAT-WRAPPER) ((x NUMBER-WRAPPER))
+  ;; See relation `log'.
+  :public? TRUE
+  (typecase x
+    ((FLOAT-WRAPPER INTEGER-WRAPPER LONG-INTEGER-WRAPPER)
+     (return (choose (stella/> x 0) (stella/log x) NULL)))))
+
+(defun (log10-computation FLOAT-WRAPPER) ((x NUMBER-WRAPPER))
+  ;; See relation `log10'.
+  :public? TRUE
+  (typecase x
+    ((FLOAT-WRAPPER INTEGER-WRAPPER LONG-INTEGER-WRAPPER)
+     (return (choose (stella/> x 0) (stella/log10 x) NULL)))))
+
+(defun (exp-computation FLOAT-WRAPPER) ((x NUMBER-WRAPPER))
+  ;; See relation `exp'.
+  :public? TRUE
+  (typecase x
+    ((FLOAT-WRAPPER INTEGER-WRAPPER LONG-INTEGER-WRAPPER)
+     (return (stella/exp x)))))
+
+(defun (expt-computation FLOAT-WRAPPER) ((x NUMBER-WRAPPER) (n NUMBER-WRAPPER))
+  ;; See relation `expt'.
+  :public? TRUE
+  (typecase x
+    ((FLOAT-WRAPPER INTEGER-WRAPPER LONG-INTEGER-WRAPPER)
+     (return (stella/expt x (coerce-to-float n))))))
+
+(define-computed-constraint log-constraint ((x NUMBER-WRAPPER)
+                                            (log NUMBER-WRAPPER))
+  ;; See relation `log'.
+  ;; minor floating point ugliness: depending on how the constraint was
+  ;; invoked, we have to use the identical computation to test with two
+  ;; bound arguments.  This matters in queries such as `(retrieve (log ?x 2))'
+  ;; where the constraint is evaluated when the query description is built
+  ;; and then tested with bound arguments by the query engine.  In certain
+  ;; cases, the log and exp computations are not exact inverses of each
+  ;; other which can then make the inference fail.  For this reason, we
+  ;; try both computations in the case where all args are bound.
+  (setq value
+    (or (arithmetic-equal-test (log-computation x) log)
+        (arithmetic-equal-test x (exp-computation log))))
+  (setq value (exp-computation log))
+  (setq value (log-computation x)))
+
+(define-computed-constraint log10-constraint ((x NUMBER-WRAPPER)
+                                              (log NUMBER-WRAPPER))
+  ;; See relation `log10'.
+  (setq value
+    (or (arithmetic-equal-test (log10-computation x) log)
+        (arithmetic-equal-test x (expt-computation 10.0 log))))
+  (setq value (expt-computation 10.0 log))
+  (setq value (log10-computation x)))
+
+(define-computed-constraint exp-constraint ((x NUMBER-WRAPPER)
+                                            (y NUMBER-WRAPPER))
+  ;; See relation `exp'.
+  (setq value
+    (or (arithmetic-equal-test (exp-computation x) y)
+        (arithmetic-equal-test x (log-computation y))))
+  (setq value (log-computation y))
+  (setq value (exp-computation x)))
 
 
   ;;
@@ -292,7 +373,7 @@
              (setq proposition
                (some p in (unfiltered-dependent-propositions self @INTERVAL-CACHE-OF)
                    where (eql? (relationRef p) @INTERVAL-CACHE-OF)))
-             (equate-values (value-of (last-argument proposition)) copyCache)
+             (equate-values proposition (value-of (last-argument proposition)) copyCache)
              (return copyCache)))
           (otherwise
            (return (create-interval-cache self))))))
@@ -302,7 +383,15 @@
   ;; Print an indication of the type of clash.
   ;; TO DO: FIGURE OUT HOW TO SUPPRESS PRINTING.
   (mark-as-incoherent (interval-member interval))
-  (signal CLASH  "Clash in interval values " interval EOL) )
+  (let ((message (message-to-string "Clash in interval values " interval EOL))
+	(clash (new INTERVAL-CLASH :message message)))
+    (setf (context clash) *context*)
+    (setf (/logic/interval-member clash) (interval-member interval))
+    (setf (/logic/lower-bound clash) (lower-bound interval))
+    (setf (/logic/upper-bound clash) (upper-bound interval))
+    (setf (/logic/strict-lower-bound? clash) (strict-lower-bound? interval))
+    (setf (/logic/strict-upper-bound? clash) (strict-upper-bound? interval))
+    (signal-exception clash)))
 
 (defun evaluate-adjacent-inequalities ((self LOGIC-OBJECT))
   ;; The interval bounds on 'self' have become tigher.
@@ -336,9 +425,9 @@
         (FLOAT-WRAPPER
          (if (strict-lower-bound? interval)
            (if (integer-valued? (unwrap-float lb))
-             (return (1+ (floor (unwrap-float lb))))
-             (return (ceiling (unwrap-float lb))))
-           (return (ceiling (unwrap-float lb)))))
+             (return (1+ (stella/floor (unwrap-float lb))))
+             (return (stella/ceiling (unwrap-float lb))))
+           (return (stella/ceiling (unwrap-float lb)))))
         (otherwise
          (return NULL))))
     (return NULL)))
@@ -354,9 +443,9 @@
         (FLOAT-WRAPPER
          (if (strict-upper-bound? interval)
            (if (integer-valued? (unwrap-float ub))
-             (return (1- (floor (unwrap-float ub))))
-             (return (floor (unwrap-float ub))))
-           (return (floor (unwrap-float ub)))))
+             (return (1- (stella/floor (unwrap-float ub))))
+             (return (stella/floor (unwrap-float ub))))
+           (return (stella/floor (unwrap-float ub)))))
         (otherwise
          (return NULL))))
     (return NULL)))
@@ -368,7 +457,7 @@
     (when (and (defined? lb) 
                (defined? ub)
                (eql? lb ub))
-      (equate-values (interval-member interval) lb))))
+      (equate-values NULL (interval-member interval) lb))))
 
 
 (defmethod evaluate-tighter-interval ((interval INTERVAL-CACHE))
@@ -384,7 +473,7 @@
       (if (or (strict-lower-bound? interval)
               (strict-upper-bound? interval))
         (signal-interval-clash interval)
-        (equate-values (interval-member interval) (lower-bound interval)))
+        (equate-values NULL (interval-member interval) (lower-bound interval)))
       (exception-case 
         (progn
           (when (compare-interval-bounds? @> (lower-bound interval)
@@ -393,6 +482,7 @@
           (when (integer-valued-member? interval)
             (evaluate-tighter-integer-interval interval)))
        (INCOMPATIBLE-QUANTITY-EXCEPTION ()
+          ;; Should this signal something else instead?  Like a plain clash?
           (signal-interval-clash interval)))))
   (evaluate-adjacent-inequalities (interval-member interval)))
    
@@ -825,12 +915,18 @@
         (propagate-inequality-to-interval-cache
          (get-interval-cache value2) value1
          (inverse-inequality-operator operator))
-        ;; both arguments are bound:
-        (evaluate-PREDICATE-proposition self))) ))
-
+        ;; both arguments are bound: since this IS the evaluator and there is no constraint/computation
+        ;; attached to inequalities, we have to handle the evaluation of bound arguments here:
+        (cond ((compare-interval-bounds? operator value1 value2)
+               (assign-truth-value self TRUE))
+              ((true? self)
+               (signal-truth-value-clash self))
+              (otherwise
+               ;; TO DO: in light of the `true?' test at the beginning of this function,
+               ;; we'll never get here, but we should probably generalize this appropriately:
+               (assign-truth-value self FALSE)))))))
 
 #|
-
 (cl:progn
   (clear-module "PL-USER")
   (cc pl-user)
@@ -845,19 +941,17 @@
 (trace PL-KERNEL/evaluate-tighter-interval)
 (trace PL-KERNEL/INEQUALITY-evaluator)
 (trace PL-KERNEL/propagate-inequality-to-interval-cache)
-
 |#
 
 #|
-
 (ask (integer 23))
 (ask (not (integer "ABC")))
 (ask (string "ABC"))
 (ask (float 2.3))
 (ask (member-of 23 INTEGER))
 (ask (number 3))
-
 |#
+
 
   ;;
 ;;;;;; String Computations
@@ -875,103 +969,113 @@
           do (print-stream out (pli/object-to-string arg)))
       (return (the-string out)))))
 
-(defun (subsequence-specialist KEYWORD)
-       ((frame CONTROL-FRAME) (lastMove KEYWORD))
-  ;; Specialist that applies computed constraints.
-  ;; If all arguments are bound, the constraint is evaluated to see
-  ;;   if it holds.
-  ;; If all but one argument is bound, and the unbound argument is
-  ;;   a pattern variable, then the missing value is computed.
-  (let ((proposition (proposition frame))
-        (superArg (first (arguments proposition)))
-        (superArgValue (argument-bound-to superArg))
-        (p1Arg (second (arguments proposition)))
-        (p1ArgValue (argument-bound-to p1Arg))
-	(p2Arg (third (arguments proposition)))
-        (p2ArgValue (argument-bound-to p2Arg))
-        (subArg (fourth (arguments proposition)))
-        (subArgValue (argument-bound-to subArg))
+(defun (subsequence-specialist KEYWORD) ((frame CONTROL-FRAME) (lastMove KEYWORD))
+  ;; Constraint specialist for the `substring' relation.
+  ;; This is somewhat complicated to support a variety of different binding patterns,
+  ;; most of which we rarely/never use.  For example:
+  ;;      (substring "foobar" 2 4 ?sub)
+  ;;      (substring "foobar" ?p1 3 "oo")
+  ;;      (substring "foobar" 1 ?p2 "oo")
+  ;;      (substring "foobar" ?p1 ?p2 "o")
+  ;;      (substring "foobar" 2 4 "ob")
+  ;; We also coerce the string arguments to type string if necessary and interpret
+  ;; -1 as the end of the string.
+  (ignore lastMove)
+  (let ((arguments (arguments (proposition frame)))
+        (superArg (first arguments))   ;; ?s
+        (p1Arg (second arguments))     ;; ?start
+	(p2Arg (third arguments))      ;; ?end
+        (subArg (fourth arguments))    ;; ?sub
         (iterator (iterator frame)))
-    (ignore lastMove)
+    (when (null? iterator)
+      ;; First time (the common case):
+      (let ((superArgValue (argument-bound-to superArg))
+            (super (choose (string? superArgValue)
+                           (unwrap-string superArgValue)
+                           (pli/object-to-string superArgValue)))
+            (superLength INTEGER NULL)
+            (p1ArgValue (argument-bound-to p1Arg))
+            (p1 INTEGER NULL)
+            (p2ArgValue (argument-bound-to p2Arg))
+            (p2 INTEGER NULL)
+            (subArgValue (argument-bound-to subArg))
+            (sub (choose (string? subArgValue)
+                         (unwrap-string subArgValue)
+                         (pli/object-to-string subArgValue)))
+            (subLength (choose (defined? sub)
+                               (/stella/length sub)
+                               NULL)))
+        (when (null? super)
+          ;; If the superstring is empty, then we get an infinite number
+          ;; of possibilities, so just fail out of the computation.
+          (return :FAILURE))
 
-    (when (null? iterator)  ;; First time
-      (cond ((null? superArgValue)
-	     ;; If the superstring is empty, then we get an infinite number
-	     ;; of possibilities, so just fail out of the computation.
-	     (return :FAILURE))
-	    ((null? subArgValue)
-	     ;; If the result is empty, then only compute it if both of the
-	     ;; position arguments are bound
-	     (let ((p1 INTEGER NULL)
-		   (p2 INTEGER NULL)
-		   (super STRING NULL))
-	       (if (or (null? p1ArgValue) 
-		       (null? p2ArgValue))
-		 (return :FAILURE)
-		 (progn 
-		   (setq p1 (wrapper-value (cast p1ArgValue INTEGER-WRAPPER)))
-		   (setq p2 (wrapper-value (cast p2ArgValue INTEGER-WRAPPER)))
-		   (setq super (unwrap-string superArgValue))
-		   (if (or (stella/< p1 0) (stella/> p2 (/stella/length super)))
-		     (return :TERMINAL-FAILURE)
-		     (return
-		       (select-proof-result
-			(bind-argument-to-value? 
-			 subArg (subsequence super p1 p2) TRUE)
-			FALSE TRUE)))))))
-	    ((null? p1ArgValue)
-	     (if (null? p2ArgValue)
-	       (progn  ;; Allocate iterator for substring positions:
-		 (setq iterator (new SUBSTRING-POSITION-ITERATOR
-				     :super-string (unwrap-string superArgValue)
-				     :sub-string (unwrap-string subArgValue)))
-		 (setf (iterator frame) iterator))
-	       ;; Compute missing value
-	       (let ((p2 (wrapper-value (cast p2ArgValue INTEGER-WRAPPER)))
-		     (sub (unwrap-string subArgValue))
-		     (lsub (/stella/length sub)))
-		 (cond ((stella/> lsub p2) ;; Substring too long for position
-			(return :TERMINAL-FAILURE))
-		       ((string-eql? (subsequence (unwrap-string superArgValue) 
-						  (/stella/- p2 lsub) p2)
-				     sub)
-			(return
-			  (select-proof-result
-			   (bind-argument-to-value? p1Arg (/stella/- p2 lsub) TRUE)
-			   FALSE TRUE)))
-		       (otherwise
-			(return :TERMINAL-FAILURE))))))
-	    ((null? p2ArgValue)
-	     (let ((p1 (wrapper-value (cast p1ArgValue INTEGER-WRAPPER)))
-		   (sub (unwrap-string subArgValue))
-		   (lsub (/stella/length sub))
-		   (super (unwrap-string superArgValue))
-		   (lsuper (/stella/length super)))
-	       (cond ((or (stella/< p1 0)
-			  (stella/> (/stella/+ p1 lsub) lsuper))  ;; Substring too long for position
-		      (return :TERMINAL-FAILURE))
-		     ((string-eql? sub (subsequence super p1 (/stella/+ p1 lsub)))
-		      (return
-			(select-proof-result
-			 (bind-argument-to-value? p2Arg (/stella/+ p1 lsub) TRUE)
-			 FALSE TRUE)))
-		     (otherwise
-		      (return :TERMINAL-FAILURE)))))
-	    ;; All arguments bound
-	    (otherwise
-	     (let ((super-string (unwrap-string superArgValue))
-                   (begin-index (unwrap-integer p1ArgValue))
-                   (end-index (unwrap-integer p2ArgValue))
-                   ;; Make sure the subsequence call won't fail with an error:
-                   (match? (and (/stella/<= end-index (/stella/length super-string))
-                                (bind-argument-to-value? 
-			         subArg 
-			         (subsequence super-string begin-index end-index)
-			         TRUE))))
-	       (set-frame-truth-value frame 
-				      (choose match? TRUE-TRUTH-VALUE FALSE-TRUTH-VALUE))
-	       (return (select-proof-result match? FALSE TRUE))))))
-    ;; At this point, the code has either returned or allocated an iterator
+        ;; argument normalization, type and range checking:
+        (setq superLength (/stella/length super))
+        (when (defined? p1ArgValue)
+          (if (integer? p1ArgValue)
+              (setq p1 p1ArgValue)
+            (return :TERMINAL-FAILURE))
+          (when (or (/stella/< p1 0)
+                    (/stella/> p1 superLength))
+            (return :TERMINAL-FAILURE)))
+        (when (defined? p2ArgValue)
+          (if (integer? p2ArgValue)
+              (setq p2 p2ArgValue)
+            (return :TERMINAL-FAILURE))
+          (when (/stella/< p2 0)
+            ;; count from the end, -1=length:
+            (setq p2 (stella/+ superLength p2 1)))
+          (when (or (/stella/> p2 superLength)
+                    (and (defined? p1)
+                         (/stella/> p1 p2)))
+            (return :TERMINAL-FAILURE)))
+        
+        ;; now compute one or more values:
+        (cond ((null? sub)
+               ;; If sub is unbound, only compute it if both positions are bound:
+               (if (and (defined? p1)
+                        (defined? p2))
+                   (return
+                     (select-proof-result
+                      (bind-argument-to-value? subArg (subsequence super p1 p2) TRUE)
+                      FALSE TRUE))
+                 (return :FAILURE)))
+              ((null? p1)
+               (if (null? p2)
+                   ;; Allocate iterator for substring positions:
+                   (setf (iterator frame)
+                     (new SUBSTRING-POSITION-ITERATOR :super-string super :sub-string sub))
+                 ;; Compute missing value:
+                 (cond ((stella/> subLength p2)
+                        ;; Substring too long for position:
+                        (return :TERMINAL-FAILURE))
+                       ((eql? (subsequence super (/stella/- p2 subLength) p2) sub)
+                        (return
+                          (select-proof-result
+                           (bind-argument-to-value? p1Arg (/stella/- p2 subLength) TRUE)
+                           FALSE TRUE)))
+                       (otherwise
+                        (return :TERMINAL-FAILURE)))))
+              ((null? p2)
+               (cond ((stella/> (/stella/+ p1 subLength) superLength)
+                      ;; Substring too long for position:
+                      (return :TERMINAL-FAILURE))
+                     ((eql? sub (subsequence super p1 (/stella/+ p1 subLength)))
+                      (return
+                        (select-proof-result
+                         (bind-argument-to-value? p2Arg (/stella/+ p1 subLength) TRUE)
+                         FALSE TRUE)))
+                     (otherwise
+                      (return :TERMINAL-FAILURE))))
+              (otherwise
+               ;; All arguments bound:
+               (let ((match? (bind-argument-to-value? subArg (subsequence super p1 p2) TRUE)))
+                 (set-frame-truth-value frame (choose match? TRUE-TRUTH-VALUE FALSE-TRUTH-VALUE))
+                 (return (select-proof-result match? FALSE TRUE)))))))
+    
+    ;; At this point, the code has either returned or allocated an iterator:
+    (setq iterator (iterator frame))
     (if (and (next? iterator)
              (bind-argument-to-value? p1Arg 
 				      (first (cast (/stella/value iterator) CONS))
@@ -983,35 +1087,52 @@
       (return :TERMINAL-FAILURE))))
 
 
-(defun (string-match-computation-helper INTEGER-WRAPPER)
-    ((pattern OBJECT) (x OBJECT) (start OBJECT) (end OBJECT) (ignore-case? BOOLEAN))
-  :public? FALSE
-  (unless (and (string? pattern)
-               (integer? start)
+(defun (normalize-string-computation-args STRING INTEGER INTEGER) ((x OBJECT) (start OBJECT) (end OBJECT) (coerce? BOOLEAN))
+  ;; Normalize object and start/end args for a string computation such as `string-match'.
+  ;; Returns NULL if normalization is not possible or leads to illegal values.
+  ;; If `coerce?' use `pli/object-to-string' if necessary to coerce `x' into a string;
+  ;; otherwise, only accepts strings and named logic objects.
+  (unless (and (integer? start)
                (integer? end))
-    (return NULL))
-  (let ((thePattern STRING pattern)
-        (theStart INTEGER start)
+    (return NULL NULL NULL))
+  (let ((theStart INTEGER start)
         (theEnd INTEGER end)
         (name STRING (choose (string? x) x (object-name-string x)))
-        (nameLength (stella/length name))
-        (matchPosition INTEGER NULL))
+        (nameLength 0))
+    (when (and (null? name)
+               coerce?)
+      (setq name (pli/object-to-string x)))
+    (unless (defined? name)
+      (return NULL NULL NULL))
+    (setq nameLength (stella/length name))
     (when (stella/< theStart 0)
       (setq theStart (1+ (stella/+ nameLength theStart))))
     (when (stella/< theStart 0)
-      (return NULL))
+      (return NULL NULL NULL))
     (when (stella/< theEnd 0)
       (setq theEnd (1+ (stella/+ nameLength theEnd))))
-    (when (or (stella/< theEnd 0)
-              (stella/> theEnd nameLength))
-      (return NULL))
-    (if ignore-case?
-	(setq matchPosition (string-search-ignore-case name thePattern theStart))
-	(setq matchPosition (string-search name thePattern theStart)))
-    (if (and (defined? matchPosition)
-             (stella/< matchPosition theEnd))
-        (return matchPosition)
-      (return NULL))))
+    (if (or (stella/< theEnd 0)
+            (stella/> theEnd nameLength))
+        (return NULL NULL NULL)
+      (return name theStart theEnd))))
+
+(defun (string-match-computation-helper INTEGER-WRAPPER)
+    ((pattern OBJECT) (x OBJECT) (start OBJECT) (end OBJECT) (ignore-case? BOOLEAN))
+  (unless (string? pattern)
+    (return NULL))
+  (let ((thePattern STRING pattern)
+        (matchPosition INTEGER NULL))
+    (mv-bind (name theStart theEnd)
+        (normalize-string-computation-args x start end FALSE)
+      (when (null? name)
+        (return NULL))
+      (if ignore-case?
+          (setq matchPosition (string-search-ignore-case name thePattern theStart))
+        (setq matchPosition (string-search name thePattern theStart)))
+      (if (and (defined? matchPosition)
+               (stella/<= (stella/+ matchPosition (stella/length thePattern)) theEnd))
+          (return matchPosition)
+        (return NULL)))))
 
 (defun (string-match-computation INTEGER-WRAPPER)
     ((pattern OBJECT) (x OBJECT) (start OBJECT) (end OBJECT))
@@ -1023,16 +1144,135 @@
   ;; See relation `string-match-ignore-case'.
   (return (string-match-computation-helper pattern x start end true)))
 
+(defun (string-upcase-computation STRING-WRAPPER) ((x OBJECT) (start OBJECT) (end OBJECT))
+  ;; See relation `string-upcase'.
+  (mv-bind (name theStart theEnd)
+      (normalize-string-computation-args x start end FALSE)
+    (when (null? name)
+      (return NULL))
+    (if (and (= theStart 0)
+             (= theEnd (stella/length name)))
+        ;; special-case simple standard scenario:
+        (return (stella/string-upcase name))
+      (return (concatenate
+                (subsequence name 0 theStart)
+                (stella/string-upcase (subsequence name theStart theEnd))
+                (subsequence name theEnd NULL))))))
+
+(defun (string-downcase-computation STRING-WRAPPER) ((x OBJECT) (start OBJECT) (end OBJECT))
+  ;; See relation `string-downcase'.
+  (mv-bind (name theStart theEnd)
+      (normalize-string-computation-args x start end FALSE)
+    (when (null? name)
+      (return NULL))
+    (if (and (= theStart 0)
+             (= theEnd (stella/length name)))
+        ;; special-case simple standard scenario:
+        (return (stella/string-downcase name))
+      (return (concatenate
+                (subsequence name 0 theStart)
+                (stella/string-downcase (subsequence name theStart theEnd))
+                (subsequence name theEnd NULL))))))
+
+(defun (string-capitalize-computation STRING-WRAPPER) ((x OBJECT) (start OBJECT) (end OBJECT))
+  ;; See relation `string-capitalize'.
+  (mv-bind (name theStart theEnd)
+      (normalize-string-computation-args x start end FALSE)
+    (when (null? name)
+      (return NULL))
+    (if (and (= theStart 0)
+             (= theEnd (stella/length name)))
+        ;; special-case simple standard scenario:
+        (return (stella/string-capitalize name))
+      (return (concatenate
+                (subsequence name 0 theStart)
+                (stella/string-capitalize (subsequence name theStart theEnd))
+                (subsequence name theEnd NULL))))))
+
+(defun (string-replace-computation STRING-WRAPPER) ((x OBJECT) (from OBJECT) (to OBJECT) (start OBJECT) (end OBJECT))
+  ;; See relation `string-replace'.
+  (mv-bind (name theStart theEnd)
+      (normalize-string-computation-args x start end FALSE)
+    (when (or (null? name)
+              (not (string? from))
+              (not (string? to)))
+      (return NULL))
+    (if (and (= theStart 0)
+             (= theEnd (stella/length name)))
+        ;; special-case simple standard scenario:
+        (return (replace-substrings name to from))
+      (return (concatenate
+                (subsequence name 0 theStart)
+                (replace-substrings (subsequence name theStart theEnd) to from)
+                (subsequence name theEnd NULL))))))
+
+(defun (string-compare-computation-helper INTEGER-WRAPPER) ((o1 OBJECT) (o2 OBJECT)
+                                                            (start1 OBJECT) (end1 OBJECT)
+                                                            (start2 OBJECT) (end2 OBJECT)
+                                                            (ignoreCase? BOOLEAN))
+  ;; See relation `string-compare'.
+  (mv-bind (name1 theStart1 theEnd1)
+      (normalize-string-computation-args o1 start1 end1 FALSE)
+    (when (null? name1)
+      (return NULL))
+    (mv-bind (name2 theStart2 theEnd2)
+        (normalize-string-computation-args o2 start2 end2 FALSE)
+      (when (null? name2)
+        (return NULL))
+      (when (or (stella/> theStart1 0)
+                (stella/< theEnd1 (stella/length name1)))
+        (setq name1 (subsequence name1 theStart1 theEnd1)))
+      (when (or (stella/> theStart2 0)
+                (stella/< theEnd2 (stella/length name2)))
+        (setq name2 (subsequence name2 theStart2 theEnd2)))
+      (return (stella/string-compare name1 name2 (not ignoreCase?))))))
+
+(defun (string-compare-computation INTEGER-WRAPPER) ((o1 OBJECT) (o2 OBJECT)
+                                                     (start1 OBJECT) (end1 OBJECT)
+                                                     (start2 OBJECT) (end2 OBJECT))
+  ;; See relation `string-compare'.
+  (return (string-compare-computation-helper o1 o2 start1 end1 start2 end2 FALSE)))
+
+(defun (string-compare-ignore-case-computation INTEGER-WRAPPER) ((o1 OBJECT) (o2 OBJECT)
+                                                                 (start1 OBJECT) (end1 OBJECT)
+                                                                 (start2 OBJECT) (end2 OBJECT))
+  ;; See relation `string-compare-ignore-case'.
+  (return (string-compare-computation-helper o1 o2 start1 end1 start2 end2 TRUE)))
+
+(defun (string-to-number-computation NUMBER-WRAPPER) ((x OBJECT) (start OBJECT) (end OBJECT))
+  ;; See relation `string-to-number'.
+  (mv-bind (name theStart theEnd)
+      (normalize-string-computation-args x start end FALSE)
+    (when (null? name)
+      (return NULL))
+    (when (or (stella/> theStart 0)
+              (stella/< theEnd (stella/length name)))
+      (setq name (subsequence name theStart theEnd)))
+    (exception-case
+        (return (wrap-integer-value (string-to-integer name)))
+      (NATIVE-EXCEPTION ()))
+    (exception-case
+        (return (string-to-float name))
+      (NATIVE-EXCEPTION ()))
+    (return NULL)))
+
+
   ;;
 ;;;;;; Other Literal Computations
   ;;
 
 (defun (LENGTH-computation INTEGER-WRAPPER) ((x OBJECT))
   (typecase x
-    (STRING-WRAPPER
+    (STRING
      ;; LENGTH is a PL-KERNEL-KB deffunction:
-     (return (/stella/length (wrapper-value x))))
-    (otherwise
-     (print "Length computation not yet implemented for Lists")
-     (return NULL-INTEGER))) )
-
+     (return (stella/length (wrapper-value x))))
+    (SKOLEM
+     (cond ((or (enumerated-list? x)
+                (enumerated-set? x))
+            (return (1- (stella/length (arguments (defining-proposition x))))))
+           ((logical-collection? x)
+            (let ((listValue (asserted-collection-members x TRUE)))
+              (when (defined? listValue)
+                (return (stella/length listValue)))))))
+    (otherwise NULL))
+  (return NULL))

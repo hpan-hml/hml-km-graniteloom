@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -899,7 +899,167 @@ Iterator* privateClassStorageSlots(Class* clasS) {
   return (classStorageSlots(clasS, cons(wrapFunctionCode(((cpp_function_code)(&filterPrivateSlotP))), cons(wrapFunctionCode(((cpp_function_code)(&filterNonParameterSlotP))), cons(wrapFunctionCode(((cpp_function_code)(&filterNonExternalSlotP))), cons(wrapFunctionCode(((cpp_function_code)(&filterNonAuxiliarySlotP))), NIL))))));
 }
 
+CrossProductIterator* newCrossProductIterator() {
+  { CrossProductIterator* self = NULL;
+
+    self = new CrossProductIterator();
+    self->firstIterationP = true;
+    self->value = NULL;
+    self->cursors = NIL;
+    self->domains = NIL;
+    return (self);
+  }
+}
+
+Surrogate* CrossProductIterator::primaryType() {
+  { CrossProductIterator* self = this;
+
+    return (SGT_ITERATORS_STELLA_CROSS_PRODUCT_ITERATOR);
+  }
+}
+
+Object* accessCrossProductIteratorSlotValue(CrossProductIterator* self, Symbol* slotname, Object* value, boolean setvalueP) {
+  if (slotname == SYM_ITERATORS_STELLA_DOMAINS) {
+    if (setvalueP) {
+      self->domains = ((Cons*)(value));
+    }
+    else {
+      value = self->domains;
+    }
+  }
+  else if (slotname == SYM_ITERATORS_STELLA_CURSORS) {
+    if (setvalueP) {
+      self->cursors = ((Cons*)(value));
+    }
+    else {
+      value = self->cursors;
+    }
+  }
+  else {
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "`" << slotname << "'" << " is not a valid case option";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
+  return (value);
+}
+
+CrossProductIterator* allocateCrossProductIterator(Cons* domains) {
+  // Allocate a cross product iterator for a list of `domains'.
+  { CrossProductIterator* self000 = newCrossProductIterator();
+
+    self000->domains = domains;
+    { CrossProductIterator* iterator = self000;
+      Cons* cursors = NIL;
+      Cons* values = NIL;
+
+      { Cons* domain = NULL;
+        Cons* iter000 = domains;
+        int i = NULL_INTEGER;
+        int iter001 = 0;
+
+        for  (domain, iter000, i, iter001; 
+              !(iter000 == NIL); 
+              iter000 = iter000->rest,
+              iter001 = iter001 + 1) {
+          domain = ((Cons*)(iter000->value));
+          i = iter001;
+          if ((!((boolean)(domain))) ||
+              (domain == NIL)) {
+            return (iterator);
+          }
+          cursors = cons(((i == 0) ? domain : domain->rest), cursors);
+          values = cons(domain->value, values);
+        }
+      }
+      iterator->cursors = cursors->reverse();
+      iterator->value = values->reverse();
+      return (iterator);
+    }
+  }
+}
+
+void CrossProductIterator::reset() {
+  // Reset `self' to its initially allocated state.  Note, that
+  // this is somewhat expensive, costing almost as much as allocating the iterator.
+  { CrossProductIterator* self = this;
+
+    { Cons* domains = self->domains;
+      Cons* cursors = NIL;
+      Cons* values = NIL;
+
+      { Cons* domain = NULL;
+        Cons* iter000 = domains;
+        int i = NULL_INTEGER;
+        int iter001 = 0;
+
+        for  (domain, iter000, i, iter001; 
+              !(iter000 == NIL); 
+              iter000 = iter000->rest,
+              iter001 = iter001 + 1) {
+          domain = ((Cons*)(iter000->value));
+          i = iter001;
+          if ((!((boolean)(domain))) ||
+              (domain == NIL)) {
+            return;
+          }
+          cursors = cons(((i == 0) ? domain : domain->rest), cursors);
+          values = cons(domain->value, values);
+        }
+      }
+      self->cursors = cursors->reverse();
+      self->value = values->reverse();
+    }
+  }
+}
+
+boolean CrossProductIterator::nextP() {
+  { CrossProductIterator* self = this;
+
+    { Cons* domains = self->domains;
+      Cons* cursors = self->cursors;
+      Cons* cursor = NIL;
+      Cons* values = ((Cons*)(self->value));
+
+      if (!((boolean)(values))) {
+        return (false);
+      }
+      while (!(cursors == NIL)) {
+        cursor = ((Cons*)(cursors->value));
+        if (!(cursor == NIL)) {
+          values->firstSetter(cursor->value);
+          cursors->firstSetter(cursor->rest);
+          return (true);
+        }
+        else {
+          cursor = ((Cons*)(domains->value));
+          values->firstSetter(cursor->value);
+          cursors->firstSetter(cursor->rest);
+        }
+        cursors = cursors->rest;
+        domains = domains->rest;
+        values = values->rest;
+      }
+      self->value = NULL;
+      return (false);
+    }
+  }
+}
+
 void helpStartupIterators1() {
+  {
+    SYM_ITERATORS_STELLA_SLOT_AUXILIARYp = ((Symbol*)(internRigidSymbolWrtModule("SLOT-AUXILIARY?", NULL, 0)));
+    SGT_ITERATORS_STELLA_TABLE = ((Surrogate*)(internRigidSymbolWrtModule("TABLE", NULL, 1)));
+    SGT_ITERATORS_STELLA_CROSS_PRODUCT_ITERATOR = ((Surrogate*)(internRigidSymbolWrtModule("CROSS-PRODUCT-ITERATOR", NULL, 1)));
+    SYM_ITERATORS_STELLA_DOMAINS = ((Symbol*)(internRigidSymbolWrtModule("DOMAINS", NULL, 0)));
+    SYM_ITERATORS_STELLA_CURSORS = ((Symbol*)(internRigidSymbolWrtModule("CURSORS", NULL, 0)));
+    SYM_ITERATORS_STELLA_STARTUP_ITERATORS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-ITERATORS", NULL, 0)));
+    SYM_ITERATORS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
+  }
+}
+
+void helpStartupIterators2() {
   {
     defineMethodObject("(DEFMETHOD (ALLOCATE-ITERATOR (LIKE SELF)) ((SELF ABSTRACT-ITERATOR)) :DOCUMENTATION \"Iterator objects return themselves when asked\nfor an iterator (they occupy the same position as a collection\nwithin a 'foreach' statement).\" :PUBLIC? TRUE)", ((cpp_method_code)(&AbstractIterator::allocateIterator)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF ABSTRACT-ITERATOR)) :DOCUMENTATION \"Iterate over 'self', and count how many\nitems there are.  Bad idea if 'self' iterates over an infinite\ncollection, since in that case it will run forever.'\" :PUBLIC? TRUE)", ((cpp_method_code)(&AbstractIterator::length)), ((cpp_method_code)(NULL)));
@@ -967,22 +1127,29 @@ void helpStartupIterators1() {
 void startupIterators() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
-      SYM_ITERATORS_STELLA_SLOT_AUXILIARYp = ((Symbol*)(internRigidSymbolWrtModule("SLOT-AUXILIARY?", NULL, 0)));
-      SGT_ITERATORS_STELLA_TABLE = ((Surrogate*)(internRigidSymbolWrtModule("TABLE", NULL, 1)));
-      SYM_ITERATORS_STELLA_STARTUP_ITERATORS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-ITERATORS", NULL, 0)));
-      SYM_ITERATORS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
+      helpStartupIterators1();
+    }
+    if (currentStartupTimePhaseP(5)) {
+      { Class* clasS = defineClassFromStringifiedSource("CROSS-PRODUCT-ITERATOR", "(DEFCLASS CROSS-PRODUCT-ITERATOR (ITERATOR) :DOCUMENTATION \"Iterator class that generates the cross product of a list of domains.\nEach value tuple is represented as a CONS.  CAUTION: the value tuple will be modified\ndestructively, hence, it needs to be copied in case it needs to persist beyond a single\niteration.\" :PUBLIC? TRUE :PARAMETERS ((ANY-VALUE :TYPE CONS)) :SLOTS ((DOMAINS :TYPE (CONS OF CONS) :INITIALLY NIL) (CURSORS :TYPE (CONS OF CONS) :INITIALLY NIL)))");
+
+        clasS->classConstructorCode = ((cpp_function_code)(&newCrossProductIterator));
+        clasS->classSlotAccessorCode = ((cpp_function_code)(&accessCrossProductIteratorSlotValue));
+      }
     }
     if (currentStartupTimePhaseP(6)) {
       finalizeClasses();
     }
     if (currentStartupTimePhaseP(7)) {
-      helpStartupIterators1();
+      helpStartupIterators2();
       defineFunctionObject("CLASS-TABLES-NEXT?", "(DEFUN (CLASS-TABLES-NEXT? BOOLEAN) ((SELF ALL-PURPOSE-ITERATOR)))", ((cpp_function_code)(&classTablesNextP)), NULL);
       defineFunctionObject("CLASS-TABLES", "(DEFUN (CLASS-TABLES (ITERATOR OF TABLE)) ((CLASS CLASS) (FILTERS (CONS OF FUNCTION-CODE-WRAPPER))))", ((cpp_function_code)(&classTables)), NULL);
       defineFunctionObject("PUBLIC-CLASS-STORAGE-SLOTS", "(DEFUN (PUBLIC-CLASS-STORAGE-SLOTS (ITERATOR OF STORAGE-SLOT)) ((CLASS CLASS)) :DOCUMENTATION \"Iterate over all public storage-slots attached to 'class'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&publicClassStorageSlots)), NULL);
       defineFunctionObject("PRIVATE-CLASS-STORAGE-SLOTS", "(DEFUN (PRIVATE-CLASS-STORAGE-SLOTS (ITERATOR OF STORAGE-SLOT)) ((CLASS CLASS)) :DOCUMENTATION \"Iterate over all private storage-slots attached to 'class'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&privateClassStorageSlots)), NULL);
+      defineFunctionObject("ALLOCATE-CROSS-PRODUCT-ITERATOR", "(DEFUN (ALLOCATE-CROSS-PRODUCT-ITERATOR CROSS-PRODUCT-ITERATOR) ((DOMAINS (CONS OF CONS))) :DOCUMENTATION \"Allocate a cross product iterator for a list of `domains'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allocateCrossProductIterator)), NULL);
+      defineMethodObject("(DEFMETHOD RESET ((SELF CROSS-PRODUCT-ITERATOR)) :DOCUMENTATION \"Reset `self' to its initially allocated state.  Note, that\nthis is somewhat expensive, costing almost as much as allocating the iterator.\" :PUBLIC? TRUE)", ((cpp_method_code)(&CrossProductIterator::reset)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF CROSS-PRODUCT-ITERATOR)))", ((cpp_method_code)(&CrossProductIterator::nextP)), ((cpp_method_code)(NULL)));
       defineFunctionObject("STARTUP-ITERATORS", "(DEFUN STARTUP-ITERATORS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupIterators)), NULL);
       { MethodSlot* function = lookupFunction(SYM_ITERATORS_STELLA_STARTUP_ITERATORS);
 
@@ -1002,6 +1169,12 @@ void startupIterators() {
 Symbol* SYM_ITERATORS_STELLA_SLOT_AUXILIARYp = NULL;
 
 Surrogate* SGT_ITERATORS_STELLA_TABLE = NULL;
+
+Surrogate* SGT_ITERATORS_STELLA_CROSS_PRODUCT_ITERATOR = NULL;
+
+Symbol* SYM_ITERATORS_STELLA_DOMAINS = NULL;
+
+Symbol* SYM_ITERATORS_STELLA_CURSORS = NULL;
 
 Symbol* SYM_ITERATORS_STELLA_STARTUP_ITERATORS = NULL;
 

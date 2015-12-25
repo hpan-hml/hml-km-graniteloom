@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -90,11 +90,11 @@ char* stringifyInModule(Object* tree, Module* module) {
   // Stringify a parse `tree' relative to `module', or
   // `*module*' if no module is specified.
   if (!((boolean)(module))) {
-    module = oMODULEo.get();
+    module = oMODULEo;
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     return (stringify(tree));
   }
 }
@@ -103,11 +103,11 @@ Object* unstringifyInModule(char* string, Module* module) {
   // Unstringify relative to `module', or `*MODULE*' if no
   // module is specified.
   if (!((boolean)(module))) {
-    module = oMODULEo.get();
+    module = oMODULEo;
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     return (readSExpressionFromString(string));
   }
 }
@@ -681,7 +681,7 @@ StorageSlot* defineStorageSlotFromParseTree(Cons* slotdef, Surrogate* owner) {
 Module* recordSlotHomeModule(Slot* self) {
   { Symbol* name = self->slotName;
     Module* namemodule = ((Module*)(name->homeContext));
-    Module* definitionmodule = oMODULEo.get();
+    Module* definitionmodule = oMODULEo;
     Module* homemodule = namemodule;
 
     if (explicitlyQualifiedNameP(name, definitionmodule)) {
@@ -749,7 +749,7 @@ Class* getIdenticalClass(char* classname, char* stringifiedsource) {
 
           if ((oldvalue->classStringifiedSource != NULL) &&
               (stringEqlP(oldvalue->classStringifiedSource, stringifiedsource) &&
-               (((Module*)(surrogate->homeContext)) == oMODULEo.get()))) {
+               (((Module*)(surrogate->homeContext)) == oMODULEo))) {
             return (oldvalue);
           }
         }
@@ -1321,7 +1321,7 @@ MethodSlot* lookupOptionHandler(StorageSlot* slot) {
       }
     }
     handler = lookupFunction(handlername);
-    if ((oSAFETYo.get() >= 2) &&
+    if ((oSAFETYo >= 2) &&
         (((boolean)(handler)) &&
          ((!(handlername == SYM_STELLA_IN_STELLA_DEFAULT_OPTION_HANDLER)) &&
           (!handler->conformingSignaturesP(oDEFAULT_OPTION_HANDLERo))))) {
@@ -1358,7 +1358,7 @@ void defaultOptionHandler(Object* self, StorageSlot* slot, Object* tree) {
         parsedvalue = permanentCopy(tree);
       }
     }
-    if ((oSAFETYo.get() >= 2) &&
+    if ((oSAFETYo >= 2) &&
         ((boolean)(parsedvalue))) {
       if (!isaP(parsedvalue, slot->type()->typeToWrappedType())) {
         { 
@@ -1444,7 +1444,7 @@ void helpStartupStellaIn1() {
 void startupStellaIn() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupStellaIn1();
       KWD_STELLA_IN_GLOBALLY_INLINEp = ((Keyword*)(internRigidSymbolWrtModule("GLOBALLY-INLINE?", NULL, 2)));

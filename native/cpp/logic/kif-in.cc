@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -1227,24 +1227,24 @@ DEFINE_STELLA_SPECIAL(oLOGIC_DIALECTo, Keyword* , NULL);
 Object* standardizeLogicalParseTree(Object* tree) {
   { Object* standardizedtree = NULL;
 
-    if (oLOGIC_DIALECTo.get() == KWD_KIF_IN_KIF) {
+    if (oLOGIC_DIALECTo == KWD_KIF_IN_KIF) {
       standardizedtree = kifExpressionToUntypedStellaExpression(tree);
     }
-    else if (oLOGIC_DIALECTo.get() == KWD_KIF_IN_STELLA) {
+    else if (oLOGIC_DIALECTo == KWD_KIF_IN_STELLA) {
       standardizedtree = convertToPrefixPropositionTree(tree);
     }
-    else if (oLOGIC_DIALECTo.get() == KWD_KIF_IN_PREFIX_STELLA) {
+    else if (oLOGIC_DIALECTo == KWD_KIF_IN_PREFIX_STELLA) {
       standardizedtree = tree;
     }
-    else if (oLOGIC_DIALECTo.get() == KWD_KIF_IN_MELD) {
+    else if (oLOGIC_DIALECTo == KWD_KIF_IN_MELD) {
     }
-    else if (oLOGIC_DIALECTo.get() == KWD_KIF_IN_LOOM) {
+    else if (oLOGIC_DIALECTo == KWD_KIF_IN_LOOM) {
       standardizedtree = kifExpressionToUntypedStellaExpression(tree);
     }
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
 
-        *(stream000->nativeStream) << "`" << oLOGIC_DIALECTo.get() << "'" << " is not a valid case option";
+        *(stream000->nativeStream) << "`" << oLOGIC_DIALECTo << "'" << " is not a valid case option";
         throw *newStellaException(stream000->theStringReader());
       }
     }
@@ -1263,28 +1263,28 @@ Keyword* inDialect(Object* dialect) {
       { Object* dialect000 = dialect;
         Symbol* dialect = ((Symbol*)(dialect000));
 
-        oLOGIC_DIALECTo.set(dialect->keywordify());
+        oLOGIC_DIALECTo = dialect->keywordify();
       }
     }
     else if (subtypeOfStringP(testValue000)) {
       { Object* dialect001 = dialect;
         StringWrapper* dialect = ((StringWrapper*)(dialect001));
 
-        oLOGIC_DIALECTo.set(stringKeywordify(dialect->wrapperValue));
+        oLOGIC_DIALECTo = stringKeywordify(dialect->wrapperValue);
       }
     }
     else if (subtypeOfKeywordP(testValue000)) {
       { Object* dialect002 = dialect;
         Keyword* dialect = ((Keyword*)(dialect002));
 
-        oLOGIC_DIALECTo.set(dialect);
+        oLOGIC_DIALECTo = dialect;
       }
     }
     else {
       *(STANDARD_WARNING->nativeStream) << "Warning: " << "IN-DIALECT: Illegal dialect specification: " << "`" << dialect << "'" << std::endl;
     }
   }
-  return (oLOGIC_DIALECTo.get());
+  return (oLOGIC_DIALECTo);
 }
 
 void helpStartupKifIn1() {
@@ -1350,7 +1350,7 @@ void helpStartupKifIn1() {
 void startupKifIn() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupKifIn1();
     }
@@ -1358,7 +1358,7 @@ void startupKifIn() {
       oANNOTATION_TRANSLATION_TABLEo = listO(7, listO(4, SYM_KIF_IN_LOGIC_lle, SYM_KIF_IN_STELLA_le, listO(3, KWD_KIF_IN_DIRECTION, KWD_KIF_IN_BACKWARD, NIL), NIL), listO(4, SYM_KIF_IN_LOGIC_egg, SYM_KIF_IN_STELLA_eg, listO(3, KWD_KIF_IN_DIRECTION, KWD_KIF_IN_FORWARD, NIL), NIL), listO(4, SYM_KIF_IN_LOGIC_lt, SYM_KIF_IN_STELLA_le, listO(3, KWD_KIF_IN_CONFIDENCE_LEVEL, KWD_KIF_IN_DEFAULT, NIL), NIL), listO(4, SYM_KIF_IN_LOGIC_tg, SYM_KIF_IN_STELLA_eg, listO(3, KWD_KIF_IN_CONFIDENCE_LEVEL, KWD_KIF_IN_DEFAULT, NIL), NIL), listO(4, SYM_KIF_IN_LOGIC_llt, SYM_KIF_IN_STELLA_le, listO(5, KWD_KIF_IN_CONFIDENCE_LEVEL, KWD_KIF_IN_DEFAULT, KWD_KIF_IN_DIRECTION, KWD_KIF_IN_BACKWARD, NIL), NIL), listO(4, SYM_KIF_IN_LOGIC_tgg, SYM_KIF_IN_STELLA_eg, listO(5, KWD_KIF_IN_CONFIDENCE_LEVEL, KWD_KIF_IN_DEFAULT, KWD_KIF_IN_DIRECTION, KWD_KIF_IN_FORWARD, NIL), NIL), NIL);
       oKIF_SENTENCE_OPERATORSo = getQuotedTree("((AND OR NOT FAIL EXISTS FORALL => <= <=> =) \"/LOGIC\")", "/LOGIC");
       oKIF_TERM_OPERATORSo = getQuotedTree("((THE SETOFALL KAPPA LAMBDA COND IF SETOF LISTOF) \"/LOGIC\")", "/LOGIC");
-      oLOGIC_DIALECTo.set(KWD_KIF_IN_KIF);
+      oLOGIC_DIALECTo = KWD_KIF_IN_KIF;
     }
     if (currentStartupTimePhaseP(5)) {
       defineStellaTypeFromStringifiedSource("(DEFTYPE PARSE-TREE OBJECT)");

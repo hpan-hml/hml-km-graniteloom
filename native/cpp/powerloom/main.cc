@@ -10,7 +10,6 @@ using namespace stella;
 using namespace stella_powerloom_code;
 
 int main(int count, char** arguments) {
-  // Main PowerLoom entry point.
   std::cout << "Initializing STELLA..." << std::endl;
   startupStellaSystem();
   std::cout << "Initializing PowerLoom..." << std::endl;

@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2012      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: timepoint-support.ste,v 1.15 2010/09/10 23:37:37 hans Exp
+;;; Version: timepoint-support.ste,v 1.17 2012/03/02 21:39:35 hans Exp
 
 (in-package "STELLA")
 
@@ -356,12 +356,13 @@ that all logic-wrapped DATE-TIME-OBJECTs are the same object."
   ;; it (yet) via a computation or a constraint (see also general comment above).
   (equate-equivalent-FUNCTION-propositions self)
   (let ((storedValue (value-of (nth (arguments self) 7)))
+        (computation (lookup-function (quote timepoint-of*-computation)))
         (computedValue
          ;; use `compute-relation-value', since it does all the required type checking, etc.:
-         (compute-relation-value self (the-code :function timepoint-of*-computation) FALSE)))
+         (compute-relation-value self computation FALSE)))
     (when (and (defined? computedValue)
                (not (eql? computedValue storedValue)))
-      (equate-values computedValue storedValue))))
+      (equate-values self computedValue storedValue))))
 
 (defun (timepoint-of*-specialist KEYWORD) ((frame CONTROL-FRAME) (lastMove KEYWORD))
   ;; Compute a timepoint from the input arguments, or recover the input

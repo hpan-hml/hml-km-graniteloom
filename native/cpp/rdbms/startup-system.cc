@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -71,7 +71,7 @@ void startupRdbmsSystem() {
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/RDBMS", oSTARTUP_TIME_PHASEo > 1));
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       if (currentStartupTimePhaseP(2)) {
         SYM_STARTUP_SYSTEM_RDBMS_STARTUP_RDBMS_SYSTEM = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-RDBMS-SYSTEM", NULL, 0)));
         SYM_STARTUP_SYSTEM_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));

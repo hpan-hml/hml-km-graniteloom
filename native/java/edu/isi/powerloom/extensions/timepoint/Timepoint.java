@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -59,6 +59,8 @@ public class Timepoint {
   public static Surrogate SGT_TIMEPOINT_KB_TIMEPOINT_OF = null;
 
   public static Surrogate SGT_TIMEPOINT_KB_DURATION_OF = null;
+
+  public static Symbol SYM_TIMEPOINT_SUPPORT_TIMEPOINT_OF$_COMPUTATION = null;
 
   public static Keyword KWD_MONDAY = null;
 
@@ -665,11 +667,12 @@ public class Timepoint {
   public static void timepointOf$Evaluator(Proposition self) {
     Proposition.equateEquivalentFunctionPropositions(self);
     { Stella_Object storedvalue = Logic.valueOf((self.arguments.theArray)[7]);
-      Stella_Object computedvalue = Proposition.computeRelationValue(self, Native.find_java_method("edu.isi.powerloom.extensions.timepoint.Timepoint", "timepointOf$Computation", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.IntegerWrapper"), Native.find_java_class("edu.isi.stella.IntegerWrapper"), Native.find_java_class("edu.isi.stella.IntegerWrapper"), Native.find_java_class("edu.isi.stella.IntegerWrapper"), Native.find_java_class("edu.isi.stella.IntegerWrapper"), Native.find_java_class("edu.isi.stella.NumberWrapper"), Native.find_java_class("edu.isi.stella.Stella_Object")}), false);
+      MethodSlot computation = Symbol.lookupFunction(Timepoint.SYM_TIMEPOINT_SUPPORT_TIMEPOINT_OF$_COMPUTATION);
+      Stella_Object computedvalue = Proposition.computeRelationValue(self, computation, false);
 
       if ((computedvalue != null) &&
           (!Stella_Object.eqlP(computedvalue, storedvalue))) {
-        Logic.equateValues(computedvalue, storedvalue);
+        Proposition.equateValues(self, computedvalue, storedvalue);
       }
     }
   }

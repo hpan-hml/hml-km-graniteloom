@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -305,9 +305,15 @@ public class RDBMS {
 
   public static Keyword KWD_FAILURE = null;
 
+  public static Keyword KWD_DB_LOOKUP = null;
+
   public static Keyword KWD_CONTINUING_SUCCESS = null;
 
   public static Keyword KWD_FINAL_SUCCESS = null;
+
+  public static Keyword KWD_TECHNICAL = null;
+
+  public static Keyword KWD_LAY = null;
 
   public static Symbol SYM_RDBMS_pREL = null;
 
@@ -1569,7 +1575,8 @@ public class RDBMS {
               if (col == null) {
                 nonullsP = false;
               }
-              else if (binding != null) {
+              else if ((binding != null) &&
+                  (!Logic.skolemP(binding))) {
                 col = binding;
               }
               if (collect000 == null) {
@@ -1601,6 +1608,14 @@ public class RDBMS {
           if (!(iterator.nextP())) {
             return (RDBMS.KWD_FAILURE);
           }
+        }
+      }
+      if (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue()) {
+        { PrimitiveStrategy self000 = PrimitiveStrategy.newPrimitiveStrategy();
+
+          self000.strategy = RDBMS.KWD_DB_LOOKUP;
+          self000.antecedents = Stella.NIL;
+          ControlFrame.recordGoalJustification(frame, self000);
         }
       }
       if (iterator.nextP()) {
@@ -1656,7 +1671,7 @@ public class RDBMS {
 
             for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
               triple = ((Cons)(iter000.value));
-              { java.lang.reflect.Method code = Logic.functionCodeFromProcedure(triple.value);
+              { java.lang.reflect.Method code = ComputedProcedure.functionCodeFromProcedure(((ComputedProcedure)(triple.value)));
 
                 if (code != null) {
                   evaluatorforms = Cons.cons(Cons.consList(Cons.cons(FunctionCodeWrapper.wrapFunctionCode(code), Cons.cons(triple.rest.value, Cons.cons(triple.rest.rest.value, Stella.NIL)))), evaluatorforms);
@@ -2415,7 +2430,9 @@ public class RDBMS {
         }
       }
       else if (instanceref == null) {
-        instanceref = Surrogate.internSurrogateInModule(name, module, localP);
+        if (!(name.charAt(0) == '(')) {
+          instanceref = Surrogate.internSurrogateInModule(name, module, localP);
+        }
       }
       typeref = Logic.objectSurrogate(type);
       if (typeref == RDBMS.SGT_STELLA_THING) {
@@ -2427,7 +2444,16 @@ public class RDBMS {
         try {
           Native.setSpecial(Stella.$MODULE$, module);
           Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
-          return (Logic.createLogicInstance(instanceref, typeref));
+          if (instanceref != null) {
+            return (Logic.createLogicInstance(instanceref, typeref));
+          }
+          else {
+            { Stella_Object skolem = Logic.evaluateTerm(Stella.readSExpressionFromString(name));
+
+              Logic.assertIsaProposition(skolem, typeref);
+              return (skolem);
+            }
+          }
 
         } finally {
           Stella.$CONTEXT$.set(old$Context$000);
@@ -2620,7 +2646,7 @@ public class RDBMS {
           Stella.writeHtmlEscapingUrlSpecialCharacters(url.nativeStream, database);
           url.nativeStream.print("&");
           url.nativeStream.print(parameters);
-          reply = ((InputStream)(edu.isi.stella.javalib.Native.funcall(Stella.autoload("HTTP/HTTP-GET-DATA", "webtools", RDBMS.SGT_RDBMS_RUN_FETCH_QUERY, true), null, new java.lang.Object [] {host, new Integer(port), url.theStringReader(), null})));
+          reply = ((InputStream)(edu.isi.stella.javalib.Native.funcall(Stella.autoload("HTTP/HTTP-GET-DATA", "webtools", RDBMS.SGT_RDBMS_RUN_FETCH_QUERY, true), null, new java.lang.Object [] {host, new Integer(port), url.theStringReader(), ((Stella_Object)(null))})));
           { Stella_Object exp = null;
             XmlExpressionIterator iter000 = InputStream.xmlExpressions(reply, null);
 

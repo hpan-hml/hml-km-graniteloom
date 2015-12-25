@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -56,6 +56,28 @@ public abstract class DictionaryIterator extends AbstractDictionaryIterator {
     /** The current value of this iterator
      */
     public Stella_Object value;
+
+  public Stella_Object keySetter(Stella_Object key) {
+    { DictionaryIterator self = this;
+
+      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+        stream000.nativeStream.print("DICTIONARY-ITERATOR.key-setter not implemented on `" + self + "'");
+        throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+      }
+    }
+  }
+
+  public Stella_Object valueSetter(Stella_Object value) {
+    { DictionaryIterator self = this;
+
+      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+        stream000.nativeStream.print("DICTIONARY-ITERATOR.value-setter not implemented on `" + self + "'");
+        throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+      }
+    }
+  }
 
 }
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -68,7 +68,8 @@
    (CL:SETF (|%SampleContents.textContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%SampleContents.SampleListItem| SELF) NULL)
    (CL:SETF (|%SampleContents.sub| SELF) NULL)
-   (CL:SETF (|%SampleContents.sampleAttr| SELF) STELLA::NULL-STRING) SELF))
+   (CL:SETF (|%SampleContents.sampleAttr| SELF) STELLA::NULL-STRING)
+   SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |SampleContents|))
   |SGT-SAMPLE-CONTENTS-SAMPLE-SampleContents|)
@@ -79,17 +80,19 @@
     (CL:IF SETVALUE?
      (CL:SETF (|%SampleContents.sampleAttr| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%SampleContents.sampleAttr| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%SampleContents.sampleAttr| SELF)))))
    ((CL:EQ SLOTNAME |SYM-SAMPLE-CONTENTS-SAMPLE-sub|)
     (CL:IF SETVALUE? (CL:SETF (|%SampleContents.sub| SELF) VALUE)
      (CL:SETQ VALUE (|%SampleContents.sub| SELF))))
    ((CL:EQ SLOTNAME |SYM-SAMPLE-CONTENTS-SAMPLE-SampleListItem|)
-    (CL:IF SETVALUE? (CL:SETF (|%SampleContents.SampleListItem| SELF) VALUE)
+    (CL:IF SETVALUE?
+     (CL:SETF (|%SampleContents.SampleListItem| SELF) VALUE)
      (CL:SETQ VALUE (|%SampleContents.SampleListItem| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -111,8 +114,8 @@
      (CL:SETQ VALUE (WRAP-STRING (|%SampleNested.nestedAttr| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -134,8 +137,8 @@
      (CL:SETQ VALUE (WRAP-STRING (|%SampleListItem.itemID| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -200,7 +203,8 @@
      (CL:FUNCTION STARTUP-SAMPLE-CONTENTS) NULL)
     (CL:LET*
      ((FUNCTION
-       (LOOKUP-FUNCTION SYM-SAMPLE-CONTENTS-SAMPLE-STARTUP-SAMPLE-CONTENTS)))
+       (LOOKUP-FUNCTION
+        SYM-SAMPLE-CONTENTS-SAMPLE-STARTUP-SAMPLE-CONTENTS)))
      (SET-DYNAMIC-SLOT-VALUE (%METHOD-SLOT.DYNAMIC-SLOTS FUNCTION)
       SYM-SAMPLE-CONTENTS-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupSampleContents") NULL-STRING-WRAPPER)))

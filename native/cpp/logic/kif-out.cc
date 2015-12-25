@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -76,9 +76,89 @@ void registerLogicDialectPrintFunction(Keyword* dialect, FunctionCodeWrapper* fn
   oLOGIC_DIALECT_PRINT_FUNCTIONSo->insertAt(dialect, fn);
 }
 
+// Used to register objects that quantify variables, so we
+// can decide in certain contexts whether to print a variable or its value.
+DEFINE_STELLA_SPECIAL(oPRINTQUANTIFIEDOBJECTSSTACKo, Cons* , NULL);
+
+void pushQuantifiedObject(Object* object) {
+  if (((boolean)(oPRINTQUANTIFIEDOBJECTSSTACKo))) {
+    oPRINTQUANTIFIEDOBJECTSSTACKo = cons(object, oPRINTQUANTIFIEDOBJECTSSTACKo);
+  }
+}
+
+void popQuantifiedObject() {
+  if (((boolean)(oPRINTQUANTIFIEDOBJECTSSTACKo))) {
+    oPRINTQUANTIFIEDOBJECTSSTACKo = oPRINTQUANTIFIEDOBJECTSSTACKo->rest;
+  }
+}
+
+boolean quantifiedObjectVariableP(Skolem* var) {
+  if (((boolean)(oPRINTQUANTIFIEDOBJECTSSTACKo))) {
+    { Object* obj = NULL;
+      Cons* iter000 = oPRINTQUANTIFIEDOBJECTSSTACKo;
+
+      for (obj, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+        obj = iter000->value;
+        { Surrogate* testValue000 = safePrimaryType(obj);
+
+          if (subtypeOfP(testValue000, SGT_KIF_OUT_LOGIC_PROPOSITION)) {
+            { Object* obj000 = obj;
+              Proposition* obj = ((Proposition*)(obj000));
+
+              if (((Vector*)(dynamicSlotValue(obj->dynamicSlots, SYM_KIF_OUT_LOGIC_IO_VARIABLES, NULL)))->memberP(var)) {
+                return (true);
+              }
+            }
+          }
+          else if (subtypeOfP(testValue000, SGT_KIF_OUT_LOGIC_DESCRIPTION)) {
+            { Object* obj001 = obj;
+              Description* obj = ((Description*)(obj001));
+
+              if (obj->ioVariables->memberP(var) ||
+                  obj->internalVariables->memberP(var)) {
+                return (true);
+              }
+            }
+          }
+          else if (subtypeOfP(testValue000, SGT_KIF_OUT_STELLA_VECTOR)) {
+            { Object* obj002 = obj;
+              Vector* obj = ((Vector*)(obj002));
+
+              if (obj->memberP(var)) {
+                return (true);
+              }
+            }
+          }
+          else if (testValue000 == SGT_KIF_OUT_STELLA_CONS) {
+            { Object* obj003 = obj;
+              Cons* obj = ((Cons*)(obj003));
+
+              if (obj->memberP(var)) {
+                return (true);
+              }
+            }
+          }
+          else if (subtypeOfP(testValue000, SGT_KIF_OUT_STELLA_LIST)) {
+            { Object* obj004 = obj;
+              List* obj = ((List*)(obj004));
+
+              if (obj->memberP(var)) {
+                return (true);
+              }
+            }
+          }
+          else {
+          }
+        }
+      }
+    }
+  }
+  return (false);
+}
+
 char* maybeDowncase(char* string) {
-  if (!oMODULEo.get()->caseSensitiveP) {
-    if (oDOWNCASEOPERATORSpo.get()) {
+  if (!oMODULEo->caseSensitiveP) {
+    if (oDOWNCASEOPERATORSpo) {
       return (stringDowncase(string));
     }
     if (stringEqlP(string, "FORALL")) {
@@ -121,19 +201,19 @@ void increaseIndent(int indent) {
   if (indent == NULL_INTEGER) {
     indent = oINDENT_QUANTUMo;
   }
-  oINDENTCOUNTERo.set(oINDENTCOUNTERo.get() + indent);
+  oINDENTCOUNTERo = oINDENTCOUNTERo + indent;
 }
 
 void decreaseIndent(int indent) {
   if (indent == NULL_INTEGER) {
     indent = oINDENT_QUANTUMo;
   }
-  oINDENTCOUNTERo.set(oINDENTCOUNTERo.get() - indent);
+  oINDENTCOUNTERo = oINDENTCOUNTERo - indent;
 }
 
 void printIndent(OutputStream* stream, int indent) {
   if (indent == NULL_INTEGER) {
-    indent = oINDENTCOUNTERo.get();
+    indent = oINDENTCOUNTERo;
   }
   { int i = NULL_INTEGER;
     int iter000 = 1;
@@ -159,7 +239,7 @@ void printLogicalFormInDialect(Object* self, Keyword* dialect, OutputStream* str
     return;
   }
   if (!((boolean)(dialect))) {
-    dialect = oLOGIC_DIALECTo.get();
+    dialect = oLOGIC_DIALECTo;
   }
   if (dialect == KWD_KIF_OUT_KIF) {
     printAsKif(self, stream);
@@ -191,7 +271,10 @@ void printLogicalForm(Object* form, OutputStream* stream) {
   // Print the logical form `form' to `stream' according to
   // the current setting of `*logic-dialect*'.  Pretty-printing is controlled
   // by the current setting of `*prettyPrintLogicalForms?*'.
-  printLogicalFormInDialect(form, oLOGIC_DIALECTo.get(), stream);
+  { 
+    BIND_STELLA_SPECIAL(oPRINTQUANTIFIEDOBJECTSSTACKo, Cons*, NIL);
+    printLogicalFormInDialect(form, oLOGIC_DIALECTo, stream);
+  }
 }
 
 void prettyPrintLogicalForm(Object* form, OutputStream* stream) {
@@ -199,7 +282,8 @@ void prettyPrintLogicalForm(Object* form, OutputStream* stream) {
   // to the current setting of `*logic-dialect*'.
   { 
     BIND_STELLA_SPECIAL(oPRETTYPRINTLOGICALFORMSpo, boolean, true);
-    printLogicalFormInDialect(form, oLOGIC_DIALECTo.get(), stream);
+    BIND_STELLA_SPECIAL(oPRINTQUANTIFIEDOBJECTSSTACKo, Cons*, NIL);
+    printLogicalFormInDialect(form, oLOGIC_DIALECTo, stream);
   }
 }
 
@@ -209,7 +293,8 @@ void printUnformattedLogicalForm(Object* form, OutputStream* stream) {
   // forced to be turned off.
   { 
     BIND_STELLA_SPECIAL(oPRETTYPRINTLOGICALFORMSpo, boolean, false);
-    printLogicalFormInDialect(form, oLOGIC_DIALECTo.get(), stream);
+    BIND_STELLA_SPECIAL(oPRINTQUANTIFIEDOBJECTSSTACKo, Cons*, NIL);
+    printLogicalFormInDialect(form, oLOGIC_DIALECTo, stream);
   }
 }
 
@@ -221,19 +306,20 @@ void printFormula(Object* formula, int indent) {
 }
 
 void printAsKif(Object* self, OutputStream* stream) {
-  { int currentindentcounter = oINDENTCOUNTERo.get();
+  { int currentindentcounter = oINDENTCOUNTERo;
 
     { 
       BIND_STELLA_SPECIAL(oINDENTCOUNTERo, int, currentindentcounter);
       BIND_STELLA_SPECIAL(oPRINTLOGICALFORMSTREAMo, OutputStream*, stream);
-      BIND_STELLA_SPECIAL(oPRETTYPRINTKIFpo, boolean, oPRETTYPRINTLOGICALFORMSpo.get());
+      BIND_STELLA_SPECIAL(oPRETTYPRINTKIFpo, boolean, oPRETTYPRINTLOGICALFORMSpo);
+      BIND_STELLA_SPECIAL(oPRINTQUANTIFIEDOBJECTSSTACKo, Cons*, NIL);
       printAsKifInternal(self);
     }
   }
 }
 
 void printAsKifInternal(Object* self) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
 
     if (!((boolean)(self))) {
       *(stream->nativeStream) << "NULL";
@@ -339,11 +425,11 @@ boolean visibleArgumentP(Object* self) {
 
       if ((self->kind == KWD_KIF_OUT_ISA) &&
           coerceWrappedBooleanToBoolean(self->variableTypeP_reader())) {
-        if (((boolean)(oCURRENTJUSTIFICATIONo.get()))) {
+        if (((boolean)(oCURRENTJUSTIFICATIONo))) {
           return (true);
         }
-        if ((oPRINTMODEo.get() == KWD_KIF_OUT_REALISTIC) ||
-            (oPRINTMODEo.get() == KWD_KIF_OUT_ORIGINAL)) {
+        if ((oPRINTMODEo == KWD_KIF_OUT_REALISTIC) ||
+            (oPRINTMODEo == KWD_KIF_OUT_ORIGINAL)) {
           return (false);
         }
         else {
@@ -381,7 +467,7 @@ void printKifArguments(Vector* arguments, boolean separatelinesP, boolean omitla
   if (!((boolean)(arguments))) {
     return;
   }
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
     Iterator* argumentsiterator = (omitlastargumentP ? arguments->butLast() : ((Iterator*)(arguments->allocateIterator())));
     int visibleargcount = visibleArgumentsCount(arguments);
     int argindex = 0;
@@ -400,7 +486,7 @@ void printKifArguments(Vector* arguments, boolean separatelinesP, boolean omitla
           argindex = argindex + 1;
           if (argindex > 1) {
             if (separatelinesP &&
-                oPRETTYPRINTKIFpo.get()) {
+                oPRETTYPRINTKIFpo) {
               *(stream->nativeStream) << std::endl;
               printIndent(stream, NULL_INTEGER);
             }
@@ -416,7 +502,7 @@ void printKifArguments(Vector* arguments, boolean separatelinesP, boolean omitla
 }
 
 void printKifOperatorWithArguments(char* operatoR, Vector* arguments, boolean separatelinesP, boolean omitlastargumentP) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
 
     *(stream->nativeStream) << "(" << operatoR << (((arguments->length() > 0) ? (char*)" " : (char*)""));
     increaseIndent(strlen(operatoR) + 2);
@@ -429,7 +515,7 @@ void printKifOperatorWithArguments(char* operatoR, Vector* arguments, boolean se
 char* stringifiedSurrogate(Surrogate* operatoR) {
   { NamedDescription* description = getDescription(operatoR);
     char* string = NULL;
-    boolean visibleP = operatoR == lookupSurrogateInModule(operatoR->symbolName, oMODULEo.get(), false);
+    boolean visibleP = operatoR == lookupSurrogateInModule(operatoR->symbolName, oMODULEo, false);
 
     if (((boolean)(description))) {
       string = internalStellaOperatorToKif(surrogateToSymbol(operatoR))->symbolName;
@@ -437,11 +523,11 @@ char* stringifiedSurrogate(Surrogate* operatoR) {
     else {
       string = operatoR->symbolName;
     }
-    if ((oPRINTREADABLYpo.get() ||
+    if ((oPRINTREADABLYpo ||
         (!visibleP)) &&
         ((!((boolean)(description))) ||
          (!(string[0] == '(')))) {
-      { Keyword* testValue000 = computeSymbolEscapeCode(string, oMODULEo.get()->caseSensitiveP);
+      { Keyword* testValue000 = computeSymbolEscapeCode(string, oMODULEo->caseSensitiveP);
 
         if (testValue000 == KWD_KIF_OUT_UNESCAPED) {
           if (visibleP) {
@@ -513,8 +599,8 @@ void printKifProposition(Proposition* self) {
   if (self == NULL) {
     return;
   }
-  { boolean toplevelP = oTOPLEVELPRINTKIFPROPOSITIONpo.get();
-    OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { boolean toplevelP = oTOPLEVELPRINTKIFPROPOSITIONpo;
+    OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
     boolean printexplicitnegationP = toplevelP &&
         ((falseP(self) ||
         defaultFalseP(self)) &&
@@ -526,8 +612,8 @@ void printKifProposition(Proposition* self) {
         *(stream->nativeStream) << "(" << stringifiedSurrogate(SGT_KIF_OUT_PL_KERNEL_KB_NOT) << " ";
         increaseIndent(5);
       }
-      if (((oPRINTMODEo.get() == KWD_KIF_OUT_REALISTIC) ||
-          (oPRINTMODEo.get() == KWD_KIF_OUT_ORIGINAL)) &&
+      if (((oPRINTMODEo == KWD_KIF_OUT_REALISTIC) ||
+          (oPRINTMODEo == KWD_KIF_OUT_ORIGINAL)) &&
           (toplevelP &&
            topLevelExistsPropositionP(self))) {
         printKifTopLevelExistsProposition(self);
@@ -544,7 +630,7 @@ void printKifProposition(Proposition* self) {
 }
 
 void helpPrintKifProposition(Proposition* self) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
     char* operatoR = NULL;
     boolean separatelinesP = false;
 
@@ -560,8 +646,8 @@ void helpPrintKifProposition(Proposition* self) {
         }
         separatelinesP = true;
         if (visibleArgumentsCount(self->arguments) == 1) {
-          if ((oPRINTMODEo.get() == KWD_KIF_OUT_REALISTIC) ||
-              (oPRINTMODEo.get() == KWD_KIF_OUT_ORIGINAL)) {
+          if ((oPRINTMODEo == KWD_KIF_OUT_REALISTIC) ||
+              (oPRINTMODEo == KWD_KIF_OUT_ORIGINAL)) {
             printKifArguments(self->arguments, false, false);
             return;
           }
@@ -583,15 +669,8 @@ void helpPrintKifProposition(Proposition* self) {
         }
       }
       else if (testValue000 == KWD_KIF_OUT_FUNCTION) {
-        if (oPRINTFUNCTIONSASRELATIONSpo.get()) {
-          operatoR = stringifiedKifOperator(self);
-        }
-        else {
-          {
-            printKifFunctionProposition(self);
-            return;
-          }
-        }
+        printKifFunctionProposition(self);
+        return;
       }
       else if (testValue000 == KWD_KIF_OUT_IMPLIES) {
         printKifImpliesProposition(self);
@@ -621,12 +700,21 @@ void helpPrintKifProposition(Proposition* self) {
 }
 
 void printKifFunctionProposition(Proposition* self) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
     char* downcasedname = stringifiedKifOperator(self);
     Object* lastargument = (self->arguments->theArray)[(self->arguments->length() - 1)];
+    boolean printasrelationP = oPRINTFUNCTIONSASRELATIONSpo;
 
-    *(stream->nativeStream) << "(= ";
-    printKifOperatorWithArguments(downcasedname, self->arguments, false, true);
+    if (!(printasrelationP)) {
+      *(stream->nativeStream) << "(= ";
+    }
+    *(stream->nativeStream) << "(" << downcasedname << " ";
+    increaseIndent(strlen(downcasedname) + 2);
+    printKifArguments(self->arguments, false, true);
+    decreaseIndent(strlen(downcasedname) + 2);
+    if (!(printasrelationP)) {
+      *(stream->nativeStream) << ")";
+    }
     *(stream->nativeStream) << " ";
     if (((boolean)(lastargument))) {
       { Surrogate* testValue000 = safePrimaryType(lastargument);
@@ -679,7 +767,7 @@ void printKifQuantifiedVariables(Vector* variables, boolean includetypesP) {
   if (!((boolean)(variables))) {
     return;
   }
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
 
     *(stream->nativeStream) << "(";
     { Skolem* vbl = NULL;
@@ -739,7 +827,8 @@ void printKifQuantifiedVariables(Vector* variables, boolean includetypesP) {
 }
 
 void printKifQuantification(Proposition* self) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  pushQuantifiedObject(self);
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
     Proposition* tail = ((Proposition*)((self->arguments->theArray)[0]));
     Proposition* head = ((self->arguments->length() == 2) ? ((Proposition*)((self->arguments->theArray)[1])) : NULL);
     boolean implicationP = ((boolean)(head));
@@ -788,25 +877,29 @@ void printKifQuantification(Proposition* self) {
     }
     decreaseIndent(NULL_INTEGER);
     *(stream->nativeStream) << ")";
+    popQuantifiedObject();
   }
 }
 
 void printKifTopLevelExistsProposition(Proposition* self) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
+    Vector* variables = collectSkolemizedExistsVariables(self);
 
+    pushQuantifiedObject(variables);
     *(stream->nativeStream) << "(" << stringifiedSurrogate(SGT_KIF_OUT_PL_KERNEL_KB_EXISTS) << " ";
-    printKifQuantifiedVariables(collectSkolemizedExistsVariables(self), false);
+    printKifQuantifiedVariables(variables, false);
     *(stream->nativeStream) << std::endl;
     increaseIndent(NULL_INTEGER);
     printIndent(stream, NULL_INTEGER);
     printKifProposition(self);
     decreaseIndent(NULL_INTEGER);
     *(stream->nativeStream) << ")";
+    popQuantifiedObject();
   }
 }
 
 void printKifWrapper(LiteralWrapper* self) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
 
     { Surrogate* testValue000 = safePrimaryType(self);
 
@@ -870,7 +963,7 @@ void printKifWrapper(LiteralWrapper* self) {
 }
 
 void printKifLogicObject(LogicObject* self) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
 
     if (((boolean)(self->surrogateValueInverse))) {
       *(stream->nativeStream) << stringifiedSurrogate(self->surrogateValueInverse);
@@ -882,9 +975,12 @@ void printKifLogicObject(LogicObject* self) {
 }
 
 void printKifSkolem(Skolem* self, boolean suppressdefiningpropositionP) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
 
-    if (suppressdefiningpropositionP) {
+    if (quantifiedObjectVariableP(self)) {
+      printSkolemName(self, stream);
+    }
+    else if (suppressdefiningpropositionP) {
       printSkolem(self, stream, false);
     }
     else if (((boolean)(self->definingProposition))) {
@@ -897,14 +993,19 @@ void printKifSkolem(Skolem* self, boolean suppressdefiningpropositionP) {
 }
 
 void printKifVariable(PatternVariable* self) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
 
-    printVariable(self, stream);
+    if (quantifiedObjectVariableP(self)) {
+      printQuantifiedVariable(self, stream);
+    }
+    else {
+      printVariable(self, stream);
+    }
   }
 }
 
 void printKifStellaCollection(Collection* self) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
 
     *(stream->nativeStream) << "(" << ((self->noDuplicatesP() ? stringifiedSurrogate(SGT_KIF_OUT_PL_KERNEL_KB_SETOF) : stringifiedSurrogate(SGT_KIF_OUT_PL_KERNEL_KB_LISTOF)));
     { Object* m = NULL;
@@ -923,7 +1024,8 @@ void printKifStellaCollection(Collection* self) {
 void printKifDescription(Description* self) {
   { 
     BIND_STELLA_SPECIAL(oQUERYITERATORo, QueryIterator*, NULL);
-    { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+    pushQuantifiedObject(self);
+    { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
       Description* complement = ((Description*)(dynamicSlotValue(self->dynamicSlots, SYM_KIF_OUT_LOGIC_COMPLEMENT_DESCRIPTION, NULL)));
 
       if (((boolean)(self->surrogateValueInverse))) {
@@ -931,8 +1033,8 @@ void printKifDescription(Description* self) {
       }
       else if (((boolean)(complement)) &&
           (((boolean)(complement->surrogateValueInverse)) &&
-           (!((oPRINTMODEo.get() == KWD_KIF_OUT_REALISTIC) ||
-          (oPRINTMODEo.get() == KWD_KIF_OUT_ORIGINAL))))) {
+           (!((oPRINTMODEo == KWD_KIF_OUT_REALISTIC) ||
+          (oPRINTMODEo == KWD_KIF_OUT_ORIGINAL))))) {
         *(stream->nativeStream) << "not-" << stringifiedSurrogate(complement->surrogateValueInverse);
       }
       else {
@@ -942,12 +1044,13 @@ void printKifDescription(Description* self) {
         printKifDescriptionProposition(self, false);
         *(stream->nativeStream) << ")";
       }
+      popQuantifiedObject();
     }
   }
 }
 
 void printKifDescriptionProposition(Description* self, boolean invertP) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
     Vector* existentials = (self->internalVariables->nonEmptyP() ? copyConsListToVariablesVector(topLevelExistentialVariables(self)) : ZERO_VARIABLES_VECTOR);
 
     if (invertP) {
@@ -976,7 +1079,7 @@ void printKifDescriptionProposition(Description* self, boolean invertP) {
 Surrogate* chooseImplicationOperator(Proposition* rule, boolean forwardP) {
   { Surrogate* operatorprefix = (forwardP ? SGT_KIF_OUT_PL_KERNEL_KB_eg : SGT_KIF_OUT_PL_KERNEL_KB_le);
 
-    if (oPRINTMODEo.get() == KWD_KIF_OUT_REALISTIC) {
+    if (oPRINTMODEo == KWD_KIF_OUT_REALISTIC) {
     }
     else if (forwardP &&
         ((BooleanWrapper*)(dynamicSlotValue(rule->dynamicSlots, SYM_KIF_OUT_LOGIC_FORWARD_ONLYp, FALSE_WRAPPER)))->wrapperValue) {
@@ -987,7 +1090,7 @@ Surrogate* chooseImplicationOperator(Proposition* rule, boolean forwardP) {
       operatorprefix = SGT_KIF_OUT_PL_KERNEL_KB_lle;
     }
     if (defaultTrueP(rule) &&
-        (!(oPRINTMODEo.get() == KWD_KIF_OUT_REALISTIC))) {
+        (!(oPRINTMODEo == KWD_KIF_OUT_REALISTIC))) {
       if (operatorprefix == SGT_KIF_OUT_PL_KERNEL_KB_le) {
         operatorprefix = SGT_KIF_OUT_PL_KERNEL_KB_lt;
       }
@@ -1044,12 +1147,12 @@ KeyValueMap* createSkolemMappingTable(Vector* oldvars, Vector* newvars) {
 }
 
 void printDescriptionsAsKifRule(Description* head, Description* tail, Proposition* rule, boolean reversepolarityP) {
-  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo.get();
+  { OutputStream* stream = oPRINTLOGICALFORMSTREAMo;
     boolean forwardarrowP = ((BooleanWrapper*)(dynamicSlotValue(rule->dynamicSlots, SYM_KIF_OUT_LOGIC_FORWARD_ONLYp, FALSE_WRAPPER)))->wrapperValue &&
         (!reversepolarityP);
     boolean reverseargumentsP = forwardarrowP ||
         reversepolarityP;
-    int currentindentcounter = oINDENTCOUNTERo.get();
+    int currentindentcounter = oINDENTCOUNTERo;
     Surrogate* operatorprefix = chooseImplicationOperator(rule, forwardarrowP);
     int operatorprefixindent = 2 + strlen((operatorprefix->symbolName));
     boolean mapheadvariablesP = namedDescriptionP(head);
@@ -1091,16 +1194,20 @@ void printDescriptionsAsKifRule(Description* head, Description* tail, Propositio
       printIndent(stream, NULL_INTEGER);
       *(stream->nativeStream) << "(" << stringifiedSurrogate(operatorprefix) << " ";
       increaseIndent(operatorprefixindent);
+      pushQuantifiedObject(head);
       { 
         BIND_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueMap*, headvariablemapping);
         printKifDescriptionProposition(head, reversepolarityP);
       }
+      popQuantifiedObject();
       *(stream->nativeStream) << std::endl;
       printIndent(stream, NULL_INTEGER);
+      pushQuantifiedObject(tail);
       { 
         BIND_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueMap*, tailvariablemapping);
         printKifDescriptionProposition(tail, reversepolarityP);
       }
+      popQuantifiedObject();
       *(stream->nativeStream) << "))";
       decreaseIndent(operatorprefixindent);
       decreaseIndent(NULL_INTEGER);
@@ -1122,13 +1229,13 @@ void excludeOriginatedPropositions() {
 
         for (prop, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
           prop = ((Proposition*)(iter001->value));
-          oEXCLUDEDPROPOSITIONSo.get()->insertAt(prop, TRUE_WRAPPER);
+          oEXCLUDEDPROPOSITIONSo->insertAt(prop, TRUE_WRAPPER);
         }
       }
     }
   }
   { Proposition* p = NULL;
-    Iterator* iter002 = locallyConceivedPropositions(oMODULEo.get())->allocateIterator();
+    Iterator* iter002 = locallyConceivedPropositions(oMODULEo)->allocateIterator();
 
     for (p, iter002; iter002->nextP(); ) {
       p = ((Proposition*)(iter002->value));
@@ -1138,7 +1245,7 @@ void excludeOriginatedPropositions() {
 
           for (prop, iter003; !(iter003 == NIL); iter003 = iter003->rest) {
             prop = ((Proposition*)(iter003->value));
-            oEXCLUDEDPROPOSITIONSo.get()->insertAt(prop, TRUE_WRAPPER);
+            oEXCLUDEDPROPOSITIONSo->insertAt(prop, TRUE_WRAPPER);
           }
         }
       }
@@ -1150,10 +1257,13 @@ boolean hiddenRelationP(Surrogate* relationRef) {
   return (allTrueDependentPropositions(relationRef->surrogateValue, SGT_KIF_OUT_PL_KERNEL_KB_HIDDEN_RELATION, false)->nextP());
 }
 
-boolean excludedPropositionP(Proposition* proposition) {
-  if (unknownP(proposition) ||
-      (((boolean)(((BooleanWrapper*)(oEXCLUDEDPROPOSITIONSo.get()->lookup(proposition))))) ||
-       ((boolean)(((Proposition*)(dynamicSlotValue(proposition->dynamicSlots, SYM_KIF_OUT_LOGIC_MASTER_PROPOSITION, NULL))))))) {
+boolean excludedPropositionP(Proposition* proposition, Module* module) {
+  if (unknownP(proposition) &&
+      (proposition->homeModule() == module)) {
+    return (true);
+  }
+  if (((boolean)(((BooleanWrapper*)(oEXCLUDEDPROPOSITIONSo->lookup(proposition))))) ||
+      ((boolean)(((Proposition*)(dynamicSlotValue(proposition->dynamicSlots, SYM_KIF_OUT_LOGIC_MASTER_PROPOSITION, NULL)))))) {
     return (true);
   }
   { Keyword* testValue000 = proposition->kind;
@@ -1394,12 +1504,21 @@ void helpPrettyPrintRelationDefinitionTree(Cons* tree, OutputStream* stream, int
 }
 
 void prettyPrintAssertion(Proposition* proposition, OutputStream* stream) {
-  { Symbol* operatoR = (defaultTruthValueP(((TruthValue*)(accessInContext(proposition->truthValue, proposition->homeContext, false)))) ? SYM_KIF_OUT_LOGIC_PRESUME : SYM_KIF_OUT_STELLA_ASSERT);
+  { Symbol* operatoR = SYM_KIF_OUT_STELLA_ASSERT;
     Surrogate* name = ((Surrogate*)(dynamicSlotValue(proposition->dynamicSlots, SYM_KIF_OUT_STELLA_SURROGATE_VALUE_INVERSE, NULL)));
+    TruthValue* truthvalue = ((TruthValue*)(accessInContext(proposition->truthValue, proposition->homeContext, false)));
 
     if (((boolean)(name))) {
       prettyPrintNamedRule(name, stream);
       return;
+    }
+    if ((truthvalue == DEFAULT_TRUE_TRUTH_VALUE) ||
+        (truthvalue == DEFAULT_FALSE_TRUTH_VALUE)) {
+      operatoR = SYM_KIF_OUT_LOGIC_PRESUME;
+    }
+    else if ((truthvalue == UNKNOWN_TRUTH_VALUE) ||
+        (!((boolean)(truthvalue)))) {
+      operatoR = SYM_KIF_OUT_STELLA_RETRACT;
     }
     { 
       BIND_STELLA_SPECIAL(oPRINTMODEo, Keyword*, KWD_KIF_OUT_ORIGINAL);
@@ -1459,7 +1578,7 @@ void printModuleFileHeader(Module* module, OutputStream* stream) {
     module->printDefinition(stream);
   }
   *(stream->nativeStream) << std::endl;
-  *(stream->nativeStream) << "(IN-MODULE \"" << module->moduleFullName << "\")" << std::endl << std::endl << "(" << SYM_KIF_OUT_LOGIC_IN_DIALECT << " " << oLOGIC_DIALECTo.get() << ")" << std::endl << std::endl;
+  *(stream->nativeStream) << "(IN-MODULE \"" << module->moduleFullName << "\")" << std::endl << std::endl << "(" << SYM_KIF_OUT_LOGIC_IN_DIALECT << " " << oLOGIC_DIALECTo << ")" << std::endl << std::endl;
 }
 
 void printModuleFileTrailer(Module* module, OutputStream* stream) {
@@ -1651,7 +1770,7 @@ void doSaveModule(Module* module, Object* store) {
     BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       { Surrogate* testValue000 = safePrimaryType(store);
 
         if (subtypeOfP(testValue000, SGT_KIF_OUT_STELLA_OUTPUT_STREAM)) {
@@ -1719,11 +1838,12 @@ void doSaveModule(Module* module, Object* store) {
         { Cons* reversedpropositions = NIL;
 
           { Proposition* p = NULL;
-            Iterator* iter003 = locallyConceivedPropositions(module)->allocateIterator();
+            Iterator* iter003 = allPropositions(module, false);
 
             for (p, iter003; iter003->nextP(); ) {
               p = ((Proposition*)(iter003->value));
-              if (!excludedPropositionP(p)) {
+              if (locallyModifiedPropositionP(p, module) &&
+                  (!excludedPropositionP(p, module))) {
                 reversedpropositions = cons(p, reversedpropositions);
               }
             }
@@ -1766,16 +1886,28 @@ void doSaveModule(Module* module, Object* store) {
   }
 }
 
-void saveModule(Object* name, char* file) {
-  // Save all definitions and assertions of module `name' to `file'.
-  { Module* module = coerceToModule(name, true);
+void saveModule(Cons* options) {
+  // Save all definitions and assertions of the specified :module (which
+  // defaults to the current module) to a file or persistent store.  If :file is specified,
+  // the KB is saved to that file.  If no :file is specified but the specified :module is
+  // associated with a persistent store, the KB will saved to that store, otherwise, an
+  // error will be signalled.  The specifics on how a save operation will proceed for a
+  // persistent store depends on the particular type of store (see respective documentation).
+  // For backwards compatibility, this command also supports the old <module> <file> arguments
+  // specified without keywords.
+  { Cons* optionslist = options;
+    PropertyList* theoptions = parseOptions((keywordP(optionslist->value) ? optionslist : consList(4, KWD_KIF_OUT_MODULE, optionslist->value, KWD_KIF_OUT_FILE, optionslist->rest->value)), listO(5, KWD_KIF_OUT_MODULE, SGT_KIF_OUT_STELLA_MODULE, KWD_KIF_OUT_FILE, SGT_KIF_OUT_STELLA_STRING, NIL), true, false);
+    Module* themodule = ((Module*)(theoptions->lookupWithDefault(KWD_KIF_OUT_MODULE, oMODULEo)));
+    StringWrapper* file = ((StringWrapper*)(theoptions->lookupWithDefault(KWD_KIF_OUT_FILE, NULL)));
 
-    if (((boolean)(module))) {
+    if (((boolean)(themodule)) &&
+        ((boolean)(file))) {
+      plLog(KWD_KIF_OUT_MEDIUM, 5, wrapString("Saving module "), wrapString(themodule->moduleFullName), wrapString(" to "), file, wrapString("..."));
       { OutputFileStream* stream = NULL;
 
         try {
-          stream = openOutputFile(file, 0);
-          doSaveModule(module, stream);
+          stream = openOutputFile(file->wrapperValue, 0);
+          doSaveModule(themodule, stream);
         }
 catch (...) {
           if (((boolean)(stream))) {
@@ -1788,21 +1920,33 @@ catch (...) {
         }
       }
     }
+    else if (((boolean)(themodule)) &&
+        ((boolean)(((ObjectStore*)(dynamicSlotValue(themodule->dynamicSlots, SYM_KIF_OUT_LOGIC_OBJECT_STORE, NULL)))))) {
+      plLog(KWD_KIF_OUT_MEDIUM, 3, wrapString("Saving module "), wrapString(themodule->moduleFullName), wrapString(" to the associated store..."));
+      doSaveModule(themodule, ((ObjectStore*)(dynamicSlotValue(themodule->dynamicSlots, SYM_KIF_OUT_LOGIC_OBJECT_STORE, NULL))));
+    }
+    else if (!((boolean)(file))) {
+      throw *newStellaException("save-module: no file or persistent store specified to save to");
+    }
   }
 }
 
 void saveModuleEvaluatorWrapper(Cons* arguments) {
-  saveModule(arguments->value, ((StringWrapper*)(arguments->rest->value))->wrapperValue);
+  saveModule(arguments);
 }
 
 void helpStartupKifOut1() {
   {
+    SGT_KIF_OUT_LOGIC_PROPOSITION = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 1)));
+    SYM_KIF_OUT_LOGIC_IO_VARIABLES = ((Symbol*)(internRigidSymbolWrtModule("IO-VARIABLES", NULL, 0)));
+    SGT_KIF_OUT_LOGIC_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 1)));
+    SGT_KIF_OUT_STELLA_VECTOR = ((Surrogate*)(internRigidSymbolWrtModule("VECTOR", getStellaModule("/STELLA", true), 1)));
+    SGT_KIF_OUT_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", getStellaModule("/STELLA", true), 1)));
+    SGT_KIF_OUT_STELLA_LIST = ((Surrogate*)(internRigidSymbolWrtModule("LIST", getStellaModule("/STELLA", true), 1)));
     KWD_KIF_OUT_KIF = ((Keyword*)(internRigidSymbolWrtModule("KIF", NULL, 2)));
     KWD_KIF_OUT_STELLA = ((Keyword*)(internRigidSymbolWrtModule("STELLA", NULL, 2)));
     KWD_KIF_OUT_PREFIX_STELLA = ((Keyword*)(internRigidSymbolWrtModule("PREFIX-STELLA", NULL, 2)));
     KWD_KIF_OUT_SQL = ((Keyword*)(internRigidSymbolWrtModule("SQL", NULL, 2)));
-    SGT_KIF_OUT_LOGIC_PROPOSITION = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 1)));
-    SGT_KIF_OUT_LOGIC_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 1)));
     SGT_KIF_OUT_LOGIC_PATTERN_VARIABLE = ((Surrogate*)(internRigidSymbolWrtModule("PATTERN-VARIABLE", NULL, 1)));
     SGT_KIF_OUT_LOGIC_SKOLEM = ((Surrogate*)(internRigidSymbolWrtModule("SKOLEM", NULL, 1)));
     SGT_KIF_OUT_LOGIC_LOGIC_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("LOGIC-OBJECT", NULL, 1)));
@@ -1837,7 +1981,6 @@ void helpStartupKifOut1() {
     SGT_KIF_OUT_PL_KERNEL_KB_le = ((Surrogate*)(internRigidSymbolWrtModule("<=", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_KIF_OUT_PL_KERNEL_KB_FORALL = ((Surrogate*)(internRigidSymbolWrtModule("FORALL", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_KIF_OUT_PL_KERNEL_KB_EXISTS = ((Surrogate*)(internRigidSymbolWrtModule("EXISTS", getStellaModule("/PL-KERNEL-KB", true), 1)));
-    SYM_KIF_OUT_LOGIC_IO_VARIABLES = ((Symbol*)(internRigidSymbolWrtModule("IO-VARIABLES", NULL, 0)));
     SGT_KIF_OUT_PL_KERNEL_KB_SETOF = ((Surrogate*)(internRigidSymbolWrtModule("SETOF", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_KIF_OUT_PL_KERNEL_KB_LISTOF = ((Surrogate*)(internRigidSymbolWrtModule("LISTOF", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SYM_KIF_OUT_LOGIC_COMPLEMENT_DESCRIPTION = ((Symbol*)(internRigidSymbolWrtModule("COMPLEMENT-DESCRIPTION", NULL, 0)));
@@ -1854,20 +1997,21 @@ void helpStartupKifOut1() {
     SYM_KIF_OUT_LOGIC_MASTER_PROPOSITION = ((Symbol*)(internRigidSymbolWrtModule("MASTER-PROPOSITION", NULL, 0)));
     SGT_KIF_OUT_STELLA_LITERAL_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL-WRAPPER", getStellaModule("/STELLA", true), 1)));
     KWD_KIF_OUT_TERSE = ((Keyword*)(internRigidSymbolWrtModule("TERSE", NULL, 2)));
-    KWD_KIF_OUT_VERBOSE = ((Keyword*)(internRigidSymbolWrtModule("VERBOSE", NULL, 2)));
-    KWD_KIF_OUT_SOURCE = ((Keyword*)(internRigidSymbolWrtModule("SOURCE", NULL, 2)));
-    KWD_KIF_OUT_SLOTS = ((Keyword*)(internRigidSymbolWrtModule("SLOTS", NULL, 2)));
   }
 }
 
 void helpStartupKifOut2() {
   {
+    KWD_KIF_OUT_VERBOSE = ((Keyword*)(internRigidSymbolWrtModule("VERBOSE", NULL, 2)));
+    KWD_KIF_OUT_SOURCE = ((Keyword*)(internRigidSymbolWrtModule("SOURCE", NULL, 2)));
+    KWD_KIF_OUT_SLOTS = ((Keyword*)(internRigidSymbolWrtModule("SLOTS", NULL, 2)));
     KWD_KIF_OUT_PUBLIC_SLOTS = ((Keyword*)(internRigidSymbolWrtModule("PUBLIC-SLOTS", NULL, 2)));
     KWD_KIF_OUT_METHODS = ((Keyword*)(internRigidSymbolWrtModule("METHODS", NULL, 2)));
     KWD_KIF_OUT_PUBLIC_METHODS = ((Keyword*)(internRigidSymbolWrtModule("PUBLIC-METHODS", NULL, 2)));
-    SYM_KIF_OUT_LOGIC_PRESUME = ((Symbol*)(internRigidSymbolWrtModule("PRESUME", NULL, 0)));
     SYM_KIF_OUT_STELLA_ASSERT = ((Symbol*)(internRigidSymbolWrtModule("ASSERT", getStellaModule("/STELLA", true), 0)));
     SYM_KIF_OUT_STELLA_SURROGATE_VALUE_INVERSE = ((Symbol*)(internRigidSymbolWrtModule("SURROGATE-VALUE-INVERSE", getStellaModule("/STELLA", true), 0)));
+    SYM_KIF_OUT_LOGIC_PRESUME = ((Symbol*)(internRigidSymbolWrtModule("PRESUME", NULL, 0)));
+    SYM_KIF_OUT_STELLA_RETRACT = ((Symbol*)(internRigidSymbolWrtModule("RETRACT", getStellaModule("/STELLA", true), 0)));
     SYM_KIF_OUT_LOGIC_DEFRULE = ((Symbol*)(internRigidSymbolWrtModule("DEFRULE", NULL, 0)));
     SYM_KIF_OUT_LOGIC_IN_DIALECT = ((Symbol*)(internRigidSymbolWrtModule("IN-DIALECT", NULL, 0)));
     SGT_KIF_OUT_STELLA_RELATION = ((Surrogate*)(internRigidSymbolWrtModule("RELATION", getStellaModule("/STELLA", true), 1)));
@@ -1875,6 +2019,12 @@ void helpStartupKifOut2() {
     SGT_KIF_OUT_LOGIC_OBJECT_STORE = ((Surrogate*)(internRigidSymbolWrtModule("OBJECT-STORE", NULL, 1)));
     SGT_KIF_OUT_LOGIC_NAMED_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("NAMED-DESCRIPTION", NULL, 1)));
     SYM_KIF_OUT_LOGIC_UNDECLAREDp = ((Symbol*)(internRigidSymbolWrtModule("UNDECLARED?", NULL, 0)));
+    KWD_KIF_OUT_MODULE = ((Keyword*)(internRigidSymbolWrtModule("MODULE", NULL, 2)));
+    KWD_KIF_OUT_FILE = ((Keyword*)(internRigidSymbolWrtModule("FILE", NULL, 2)));
+    SGT_KIF_OUT_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 1)));
+    SGT_KIF_OUT_STELLA_STRING = ((Surrogate*)(internRigidSymbolWrtModule("STRING", getStellaModule("/STELLA", true), 1)));
+    KWD_KIF_OUT_MEDIUM = ((Keyword*)(internRigidSymbolWrtModule("MEDIUM", NULL, 2)));
+    SYM_KIF_OUT_LOGIC_OBJECT_STORE = ((Symbol*)(internRigidSymbolWrtModule("OBJECT-STORE", NULL, 0)));
     SYM_KIF_OUT_LOGIC_STARTUP_KIF_OUT = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-KIF-OUT", NULL, 0)));
     SYM_KIF_OUT_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
   }
@@ -1883,6 +2033,9 @@ void helpStartupKifOut2() {
 void helpStartupKifOut3() {
   {
     defineFunctionObject("REGISTER-LOGIC-DIALECT-PRINT-FUNCTION", "(DEFUN REGISTER-LOGIC-DIALECT-PRINT-FUNCTION ((DIALECT KEYWORD) (FN FUNCTION-CODE-WRAPPER)) :DOCUMENTATION \"Register `fn' as a logic-object print function for `dialect'.\nEach function should have the signature `((self OBJECT) (stream OUTPUT-STREAM))'.\nAny return values will be ignored.\" :PUBLIC? TRUE)", ((cpp_function_code)(&registerLogicDialectPrintFunction)), NULL);
+    defineFunctionObject("PUSH-QUANTIFIED-OBJECT", "(DEFUN PUSH-QUANTIFIED-OBJECT ((OBJECT OBJECT)))", ((cpp_function_code)(&pushQuantifiedObject)), NULL);
+    defineFunctionObject("POP-QUANTIFIED-OBJECT", "(DEFUN POP-QUANTIFIED-OBJECT ())", ((cpp_function_code)(&popQuantifiedObject)), NULL);
+    defineFunctionObject("QUANTIFIED-OBJECT-VARIABLE?", "(DEFUN (QUANTIFIED-OBJECT-VARIABLE? BOOLEAN) ((VAR SKOLEM)))", ((cpp_function_code)(&quantifiedObjectVariableP)), NULL);
     defineFunctionObject("MAYBE-DOWNCASE", "(DEFUN (MAYBE-DOWNCASE STRING) ((STRING STRING)))", ((cpp_function_code)(&maybeDowncase)), NULL);
     defineFunctionObject("INCREASE-INDENT", "(DEFUN INCREASE-INDENT ((INDENT INTEGER)))", ((cpp_function_code)(&increaseIndent)), NULL);
     defineFunctionObject("DECREASE-INDENT", "(DEFUN DECREASE-INDENT ((INDENT INTEGER)))", ((cpp_function_code)(&decreaseIndent)), NULL);
@@ -1920,7 +2073,7 @@ void helpStartupKifOut3() {
     defineFunctionObject("PRINT-DESCRIPTIONS-AS-KIF-RULE", "(DEFUN PRINT-DESCRIPTIONS-AS-KIF-RULE ((HEAD DESCRIPTION) (TAIL DESCRIPTION) (RULE PROPOSITION) (REVERSEPOLARITY? BOOLEAN)))", ((cpp_function_code)(&printDescriptionsAsKifRule)), NULL);
     defineFunctionObject("EXCLUDE-ORIGINATED-PROPOSITIONS", "(DEFUN EXCLUDE-ORIGINATED-PROPOSITIONS ())", ((cpp_function_code)(&excludeOriginatedPropositions)), NULL);
     defineFunctionObject("HIDDEN-RELATION?", "(DEFUN (HIDDEN-RELATION? BOOLEAN) ((RELATION-REF SURROGATE)))", ((cpp_function_code)(&hiddenRelationP)), NULL);
-    defineFunctionObject("EXCLUDED-PROPOSITION?", "(DEFUN (EXCLUDED-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&excludedPropositionP)), NULL);
+    defineFunctionObject("EXCLUDED-PROPOSITION?", "(DEFUN (EXCLUDED-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION) (MODULE MODULE)))", ((cpp_function_code)(&excludedPropositionP)), NULL);
     defineFunctionObject("PRETTY-PRINT-NAMED-DESCRIPTION", "(DEFUN PRETTY-PRINT-NAMED-DESCRIPTION ((SELF NAMED-DESCRIPTION) (STREAM OUTPUT-STREAM)))", ((cpp_function_code)(&prettyPrintNamedDescription)), NULL);
     defineMethodObject("(DEFMETHOD DESCRIBE-OBJECT ((SELF NAMED-DESCRIPTION) (STREAM OUTPUT-STREAM) (MODE KEYWORD)) :DOCUMENTATION \"Prints a description of 'self' to stream 'stream'.  'mode'\ncan be :terse, :verbose, or :source.  Used by `describe'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&NamedDescription::describeObject)), ((cpp_method_code)(NULL)));
     defineFunctionObject("STELLA-RELATION-STRINGIFIED-SOURCE", "(DEFUN (STELLA-RELATION-STRINGIFIED-SOURCE STRING) ((SELF RELATION)))", ((cpp_function_code)(&stellaRelationStringifiedSource)), NULL);
@@ -1939,19 +2092,13 @@ void helpStartupKifOut3() {
     defineMethodObject("(DEFMETHOD CLEAR-OBJECT-STORE ((STORE OBJECT-STORE)))", ((cpp_method_code)(&ObjectStore::clearObjectStore)), ((cpp_method_code)(NULL)));
     defineFunctionObject("SAVE-OBJECT", "(DEFUN SAVE-OBJECT ((OBJECT OBJECT) (STORE OBJECT)))", ((cpp_function_code)(&saveObject)), NULL);
     defineFunctionObject("DO-SAVE-MODULE", "(DEFUN DO-SAVE-MODULE ((MODULE MODULE) (STORE OBJECT)) :DOCUMENTATION \"Save `module' to the persistent store `store' which can\neither be an output stream or a persistent OBJECT-STORE.\" :PUBLIC? TRUE)", ((cpp_function_code)(&doSaveModule)), NULL);
-    defineFunctionObject("SAVE-MODULE", "(DEFUN SAVE-MODULE ((NAME NAME) (FILE STRING)) :COMMAND? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Save all definitions and assertions of module `name' to `file'.\")", ((cpp_function_code)(&saveModule)), ((cpp_function_code)(&saveModuleEvaluatorWrapper)));
-    defineFunctionObject("STARTUP-KIF-OUT", "(DEFUN STARTUP-KIF-OUT () :PUBLIC? TRUE)", ((cpp_function_code)(&startupKifOut)), NULL);
-    { MethodSlot* function = lookupFunction(SYM_KIF_OUT_LOGIC_STARTUP_KIF_OUT);
-
-      setDynamicSlotValue(function->dynamicSlots, SYM_KIF_OUT_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupKifOut"), NULL_STRING_WRAPPER);
-    }
   }
 }
 
 void startupKifOut() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupKifOut1();
       helpStartupKifOut2();
@@ -1965,6 +2112,12 @@ void startupKifOut() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupKifOut3();
+      defineFunctionObject("SAVE-MODULE", "(DEFUN SAVE-MODULE (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Save all definitions and assertions of the specified :module (which\ndefaults to the current module) to a file or persistent store.  If :file is specified,\nthe KB is saved to that file.  If no :file is specified but the specified :module is\nassociated with a persistent store, the KB will saved to that store, otherwise, an\nerror will be signalled.  The specifics on how a save operation will proceed for a\npersistent store depends on the particular type of store (see respective documentation).\nFor backwards compatibility, this command also supports the old <module> <file> arguments\nspecified without keywords.\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&saveModule)), ((cpp_function_code)(&saveModuleEvaluatorWrapper)));
+      defineFunctionObject("STARTUP-KIF-OUT", "(DEFUN STARTUP-KIF-OUT () :PUBLIC? TRUE)", ((cpp_function_code)(&startupKifOut)), NULL);
+      { MethodSlot* function = lookupFunction(SYM_KIF_OUT_LOGIC_STARTUP_KIF_OUT);
+
+        setDynamicSlotValue(function->dynamicSlots, SYM_KIF_OUT_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupKifOut"), NULL_STRING_WRAPPER);
+      }
     }
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
@@ -1977,6 +2130,7 @@ void startupKifOut() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTLOGICALFORMSTREAM* OUTPUT-STREAM NULL :PUBLIC? TRUE :DOCUMENTATION \"Eliminates necessity of passing stream argument\nthroughout 'print-logical-form' functions.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *DOWNCASEOPERATORS?* BOOLEAN FALSE :PUBLIC? TRUE :DOCUMENTATION \"Controls whether down-casing happens during logical\nform printing (leading to lots more string garbage).\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOGIC-DIALECT-PRINT-FUNCTIONS* (KEY-VALUE-LIST OF KEYWORD FUNCTION-CODE-WRAPPER) (NEW (KEY-VALUE-LIST OF KEYWORD FUNCTION-CODE-WRAPPER)) :DOCUMENTATION \"Table to allow extension of the logical form printing code\nby associating keywords with print functions.  Should have values added only\nvia the associated function REGISTER-LOGIC-DIALECT-PRINT-FUNCTION.\")");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTQUANTIFIEDOBJECTSSTACK* CONS NULL :DOCUMENTATION \"Used to register objects that quantify variables, so we\ncan decide in certain contexts whether to print a variable or its value.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *INDENTCOUNTER* INTEGER 0 :PUBLIC? TRUE :DOCUMENTATION \"The number of spaces prepended during printing a logical form.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *INDENT-QUANTUM* INTEGER 3 :PUBLIC? TRUE :DOCUMENTATION \"The number of spaces added by a call to 'increase-indent'.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *TOPLEVELPRINTKIFPROPOSITION?* BOOLEAN TRUE)");
@@ -1986,6 +2140,18 @@ void startupKifOut() {
   }
 }
 
+Surrogate* SGT_KIF_OUT_LOGIC_PROPOSITION = NULL;
+
+Symbol* SYM_KIF_OUT_LOGIC_IO_VARIABLES = NULL;
+
+Surrogate* SGT_KIF_OUT_LOGIC_DESCRIPTION = NULL;
+
+Surrogate* SGT_KIF_OUT_STELLA_VECTOR = NULL;
+
+Surrogate* SGT_KIF_OUT_STELLA_CONS = NULL;
+
+Surrogate* SGT_KIF_OUT_STELLA_LIST = NULL;
+
 Keyword* KWD_KIF_OUT_KIF = NULL;
 
 Keyword* KWD_KIF_OUT_STELLA = NULL;
@@ -1993,10 +2159,6 @@ Keyword* KWD_KIF_OUT_STELLA = NULL;
 Keyword* KWD_KIF_OUT_PREFIX_STELLA = NULL;
 
 Keyword* KWD_KIF_OUT_SQL = NULL;
-
-Surrogate* SGT_KIF_OUT_LOGIC_PROPOSITION = NULL;
-
-Surrogate* SGT_KIF_OUT_LOGIC_DESCRIPTION = NULL;
 
 Surrogate* SGT_KIF_OUT_LOGIC_PATTERN_VARIABLE = NULL;
 
@@ -2066,8 +2228,6 @@ Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_FORALL = NULL;
 
 Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_EXISTS = NULL;
 
-Symbol* SYM_KIF_OUT_LOGIC_IO_VARIABLES = NULL;
-
 Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_SETOF = NULL;
 
 Surrogate* SGT_KIF_OUT_PL_KERNEL_KB_LISTOF = NULL;
@@ -2112,11 +2272,13 @@ Keyword* KWD_KIF_OUT_METHODS = NULL;
 
 Keyword* KWD_KIF_OUT_PUBLIC_METHODS = NULL;
 
-Symbol* SYM_KIF_OUT_LOGIC_PRESUME = NULL;
-
 Symbol* SYM_KIF_OUT_STELLA_ASSERT = NULL;
 
 Symbol* SYM_KIF_OUT_STELLA_SURROGATE_VALUE_INVERSE = NULL;
+
+Symbol* SYM_KIF_OUT_LOGIC_PRESUME = NULL;
+
+Symbol* SYM_KIF_OUT_STELLA_RETRACT = NULL;
 
 Symbol* SYM_KIF_OUT_LOGIC_DEFRULE = NULL;
 
@@ -2131,6 +2293,18 @@ Surrogate* SGT_KIF_OUT_LOGIC_OBJECT_STORE = NULL;
 Surrogate* SGT_KIF_OUT_LOGIC_NAMED_DESCRIPTION = NULL;
 
 Symbol* SYM_KIF_OUT_LOGIC_UNDECLAREDp = NULL;
+
+Keyword* KWD_KIF_OUT_MODULE = NULL;
+
+Keyword* KWD_KIF_OUT_FILE = NULL;
+
+Surrogate* SGT_KIF_OUT_STELLA_MODULE = NULL;
+
+Surrogate* SGT_KIF_OUT_STELLA_STRING = NULL;
+
+Keyword* KWD_KIF_OUT_MEDIUM = NULL;
+
+Symbol* SYM_KIF_OUT_LOGIC_OBJECT_STORE = NULL;
 
 Symbol* SYM_KIF_OUT_LOGIC_STARTUP_KIF_OUT = NULL;
 

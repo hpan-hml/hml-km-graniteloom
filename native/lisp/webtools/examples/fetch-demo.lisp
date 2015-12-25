@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -64,7 +64,8 @@
 
 ;;; Forward declarations:
 
-(CL:DECLAIM (CL:SPECIAL *STARTUP-TIME-PHASE* *MODULE* STANDARD-OUTPUT EOL))
+(CL:DECLAIM
+ (CL:SPECIAL *STARTUP-TIME-PHASE* *MODULE* STANDARD-OUTPUT EOL))
 
 ;;; (DEFCLASS runAgentAndWaitForResponse ...)
 
@@ -75,7 +76,8 @@
 
 (CL:DEFUN |new-runAgentAndWaitForResponse| ()
   (CL:LET* ((SELF NULL))
-   (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |runAgentAndWaitForResponse|)))
+   (CL:SETQ SELF
+    (CL:MAKE-INSTANCE (CL:QUOTE |runAgentAndWaitForResponse|)))
    (CL:SETF (|%cdataContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%textContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%arg2| SELF) NULL) (CL:SETF (|%arg1| SELF) NULL)
@@ -133,8 +135,8 @@
 ;;; (DEFCLASS runAgentAndWaitForResponseReturn ...)
 
 (CL:DEFCLASS |runAgentAndWaitForResponseReturn| (|XMLObject|)
-  ((|type| :TYPE CL:SIMPLE-STRING :INITFORM STELLA::NULL-STRING :ALLOCATION
-    :INSTANCE :ACCESSOR |%type|)))
+  ((|type| :TYPE CL:SIMPLE-STRING :INITFORM STELLA::NULL-STRING
+    :ALLOCATION :INSTANCE :ACCESSOR |%type|)))
 
 (CL:DEFUN |new-runAgentAndWaitForResponseReturn| ()
   (CL:LET* ((SELF NULL))
@@ -203,7 +205,8 @@
 
 (CL:DEFUN GET-FETCH-RESPONSE1 ()
   (CL:LET*
-   ((|url| "http://pegasus2.isi.edu:8080/axis/services/AgentRunnerService")
+   ((|url|
+     "http://pegasus2.isi.edu:8080/axis/services/AgentRunnerService")
     (|headers| (NEW-PROPERTY-LIST)) (|response| STELLA::NULL-STRING))
    (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING |url| |response|))
    (INSERT-AT |headers| (WRAP-STRING "content-type")
@@ -221,7 +224,8 @@
 
 (CL:DEFUN GET-FETCH-RESPONSE2 ()
   (CL:LET*
-   ((|url| "http://pegasus2.isi.edu:8080/axis/services/AgentRunnerService")
+   ((|url|
+     "http://pegasus2.isi.edu:8080/axis/services/AgentRunnerService")
     (|headers| (NEW-PROPERTY-LIST)) (|response| STELLA::NULL-STRING)
     (|request| (MAKE-FETCH-REQUEST1)))
    (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING |url| |response| |request|))
@@ -240,18 +244,20 @@
 
 (CL:DEFUN GET-FETCH-RESPONSE3 ()
   (CL:LET*
-   ((|url| "http://pegasus2.isi.edu:8080/axis/services/AgentRunnerService")
+   ((|url|
+     "http://pegasus2.isi.edu:8080/axis/services/AgentRunnerService")
     (|requestObject| (MAKE-FETCH-REQUEST-OBJECT1))
     (|responseObject| (CALL-WEBSERVICE |requestObject| |url|)))
    (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING |url|))
    (CL:LET* ((*SUPRESS-NAMESPACES?* CL:T))
     (CL:DECLARE (CL:SPECIAL *SUPRESS-NAMESPACES?*))
-    (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT) "Retrieved Result is: "
-     EOL (TO-XML-STRING |responseObject|) EOL))))
+    (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT)
+     "Retrieved Result is: " EOL (TO-XML-STRING |responseObject|) EOL))))
 
 ;;; (DEFUN (MAKE-FETCH-REQUEST1 STRING) ...)
 
-(CL:DECLAIM (CL:FTYPE (CL:FUNCTION () CL:SIMPLE-STRING) MAKE-FETCH-REQUEST1))
+(CL:DECLAIM
+ (CL:FTYPE (CL:FUNCTION () CL:SIMPLE-STRING) MAKE-FETCH-REQUEST1))
 (CL:DEFUN MAKE-FETCH-REQUEST1 ()
   (CL:LET* ((*SUPRESS-NAMESPACES?* CL:T))
    (CL:DECLARE (CL:SPECIAL *SUPRESS-NAMESPACES?*))
@@ -266,7 +272,8 @@
     (CL:LET* ((SELF-001 (|new-value|)))
      (CL:SETF (|%textContent| SELF-001) "Marina Del Rey")
      (CL:LET* ((|value| SELF-001))
-      (CL:LET* ((SELF-002 (|new-item|))) (CL:SETF (|%key| SELF-002) |key|)
+      (CL:LET* ((SELF-002 (|new-item|)))
+       (CL:SETF (|%key| SELF-002) |key|)
        (CL:SETF (|%val| SELF-002) |value|)
        (CL:LET* ((|item| SELF-002))
         (CL:LET* ((SELF-003 (|new-arg0|)))
@@ -292,7 +299,8 @@
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
     (CL:SETQ |SGT-FETCH-DEMO-FETCH-runAgentAndWaitForResponse|
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "runAgentAndWaitForResponse" NULL 1))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "runAgentAndWaitForResponse" NULL
+      1))
     (CL:SETQ |SYM-FETCH-DEMO-FETCH-arg0|
      (INTERN-RIGID-SYMBOL-WRT-MODULE "arg0" NULL 0))
     (CL:SETQ |SYM-FETCH-DEMO-FETCH-arg1|
@@ -300,13 +308,13 @@
     (CL:SETQ |SYM-FETCH-DEMO-FETCH-arg2|
      (INTERN-RIGID-SYMBOL-WRT-MODULE "arg2" NULL 0))
     (CL:SETQ |SGT-FETCH-DEMO-FETCH-runAgentAndWaitForResponseResponse|
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "runAgentAndWaitForResponseResponse" NULL
-      1))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE
+      "runAgentAndWaitForResponseResponse" NULL 1))
     (CL:SETQ |SYM-FETCH-DEMO-FETCH-return|
      (INTERN-RIGID-SYMBOL-WRT-MODULE "return" NULL 0))
     (CL:SETQ |SGT-FETCH-DEMO-FETCH-runAgentAndWaitForResponseReturn|
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "runAgentAndWaitForResponseReturn" NULL
-      1))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "runAgentAndWaitForResponseReturn"
+      NULL 1))
     (CL:SETQ |SYM-FETCH-DEMO-XSI-type|
      (INTERN-RIGID-SYMBOL-WRT-MODULE "type"
       (GET-STELLA-MODULE "/STELLA/XML-OBJECTS/XSI" CL:T) 0))
@@ -326,7 +334,8 @@
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 5)
     (CL:LET*
      ((CLASS
-       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "runAgentAndWaitForResponse"
+       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE
+        "runAgentAndWaitForResponse"
         "(DEFCLASS runAgentAndWaitForResponse (XMLObject) :PUBLIC-SLOTS ((arg0 :TYPE /STELLA/XML-OBJECTS/FETCH-CONTENT/arg0) (arg1 :TYPE /STELLA/XML-OBJECTS/FETCH-CONTENT/arg1) (arg2 :TYPE /STELLA/XML-OBJECTS/FETCH-CONTENT/arg2)))")))
      (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS)
       (CL:FUNCTION |new-runAgentAndWaitForResponse|))
@@ -340,7 +349,8 @@
      (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS)
       (CL:FUNCTION |new-runAgentAndWaitForResponseResponse|))
      (CL:SETF (%CLASS-SLOT-ACCESSOR-CODE CLASS)
-      (CL:FUNCTION |access-runAgentAndWaitForResponseResponse-Slot-Value|)))
+      (CL:FUNCTION
+       |access-runAgentAndWaitForResponseResponse-Slot-Value|)))
     (CL:LET*
      ((CLASS
        (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE
@@ -349,15 +359,19 @@
      (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS)
       (CL:FUNCTION |new-runAgentAndWaitForResponseReturn|))
      (CL:SETF (%CLASS-SLOT-ACCESSOR-CODE CLASS)
-      (CL:FUNCTION |access-runAgentAndWaitForResponseReturn-Slot-Value|))))
+      (CL:FUNCTION
+       |access-runAgentAndWaitForResponseReturn-Slot-Value|))))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7)
     (DEFINE-FUNCTION-OBJECT "GET-FETCH-RESPONSE1"
-     "(DEFUN GET-FETCH-RESPONSE1 ())" (CL:FUNCTION GET-FETCH-RESPONSE1) NULL)
+     "(DEFUN GET-FETCH-RESPONSE1 ())" (CL:FUNCTION GET-FETCH-RESPONSE1)
+     NULL)
     (DEFINE-FUNCTION-OBJECT "GET-FETCH-RESPONSE2"
-     "(DEFUN GET-FETCH-RESPONSE2 ())" (CL:FUNCTION GET-FETCH-RESPONSE2) NULL)
+     "(DEFUN GET-FETCH-RESPONSE2 ())" (CL:FUNCTION GET-FETCH-RESPONSE2)
+     NULL)
     (DEFINE-FUNCTION-OBJECT "GET-FETCH-RESPONSE3"
-     "(DEFUN GET-FETCH-RESPONSE3 ())" (CL:FUNCTION GET-FETCH-RESPONSE3) NULL)
+     "(DEFUN GET-FETCH-RESPONSE3 ())" (CL:FUNCTION GET-FETCH-RESPONSE3)
+     NULL)
     (DEFINE-FUNCTION-OBJECT "MAKE-FETCH-REQUEST1"
      "(DEFUN (MAKE-FETCH-REQUEST1 STRING) ())"
      (CL:FUNCTION MAKE-FETCH-REQUEST1) NULL)
@@ -368,7 +382,8 @@
      "(DEFUN STARTUP-FETCH-DEMO () :PUBLIC? TRUE)"
      (CL:FUNCTION STARTUP-FETCH-DEMO) NULL)
     (CL:LET*
-     ((FUNCTION (LOOKUP-FUNCTION SYM-FETCH-DEMO-FETCH-STARTUP-FETCH-DEMO)))
+     ((FUNCTION
+       (LOOKUP-FUNCTION SYM-FETCH-DEMO-FETCH-STARTUP-FETCH-DEMO)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
       SYM-FETCH-DEMO-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupFetchDemo") NULL-STRING-WRAPPER)))

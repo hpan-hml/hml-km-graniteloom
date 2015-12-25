@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: specialists.ste,v 1.90 2010/10/11 20:35:29 hans Exp
+;;; Version: specialists.ste,v 1.99 2014/04/30 17:57:46 hans Exp
 
 ;;; Specialists that perform procedural computations to evaluate
 ;;;    relational queries.
@@ -56,46 +56,56 @@
 
 ;; Defined here instead of `pl-kernel-kb.ste', since it is a class
 ;;    (does it need to be?):
+
 (defclass COMPUTED-PROCEDURE (THING)
-  :public? TRUE
   :documentation "Each instance denotes a programming language 
 function that computes some procedure.  The slot 'procedure-name'
-provides the name of the procedure.  The slot 'procedure-code'
-points directly to the procedure itself.  Both slots are optional;
-if neither is supplied, the procedure will be invoked by extracting
-its name from the name of the instance."
+provides the name of the procedure.  The slot 'procedure-function'
+points to the STELLA function object carrying out the computation.
+If neither is supplied, the procedure will be looked up by extracting
+its name from the name of the instance.  Pointing to a function object
+instead of just the code gives us access to argument type information.
+Note that we support external non-STELLA functions by creating a dummy
+STELLA function object during registration of the computation (see
+`register-computation-function' and friends)."
+  :public? TRUE
   :public-slots ((procedure-name :type STELLA/SYMBOL)
-		 (procedure-code :type STELLA/FUNCTION-CODE)) )
+		 (procedure-function :type STELLA/FUNCTION)))
 
-(defun (function-code-from-procedure FUNCTION-CODE) ((p OBJECT))
-  ;; Given a PROCEDURE instance, return a pointer to a STELLA function that
-  ;;    computes that procedure.
-  ;; Note: STELLA bug causes problems when the input parameter has type
-  ;;    PL-KERNEL/COMPUTED-PROCEDURE, so we kludge things here:
-  (let ((procedure PL-KERNEL/COMPUTED-PROCEDURE p))
-    (when (defined? (PL-KERNEL/procedure-code procedure))
-      (return (PL-KERNEL/procedure-code procedure)))
-    (let ((procedureName (PL-KERNEL/procedure-name procedure))
-          (stellaFunction STELLA/FUNCTION NULL))
-      (when (null? procedureName)
-        (setq procedureName
-          (type-to-symbol (surrogate-value-inverse procedure)))
-        ;; cache name for future use:
-        (setf (PL-KERNEL/procedure-name procedure) procedureName))
-      (setq stellaFunction (lookup-function procedureName))
-      (when (null? stellaFunction)
-        ;; this shouldn't really happen, see if it exists in the kernel:
-        (let ((kernelName
-               (lookup-symbol-in-module (symbol-name procedureName)
-                                        (get-stella-module "PL-KERNEL" TRUE)
-                                        FALSE)))
-          (when (defined? kernelName)
-            (setq stellaFunction (lookup-function kernelName)))))
-      (when (null? stellaFunction)
-        (inform "   Missing specialist -- no STELLA function is named "
-                procedureName EOL)
-        (return NULL))
-      (return (function-code stellaFunction))) ))
+(defun (stella-function-from-procedure FUNCTION) ((procedure PL-KERNEL/COMPUTED-PROCEDURE))
+  ;; Given a `procedure' instance, return the STELLA function object
+  ;;    that computes that procedure.
+  (when (defined? (procedure-function procedure))
+    (return (procedure-function procedure)))
+  (let ((procedureName (PL-KERNEL/procedure-name procedure))
+        (stellaFunction STELLA/FUNCTION NULL))
+    (when (null? procedureName)
+      (setq procedureName
+        (type-to-symbol (surrogate-value-inverse procedure)))
+      ;; cache name for future use:
+      (setf (PL-KERNEL/procedure-name procedure) procedureName))
+    (setq stellaFunction (lookup-function procedureName))
+    (when (null? stellaFunction)
+      ;; not sure this is still needed (maybe during bootstrap), but
+      ;; we keep it for robustness: see if name exists in the kernel:
+      (let ((kernelName
+             (lookup-symbol-in-module (symbol-name procedureName) *pl-kernel-module* FALSE)))
+        (when (defined? kernelName)
+          (setq stellaFunction (lookup-function kernelName)))))
+    (when (null? stellaFunction)
+      (signal-proposition-error "Missing specialist, no STELLA function is named " procedureName))
+    (when (eql? *powerloom-execution-mode* :release)
+      ;; cache it - which is painful if we are actively developing a specialist
+      ;; - hence, we only do that in production mode:
+      (setf (procedure-function procedure) stellaFunction))
+    (return stellaFunction)))
+
+(defun (function-code-from-procedure FUNCTION-CODE) ((procedure PL-KERNEL/COMPUTED-PROCEDURE))
+  ;; Given a `procedure' instance, return a function code pointer that computes the procedure.
+  (let ((stellaFunction (procedure-function procedure)))
+    (when (null? stellaFunction)
+      (setq stellaFunction (stella-function-from-procedure procedure)))
+    (return (function-code stellaFunction))))
 
 (defun (lookup-specialist FUNCTION-CODE) ((description NAMED-DESCRIPTION))
   ;; Called by 'continue-specialist-proof'.
@@ -118,36 +128,50 @@ its name from the name of the instance."
         (setq functionCode  (the-code :FUNCTION native-slot-reader-specialist))))
     (return functionCode) ))
 
-(defun (lookup-constraint FUNCTION-CODE) ((description NAMED-DESCRIPTION))
-  ;; Called by 'PL-KERNEL/constraint-specialist' and by 'evaluate-xxx-proposition'.
-  ;; Return a constraint computation for 'description' if one exists.
+(defun (lookup-constraint-function FUNCTION) ((description NAMED-DESCRIPTION))
+  ;; Return a constraint computation function for 'description' if one exists.
   (let ((computationProcedure
-         (access-binary-value description PL-KERNEL/@relation-constraint))
-        (functionCode FUNCTION-CODE NULL))
-    (when (defined? computationProcedure)
-      (setq functionCode (function-code-from-procedure computationProcedure)))
-    (return functionCode) ))
+         (access-binary-value description PL-KERNEL/@relation-constraint)))
+    (if (defined? computationProcedure)
+        (return (stella-function-from-procedure computationProcedure))
+      (return NULL))))
+
+(defun (lookup-constraint FUNCTION-CODE) ((description NAMED-DESCRIPTION))
+  ;; Return constraint computation code for 'description' if it exists.
+  (let ((function (lookup-constraint-function description)))
+    (if (defined? function)
+        (return (function-code function))
+      (return NULL))))
+
+(defun (lookup-computation-function FUNCTION) ((description NAMED-DESCRIPTION))
+  ;; Return a computation function for 'description' if one exists.
+  (let ((computationProcedure
+         (access-binary-value description PL-KERNEL/@relation-computation)))
+    (if (defined? computationProcedure)
+        (return (stella-function-from-procedure computationProcedure))
+      (return NULL))))
 
 (defun (lookup-computation FUNCTION-CODE) ((description NAMED-DESCRIPTION))
-  ;; Called by 'PL-KERNEL/computation-specialist' and by 'evaluate-xxx-proposition'.
-  ;; Return a computation for 'description' if one exists.
+  ;; Return computation code for 'description' if it exists.
+  (let ((function (lookup-computation-function description)))
+    (if (defined? function)
+        (return (function-code function))
+      (return NULL))))
+
+(defun (lookup-evaluator-function FUNCTION) ((description NAMED-DESCRIPTION))
+  ;; Return an evaluator function for 'description' if one exists.
   (let ((computationProcedure
-         (access-binary-value description PL-KERNEL/@relation-computation))
-        (functionCode FUNCTION-CODE NULL))
-    (when (defined? computationProcedure)
-      (setq functionCode (function-code-from-procedure computationProcedure)))
-    (return functionCode) ))
+         (access-binary-value description PL-KERNEL/@relation-evaluator)))
+    (if (defined? computationProcedure)
+        (return (stella-function-from-procedure computationProcedure))
+      (return NULL))))
 
 (defun (lookup-evaluator FUNCTION-CODE) ((description NAMED-DESCRIPTION))
-  ;; Called by 'evaluate-proposition'.
-  ;; Return a evaluator for 'description' if one exists.
-  (let ((evaluatorProcedure
-         (access-binary-value description PL-KERNEL/@relation-evaluator))
-        (functionCode FUNCTION-CODE NULL))
-    (when (defined? evaluatorProcedure)
-      (setq functionCode (function-code-from-procedure evaluatorProcedure)))
-    (return functionCode) ))
-
+  ;; Return evaluator code for 'description' if it exists.
+  (let ((function (lookup-evaluator-function description)))
+    (if (defined? function)
+        (return (function-code function))
+      (return NULL))))
 
 
   ;;
@@ -301,29 +325,50 @@ keyword indicating success or failure of a proof."
       (setq p1 (string-search super sub (+ p1 1))))
     (return count)))
 
-(defun (computation-input-bound? BOOLEAN) ((value OBJECT))
-  ;; Return true if `value' is considered a bound input for a computation.
-  ;; This requires that it is defined, and, if it is a skolem, it has to
-  ;; represent a bonafide term such as a list or output of a total function.
-  (when (null? value)
-    (return FALSE))
-  (typecase value
-    (SKOLEM
-     (when (logical-collection? value)
-       (return TRUE))
-     (let ((prop (defining-proposition value)))
-       (return (and (defined? prop)
-                    (test-property? (get-description (relationRef prop)) PL-KERNEL/@TOTAL)))))
-    (otherwise
-     (return TRUE))))
+(defun (bound-computation-input-skolem? BOOLEAN) ((skolem SKOLEM))
+  ;; Helper for `compute-relation-value'.
+  ;; Return true if `skolem' is considered a bound input for a computation.
+  ;; This requires it to be a term such as a list or output of a total function.
+  (if (logical-collection? skolem)
+      (return TRUE)
+    (let ((prop (defining-proposition skolem)))
+      (return (and (defined? prop)
+                   (test-property? (get-description (relationRef prop)) PL-KERNEL/@TOTAL))))))
+
+(defun (argument-target-type TYPE) ((parameterTypes (LIST OF TYPE-SPEC))
+                                    (nInputTypes INTEGER)
+                                    (argIndex INTEGER))
+  ;; Helper for `compute-relation-value'.
+  ;; Given a list of `parameterTypes' from a description or function object, compute
+  ;; the target type for the argument at `argIndex'.  `nInputTypes' specifies how many
+  ;; of `parameterTypes' are inputs, so we know which is the last input parameter for
+  ;; variable arity functions.
+  ;; IMPORTANT: this cannot be used to get the type of the output argument of a function,
+  ;; since we don't know whether `argIndex' points to the last argument or not; also,
+  ;; function objects don't have the return type in their input parameter list.
+  (let ((targetType (nth parameterTypes (min argIndex (1- nInputTypes)))))
+    (cond ((eql? (type-spec-to-base-type targetType) @CONS)
+           ;; we have a variable-argument computation:
+           (typecase targetType
+             (PARAMETRIC-TYPE-SPECIFIER
+              (return (type-spec-to-base-type (first (specifier-parameter-types targetType)))))
+             (otherwise
+              (return @OBJECT))))
+          (otherwise
+           (return targetType)))))
 
 (defun (compute-relation-value OBJECT) ((proposition PROPOSITION)
-                                        (code FUNCTION-CODE)
+                                        (computation FUNCTION)
                                         (error? BOOLEAN))
   ;; Helper function to compute values of computed functions and relations.
-  ;; Checks if all arguments of `proposition' are bound (to non skolems), and,
-  ;;    if so, apply `code' to them to compute a value which will be returned.
-  ;; If `code' is null, try to look it up via `lookup-computation'.
+  ;; Checks if all arguments of `proposition' are bound (see below for skolems),
+  ;;     and, if so, apply `code' to them to compute a value which will be returned.
+  ;; Skolem arguments are considered unbound IFF: they fail a logical type check
+  ;;    or a physical type check on the contraint computation, and they are not
+  ;;    the output of a total function such as lists, sets, etc.  That is, if
+  ;;    a constraint computation takes an OBJECT or LOGIC-OBJECT argument, it
+  ;;    is assumed it can handle skolems as bound arguments.
+  ;; If `computation' is null, try to look it up via `lookup-computation-function'.
   ;; Failure to compute a value is indicated by a NULL result.
   ;; If `error?' is true, raise an error if there is an argument type mismatch,
   ;;    otherwise, fail silently.
@@ -337,35 +382,35 @@ keyword indicating success or failure of a proof."
   (let ((arguments (arguments proposition))
         (description (get-description (relationRef proposition)))
         (function? (function-description? description))
-        (computationCode (first-defined code (lookup-computation description)))
-        (argTypes (the-cons-list (io-variable-types description)))
-        (argTypesIter ITERATOR NULL)
-        (argType TYPE NULL)
+        (argTypes (io-variable-types description))
+        (nInputTypes (- (length argTypes) (choose function? 1 0)))
+        (compArgTypes LIST NULL)
         (value OBJECT NULL)
         (boundArguments NIL)
         (variableArity? (variable-arity? description)))
-    (when variableArity?
-      ;; only pay the cost of iterator allocation for variable arity relations:
-      (setq argTypesIter
-        (choose function?
-                (all-domain-types description)
-                (all-argument-types description))))
+    (when (null? computation)
+      (setq computation (lookup-computation-function description)))
+    (setq compArgTypes (method-parameter-type-specifiers computation))
     (foreach arg in arguments
-        as i in (interval (choose function? 2 1) (length arguments))
-        do (ignore i)
-           (if (defined? argTypesIter)
-               ;; note that the iterator exhausts after the first vararg:
-               (setq argType (first-defined (pop argTypesIter) argType))
-             (setq argType (popq argTypes)))
-           (setq value (safe-argument-bound-to arg))
-           (unless (computation-input-bound? value)
-             ;; unbound input argument, fail:
-             (return NULL))
-           (when (not (check-strict-type? value argType TRUE))
-             (if error?
-                 (signal-proposition-error "compute-relation-value: incorrect argument type for "
-                                           value " in " proposition "; should be " argType)
-               (return NULL)))
+        as i in (interval 0 (- (length arguments) (choose function? 2 1)))
+        do (setq value (safe-argument-bound-to arg))
+           (cond ((null? value)
+                  ;; unbound input argument, fail:
+                  (return NULL))
+                 ;; we test both logical and physical argument types here:
+                 ((and (check-strict-type? value (argument-target-type argTypes nInputTypes i) TRUE)
+                       (subtype-of? (primary-type value) (argument-target-type compArgTypes nInputTypes i)))
+                  NULL)
+                 ((and (skolem? value)
+                       (not (bound-computation-input-skolem? value)))
+                  ;; we had a regular skolem that failed one or both type checks, treat it as an unbound input:
+                  (return NULL))
+                 (otherwise
+                  ;; we failed a type check:
+                  (if error?
+                      (signal-proposition-error "compute-relation-value: incorrect argument type for "
+                                                value " in " proposition)
+                    (return NULL))))
         collect value into boundArguments)
     (when variableArity?
       ;; KLUDGE to handle variable args passed to computations as a list
@@ -379,7 +424,7 @@ keyword indicating success or failure of a proof."
                  (cons (nth-rest boundArguments nFixed) NIL)))
               (otherwise
                (return NULL)))))
-    (setq value (apply computationCode boundArguments))
+    (setq value (apply (function-code computation) boundArguments))
     (return value)))
 
 (defun (/PL-KERNEL-KB/computation-specialist KEYWORD)
@@ -399,67 +444,75 @@ keyword indicating success or failure of a proof."
     (return (select-test-result success? TRUE frame))))
 
 (defun (compute-simple-relation-constraint OBJECT INTEGER) ((proposition PROPOSITION)
-                                                            (code FUNCTION-CODE)
+                                                            (computation FUNCTION)
                                                             (error? BOOLEAN))
   ;; Helper function to compute values of simple computed constraint functions
   ;;    and relations.  We call them simple constraints, since they can handle
   ;;    at most one unbound argument at any position.  In the future, we might
   ;;    support constraints that can handle arbitrary binding patterns.
-  ;; Check if all or all but one arguments of `proposition' are bound (to
-  ;;    non-skolems), and, if so, apply `code' to them to compute a value for
-  ;;    the missing binding which will be returned.  As a second value, the
+  ;; Check if all or all but one arguments of `proposition' are bound (see below
+  ;;    for skolems) and, if so, apply `code' to them to compute a value for the
+  ;;    missing binding which will be returned.  As a second value, the
   ;;    position of the missing value will be returned.  If all arguments are
   ;;    bound, the returned value will be true or false and the position -1.
-  ;; If `code' is null, try to look it up via `lookup-constraint'.
+  ;; Skolem arguments are considered unbound IFF: they fail a logical type check
+  ;;    or a physical type check on the contraint computation, and they are not
+  ;;    the output of a total function such as lists, sets, etc.  That is, if
+  ;;    a constraint computation takes an OBJECT or LOGIC-OBJECT argument, it
+  ;;    is assumed it can handle skolems as bound arguments.
+  ;; If `computation' is null, try to look it up via `lookup-constraint-function'.
   ;; Failure to compute a value is indicated by a NULL result.
   ;; If `error?' is true, raise an error if there is an argument type mismatch,
   ;;    otherwise, fail silently.
   ;; This function can be called in both backward and forward chaining contexts
   ;;    as well as for descriptive propositions.
   ;; Note that this makes the following unchecked assumptions:
-  ;; - there is computation code associated with the relation of `proposition'
+  ;; - there is a constraint computation code associated with the relation of `proposition'
   ;; - we are not violating any argument number constraints (they are checked
-  ;;   during proposition construction)
+  ;;   during proposition construction), also constraints can't be variable-arity
   ;; - relations do return a boolean wrapper as their computed value
   (let ((arguments (arguments proposition))
         (description (get-description (relationRef proposition)))
-        (constraintCode (first-defined code (lookup-constraint description)))
-        (argTypes (the-cons-list (io-variable-types description)))
-        (argTypesIter ITERATOR NULL)
-        (argType TYPE NULL)
+        (argTypes (io-variable-types description))
+        (nInputTypes (length argTypes))
+        (compArgTypes LIST NULL)
         (value OBJECT NULL)
 	(nullCount 0)
         (variableIndex -1)
         (boundArguments NIL))
-    (when (variable-arity? description)
-      ;; only pay the cost of iterator allocation for variable arity relations
-      ;; (which seems a pretty unlikely scenario for computed constraints):
-      (setq argTypesIter (all-argument-types description)))
+    (when (null? computation)
+      (setq computation (lookup-constraint-function description)))
+    (setq compArgTypes (method-parameter-type-specifiers computation))
     (foreach arg in arguments
         as i in (interval 0 NULL)
-        do (if (defined? argTypesIter)
-               ;; note that the iterator exhausts after the first vararg:
-               (setq argType (first-defined (pop argTypesIter) argType))
-             (setq argType (popq argTypes)))
-           (setq value (safe-argument-bound-to arg))
-           (cond ((or (null? value)
-                      (skolem? value))
-                  ;; if we have a skolem value, we must be in forward/evaluation
-                  ;; mode, since, otherwise, `argument-bound-to' had returned NULL:
+        do (setq value (safe-argument-bound-to arg))
+           (cond ((null? value)
                   (setq value NULL)
                   (++ nullCount)
                   (setq variableIndex i))
-                 ((not (check-strict-type? value argType TRUE))
+                 ;; we test both logical and physical argument types here:
+                 ((and (check-strict-type? value (argument-target-type argTypes nInputTypes i) TRUE)
+                       ;; note: for constraint fns, the first argument is an index that needs to be ignored:
+                       (subtype-of? (primary-type value) (argument-target-type compArgTypes (1+ nInputTypes) (1+ i))))
+                  NULL)
+                 ((and (skolem? value)
+                       (not (bound-computation-input-skolem? value)))
+                  ;; we had a regular skolem that failed one or both type checks, treat it as an unbound input:
+                  (setq value NULL)
+                  (++ nullCount)
+                  (setq variableIndex i))
+                 (otherwise
+                  ;; we failed a type check:
                   (if error?
-                      (signal-proposition-error "compute-relation-value: incorrect argument type for "
-                                                value " in " proposition "; should be " argType)
+                      (signal-proposition-error "compute-relation-constraint: incorrect argument type for "
+                                                value " in " proposition)
                     (return NULL -1))))
         collect value into boundArguments)
     (case nullCount
-      (0 (setq value (apply constraintCode (cons variableIndex boundArguments))))
+      (0 (setq value (apply (function-code computation) (cons variableIndex boundArguments))))
       (1 (when *reversePolarity?*
            (return NULL -1))
-         (setq value (apply constraintCode (cons variableIndex boundArguments))))
+         (setq value (apply (function-code computation) (cons variableIndex boundArguments))))
       (otherwise ;; too many unbound arguments, fail
        (return NULL -1)))
     (return value variableIndex)))
@@ -756,9 +809,72 @@ keyword indicating success or failure of a proof."
        
     (when (defined? iterator)
       ;; must be generating classes:
-      (when (next? iterator)
-        (bind-variable-to-value? collectionArg (value iterator) TRUE)
-        (return :CONTINUING-SUCCESS))
+      (while (next? iterator)
+        (when (bind-variable-to-value? collectionArg (value iterator) TRUE)
+          (return :CONTINUING-SUCCESS)))
+      ;; iterator is used-up:
+      (return :FAILURE))
+    (return :FAILURE)))
+
+(defun (/PL-KERNEL-KB/DIRECT-INSTANCE-OF-specialist KEYWORD) ((frame CONTROL-FRAME) (lastMove KEYWORD))
+  ;; Assertion-level version of INSTANCE-OF-specialist.
+  ;; BUG: this doesn't fully capture the intended semantics of "(direct-instance-of ?x ?y)" which is
+  ;; that ?x is an instance of ?y and there are no subclasses of ?y that ?x is an instance of.  Currently
+  ;; this is a mix of direct and asserted instance-of.  We need to clean this up and create an additional
+  ;; "asserted-instance-of" relation with associated specialist.
+  (let ((proposition (proposition frame))
+        (arguments (arguments proposition))
+        (memberArg (first arguments))
+        (member (argument-bound-to memberArg))
+        (collectionArg (second arguments))
+        (collection (argument-bound-to collectionArg))
+        (iterator (iterator frame)))
+    (case lastMove
+      (:UP-TRUE
+       (return (choose (defined? (down frame))
+                       :CONTINUING-SUCCESS
+                       :FINAL-SUCCESS)))
+      (:UP-FAIL
+       (return :FAILURE))
+      (otherwise NULL))
+    (when (null? iterator) ; first time here?
+      (cond
+       ((and (defined? collection)
+             (class? collection)
+             (isa? collection @NAMED-DESCRIPTION))
+        ;;; TO DO: figure out whether we should support the case
+        ;;; of direct assertion to unnamed descriptions here as well
+        (cond ((null? member)
+               ;;; TO DO: figure out whether this captures the proper meaning
+               ;;; of `direct' here (see `all-direct-types' for reference):
+               (setq iterator (all-extension-members collection)))
+              ((levellized-test-type-on-instance? ASSERTION-INFERENCE
+                                                  member
+                                                  (object-surrogate collection))
+               (return :FINAL-SUCCESS))
+              (otherwise
+               (return :FAILURE))))
+       ((defined? member)
+        ;; `memberArg' is bound; generate classes:
+        (setq iterator (allocate-iterator (all-direct-types member))))
+       (otherwise
+        ;; Two unbound arguments passed to 'direct-instance-of':
+        (return :FAILURE)))
+      (setf (iterator frame) iterator))
+       
+    (when (defined? iterator)
+      ;; must be generating values:
+      (while (next? iterator)
+        (let ((value (value iterator)))
+          (typecase value
+            (PROPOSITION
+             ;; we must be generating extension members:
+             (when (bind-variable-to-value? memberArg (first (arguments value)) TRUE)
+               (return :CONTINUING-SUCCESS)))
+            (otherwise
+             ;; we must be generating classes:
+             (when (bind-variable-to-value? collectionArg value TRUE)
+               (return :CONTINUING-SUCCESS))))))
       ;; iterator is used-up:
       (return :FAILURE))
     (return :FAILURE)))
@@ -799,8 +915,10 @@ keyword indicating success or failure of a proof."
     (when (null? iterator) ; first time through?
       (cond ((and (defined? subCollection)
                   (defined? superCollection))
-             ;; both arguments are bound:
-             (cond ((collection-implies-collection? subCollection superCollection)
+             ;; both arguments are bound - make sure both are bonafide logic objects:
+             (cond ((and (isa? subCollection @LOGIC-OBJECT)
+                         (isa? superCollection @LOGIC-OBJECT)
+                         (collection-implies-collection? subCollection superCollection))
 		    (return (select-test-result TRUE TRUE frame)))
                    ((test-disjoint-terms? subCollection superCollection)
 		    (return (select-test-result FALSE TRUE frame)))
@@ -948,32 +1066,102 @@ keyword indicating success or failure of a proof."
     (return :FAILURE) ))
 
 
+(defun (/PL-KERNEL-KB/TOTAL-VALUE-specialist KEYWORD) ((frame CONTROL-FRAME) (lastMove KEYWORD))
+  ;; Specialist for `total-value'.  This is identical to `holds' except for the case where the
+  ;; specified function and its inputs do not have an associated value term.  In that case, we
+  ;; treat the function just as if it were total and create a value skolem for it.
+  (let ((valueProposition (proposition frame))
+        (valueArguments (arguments valueProposition))
+        (description (argument-bound-to (first valueArguments))))
+    (cond ((defined? description)
+           (case lastMove
+             (:UP-TRUE
+              (when (null? (iterator frame))
+                ;; kludgy way to remember that we succeeded at least once (since `total-value' is a
+                ;; function, we should never get here again in case all inputs were bound, but just in case):
+                (setf (iterator frame) EMPTY-PROPOSITIONS-ITERATOR))
+              (return (choose (defined? (down frame)) :CONTINUING-SUCCESS :FINAL-SUCCESS)))
+             (:UP-FAIL
+              (cond ((or (defined? (iterator frame))
+                         (reverse-polarity? frame))
+                     (return :FAILURE))
+                    ;; under just the right conditions, we mirror part of `try-manufacture-skolem-proof' here:
+                    ((and (isa? description @NAMED-DESCRIPTION)
+                          (function-description? description)
+                          (all-key-arguments-bound? valueProposition)
+                          (null? (argument-bound-to (last valueArguments))))
+                     (let ((functionProp
+                            (find-or-create-function-proposition
+                             (object-surrogate description)
+                             (collect (argument-bound-to (nth valueArguments i))
+                                      foreach i in (interval 1 (- (length valueArguments) 2))))))
+                       (bind-variable-to-value?
+                        (last-argument valueProposition) (last-argument functionProp) TRUE)
+                       (return :FINAL-SUCCESS)))
+                    (otherwise
+                     (return :FAILURE))))
+             (:DOWN
+              (return (/PL-KERNEL-KB/HOLDS-specialist frame lastMove)))))
+          (otherwise
+           (return (/PL-KERNEL-KB/HOLDS-specialist frame lastMove))))))
+
+
   ;;
 ;;;;;; Proposition accessors
   ;;
 
-(defun (/PL-KERNEL-KB/PROPOSITION-RELATION-computation OBJECT) ((p PROPOSITION))
+(defun (/PL-KERNEL-KB/PROPOSITION-RELATION-computation OBJECT) ((p OBJECT))
   ;; NOTE: constant propositions such as TRUE will return themselves.
-  (let ((operator (operator p)))
-    (typecase operator
-      (SURROGATE (return (surrogate-value operator)))
-      (otherwise (return NULL)))))
+  (when (function-output-skolem? p)
+    (setq p (defining-proposition (cast p SKOLEM))))
+  (typecase p
+    (PROPOSITION
+     (let ((operator (operator p)))
+       (typecase operator
+         (SURROGATE (return (surrogate-value operator)))
+         (otherwise NULL))))
+    (otherwise NULL))
+  (return NULL))
 
-(defun (/PL-KERNEL-KB/PROPOSITION-ARGUMENT-computation OBJECT) ((p PROPOSITION) (i INTEGER-WRAPPER))
+(defun (/PL-KERNEL-KB/PROPOSITION-ARGUMENT-computation OBJECT) ((p OBJECT) (i INTEGER-WRAPPER))
   ;; Conceivably, this could be a general specialist similar to `nth-element-specialist' that
   ;; could also find positions of arguments.  For now, this can be achieved by using
   ;; `proposition-arguments' and then the list accessors.
-  (let ((arguments (arguments p)))
-    (if (and (>= i 0)
-             (< i (length arguments)))
-        (return (nth arguments i))
-      (return NULL))))
+  (typecase p
+    (PROPOSITION
+     (let ((arguments (arguments p)))
+       (when (and (>= i 0)
+                  (< i (length arguments)))
+         (return (nth arguments i)))))
+    (SKOLEM
+     (when (function-output-skolem? p)
+       (let ((prop (defining-proposition (cast p SKOLEM)))
+             (arguments (arguments prop)))
+         (when (and (>= i 0)
+                  (< i (1- (length arguments))))
+           (return (nth arguments i))))))
+    (otherwise NULL))
+  (return NULL))
 
-(defun (/PL-KERNEL-KB/PROPOSITION-ARGUMENTS-computation SKOLEM) ((p PROPOSITION))
-  (return (create-logical-list (listify (arguments p)))))
+(defun (/PL-KERNEL-KB/PROPOSITION-ARGUMENTS-computation SKOLEM) ((p OBJECT))
+  (typecase p
+    (PROPOSITION
+     (return (create-logical-list (listify (arguments p)))))
+    (SKOLEM
+     (when (function-output-skolem? p)
+       (return (create-logical-list (listify (but-last (arguments (defining-proposition (cast p SKOLEM)))))))))
+    (otherwise NULL))
+  (return NULL))
 
-(defun (/PL-KERNEL-KB/PROPOSITION-ARITY-computation INTEGER-WRAPPER) ((p PROPOSITION))
-  (return (length (arguments p))))
+(defun (/PL-KERNEL-KB/PROPOSITION-ARITY-computation INTEGER-WRAPPER) ((p OBJECT))
+  (typecase p
+    (PROPOSITION
+     (return (length (arguments p))))
+    (SKOLEM
+     (when (function-output-skolem? p)
+       (return (1- (length (arguments (defining-proposition (cast p SKOLEM))))))))
+    (otherwise NULL))
+  (return NULL))
 
 
   ;;
@@ -1249,10 +1437,10 @@ keyword indicating success or failure of a proof."
           (new DESCRIPTION
                :io-variables (copy-list-to-arguments-vector ioVariables)
                :proposition proposition))
+        (compute-internal-variables subQueryDescription)
         (setq subQueryDescription
           (first-defined (find-duplicate-description subQueryDescription)
                          subQueryDescription)))
-      (compute-internal-variables subQueryDescription)
       (setq ioVariableBindings (new VECTOR :array-size (length ioVariables)))
       (setq trueFalseQuery? TRUE)
       (foreach var in ioVariables
@@ -1467,7 +1655,7 @@ keyword indicating success or failure of a proof."
          (record-primitive-justification frame :UP-FAIL))
        (call-set-inference-level (keyword (saved-inference-level adjunct)) NULL)
        (setq *inferenceLevel* (saved-inference-level adjunct))
-       (return :FAILURE))) ))
+       (return :TERMINAL-FAILURE))) ))
 
        
   ;;
@@ -1884,9 +2072,14 @@ keyword indicating success or failure of a proof."
                   ;; will be nonsense; think about how to address this correctly:
                   (remove-duplicates-equal members)
                   (remove-duplicates members))))
-      (setq result (choose list?
-                           (create-logical-list members)
-                           (create-enumerated-set members))))
+      ;;; KLUDGE: ensure the function terms are allocated in the module and not the current
+      ;;; inference cache, since otherwise we can't assert-from-query about them; this means,
+      ;;; these terms won't get cleaned up when the inference cache gets destroyed...
+      ;;; NOTE: this kludge might have become obsolete with a recent patch to list term creation functions.
+      (within-module *module*
+        (setq result (choose list?
+                             (create-logical-list members)
+                             (create-enumerated-set members)))))
     (let ((success (select-test-result (bind-argument-to-value? listArg result TRUE) TRUE frame)))
       (when (and (record-justifications?)
                  (not (eql? success :TERMINAL-FAILURE)))
@@ -1907,28 +2100,6 @@ keyword indicating success or failure of a proof."
   (define-explanation-phrase :COLLECT-MEMBERS :lay
     "because of a specialized COLLECT-MEMBERS reasoning procedure"))
 
-(defun (/PL-KERNEL-KB/LENGTH-OF-LIST-specialist KEYWORD)
-       ((frame CONTROL-FRAME) (lastMove KEYWORD))
-  ;; Compute as many members of the first list argument as possible
-  ;;    and bind the second argument to the length of the computed list.
-  ;; TO DO: MAYBE SPECIAL-CASE ENUMERATED LISTS AND SETS WITHOUT EQUIVALENTS
-  ;;    TO AVOID THE OVERHEAD OF CALLING `ASSERTED-COLLECTION-MEMBERS'.
-  (let ((proposition (proposition frame))
-        (listArg (first (arguments proposition)))
-        (listSkolem (argument-bound-to listArg))
-        (lengthArg (second (arguments proposition))))
-    (ignore lastMove)
-    (when (and (defined? listSkolem)
-               (not (logical-collection? listSkolem)))
-      (inform EOL "Non list appears in second argument to 'LENGTH-OF-LIST'" EOL)
-      (return :TERMINAL-FAILURE))
-    (let ((listValue (asserted-collection-members listSkolem TRUE))
-	  (len INTEGER NULL))
-      (when (null? listValue)
-        (return :TERMINAL-FAILURE))
-      (setq len (length (cast listValue STELLA/LIST)))
-      (return (select-test-result (bind-argument-to-value? lengthArg len TRUE)
-				  TRUE frame))) ))
 
 (defun (/PL-KERNEL-KB/NTH-ELEMENT-specialist KEYWORD) ((frame CONTROL-FRAME)
                                                        (lastMove KEYWORD))
@@ -2812,25 +2983,32 @@ specialists.")
 
 (defun (/PL-KERNEL-KB/REFLEXIVE-RELATION-specialist KEYWORD)
        ((frame CONTROL-FRAME) (lastMove KEYWORD))
-  ;; 'Arg1' and 'Arg2' are instances.  If the same, then return TRUE
+  ;; If 'Arg1' and 'Arg2' are instances that are the same, then return TRUE.
+  ;; If one arg is bound and the other unbound, bind the unbound to the bound one.
   (ignore lastMove)
   (let ((proposition (proposition frame))
-        (arg1 (argument-bound-to (first (arguments proposition))))
-        (arg2 (argument-bound-to (second (arguments proposition)))))
-    (if (or (eql? arg1 arg2)
-            (eql? (argument-bound-to arg1) (argument-bound-to arg2)))
-      (return (select-test-result TRUE TRUE frame))
-      (return :FAILURE))))
+        (arg1 (first (arguments proposition)))
+        (arg2 (second (arguments proposition)))
+        (arg1Val (argument-bound-to arg1))
+        (arg2Val (argument-bound-to arg2)))
+    (cond ((and (defined? arg1Val)
+                (bind-argument-to-value? arg2 arg1Val TRUE))
+           (return (select-test-result TRUE TRUE frame)))
+          ((and (defined? arg2Val)
+                (bind-argument-to-value? arg1 arg2Val TRUE))
+           (return (select-test-result TRUE TRUE frame)))
+          (otherwise
+           (return :FAILURE)))))
 
 (defun (/PL-KERNEL-KB/IRREFLEXIVE-RELATION-specialist KEYWORD)
        ((frame CONTROL-FRAME) (lastMove KEYWORD))
-  ;; 'Arg1' and 'Arg2' are instances.  If the same, then return FALSE
+  ;; If 'Arg1' and 'Arg2' are instances that are the same, then return FALSE
   (ignore lastMove)
   (let ((proposition (proposition frame))
         (arg1 (argument-bound-to (first (arguments proposition))))
         (arg2 (argument-bound-to (second (arguments proposition)))))
-    (if (or (eql? arg1 arg2)
-            (eql? (argument-bound-to arg1) (argument-bound-to arg2)))
+    (if (and (defined? arg1)
+             (eql? arg1 arg2))
       (return (select-test-result FALSE TRUE frame))
       (return :FAILURE))))
 
@@ -2846,13 +3024,18 @@ specialists.")
       (return null)
       (return name-string))))
 
+(defun (/PL-KERNEL-KB/object-print-name-computation STRING-WRAPPER) ((objectArg OBJECT))
+  ;; Return the print-name of 'objectArg'.
+  (let ((nameSymbol (object-name (value-of objectArg))))
+    (if (null? nameSymbol)
+      (return NULL)
+      (return (relative-name nameSymbol TRUE)))))
+
 (defun (/PL-KERNEL-KB/name-to-object-computation OBJECT) ((nameArg OBJECT))
   ;; Find or create the logic object named by `nameArg'.
   ;; We are interpreting `nameArg' literally here, i.e., it is not a print name
   ;;    as assumed by PLI functions and an object with exactly that name will
   ;;    be looked up or created (we will first coerce to a string if necessary).
-  ;; TO DO: conceivably, we might want to have a variant of this that uses a print
-  ;;    name as its argument.
   (within-module (base-module *context*) ;; don't create in inference caches...
     (when (not (string? nameArg))
       ;; we have some kind of object, try to lookup the instance
@@ -2871,6 +3054,31 @@ specialists.")
          (create-logic-instance
           (intern-surrogate-in-module nameArgString *module* TRUE)
           NULL))))))
+
+(defun (/PL-KERNEL-KB/print-name-to-object-computation OBJECT) ((nameArg OBJECT))
+  ;; Find or create the logic object named by `nameArg'.
+  ;; Similar to `/PL-KERNEL-KB/name-to-object-computation', but we are interpreting
+  ;; `nameArg' as a (possibly qualified) print name with escape characters here.
+  (within-module (base-module *context*) ;; don't create in inference caches...
+    (when (not (string? nameArg))
+      ;; we have some kind of object, try to lookup the instance
+      ;; directly without converting to a string first:
+      (let ((instance (get-instance nameArg)))
+        (when (defined? instance)
+          (return instance))))
+    ;; we didn't find an existing instance or `nameArg' was a string:
+    (exception-case
+        (let ((nameArgString (pli/object-to-string nameArg))
+              (instanceName (intern-stella-name nameArgString)))
+          (return
+            (first-defined
+             (get-instance instanceName)
+             (create-logic-instance
+              (intern-surrogate-in-module (symbol-name instanceName) (interned-in instanceName) TRUE)
+              NULL))))
+      (STELLA-EXCEPTION ()
+        ;; illegal read syntax or non-existing module:
+        (return NULL)))))
 
 
   ;;

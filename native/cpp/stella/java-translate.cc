@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -132,7 +132,7 @@ Cons* javaTranslateDefineGlobalVariableUnit(TranslationUnit* unit) {
 
     { 
       BIND_STELLA_SPECIAL(oCONTEXTo, Context*, global->homeModule());
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
       { StringWrapper* variabletype = (global->variableSpecialP ? wrapString(javaYieldSpecialVariableClassName()) : javaTranslateTypeSpec(globalVariableTypeSpec(global)));
         Cons* typelist = cons(variabletype, NIL);
         Object* initialvaluetree = javaTranslateATree(unit->codeRegister);
@@ -223,10 +223,10 @@ Cons* javaTranslateDefineMethodUnit(TranslationUnit* unit) {
         unit->translation = NIL;
         return (otree);
       }
-      oMETHODBEINGWALKEDo.set(method);
+      oMETHODBEINGWALKEDo = method;
       bodytree = deleteQuotedNullStatements(bodytree);
       if (!unitisfunction) {
-        oDUMMYDECLARATIONSo.set(cons(cons(((Symbol*)(method->methodParameterNames_reader()->first())), cons(method->slotOwner, cons(SYM_JAVA_TRANSLATE_STELLA_THIS, NIL))), oDUMMYDECLARATIONSo.get()));
+        oDUMMYDECLARATIONSo = cons(cons(((Symbol*)(method->methodParameterNames_reader()->first())), cons(method->slotOwner, cons(SYM_JAVA_TRANSLATE_STELLA_THIS, NIL))), oDUMMYDECLARATIONSo);
       }
       if (method->abstractP) {
         translatedmethodbody = NIL;
@@ -234,8 +234,8 @@ Cons* javaTranslateDefineMethodUnit(TranslationUnit* unit) {
       else {
         {
           translatedmethodbody = cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, javaTranslateListOfTrees(bodytree)->concatenate(NIL, 0));
-          if (!(oDUMMYDECLARATIONSo.get() == NIL)) {
-            translatedmethodbody = wrapMethodBodyWithJavaAuxiliaryDeclarations(translatedmethodbody, oDUMMYDECLARATIONSo.get());
+          if (!(oDUMMYDECLARATIONSo == NIL)) {
+            translatedmethodbody = wrapMethodBodyWithJavaAuxiliaryDeclarations(translatedmethodbody, oDUMMYDECLARATIONSo);
           }
         }
       }
@@ -267,10 +267,10 @@ Cons* javaTranslateDefprintUnit(TranslationUnit* unit) {
 
       { 
         BIND_STELLA_SPECIAL(oCONTEXTo, Context*, clasS->homeModule());
-        BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+        BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
         bodytree = deleteQuotedNullStatements(bodytree);
-        oDUMMYDECLARATIONSo.set(cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_SELF, canonicalType(clasS->classType), cons(SYM_JAVA_TRANSLATE_STELLA_THIS, NIL)), oDUMMYDECLARATIONSo.get()));
-        translatedmethodbody = wrapMethodBodyWithJavaAuxiliaryDeclarations(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, javaTranslateATree(bodytree), NIL), oDUMMYDECLARATIONSo.get());
+        oDUMMYDECLARATIONSo = cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_SELF, canonicalType(clasS->classType), cons(SYM_JAVA_TRANSLATE_STELLA_THIS, NIL)), oDUMMYDECLARATIONSo);
+        translatedmethodbody = wrapMethodBodyWithJavaAuxiliaryDeclarations(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, javaTranslateATree(bodytree), NIL), oDUMMYDECLARATIONSo);
         otree = listO(5, SYM_JAVA_TRANSLATE_STELLA_JAVA_METHOD, cons(wrapString("public"), NIL), cons(wrapString("String"), NIL), wrapString("toString"), listO(3, NIL, translatedmethodbody, NIL));
         unit->translation = NIL;
         return (otree);
@@ -667,7 +667,7 @@ char* javaChangeCase(GeneralizedSymbol* symbol, Keyword* caseconvention) {
     Keyword* capsBreakKeyword = (allUpperP ? KWD_JAVA_TRANSLATE_CLEVER : KWD_JAVA_TRANSLATE_YES);
 
     if (!((boolean)(module))) {
-      module = oMODULEo.get();
+      module = oMODULEo;
     }
     if (module->caseSensitiveP ||
         (!allUpperP)) {
@@ -885,8 +885,8 @@ StringWrapper* javaTranslateClassName(GeneralizedSymbol* namesymbol) {
 }
 
 boolean inCurrentJavaPackageP(Module* module) {
-  return ((module == oMODULEo.get()) ||
-      stringEqlP(javaPackagePrefix(module, "."), javaPackagePrefix(oMODULEo.get(), ".")));
+  return ((module == oMODULEo) ||
+      stringEqlP(javaPackagePrefix(module, "."), javaPackagePrefix(oMODULEo, ".")));
 }
 
 boolean inheritedClassNameConflictsP(char* stellaClassName) {
@@ -896,7 +896,7 @@ boolean inheritedClassNameConflictsP(char* stellaClassName) {
     Module* catchallModule = NULL;
 
     { Module* module = NULL;
-      Cons* iter000 = oMODULEo.get()->uses->theConsList;
+      Cons* iter000 = oMODULEo->uses->theConsList;
 
       for (module, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         module = ((Module*)(iter000->value));
@@ -914,7 +914,7 @@ boolean inheritedClassNameConflictsP(char* stellaClassName) {
       }
     }
     { Context* module = NULL;
-      Cons* iter001 = oMODULEo.get()->allSuperContexts;
+      Cons* iter001 = oMODULEo->allSuperContexts;
 
       for (module, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
         module = ((Context*)(iter001->value));
@@ -935,7 +935,7 @@ boolean inheritedClassNameConflictsP(char* stellaClassName) {
     }
     javaClassName = javaTranslateClassNamestring(wrapString(stellaClassName))->wrapperValue;
     { Module* module = NULL;
-      Cons* iter002 = oMODULEo.get()->uses->theConsList;
+      Cons* iter002 = oMODULEo->uses->theConsList;
 
       for (module, iter002; !(iter002 == NIL); iter002 = iter002->rest) {
         module = ((Module*)(iter002->value));
@@ -949,7 +949,7 @@ boolean inheritedClassNameConflictsP(char* stellaClassName) {
       }
     }
     { Context* module = NULL;
-      Cons* iter003 = oMODULEo.get()->allSuperContexts;
+      Cons* iter003 = oMODULEo->allSuperContexts;
 
       for (module, iter003; !(iter003 == NIL); iter003 = iter003->rest) {
         module = ((Context*)(iter003->value));
@@ -985,10 +985,10 @@ boolean classNameConflictsWithSlotNameP(Class* definingClass, char* javaClassNam
 }
 
 boolean omitJavaPackagePrefixP(Module* module, char* stellaClassName) {
-  if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_JAVA_TRANSLATE_MINIMIZE_JAVA_PREFIXES)) {
+  if (oCURRENT_STELLA_FEATURESo->membP(KWD_JAVA_TRANSLATE_MINIMIZE_JAVA_PREFIXES)) {
     return (inCurrentJavaPackageP(module) ||
-        ((oMODULEo.get()->uses->membP(module) ||
-        oMODULEo.get()->allSuperContexts->membP(module)) &&
+        ((oMODULEo->uses->membP(module) ||
+        oMODULEo->allSuperContexts->membP(module)) &&
          (!inheritedClassNameConflictsP(stellaClassName))));
   }
   else {
@@ -1036,7 +1036,7 @@ StringWrapper* javaTranslateTypeSpecHelper(StandardObject* typeSpec, boolean fun
               return (wrapString(stringConcatenate(javaPackagePrefix(finalType->homeModule(), "."), typeName, 0)));
             }
             else if (functionP &&
-                classNameConflictsWithSlotNameP(oCURRENT_JAVA_OUTPUT_CLASSo.get(), typeName)) {
+                classNameConflictsWithSlotNameP(oCURRENT_JAVA_OUTPUT_CLASSo, typeName)) {
               return (wrapString(stringConcatenate(javaPackagePrefix(finalType->homeModule(), "."), typeName, 0)));
             }
             else {
@@ -1210,7 +1210,7 @@ Object* javaTranslateInlineCallTree(Cons* tree) {
                   { Object* token000 = token;
                     StringWrapper* token = ((StringWrapper*)(token000));
 
-                    *(oCURRENT_STREAMo.get()->nativeStream) << token->wrapperValue;
+                    *(oCURRENT_STREAMo->nativeStream) << token->wrapperValue;
                   }
                 }
                 else if (testValue000 == SGT_JAVA_TRANSLATE_STELLA_CONS) {
@@ -1233,11 +1233,11 @@ Object* javaTranslateInlineCallTree(Cons* tree) {
                         }
                       }
                       if (!(atomicExpressionP(argument))) {
-                        *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+                        *(oCURRENT_STREAMo->nativeStream) << "(";
                       }
                       javaOutputStatement(javaTranslateATree(copyConsTree(argument)));
                       if (!(atomicExpressionP(argument))) {
-                        *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+                        *(oCURRENT_STREAMo->nativeStream) << ")";
                       }
                     }
                   }
@@ -1252,7 +1252,7 @@ Object* javaTranslateInlineCallTree(Cons* tree) {
               }
             }
           }
-          inlinedbody = ((OutputStringStream*)(oCURRENT_STREAMo.get()))->theStringReader();
+          inlinedbody = ((OutputStringStream*)(oCURRENT_STREAMo))->theStringReader();
           if (successP) {
             return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_VERBATIM, newVerbatimStringWrapper(inlinedbody), NIL));
           }
@@ -1365,8 +1365,8 @@ Cons* javaTranslateLoop(Cons* tree) {
     BIND_STELLA_SPECIAL(oJAVA_LOOP_NAME_USEDpo, boolean, false);
     { Cons* body = javaTranslateListOfTrees(tree->rest);
 
-      if (oJAVA_LOOP_NAME_USEDpo.get()) {
-        return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_NAMED_STATEMENT, javaTranslateATree(oJAVA_LOOP_NAMEo.get()), cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_LOOP, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_PROGN, cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, body->concatenate(NIL, 0)), NIL), NIL), NIL)));
+      if (oJAVA_LOOP_NAME_USEDpo) {
+        return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_NAMED_STATEMENT, javaTranslateATree(oJAVA_LOOP_NAMEo), cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_LOOP, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_PROGN, cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, body->concatenate(NIL, 0)), NIL), NIL), NIL)));
       }
       else {
         return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_LOOP, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_PROGN, cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, body->concatenate(NIL, 0)), NIL), NIL));
@@ -1497,8 +1497,8 @@ Cons* javaTranslateForeachTree(Cons* tree) {
           }
         }
       }
-      if (oJAVA_LOOP_NAME_USEDpo.get()) {
-        return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_BLOCK, declarations, cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_NAMED_STATEMENT, javaTranslateATree(oJAVA_LOOP_NAMEo.get()), cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_FOREACH, variables, cons(continuationtest, cons(valueassignments, cons(nextassignments, cons(body, NIL))))), NIL)), NIL), NIL)));
+      if (oJAVA_LOOP_NAME_USEDpo) {
+        return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_BLOCK, declarations, cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_NAMED_STATEMENT, javaTranslateATree(oJAVA_LOOP_NAMEo), cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_FOREACH, variables, cons(continuationtest, cons(valueassignments, cons(nextassignments, cons(body, NIL))))), NIL)), NIL), NIL)));
       }
       else {
         return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_BLOCK, declarations, cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_FOREACH, variables, cons(continuationtest, cons(valueassignments, cons(nextassignments, cons(body, NIL))))), NIL), NIL)));
@@ -1545,7 +1545,7 @@ Cons* javaTranslateCast(Cons* tree) {
 Cons* javaTranslateReturnTree(Cons* tree) {
   { Cons* otree = NULL;
     Cons* returnassignments = NIL;
-    Cons* methodotherreturntypes = oMETHODBEINGWALKEDo.get()->methodReturnTypeSpecifiers_reader()->rest();
+    Cons* methodotherreturntypes = oMETHODBEINGWALKEDo->methodReturnTypeSpecifiers_reader()->rest();
     Object* returnexpression = NULL;
     Cons* translatedreturnexpression = NIL;
     Cons* mvreturnparametertranslation = NIL;
@@ -1599,7 +1599,7 @@ Cons* javaTranslateReturnTree(Cons* tree) {
     else {
       { char* tempvarname = "_return_temp";
 
-        otree = listO(4, SYM_JAVA_TRANSLATE_STELLA_JAVA_BLOCK, cons(cons(javaTranslateTypeSpec(oMETHODBEINGWALKEDo.get()->computeReturnTypeSpec(oMETHODBEINGWALKEDo.get()->slotOwner)), listO(3, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_IDENT, wrapString(tempvarname), NIL), translatedreturnexpression, NIL)), NIL), cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, returnassignments->concatenate(cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_RETURN, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_IDENT, wrapString(tempvarname), NIL), NIL), NIL), 0)), NIL);
+        otree = listO(4, SYM_JAVA_TRANSLATE_STELLA_JAVA_BLOCK, cons(cons(javaTranslateTypeSpec(oMETHODBEINGWALKEDo->computeReturnTypeSpec(oMETHODBEINGWALKEDo->slotOwner)), listO(3, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_IDENT, wrapString(tempvarname), NIL), translatedreturnexpression, NIL)), NIL), cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, returnassignments->concatenate(cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_RETURN, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_IDENT, wrapString(tempvarname), NIL), NIL), NIL), 0)), NIL);
       }
     }
     return (otree);
@@ -1607,22 +1607,22 @@ Cons* javaTranslateReturnTree(Cons* tree) {
 }
 
 Cons* javaTranslateBreak(Cons* tree) {
-  if (!((boolean)(oJAVA_LOOP_NAMEo.get()))) {
+  if (!((boolean)(oJAVA_LOOP_NAMEo))) {
     breakProgram("No loop name in (BREAK)");
   }
-  oJAVA_LOOP_NAME_USEDpo.set(true);
+  oJAVA_LOOP_NAME_USEDpo = true;
   tree->firstSetter(SYM_JAVA_TRANSLATE_STELLA_JAVA_BREAK);
-  tree->rest = cons(javaTranslateATree(oJAVA_LOOP_NAMEo.get()), NIL);
+  tree->rest = cons(javaTranslateATree(oJAVA_LOOP_NAMEo), NIL);
   return (tree);
 }
 
 Cons* javaTranslateContinue(Cons* tree) {
-  if (!((boolean)(oJAVA_LOOP_NAMEo.get()))) {
+  if (!((boolean)(oJAVA_LOOP_NAMEo))) {
     breakProgram("No loop name in (CONTINUE)");
   }
-  oJAVA_LOOP_NAME_USEDpo.set(true);
+  oJAVA_LOOP_NAME_USEDpo = true;
   tree->firstSetter(SYM_JAVA_TRANSLATE_STELLA_JAVA_CONTINUE);
-  tree->rest = cons(javaTranslateATree(oJAVA_LOOP_NAMEo.get()), NIL);
+  tree->rest = cons(javaTranslateATree(oJAVA_LOOP_NAMEo), NIL);
   return (tree);
 }
 
@@ -1802,8 +1802,8 @@ Cons* javaTranslateWhile(Cons* tree) {
       Cons* body = javaTranslateListOfTrees(tree->rest->rest);
 
       tree->rest->rest = NIL;
-      if (oJAVA_LOOP_NAME_USEDpo.get()) {
-        return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_NAMED_STATEMENT, javaTranslateATree(oJAVA_LOOP_NAMEo.get()), cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_WHILE, test, cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_PROGN, cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, body->concatenate(NIL, 0)), NIL), NIL)), NIL)));
+      if (oJAVA_LOOP_NAME_USEDpo) {
+        return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_NAMED_STATEMENT, javaTranslateATree(oJAVA_LOOP_NAMEo), cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_WHILE, test, cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_PROGN, cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, body->concatenate(NIL, 0)), NIL), NIL)), NIL)));
       }
       else {
         return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_WHILE, test, cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_PROGN, cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, body->concatenate(NIL, 0)), NIL), NIL)));
@@ -2554,8 +2554,27 @@ Cons* javaTranslatePrintStream(Cons* tree) {
       tree->secondSetter(javaTranslateATree(tree->rest->value));
     }
   }
-  javaTranslateListOfTrees(tree->rest->rest);
-  return (tree);
+  { Cons* args = tree->rest->rest;
+    StandardObject* arg1Type = walkedExpressionType(args->value);
+    StandardObject* arg2Type = walkedExpressionType(args->rest->value);
+
+    javaTranslateListOfTrees(args);
+    if ((!(args->rest == NIL)) &&
+        ((!(arg1Type == SGT_JAVA_TRANSLATE_STELLA_STRING)) &&
+         (!(arg2Type == SGT_JAVA_TRANSLATE_STELLA_STRING)))) {
+      if (subTypeSpecOfP(arg1Type, SGT_JAVA_TRANSLATE_STELLA_OBJECT)) {
+        args->firstSetter(listO(5, SYM_JAVA_TRANSLATE_STELLA_JAVA_METHOD_CALL, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_IDENT, wrapString("Object"), NIL), listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_IDENT, wrapString("toString"), NIL), args->value, cons(cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_ACTUALS, NIL), NIL)));
+      }
+      else if (subTypeSpecOfP(arg2Type, SGT_JAVA_TRANSLATE_STELLA_OBJECT)) {
+        args->secondSetter(listO(5, SYM_JAVA_TRANSLATE_STELLA_JAVA_METHOD_CALL, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_IDENT, wrapString("Object"), NIL), listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_IDENT, wrapString("toString"), NIL), args->rest->value, cons(cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_ACTUALS, NIL), NIL)));
+      }
+      else {
+        args->rest = cons(args->value, args->rest);
+        args->firstSetter(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_LITERAL, wrapString(""), NIL));
+      }
+    }
+    return (tree);
+  }
 }
 
 Cons* javaTranslatePrintNativeStream(Cons* tree) {
@@ -2774,11 +2793,11 @@ Cons* javaDeleteQuotedNullStatements(Cons* trees) {
 }
 
 Cons* javaWrapMethodBodyWithVarargDeclarations(Cons* methodbody) {
-  return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_BLOCK, oVARARGDECLSo.get()->reverse(), cons(methodbody, NIL)));
+  return (listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_BLOCK, oVARARGDECLSo->reverse(), cons(methodbody, NIL)));
 }
 
 Cons* javaWrapMethodBodyWithVarargValueSetup(Cons* methodbody) {
-  return (cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, oVARARGSTATEMENTSo.get()->reverse()->concatenate(cons(methodbody, NIL), 0)));
+  return (cons(SYM_JAVA_TRANSLATE_STELLA_JAVA_STATEMENTS, oVARARGSTATEMENTSo->reverse()->concatenate(cons(methodbody, NIL), 0)));
 }
 
 StringWrapper* javaTranslateVariableLengthArgName(Symbol* namesymbol, int parameternumber) {
@@ -2869,7 +2888,7 @@ Cons* javaTranslateFunctionCall(Cons* tree, MethodSlot* method) {
             actuals = actuals->concatenate(cons(listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_MAKE_ARRAY, javaTranslateTypeSpec(SGT_JAVA_TRANSLATE_STELLA_NATIVE_OBJECT_POINTER), cons(wrapInteger(function->methodReturnTypeSpecifiers_reader()->length() - 1), NIL)), NIL), 0);
           }
           otree = listO(5, SYM_JAVA_TRANSLATE_STELLA_JAVA_FUNCTION_CALL, listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_IDENT, wrapString(javaYieldClassNameForFunction(function)), NIL), listO(3, SYM_JAVA_TRANSLATE_STELLA_JAVA_IDENT, javaTranslateFunctionName(function), NIL), actuals, NIL);
-          if (!(oVARARGSTATEMENTSo.get() == NIL)) {
+          if (!(oVARARGSTATEMENTSo == NIL)) {
             otree = javaWrapMethodBodyWithVarargValueSetup(otree);
           }
         }
@@ -3273,10 +3292,11 @@ void helpStartupJavaTranslate4() {
     KWD_JAVA_TRANSLATE_CONTINUABLE_ERROR = ((Keyword*)(internRigidSymbolWrtModule("CONTINUABLE-ERROR", NULL, 2)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_STANDARD_ERROR = ((Symbol*)(internRigidSymbolWrtModule("JAVA_STANDARD_ERROR", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_STANDARD_OUT = ((Symbol*)(internRigidSymbolWrtModule("JAVA_STANDARD_OUT", NULL, 0)));
+    SGT_JAVA_TRANSLATE_STELLA_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("OBJECT", NULL, 1)));
+    SYM_JAVA_TRANSLATE_STELLA_JAVA_LITERAL = ((Symbol*)(internRigidSymbolWrtModule("JAVA_LITERAL", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_PRINT_NATIVE_STREAM = ((Symbol*)(internRigidSymbolWrtModule("JAVA_PRINT_NATIVE_STREAM", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_EOL = ((Symbol*)(internRigidSymbolWrtModule("JAVA_EOL", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_EOL = ((Symbol*)(internRigidSymbolWrtModule("EOL", NULL, 0)));
-    SYM_JAVA_TRANSLATE_STELLA_JAVA_LITERAL = ((Symbol*)(internRigidSymbolWrtModule("JAVA_LITERAL", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_TRUE = ((Symbol*)(internRigidSymbolWrtModule("TRUE", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_FALSE = ((Symbol*)(internRigidSymbolWrtModule("FALSE", NULL, 0)));
     SYM_JAVA_TRANSLATE_STELLA_NULL = ((Symbol*)(internRigidSymbolWrtModule("NULL", NULL, 0)));
@@ -3295,7 +3315,6 @@ void helpStartupJavaTranslate4() {
     SYM_JAVA_TRANSLATE_STELLA_AREF_SETTER = ((Symbol*)(internRigidSymbolWrtModule("AREF-SETTER", NULL, 0)));
     SGT_JAVA_TRANSLATE_STELLA_METHOD_SLOT = ((Surrogate*)(internRigidSymbolWrtModule("METHOD-SLOT", NULL, 1)));
     SYM_JAVA_TRANSLATE_STELLA_JAVA_UNARY_OP = ((Symbol*)(internRigidSymbolWrtModule("JAVA_UNARY_OP", NULL, 0)));
-    SYM_JAVA_TRANSLATE_STELLA_JAVA_BINARY_OP = ((Symbol*)(internRigidSymbolWrtModule("JAVA_BINARY_OP", NULL, 0)));
   }
 }
 
@@ -3303,8 +3322,8 @@ void helpStartupJavaTranslate5() {
   {
     oJAVA_TRUE_STRING_WRAPPERo = wrapString("true");
     oJAVA_FALSE_STRING_WRAPPERo = wrapString("false");
-    oVARARGSTATEMENTSo.set(NIL);
-    oVARARGDECLSo.set(NIL);
+    oVARARGSTATEMENTSo = NIL;
+    oVARARGDECLSo = NIL;
     oJAVA_OPERATOR_TABLEo = ((KeyValueList*)(dictionary(SGT_JAVA_TRANSLATE_STELLA_KEY_VALUE_LIST, 34, SYM_JAVA_TRANSLATE_STELLA_ii, cons(wrapString("++"), NIL), SYM_JAVA_TRANSLATE_STELLA___, cons(wrapString("--"), NIL), SYM_JAVA_TRANSLATE_STELLA_i, cons(wrapString("+"), NIL), SYM_JAVA_TRANSLATE_STELLA__, cons(wrapString("-"), NIL), SYM_JAVA_TRANSLATE_STELLA_o, cons(wrapString("*"), NIL), SYM_JAVA_TRANSLATE_STELLA_s, cons(wrapString("/"), NIL), SYM_JAVA_TRANSLATE_STELLA_EQp, cons(wrapString("=="), NIL), SYM_JAVA_TRANSLATE_STELLA_g, cons(wrapString(">"), NIL), SYM_JAVA_TRANSLATE_STELLA_ge, cons(wrapString(">="), NIL), SYM_JAVA_TRANSLATE_STELLA_eg, cons(wrapString(">="), NIL), SYM_JAVA_TRANSLATE_STELLA_l, cons(wrapString("<"), NIL), SYM_JAVA_TRANSLATE_STELLA_el, cons(wrapString("<="), NIL), SYM_JAVA_TRANSLATE_STELLA_le, cons(wrapString("<="), NIL), SYM_JAVA_TRANSLATE_STELLA_AND, cons(wrapString("&&"), NIL), SYM_JAVA_TRANSLATE_STELLA_OR, cons(wrapString("||"), NIL), SYM_JAVA_TRANSLATE_STELLA_NOT, cons(wrapString("!"), NIL), SYM_JAVA_TRANSLATE_STELLA_CHOOSE, cons(wrapString("?"), cons(wrapString(":"), NIL)))));
     oJAVA_CHARACTER_SUBSTITUTION_TABLEo = javaCreateCharacterSubstitutionTable();
     oJAVA_RESERVED_WORD_TABLEo = javaCreateReservedWordTable();
@@ -3445,12 +3464,13 @@ void helpStartupJavaTranslate7() {
 void startupJavaTranslate() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupJavaTranslate1();
       helpStartupJavaTranslate2();
       helpStartupJavaTranslate3();
       helpStartupJavaTranslate4();
+      SYM_JAVA_TRANSLATE_STELLA_JAVA_BINARY_OP = ((Symbol*)(internRigidSymbolWrtModule("JAVA_BINARY_OP", NULL, 0)));
       SYM_JAVA_TRANSLATE_STELLA_JAVA_TERNARY_OP = ((Symbol*)(internRigidSymbolWrtModule("JAVA_TERNARY_OP", NULL, 0)));
       SGT_JAVA_TRANSLATE_STELLA_ARRAY = ((Surrogate*)(internRigidSymbolWrtModule("ARRAY", NULL, 1)));
       SGT_JAVA_TRANSLATE_STELLA_NATIVE_VECTOR = ((Surrogate*)(internRigidSymbolWrtModule("NATIVE-VECTOR", NULL, 1)));
@@ -3943,13 +3963,15 @@ Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_STANDARD_ERROR = NULL;
 
 Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_STANDARD_OUT = NULL;
 
+Surrogate* SGT_JAVA_TRANSLATE_STELLA_OBJECT = NULL;
+
+Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_LITERAL = NULL;
+
 Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_PRINT_NATIVE_STREAM = NULL;
 
 Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_EOL = NULL;
 
 Symbol* SYM_JAVA_TRANSLATE_STELLA_EOL = NULL;
-
-Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_LITERAL = NULL;
 
 Symbol* SYM_JAVA_TRANSLATE_STELLA_TRUE = NULL;
 

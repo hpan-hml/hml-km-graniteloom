@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2011      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: methods.ste,v 1.93 2010/09/08 20:57:29 hans Exp
+;;; Version: methods.ste,v 1.94 2011/12/12 23:21:32 hans Exp
 
 ;;; Procedures that define Stella method objects (method-slots).
 
@@ -721,6 +721,22 @@ to the class identified by the first parameter in 'inputParameters'."
                   (bquote (concatenate & chunk & stringTree))))
     (return stringTree)))
 
+(defun (define-function-object-eagerly? BOOLEAN) ((function METHOD-SLOT))
+  ;; Return TRUE if `function' should be defined eagerly during startup.
+  ;; This is needed, for example, if we need a slot option handler to run
+  ;; for side effect right away (as with property demon registration).
+  ;; Currently we do this if any option handlers are defined on any of
+  ;; `function's dynamic slots.
+  (let ((methodClass (type-class @METHOD-SLOT))
+        (slot STORAGE-SLOT NULL))
+    (foreach (slotName value) in (dynamic-slots function)
+        do (ignore value)
+           (setq slot (safe-lookup-slot methodClass slotName))
+           (when (and (defined? slot)
+                      (defined? (slot-option-handler slot)))
+             (return TRUE)))
+    (return FALSE)))
+
 (defun (yield-define-stella-method-object CONS)
     ((method METHOD-SLOT) (codeMethod METHOD-SLOT) (wrapperMethod METHOD-SLOT))
   ;; Yield a parse tree that defines a method object for `method' at startup time.
@@ -730,18 +746,22 @@ to the class identified by the first parameter in 'inputParameters'."
   ;; If `wrapperMethod' is non-NULL, the `evaluator-wrapper-code' slot of `method'
   ;;    will be initialized with `wrapperMethod's code.
   (safety 2 (defined? (method-stringified-source method)))
-  (let ((name (stringify (slot-name method))))
+  (let ((name OBJECT (stringify (slot-name method))))
     (cond ((method-function? method)
+           (cond ((define-function-object-eagerly? method)
+                  ;; indicate eager definition by setting the `name' string to NULL:
+                  (setq name (quote NULL)))
+                 ((not (eql? name (symbol-name (slot-name method))))
+                  ;; indicate to `define-function-object' that this is a
+                  ;; complex name that needs to be unstringified (we could fold this
+                  ;; into the NULL case above, but for now we leave it as is):
+                  (setq name (concatenate " " name))))
            (return
              (bquote
-              ;; This will define the method object lazily, i.e., the actual
-              ;;    object generation will be deferred until its first lookup:
+              ;; This will (generally) define the method object lazily, i.e., the
+              ;; actual object generation will be deferred until its first lookup:
               (define-function-object
-               & (choose (eql? name (symbol-name (slot-name method)))
-                         name
-                         ;; indicate to `define-function-object' that this is a
-                         ;;    complex name that needs to be unstringified:
-                         (concatenate " " name))
+               & name
                & (yield-string-constant-tree (method-stringified-source method))
                & (choose (defined? codeMethod)
                          (bquote (the-code :function & (slot-name codeMethod)))
@@ -1497,32 +1517,43 @@ Scan all visible symbols looking for one that has a function defined for it."
   ;;    appropriate code slots of the generated objects.
   ;; This defines the function object lazily (in concert with `lookup-function')
   ;;    to defer parsing of `definition' and function object generation to the
-  ;;    point where the object is actually needed.
+  ;;    point where the object is actually needed.  Unless, if `name' is NULL
+  ;;    the object is created eagerly to run any option handlers right away.
   ;; To allow insertion of a stub into the function lookup table without having
   ;;    to parse `definition', we pass the `name' of the function in a separate
   ;;    argument.
-  (let ((nameSymbol
-         (choose (eql? (nth name 0) #\space)
-                 ;; `yield-define-stella-method-object' tells us that we
-                 ;;     have a complex name, use the reader to parse it:
-                 (read-s-expression-from-string name)
-                 ;; otherwise, intern it directly:
-                 (intern-symbol-in-module name NULL FALSE)))
-        (oldFunction (lookup *function-lookup-table* nameSymbol))
-        (record (new VECTOR :array-size (choose (defined? wrapperCode) 5 4))))
-    (when (and (defined? oldFunction)
-               (eql? (primary-type oldFunction) @VECTOR))
-      (setq oldFunction NULL))
-    (setf (first record) definition)
-    (setf (second record) oldFunction)
-    ;; we have to store module information, since the stub
-    ;;    might get expanded while we are in a different module:
-    (setf (third record) (module-full-name *module*))
-    (when (defined? code)
-      (setf (fourth record) code))
-    (when (defined? wrapperCode)
-      (setf (fifth record) wrapperCode))
-    (insert-at *function-lookup-table* nameSymbol record)))
+  (if (null? name)
+      ;; eager creation, define function object right away:
+      (let ((function (define-method-from-stringified-source NULL NULL definition)))
+        (when (defined? function)
+          (when (defined? code)
+            (setf (function-code function) code))
+          (when (defined? wrapperCode)
+            (setf (evaluator-wrapper-code function) wrapperCode))
+          (insert-at *function-lookup-table* (slot-name function) function)))
+    ;; otherwise, only define a stub:
+    (let ((nameSymbol
+           (choose (eql? (nth name 0) #\space)
+                   ;; `yield-define-stella-method-object' tells us that we
+                   ;;     have a complex name, use the reader to parse it:
+                   (read-s-expression-from-string name)
+                   ;; otherwise, intern it directly:
+                   (intern-symbol-in-module name NULL FALSE)))
+          (oldFunction (lookup *function-lookup-table* nameSymbol))
+          (record (new VECTOR :array-size (choose (defined? wrapperCode) 5 4))))
+      (when (and (defined? oldFunction)
+                 (eql? (primary-type oldFunction) @VECTOR))
+        (setq oldFunction NULL))
+      (setf (first record) definition)
+      (setf (second record) oldFunction)
+      ;; we have to store module information, since the stub
+      ;;    might get expanded while we are in a different module:
+      (setf (third record) (module-full-name *module*))
+      (when (defined? code)
+        (setf (fourth record) code))
+      (when (defined? wrapperCode)
+        (setf (fifth record) wrapperCode))
+      (insert-at *function-lookup-table* nameSymbol record))))
 
   ;;
 ;;;;;; Global variables

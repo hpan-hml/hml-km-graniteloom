@@ -1,6 +1,6 @@
-This is manual.info, produced by makeinfo version 4.3 from manual.texi.
+This is manual.info, produced by makeinfo version 4.13 from manual.texi.
 
-   This file documents the STELLA programming language.
+This file documents the STELLA programming language.
 
    Copyright (C) 2006 University of Southern California, Information
 Sciences Institute 4676 Admiralty Way Marina Del Rey, CA 90292
@@ -12,11 +12,11 @@ preserved on all copies.
 
 File: manual.info,  Node: Top,  Next: Overview,  Prev: (dir),  Up: (dir)
 
-STELLA Manual
-*************
+1 STELLA Manual
+***************
 
-   This document describes the STELLA programming language.  STELLA
-stands for Strongly-TypEd, Lisp-like LAnguage.  It is an object-oriented
+This document describes the STELLA programming language.  STELLA stands
+for Strongly-TypEd, Lisp-like LAnguage.  It is an object-oriented
 language that strongly supports symbolic programming tasks.  STELLA
 programs can currently be translated into Common-Lisp, C++ and Java.
 STELLA programming is best done in an Emacs-based Lisp development
@@ -40,11 +40,11 @@ it as a stand-alone application, or to link it with other programs.
 
 File: manual.info,  Node: Overview,  Next: Installation,  Prev: Top,  Up: Top
 
-Introduction
-************
+2 Introduction
+**************
 
-   This document describes the STELLA programming language.  STELLA
-stands for Strongly-TypEd, Lisp-like LAnguage.  It is an object-oriented
+This document describes the STELLA programming language.  STELLA stands
+for Strongly-TypEd, Lisp-like LAnguage.  It is an object-oriented
 language that strongly supports symbolic programming tasks.  We
 developed it, since none of the currently "healthy" languages such as
 C++ or Java adequately support symbolic programming.  While Common-Lisp
@@ -118,10 +118,10 @@ application, or to link it with other programs.
 
 File: manual.info,  Node: Credits and History,  Prev: Overview,  Up: Overview
 
-Credits and History
-===================
+2.1 Credits and History
+=======================
 
-   Bob MacGregor invented STELLA in 1995 to implement the PowerLoom
+Bob MacGregor invented STELLA in 1995 to implement the PowerLoom
 knowledge representation system.  He wrote most of the first Lisp-based
 kernel system of STELLA and still occasionally writes extensions or
 provides fixes.  Today he is primarily a STELLA user writing his own
@@ -148,8 +148,8 @@ extensions such as the STELLA XML parser.
 
 File: manual.info,  Node: Installation,  Next: The STELLA Language,  Prev: Overview,  Up: Top
 
-Installation
-************
+3 Installation
+**************
 
 * Menu:
 
@@ -164,10 +164,10 @@ Installation
 
 File: manual.info,  Node: System Requirements,  Next: Unpacking the Sources,  Prev: Installation,  Up: Installation
 
-System Requirements
-===================
+3.1 System Requirements
+=======================
 
-   To install and use STELLA you'll approximately need the following
+To install and use STELLA you'll approximately need the following
 amounts of disk space:
 
    * 8 MB for the tar-red or zip-ped archive file
@@ -234,11 +234,11 @@ supported.
 
 File: manual.info,  Node: Unpacking the Sources,  Next: Lisp Installation,  Prev: System Requirements,  Up: Installation
 
-Unpacking the Sources
-=====================
+3.2 Unpacking the Sources
+=========================
 
-   Uncompress and untar the file `stella-X.Y.Z.tar.gz' (or unzip the
-file `stella-X.Y.Z.zip') in the parent directory of where you want to
+Uncompress and untar the file `stella-X.Y.Z.tar.gz' (or unzip the file
+`stella-X.Y.Z.zip') in the parent directory of where you want to
 install STELLA (`X.Y.Z' are place holders for the actual version
 numbers).  This will create the STELLA tree in the directory
 `stella-X.Y.Z/'.  All pathnames mentioned below will be relative to that
@@ -247,10 +247,10 @@ directory which we will usually refer to as the "STELLA directory".
 
 File: manual.info,  Node: Lisp Installation,  Next: C++ Installation,  Prev: Unpacking the Sources,  Up: Installation
 
-Lisp Installation
-=================
+3.3 Lisp Installation
+=====================
 
-   To install the Lisp version startup Lisp and load the file
+To install the Lisp version startup Lisp and load the file
 `load-stella.lisp' with:
 
      (CL:load "load-stella.lisp")
@@ -298,11 +298,11 @@ you have to type `CL:*' instead of `*'.
 
 File: manual.info,  Node: C++ Installation,  Next: Java Installation,  Prev: Lisp Installation,  Up: Installation
 
-C++ Installation
-================
+3.4 C++ Installation
+====================
 
-   To compile the C++ version of STELLA change to the native C++
-directory and run `make':
+To compile the C++ version of STELLA change to the native C++ directory
+and run `make':
 
      % cd native/cpp/stella
      % make
@@ -339,15 +339,15 @@ version will be run.
 
 File: manual.info,  Node: Java Installation,  Next: X/Emacs Setup,  Prev: C++ Installation,  Up: Installation
 
-Java Installation
-=================
+3.5 Java Installation
+=====================
 
-   Nothing needs to be done to install the Java version.  Since Java
-class files are platform independent, they are already shipped with the
-STELLA distribution and can be found in the directory `native/java' and
-its subdirectories.  Additionally, they have been collected into the
-file `native/java/lib/stella.jar'.  To try out the Java version of
-STELLA run the `stella' script in the STELLA directory:
+Nothing needs to be done to install the Java version.  Since Java class
+files are platform independent, they are already shipped with the STELLA
+distribution and can be found in the directory `native/java' and its
+subdirectories.  Additionally, they have been collected into the file
+`native/java/lib/stella.jar'.  To try out the Java version of STELLA
+run the `stella' script in the STELLA directory:
 
      % stella java
      Running Java version of STELLA...
@@ -371,11 +371,11 @@ use the STELLA Java executable to translate STELLA code.
 
 File: manual.info,  Node: X/Emacs Setup,  Next: Removing Unneeded Files,  Prev: Java Installation,  Up: Installation
 
-X/Emacs Setup
-=============
+3.6 X/Emacs Setup
+=================
 
-   STELLA development is very similar to Lisp development, and it is
-best done in an X/Emacs-based Lisp development environment such as the
+STELLA development is very similar to Lisp development, and it is best
+done in an X/Emacs-based Lisp development environment such as the
 Allegro-CL Emacs interface plus Allegro Composer, or ILISP.  If you do
 use X/Emacs with the Allegro CL interface, add the following to your
 `.emacs' or `.xemacs/init.el' file:
@@ -392,10 +392,10 @@ specific installation instructions.
 
 File: manual.info,  Node: Removing Unneeded Files,  Prev: X/Emacs Setup,  Up: Installation
 
-Removing Unneeded Files
-=======================
+3.7 Removing Unneeded Files
+===========================
 
-   To save disk space you can remove files that you don't need.  For
+To save disk space you can remove files that you don't need.  For
 example, if you are not interested in the C++ version of STELLA, you can
 delete the directory `native/cpp'.  Similarly, you can remove
 `native/java' to eliminate all Java-related files.  You could do the
@@ -409,8 +409,8 @@ STELLA documentation, you can delete parts or all of the
 
 File: manual.info,  Node: The STELLA Language,  Next: Programming in STELLA,  Prev: Installation,  Up: Top
 
-The STELLA Language
-*******************
+4 The STELLA Language
+*********************
 
 * Menu:
 
@@ -426,14 +426,14 @@ The STELLA Language
 
 File: manual.info,  Node: Language Overview,  Next: Basic Data Types,  Prev: The STELLA Language,  Up: The STELLA Language
 
-Language Overview
-=================
+4.1 Language Overview
+=====================
 
-   STELLA is a strongly typed, object-oriented, Lisp-like language.
-STELLA programs are first translated into either Common Lisp, C++, or
-Java, and then compiled with any conventional compiler for the chosen
-target language to generate executable code.  Over 95% of the STELLA
-system is written in STELLA itself, the rest is written in
+STELLA is a strongly typed, object-oriented, Lisp-like language.  STELLA
+programs are first translated into either Common Lisp, C++, or Java,
+and then compiled with any conventional compiler for the chosen target
+language to generate executable code.  Over 95% of the STELLA system is
+written in STELLA itself, the rest is written in
 target-language-specific native code.
 
    The design of STELLA borrows from a variety of programming
@@ -509,18 +509,18 @@ expressions.
 
 File: manual.info,  Node: Basic Data Types,  Next: Control Structure,  Prev: Language Overview,  Up: The STELLA Language
 
-Basic Data Types (tbw)
-======================
+4.2 Basic Data Types (tbw)
+==========================
 
-   To be written.
+To be written.
 
 
 File: manual.info,  Node: Control Structure,  Next: Functions,  Prev: Basic Data Types,  Up: The STELLA Language
 
-Control Structure (tbc)
-=======================
+4.3 Control Structure (tbc)
+===========================
 
-   To be completed.
+To be completed.
 
 * Menu:
 
@@ -529,16 +529,16 @@ Control Structure (tbc)
 
 File: manual.info,  Node: Conditionals,  Prev: Control Structure,  Up: Control Structure
 
-Conditionals
-------------
+4.3.1 Conditionals
+------------------
 
-   STELLA conditionals are very similar to those found in Common-Lisp.
+STELLA conditionals are very similar to those found in Common-Lisp.
 The main difference is that most STELLA conditionals are statements and
 therefore do not return a value.  For this reason, a C++-style `choose'
 directive has been added to the language to allow value
 conditionalization based on a boolean expression.
 
- - Statement: if condition then-statement else-statement
+ -- Statement: if condition then-statement else-statement
      Evaluate the boolean expression CONDITION.  If the result is true
      execute THEN-STATEMENT, otherwise, execute ELSE-STATEMENT.  Note
      that unlike the Common-Lisp version of `if' the ELSE-STATEMENT is
@@ -548,7 +548,7 @@ conditionalization based on a boolean expression.
               (print "x is greater than y" EOL)
             (print "x is less than or equal to y" EOL))
 
- - Statement: when condition statement...
+ -- Statement: when condition statement...
      Evaluate the boolean expression CONDITION.  Only if the result is
      true execute the STATEMENT's in the body.  Example:
 
@@ -556,7 +556,7 @@ conditionalization based on a boolean expression.
             (print "x is a symbol, ")
             (print "its name is " (symbol-name (cast x SYMBOL)) EOL))
 
- - Statement: unless condition statement...
+ -- Statement: unless condition statement...
      Evaluate the boolean expression CONDITION.  Only if the result is
      false execute the STATEMENT's in the body.  Therefore, `(unless
      TEST ...)' is equivalent to `(when (not TEST) ...)'.  Example:
@@ -565,7 +565,7 @@ conditionalization based on a boolean expression.
             (print "x is not a symbol, ")
             (print "hence, its name is unknown" EOL))
 
- - Statement: cond clause...
+ -- Statement: cond clause...
      `cond' is a conditional with an arbitrary number of conditions each
      represented by a CLAUSE.  Each `cond' clause has to be of the
      following form:
@@ -583,7 +583,7 @@ conditionalization based on a boolean expression.
                 (otherwise
                  (print "x is an object" EOL)))
 
- - Expression: choose condition true-expression false-expression
+ -- Expression: choose condition true-expression false-expression
      Evaluate the boolean expression CONDITION.  If the result is true
      return the value of TRUE-EXPRESSION, otherwise, return the value
      of FALSE-EXPRESSION.  STELLA computes the most specific common
@@ -593,7 +593,7 @@ conditionalization based on a boolean expression.
 
           (setq face (choose happy? :smile :frown))
 
- - Statement: case expression clause...
+ -- Statement: case expression clause...
      Each `case' clause has to be of one of the following forms:
 
           (KEY STATEMENT...)
@@ -621,7 +621,7 @@ conditionalization based on a boolean expression.
             (otherwise
              (setq price :unknown)))
 
- - Statement: typecase expression clause...
+ -- Statement: typecase expression clause...
      Each `typecase' clause has to be of one of the following forms:
 
           (TYPE STATEMENT...)
@@ -686,48 +686,48 @@ e.g., `STRING-WRAPPER', `INTEGER-WRAPPER', etc.
 
 File: manual.info,  Node: Functions,  Next: Classes,  Prev: Control Structure,  Up: The STELLA Language
 
-Functions (tbw)
-===============
+4.4 Functions (tbw)
+===================
 
-   To be written.
+To be written.
 
 
 File: manual.info,  Node: Classes,  Next: Methods,  Prev: Functions,  Up: The STELLA Language
 
-Classes (tbw)
-=============
+4.5 Classes (tbw)
+=================
 
-   To be written.
+To be written.
 
 
 File: manual.info,  Node: Methods,  Next: Macros,  Prev: Classes,  Up: The STELLA Language
 
-Methods (tbw)
-=============
+4.6 Methods (tbw)
+=================
 
-   To be written.
+To be written.
 
 
 File: manual.info,  Node: Macros,  Next: Modules,  Prev: Methods,  Up: The STELLA Language
 
-Macros (tbw)
-============
+4.7 Macros (tbw)
+================
 
-   To be written.
+To be written.
 
 
 File: manual.info,  Node: Modules,  Prev: Macros,  Up: The STELLA Language
 
-Modules (tbw)
-=============
+4.8 Modules (tbw)
+=================
 
-   To be written.
+To be written.
 
 
 File: manual.info,  Node: Programming in STELLA,  Next: Library Classes,  Prev: The STELLA Language,  Up: Top
 
-Programming in STELLA
-*********************
+5 Programming in STELLA
+***********************
 
 * Menu:
 
@@ -738,10 +738,10 @@ Programming in STELLA
 
 File: manual.info,  Node: Hello World in STELLA,  Next: Incrementally Developing STELLA Code,  Prev: Programming in STELLA,  Up: Programming in STELLA
 
-Hello World in STELLA
-=====================
+5.1 Hello World in STELLA
+=========================
 
-   Included with the STELLA distribution is a simple Hello World
+Included with the STELLA distribution is a simple Hello World
 application that shows you how to organize your own STELLA code and
 build a working STELLA application.  The sources for the Hello World
 system consist of the following files:
@@ -799,10 +799,10 @@ of other options:
 
 File: manual.info,  Node: Hello World in Lisp,  Next: Hello World in C++,  Prev: Hello World in STELLA,  Up: Hello World in STELLA
 
-Hello World in Lisp
--------------------
+5.1.1 Hello World in Lisp
+-------------------------
 
-   To generate a Lisp translation of Hello World you can use either the
+To generate a Lisp translation of Hello World you can use either the
 Lisp, C++ or Java version of STELLA.  Before you can translate you have
 to make sure the following native directories exist:
 
@@ -824,7 +824,7 @@ automatically).  For the Hello World system these directories already
 exist.
 
    To generate a Lisp translation of Hello World using Lisp startup a
-Lisp version of STELLA (see *Note Lisp Installation::).  The following
+Lisp version of STELLA (see *note Lisp Installation::).  The following
 idiom will then translate the system into Lisp and also Lisp-compile
 and load it.  The first argument to `make-system' is the name of the
 system, and the second argument indicates into what language it should
@@ -889,10 +889,10 @@ translations have already been generated in the previous step.
 
 File: manual.info,  Node: Hello World in C++,  Next: Hello World in Java,  Prev: Hello World in Lisp,  Up: Hello World in STELLA
 
-Hello World in C++
-------------------
+5.1.2 Hello World in C++
+------------------------
 
-   To generate a C++ translation of Hello World you can use either the
+To generate a C++ translation of Hello World you can use either the
 Lisp, C++ or Java version of STELLA.  Before you can translate you have
 to make sure the following native directory exists:
 
@@ -905,7 +905,7 @@ versions of STELLA might do that automatically).  For the Hello World
 system the directory already exist.
 
    To generate a C++ translation of Hello World using Lisp startup a
-Lisp version of STELLA (see *Note Lisp Installation::).  The following
+Lisp version of STELLA (see *note Lisp Installation::).  The following
 idiom will then translate the system into C++.  The first argument to
 `make-system' is the name of the system, and the second argument
 indicates into what language it should be translated:
@@ -984,10 +984,10 @@ library file directly.  To run the Hello World system simply run the
 
 File: manual.info,  Node: Hello World in Java,  Prev: Hello World in C++,  Up: Hello World in STELLA
 
-Hello World in Java
--------------------
+5.1.3 Hello World in Java
+-------------------------
 
-   To generate a Java translation of Hello World you can use either the
+To generate a Java translation of Hello World you can use either the
 Lisp, C++ or Java version of STELLA.  Before you can translate you have
 to make sure the following native directory exists:
 
@@ -1007,7 +1007,7 @@ specified via the `:java-package' option in the definition of the
 as part of a Java identifier.
 
    To generate a Java translation of Hello World using Lisp startup a
-Lisp version of STELLA (see *Note Lisp Installation::).  The following
+Lisp version of STELLA (see *note Lisp Installation::).  The following
 idiom will then translate the system into Java.  The first argument to
 `make-system' is the name of the system, and the second argument
 indicates into what language it should be translated:
@@ -1058,4 +1058,3327 @@ run the Hello World system like this:
 
    It is not necessary to Java-compile STELLA first, since STELLA
 already ships with a Java compilation of the STELLA system.
+
+
+File: manual.info,  Node: Incrementally Developing STELLA Code,  Next: Performance Hints,  Prev: Hello World in STELLA,  Up: Programming in STELLA
+
+5.2 Incrementally Developing STELLA Code
+========================================
+
+The preferred method of STELLA code development is to use a Lisp-based
+version of STELLA for all the prototyping and testing, since that allows
+you to exploit most (or all) of the rapid-prototyping advantages of
+Lisp.  Once a system has reached a certain point of stability, it can be
+translated into C++ or Java for delivery or to interface it with other
+C++ or Java code.
+
+   In the following, we assume an X/Emacs-based Lisp development
+environment such as the Allegro CL Emacs interface, where Lisp is run in
+an Emacs subprocess, and Lisp source can be compiled and evaluated
+directly from the source buffers.  By "Lisp buffer" we mean the listener
+buffer in which Lisp is actually running, and by "source buffer" we mean
+a buffer that is used to edit a file that contains STELLA source.
+
+   Included in the distribution is the Hello World system comprised of
+the files
+
+     sources/systems/hello-world-system.ste
+     sources/hello-world/file-a.ste
+     sources/hello-world/file-b.ste
+
+   To get started, simply add your code to either `file-a.ste' or
+`file-b.ste', since all the necessary definitions and directories for
+these files are already set up properly.  See section ??? on how to
+setup your own system.
+
+   Make sure the Hello World system is loaded into Lisp by doing the
+following:
+
+     (make-system "hello-world" :common-lisp)
+
+   This will make sure that the system definition is loaded and the
+necessary module definition is evaluated.
+
+   Now suppose you add the following function to `file-a.ste':
+
+     (defun (factorial INTEGER) ((n INTEGER))
+       (if (eql? n 0)
+           (return 1)
+         (return (* n (factorial (1- n))))))
+
+   There are various options for translating and evaluating this
+definition.  For example, you can simply remake the complete system
+similar to what you would do for a C++ or Java program:
+
+     (make-system "hello-world" :common-lisp)
+
+   This will retranslate the modified files, recompile them and reload
+them into your Lisp image.
+
+   Instead of retranslating and recompiling everything, you can
+incrementally evaluate the definition of `factorial' from your
+Emacs-to-Lisp interface.  Simply put your cursor somewhere inside the
+definition in the source buffer and evaluate it by typing `M-C-x'.
+This translates the STELLA code into Lisp and compiles (or evaluates)
+the resulting Lisp code.  Now you can actually try it out in the Lisp
+buffer, for example:
+
+     STELLA(4): (factorial 6)
+     720
+
+   Finally, instead of evaluating the definition in the source buffer,
+you can also enter it directly at the Lisp prompt with the same effect.
+
+   The way this works is that the Lisp symbol `stella::defun' is
+actually bound to a Lisp macro that calls all the necessary translation
+machinery to convert the STELLA `defun' into Lisp code.  Look at the
+file `sources/stella/cl-lib/stella-to-cl.ste' for the complete set of
+such macros.  This might be a bit confusing, since there are now three
+different bindings (or meanings) of `defun':
+
+  1. The STELLA operator `defun' used to define STELLA functions.
+
+  2. The Lisp macro `stella::defun' that resides in the `STELLA' Lisp
+     package and is only available for convenience in Lisp versions of
+     STELLA.
+
+  3. The Lisp macro `CL:defun' which is the standard Common Lisp macro
+     used to define Lisp functions.
+
+   We'll try to explicitly qualify which meaning is used wherever there
+might be some doubt which one is meant.  In general, every unqualified
+symbol mentioned below is either part of the STELLA language or resides
+in the STELLA Lisp package.
+
+   Since a newly-written STELLA function might have errors, it is
+prudent to first only translate it without actually executing the
+result of the translation.  In the source buffer you can do that by
+macro-expanding the `defun'.  For example, if you use the Allegro CL
+interface you would position the cursor on the opening parenthesis of
+the `defun' and then type `M-M'.  Any errors discovered by the STELLA
+translator are reported in the Lisp buffer window.  The expansion will
+be a `CL:progn' that contains the translated definition as the first
+element plus various startup-time (initialization) code following it.
+
+   In the Lisp buffer you can achieve a similar effect with the
+`lptrans' macro.  For example, executing
+
+     (lptrans
+      (defun (factorial INTEGER) ((n INTEGER))
+        (if (eql? n 0)
+            (return 1)
+          (return (* n (factorial (1- n)))))))
+
+   in the Lisp buffer first Lisp-translates the definition, and then
+prints the translation.  To see the C++ translation you can use
+`cpptrans', calling `jptrans' will generate the Java translation.
+
+   You can also use `lptrans'/`cpptrans'/`jptrans' to translate code
+fragments that are not top-level definitions such as `defun' and its
+friends.  For example:
+
+     STELLA(8): (lptrans
+                 (foreach element in (list 1 2 3)
+                     do (print element EOL)))
+
+     (CL:LET* ((ELEMENT NULL)
+               (ITER-003
+                (%THE-CONS-LIST (LIST (WRAP-INTEGER 1) (WRAP-INTEGER 2)
+                                      (WRAP-INTEGER 3)))))
+       (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-003 NIL)) DO
+                (CL:PROGN (SETQ ELEMENT (%%VALUE ITER-003))
+                          (SETQ ITER-003 (%%REST ITER-003)))
+                (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT)
+                                ELEMENT EOL)))
+     ()
+     STELLA(9): (cpptrans
+                 (foreach element in (list 1 2 3)
+                     do (print element EOL)))
+     { Object* element = NULL;
+       Cons* iter004 = list(3, wrapInteger(1), wrapInteger(2),
+                               wrapInteger(3))-> theConsList;
+
+       while (!(iter004 == NIL)) {
+         element = iter004->value;
+         iter004 = iter004->rest;
+         cout << element << endl;
+       }
+     }
+     :VOID
+     STELLA(10): (jptrans
+                  (foreach element in (list 1 2 3)
+                      do (print element EOL)))
+     { Stella_Object element = null;
+       Cons iter005 = Stella.list
+                       (Stella_Object.cons
+                         (IntegerWrapper.wrapInteger(1),
+                          Stella_Object.cons
+                           (IntegerWrapper.wrapInteger(2),
+                            Stella_Object.cons
+                             (IntegerWrapper.wrapInteger(3),
+                              Stella.NIL)))).theConsList;
+
+       while (!(iter005 == Stella.NIL)) {
+         {
+           element = iter005.value;
+           iter005 = iter005.rest;
+         }
+         java.lang.System.out.println(element);
+       }
+     }
+     :VOID
+
+   The use of `lptrans' is really necessary here, since there is no
+Lisp macro `foreach' that knows how to translate STELLA `foreach' loops
+(those Lisp macros only exist for top-level definition commands such as
+`defun').  In order to translate such code fragments without error
+messages, they need to be self-contained, i.e., all referenced
+variables have to be either bound by a surrounding `let', or they must
+be globally defined variables.  Otherwise, the STELLA translator will
+generate various "undefined variable" error messages.
+
+   You can use the STELLA Lisp macro `eval' (i.e., `stella::eval' not
+`CL:eval') to actually execute such a code fragment.  For example:
+
+     STELLA(11): (eval
+                  (foreach element in (list 1 2 3)
+                      do (print element EOL)))
+     |L|1
+     |L|2
+     |L|3
+     ()
+
+   This translates the loop and executes the result, which prints the
+wrapped numbers (hence, the `|L|' prefix) to standard output.  The `()'
+at the end is the resulting Lisp value returned by the loop (in Lisp
+everything returns a value, even though for STELLA `foreach' is a
+statement, not an expression).
+
+   Make it a habit to wrap `eval' around any STELLA code you
+incrementally evaluate in the Lips buffer.  This makes sure that all the
+arguments to a function, etc., are translated into the appropriate
+STELLA objects.  For example, evaluating
+
+     (eval (list :a :b :c))
+
+   in the Lisp buffer generates a STELLA list that points to the STELLA
+keywords `:a', `:b' and `:c'.  If you don't use `eval', for example,
+
+     (list :a :b :c)
+
+   a STELLA list containing the Lisp keywords `:a', `:b' and `:c' will
+be created.  Lisp keywords are a completely different data structure
+than STELLA keywords, and any STELLA code expecting a STELLA keyword but
+finding a Lisp keyword will break, since Lisp keywords are not a legal
+STELLA data structure.  Unfortunately, such cases can be very confusing,
+since Lisp and STELLA keywords look/print exactly alike.
+
+   `eval' is also necessary to access STELLA symbols and surrogates in
+the Lisp buffer.  For example, to access a STELLA symbol, you can use
+`quote' (again, this is the STELLA `quote' not `CL:quote'):
+
+     (eval (quote foo))
+
+   This returns the STELLA symbol `foo'.  We explicitly used `quote'
+here, since code typed at the Lisp prompt is first passed through the
+Lisp reader before the STELLA translator sees it, and the default Lisp
+reader interprets the `'' character differently than the STELLA reader.
+Within a STELLA file you can use the syntax `'foo', since it will be
+read directly by the STELLA reader that knows how to interpret it
+correctly.
+
+   `lptrans', `cpptrans' and `jptrans' are evaluable STELLA commands
+that can also be evaluated by the C++ and Java version of STELLA.  For
+example, to generate a Java translation of a little STELLA code
+fragment you could run the `stella' script in the STELLA directory like
+this (the output below has been additionally indented by hand for
+clarity):
+
+     % ./stella -e '(jptrans\
+                      (foreach element in (list 1 2 3)\
+                         do (print element EOL)))'
+     Running C++ version of STELLA...
+     Welcome to STELLA 3.4.0
+     { Stella_Object element = null;
+       Cons iter001 = Stella.list
+                       (Stella_Object.cons
+                         (IntegerWrapper.wrapInteger(1),
+                          Stella_Object.cons
+                           (IntegerWrapper.wrapInteger(2),
+                            Stella_Object.cons
+                             (IntegerWrapper.wrapInteger(3),
+                              Stella.NIL)))).theConsList;
+
+       while (!(iter001 == Stella.NIL)) {
+         {
+           element = iter001.value;
+           iter001 = iter001.rest;
+         }
+         java.lang.System.out.println(element);
+       }
+     }
+
+
+File: manual.info,  Node: Performance Hints,  Prev: Incrementally Developing STELLA Code,  Up: Programming in STELLA
+
+5.3 Performance Hints
+=====================
+
+Here are a few things to watch out for once you get serious about the
+performance of your translated STELLA programs:
+
+   *Safety checks:* The STELLA variable `*safety*' controls whether
+certain safety code is added to your translated STELLA program.  For
+Lisp translations it also controls whether `cast''s will be translated
+into run-time type checks or not.  There is no run-time type checking
+performed in C++.  In Java native casts will always perform runtime
+type tests.  The default `*safety*' level is 3 which enables the
+translation of all `safety' clauses with level 3 or lower.  A safety
+level of 1 or lower disables the generation of calls to the `cast'
+function in Lisp.  `cast' performs run-time type checks which are
+somewhat expensive.  However, you should not disable run-time type
+checking in Lisp until you have fully debugged your program.  Once you
+are confident that your program works correctly, you can set `*safety*'
+to 0 before you translate it.  That way you will avoid the generation
+and execution of any safety code at all.  All of the core STELLA system
+was translated with `*safety*' set to 1.
+
+   *Quoted cons trees:* Access to quoted constants that are not symbols
+is somewhat slow, since it currently uses hashing to find them in a
+table.  Hence, access to quoted constants such as `(quote (foo bar
+fum))' should be avoided in inner loops.  Access to quoted symbols such
+as `(quote foo)' is fast and does not cause any performance problems.
+The use of `quote' for constant cons trees is rare in STELLA (and
+somewhat deprecated), which is the reason why this mechanism is not all
+that well supported.  Future versions of STELLA might re-implement the
+handling of constants and alleviate this performance problem.
+
+   *Equality tests:* The standard equality test in STELLA is `eql?',
+which the translator will translate into the most efficient equality
+test for the particular types of operands (`eql?' is somewhat similar
+to the Lisp function `CL:eql' with the exception of comparing strings).
+If the translator can determine that at least one of the operands is a
+subtype of `STANDARD-OBJECT', it will translate the test into a fast
+pointer comparison with the Lisp function `CL:eq' or the C++/Java `=='
+operator.  However, if both operands are of type `OBJECT', they might
+be wrapped literals such as wrapped integers or strings.  In that case
+the equality test translates into a call to the function `eql?' which
+in turn uses method calls to handle comparison of different types of
+wrapped literals (two wrapped literals are equal if their wrapped
+content is equal).  This is of course a lot less efficient than a
+simple pointer comparison.  It also means that if you can restrict the
+type of a variable that will be tested with `eql?' to
+`STANDARD-OBJECT', you probably should do so for performance reasons.
+
+   *Type tests:* Run-time type tests as used implicitly within a
+`typecase' or explicitly with functions such as `cons?' have to use a
+call to the method `primary-type'.  Hence, in performance-critical
+portions of your code you should try to keep the number of such tests
+as small as possible.
+
+   *Wrapping and unwrapping literals:* The STELLA translator
+automatically wraps (or objectifies) literals such as numbers or strings
+when they are stored in a variable or slot of type `OBJECT'.
+Similarly, it unwraps wrapped literals automatically to operate on the
+literal directly.  This is very convenient, since it relieves the
+programmer from having to perform these conversions by hand and makes
+the code less cluttered.  For example, consider the following code
+fragment:
+
+     (let ((l (cons "foo" nil))
+           (x (concatenate "bar" (first l))))
+       (print x EOL)))
+   Here is its C++ translation:
+     { Cons* l = cons(wrapString("foo"), NIL);
+        char* x = stringConcatenate
+                   ("bar", ((StringWrapper*)(l->value))->wrapperValue, 0);
+
+       std::cout << x << std::endl;
+     }
+
+   Notice how the string literal `"foo"' is first wrapped so it can be
+inserted into the `CONS' list `l' and then automatically unwrapped in
+the call to `concatenate'.  While this is very convenient, it does
+cause a certain overhead that should be avoided in performance critical
+loops, etc.  In such situations, it often helps to use auxiliary
+variables of the appropriate literal type to avoid unnecessary
+wrap/unwrap operations.
+
+   *Lisp-style property lists:* Lisp programs often use property lists
+for fast retrieval of information that is linked to symbols.  To
+support the easy translation of existing Lisp programs that use this
+paradigm into STELLA, a similar mechanism implemented by the functions
+`symbol-value', `symbol-plist', and `symbol-property' is available that
+preserves the performance benefits of this storage scheme (see the file
+`sources/stella/symbols.ste').  However, property lists do not fit the
+object-oriented programming paradigm supported by STELLA, and, hence,
+are frowned upon.
+
+   *Compiler optimization:* The optimization settings used with the
+native Lisp or C++ compiler can greatly influence performance results.
+In particular, using high optimization settings with the Lisp compiler
+can greatly improve slot access time on STELLA objects.
+
+* Menu:
+
+* Lisp Performance Hints::
+
+
+File: manual.info,  Node: Lisp Performance Hints,  Prev: Performance Hints,  Up: Performance Hints
+
+5.3.1 Lisp Performance Hints
+----------------------------
+
+The standard Lisp implementation for STELLA objects are CLOS objects,
+since CLOS provides the most natural Lisp implementation for the STELLA
+object system.  However, there is a price to pay, since in Lisp slot
+access on CLOS objects is a lot slower than slot access on structs.  For
+example, in Allegro CL 4.3, the access to the `value' slot of a STELLA
+CONS cell takes about 4 times longer on a CLOS object implementation of
+`CONS' than on a struct implementation.  Unfortunately, the struct
+implementation itself takes about 3 times longer than calling `CL:car'
+on a Lisp cons, which is why we are actually using Lisp conses as the
+Lisp implementation for STELLA `CONS'es.  Note, that in the C++ and
+Java translation these slot-access performance problems are nonexistent.
+
+   In order to get the maximum performance out of the Lisp version of
+STELLA, you can tell the translator to use structs as the implementation
+for STELLA objects.  It does so by using `CL:defstruct' instead of
+`CL:defclass' and dispatches methods directly on the structure object.
+
+   To use the struct translation scheme evaluate
+
+     (set-stella-feature :use-common-lisp-structs)
+
+   before you translate a STELLA system.  This will generate translated
+files with a `.slisp' extension.  Make sure that after you translated
+all the files you are interested in, you disable the above feature with
+
+     (unset-stella-feature :use-common-lisp-structs)
+
+   Otherwise, subsequent incremental translations in that Lisp image
+might fail, since different translation schemes cannot be mixed.  If you
+already are using the struct version of STELLA, all systems will be
+translated in struct mode by default.
+
+   To use the struct translation of your system you have to use the
+struct version of STELLA.  To do so do the following:
+
+     (CL:setq cl-user::*load-cl-struct-stella?* CL:t)
+     (CL:load "load-stella.lisp")
+
+   Alternatively, you can edit the initial value of the variable
+`*load-cl-struct-stella?*' in the file `load-stella.lisp' (see also
+*note Lisp Installation::).
+
+   The reasons why the struct translation scheme is not enabled by
+default are the following:
+
+   * Incremental redefinition of STELLA classes does not redefine any
+     objects created with the old definition, and, hence, slot
+     accessors might simply break or retrieve the value of a different
+     slot when applied to such an old object.  The programmer therefore
+     has to be very careful when redefining a STELLA class while in
+     struct mode.  This means, that you should view the usage of the
+     struct-translation scheme for Lisp as a kind of delivery option,
+     similar to translating into C++.  Part of the reason why slot
+     access on CLOS object is expensive is the indirection machinery
+     that allows redefinition of classes and their associated instances.
+     This is great for code development, but the flexibility and
+     expense is usually not needed or warranted for delivered code.
+
+   * The performance trade-offs between CLOS and struct versions might
+     be different in different versions of Lisp.  For example, in older
+     version of Allegro CL slot access on structs was fast, but method
+     dispatch was significantly slower than for CLOS objects which
+     eliminated some/all of the performance gains.
+
+
+File: manual.info,  Node: Library Classes,  Next: Library Functions,  Prev: Programming in STELLA,  Up: Top
+
+6 Library Classes (tbw)
+***********************
+
+To be written.
+
+
+File: manual.info,  Node: Library Functions,  Next: Function Index,  Prev: Library Classes,  Up: Top
+
+7 Library Functions
+*******************
+
+* Menu:
+
+* Basic Constants and Predicates::
+* Numbers::
+* Characters::
+* Strings::
+* CONS Lists and Trees::
+* Lists::
+* Property and Key-Value Lists::
+* Vectors::
+* Hash Tables::
+* Key Value Maps::
+* Hash Sets::
+* Iterators::
+* Symbols::
+* Contexts and Modules::
+* Input and Output::
+* Files::
+* Dates and Times::
+* XML Support::
+* Miscellaneous::
+
+
+File: manual.info,  Node: Basic Constants and Predicates,  Next: Numbers,  Prev: Library Functions,  Up: Library Functions
+
+7.1 Basic Constants and Predicates
+==================================
+
+ -- ???: true
+     Not yet implemented.
+
+ -- ???: false
+     Not yet implemented.
+
+ -- Method on OBJECT: null? (x) : BOOLEAN
+     Return true if X is undefined (handled specially by all
+     translators).
+
+ -- Method on SECOND-CLASS-OBJECT: null? (x) : BOOLEAN
+     Return true if X is undefined (handled specially by all
+     translators).
+
+ -- Method on NATIVE-VECTOR: null? (x) : BOOLEAN
+     Return true if X is undefined (handled specially by all
+     translators).
+
+ -- Method on STRING: null? (x) : BOOLEAN
+     Return true if X is undefined (handled specially by all
+     translators).
+
+ -- Method on MUTABLE-STRING: null? (x) : BOOLEAN
+     Return true if X is undefined (handled specially by all
+     translators).
+
+ -- Method on CHARACTER: null? (x) : BOOLEAN
+     Return true if X is undefined (handled specially by all
+     translators).
+
+ -- Method on CODE: null? (x) : BOOLEAN
+     Return true if X is undefined (handled specially by all
+     translators).
+
+ -- Method on INTEGER: null? (x) : BOOLEAN
+     Return true if X is undefined (handled specially by all
+     translators).
+
+ -- Method on FLOAT: null? (x) : BOOLEAN
+     Return true if X is undefined (handled specially by all
+     translators).
+
+ -- Method on OBJECT: defined? (x) : BOOLEAN
+     Return true if X is defined (handled specially by all translators).
+
+ -- Method on SECOND-CLASS-OBJECT: defined? (x) : BOOLEAN
+     Return true if X is defined (handled specially by all translators).
+
+ -- Method on NATIVE-VECTOR: defined? (x) : BOOLEAN
+     Return true if X is defined (handled specially by all translators).
+
+ -- Method on STRING: defined? (x) : BOOLEAN
+     Return true if X is defined (handled specially by all translators).
+
+ -- Method on MUTABLE-STRING: defined? (x) : BOOLEAN
+     Return true if X is defined (handled specially by all translators).
+
+ -- Method on CHARACTER: defined? (x) : BOOLEAN
+     Return true if X is defined (handled specially by all translators).
+
+ -- Method on CODE: defined? (x) : BOOLEAN
+     Return true if X is defined (handled specially by all translators).
+
+ -- Method on INTEGER: defined? (x) : BOOLEAN
+     Return true if X is defined (handled specially by all translators).
+
+ -- Method on FLOAT: defined? (x) : BOOLEAN
+     Return true if X is defined (handled specially by all translators).
+
+ -- Function: eq? ((x UNKNOWN) (y UNKNOWN)) : BOOLEAN
+     Return true if X and Y are literally the same object (or simple
+     number).  Analogue to the Common Lisp EQL and C++ and Java's ==.
+
+ -- Function: eql? ((x OBJECT) (y OBJECT)) : BOOLEAN
+     Return true if X and Y are `eq?' or equivalent literals such as
+     strings that also might be wrapped in non-identical wrappers.  For
+     the case where X or Y are plain literals such as strings or
+     integers, the STELLA translator substitutes the equality test
+     appropriate for the particular target language and does not
+     actually call this function.  For cases where X or Y are known to
+     be of type STANDARD-OBJECT, the STELLA translator substitutes the
+     faster `eq?' test inline.
+
+ -- Function: equal? ((x OBJECT) (y OBJECT)) : BOOLEAN
+     Return true if X and Y are `eql?' or considered equal by a
+     user-defined `object-equal?' method.  This implements a fully
+     extensible equality test similar to Java's `equals' method.  Note
+     that writers of custom `object-equal?' methods must also implement
+     a corresponding `equal-hash-code' method.
+
+ -- Method on OBJECT: object-equal? (x (y OBJECT)) : BOOLEAN
+     Return true if X and Y are `eq?'.
+
+ -- Method on WRAPPER: object-equal? (x (y OBJECT)) : BOOLEAN
+     Return true if X and Y are literal wrappers whose literals are
+     considered `eql?'.
+
+
+File: manual.info,  Node: Numbers,  Next: Characters,  Prev: Basic Constants and Predicates,  Up: Library Functions
+
+7.2 Numbers
+===========
+
+ -- Constant: pi : FLOAT
+     A float approximation of the mathematical constant pi.
+
+ -- Function: + (&rest (arguments NUMBER)) : NUMBER
+     Return the sum of all ARGUMENTS.
+
+ -- Function: - ((x NUMBER) &rest (arguments NUMBER)) : NUMBER
+     If only X was supplied return the result of 0 - X.  Otherwise,
+     return the result of (...((X - arg1) - arg2) - ... - argN).
+
+ -- Function: * (&rest (arguments NUMBER)) : NUMBER
+     Return the product of all ARGUMENTS.
+
+ -- Function: / ((x NUMBER) &rest (arguments NUMBER)) : NUMBER
+     If only X was supplied return the result of 1 / X.  Otherwise,
+     return the result of (...((X / arg1) / arg2 ) / ... / argN).
+
+ -- Macro: 1+ ((expression OBJECT)) : OBJECT
+     Add 1 to EXPRESSION and return the result.
+
+ -- Macro: 1- ((expression OBJECT)) : OBJECT
+     Subtract 1 from EXPRESSION and return the result.
+
+ -- Macro: ++ ((place OBJECT) &body (increment CONS)) : OBJECT
+     Increment the value of PLACE and return the result.  PLACE can be
+     either a variable name or a slot reference.  Increment by the
+     optional INCREMENT (which can be a float) or 1 otherwise.
+
+ -- Macro: - ((place OBJECT) &body (decrement CONS)) : OBJECT
+     Decrement the value of PLACE and return the result.  PLACE can be
+     either a variable name or a slot reference.  Decrement by the
+     optional DECREMENT (which can be a float) or 1 otherwise.
+
+ -- Function: = ((x NUMBER) (y NUMBER)) : BOOLEAN
+     Return true if X and Y are numbers of exactly the same magnitude.
+
+ -- Function: < ((x NUMBER) (y NUMBER)) : BOOLEAN
+     Return true if X is less than Y.
+
+ -- Function: <= ((x NUMBER) (y NUMBER)) : BOOLEAN
+     Return true if X is less than or equal to Y.
+
+ -- Function: >= ((x NUMBER) (y NUMBER)) : BOOLEAN
+     Return true if X is greater than or equal to Y.
+
+ -- Function: > ((x NUMBER) (y NUMBER)) : BOOLEAN
+     Return true if X is greater than Y.
+
+ -- ???: zero?
+     Not yet implemented.
+
+ -- ???: plus?
+     Not yet implemented.
+
+ -- ???: even?
+     Not yet implemented.
+
+ -- ???: odd?
+     Not yet implemented.
+
+ -- ???: div
+     Not yet implemented.
+
+ -- ???: rem
+     Not yet implemented.
+
+ -- ???: mod
+     Not yet implemented.
+
+ -- Function: gcd ((x LONG-INTEGER) (y LONG-INTEGER)) : LONG-INTEGER
+     Return the greatest common divisor of X and Y.
+
+ -- Function: ceiling ((n NUMBER)) : INTEGER
+     Return the smallest integer >= N.
+
+ -- Function: floor ((n NUMBER)) : INTEGER
+     Return the biggest integer <= N.
+
+ -- Function: round ((n NUMBER)) : INTEGER
+     Round N to the closest integer and return the result.
+
+ -- Method on INTEGER: abs (x) : INTEGER
+     Return the absolute value of X.
+
+ -- Method on FLOAT: abs (x) : FLOAT
+     Return the absolute value of X.
+
+ -- ???: min
+     Not yet implemented.
+
+ -- ???: max
+     Not yet implemented.
+
+ -- Function: sqrt ((n FLOAT)) : FLOAT
+     Return the square root of N.
+
+ -- Function: exp ((n FLOAT)) : FLOAT
+     Return the e to the power N.
+
+ -- Function: expt ((x FLOAT) (y FLOAT)) : FLOAT
+     Return X ^ Y.
+
+ -- Function: log ((n FLOAT)) : FLOAT
+     Return the natural logarithm (base e) of N.
+
+ -- Function: log10 ((n FLOAT)) : FLOAT
+     Return the logarithm (base 10) of N.
+
+ -- Function: sin ((n FLOAT)) : FLOAT
+     Return the sine of N radians.
+
+ -- Function: cos ((n FLOAT)) : FLOAT
+     Return the cosine of N radians.
+
+ -- Function: tan ((n FLOAT)) : FLOAT
+     Return the tangent of N radians.
+
+ -- Function: asin ((n FLOAT)) : FLOAT
+     Return the arcsine of N in radians.
+
+ -- Function: acos ((n FLOAT)) : FLOAT
+     Return the arccosine of N in radians.
+
+ -- Function: atan ((n FLOAT)) : FLOAT
+     Return the arc tangent of N in radians.
+
+ -- Function: atan2 ((x FLOAT) (y FLOAT)) : FLOAT
+     Return the arc tangent of X / Y in radians.
+
+ -- Function: random ((n INTEGER)) : INTEGER
+     Generate a random integer in the interval [0..n-1].  The random
+     number generator is seeded based on the current time every time
+     STELLA starts up; however, your mileage may vary depending on the
+     native language implementation.
+
+ -- Function: integer-to-string ((i LONG-INTEGER)) : STRING
+     Convert I to its string representation and return the result.
+     This is more efficient than using a string stream.
+
+ -- Function: string-to-integer ((string STRING)) : LONG-INTEGER
+     Convert a STRING representation of an integer into an integer.
+
+ -- Function: float-to-string ((f FLOAT)) : STRING
+     Convert F to its string representation and return the result.
+     This is more efficient than using a string stream.
+
+ -- Function: string-to-float ((string STRING)) : FLOAT
+     Convert a STRING representation of a float into a float.
+
+ -- Function: format-float ((f FLOAT) (nDecimals INTEGER)) : STRING
+     Print F in fixed-point format with NDECIMALS behind the decimal
+     point and return the result as a string.
+
+ -- Function: wrap-integer ((value INTEGER)) : INTEGER-WRAPPER
+     Return a literal object whose value is the INTEGER VALUE.
+
+ -- Function: unwrap-integer ((wrapper INTEGER-WRAPPER)) : INTEGER
+     Unwrap WRAPPER and return the result.  Return NULL if WRAPPER is
+     NULL.
+
+ -- Function: wrap-float ((value FLOAT)) : FLOAT-WRAPPER
+     Return a literal object whose value is the FLOAT VALUE.
+
+ -- Function: unwrap-float ((wrapper FLOAT-WRAPPER)) : FLOAT
+     Unwrap WRAPPER and return the result.  Return NULL if WRAPPER is
+     NULL.
+
+
+File: manual.info,  Node: Characters,  Next: Strings,  Prev: Numbers,  Up: Library Functions
+
+7.3 Characters
+==============
+
+ -- Function: character-code ((ch CHARACTER)) : INTEGER
+     Return the 8-bit ASCII code of CH as an integer.
+
+ -- Function: code-character ((code INTEGER)) : CHARACTER
+     Return the character encoded by CODE (0 <= CODE <= 255).
+
+ -- Function: digit-character? ((ch CHARACTER)) : BOOLEAN
+     Return TRUE if CH represents a digit.
+
+ -- Function: letter-character? ((ch CHARACTER)) : BOOLEAN
+     Return TRUE if CH represents a letter.
+
+ -- Function: upper-case-character? ((ch CHARACTER)) : BOOLEAN
+     Return TRUE if CH represents an upper-case character.
+
+ -- Function: lower-case-character? ((ch CHARACTER)) : BOOLEAN
+     Return TRUE if CH represents a lower-case character.
+
+ -- Function: white-space-character? ((ch CHARACTER)) : BOOLEAN
+     Return TRUE if CH is a white space character.
+
+ -- Function: character-downcase ((ch CHARACTER)) : CHARACTER
+     If CH is lowercase, return its uppercase version, otherwise,
+     return CH unmodified.
+
+ -- Function: character-upcase ((ch CHARACTER)) : CHARACTER
+     If CH is uppercase, return its lowercase version, otherwise,
+     return CH unmodified.  If only the first character of a sequence
+     of characters is to be capitalized, `character-capitalize' should
+     be used instead.
+
+ -- Function: character-capitalize ((ch CHARACTER)) : CHARACTER
+     Return the capitalized character for CH.  This is generally the
+     same as the uppercase character, except for obscure non-English
+     characters in Java.  It should be used if only the first character
+     of a sequence of characters is to be capitalized.
+
+ -- Function: character-to-string ((c CHARACTER)) : STRING
+     Convert C into a one-element string and return the result.
+
+ -- Function: wrap-character ((value CHARACTER)) : CHARACTER-WRAPPER
+     Return a literal object whose value is the CHARACTER VALUE.
+
+ -- Function: unwrap-character ((wrapper CHARACTER-WRAPPER)) : CHARACTER
+     Unwrap WRAPPER and return the result.  Return NULL if WRAPPER is
+     NULL.
+
+
+File: manual.info,  Node: Strings,  Next: CONS Lists and Trees,  Prev: Characters,  Up: Library Functions
+
+7.4 Strings
+===========
+
+ -- Function: string-eql? ((x STRING) (y STRING)) : BOOLEAN
+     Return true if X and Y are equal strings or are both undefined.
+     This test is substituted automatically by the STELLA translator if
+     `eql?' is applied to strings.
+
+ -- Function: string-equal? ((x STRING) (y STRING)) : BOOLEAN
+     Return true if X and Y are equal strings ignoring character case or
+     are both undefined.
+
+ -- Method on STRING: empty? (x) : BOOLEAN
+     Return true if X is the empty string ""
+
+ -- Method on STRING: non-empty? (x) : BOOLEAN
+     Return true if X is not the empty string ""
+
+ -- Function: string-compare ((x STRING) (y STRING)
+          (case-sensitive? BOOLEAN)) : INTEGER
+     Compare X and Y lexicographically, and return -1, 0, or 1,
+     depending on whether X is less than, equal, or greater than Y.  If
+     CASE-SENSITIVE? is true, then case does matter for the comparison
+
+ -- Function: string< ((x STRING) (y STRING)) : BOOLEAN
+     Return true if X is lexicographically < Y, considering case.
+
+ -- Function: string<= ((x STRING) (y STRING)) : BOOLEAN
+     Return true if X is lexicographically <= Y, considering case.
+
+ -- Function: string>= ((x STRING) (y STRING)) : BOOLEAN
+     Return true if X is lexicographically >= Y, considering case.
+
+ -- Function: string> ((x STRING) (y STRING)) : BOOLEAN
+     Return true if X is lexicographically > Y, considering case.
+
+ -- Function: string-less? ((x STRING) (y STRING)) : BOOLEAN
+     Return true if X is lexicographically < Y, ignoring case.
+
+ -- Function: string-less-equal? ((x STRING) (y STRING)) : BOOLEAN
+     Return true if X is lexicographically <= Y, ignoring case.
+
+ -- Function: string-greater-equal? ((x STRING) (y STRING)) : BOOLEAN
+     Return true if X is lexicographically >= Y, ignoring case.
+
+ -- Function: string-greater? ((x STRING) (y STRING)) : BOOLEAN
+     Return true if X is lexicographically > Y, ignoring case.
+
+ -- Function: all-upper-case-string? ((s STRING)) : BOOLEAN
+     Return TRUE if all letters in S are upper case.
+
+ -- Function: all-lower-case-string? ((s STRING)) : BOOLEAN
+     Return TRUE if all letters in S are lower case.
+
+ -- Function: make-string ((size INTEGER) (initchar CHARACTER)) : STRING
+     Return a new string filled with SIZE INITCHARs.
+
+ -- Function: make-mutable-string ((size INTEGER) (initchar CHARACTER))
+          : MUTABLE-STRING
+     Return a new mutable string filled with SIZE INITCHARs.
+
+ -- Function: make-raw-mutable-string ((size INTEGER)) : MUTABLE-STRING
+     Return a new uninitialized mutable string of SIZE.
+
+ -- Method on STRING: first (self) : CHARACTER
+     Return the first character of SELF.
+
+ -- Method on MUTABLE-STRING: first (self) : CHARACTER
+     Return the first character of SELF (settable via `setf').
+
+ -- Method on STRING: second (self) : CHARACTER
+     Return the second character of SELF.
+
+ -- Method on MUTABLE-STRING: second (self) : CHARACTER
+     Return the second character of SELF (settable via `setf').
+
+ -- Method on STRING: third (self) : CHARACTER
+     Return the third character of SELF.
+
+ -- Method on MUTABLE-STRING: third (self) : CHARACTER
+     Return the third character of SELF (settable via `setf').
+
+ -- Method on STRING: fourth (self) : CHARACTER
+     Return the fourth character of SELF.
+
+ -- Method on MUTABLE-STRING: fourth (self) : CHARACTER
+     Return the fourth character of SELF (settable via `setf').
+
+ -- Method on STRING: fifth (self) : CHARACTER
+     Return the fifth character of SELF.
+
+ -- Method on MUTABLE-STRING: fifth (self) : CHARACTER
+     Return the fifth character of SELF (settable via `setf').
+
+ -- Method on STRING: nth (self (position INTEGER)) : CHARACTER
+     Return the character in SELF at POSITION.
+
+ -- Method on MUTABLE-STRING: nth (self (position INTEGER)) : CHARACTER
+     Return the character in SELF at POSITION.
+
+ -- Method on STRING: rest (self) : STRING
+     Not documented.
+
+ -- Method on STRING: length (self) : INTEGER
+     Return the length of the string SELF.
+
+ -- Method on MUTABLE-STRING: length (self) : INTEGER
+     Return the length of the string SELF.
+
+ -- Method on STRING: member? (self (char CHARACTER)) : BOOLEAN
+     Not documented.
+
+ -- Method on STRING: position (string (character CHARACTER)
+          (start INTEGER)) : INTEGER
+     Return the position of CHARACTER within STRING (counting from
+     zero); or return NULL if CHARACTER does not occur within STRING.
+     If START was supplied as non-NULL, only consider the substring
+     starting at START, however, the returned position will always be
+     relative to the entire string.
+
+ -- Method on STRING: last-position (string (character CHARACTER)
+          (end INTEGER)) : INTEGER
+     Return the last position of CHARACTER within STRING (counting from
+     zero); or return NULL if CHARACTER does not occur within STRING.
+     If END was supplied as non-NULL, only consider the substring
+     ending at END, however, the returned position will always be
+     relative to the entire string.
+
+ -- Function: string-search ((string STRING) (substring STRING)
+          (start INTEGER)) : INTEGER
+     Return start position of the left-most occurrence of SUBSTRING in
+     STRING, beginning from START.  Return NULL if it is not a
+     substring.  The comparison is exact.
+
+ -- Method on STRING: copy (string) : STRING
+     Return a copy of STRING.
+
+ -- Function: string-upcase ((string STRING)) : STRING
+     Return an upper-case copy of STRING.
+
+ -- Function: string-downcase ((string STRING)) : STRING
+     Return a lower-case copy of STRING.
+
+ -- Function: string-capitalize ((string STRING)) : STRING
+     Return a capitalized version of STRING.
+
+ -- Method on STRING: concatenate (string1 (string2 STRING)
+          &rest (otherStrings STRING)) : STRING
+     Return a new string representing the concatenation of STRING1,
+     STRING2, and OTHERSTRINGS.  The two mandatory parameters allow us
+     to optimize the common binary case by not relying on the somewhat
+     less efficient variable arguments mechanism.
+
+ -- Method on STRING: subsequence (string (start INTEGER)
+          (end INTEGER)) : STRING
+     Return a substring of STRING beginning at position START and
+     ending up to but not including position END, counting from zero.
+     An END value of NULL stands for the rest of the string.
+
+ -- Method on STRING: remove (string (char CHARACTER)) : STRING
+     Remove all occurences of CHAR from STRING.
+
+ -- Method on STRING: substitute (self (new-char CHARACTER)
+          (old-char CHARACTER)) : STRING
+     Substitute all occurences of OLD-CHAR with NEW-CHAR in the string
+     SELF.
+
+ -- Method on MUTABLE-STRING: substitute (self (new-char CHARACTER)
+          (old-char CHARACTER)) : MUTABLE-STRING
+     Substitute all occurences of OLD-CHAR with NEW-CHAR in the string
+     SELF.
+
+ -- Function: replace-substrings ((string STRING) (new STRING)
+          (old STRING)) : STRING
+     Replace all occurrences of OLD in STRING with NEW.
+
+ -- Function: instantiate-string-template ((template STRING)
+          &rest (vars&values STRING)) : STRING
+     For each occurrence of a <var> string from VARS&VALUES in TEMPLATE
+     replace it with its corresponding <value> string.  Replacement is
+     done in sequence which means (part of) a value might be replaced
+     further with a later <var> and <value>.
+
+ -- Function: insert-string ((source STRING) (start INTEGER)
+          (end INTEGER) (target MUTABLE-STRING) (target-index INTEGER)
+          (case-conversion KEYWORD)) : INTEGER
+     Inserts characters from SOURCE begining at START and ending at END
+     into TARGET starting at TARGET-INDEX.  If END is `null', then the
+     entire length of the string is used. The copy of characters is
+     affected by the CASE-CONVERSION keyword which should be one of
+     :UPCASE :DOWNCASE :CAPITALIZE :PRESERVE.
+
+     The final value of target-index is returned.
+
+ -- Function: wrap-string ((value STRING)) : STRING-WRAPPER
+     Return a literal object whose value is the STRING VALUE.
+
+ -- Function: wrap-mutable-string ((value MUTABLE-STRING)) :
+          MUTABLE-STRING-WRAPPER
+     Return a literal object whose value is the MUTABLE-STRING VALUE.
+
+ -- Function: unwrap-string ((wrapper STRING-WRAPPER)) : STRING
+     Unwrap WRAPPER and return the result.  Return NULL if WRAPPER is
+     NULL.
+
+ -- Function: unwrap-mutable-string ((wrapper MUTABLE-STRING-WRAPPER))
+          : MUTABLE-STRING
+     Unwrap WRAPPER and return the result.  Return NULL if WRAPPER is
+     NULL.
+
+ -- Function: string-to-mutable-string ((s STRING)) : MUTABLE-STRING
+     Copy S into a mutable string with the same content.  In Lisp and
+     C++ this simply copies S.
+
+ -- Function: mutable-string-to-string ((s MUTABLE-STRING)) : STRING
+     Convert S into a regular string with the same content.  In Lisp
+     and C++ this is a no-op.
+
+ -- Function: integer-to-string ((i LONG-INTEGER)) : STRING
+     Convert I to its string representation and return the result.
+     This is more efficient than using a string stream.
+
+ -- Function: string-to-integer ((string STRING)) : LONG-INTEGER
+     Convert a STRING representation of an integer into an integer.
+
+ -- Function: float-to-string ((f FLOAT)) : STRING
+     Convert F to its string representation and return the result.
+     This is more efficient than using a string stream.
+
+ -- Function: string-to-float ((string STRING)) : FLOAT
+     Convert a STRING representation of a float into a float.
+
+ -- Function: format-float ((f FLOAT) (nDecimals INTEGER)) : STRING
+     Print F in fixed-point format with NDECIMALS behind the decimal
+     point and return the result as a string.
+
+ -- Function: character-to-string ((c CHARACTER)) : STRING
+     Convert C into a one-element string and return the result.
+
+ -- Function: stringify ((expression OBJECT)) : STRING
+     Print EXPRESSION onto a string and return the result.  Printing is
+     done with `*printReadably?*' set to true and with `*printPretty?*'
+     set to false.
+
+ -- Function: stringify-in-module ((tree OBJECT) (module MODULE)) :
+          STRING
+     Stringify a parse TREE relative to MODULE, or `*module*' if no
+     module is specified.
+
+ -- Function: unstringify ((string STRING)) : OBJECT
+     Read a STELLA expression from STRING and return the result.  This
+     is identical to `read-s-expression-from-string'.
+
+ -- Function: unstringify-in-module ((string STRING) (module MODULE)) :
+          OBJECT
+     Unstringify relative to MODULE, or `*MODULE*' if no module is
+     specified.
+
+
+File: manual.info,  Node: CONS Lists and Trees,  Next: Lists,  Prev: Strings,  Up: Library Functions
+
+7.5 `CONS' Lists and Trees
+==========================
+
+ -- Class: CONS : STANDARD-OBJECT
+     Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+      -- Slot of : value : (LIKE (ANY-VALUE SELF))
+          Not documented.
+
+      -- Slot of : rest : (CONS OF (LIKE (ANY-VALUE SELF)))
+          Not documented.
+
+ -- Variable: nil : CONS
+     Not documented.
+
+ -- Method on CONS: empty? (self) : BOOLEAN
+     Return `true' iff SELF equals `nil'.
+
+ -- Method on CONS: non-empty? (self) : BOOLEAN
+     Return `true' iff SELF is not equal to `nil'.
+
+ -- Function: nil? ((x OBJECT)) : BOOLEAN
+     Return `true' iff X equals `nil'.
+
+ -- Function: equal-cons-trees? ((tree1 OBJECT) (tree2 OBJECT)) :
+          BOOLEAN
+     Return `true' iff the cons trees TREE1 and TREE2 are structurally
+     equivalent.  Uses an `eql?' test.
+
+ -- Method on CONS: object-equal? (tree1 (tree2 OBJECT)) : BOOLEAN
+     Return `true' iff the cons trees TREE1 and TREE2 are structurally
+     equivalent.  Uses `equal?' to test equality of subtrees.
+
+ -- Method on CONS: equal-hash-code (self) : INTEGER
+     Return an `equal?' hash code for SELF.  Note that this is O(N) in
+     the number of elements of SELF.
+
+ -- Function: cons ((value OBJECT) (rest CONS)) : CONS
+     Return a cons record that points to VALUE and REST.
+
+ -- Method on CONS: first (self) : (LIKE (ANY-VALUE SELF))
+     Return the first element of SELF.  The first element of SELF can
+     be set with `setf'.  Note that `(first NIL)' = `null'.
+
+ -- Method on CONS: second (self) : (LIKE (ANY-VALUE SELF))
+     Return the second element of SELF.  The second element of SELF can
+     be set with `setf'.  Note that `(second NIL)' = `null'.
+
+ -- Method on CONS: third (self) : (LIKE (ANY-VALUE SELF))
+     Return the third element of SELF.  The third element of SELF can
+     be set with `setf'.  Note that `(third NIL)' = `null'.
+
+ -- Method on CONS: fourth (self) : (LIKE (ANY-VALUE SELF))
+     Return the fourth element of SELF.  The fourth element of SELF can
+     be set with `setf'.  Note that `(fourth NIL)' = `null'.
+
+ -- Method on CONS: fifth (self) : (LIKE (ANY-VALUE SELF))
+     Return the fifth element of SELF.  The fifth element of SELF can
+     be set with `setf'.  Note, that `(fifth NIL)' = `null'.
+
+ -- Method on CONS: nth (self (position INTEGER)) : (LIKE (ANY-VALUE
+          SELF))
+     Return the element of SELF at POSITION.  The nth element of SELF
+     can be set with `setf'.  Note, that `(nth NIL <pos>)' = `null'.
+
+ -- Method on CONS: nth-rest (self (position INTEGER)) : (LIKE SELF)
+     Apply `rest' POSITION times to SELF.
+
+ -- Method on CONS: last (self) : (LIKE (ANY-VALUE SELF))
+     Return the last element of SELF.
+
+ -- Method on CONS: but-last (self) : (ITERATOR OF (LIKE (ANY-VALUE
+          SELF)))
+     Generate all but the last element of the cons list SELF.
+
+ -- Function: last-cons ((self CONS)) : (CONS OF (LIKE (ANY-VALUE
+          SELF)))
+     Return the last cons of SELF.
+
+ -- Method on CONS: length (self) : INTEGER
+     Return the length of the CONS list SELF.
+
+ -- Method on CONS: member? (self (object OBJECT)) : BOOLEAN
+     Return `true' iff OBJECT is a member of the cons list SELF (uses
+     an `eql?' test).
+
+ -- Method on CONS: memb? (self (object OBJECT)) : BOOLEAN
+     Return `true' iff OBJECT is a member of the cons list SELF (uses
+     an `eq?' test).
+
+ -- Method on CONS: position (self (object OBJECT) (start INTEGER)) :
+          INTEGER
+     Return the position of OBJECT within the cons-list SELF (counting
+     from zero); or return `null' if OBJECT does not occur within SELF
+     (uses an `eql?' test).  If START was supplied as non-`null', only
+     consider the sublist starting at START, however, the returned
+     position will always be relative to the entire list.
+
+ -- Method on CONS: last-position (self (object OBJECT) (end INTEGER))
+          : INTEGER
+     Return the position of OBJECT within the cons-list SELF (counting
+     from zero); or return `null' if OBJECT does not occur within SELF
+     (uses an `eql?' test).  If `start' was supplied as non-`null', only
+     consider the sublist ending at END, however, the returned position
+     will always be relative to the entire list.
+
+ -- Method on CONS: reverse (self) : (LIKE SELF)
+     Destructively reverse the members of the cons list SELF.
+
+ -- Method on CONS: remove (self (value OBJECT)) : (LIKE SELF)
+     Destructively remove all entries in the cons list SELF that match
+     VALUE.  Unless the remaining list is `nil', insure that the cons
+     that heads the list is unchanged.
+
+ -- Method on CONS: remove-duplicates (self) : (LIKE SELF)
+     Destructively remove duplicates from SELF and return the result.
+     Removes all but the first occurrence of items in the list.
+     Preserves the original order of the remaining members.  Runs in
+     linear time.
+
+ -- Method on CONS: remove-if (self (test? FUNCTION-CODE)) : (LIKE SELF)
+     Destructively removes all members of the cons list SELF for which
+     TEST? evaluates to `true'.  `test' takes a single argument of type
+     OBJECT and returns `true' or `false'.  Returns a cons list.  In
+     case the first element is removed, the return result should be
+     assigned to a variable.
+
+ -- Method on CONS: substitute (self (inValue OBJECT)
+          (outValue OBJECT)) : CONS
+     Destructively replace each appearance of OUTVALUE by INVALUE in
+     the cons list SELF.
+
+ -- Method on CONS: concatenate (list1 (list2 CONS)
+          &rest (otherLists CONS)) : CONS
+     Return a cons list consisting of the concatenation of LIST1,
+     LIST2, and OTHERLISTS.  The operation is destructive wrt all but
+     the last list argument which is left intact.  The two mandatory
+     parameters allow us to optimize the common binary case by not
+     relying on the somewhat less efficient variable arguments
+     mechanism.
+
+ -- Function: append ((consList1 CONS) (consList2 CONS)) : CONS
+     Return a cons list representing the concatenation of CONSLIST1 and
+     CONSLIST2.  The concatenation is NOT destructive.
+
+ -- Method on CONS: prepend (self (list1 CONS)) : CONS
+     Return a cons list consisting of the concatenation of LIST1 and
+     SELF.  A copy of LIST1 is prepended to SELF.  This operation
+     results in structure sharing of SELF; to avoid this, SELF should
+     not be pointed to by anything other than the tail of the prepended
+     copy.
+
+ -- Macro: pushq ((variable SYMBOL) (value OBJECT)) : OBJECT
+     Push VALUE onto the cons list VARIABLE.
+
+ -- Macro: pushq-new ((variable SYMBOL) (value OBJECT)) : OBJECT
+     Push VALUE onto the cons list VARIABLE, unless VALUE is already a
+     member of the list.
+
+ -- Macro: popq ((variable SYMBOL)) : OBJECT
+     Pops a value from the cons list VARIABLE.
+
+ -- Function: cons-list (&rest (values OBJECT)) : CONS
+     Return a cons list containing VALUES, in order.
+
+ -- Function: list* (&rest (values OBJECT)) : CONS
+     Return a list of conses that make up the list VALUES, terminated
+     by the last value rather than by `nil'.  Assumes that at least one
+     value is passed in.
+
+ -- Function: copy-cons-list ((self CONS)) : (LIKE SELF)
+     Return a copy of the cons list SELF.
+
+ -- Function: copy-cons-tree ((self OBJECT)) : (LIKE SELF)
+     Return a copy of the cons tree SELF.
+
+ -- Function: substitute-cons-tree ((tree OBJECT) (newValue OBJECT)
+          (oldValue OBJECT)) : OBJECT
+     Destructively replace each appearance of OLDVALUE by NEWVALUE in
+     the cons tree TREE.  Return the tree.  Uses an `eql?' test.
+
+ -- Function: search-cons-tree? ((tree OBJECT) (value OBJECT)) : BOOLEAN
+     Return `true' iff the value VALUE is embedded within the cons tree
+     TREE.  Uses an `eql?' test.
+
+ -- Function: tree-size ((self OBJECT)) : INTEGER
+     Not documented.
+
+ -- Function: safe-tree-size ((tree CONS)) : INTEGER STRING
+     Not documented.
+
+ -- Function: cons-tree-nth ((tree CONS) &rest (index INTEGER)) : OBJECT
+     Access an arbitrary element of TREE identified by a path specified
+     as a list of INDEX values.  The first INDEX specifies the INDEX-th
+     element of TREE, the second INDEX the INDEX-th subelement of that
+     element, etc.  Example:
+
+            (cons-tree-nth (quote (a (b (c d e) f) g)) 1 1 2) => e
+
+
+ -- Function: cons-tree-nth-rest ((tree CONS) &rest (index INTEGER)) :
+          CONS
+     Access an arbitrary sublist of TREE identified by a path specified
+     as a list of INDEX values.  The first INDEX specifies the INDEX-th
+     element of TREE, the second INDEX the INDEX-th subelement of that
+     element, ..., the last index specifies the `nth-rest' of the
+     previous element (different from `cons-tree-nth').  Example:
+
+            (cons-tree-nth-rest (quote (a (b (c d e) f) g)) 1 1 1) => (d e)
+
+
+ -- Function: match-cons-tree ((tree OBJECT) (pattern OBJECT)
+          (bindings KEY-VALUE-LIST)) : KEY-VALUE-LIST
+     Match PATTERN against TREE and return a list of variable bindings
+     if they match, or NULL otherwise.  BINDINGS can be NULL or an
+     initial list of bindings to consider.  Pattern variables use KIF
+     syntax, i.e., they need to start with a `?' character.  A single
+     question mark is interpreted as the anonymous variable. Example:
+
+            (match-cons-tree (quote (a (b (a d) e) (a d) f g))
+                             (quote (a (?x ?y ?) ?y ? g))
+                             NULL)
+            => |kv|(<?Y,(A D)> <?X,B>)
+
+     Variables can't be quoted but quoting can effectively be achieved
+     by inserting to-be-quoted variables bound to themselves into
+     BINDINGS.
+
+ -- Function: cons-tree-match? ((tree OBJECT) (pattern OBJECT)) :
+          BOOLEAN
+     Predicate version of `match-cons-tree' (which see).
+
+ -- Method on CONS: consify (self) : (CONS OF (LIKE (ANY-VALUE SELF)))
+     Return SELF.
+
+ -- Method on CONS: allocate-iterator (self) : (CONS-ITERATOR OF (LIKE
+          (ANY-VALUE SELF)))
+     Not documented.
+
+ -- Method on CONS-ITERATOR: next? (self) : BOOLEAN
+     Not documented.
+
+ -- Method on CONS: sort (self (predicate FUNCTION-CODE)) : (CONS OF
+          (LIKE (ANY-VALUE SELF)))
+     Perform a stable, destructive sort of SELF according to PREDICATE,
+     and return the result.  If PREDICATE has a `<' semantics, the
+     result will be in ascending order.  It is not guaranteed that SELF
+     will point to the beginning of the sorted result.  If PREDICATE is
+     `null', a suitable `<' predicate is chosen depending on the first
+     element of SELF, and it is assumed that all elements of SELF have
+     the same type (supported element types are GENERALIZED-SYMBOL,
+     STRING, INTEGER, and FLOAT).
+
+ -- Method on CONS: sort-tuples (self (n INTEGER)
+          (predicate FUNCTION-CODE)) : (CONS OF (LIKE (ANY-VALUE SELF)))
+     Just like `sort' but assumes each element of SELF is a tuple (a
+     cons) whose N-th element (0-based) will be used for comparison.
+
+ -- Function: map-null-to-nil ((self CONS)) : (LIKE SELF)
+     Return `nil' iff SELF is `null' or SELF otherwise.
+
+ -- Special Variable: *printpretty?* : BOOLEAN
+     If `true' conses will be pretty printed.
+
+ -- Special Variable: *printreadably?* : BOOLEAN
+     If `true' conses will be printed as readable Stella code.
+
+ -- Special Variable: *printprettycode?* : BOOLEAN
+     When `true' pretty-print Stella and translated code.  Since (Lisp)
+     pretty-printing is somewhat slow, turning this off speeds up file
+     translation, but it also makes translated output very unreadable.
+
+* Menu:
+
+* CONS Lists as Sets::
+
+
+File: manual.info,  Node: CONS Lists as Sets,  Prev: CONS Lists and Trees,  Up: CONS Lists and Trees
+
+7.5.1 CONS Lists as Sets
+------------------------
+
+ -- Method on CONS: subset? (self (otherList CONS)) : BOOLEAN
+     Return true if every element of SELF also occurs in OTHERLIST.
+     Uses an `eql?' test and a simple quadratic-time algorithm.  Note
+     that this does not check whether SELF and OTHERLIST actually are
+     sets.
+
+ -- Method on CONS: equivalent-sets? (self (otherList CONS)) : BOOLEAN
+     Return true if every element of SELF occurs in OTHERLIST and vice
+     versa.  Uses an `eql?' test and a simple quadratic-time algorithm.
+     Note that this does not check whether SELF and OTHERLIST actually
+     are sets.
+
+ -- Method on CONS: union (self (otherList CONS)) : CONS
+     Return the set union of SELF and OTHERLIST.  Uses an `eql?' test
+     and a simple quadratic-time algorithm.  Note that the result is
+     only guaranteed to be a set if both SELF and OTHERLIST are sets.
+
+ -- Method on CONS: intersection (self (otherList CONS)) : CONS
+     Return the set intersection of SELF and OTHERLIST.  Uses an `eql?'
+     test and a simple quadratic-time algorithm.  Note that the result
+     is only guaranteed to be a set if both SELF and OTHERLIST are sets.
+
+ -- Method on CONS: difference (self (otherList CONS)) : CONS
+     Return the set difference of SELF and OTHERLIST (i.e., all elements
+     that are in SELF but not in `otherSet').  Uses an `eql?' test and
+     a simple quadratic-time algorithm.  Note that the result is only
+     guaranteed to be a set if both SELF and OTHERLIST are sets.
+
+ -- Method on CONS: subtract (self (otherList CONS)) : CONS
+     Return the set difference of SELF and OTHERLIST by destructively
+     removing elements from SELF that also occur in OTHERLIST.  Uses an
+     `eql?' test and a simple quadratic-time algorithm.  Note that the
+     result is only guaranteed to be a set if SELF is a set.
+
+
+File: manual.info,  Node: Lists,  Next: Property and Key-Value Lists,  Prev: CONS Lists and Trees,  Up: Library Functions
+
+7.6 Lists
+=========
+
+ -- Class: LIST : SEQUENCE
+     Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+      -- Slot of : the-cons-list : (CONS OF (LIKE (ANY-VALUE SELF)))
+          Not documented.
+
+ -- Variable: nil-list : LIST
+     Not documented.
+
+ -- Function: defined-list? ((self LIST)) : BOOLEAN
+     Return TRUE unless SELF is NULL or the `NIL-LIST'.
+
+ -- Function: null-list? ((self LIST)) : BOOLEAN
+     Return TRUE iff SELF is NULL or the `NIL-LIST'.
+
+ -- Method on LIST: empty? (self) : BOOLEAN
+     Return TRUE if the list SELF has no members.
+
+ -- Method on LIST: non-empty? (self) : BOOLEAN
+     Return TRUE if the list SELF has at least one member.
+
+ -- Method on LIST: object-equal? (x (y OBJECT)) : BOOLEAN
+     Return TRUE iff the lists X and Y are structurally equivalent.
+     Uses `equal?' to test equality of elements.
+
+ -- Method on LIST: equal-hash-code (self) : INTEGER
+     Return an `equal?' hash code for SELF.  Note that this is O(N) in
+     the number of elements of SELF.
+
+ -- Function: list (&rest (values OBJECT)) : LIST
+     Return a list containing VALUES, in order.
+
+ -- Method on LIST: first (self) : (LIKE (ANY-VALUE SELF))
+     Return the first item in the list SELF, or NULL if empty.
+
+ -- Method on LIST: second (self) : (LIKE (ANY-VALUE SELF))
+     Return the second item in the list SELF, or NULL if empty.
+
+ -- Method on LIST: third (self) : (LIKE (ANY-VALUE SELF))
+     Return the third item in the list SELF, or NULL if empty.
+
+ -- Method on LIST: fourth (self) : (LIKE (ANY-VALUE SELF))
+     Return the fourth item in the list SELF, or NULL if empty.
+
+ -- Method on LIST: fifth (self) : (LIKE (ANY-VALUE SELF))
+     Return the fifth item in the list SELF, or NULL if empty.
+
+ -- Method on LIST: nth (self (position INTEGER)) : (LIKE (ANY-VALUE
+          SELF))
+     Return the nth item in the list SELF, or NULL if empty.
+
+ -- Method on LIST: rest (self) : (CONS OF (LIKE (ANY-VALUE SELF)))
+     Return a cons list of all but the first item in the list SELF.
+
+ -- Method on LIST: last (self) : (LIKE (ANY-VALUE SELF))
+     Return the last element of SELF.
+
+ -- Method on LIST: but-last (self) : (ITERATOR OF (LIKE (ANY-VALUE
+          SELF)))
+     Generate all but the last element of the list SELF.
+
+ -- Method on LIST: length (self) : INTEGER
+     Not documented.
+
+ -- Method on LIST: member? (self (object OBJECT)) : BOOLEAN
+     Return TRUE iff OBJECT is a member of the list SELF (uses an
+     `eql?' test).
+
+ -- Method on LIST: memb? (self (object (LIKE (ANY-VALUE SELF)))) :
+          BOOLEAN
+     Return TRUE iff OBJECT is a member of the cons list SELF (uses an
+     `eq?' test).
+
+ -- Method on LIST: position (self (object OBJECT) (start INTEGER)) :
+          INTEGER
+     Return the position of OBJECT within the list SELF (counting from
+     zero); or return NULL if OBJECT does not occur within SELF (uses
+     an `eql?' test).  If START was supplied as non-NULL, only consider
+     the sublist starting at START, however, the returned position will
+     always be relative to the entire list.
+
+ -- Method on LIST: last-position (self (object OBJECT) (end INTEGER))
+          : INTEGER
+     Return the position of OBJECT within the list SELF (counting from
+     zero); or return NULL if OBJECT does not occur within SELF (uses
+     an `eql?' test).  If END was supplied as non-NULL, only consider
+     the sublist ending at END, however, the returned position will
+     always be relative to the entire list.
+
+ -- Method on LIST: insert (self (value (LIKE (ANY-VALUE SELF)))) :
+     Add VALUE to the front of the list SELF.
+
+ -- Method on LIST: push (self (value (LIKE (ANY-VALUE SELF)))) :
+     Add VALUE to the front of the list SELF.
+
+ -- Method on LIST: insert-new (self (value (LIKE (ANY-VALUE SELF)))) :
+     Add VALUE to the front of the list SELF unless its already a
+     member.
+
+ -- Method on LIST: insert-last (self (value (LIKE (ANY-VALUE SELF)))) :
+     Insert VALUE as the last entry in the list SELF.
+
+ -- Method on LIST: reverse (self) : (LIKE SELF)
+     Reverse the members of SELF (in place).
+
+ -- Method on LIST: remove (self (value (LIKE (ANY-VALUE SELF)))) :
+          (LIKE SELF)
+     Destructively remove all entries in SELF that match VALUE.
+
+ -- Method on LIST: remove-duplicates (self) : (LIKE SELF)
+     Destructively remove duplicates from SELF and return the result.
+     Preserves the original order of the remaining members.
+
+ -- Method on LIST: remove-deleted-members (self) : (LIKE SELF)
+     Not documented.
+
+ -- Method on LIST: remove-if (self (test? FUNCTION-CODE)) : (LIKE SELF)
+     Destructively remove all members of the list SELF for which TEST?
+     evaluates to TRUE.  `test' takes a single argument of type OBJECT
+     and returns TRUE or FALSE.  Returns SELF.
+
+ -- Method on LIST: pop (self) : (LIKE (ANY-VALUE SELF))
+     Remove and return the first element in the list SELF.  Return NULL
+     if the list is empty.
+
+ -- Method on LIST: substitute (self (inValue OBJECT)
+          (outValue OBJECT)) : (LIKE SELF)
+     Destructively replace each appearance of OUTVALUE by INVALUE in
+     the list SELF.
+
+ -- Method on LIST: concatenate (list1 (list2 LIST)
+          &rest (otherLists LIST)) : LIST
+     Copy LIST2 and all OTHERLISTS onto the end of LIST1.  The
+     operation is destructive wrt LIST1, but leaves all other lists
+     intact.  The two mandatory parameters allow us to optimize the
+     common binary case by not relying on the somewhat less efficient
+     variable arguments mechanism.
+
+ -- Method on LIST: prepend (self (list2 LIST)) : (LIKE SELF)
+     Copy LIST2 onto the front of the list SELF.  The operation is
+     destructive wrt SELF, but leaves LIST2 intact.
+
+ -- Method on LIST: copy (self) : (LIST OF (LIKE (ANY-VALUE SELF)))
+     Return a copy of the list SELF.  The conses in the copy are
+     freshly allocated.
+
+ -- Method on LIST: clear (self) :
+     Make SELF an empty list.
+
+ -- Method on LIST: consify (self) : (CONS OF (LIKE (ANY-VALUE SELF)))
+     Return a list of elements in SELF.
+
+ -- Method on LIST: allocate-iterator (self) : (LIST-ITERATOR OF (LIKE
+          (ANY-VALUE SELF)))
+     Not documented.
+
+ -- Method on LIST-ITERATOR: next? (self) : BOOLEAN
+     Not documented.
+
+ -- Method on LIST: sort (self (predicate FUNCTION-CODE)) : (LIST OF
+          (LIKE (ANY-VALUE SELF)))
+     Perform a stable, destructive sort of SELF according to PREDICATE,
+     and return the result.  If PREDICATE has a `<' semantics, the
+     result will be in ascending order.  If PREDICATE is NULL, a
+     suitable `<' predicate is chosen depending on the first element of
+     SELF, and it is assumed that all elements of SELF have the same
+     type (supported element types are GENERALIZED-SYMBOL, STRING,
+     INTEGER, and FLOAT).
+
+ -- Function: map-null-to-nil-list ((self LIST)) : LIST
+     Return NIL-LIST iff SELF is NULL or SELF otherwise.
+
+* Menu:
+
+* Lists as Sets::
+
+
+File: manual.info,  Node: Lists as Sets,  Prev: Lists,  Up: Lists
+
+7.6.1 Lists as Sets
+-------------------
+
+Similar to `CONS' lists `LIST''s can also be treated as sets and
+support the set manipulations below.  Note that `LIST' constructors do
+not check for proper set-hood and may have surprising results if a list
+contains duplicate elements.
+
+ -- Method on LIST: subset? (self (otherList LIST)) : BOOLEAN
+     Return true if every element of SELF also occurs in OTHERLIST.
+     Uses an `eql?' test and a simple quadratic-time algorithm.  Note
+     that this does not check whether SELF and OTHERLIST actually are
+     sets.
+
+ -- Method on LIST: equivalent-sets? (self (otherList LIST)) : BOOLEAN
+     Return true if every element of SELF occurs in OTHERLIST and vice
+     versa.  Uses an `eql?' test and a simple quadratic-time algorithm.
+     Note that this does not check whether SELF and OTHERLIST actually
+     are sets.
+
+ -- Method on LIST: union (self (otherList LIST)) : LIST
+     Return the set union of SELF and OTHERLIST.  Uses an `eql?' test
+     and a simple quadratic-time algorithm.  Note that the result is
+     only guaranteed to be a set if both SELF and OTHERLIST are sets.
+
+ -- Method on LIST: intersection (self (otherList LIST)) : LIST
+     Return the set intersection of SELF and OTHERLIST.  Uses an `eql?'
+     test and a simple quadratic-time algorithm.  Note that the result
+     is only guaranteed to be a set if both SELF and OTHERLIST are sets.
+
+ -- Method on LIST: difference (self (otherList LIST)) : LIST
+     Return the set difference of SELF and OTHERLIST (i.e., all elements
+     that are in SELF but not in `otherSet').  Uses an `eql?' test and
+     a simple quadratic-time algorithm.  Note that the result is only
+     guaranteed to be a set if both SELF and OTHERLIST are sets.
+
+ -- Method on LIST: subtract (self (otherList LIST)) : LIST
+     Return the set difference of SELF and OTHERLIST by destructively
+     removing elements from SELF that also occur in OTHERLIST.  Uses an
+     `eql?' test and a simple quadratic-time algorithm.  Note that the
+     result is only guaranteed to be a set if SELF is a set.
+
+   `SET' is a subclass of `LIST' that overrides certain `LIST'
+operations to prevent duplicate elements.  The following additional or
+modified operations are supported:
+
+ -- Class: SET : LIST, SET-MIXIN
+     Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+ -- Method on SET: insert (self (value (LIKE (ANY-VALUE SELF)))) :
+     Add VALUE to the set SELF unless it is already a member.
+
+ -- Method on SET: push (self (value (LIKE (ANY-VALUE SELF)))) :
+     Add VALUE to the front of set SELF unless it is already a member.
+
+ -- Method on SET: insert-last (self (value (LIKE (ANY-VALUE SELF)))) :
+     Add VALUE to the end of set SELF unless it is already a member.
+
+ -- Method on SET: substitute (self (new OBJECT) (old OBJECT)) : (LIKE
+          SELF)
+     Destructively replace OLD with NEW in the set SELF unless NEW is
+     already a member.
+
+ -- Method on SET: concatenate (set1 (set2 LIST)
+          &rest (otherSets LIST)) : SET
+     Union SET2 and all OTHERSETS onto the end of SET1.  The operation
+     is destructive wrt SET1, but leaves all other sets intact.  The
+     two mandatory parameters allow us to optimize the common binary
+     case by not relying on the somewhat less efficient variable
+     arguments mechanism.
+
+ -- Method on SET: object-equal? (x (y OBJECT)) : BOOLEAN
+     Return TRUE iff X and Y are SET's with equivalent members.  Uses
+     `equal?' to test equality of elements.  This is more general than
+     `equivalent-sets?', since that only uses an `eql?' test.
+
+ -- Method on SET: equal-hash-code (self) : INTEGER
+     Return an `equal?' hash code for SELF.  Note that this is O(N) in
+     the number of elements of SELF.
+
+ -- Function: set (&rest (values OBJECT)) : SET
+     Return a set containing VALUES, in order.
+
+
+File: manual.info,  Node: Property and Key-Value Lists,  Next: Vectors,  Prev: Lists,  Up: Library Functions
+
+7.7 Property and Key-Value Lists
+================================
+
+ -- Class: PROPERTY-LIST : DICTIONARY
+     Not documented.
+
+      -- Class Parameter of : any-key : OBJECT
+          Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+      -- Slot of : the-plist : CONS
+          Not documented.
+
+ -- Method on PROPERTY-LIST: empty? (self) : BOOLEAN
+     Not documented.
+
+ -- Method on PROPERTY-LIST: non-empty? (self) : BOOLEAN
+     Not documented.
+
+ -- Method on PROPERTY-LIST: object-equal? (x (y OBJECT)) : BOOLEAN
+     Return TRUE if X and Y represent the same set of key/value pairs..
+
+ -- Method on PROPERTY-LIST: equal-hash-code (self) : INTEGER
+     Return an `equal?' hash code for SELF.  Note that this is O(N) in
+     the number of entries of SELF.
+
+ -- Method on PROPERTY-LIST: length (self) : INTEGER
+     Not documented.
+
+ -- Method on PROPERTY-LIST: lookup (self (key (LIKE (ANY-KEY SELF))))
+          : (LIKE (ANY-VALUE SELF))
+     Not documented.
+
+ -- Method on PROPERTY-LIST: insert-at (self
+          (key (LIKE (ANY-KEY SELF))) (value (LIKE (ANY-VALUE SELF)))) :
+     Insert the entry <`key', VALUE> into the property list SELF.  If a
+     previous entry existed with key KEY, that entry is replaced.
+
+ -- Method on PROPERTY-LIST: remove-at (self
+          (key (LIKE (ANY-KEY SELF)))) : OBJECT
+     Remove the entry that matches the key KEY.  Return the value of
+     the matching entry, or NULL if there is no matching entry.
+     Assumes that at most one entry matches KEY.
+
+ -- Method on PROPERTY-LIST: copy (self) : (LIKE SELF)
+     Return a copy of the list SELF.  The conses in the copy are
+     freshly allocated.
+
+ -- Method on PROPERTY-LIST: clear (self) :
+     Make SELF an empty property list.
+
+ -- Method on PROPERTY-LIST: allocate-iterator (self) :
+          (PROPERTY-LIST-ITERATOR OF (LIKE (ANY-KEY SELF)) (LIKE
+          (ANY-VALUE SELF)))
+     Not documented.
+
+ -- Method on PROPERTY-LIST-ITERATOR: next? (self) : BOOLEAN
+     Not documented.
+
+ -- Class: KV-CONS : STANDARD-OBJECT
+     Not documented.
+
+      -- Class Parameter of : any-key : OBJECT
+          Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+      -- Slot of : key : OBJECT
+          Not documented.
+
+      -- Slot of : value : OBJECT
+          Not documented.
+
+      -- Slot of : rest : KV-CONS
+          Not documented.
+
+ -- Function: kv-cons ((key OBJECT) (value OBJECT) (rest KV-CONS)) :
+          KV-CONS
+     Create, fill-in, and return a new KV-CONS.
+
+ -- Function: copy-kv-cons-list ((kvconslist KV-CONS)) : KV-CONS
+     Return a copy of the cons list `consList'.
+
+ -- Class: KEY-VALUE-LIST : DICTIONARY
+     Not documented.
+
+      -- Class Parameter of : any-key : OBJECT
+          Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+      -- Slot of : the-kv-list : KV-CONS
+          Not documented.
+
+ -- Method on KEY-VALUE-LIST: empty? (self) : BOOLEAN
+     Not documented.
+
+ -- Method on KEY-VALUE-LIST: non-empty? (self) : BOOLEAN
+     Not documented.
+
+ -- Method on KEY-VALUE-LIST: object-equal? (x (y OBJECT)) : BOOLEAN
+     Return TRUE if X and Y represent the same set of key/value pairs.
+
+ -- Method on KEY-VALUE-LIST: equal-hash-code (self) : INTEGER
+     Return an `equal?' hash code for SELF.  Note that this is O(N) in
+     the number of entries of SELF.
+
+ -- Method on KEY-VALUE-LIST: length (self) : INTEGER
+     Not documented.
+
+ -- Method on KEY-VALUE-LIST: lookup (self (key (LIKE (ANY-KEY SELF))))
+          : (LIKE (ANY-VALUE SELF))
+     Not documented.
+
+ -- Method on KEY-VALUE-LIST: reverse (self) : (LIKE SELF)
+     Destructively reverse the members of the list SELF.
+
+ -- Method on KEY-VALUE-LIST: insert-at (self
+          (key (LIKE (ANY-KEY SELF))) (value (LIKE (ANY-VALUE SELF)))) :
+     Insert the entry <`key', VALUE> into the association SELF. If a
+     previous entry existed with key KEY, that entry is replaced.
+
+ -- Method on KEY-VALUE-LIST: remove-at (self
+          (key (LIKE (ANY-KEY SELF)))) : OBJECT
+     Remove the entry that matches the key KEY.  Return the value of
+     the matching entry, or NULL if there is no matching entry.
+     Assumes that at most one entry matches KEY.
+
+ -- Method on KEY-VALUE-LIST: insert-entry (self
+          (key (LIKE (ANY-KEY SELF))) (value (LIKE (ANY-VALUE SELF)))) :
+     Insert an entry <`key',VALUE> to SELF unless an identical entry
+     already exists.  This can generate duplicate entries for KEY.
+
+ -- Method on KEY-VALUE-LIST: remove-entry (self
+          (key (LIKE (ANY-KEY SELF))) (value (LIKE (ANY-VALUE SELF)))) :
+     Remove the entry that matches <`key',VALUE>.  Assumes that more
+     than one entry can match KEY.
+
+ -- Method on KEY-VALUE-LIST: push (self (value KV-CONS)) :
+     Make VALUE be the new first element of SELF.  Note that the `rest'
+     slot of VALUE should be `null', since it will be overwritten.
+     This might duplicate an existing entry. If a previous entry
+     existed with the same key as VALUE, that entry is retained, but
+     shadowed by this new entry.
+
+ -- Method on KEY-VALUE-LIST: kv-push (self (key (LIKE (ANY-KEY SELF)))
+          (value (LIKE (ANY-VALUE SELF)))) :
+     Add a new entry <`key', VALUE> to the front of the association
+     SELF. This might duplicate an existing entry. If a previous entry
+     existed with key KEY, that entry is retained, but shadowed by this
+     new entry.
+
+ -- Method on KEY-VALUE-LIST: pop (self) : (LIKE (ANY-VALUE SELF))
+     Remove and return the value of the first element of the kv-list
+     SELF.  It does NOT return the KV-CONS object.  Return `null' if
+     the list is empty.
+
+ -- Method on KEY-VALUE-LIST: copy (self) : (LIKE SELF)
+     Return a copy of the kv-list SELF.  The kv-conses in the copy are
+     freshly allocated.
+
+ -- Method on KEY-VALUE-LIST: clear (self) :
+     Make SELF an empty dictionary.
+
+ -- Method on KEY-VALUE-LIST: consify (self) : (CONS OF (LIKE
+          (ANY-VALUE SELF)))
+     Return a list of key-value pairs in SELF.
+
+ -- Method on KEY-VALUE-LIST: allocate-iterator (self) :
+          (KV-LIST-ITERATOR OF (LIKE (ANY-KEY SELF)) (LIKE (ANY-VALUE
+          SELF)))
+     Not documented.
+
+ -- Method on KV-LIST-ITERATOR: next? (self) : BOOLEAN
+     Not documented.
+
+
+File: manual.info,  Node: Vectors,  Next: Hash Tables,  Prev: Property and Key-Value Lists,  Up: Library Functions
+
+7.8 Vectors
+===========
+
+ -- Class: VECTOR : SEQUENCE
+     Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+      -- Slot of : array-size : INTEGER
+          Not documented.
+
+      -- Slot of : the-array : (NATIVE-VECTOR OF (LIKE (ANY-VALUE
+               SELF)))
+          Not documented.
+
+ -- Class: EXTENSIBLE-VECTOR : VECTOR
+     Not documented.
+
+ -- Method on VECTOR: empty? (self) : BOOLEAN
+     Return `true' if SELF has length 0.
+
+ -- Method on VECTOR: non-empty? (self) : BOOLEAN
+     Return `true' if SELF has length > 0.
+
+ -- Method on VECTOR: object-equal? (x (y OBJECT)) : BOOLEAN
+     Return TRUE iff the vectors X and Y are structurally equivalent.
+     Uses `equal?' to test equality of elements.
+
+ -- Method on VECTOR: equal-hash-code (self) : INTEGER
+     Return an `equal?' hash code for SELF.
+
+ -- Function: vector (&rest (values OBJECT)) : VECTOR
+     Return a vector containing VALUES, in order.
+
+ -- Method on VECTOR: first (self) : (LIKE (ANY-VALUE SELF))
+     Not documented.
+
+ -- Method on VECTOR: second (self) : (LIKE (ANY-VALUE SELF))
+     Not documented.
+
+ -- Method on VECTOR: third (self) : (LIKE (ANY-VALUE SELF))
+     Not documented.
+
+ -- Method on VECTOR: fourth (self) : (LIKE (ANY-VALUE SELF))
+     Not documented.
+
+ -- Method on VECTOR: fifth (self) : (LIKE (ANY-VALUE SELF))
+     Not documented.
+
+ -- Method on VECTOR: nth (self (position INTEGER)) : (LIKE (ANY-VALUE
+          SELF))
+     Not documented.
+
+ -- Method on VECTOR: last (self) : (LIKE (ANY-VALUE SELF))
+     Return the last item in the vector SELF.
+
+ -- Method on VECTOR: but-last (self) : (ITERATOR OF (LIKE (ANY-VALUE
+          SELF)))
+     Generate all but the last element of the vector SELF.
+
+ -- Method on VECTOR: length (self) : INTEGER
+     Not documented.
+
+ -- Method on VECTOR: member? (self (object OBJECT)) : BOOLEAN
+     Not documented.
+
+ -- Method on VECTOR: position (self (object OBJECT) (start INTEGER)) :
+          INTEGER
+     Return the position of OBJECT within the vector SELF (counting
+     from zero); or return `null' if OBJECT does not occur within SELF
+     (uses an `eql?' test).  If START was supplied as non-`null', only
+     consider the portion starting at START, however, the returned
+     position will always be relative to the entire vector.
+
+ -- Method on VECTOR: last-position (self (object OBJECT)
+          (end INTEGER)) : INTEGER
+     Return the position of OBJECT within the vector SELF (counting
+     from zero); or return `null' if OBJECT does not occur within SELF
+     (uses an `eql?' test).  If END was supplied as non-`null', only
+     consider the portion ending at index END, however, the returned
+     position will always be relative to the entire vector.
+
+ -- Method on VECTOR: insert-at (self (offset INTEGER)
+          (value (LIKE (ANY-VALUE SELF)))) :
+     Not documented.
+
+ -- Method on VECTOR: copy (self) : (VECTOR OF (LIKE (ANY-VALUE SELF)))
+     Return a copy of the vector SELF.
+
+ -- Method on VECTOR: clear (self) :
+     Not documented.
+
+ -- Function: resize-vector ((self VECTOR) (size INTEGER)) :
+     Change the size of SELF to SIZE.  If SIZE is smaller than the
+     current size of SELF the vector will be truncated.  Otherwise, the
+     internal array of SELF will be grown to SIZE and unused elements
+     will be initialized to NULL.
+
+ -- Method on VECTOR: consify (self) : (CONS OF (LIKE (ANY-VALUE SELF)))
+     Return a list of elements in SELF.
+
+ -- Method on EXTENSIBLE-VECTOR: insert-at (self (offset INTEGER)
+          (value (LIKE (ANY-VALUE SELF)))) :
+     Not documented.
+
+ -- Method on VECTOR-SEQUENCE: insert (self
+          (value (LIKE (ANY-VALUE SELF)))) :
+     Append VALUE to the END of the sequence SELF.  Resize the array if
+     necessary.
+
+ -- Method on VECTOR-SEQUENCE: remove (self
+          (value (LIKE (ANY-VALUE SELF)))) : VECTOR-SEQUENCE
+     Remove VALUE from the sequence SELF, and left shift the values
+     after it to close the gap.
+
+ -- Method on VECTOR-SEQUENCE: length (self) : INTEGER
+     Not documented.
+
+
+File: manual.info,  Node: Hash Tables,  Next: Key Value Maps,  Prev: Vectors,  Up: Library Functions
+
+7.9 Hash Tables
+===============
+
+ -- Class: HASH-TABLE : ABSTRACT-HASH-TABLE
+     Not documented.
+
+      -- Class Parameter of : any-key : OBJECT
+          Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+ -- Class: STRING-HASH-TABLE : ABSTRACT-HASH-TABLE
+     Not documented.
+
+      -- Class Parameter of : any-key : STRING
+          Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+ -- Class: STRING-TO-INTEGER-HASH-TABLE : ABSTRACT-HASH-TABLE
+     Not documented.
+
+      -- Class Parameter of : any-key : STRING
+          Not documented.
+
+      -- Class Parameter of : any-value : INTEGER
+          Not documented.
+
+ -- Class: INTEGER-HASH-TABLE : ABSTRACT-HASH-TABLE
+     Not documented.
+
+      -- Class Parameter of : any-key : INTEGER
+          Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+ -- Class: FLOAT-HASH-TABLE : ABSTRACT-HASH-TABLE
+     Not documented.
+
+      -- Class Parameter of : any-key : FLOAT
+          Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+ -- Method on HASH-TABLE: lookup (self (key (LIKE (ANY-KEY SELF)))) :
+          (LIKE (ANY-VALUE SELF))
+     Not documented.
+
+ -- Method on HASH-TABLE: insert-at (self (key (LIKE (ANY-KEY SELF)))
+          (value (LIKE (ANY-VALUE SELF)))) :
+     Not documented.
+
+ -- Method on HASH-TABLE: remove-at (self (key (LIKE (ANY-KEY SELF)))) :
+     Not documented.
+
+ -- Method on STRING-HASH-TABLE: lookup (self (key STRING)) : (LIKE
+          (ANY-VALUE SELF))
+     Not documented.
+
+ -- Method on STRING-HASH-TABLE: insert-at (self (key STRING)
+          (value OBJECT)) :
+     Not documented.
+
+ -- Method on STRING-HASH-TABLE: remove-at (self (key STRING)) :
+     Not documented.
+
+ -- Method on STRING-TO-INTEGER-HASH-TABLE: lookup (self (key STRING))
+          : INTEGER
+     Not documented.
+
+ -- Method on STRING-TO-INTEGER-HASH-TABLE: insert-at (self
+          (key STRING) (value INTEGER)) :
+     Not documented.
+
+ -- Method on INTEGER-HASH-TABLE: lookup (self (key INTEGER)) : (LIKE
+          (ANY-VALUE SELF))
+     Not documented.
+
+ -- Method on INTEGER-HASH-TABLE: insert-at (self (key INTEGER)
+          (value OBJECT)) :
+     Not documented.
+
+ -- Method on FLOAT-HASH-TABLE: insert-at (self (key FLOAT)
+          (value OBJECT)) :
+     Not documented.
+
+   STELLA provides its own implementation of hash tables for cases where
+language-native implementations are not available, or where additional
+features are needed.
+
+ -- Class: STELLA-HASH-TABLE : ABSTRACT-HASH-TABLE
+     Not documented.
+
+      -- Class Parameter of : any-key : OBJECT
+          Not documented.
+
+      -- Class Parameter of : any-value : OBJECT
+          Not documented.
+
+      -- Slot of : the-table : (ARRAY SIZE () OF KV-CONS)
+          Not documented.
+
+      -- Slot of : size : INTEGER
+          Not documented.
+
+      -- Slot of : initial-size : INTEGER
+          If supplied, the initial hash table will be sized to hold at
+          least that many elements.
+
+      -- Slot of : free-elements : INTEGER
+          Not documented.
+
+      -- Slot of : equal-test? : BOOLEAN
+          If true use `equal?' as the equality test and
+          `equal-hash-code' as the hash function, otherwise, use `eql?'
+          and `hash-code' (the default).
+
+ -- Method on STELLA-HASH-TABLE: lookup (self
+          (key (LIKE (ANY-KEY SELF)))) : (LIKE (ANY-VALUE SELF))
+     Lookup the entry identified by KEY in SELF and return its value,
+     or NULL if no such entry exists.    Uses an `eql?' test by default
+     or `equal?' if `equal-test?' of SELF is TRUE.
+
+ -- Method on STELLA-HASH-TABLE: insert-at (self
+          (key (LIKE (ANY-KEY SELF))) (value (LIKE (ANY-VALUE SELF)))) :
+     Set the value of the entry identified by KEY in SELF to VALUE or
+     add a new entry if no entry with KEY exists yet.  Uses an `eql?'
+     test by default or `equal?' if `equal-test?' of SELF is TRUE.
+
+ -- Method on STELLA-HASH-TABLE: remove-at (self
+          (key (LIKE (ANY-KEY SELF)))) :
+     Remove the entry identified by KEY from SELF.  Uses an `eql?' test
+     by default or `equal?' if `equal-test?' of SELF is TRUE.
+
+ -- Method on STELLA-HASH-TABLE: length (self) : INTEGER
+     Return the number of entries in SELF.
+
+ -- Method on STELLA-HASH-TABLE: empty? (self) : BOOLEAN
+     Return TRUE if SELF has zero entries.
+
+ -- Method on STELLA-HASH-TABLE: non-empty? (self) : BOOLEAN
+     Return TRUE if SELF has at least 1 entry.
+
+ -- Method on STELLA-HASH-TABLE: copy (self) : (LIKE SELF)
+     Return a copy of the hash table SELF.  The bucket table and
+     buckets are freshly allocated, however, the keys and values of
+     entries are not copied themselves (similar to what we do for
+     lists, etc.).
+
+ -- Method on STELLA-HASH-TABLE: clear (self) :
+     Remove all entries from SELF.  This will result in a
+     re-initialization of the table upon the first insertion into SELF.
+
+ -- Method on STELLA-HASH-TABLE: consify (self) : (CONS OF CONS)
+     Collect all entries of SELF into a cons list of `(<key> <value>)'
+     pairs and return the result.
+
+ -- Method on STELLA-HASH-TABLE: object-equal? (x (y OBJECT)) : BOOLEAN
+     Return TRUE if X and Y represent the same set of key/value pairs.
+
+ -- Method on STELLA-HASH-TABLE: equal-hash-code (self) : INTEGER
+     Return an `equal?' hash code for SELF.  Note that this is O(N) in
+     the number of entries of SELF.
+
+ -- Method on STELLA-HASH-TABLE: allocate-iterator (self) :
+          (STELLA-HASH-TABLE-ITERATOR OF (LIKE (ANY-KEY SELF)) (LIKE
+          (ANY-VALUE SELF)))
+     Allocate an iterator for SELF.
+
+   Hashing objects into STELLA hash tables is accomplished via
+`hash-code' and `equal-hash-code' methods.  These methods are
+implemented for all built-in STELLA types but are user extensible for
+cases where special functionality on user-defined objects is needed.
+Defining new `hash-code' methods should only be necessary if new
+wrapper types are defined, since for all types descending from
+`STANDARD-OBJECT' the built-in method should be adequate.
+
+ -- Function: object-hash-code ((self OBJECT)) : INTEGER
+     Return a hash code for SELF (can be negative).  Two objects that
+     are `eq?' are guaranteed to generate the same hash code.  Two
+     objects that are not `eq?' do not necessarily generate different
+     hash codes.  Similar to `hash-code' but always hashes on the
+     address of SELF even if it is a wrapper.
+
+ -- Method on OBJECT: hash-code (self) : INTEGER
+     Return a hash code for SELF (can be negative).  Two objects that
+     are `eql?' are guaranteed to generate the same hash code.  Two
+     objects that are not `eql?' do not necessarily generate different
+     hash codes.
+
+ -- Method on STANDARD-OBJECT: hash-code (self) : INTEGER
+     Not documented.
+
+ -- Method on STRING-WRAPPER: hash-code (self) : INTEGER
+     Not documented.
+
+ -- Method on INTEGER-WRAPPER: hash-code (self) : INTEGER
+     Not documented.
+
+ -- Method on FLOAT-WRAPPER: hash-code (self) : INTEGER
+     Not documented.
+
+ -- Method on CHARACTER-WRAPPER: hash-code (self) : INTEGER
+     Not documented.
+
+ -- Method on BOOLEAN-WRAPPER: hash-code (self) : INTEGER
+     Not documented.
+
+ -- Method on STRING: hash-code (self) : INTEGER
+     Not documented.
+
+ -- Method on INTEGER: hash-code (self) : INTEGER
+     Not documented.
+
+ -- Method on FLOAT: hash-code (self) : INTEGER
+     Not documented.
+
+ -- Method on CHARACTER: hash-code (self) : INTEGER
+     Not documented.
+
+ -- Method on OBJECT: equal-hash-code (self) : INTEGER
+     Return a hash code for SELF (can be negative).  Two objects that
+     are `equal?' are guaranteed to generate the same hash code
+     (provided, that writers of `object-equal?' methods also
+     implemented the appropriate `equal-hash-code' method).  Two
+     objects that are not `equal?'do not necessarily generate different
+     hash codes.
+
+   The following low-level utilities are available to implement
+specialized hashing schemes or for defining new versions of
+`equal-hash-code'.
+
+ -- Function: hashmod ((code INTEGER) (size INTEGER)) : INTEGER
+     Map the hash code CODE onto a bucket index for a hash table of
+     SIZE (i.e., onto the interval [0..size-1].  This is just like
+     `rem' for positive hash codes but also works for negative hash
+     codes by mapping those onto a positive number first.  Note, that
+     the sign conversion mapping is not equivalent to calling the `abs'
+     function (it simply masks the sign bit for speed) and therefore
+     really only makes sense for hash codes.
+
+ -- Function: rotate-hash-code ((arg INTEGER)) : INTEGER
+     Rotate ARG to the right by 1 position.  This means shift ARG to
+     the right by one and feed in ARGs bit zero from the left.  In Lisp
+     the result will stay in positive FIXNUM range.  In C++ and Java
+     this might return a negative value which might be equal to
+     NULL-INTEGER.  Important: to make this inlinable, it must be
+     called with an atom (i.e., constant or variable) as its argument.
+     This function is primarily useful for hashing sequences of items
+     where the hash code should take the sequential order of elements
+     into account (e.g., lists).
+
+
+File: manual.info,  Node: Key Value Maps,  Next: Hash Sets,  Prev: Hash Tables,  Up: Library Functions
+
+7.10 Key Value Maps
+===================
+
+`KEY-VALUE-MAP' is a full-featured dictionary class that supports
+`eql?' or extensible `equal?' equality tests, O(1) access operations
+even for large numbers of entries by using a hash table, light-weight
+`KV-CONS' representation for small tables and iteration even if the
+dictionary is represented by a hash table (note that in STELLA we
+cannot iterate over regular `HASH-TABLE''s, since native Lisp hash
+tables do not allow us to implement a hash table iterator).  Since
+large `KEY-VALUE-MAP''s are implemented via `STELLA-HASH-TABLE''s, we
+can support iteration.
+
+ -- Class: KEY-VALUE-MAP : DICTIONARY
+     Full-featured dictionary class that supports `eql?' or `equal?'
+     equality tests, O(1) access operations even for large numbers of
+     entries by using a hash table, light-weight KV-CONS representation
+     for small tables and iteration even if the dictionary is
+     represented by a hash table.
+
+      -- Slot of : the-map : OBJECT
+          Not documented.
+
+      -- Slot of : equal-test? : BOOLEAN
+          If true use `equal?' as the equality test (and
+          `equal-hash-code' as the hash function), otherwise, use
+          `eql?' (and `hash-code') (the default).
+
+      -- Slot of : initial-size : INTEGER
+          If supplied, the initial table will be sized to hold at least
+          that many elements.
+
+      -- Slot of : crossover-point : INTEGER
+          Not documented.
+
+ -- Method on KEY-VALUE-MAP: lookup (self (key (LIKE (ANY-KEY SELF))))
+          : (LIKE (ANY-VALUE SELF))
+     Lookup the entry identified by KEY in SELF and return its value,
+     or NULL if no such entry exists.    Uses an `eql?' test by default
+     or `equal?' if `equal-test?' of SELF is TRUE.
+
+ -- Method on KEY-VALUE-MAP: insert-at (self
+          (key (LIKE (ANY-KEY SELF))) (value (LIKE (ANY-VALUE SELF)))) :
+     Set the value of the entry identified by KEY in SELF to VALUE or
+     add a new entry if no entry with KEY exists yet.  Uses an `eql?'
+     test by default or `equal?' if `equal-test?' of SELF is TRUE.
+
+ -- Method on KEY-VALUE-MAP: remove-at (self
+          (key (LIKE (ANY-KEY SELF)))) :
+     Remove the entry identified by KEY from SELF.  Uses an `eql?' test
+     by default or `equal?' if `equal-test?' of SELF is TRUE.
+
+ -- Method on KEY-VALUE-MAP: length (self) : INTEGER
+     Return the number of entries in SELF.
+
+ -- Method on KEY-VALUE-MAP: empty? (self) : BOOLEAN
+     Return TRUE if SELF has zero entries.
+
+ -- Method on KEY-VALUE-MAP: non-empty? (self) : BOOLEAN
+     Return TRUE if SELF has at least 1 entry.
+
+ -- Method on KEY-VALUE-MAP: copy (self) : (LIKE SELF)
+     Return a copy of the map SELF.  All entries are freshly allocated,
+     however, the keys and values of entries are not copied themselves
+     (similar to what we do for lists, etc.).
+
+ -- Method on KEY-VALUE-MAP: clear (self) :
+     Reset SELF to have zero entries.
+
+ -- Method on KEY-VALUE-MAP: allocate-iterator (self) :
+          (DICTIONARY-ITERATOR OF (LIKE (ANY-KEY SELF)) (LIKE
+          (ANY-VALUE SELF)))
+     Allocate an iterator for SELF.  The only modifying operations
+     allowed during iteration are removal of the current element or
+     changing its value.  All other removal or insertion operations
+     might lead to corruption or undefined results.
+
+ -- Method on KEY-VALUE-MAP: consify (self) : CONS
+     Collect all entries of SELF into a cons list of `(<key> <value>)'
+     pairs and return the result.
+
+ -- Method on KEY-VALUE-MAP: object-equal? (x (y OBJECT)) : BOOLEAN
+     Return TRUE if X and Y represent the same set of key/value pairs.
+
+ -- Method on KEY-VALUE-MAP: equal-hash-code (self) : INTEGER
+     Return an `equal?' hash code for SELF.  Note that this is O(N) in
+     the number of entries of SELF.
+
+
+File: manual.info,  Node: Hash Sets,  Next: Iterators,  Prev: Key Value Maps,  Up: Library Functions
+
+7.11 Hash Sets
+==============
+
+`HASH-SET' is a full-featured set class that supports `eql?' or
+extensible `equal?' equality tests, O(1) insert and `member?'
+operations, O(N) `intersection' etc. operations even for large numbers
+of entries by using a STELLA hash table, light-weight `KV-CONS'
+representation for small sets and iteration even if the set is
+represented by a hash table.  The only minor drawback right now is that
+we waste one value slot per entry, since we piggy-back off
+`KEY-VALUE-MAP''s, however, that wastes at most 25% space.
+
+ -- Class: HASH-SET : KEY-VALUE-MAP, SET-MIXIN
+     Full-featured set class that supports `eql?' or `equal?' equality
+     tests, O(1) insert and `member?' operations & O(N) `intersection'
+     etc. operations even for large numbers of entries by using a hash
+     table, light-weight KV-CONS representation for small sets and
+     iteration even if the set is represented by a hash table.  The
+     only minor drawback right now is that this wastes a value slot per
+     entry, since we piggy-back off KEY-VALUE-MAP's, however, that
+     wastes at most 25% space.
+
+ -- Function: hash-set (&rest (values OBJECT)) : HASH-SET
+     Return an `eql?' HASH-SET containing VALUES.
+
+ -- Method on HASH-SET: member? (self (object OBJECT)) : BOOLEAN
+     Return TRUE iff OBJECT is a member of the set SELF.  Uses an
+     `eql?' test by default or `equal?' if `equal-test?' of SELF is
+     TRUE.
+
+ -- Method on HASH-SET: insert (self (value (LIKE (ANY-VALUE SELF)))) :
+     Add VALUE to the set SELF unless it is already a member.  Uses an
+     `eql?' test by default or `equal?' if `equal-test?' of SELF is
+     TRUE.
+
+ -- Method on HASH-SET: remove (self (value (LIKE (ANY-VALUE SELF)))) :
+          (LIKE SELF)
+     Destructively remove VALUE from the set SELF if it is a member and
+     return SELF.  Uses an `eql?' test by default or `equal?' if
+     `equal-test?' of SELF is TRUE.
+
+ -- Method on HASH-SET: remove-if (self (test? FUNCTION-CODE)) : (LIKE
+          SELF)
+     Destructively remove all elements of the set SELF for which TEST?
+     evaluates to TRUE.  TEST? takes a single argument of type OBJECT
+     and returns TRUE or FALSE.  Returns SELF.
+
+ -- Method on HASH-SET: pop (self) : (LIKE (ANY-VALUE SELF))
+     Remove and return an arbitrary element of the set SELF.  Return
+     NULL if the set is empty.  Performance note: for large sets
+     implemented via hash tables it takes O(N) to empty out the set
+     with repeated calls to `pop', since the emptier the table gets,
+     the longer it takes to find an element.  Therefore, it is usually
+     better to use iteration with embedded removals for such cases.
+
+ -- Method on HASH-SET: substitute (self (new OBJECT) (old OBJECT)) :
+          (LIKE SELF)
+     Destructively replace OLD with NEW in the set SELF unless NEW is
+     already a member.  Uses an `eql?' test by default or `equal?' if
+     `equal-test?' of SELF is TRUE.
+
+ -- Method on HASH-SET: copy (self) : (LIKE SELF)
+     Return a copy of the set SELF.  All entries are freshly allocated,
+     however, the values are not copied themselves (similar to what we
+     do for lists, etc.).
+
+ -- Method on HASH-SET: consify (self) : (CONS OF (LIKE (ANY-VALUE
+          SELF)))
+     Collect all entries of SELF into a cons list and return the result.
+
+ -- Method on HASH-SET: subset? (self (otherSet HASH-SET)) : BOOLEAN
+     Return true if every element of SELF also occurs in OTHERSET.
+     Uses an `eql?' test by default or `equal?' if `equal-test?' of
+     SELF is TRUE.
+
+ -- Method on HASH-SET: equivalent-sets? (self (otherSet HASH-SET)) :
+          BOOLEAN
+     Return true if every element of SELF occurs in OTHERSET and vice
+     versa.  Uses an `eql?' test by default or `equal?' if
+     `equal-test?' of SELF is TRUE.
+
+ -- Method on HASH-SET: intersection (self (otherSet HASH-SET)) :
+          HASH-SET
+     Return the set intersection of SELF and OTHERSET as a new set.
+     Uses an `eql?' test by default or `equal?' if `equal-test?' of
+     SELF is TRUE.
+
+ -- Method on HASH-SET: union (self (otherSet HASH-SET)) : HASH-SET
+     Return the set union of SELF and OTHERSET as a new set.  Uses an
+     `eql?' test by default or `equal?' if `equal-test?' of SELF is
+     TRUE.
+
+ -- Method on HASH-SET: difference (self (otherSet HASH-SET)) : HASH-SET
+     Return the set difference of SELF and OTHERSET as a new set (i.e.,
+     all elements that are in SELF but not in OTHERSET).  Uses an
+     `eql?' test by default or `equal?' if `equal-test?' of SELF is
+     TRUE.
+
+ -- Method on HASH-SET: subtract (self (otherSet HASH-SET)) : HASH-SET
+     Return the set difference of SELF and OTHERSET by destructively
+     removing elements from SELF that also occur in OTHERSET.  Uses an
+     `eql?' test by default or `equal?' if `equal-test?' of SELF is
+     TRUE.
+
+ -- Method on HASH-SET: object-equal? (x (y OBJECT)) : BOOLEAN
+     Return TRUE iff sets X and Y are HASH-SET's with equivalent
+     members.  Uses an `eql?' test by default or `equal?' if
+     `equal-test?' of `self' is TRUE.  This is equivalent to calling
+     `equivalent-sets?'.
+
+ -- Method on HASH-SET: equal-hash-code (self) : INTEGER
+     Return an `equal?' hash code for SELF.  Note that this is O(N) in
+     the number of elements of SELF.
+
+
+File: manual.info,  Node: Iterators,  Next: Symbols,  Prev: Hash Sets,  Up: Library Functions
+
+7.12 Iterators
+==============
+
+ -- Method on ITERATOR: empty? (self) : BOOLEAN
+     Return TRUE if the sequence represented by SELF has no elements.
+     Side-effect free.
+
+ -- Method on ITERATOR: member? (self (value OBJECT)) : BOOLEAN
+     Iterate over values of SELF, returning TRUE if one of them is
+     `eql' to 'value.
+
+ -- Method on ABSTRACT-ITERATOR: length (self) : INTEGER
+     Iterate over SELF, and count how many items there are.  Bad idea
+     if SELF iterates over an infinite collection, since in that case
+     it will run forever.'
+
+ -- Method on ITERATOR: pop (self) : (LIKE (ANY-VALUE SELF))
+     Return the first item of the sequence represented by SELF, or NULL
+     if it is empty.  Destructively uses up the first iteration element.
+
+ -- Method on ITERATOR: advance (self (n INTEGER)) : (LIKE SELF)
+     Return SELF after skipping over the first N elements in the
+     (remainder of the) iteration.
+
+ -- Method on ITERATOR: concatenate (iterator1 (iterator2 ITERATOR)
+          &rest (otherIterators ITERATOR)) : ALL-PURPOSE-ITERATOR
+     Return an iterator that first generates all values of ITERATOR1,
+     then those of ITERATOR2, and then those of all OTHERITERATORS.
+     The generated values can be filtered by supplying a filter
+     function to the resulting iterator.
+
+ -- Method on ITERATOR: consify (self) : (CONS OF (LIKE (ANY-VALUE
+          SELF)))
+     Return a list of elements generated by SELF.
+
+ -- Method on ALL-PURPOSE-ITERATOR: next? (self) : BOOLEAN
+     Apply the stored `next?' function to SELF.
+
+
+File: manual.info,  Node: Symbols,  Next: Contexts and Modules,  Prev: Iterators,  Up: Library Functions
+
+7.13 Symbols
+============
+
+ -- Function: lookup-symbol ((name STRING)) : SYMBOL
+     Return the first symbol with NAME visible from the current module.
+
+ -- Function: intern-symbol ((name STRING)) : SYMBOL
+     Return a newly-created or existing symbol with name NAME.
+
+ -- Function: unintern-symbol ((self SYMBOL)) :
+     Remove SELF from its home module and the symbol table.
+
+ -- Function: lookup-symbol-in-module ((name STRING) (module MODULE)
+          (local? BOOLEAN)) : SYMBOL
+     Return the first symbol with NAME visible from MODULE.  If LOCAL?
+     only consider symbols directly interned in MODULE.  If MODULE is
+     `null', use `*MODULE*' instead.
+
+ -- Function: intern-symbol-in-module ((name STRING) (module MODULE)
+          (local? BOOLEAN)) : SYMBOL
+     Look for a symbol named NAME in MODULE (if LOCAL? do not consider
+     inherited modules).  If none exists, intern it locally in MODULE.
+     Return the existing or newly-created symbol.
+
+ -- Function: intern-derived-symbol ((baseSymbol GENERALIZED-SYMBOL)
+          (newName STRING)) : SYMBOL
+     Return a newly-created or existing symbol with name NEWNAME which
+     is interned in the same module as BASESYMBOL.
+
+ -- Function: visible-symbol? ((self SYMBOL)) : BOOLEAN
+     Return `true' if SELF is visible from the current module.
+
+ -- Function: lookup-visible-symbols-in-module ((name STRING)
+          (module MODULE) (enforceShadowing? BOOLEAN)) : (CONS OF
+          SYMBOL)
+     Return the list of symbols with NAME visible from MODULE.  More
+     specific symbols (relative to the module precedence order defined
+     by `visible-modules') come earlier in the list.  If MODULE is
+     `null', start from `*MODULE*' instead.  If ENFORCESHADOWING? is
+     true, do not return any symbols that are shadowed due to some
+     :SHADOW declaration.
+
+ -- Function: import-symbol ((symbol SYMBOL) (module MODULE)) : SYMBOL
+     Import SYMBOL into MODULE and return the imported SYMBOL.  Signal
+     an error if a different symbol with the same name already exists
+     locally in MODULE.  Any symbol with the same name visible in
+     MODULE by inheritance will be shadowed by the newly imported
+     SYMBOL.
+
+ -- Function: safe-import-symbol ((symbol SYMBOL) (module MODULE)) :
+          SYMBOL
+     Safe version of `import-symbol' (which see).  Only imports SYMBOL
+     if no symbol with that name is currently interned or visible in
+     MODULE.  Returns SYMBOL if it was imported or the conflicting
+     symbol in MODULE otherwise.
+
+ -- Function: lookup-surrogate ((name STRING)) : SURROGATE
+     Return the first surrogate with NAME visible from the current
+     module.
+
+ -- Function: intern-surrogate ((name STRING)) : SURROGATE
+     Return a newly-created or existing surrogate with name NAME.
+
+ -- Function: unintern-surrogate ((self SURROGATE)) :
+     Remove SELF from its home module and the surrogate table.
+
+ -- Function: lookup-surrogate-in-module ((name STRING) (module MODULE)
+          (local? BOOLEAN)) : SURROGATE
+     Return the first surrogate with NAME visible from MODULE.  If
+     LOCAL? only consider surrogates directly interned in MODULE.  If
+     MODULE is `null', use `*MODULE*' instead.
+
+ -- Function: intern-surrogate-in-module ((name STRING) (module MODULE)
+          (local? BOOLEAN)) : SURROGATE
+     Look for a symbol named NAME in MODULE (if LOCAL? do not consider
+     inherited modules).  If none exists, intern it locally in MODULE.
+     Return the existing or newly-created symbol.
+
+ -- Function: intern-derived-surrogate ((baseSymbol GENERALIZED-SYMBOL)
+          (newName STRING)) : SURROGATE
+     Return a newly-created or existing surrogate with name NEWNAME
+     which is interned in the same module as BASESYMBOL.
+
+ -- Function: visible-surrogate? ((self SURROGATE)) : BOOLEAN
+     Return `true' if SELF is visible from the current module.
+
+ -- Function: lookup-visible-surrogates-in-module ((name STRING)
+          (module MODULE) (enforceShadowing? BOOLEAN)) : (CONS OF
+          SURROGATE)
+     Return the list of surrogates with NAME visible from MODULE.  More
+     specific surrogates (relative to the module precedence order
+     defined by `visible-modules') come earlier in the list.  If MODULE
+     is `null', start from `*MODULE*' instead.  If ENFORCESHADOWING? is
+     true, do not return any surrogates that are shadowed due to some
+     :SHADOW declaration.
+
+ -- Function: import-surrogate ((surrogate SURROGATE) (module MODULE))
+          : SURROGATE
+     Import SURROGATE into MODULE and return the imported SURROGATE.
+     Signal an error if a different surrogate with the same name
+     already exists locally in MODULE.  Any surrogate with the same
+     name visible in MODULE by inheritance will be shadowed by the
+     newly imported SURROGATE.
+
+ -- Function: safe-import-surrogate ((surrogate SURROGATE)
+          (module MODULE)) : SURROGATE
+     Safe version of `import-surrogate' (which see).  Only imports
+     SURROGATE if no surrogate with that name is currently interned or
+     visible in MODULE.  Returns SURROGATE if it was imported or the
+     conflicting surrogate in MODULE otherwise.
+
+ -- Function: lookup-keyword ((name STRING)) : KEYWORD
+     Return the keyword with NAME if it exists.
+
+ -- Function: intern-keyword ((name STRING)) : KEYWORD
+     Return a newly-created or existing keyword with name NAME.
+     Storage note: a COPY of NAME is stored in the keyword
+
+ -- Function: gensym ((prefix STRING)) : SYMBOL
+     Return a transient symbol with a name beginning with PREFIX and
+     ending with a globally gensym'd integer.
+
+ -- Function: local-gensym ((prefix STRING)) : SYMBOL
+     Not documented.
+
+ -- Function: symbol-plist ((symbol SYMBOL)) : CONS
+     Return the property list of SYMBOL.  The `symbol-plist' of a
+     symbol can be set with `setf'.  IMPORTANT: Property list are
+     modified destructively, hence, if you supply it as a whole make
+     sure to always supply a modfiable copy, e.g., by using `bquote'.
+
+ -- Function: symbol-property ((symbol SYMBOL) (key STANDARD-OBJECT)) :
+          OBJECT
+     Return the property of SYMBOL whose key is `eq?' to KEY.  Symbol
+     properties can be set with `setf'.
+
+ -- Function: symbol-value ((symbol SYMBOL)) : OBJECT
+     Return the value of SYMBOL.  Note, that this value is not visible
+     to code that references a variable with the same name as SYMBOL.
+     The `symbol-value' is simply a special property that can always be
+     accessed in constant time.  The `symbol-value' of a symbol can be
+     changed with `setf'.
+
+ -- Function: symbolize ((surrogate SURROGATE)) : SYMBOL
+     Convert SURROGATE into a symbol with the same name and module.
+
+
+File: manual.info,  Node: Contexts and Modules,  Next: Input and Output,  Prev: Symbols,  Up: Library Functions
+
+7.14 Context and Modules
+========================
+
+ -- Function: get-stella-context ((pathName STRING) (error? BOOLEAN)) :
+          CONTEXT
+     Return the context located at PATHNAME, or `null' if no such
+     context exists.  If ERROR? is `true', throw an exception if no
+     context is found, otherwise silently return `null'.
+
+ -- Function: clear-context ((self CONTEXT)) :
+     Destroy all objects belonging to SELF or any of its subcontexts.
+
+ -- Macro: within-context ((contextForm OBJECT) &body (body CONS)) :
+          OBJECT
+     Execute BODY within the context resulting from CONTEXTFORM.
+
+ -- Method on CONTEXT: destroy-context (self) :
+     Make the translator happy.
+
+ -- Method on STRING: destroy-context (self) :
+     Destroy the context SELF, and recursively destroy all contexts
+     that inherit SELF.
+
+ -- Method on CONTEXT: change-context (context) : CONTEXT
+     Change the current context to be the context CONTEXT.
+
+ -- Method on STRING: change-context (contextName) : CONTEXT
+     Change the current context to be the context named CONTEXTNAME.
+
+ -- N-Command: cc (&rest (name NAME)) : CONTEXT
+     Change the current context to the one named NAME.  Return the
+     value of the new current context.  If no NAME is supplied, return
+     the pre-existing value of the current context.  `cc' is a no-op if
+     the context reference cannot be successfully evaluated.
+
+ -- N-Command: defmodule ((name NAME) &rest (options OBJECT)) :
+     Define (or redefine) a module named NAME.  The accepted syntax is:
+
+            (defmodule <module-name>
+               [:documentation <docstring>]
+               [:includes {<module-name> | (<module-name>*)}]
+               [:uses {<module-name> | (<module-name>*)}]
+               [:lisp-package <package-name-string>]
+               [:java-package <package-specification-string>]
+               [:cpp-namespace <namespace-name-string>]
+               [:java-catchall-class
+               [:api? {TRUE | FALSE}]
+               [:case-sensitive? {TRUE | FALSE}]
+               [:shadow (<symbol>*)]
+               [:java-catchall-class <class-name-string>]
+               [<other-options>*])
+
+     NAME can be a string or a symbol.
+
+     Modules include objects from other modules via two separate
+     mechanisms: (1) they inherit from their parents specified via the
+     `:includes' option and/or a fully qualified module name, and (2)
+     they inherit from used modules specified via the `:uses' option.
+     The main difference between the two mechanisms is that inheritance
+     from parents is transitive, while uses-links are only followed one
+     level deep.  I.e., a module A that uses B will see all objects of
+     B (and any of B's parents) but not see anything from modules used
+     by B.  Another difference is that only objects declared as public
+     can be inherited via uses-links (this is not yet enforced).  Note
+     that - contrary to Lisp - there are separate name spaces for
+     classes, functions, and variables.  For example, a module could
+     inherit the class `CONS' from the `STELLA' module, but shadow the
+     function of the same name.
+
+     The above discussion of `:includes' and `:uses' semantics keyed on
+     the inheritance/visibility of symbols. The PowerLoom system makes
+     another very important distinction: If a module `A' is inherited
+     directly or indirectly via `:includes' specification(s) by a
+     submodule `B', then all definitions and facts asserted in `A' are
+     visible in `B'. This is not the cases for `:uses'; the `:uses'
+     options does not impact inheritance of propositions at all.
+
+     The list of modules specified in the `:includes' option plus (if
+     supplied) the parent in the path used for NAME become the new
+     module's parents. If no `:uses' option was supplied, the new
+     module will use the `STELLA' module by default, otherwise, it will
+     use the set of specified modules.
+
+     If `:case-sensitive?' is supplied as TRUE, symbols in the module
+     will be interned case-sensitively, otherwise (the default), they
+     will be converted to uppercase before they get interned.  That
+     means that any reference from inside a case-sensitive module to a
+     non-case-sensitive module will have to use uppercase names for
+     symbols in the non-case-sensitive module.  The standard system
+     modules are all NOT case sensitive.
+
+     Modules can shadow definitions of functions and classes inherited
+     from parents or used modules. Shadowing is done automatically, but
+     generates a warning unless the shadowed type or function name is
+     listed in the `:shadow' option of the module definition .
+
+     Examples:
+
+            (defmodule "PL-KERNEL/PL-USER"
+              :uses ("LOGIC" "STELLA")
+              :package "PL-USER")
+
+            (defmodule PL-USER/GENEALOGY)
+
+     The remaining options are relevant only for modules that contain
+     STELLA code.  Modules used only to contain knowledge base
+     definitions and assertions have no use for them:
+
+     The keywords `:lisp-package', `:java-package', and `:cpp-package'
+     specify the name of a native package or name space in which
+     symbols of the module should be allocated when they get translated
+     into one of Lisp, Java, or C++. By default, Lisp symbols are
+     allocated in the `STELLA' package, and C++ names are translated
+     without any prefixes. The rules that the STELLA translator uses to
+     attach translated Java objects to classes and packages are
+     somewhat complex. Use :java-package option to specify a list of
+     package names (separated by periods) that prefix the Java object
+     in this module.  Use :java-catchall-class to specify the name of
+     the Java class to contain all global & special variables,
+     parameter-less functions and functions defined on arguments that
+     are not classes in the current module.  The default value will be
+     the name of the module.
+
+     When set to TRUE, the :api? option tells the PowerLoom User Manual
+     generator that all functions defined in this module should be
+     included in the API section. Additionally, the Java translator
+     makes all API functions `synchronized'.
+
+
+ -- Function: get-stella-module ((pathName STRING) (error? BOOLEAN)) :
+          MODULE
+     Return the module located at PATHNAME, or `null' if no such module
+     exists.  The search looks at ancestors and top-most  (cardinal)
+     modules.  If ERROR? is `true', throw an exception if no  module is
+     found.
+
+ -- Function: find-or-create-module ((pathname STRING)) : MODULE
+     Return a module located at PATHNAME if one exists,   otherwise
+     create one
+
+ -- N-Command: clear-module (&rest (name NAME)) :
+     Destroy all objects belonging to module NAME or any of its
+     children.  If no NAME is supplied, the current module will be
+     cleared after confirming with the user.  Important modules such as
+     STELLA are protected against accidental clearing.
+
+ -- Function: destroy-module ((self MODULE)) :
+     Destroy the module SELF, and recursively destroy all contexts that
+     inherit SELF.
+
+ -- Method on MODULE: destroy-context (self) :
+     Destroy the context SELF, and recursively destroy all contexts
+     that inherit SELF.
+
+ -- Function: visible-modules ((from MODULE)) : (CONS OF MODULE)
+     Return a list of all modules visible from module FROM (or
+     `*module*' if FROM is NULL.  The generated modules are generated
+     from most to least-specific and will start with the module FROM.
+
+ -- Macro: within-module ((moduleForm OBJECT) &body (body CONS)) :
+          OBJECT
+     Execute BODY within the module resulting from MODULEFORM.
+     `*module*' is an acceptable MODULEFORM.  It will locally rebind
+     `*module*' and `*context*' and shield the outer bindings from
+     changes.
+
+ -- N-Command: in-module ((name NAME)) : MODULE
+     Change the current module to the module named NAME.
+
+ -- Method on MODULE: change-module (module) : MODULE
+     Change the current module to be the module MODULE.
+
+ -- Method on STRING: change-module (moduleName) : MODULE
+     Change the current module to be the module named MODULENAME.
+
+ -- Function: create-world ((parentContext CONTEXT) (name STRING)) :
+          WORLD
+     Create a new world below the world or module PARENTCONTEXT.
+     Optionally, specify a name.
+
+ -- Command: push-world () : WORLD
+     Spawn a new world that is a child of the current context, and
+     change the current context to the new world.
+
+ -- Command: pop-world () : CONTEXT
+     Destroy the current world and change the current context to be its
+     parent.  Return the current context. Nothing happens if there is
+     no current world.
+
+ -- Method on WORLD: destroy-context (self) :
+     Destroy the context SELF, and recursively destroy all contexts
+     that inherit SELF.
+
+ -- Macro: within-world ((worldForm OBJECT) &body (body CONS)) : OBJECT
+     Execute BODY within the world resulting from WORLDFORM.
+
+
+File: manual.info,  Node: Input and Output,  Next: Files,  Prev: Contexts and Modules,  Up: Library Functions
+
+7.15 Input and Output
+=====================
+
+ -- Function: read-s-expression ((stream INPUT-STREAM)) : OBJECT BOOLEAN
+     Read one STELLA s-expression from STREAM and return the result.
+     Return `true' as the second value on EOF.
+
+ -- Function: read-s-expression-from-string ((string STRING)) : OBJECT
+     Read one STELLA s-expression from STRING and return the result.
+
+ -- Function: read-line ((stream INPUT-STREAM)) : STRING
+     Read one line from STREAM and return the result.  This differs
+     from `native-read-line' in that it is not platform-dependent.  It
+     recognizes any of the three common line ending formats: CR, LF,
+     CR-LF in any combination.  It is not as fast as
+     `native-read-line', however.
+
+ -- Function: read-character ((inputStream INPUT-STREAM)) : CHARACTER
+          BOOLEAN
+     Read one character from INPUTSTREAM and return the result.  Return
+     `true' as the second value on EOF.
+
+ -- Function: unread-character ((ch CHARACTER)
+          (inputStream INPUT-STREAM)) :
+     Unread CH from INPUTSTREAM.  Signal an error if CH was not the
+     last character read.
+
+ -- Function: y-or-n? ((message STRING)) : BOOLEAN
+     Read a line of input from STANDARD-INPUT and return `true' if the
+     input was `y' or `false' if the input was `n'.  Loop until either
+     `y' or `n' was entered.  If MESSAGE is non-`null' prompt with it
+     before the input is read.  See also special variable
+     `*USER-QUERY-ACTION*'.
+
+ -- Function: yes-or-no? ((message STRING)) : BOOLEAN
+     Read a line of input from STANDARD-INPUT and return `true' if the
+     input was `yes' or `false' if the input was `no'.  Loop until
+     either `yes' or `no' was entered.  If MESSAGE is non-`null' prompt
+     with it before the input is read.  See also special variable
+     `*USER-QUERY-ACTION*'.
+
+ -- Function: flush-output ((self OUTPUT-STREAM)) :
+     Flush all buffered output of SELF.
+
+
+File: manual.info,  Node: Files,  Next: Dates and Times,  Prev: Input and Output,  Up: Library Functions
+
+7.16 Files
+==========
+
+ -- Function: open-input-file ((fileName STRING)
+          &rest (options KEYWORD)) : FILE-INPUT-STREAM
+     Open file FILENAME for input and return the resulting input stream.
+     By default signal an error if the file does not exist.  The only
+     legal option so far is `:IF-NOT-EXISTS' (or
+     `:IF-NOT-EXISTS-ACTION') which specifies what to do in case the
+     file does not exist.  If its value is `:ERROR' then an error will
+     be signaled.  If it is `:ABORT' or `:PROBE' the opening operation
+     will be aborted and NULL will be returned.
+
+ -- Function: open-output-file ((fileName STRING)
+          &rest (options KEYWORD)) : FILE-OUTPUT-STREAM
+     Open file FILENAME for output and return the resulting output
+     stream.  By default the file will be created or overwritten if it
+     already exists.  If `:IF-EXISTS' (or `:IF-EXISTS-ACTION') is one
+     of the OPTIONS its value specifies what to do in case the file
+     already exists.  If the value is `:SUPERSEDE' the pre-existing
+     file will be overwritten.  If the value is `:APPEND' the
+     preexisting file will be appended to (if the file did not yet
+     exist the file will simply be created).  If the value is `:ERROR'
+     then an error will be signaled.  If it is `:ABORT' or `:PROBE' the
+     opening operation will be aborted and NULL will be returned.
+
+     If `:IF-NOT-EXISTS' (or `:IF-NOT-EXISTS-ACTION') is one of the
+     OPTIONS its value specifies what to do in case the file does not
+     already exist.  If the value is `:CREATE', the file will simply be
+     created.  If the value is `:ERROR' then an error will be signaled.
+     If it is `:ABORT' or `:PROBE' the opening operation will be
+     aborted and NULL will be returned.
+
+ -- Function: close-stream ((self STREAM)) :
+     Close the stream SELF.
+
+ -- Function: close-all-files () :
+     Close all currently open file streams.  Use for emergencies or for
+     cleanup.
+
+ -- Macro: with-input-file ((binding CONS) &body (body CONS)) : OBJECT
+     Sets up an unwind-protected form which opens a file for input and
+     closes it afterwards.  The stream for reading is bound to the
+     variable provided in the macro form.  Syntax is `(WITH-INPUT-FILE
+     (var filename options*) body+)' where `options' can be any that
+     are legal for `open-input-file' (which see).
+
+ -- Macro: with-output-file ((binding CONS) &body (body CONS)) : OBJECT
+     Sets up an unwind-protected form which opens a file for output and
+     closes it afterwards.  The stream for writing is bound to the
+     variable provided in the macro form.  Syntax is `(WITH-OUTPUT-FILE
+     (var filename options*) body+)' where `options' can be any that
+     are legal for `open-output-file' (which see).
+
+ -- Function: probe-file? ((fileName FILE-NAME)) : BOOLEAN
+     Return true if file FILENAME exists.  Note that this does not
+     necessarily mean that the file can also be read.  IMPORTANT Java
+     idiosyncrasy: if file `foo/bar' exists and is not a directory,
+     Java will also say `foo/bar/' exists, which is different behavior
+     than in Lisp and C++.  For this reason, make sure to always use
+     `probe-directory?' to test whether a directory exists.
+
+ -- Function: file-write-date ((fileName FILE-NAME)) : CALENDAR-DATE
+     Return the time at which file FILENAME was last modified or NULL
+     if that cannot be determined.
+
+ -- Function: file-length ((fileName FILE-NAME)) : LONG-INTEGER
+     Return the length of file FILENAME in bytes or NULL if that cannot
+     be determined.
+
+ -- Function: copy-file ((fromFile FILE-NAME) (toFile FILE-NAME)) :
+     Copy file FROMFILE to file TOFILE, clobbering any data already in
+     TOFILE.
+
+ -- Function: delete-file ((fileName FILE-NAME)) :
+     Delete the file FILENAME.
+
+ -- Function: rename-file ((fromFile FILE-NAME) (toFile FILE-NAME)) :
+     Rename the file FROMFILE to TOFILE.
+
+ -- Function: make-temporary-file-name ((prefix STRING)
+          (suffix STRING)) : STRING
+     Return a file name of the form `<prefix>NNNNNN<suffix>' which is
+     guaranteed to not refer to any existing file.  A null PREFIX
+     defaults to `tmpfile', a null SUFFIX defaults to the empty string.
+     The number portion NNNNNN will correpond to a random number
+     between 0 and 999999.  If no qualifying filename can be found
+     after 100 attempts, NULL will be returned.  Note that it is
+     possible due to multi-threading or processing that the generated
+     filename becomes used by another thread or OS process.  If
+     necessary, this case can be handled by the caller.
+
+ -- Function: directory-file-name ((directory FILE-NAME)) : FILE-NAME
+     Return DIRECTORY as a file name, i.e., without a terminating
+     directory separator.
+
+ -- Function: directory-parent-directory ((directory FILE-NAME)
+          (level INTEGER)) : FILE-NAME
+     Return the LEVEL-th parent directory component of DIRECTORY
+     including the final directory separator, or the empty string if
+     DIRECTORY does not have that many parents.
+
+ -- Function: file-name-as-directory ((file FILE-NAME)) : FILE-NAME
+     Return FILE interpreted as a directory, i.e., with a terminating
+     directory separator.  If FILE is the empty string simply return
+     the empty string, i.e., interpret it as the current directory
+     instead of the root directory.
+
+ -- Function: file-name-directory ((file FILE-NAME)) : FILE-NAME
+     Return the directory component of FILE including the final
+     directory separator or the empty string if FILE does not include a
+     directory.  Note that for purposes of this function, a logical
+     host is considered part of the directory portion of FILE
+
+ -- Function: file-name-without-directory ((file FILE-NAME)) : FILE-NAME
+     Return the file name portion of FILE by removing any directory and
+     logical host components.
+
+ -- Function: file-name-without-extension ((file FILE-NAME)) : FILE-NAME
+     Remove FILEs extension (or type) if there is any and return the
+     result.
+
+ -- Function: file-extension ((file FILE-NAME)) : STRING
+     Return FILEs extension (or type) if it has any including the
+     separator character.
+
+ -- Function: file-base-name ((file FILE-NAME)) : FILE-NAME
+     Remove FILEs directory (including logical host) and extension
+     components and return the result.
+
+ -- Function: absolute-pathname? ((pathname STRING)) : BOOLEAN
+     Not documented.
+
+ -- Function: logical-host? ((host STRING)) : BOOLEAN
+     Not documented.
+
+ -- Function: logical-pathname? ((pathname STRING)) : BOOLEAN
+     Not documented.
+
+ -- Function: translate-logical-pathname ((pathname STRING)) : STRING
+     Not documented.
+
+ -- Function: directory-separator () : CHARACTER
+     Not documented.
+
+ -- Function: directory-separator-string () : STRING
+     Not documented.
+
+
+File: manual.info,  Node: Dates and Times,  Next: XML Support,  Prev: Files,  Up: Library Functions
+
+7.17 Dates and Times
+====================
+
+ -- Function: get-current-date-time () : INTEGER INTEGER INTEGER
+          KEYWORD INTEGER INTEGER INTEGER INTEGER
+     Returns the current time in UTC as multiple values of year month
+     day day-of-week hour minute second millisecond.  Currently
+     millisecond will always be zero (even in Java where it is
+     technically available).
+
+ -- Function: get-local-time-zone () : FLOAT
+     Returns the current time zone offset from UTC as a float,
+     considering the effects of daylight savings time.
+
+ -- Function: make-current-date-time () : CALENDAR-DATE
+     Create a calendar date with current time and date.
+
+ -- Function: make-date-time ((year INTEGER) (month INTEGER)
+          (day INTEGER) (hour INTEGER) (minute INTEGER)
+          (second INTEGER) (millis INTEGER) (timezone FLOAT)) :
+          CALENDAR-DATE
+     Create a calendar date with the specified components.  YEAR must be
+     the complete year (i.e., a year of 98 is 98 A.D in the 1st
+     century).  TIMEZONE is a real number in the range -12.0 to +14.0
+     where UTC is zone 0.0;  The number is the number of hours to add
+     to UTC to arrive at local time.
+
+ -- Function: parse-date-time ((date-time-string STRING)
+          (start INTEGER) (end INTEGER) (error-on-mismatch? BOOLEAN)) :
+          DECODED-DATE-TIME
+     Tries very hard to make sense out of the argument DATE-TIME-STRING
+     and returns a time structure if successful.  If not, it returns
+     `null'.  If ERROR-ON-MISMATCH? is true, parse-date-time will
+     signal an error instead of returning `null'.  Default values are
+     00:00:00 local time on the current date
+
+ -- Method on CALENDAR-DATE: decode-calendar-date (date
+          (timezone FLOAT)) : DECODED-DATE-TIME
+     Returns a decoded time object for DATE interpreted in TIMEZONE
+     TIMEZONE is the number of hours added to UTC to get local time.
+     It is in the range -12.0 to +14.0 where UTC is zone 0.0
+
+ -- Method on DECODED-DATE-TIME: encode-calendar-date (time-structure)
+          : CALENDAR-DATE
+     Returns a calendar date object for TIME-STRUCTURE.
+
+ -- ???: calendar-date-to-string
+     Not yet implemented.
+
+ -- Function: string-to-calendar-date ((input STRING)) : CALENDAR-DATE
+     Returns a calendar date object representing the date and time
+     parsed from the INPUT string.  If no valid parse is found, `null'
+     is returned.
+
+ -- ???: relative-date-to-string
+     Not yet implemented.
+
+ -- Function: compute-calendar-date ((julian-day INTEGER)) : INTEGER
+          INTEGER INTEGER KEYWORD
+     Returns the YEAR, MONTH, DAY, DAY-OF-WEEK on which the given
+     JULIAN-DAY begins at noon.
+
+ -- Function: compute-day-of-week ((yyyy INTEGER) (mm INTEGER)
+          (dd INTEGER)) : KEYWORD
+     Returns the day of the week for yyyy-mm-dd.
+
+ -- Function: compute-day-of-week-julian ((julian-day INTEGER)) :
+          KEYWORD
+     Returns the day of the week for julian-day
+
+ -- Function: compute-julian-day ((yyyy INTEGER) (mm INTEGER)
+          (dd INTEGER)) : INTEGER
+     Returns the Julian day that starts at noon on yyyy-mm-dd.  YYYY is
+     the year.  MM is the month.  DD is the day of month.  Negative
+     years are B.C.  Remember there is no year zero.
+
+ -- Function: compute-next-moon-phase ((n INTEGER) (phase KEYWORD)) :
+          INTEGER FLOAT
+     Returns the Julian Day and fraction of day of the Nth occurence
+     since January 1, 1900 of moon PHASE.  PHASE is one of :NEW-MOON,
+     :FIRST-QUARTER, :FULL-MOON, :LAST-QUARTER
+
+ -- Function: decode-time-in-millis ((time INTEGER)) : INTEGER INTEGER
+          INTEGER INTEGER
+     Returns multiple values of hours, minutes, seconds, milliseconds
+     for TIME specified in milliseconds.
+
+ -- Function: julian-day-to-modified-julian-day ((julian-day INTEGER))
+          : INTEGER
+     Returns the modified Julian day during which JULIAN-DAYstarts at
+     noon.
+
+ -- Function: modified-julian-day-to-julian-day
+          ((modified-julian-day INTEGER)) : INTEGER
+     Returns the modified Julian day during which `julian-day'starts at
+     noon.
+
+ -- Function: time-add ((t1 DATE-TIME-OBJECT) (t2 DATE-TIME-OBJECT)) :
+          DATE-TIME-OBJECT
+     Add T1 to T2.  If one of T1 or T2 is a calendar date, then the
+     result is a calendar date.  If both T1 and T2 are relative dates,
+     then the result is a relative date.  T1 and T2 cannot both be
+     calendar dates.
+
+ -- Function: time-divide ((t1 TIME-DURATION) (t2 OBJECT)) : OBJECT
+     Divides the relative date T1 by T2.  T2 must be either a relative
+     date or a wrapped number.  If T2 is a relative date, then the
+     return value will be a wrapped float.  If T2 is a wrapped number,
+     then the reutrn value will be a relative date.
+
+ -- Function: time-multiply ((t1 OBJECT) (t2 OBJECT)) : TIME-DURATION
+     Multiplies a relative date by a wrapped number.  One of T1 or T2
+     must be a relative date and the other a wrapped number.
+
+ -- Function: time-subtract ((t1 DATE-TIME-OBJECT)
+          (t2 DATE-TIME-OBJECT)) : DATE-TIME-OBJECT
+     Subtract T2 from T1.  If T1 is a calendar date, then T2 can be
+     either a calendar date (in which case the return value is a
+     relative date) or it can be a relative date (in which case the
+     return value is a calendar date).  If T1 is a relative date, then
+     T2 must also be a relative date and a relative date is returned.
+
+ -- Function: get-ticktock () : TICKTOCK
+     Return the current CPU time.  If the current OS/Language
+     combination does not support measuring of CPU time, return real
+     time instead.  Use `ticktock-difference' to measure the time
+     difference between values returned by this function.  This is an
+     attempt to provide some platform independent support to measure
+     (at least approximately) consumed CPU time.
+
+ -- Function: ticktock-difference ((t1 TICKTOCK) (t2 TICKTOCK)) : FLOAT
+     The difference in two TICKTOCK time values in seconds where T1 is
+     the earlier time.  The resolution is implementation dependent but
+     will normally be some fractional value of a second.
+
+ -- Function: ticktock-resolution () : FLOAT
+     The minimum theoretically detectable resolution of the difference
+     in two TICKTOCK time values in seconds.  This resolution is
+     implementation dependent.  It may also not be realizable in
+     practice, since the timing grain size may be larger than this
+     resolution.
+
+ -- Function: sleep ((seconds FLOAT)) :
+     The program will sleep for the indicated number of seconds.
+     Fractional values are allowed, but the results are implementation
+     dependent: Common Lisp uses the fractions natively, Java with a
+     resolution of 0.001, and C++ can only use integral values.
+
+
+File: manual.info,  Node: XML Support,  Next: Miscellaneous,  Prev: Dates and Times,  Up: Library Functions
+
+7.18 XML Support
+================
+
+ -- Function: make-xml-element ((name STRING) (namespace-name STRING)
+          (namespace STRING)) : XML-ELEMENT
+     Creates and interns an XML element object NAME using NAMESPACE-NAME
+     to refer to  NAMESPACE.  If NAMESPACE is `null', then the element
+     will be interned in the null namespace.   NAMESPACE must otherwise
+     be a URI.
+
+ -- Function: make-xml-global-attribute ((name STRING)
+          (namespace-name STRING) (namespace STRING)) :
+          XML-GLOBAL-ATTRIBUTE
+     Creates and interns an XML global attribute object with NAME using
+     NAMESPACE-NAME to refer to  NAMESPACE.  NAMESPACEmust be a URI.
+
+ -- Function: make-xml-local-attribute ((name STRING)
+          (element XML-ELEMENT)) : XML-LOCAL-ATTRIBUTE
+     Make an XML-LOCAL-ATTRIBUTE named NAME associated with ELEMENT
+
+ -- Function: get-xml-tag ((expression CONS)) : XML-ELEMENT
+     Return the XML tag object of an XML EXPRESSION.
+
+ -- Function: get-xml-attributes ((expression CONS)) : CONS
+     Return the list of attributes of an XML EXPRESSION (may be empty).
+
+ -- Function: get-xml-content ((expression CONS)) : CONS
+     Return the list of content elements of an XML EXPRESSION (may be
+     empty).
+
+ -- Function: get-xml-cdata-content ((form CONS)) : STRING
+     Return the CDATA content of a CDATA FORM.  Does NOT make sure that
+     FORM actually is a CDATA form, so bad things can happen if it is
+     given wrong input.
+
+ -- Function: xml-declaration? ((item OBJECT)) : BOOLEAN
+     Return `true' if ITEM is an XML declaration object
+
+ -- Function: xml-element? ((item OBJECT)) : BOOLEAN
+     Return `true' if ITEM is an XML element object
+
+ -- Function: xml-attribute? ((item OBJECT)) : BOOLEAN
+     Return `true' if ITEM is an XML attribute object
+
+ -- Function: xml-cdata? ((item OBJECT)) : BOOLEAN
+     Return `true' if ITEM is an XML CDATA tag object
+
+ -- Function: xml-cdata-form? ((form OBJECT)) : BOOLEAN
+     Return `true' if FORM is a CONS headed by a CDATA tag
+
+ -- Method on XML-ELEMENT: xml-element-match? (tag (name STRING)
+          (namespace STRING)) : BOOLEAN
+     Returns `true' if TAG is an XML element with the name NAME in
+     namespace NAMESPACE.  Note that NAMESPACE is the full URI, not an
+     abbreviation.  Also, NAMESPACE may be `null', in which case TAG
+     must not have a namespace associated with it.
+
+ -- Method on XML-ATTRIBUTE: xml-attribute-match? (attribute
+          (name STRING) (namespace STRING)) : BOOLEAN
+     Return `true' if ATTRIBUTE is an XML attribute with name NAME in
+     namespace NAMESPACE.  Note that NAMESPACE is the full URI, not an
+     abbreviation.  Also, NAMESPACE may be `null', in which case
+     ATTRIBUTE must not have a namespace associated with it.
+
+ -- Method on XML-GLOBAL-ATTRIBUTE: xml-attribute-match? (attribute
+          (name STRING) (namespace STRING)) : BOOLEAN
+     Return `true' if ATTRIBUTE is a global  XML attribute with name
+     NAME in namespace NAMESPACE.  Note that NAMESPACE is the full URI,
+     not an abbreviation.  Also, NAMESPACE may be `null', in which case
+     ATTRIBUTE must not have a namespace associated with it.
+
+ -- Method on XML-LOCAL-ATTRIBUTE: xml-attribute-match? (attribute
+          (name STRING) (namespace STRING)) : BOOLEAN
+     Return `true' if ATTRIBUTE is a local XML attribute with name NAME.
+     Note that NAMESPACE must be `null' and that the ATTRIBUTEs parent
+     element element is not considered by the match.  To take the
+     parent element into account use `xml-local-attribute-match?'.
+
+ -- Function: xml-local-attribute-match?
+          ((attribute XML-LOCAL-ATTRIBUTE) (name STRING)
+          (element-name STRING) (element-namespace STRING)) : BOOLEAN
+     Return true if ATTRIBUTE is a local attribute with NAME and whose
+     parent element matches ELEMENT-NAME and ELEMENT-NAMESPACE.
+
+ -- Function: xml-lookup-attribute ((attributes CONS) (name STRING)
+          (namespace STRING)) : STRING
+     Find the XML attribute in ATTRIBUTES with NAME and NAMESPACE and
+     return its value.  Note that it is assumed that all ATTRIBUTES
+     come from the same known tag, hence, the parent elements of any
+     local attributes are not considered by the lookup.
+
+ -- Macro: xml-tag-case ((item OBJECT) &body (clauses CONS)) : OBJECT
+     A case form for matching ITEM against XML element tags.  Each
+     element of CLAUSES should be a clause with the form   ("tagname"
+     ...)     or   (("tagname" "namespace-uri") ...)  The clause heads
+     can optionally be symbols instead of strings.  The key forms the
+     parameters to the method `xml-element-match?', with a missing
+     namespace argument passed as NULL.
+
+     The namespace argument will be evaluated, so one can use bound
+     variables in place of a fixed string.   As a special case, if the
+     namespace argument is :ANY, then the test will be done for a match
+     on the tag name alone.
+
+ -- Function: read-xml-expression ((stream INPUT-STREAM)
+          (start-tag OBJECT)) : OBJECT BOOLEAN
+     Read one balanced XML expression from STREAM and return its
+     s-expression representation (see
+     `xml-token-list-to-s-expression').  If `startTagName' is
+     non-`null', skip all tags until a start tag matching START-TAG is
+     encountered.  XML namespaces are ignored for outside of the start
+     tag.  Use s-expression representation to specify START-TAG, e.g.,
+     `(KIF (:version "1.0"))'.  The tag can be an XML element object, a
+     symbol, a string or a cons.  If the tag is a cons the first
+     element can also be (name namespace) pair.
+
+     Return `true' as the second value on EOF.
+
+     CHANGE WARNING:  It is anticipated that this function will change
+     to  a) Properly take XML namespaces into account and  b) require
+     XML element objects instead of strings as the second argument.
+     This change will not be backwards-compatible.
+
+ -- Function: xml-expressions ((stream INPUT-STREAM)
+          (regionTag OBJECT)) : XML-EXPRESSION-ITERATOR
+     Return an XML-expression-iterator (which see) reading from STREAM.
+     REGIONTAG can be used to define delimited regions from which
+     expressions should be considered. Use s-expression representation
+     to specify REGIONTAG, e.g., `(KIF (:version "1.0"))'.  The tag can
+     be an XML element object, a symbol, a string or a cons.  If the
+     tag is a cons the first element can also be (name namespace) pair.
+
+ -- Function: print-xml-expression ((stream OUTPUT-STREAM)
+          (xml-expression CONS) (indent INTEGER)) :
+     Prints XML-EXPRESSION on STREAM.  Indentation begins with the
+     value of INDENT.  If this is the `null' integer, no indentation is
+     performed.  Otherwise it should normally be specified as 0 (zero)
+     for top-level calls.
+
+     It is assumed that the XML-EXPRESSION is a well-formed CONS-list
+     representation of an XML  form.  It expects a form like that form
+     returned by `read-XML-expression'.
+
+     Also handles a list of xml forms such as that returned by
+     `XML-expressions'.  In that case, each of the forms is indented by
+     INDENT spaces.
+
+ -- Function: reset-xml-hash-tables () :
+     Resets Hashtables used for interning XML elements and global
+     attribute objects.  This will allow garbage collection of
+     no-longer used objects, but will also mean that newly parsed xml
+     elements and global attributes will not be eq? to already existing
+     ones with the same name.
 

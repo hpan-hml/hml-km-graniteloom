@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -126,7 +126,7 @@ void traceGoalCache(char* string, ControlFrame* frame) {
       { 
         BIND_STELLA_SPECIAL(oPRINTINFRAMEo, ControlFrame*, frame);
         std::cout << string;
-        if (oREVERSEPOLARITYpo.get()) {
+        if (oREVERSEPOLARITYpo) {
           std::cout << "not~";
         }
         std::cout << goal << std::endl;
@@ -199,7 +199,7 @@ KeyValueList* findGoalCacheTable(Proposition* goal) {
          (testValue000 == KWD_GOAL_CACHES_FUNCTION))) {
       { NamedDescription* description = getDescription(((Surrogate*)(goal->operatoR)));
 
-        if (oREVERSEPOLARITYpo.get()) {
+        if (oREVERSEPOLARITYpo) {
           return (((KeyValueList*)(dynamicSlotValue(description->dynamicSlots, SYM_GOAL_CACHES_LOGIC_NEGATED_GOAL_CACHE_TABLE, NULL))));
         }
         else {
@@ -227,7 +227,7 @@ boolean createGoalCacheP(ControlFrame* frame) {
           if (goal->operatoR->primaryType() == SGT_GOAL_CACHES_STELLA_SURROGATE) {
             { NamedDescription* goaldescription = getDescription(((Surrogate*)(goal->operatoR)));
 
-              if (oREVERSEPOLARITYpo.get()) {
+              if (oREVERSEPOLARITYpo) {
                 setDynamicSlotValue(goaldescription->dynamicSlots, SYM_GOAL_CACHES_LOGIC_NEGATED_GOAL_CACHE_TABLE, table, NULL);
               }
               else {
@@ -250,15 +250,15 @@ boolean createGoalCacheP(ControlFrame* frame) {
         traceGoalCache("CREATING GOAL CACHE: ", frame);
         goalcache = newGoalCache();
         removeObsoleteGoalCaches(table);
-        table->insertAt(oCONTEXTo.get(), goalcache);
+        table->insertAt(oCONTEXTo, goalcache);
         setDynamicSlotValue(frame->dynamicSlots, SYM_GOAL_CACHES_LOGIC_GOAL_CACHE, goalcache, NULL);
         goalcache->timestamp = getNowTimestamp();
         goalcache->proposition = goal;
-        goalcache->reversePolarityP = oREVERSEPOLARITYpo.get();
-        goalcache->cacheContext = oCONTEXTo.get();
-        oQUERYITERATORo.get()->activeGoalCaches->insert(goalcache);
-        if (topLevelQueryContextP(oCONTEXTo.get())) {
-          oQUERYITERATORo.get()->augmentedGoalCacheP = true;
+        goalcache->reversePolarityP = oREVERSEPOLARITYpo;
+        goalcache->cacheContext = oCONTEXTo;
+        oQUERYITERATORo->activeGoalCaches->insert(goalcache);
+        if (topLevelQueryContextP(oCONTEXTo)) {
+          oQUERYITERATORo->augmentedGoalCacheP = true;
         }
       }
       return (true);
@@ -267,7 +267,7 @@ boolean createGoalCacheP(ControlFrame* frame) {
 }
 
 GoalCache* lookupGoalCache(KeyValueList* table) {
-  return (((GoalCache*)(table->lookup(oCONTEXTo.get()))));
+  return (((GoalCache*)(table->lookup(oCONTEXTo))));
 }
 
 GoalCache* findGoalCache(ControlFrame* frame) {
@@ -342,7 +342,7 @@ void updateGoalCache(ControlFrame* frame, boolean successP) {
           std::cout << "AUGMENT CACHE: " << bindings << "  " << frame << std::endl;
         }
         cachedbindings->push(bindings);
-        oQUERYITERATORo.get()->augmentedGoalCacheP = true;
+        oQUERYITERATORo->augmentedGoalCacheP = true;
       }
     }
   }
@@ -351,9 +351,9 @@ void updateGoalCache(ControlFrame* frame, boolean successP) {
 Cons* yieldRelativeGoalBindings(ControlFrame* frame) {
   { Proposition* goal = frame->proposition;
     Cons* result = NIL;
-    PatternRecord* savecurrentpr = oQUERYITERATORo.get()->currentPatternRecord;
+    PatternRecord* savecurrentpr = oQUERYITERATORo->currentPatternRecord;
 
-    oQUERYITERATORo.get()->currentPatternRecord = operativePatternRecord(frame);
+    oQUERYITERATORo->currentPatternRecord = operativePatternRecord(frame);
     { Object* arg = NULL;
       Vector* vector000 = goal->arguments;
       int index000 = 0;
@@ -383,7 +383,7 @@ Cons* yieldRelativeGoalBindings(ControlFrame* frame) {
         }
       }
     }
-    oQUERYITERATORo.get()->currentPatternRecord = savecurrentpr;
+    oQUERYITERATORo->currentPatternRecord = savecurrentpr;
     return (result);
   }
 }
@@ -439,7 +439,7 @@ Keyword* continueCachedBindingsProof(ControlFrame* frame, Keyword* lastmove) {
 }
 
 boolean topLevelQueryContextP(Context* self) {
-  { Context* querycontext = oQUERYITERATORo.get()->queryContext;
+  { Context* querycontext = oQUERYITERATORo->queryContext;
 
     return ((self == querycontext) ||
         (worldStateP(self) ||
@@ -451,8 +451,8 @@ boolean cacheQueryResultsP() {
   return ((oCACHE_SUCCEEDED_GOALSpo ||
       oCACHE_FAILED_GOALSpo) &&
       ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_GOAL_CACHES_DUPLICATE_GOALS) &&
-       (!(((boolean)(oQUERYITERATORo.get())) &&
-      ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))))));
+       (!(((boolean)(oQUERYITERATORo)) &&
+      ((boolean)(oQUERYITERATORo->partialMatchStrategy))))));
 }
 
 boolean oCACHE_SUCCEEDED_GOALSpo = true;
@@ -832,7 +832,7 @@ int goalHashCode(ControlFrame* frame) {
     Vector* arguments = proposition->arguments;
     int code = 0;
 
-    code = oCONTEXTo.get()->hashCode();
+    code = oCONTEXTo->hashCode();
     if (frame->reversePolarityP) {
       code = (((((code & 1) == 0) ? ((unsigned int)code >> 1) : (((code >> 1)) | oINTEGER_MSB_MASKo))) ^ 8312004);
     }
@@ -852,7 +852,7 @@ int goalHashCode(ControlFrame* frame) {
         arg = (vector000->theArray)[index000];
         argvalue = iter000->value;
         if (!((boolean)(argvalue))) {
-          argvalue = (oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(((PatternVariable*)(arg))->boundToOffset)];
+          argvalue = (oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(((PatternVariable*)(arg))->boundToOffset)];
           if (!((boolean)(argvalue))) {
             code = hashUnboundGoalVariable(((PatternVariable*)(arg)), arguments, code);
             continue;
@@ -1002,15 +1002,15 @@ AtomicGoalCache* createAtomicGoalCache(ControlFrame* frame, AtomicGoalCache* cac
       }
       setGoalCacheList(proposition, cache);
     }
-    cache->goalContext = oCONTEXTo.get();
+    cache->goalContext = oCONTEXTo;
     cache->timestamp = getNowTimestamp();
     cache->reversePolarityP = frame->reversePolarityP;
     cache->proposition = proposition;
     cache->bindings = yieldGoalBindings(proposition);
     cache->justification = (successP ? ((Justification*)(dynamicSlotValue(frame->dynamicSlots, SYM_GOAL_CACHES_LOGIC_JUSTIFICATION, NULL))) : NULL);
     cache->truthValue = frame->truthValue;
-    if (((boolean)(oQUERYITERATORo.get())) &&
-        ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+    if (((boolean)(oQUERYITERATORo)) &&
+        ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
       frame->setCachePartialTruth(cache);
     }
     frame->cachedGoalResultP = true;
@@ -1025,23 +1025,23 @@ DEFINE_STELLA_SPECIAL(oUNIFICATION_VECTOR_2o, Vector* , NULL);
 boolean cacheMatchesGoalP(AtomicGoalCache* cache, ControlFrame* goal, boolean successP, Keyword* mode) {
   successP = successP;
   if ((getNowTimestamp() == cache->timestamp) &&
-      ((oCONTEXTo.get() == cache->goalContext) &&
+      ((oCONTEXTo == cache->goalContext) &&
        (goal->reversePolarityP == cache->reversePolarityP))) {
     { Proposition* goalproposition = goal->proposition;
       Vector* goalarguments = goalproposition->arguments;
       Proposition* cacheproposition = cache->proposition;
       Vector* cachearguments = cacheproposition->arguments;
       int nofgoalarguments = goalarguments->length();
-      Object** uvector1 = oUNIFICATION_VECTOR_1o.get()->theArray;
-      Object** uvector2 = oUNIFICATION_VECTOR_2o.get()->theArray;
+      Object** uvector1 = oUNIFICATION_VECTOR_1o->theArray;
+      Object** uvector2 = oUNIFICATION_VECTOR_2o->theArray;
 
       if ((goalproposition->operatoR == cacheproposition->operatoR) &&
           (nofgoalarguments == cachearguments->length())) {
-        if (nofgoalarguments > oUNIFICATION_VECTOR_1o.get()->arraySize) {
-          resizeVector(oUNIFICATION_VECTOR_1o.get(), 2 * nofgoalarguments);
-          resizeVector(oUNIFICATION_VECTOR_2o.get(), 2 * nofgoalarguments);
-          uvector1 = oUNIFICATION_VECTOR_1o.get()->theArray;
-          uvector2 = oUNIFICATION_VECTOR_2o.get()->theArray;
+        if (nofgoalarguments > oUNIFICATION_VECTOR_1o->arraySize) {
+          resizeVector(oUNIFICATION_VECTOR_1o, 2 * nofgoalarguments);
+          resizeVector(oUNIFICATION_VECTOR_2o, 2 * nofgoalarguments);
+          uvector1 = oUNIFICATION_VECTOR_1o->theArray;
+          uvector2 = oUNIFICATION_VECTOR_2o->theArray;
         }
         { Object* goalarg = NULL;
           Vector* vector000 = goalarguments;
@@ -1067,7 +1067,7 @@ boolean cacheMatchesGoalP(AtomicGoalCache* cache, ControlFrame* goal, boolean su
             cachebinding = iter001->value;
             i = iter002;
             if (!((boolean)(goalbinding))) {
-              goalbinding = (oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(((PatternVariable*)(goalarg))->boundToOffset)];
+              goalbinding = (oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(((PatternVariable*)(goalarg))->boundToOffset)];
             }
             uvector1[i] = goalbinding;
             uvector2[i] = cachebinding;
@@ -1233,7 +1233,7 @@ void cacheGoal(ControlFrame* frame, boolean successP, boolean keepframeP, int cl
               cachedgoal = ((AtomicGoalCache*)((oSUCCEEDED_GOALS_CACHEo->theArray)[index]));
               if ((!((boolean)(cachedgoal))) ||
                   ((!cacheMatchesGoalP(cachedgoal, frame, true, KWD_GOAL_CACHES_GOAL_INSTANTIATES_CACHE)) ||
-                   (oRECORD_JUSTIFICATIONSpo.get() &&
+                   (oRECORD_JUSTIFICATIONSpo &&
                     (!((boolean)(cachedgoal->justification)))))) {
                 (oSUCCEEDED_GOALS_CACHEo->theArray)[index] = (createAtomicGoalCache(frame, cachedgoal, true));
               }
@@ -1278,7 +1278,7 @@ AtomicGoalCache* findCachedGoal(ControlFrame* frame, Keyword* successorfailure) 
             cachedgoal = ((AtomicGoalCache*)((oSUCCEEDED_GOALS_CACHEo->theArray)[((((unsigned int) (goalHashCode(frame))) % 1541))]));
             if (((boolean)(cachedgoal)) &&
                 (cacheMatchesGoalP(cachedgoal, frame, true, KWD_GOAL_CACHES_GOAL_INSTANTIATES_CACHE) &&
-                 ((!oRECORD_JUSTIFICATIONSpo.get()) ||
+                 ((!oRECORD_JUSTIFICATIONSpo) ||
                   ((boolean)(cachedgoal->justification))))) {
               return (cachedgoal);
             }
@@ -1391,10 +1391,10 @@ boolean AtomicGoalCacheIterator::nextP() {
       }
       while (((boolean)(cachelist)) &&
           ((!cacheMatchesGoalP(cachelist, goal, true, KWD_GOAL_CACHES_CACHE_INSTANTIATES_GOAL)) ||
-           (((!(!oDONTUSEDEFAULTKNOWLEDGEpo.get())) &&
+           (((!(!oDONTUSEDEFAULTKNOWLEDGEpo)) &&
           ((goal->truthValue == DEFAULT_TRUE_TRUTH_VALUE) ||
            (goal->truthValue == DEFAULT_FALSE_TRUTH_VALUE))) ||
-            (oRECORD_JUSTIFICATIONSpo.get() &&
+            (oRECORD_JUSTIFICATIONSpo &&
              (!((boolean)(cachelist->justification))))))) {
         cachelist = cachelist->next;
       }
@@ -1467,15 +1467,15 @@ void helpStartupGoalCaches1() {
 void startupGoalCaches() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupGoalCaches1();
     }
     if (currentStartupTimePhaseP(4)) {
       oSUCCEEDED_GOALS_CACHEo = stella::newVector(1541);
       oFAILED_GOALS_CACHEo = stella::newVector(1541);
-      oUNIFICATION_VECTOR_1o.set(stella::newVector(10));
-      oUNIFICATION_VECTOR_2o.set(stella::newVector(10));
+      oUNIFICATION_VECTOR_1o = stella::newVector(10);
+      oUNIFICATION_VECTOR_2o = stella::newVector(10);
     }
     if (currentStartupTimePhaseP(5)) {
       { Class* clasS = defineClassFromStringifiedSource("GOAL-CACHE", "(DEFCLASS GOAL-CACHE (STANDARD-OBJECT) :DOCUMENTATION \"Cache of output bindings derived for a particular goal\nand set of input bindings.\" :SLOTS ((CACHED-BINDINGS :TYPE (LIST OF GOAL-BINDINGS) :ALLOCATION :EMBEDDED) (TIMESTAMP :TYPE TIMESTAMP) (PROPOSITION :TYPE PROPOSITION) (REVERSE-POLARITY? :TYPE BOOLEAN) (CACHE-CONTEXT :TYPE CONTEXT)))");

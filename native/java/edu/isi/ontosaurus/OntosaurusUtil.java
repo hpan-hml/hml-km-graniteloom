@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2000-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2000-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -47,8 +47,8 @@ package edu.isi.ontosaurus;
 
 import edu.isi.stella.javalib.Native;
 import edu.isi.stella.javalib.StellaSpecialVariable;
-import edu.isi.stella.*;
 import edu.isi.powerloom.logic.*;
+import edu.isi.stella.*;
 
 public class OntosaurusUtil {
   public static Symbol SYM_ONTOSAURUS_STARTUP_HTML_MACROS = null;
@@ -444,6 +444,10 @@ public class OntosaurusUtil {
 
   public static Surrogate SGT_STELLA_STRING = null;
 
+  public static Keyword KWD_IGNORE_ERRORSp = null;
+
+  public static Surrogate SGT_STELLA_BOOLEAN = null;
+
   public static Symbol SYM_ONTOSAURUS_STARTUP_SHELL = null;
 
   public static Symbol SYM_ONTOSAURUS_STARTUP_ONTOSAURUS_SYSTEM = null;
@@ -457,6 +461,94 @@ public class OntosaurusUtil {
 
   public static void htmlLineBreak(java.io.PrintStream stream) {
     stream.println("<BR>");
+  }
+
+  public static String getHtmlObjectType(Stella_Object renamed_Object) {
+    { String objecttype = null;
+
+      { Surrogate testValue000 = Stella_Object.safePrimaryType(renamed_Object);
+
+        if (Surrogate.subtypeOfP(testValue000, OntosaurusUtil.SGT_LOGIC_LOGIC_OBJECT)) {
+          { LogicObject object000 = ((LogicObject)(renamed_Object));
+
+            if (Logic.classP(object000)) {
+              objecttype = "concept";
+            }
+            else if (Logic.relationP(object000)) {
+              objecttype = "relation";
+            }
+            else {
+              objecttype = "object";
+            }
+          }
+        }
+        else if (Surrogate.subtypeOfP(testValue000, OntosaurusUtil.SGT_STELLA_MODULE)) {
+          { Module object000 = ((Module)(renamed_Object));
+
+            objecttype = "context";
+          }
+        }
+        else {
+        }
+      }
+      return (objecttype);
+    }
+  }
+
+  public static String getHtmlObjectLookupModule(Stella_Object renamed_Object) {
+    { Module lookupmodule = renamed_Object.homeModule();
+
+      if ((((Module)(Stella.$MODULE$.get())) != null) &&
+          Context.visibleFromP(lookupmodule, ((Module)(Stella.$MODULE$.get())))) {
+        lookupmodule = ((Module)(Stella.$MODULE$.get()));
+      }
+      return (lookupmodule.name());
+    }
+  }
+
+  public static String getHtmlObjectHandle(Stella_Object renamed_Object) {
+    { Symbol name = Logic.objectName(renamed_Object);
+
+      if (name != null) {
+        return (name.visibleName(true));
+      }
+      else if (Logic.functionOutputSkolemP(renamed_Object)) {
+        return (Native.stringify(Logic.generateTerm(renamed_Object)));
+      }
+      else {
+        return (Native.stringify(renamed_Object));
+      }
+    }
+  }
+
+  public static String getHtmlObjectTitle(Stella_Object renamed_Object) {
+    { Symbol name = Logic.objectName(renamed_Object);
+
+      if (name != null) {
+        return (name.localPrintName(false));
+      }
+      else if (Logic.functionOutputSkolemP(renamed_Object)) {
+        return (Native.stringify(Logic.generateTerm(renamed_Object)));
+      }
+      else {
+        return (Native.stringify(renamed_Object));
+      }
+    }
+  }
+
+  public static String getHtmlObjectTitlePrefix(Stella_Object renamed_Object) {
+    { Symbol name = Logic.objectName(renamed_Object);
+
+      if (((name != null) &&
+          (!(name == Symbol.lookupSymbolInModule(name.symbolName, ((Module)(Stella.$MODULE$.get())), false)))) ||
+          ((name == null) &&
+           (!Context.visibleFromP(renamed_Object.homeModule(), ((Module)(Stella.$MODULE$.get())))))) {
+        return (renamed_Object.homeModule().moduleFullName + Stella.MODULE_SEPARATOR_STRING);
+      }
+      else {
+        return ("");
+      }
+    }
   }
 
   public static void htmlWriteUrlInDetail(java.io.PrintStream stream, String action, String objecttype, String contextname, String objectname) {
@@ -512,17 +604,7 @@ public class OntosaurusUtil {
       if (Surrogate.subtypeOfP(testValue000, OntosaurusUtil.SGT_LOGIC_LOGIC_OBJECT)) {
         { LogicObject object000 = ((LogicObject)(renamed_Object));
 
-          { Module writemodule = object000.homeModule();
-            Symbol name = Logic.objectName(object000);
-            String writeName = name.localPrintName(false);
-            String modulePrefix = ((name == Symbol.lookupSymbolInModule(name.symbolName, ((Module)(Stella.$MODULE$.get())), false)) ? "" : (((Module)(name.homeContext)).moduleFullName + Stella.MODULE_SEPARATOR_STRING));
-
-            if (Stella_Object.isaP(((Module)(Stella.$MODULE$.get())), OntosaurusUtil.SGT_STELLA_MODULE) &&
-                ((Module)(Stella.$MODULE$.get())).allSuperContexts.memberP(writemodule)) {
-              writemodule = ((Module)(Stella.$MODULE$.get()));
-            }
-            OntosaurusUtil.htmlWrite3PartHrefInDetail(stream, null, action, objecttype, writemodule.name(), name.visibleName(true), modulePrefix, writeName, "", false);
-          }
+          OntosaurusUtil.htmlWrite3PartHrefInDetail(stream, null, action, objecttype, OntosaurusUtil.getHtmlObjectLookupModule(object000), OntosaurusUtil.getHtmlObjectHandle(object000), OntosaurusUtil.getHtmlObjectTitlePrefix(object000), OntosaurusUtil.getHtmlObjectTitle(object000), "", false);
         }
       }
       else if (Surrogate.subtypeOfP(testValue000, OntosaurusUtil.SGT_STELLA_MODULE)) {
@@ -540,43 +622,23 @@ public class OntosaurusUtil {
   }
 
   public static void htmlWriteUrl(java.io.PrintStream stream, String action, StandardObject renamed_Object) {
-    { String objecttype = null;
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(renamed_Object);
 
-      { Surrogate testValue000 = Stella_Object.safePrimaryType(renamed_Object);
+      if (Surrogate.subtypeOfP(testValue000, OntosaurusUtil.SGT_LOGIC_LOGIC_OBJECT)) {
+        { LogicObject object000 = ((LogicObject)(renamed_Object));
 
-        if (Surrogate.subtypeOfP(testValue000, OntosaurusUtil.SGT_LOGIC_LOGIC_OBJECT)) {
-          { LogicObject object000 = ((LogicObject)(renamed_Object));
-
-            { Module writemodule = object000.homeModule();
-
-              if (Stella_Object.isaP(((Module)(Stella.$MODULE$.get())), OntosaurusUtil.SGT_STELLA_MODULE) &&
-                  ((Module)(Stella.$MODULE$.get())).allSuperContexts.memberP(writemodule)) {
-                writemodule = ((Module)(Stella.$MODULE$.get()));
-              }
-              if (Logic.classP(object000)) {
-                objecttype = "concept";
-              }
-              else if (Logic.relationP(object000)) {
-                objecttype = "relation";
-              }
-              else {
-                objecttype = "object";
-              }
-              OntosaurusUtil.htmlWriteUrlInDetail(stream, action, objecttype, writemodule.name(), Logic.objectName(object000).visibleName(true));
-            }
-          }
-        }
-        else if (Surrogate.subtypeOfP(testValue000, OntosaurusUtil.SGT_STELLA_MODULE)) {
-          { Module object000 = ((Module)(renamed_Object));
-
-            OntosaurusUtil.htmlWriteUrlInDetail(stream, action, "context", object000.name(), object000.name());
-          }
-        }
-        else {
-          Stella.STANDARD_ERROR.nativeStream.println("Don't know how to write URL for object " + renamed_Object);
+          OntosaurusUtil.htmlWriteUrlInDetail(stream, action, OntosaurusUtil.getHtmlObjectType(object000), OntosaurusUtil.getHtmlObjectLookupModule(object000), OntosaurusUtil.getHtmlObjectHandle(object000));
         }
       }
-      return;
+      else if (Surrogate.subtypeOfP(testValue000, OntosaurusUtil.SGT_STELLA_MODULE)) {
+        { Module object000 = ((Module)(renamed_Object));
+
+          OntosaurusUtil.htmlWriteUrlInDetail(stream, action, OntosaurusUtil.getHtmlObjectType(object000), OntosaurusUtil.getHtmlObjectLookupModule(object000), OntosaurusUtil.getHtmlObjectHandle(object000));
+        }
+      }
+      else {
+        Stella.STANDARD_ERROR.nativeStream.println("Don't know how to write URL for object " + renamed_Object);
+      }
     }
   }
 
@@ -1161,7 +1223,10 @@ public class OntosaurusUtil {
   }
 
   public static void pprintFunctionTerm(Proposition self, java.io.PrintStream stream) {
-    stream.print("(");
+    { Stella_Object skolem = (self.arguments.theArray)[(self.arguments.length() - 1)];
+
+      OntosaurusUtil.htmlWriteHrefInDetail(stream, null, "show", OntosaurusUtil.getHtmlObjectType(skolem), OntosaurusUtil.getHtmlObjectLookupModule(skolem), OntosaurusUtil.getHtmlObjectHandle(skolem), "(", true);
+    }
     OntosaurusUtil.pprintObject(self.operator, stream);
     { boolean testValue000 = false;
 
@@ -2397,7 +2462,7 @@ public class OntosaurusUtil {
 
   public static void htmlDescribeContextView(LogicObject self, java.io.PrintStream stream) {
     { Module homec = self.homeModule();
-      String objectname = edu.isi.powerloom.PLI.getName(self);
+      String objectname = OntosaurusUtil.getHtmlObjectHandle(self);
       AllPurposeIterator contextlist = Context.allSubcontexts(homec, OntosaurusUtil.KWD_PREORDER);
 
       if (!(OntosaurusUtil.childModules(homec) == Stella.NIL)) {
@@ -2807,7 +2872,7 @@ public class OntosaurusUtil {
               if (!(Proposition.simpleSubrelationPropositionP(rule))) {
                 OntosaurusUtil.pprintObject(rule, stream);
                 {
-                  stream.println();
+                  stream.println("");
                   stream.println();
                 }
 ;
@@ -2855,7 +2920,7 @@ public class OntosaurusUtil {
                     factWrittenP = true;
                     OntosaurusUtil.pprintObject(fact, stream);
                     {
-                      stream.println();
+                      stream.println("");
                       stream.println();
                     }
 ;
@@ -2959,7 +3024,7 @@ public class OntosaurusUtil {
               tuple = ((Proposition)(iter000.value));
               OntosaurusUtil.pprintObject(tuple, stream);
               {
-                stream.println();
+                stream.println("");
                 stream.println();
               }
 ;
@@ -3039,7 +3104,7 @@ public class OntosaurusUtil {
     if (!(instance != null)) {
       return;
     }
-    { String namestring = Logic.objectNameString(instance);
+    { String namestring = OntosaurusUtil.getHtmlObjectHandle(instance);
 
       synchronized (Logic.$POWERLOOM_LOCK$) {
         { Object old$Context$000 = Stella.$CONTEXT$.get();
@@ -3437,7 +3502,7 @@ public class OntosaurusUtil {
   }
 
   public static void htmlWriteRelationResponsePage(NamedDescription relation, java.io.PrintStream stream) {
-    { String objectname = Logic.objectNameString(relation);
+    { String objectname = OntosaurusUtil.getHtmlObjectHandle(relation);
 
       {
         stream.print("<HTML>");
@@ -3472,7 +3537,7 @@ public class OntosaurusUtil {
   }
 
   public static void htmlWriteInstanceResponsePage(LogicObject instance, java.io.PrintStream stream) {
-    { String objectname = Logic.objectNameString(instance);
+    { String objectname = OntosaurusUtil.getHtmlObjectHandle(instance);
 
       {
         stream.print("<HTML>");
@@ -3507,7 +3572,7 @@ public class OntosaurusUtil {
   }
 
   public static void htmlWriteObjectResponsePageInternal(Stella_Object renamed_Object, java.io.PrintStream stream) {
-    { String objectname = Logic.objectNameString(renamed_Object);
+    { String objectname = OntosaurusUtil.getHtmlObjectHandle(renamed_Object);
 
       if (objectname == null) {
         objectname = Native.stringify(renamed_Object);
@@ -3618,7 +3683,7 @@ public class OntosaurusUtil {
         try {
           Native.setSpecial(Stella.$MODULE$, module);
           Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
-          { Stella_Object instance = edu.isi.powerloom.PLI.getObject(objectname, null, null);
+          { Stella_Object instance = (Stella.startsWithP(objectname, "(", 0) ? Logic.coerceToInstance(Stella.readSExpressionFromString(objectname), null) : edu.isi.powerloom.PLI.getObject(objectname, null, null));
 
             if (instance != null) {
               { Surrogate testValue000 = Stella_Object.safePrimaryType(instance);
@@ -3888,9 +3953,9 @@ public class OntosaurusUtil {
           {
             stream.print("<FONT COLOR='#990033'>");
             Stella.writeHtmlQuotingSpecialCharacters(stream, searchstring);
-            stream.println("</FONT>");
+            stream.print("</FONT>");
           }
-          stream.println("&quot;");
+          stream.print("&quot;");
           stream.println("</H1>");
         }
         stream.println("<HR SIZE=4>");
@@ -4031,32 +4096,36 @@ public class OntosaurusUtil {
       StringWrapper objectname = ((StringWrapper)(keys.fourth()));
       java.io.PrintStream stream = edu.isi.webtools.http.HttpExchange.getReplyStream(xchg);
 
-      if (keys.length() >= 4) {
-        if (Stella.startsWithP(action.wrapperValue, "graph", 0)) {
-          OntosaurusUtil.vizServerHandler(xchg);
+      try {
+        if (keys.length() >= 4) {
+          if (Stella.startsWithP(action.wrapperValue, "graph", 0)) {
+            OntosaurusUtil.vizServerHandler(xchg);
+          }
+          else {
+            OntosaurusUtil.htmlPowerloomResponse(action.wrapperValue, objecttype.wrapperValue, modulename.wrapperValue, objectname.wrapperValue, stream);
+          }
         }
         else {
-          OntosaurusUtil.htmlPowerloomResponse(action.wrapperValue, objecttype.wrapperValue, modulename.wrapperValue, objectname.wrapperValue, stream);
-        }
-      }
-      else {
-        edu.isi.webtools.http.HttpExchange.setResponseCode(xchg, OntosaurusUtil.KWD_BAD_REQUEST);
-        { String tag008 = OntosaurusUtil.makeHtmlBodyTag(OntosaurusUtil.$ERROR_BACKGROUND_COLOR$);
+          edu.isi.webtools.http.HttpExchange.setResponseCode(xchg, OntosaurusUtil.KWD_BAD_REQUEST);
+          { String tag008 = OntosaurusUtil.makeHtmlBodyTag(OntosaurusUtil.$ERROR_BACKGROUND_COLOR$);
 
-          stream.print("<" + tag008 + ">");
-          stream.println("ERROR: expected four parameters, only received " + keys.length());
-          stream.println("<BR><OL>");
-          { StringWrapper key = null;
-            Cons iter000 = keys;
+            stream.print("<" + tag008 + ">");
+            stream.println("ERROR: expected four parameters, only received " + keys.length());
+            stream.println("<BR><OL>");
+            { StringWrapper key = null;
+              Cons iter000 = keys;
 
-            for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-              key = ((StringWrapper)(iter000.value));
-              stream.println("<LI>" + key + "</LI>");
+              for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+                key = ((StringWrapper)(iter000.value));
+                stream.println("<LI>" + key + "</LI>");
+              }
             }
+            stream.println("</OL>");
+            stream.println("</" + Native.string_subsequence(tag008, 0, Native.string_position(tag008, ' ', 0)) + ">");
           }
-          stream.println("</OL>");
-          stream.println("</" + Native.string_subsequence(tag008, 0, Native.string_position(tag008, ' ', 0)) + ">");
         }
+      } catch (java.lang.Exception e) {
+        edu.isi.webtools.http.HttpExchange.generateErrorResponse(xchg, OntosaurusUtil.KWD_BAD_REQUEST, Stella.exceptionMessage(e));
       }
     }
   }
@@ -4218,7 +4287,7 @@ public class OntosaurusUtil {
     }
 ;
     {
-      stream.println();
+      stream.println("");
       stream.println();
       stream.println("<SELECT NAME=\"objecttype\">");
       stream.println("<option VALUE=\"object\" SELECTED>any</option>");
@@ -5285,7 +5354,8 @@ public class OntosaurusUtil {
 
   /** User-level command interface to <code>executeShellCommand</code> (which see).
    * Runs <code>command</code> and returns its output (if any) as a string.  If the shell created
-   * a non-zero exit status or generated any error output, an exception will be raised.
+   * a non-zero exit status or generated any error output, an exception will be raised
+   * - unless :ignore-errors? is true (which is the default).
    * If <code>command</code> was a string, split it at spaces to determine its arguments (this is
    * not sophisticated and does not handle quoting correctly).  For more complex commands,
    * supply them as a list of strings representing the program and its arguments.  If any
@@ -5300,7 +5370,7 @@ public class OntosaurusUtil {
     if (((Boolean)(OntosaurusUtil.$BLOCK_SHELL_COMMANDp$.get())).booleanValue()) {
       throw ((StellaException)(StellaException.newStellaException("Execution of `shell-command' is blocked in this context").fillInStackTrace()));
     }
-    { PropertyList theoptions = Logic.parseLogicCommandOptions(options, Cons.list$(Cons.cons(OntosaurusUtil.KWD_DIRECTORY, Cons.cons(OntosaurusUtil.SGT_STELLA_STRING, Cons.cons(OntosaurusUtil.KWD_INPUT, Cons.cons(OntosaurusUtil.SGT_STELLA_STRING, Cons.cons(Stella.NIL, Stella.NIL)))))), true, false);
+    { PropertyList theoptions = Logic.parseLogicCommandOptions(options, Cons.list$(Cons.cons(OntosaurusUtil.KWD_DIRECTORY, Cons.cons(OntosaurusUtil.SGT_STELLA_STRING, Cons.cons(OntosaurusUtil.KWD_INPUT, Cons.cons(OntosaurusUtil.SGT_STELLA_STRING, Cons.cons(OntosaurusUtil.KWD_IGNORE_ERRORSp, Cons.cons(OntosaurusUtil.SGT_STELLA_BOOLEAN, Cons.cons(Stella.NIL, Stella.NIL)))))))), true, false);
       String directory = StringWrapper.unwrapString(((StringWrapper)(theoptions.lookup(OntosaurusUtil.KWD_DIRECTORY))));
       String inputstring = StringWrapper.unwrapString(((StringWrapper)(theoptions.lookup(OntosaurusUtil.KWD_INPUT))));
       InputStringStream inputstream = ((!Stella.blankStringP(inputstring)) ? InputStringStream.newInputStringStream(inputstring) : ((InputStringStream)(null)));
@@ -5309,6 +5379,7 @@ public class OntosaurusUtil {
       int exit = OntosaurusUtil.executeShellCommand(command, directory, inputstream, outputstream, errorstream);
       String output = outputstream.theStringReader();
       String error = errorstream.theStringReader();
+      Stella_Object ignoreerrorsP = theoptions.lookupWithDefault(OntosaurusUtil.KWD_IGNORE_ERRORSp, Stella.TRUE_WRAPPER);
 
       if (inputstream != null) {
         Stream.closeStream(inputstream);
@@ -5316,13 +5387,19 @@ public class OntosaurusUtil {
       Stream.closeStream(outputstream);
       Stream.closeStream(errorstream);
       if (!Stella.blankStringP(error)) {
-        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+        if (BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(ignoreerrorsP)))) {
+          System.out.print(error);
+        }
+        else {
+          { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
 
-          stream000.nativeStream.print("shell-command: `" + error + "'");
-          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+            stream000.nativeStream.print("shell-command: `" + error + "'");
+            throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+          }
         }
       }
-      if (!(exit == 0)) {
+      if ((!(exit == 0)) &&
+          (!BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(ignoreerrorsP))))) {
         { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
 
           stream001.nativeStream.print("shell-command: non-zero exit status=`" + exit + "'");

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -76,12 +76,12 @@ VerbatimStringWrapper* oCL_FALSE_STRING_WRAPPERo = NULL;
 KeyValueList* oCL_OPERATOR_TABLEo = NULL;
 
 boolean useClConsesP() {
-  return (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES));
+  return (oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES));
 }
 
 boolean useDefconsmethodP(MethodSlot* method) {
   if ((!method->methodFunctionP) &&
-      oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES)) {
+      oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES)) {
     { Surrogate* testValue000 = method->slotOwner;
 
       if (testValue000 == SGT_CL_TRANSLATE_STELLA_CONS) {
@@ -115,11 +115,11 @@ boolean useDefconsmethodP(MethodSlot* method) {
 }
 
 boolean useClStructsP() {
-  return (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_STRUCTS));
+  return (oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_STRUCTS));
 }
 
 boolean useVectorStructsP() {
-  return (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS));
+  return (oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS));
 }
 
 DEFINE_STELLA_SPECIAL(oNEEDEXPLICITRETURNpo, boolean , false);
@@ -129,7 +129,7 @@ Cons* clTranslateListOfTrees(Cons* trees) {
 
     while (!(cursor == NIL)) {
       { 
-        BIND_STELLA_SPECIAL(oNEEDEXPLICITRETURNpo, boolean, oNEEDEXPLICITRETURNpo.get() ||
+        BIND_STELLA_SPECIAL(oNEEDEXPLICITRETURNpo, boolean, oNEEDEXPLICITRETURNpo ||
             (!(cursor->rest == NIL)));
         cursor->value = clTranslateATree(cursor->value);
       }
@@ -430,7 +430,7 @@ Object* clTranslateGlobalSymbol(Symbol* symbol) {
       return (symbol);
     }
     if (!((boolean)(symbolmodule))) {
-      symbolmodule = oMODULEo.get();
+      symbolmodule = oMODULEo;
     }
     return (yieldGlobalLispSymbol(symbolmodule, symbol->symbolName));
   }
@@ -468,8 +468,8 @@ char* yieldReadableSymbolName(Module* symbolmodule, char* symbolname, boolean lo
 
 Object* yieldGlobalLispSymbol(Module* symbolmodule, char* symbolname) {
   { char* lispsymbolpackage = (((!((boolean)(symbolmodule))) ||
-        ((symbolmodule == oMODULEo.get()) ||
-         stringEqlP(symbolmodule->lispPackage(), oMODULEo.get()->lispPackage()))) ? ((char*)(NULL)) : symbolmodule->lispPackage());
+        ((symbolmodule == oMODULEo) ||
+         stringEqlP(symbolmodule->lispPackage(), oMODULEo->lispPackage()))) ? ((char*)(NULL)) : symbolmodule->lispPackage());
     char* lispsymbolname = yieldReadableSymbolName(symbolmodule, symbolname, false);
 
     if (lispsymbolpackage == NULL) {
@@ -502,7 +502,7 @@ Object* yieldClosSlotAccessorName(Symbol* slotname) {
 
 Cons* yieldSlotValueReaderTree(Symbol* slotname, Object* objectref, Surrogate* objecttype) {
   if ((objecttype == SGT_CL_TRANSLATE_STELLA_CONS) &&
-      oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES)) {
+      oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES)) {
     if (slotname == SYM_CL_TRANSLATE_STELLA_VALUE) {
       return (cons(clTranslateGlobalSymbol(SYM_CL_TRANSLATE_STELLA_rrVALUE), cons(objectref, NIL)));
     }
@@ -514,12 +514,12 @@ Cons* yieldSlotValueReaderTree(Symbol* slotname, Object* objectref, Surrogate* o
   }
   { Class* clasS = ((Class*)(objecttype->surrogateValue));
 
-    if ((!oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_STRUCTS)) ||
+    if ((!oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_STRUCTS)) ||
         (exceptionClassP(clasS) ||
          clAlwaysTranslateToClosClassP(clasS))) {
       return (cons(yieldClosSlotAccessorName(slotname), cons(objectref, NIL)));
     }
-    else if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS)) {
+    else if (oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS)) {
       return (cons(clTranslateGlobalSymbol(SYM_CL_TRANSLATE_STELLA_CLSYS_SVAL), cons(wrapInteger(clStructSlotOffset(slotname, objecttype)), cons(clTranslateGlobalSymbol(internSymbolInModule(objecttype->symbolName, ((Module*)(objecttype->homeContext)), true)), cons(clTranslateGlobalSymbol(slotname), cons(objectref, NIL))))));
     }
     else {
@@ -594,14 +594,14 @@ Symbol* methodCallTypeForVectorStructs(Symbol* slotname, Surrogate* owner, boole
        ((slotname == SYM_CL_TRANSLATE_STELLA_NULLp) ||
         ((slotname == SYM_CL_TRANSLATE_STELLA_DEFINEDp) ||
          (symbolCommonLispP(slotname) ||
-          ((!oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_STRUCTS)) ||
-           (!oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS)))))))) {
+          ((!oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_STRUCTS)) ||
+           (!oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS)))))))) {
     return (SYM_CL_TRANSLATE_STELLA_NORMAL_CALL);
   }
   if (((!subtypeOfP(owner, SGT_CL_TRANSLATE_STELLA_OBJECT)) &&
       (!((Class*)(owner->surrogateValue))->mixinP)) ||
       ((owner == SGT_CL_TRANSLATE_STELLA_CONS) &&
-       oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES))) {
+       oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES))) {
     return (SYM_CL_TRANSLATE_STELLA_NON_OBJECT_METHOD);
   }
   else {
@@ -968,7 +968,7 @@ Cons* clTranslateHandleExceptionTree(Cons* tree) {
 
 Object* cast(Object* value, Surrogate* type) {
   // Perform a run-time type check, and then return `value'.
-  if ((oSAFETYo.get() >= 2) &&
+  if ((oSAFETYo >= 2) &&
       ((oSTARTUP_TIME_PHASEo == 999) &&
        oUNFINALIZED_CLASSESo->emptyP())) {
     if (((boolean)(value)) &&
@@ -1054,7 +1054,7 @@ Object* clTranslateCastTree(Cons* tree) {
         subtypeOfP(type, SGT_CL_TRANSLATE_STELLA_LONG_INTEGER)) {
       return (listO(3, internCommonLispSymbol("TRUNCATE"), tree->rest->value, NIL));
     }
-    if ((oSAFETYo.get() < 2) ||
+    if ((oSAFETYo < 2) ||
         ((tree->value == SYM_CL_TRANSLATE_STELLA_SAFE_CAST) ||
          (!((boolean)(lookupSlot(typeToClass(type), SYM_CL_TRANSLATE_STELLA_PRIMARY_TYPE)))))) {
       expression = tree->rest->value;
@@ -1072,8 +1072,8 @@ Object* clTranslateReturnTree(Cons* tree) {
     if (!(returnvalues->rest == NIL)) {
       returnvalues = cons(cons(internCommonLispSymbol("VALUES"), returnvalues->concatenate(NIL, 0)), NIL);
     }
-    return ((((!oNEEDEXPLICITRETURNpo.get()) &&
-        preserveTailMergeOptimizabilityP()) ? returnvalues->value : listO(3, internCommonLispSymbol("RETURN-FROM"), clTranslateGlobalSymbol(yieldRenamedNameIfNative(((MethodSlot*)(oCURRENTTRANSLATIONUNITo.get()->theObject))->slotName, KWD_CL_TRANSLATE_COMMON_LISP, KWD_CL_TRANSLATE_FUNCTION)), returnvalues->concatenate(NIL, 0))));
+    return ((((!oNEEDEXPLICITRETURNpo) &&
+        preserveTailMergeOptimizabilityP()) ? returnvalues->value : listO(3, internCommonLispSymbol("RETURN-FROM"), clTranslateGlobalSymbol(yieldRenamedNameIfNative(((MethodSlot*)(oCURRENTTRANSLATIONUNITo->theObject))->slotName, KWD_CL_TRANSLATE_COMMON_LISP, KWD_CL_TRANSLATE_FUNCTION)), returnvalues->concatenate(NIL, 0))));
   }
 }
 
@@ -1354,7 +1354,7 @@ Cons* clTranslateBooleanTree(Cons* tree) {
 }
 
 Object* clTranslateClassName(Class* clasS) {
-  if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES)) {
+  if (oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES)) {
     if (clasS->classType == SGT_CL_TRANSLATE_STELLA_CONS) {
       return (internCommonLispSymbol("CONS"));
     }
@@ -1385,17 +1385,17 @@ Cons* clTranslateMakeTree(Cons* tree) {
     Cons* otree = NULL;
 
     if ((classsymbol == internCommonLispSymbol("CONS")) &&
-        oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES)) {
+        oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES)) {
       return (listO(4, internCommonLispSymbol("CONS"), internCommonLispSymbol("NIL"), internCommonLispSymbol("NIL"), NIL));
     }
     if (exceptionClassP(clasS)) {
       otree = listO(4, internCommonLispSymbol("MAKE-CONDITION"), listO(3, internCommonLispSymbol("QUOTE"), classsymbol, NIL), clTranslateGlobalSymbol(SYM_CL_TRANSLATE_STELLA_oCONDITION_MESSAGE_KEYWORDo), cons(cons(clTranslateGlobalSymbol(SYM_CL_TRANSLATE_STELLA_REPLACE_SUBSTRINGS), cons(clTranslateATree(tree->rest->rest->value), listO(3, wrapString("~~"), wrapString("~"), NIL))), NIL));
     }
-    else if ((!oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_STRUCTS)) ||
+    else if ((!oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_STRUCTS)) ||
         clAlwaysTranslateToClosClassP(clasS)) {
       otree = listO(3, internCommonLispSymbol("MAKE-INSTANCE"), listO(3, internCommonLispSymbol("QUOTE"), classsymbol, NIL), NIL);
     }
-    else if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS)) {
+    else if (oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS)) {
       otree = cons(clTranslateGlobalSymbol(SYM_CL_TRANSLATE_STELLA_CLSYS_MAKE), cons(classsymbol, cons(wrapInteger(clStructSlots(clasS)->length() + 1), NIL)));
     }
     else {
@@ -1580,7 +1580,7 @@ Cons* clTranslateCallFunctionCodeTree(Cons* tree) {
 
     otree->rest = clTranslateListOfTrees(otree->rest);
     otree->firstSetter(((methodcodeP &&
-        oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS)) ? SYM_CL_TRANSLATE_STELLA_CLSYS_METHOD_CODE_CALL : internCommonLispSymbol("FUNCALL")));
+        oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS)) ? SYM_CL_TRANSLATE_STELLA_CLSYS_METHOD_CODE_CALL : internCommonLispSymbol("FUNCALL")));
     return (otree);
   }
 }
@@ -2008,13 +2008,13 @@ Cons* clYieldDeclareTree(Cons* declarations, boolean includeTypeChecksP) {
     Cons* typechecks = NIL;
 
     if (includeTypeChecksP &&
-        (oSAFETYo.get() >= 1)) {
+        (oSAFETYo >= 1)) {
       { Cons* decl = NULL;
         Cons* iter000 = declarations;
 
         for (decl, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
           decl = ((Cons*)(iter000->value));
-          if (oSAFETYo.get() <= 2) {
+          if (oSAFETYo <= 2) {
             typechecks = cons(newVerbatimStringWrapper("#+MCL"), typechecks);
           }
           typechecks = cons(listO(3, internCommonLispSymbol("CHECK-TYPE"), decl->rest->rest->value, cons(decl->rest->value, NIL)), typechecks);
@@ -2175,7 +2175,7 @@ Cons* clTranslateDefineMethodUnit(TranslationUnit* unit) {
 
     if ((methodname == SYM_CL_TRANSLATE_STELLA_PRINT_OBJECT) &&
         ((method->slotOwner == SGT_CL_TRANSLATE_STELLA_CONS) &&
-         oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES))) {
+         oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_CONSES))) {
       return (NULL);
     }
     { Symbol* testValue000 = methodCallTypeForVectorStructs(methodname, method->slotOwner, functionP);
@@ -2613,11 +2613,11 @@ Cons* clTranslateDefineNativeClassUnit(TranslationUnit* unit) {
     if (exceptionClassP(clasS)) {
       return (yieldConditionTree(clasS));
     }
-    else if ((!oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_STRUCTS)) ||
+    else if ((!oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_STRUCTS)) ||
         clAlwaysTranslateToClosClassP(clasS)) {
       return (yieldClosClassTree(clasS));
     }
-    else if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS)) {
+    else if (oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_USE_COMMON_LISP_VECTOR_STRUCTS)) {
       return (yieldVectorStructTree(clasS));
     }
     else {
@@ -2906,7 +2906,7 @@ void helpStartupClTranslate4() {
 void startupClTranslate() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupClTranslate1();
       helpStartupClTranslate2();

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -165,11 +165,13 @@ void collectVisibleAntecedents(Justification* self, List* visibleantecedents);
 void why(Cons* args);
 void whyEvaluatorWrapper(Cons* arguments);
 void explainWhy(char* label, Keyword* style, int maxdepth, OutputStream* stream);
+void explainProposition(Proposition* prop, Keyword* style, int maxdepth, OutputStream* stream);
 Justification* getWhyJustification(char* label);
 boolean commandOptionEqlP(Object* arg, char* option);
 char* parseWhyArguments(Cons* args, Keyword*& _Return1, int& _Return2, boolean& _Return3);
 void helpStartupExplanations1();
 void helpStartupExplanations2();
+void helpStartupExplanations3();
 void startupExplanations();
 
 // Auxiliary global declarations:
@@ -190,6 +192,8 @@ extern Keyword* KWD_EXPLANATIONS_PARTIAL;
 extern Keyword* KWD_EXPLANATIONS_HOLDS;
 extern Keyword* KWD_EXPLANATIONS_DEFINITION;
 extern Keyword* KWD_EXPLANATIONS_FAILED;
+extern Keyword* KWD_EXPLANATIONS_INCONSISTENT;
+extern Keyword* KWD_EXPLANATIONS_CLASH;
 extern Keyword* KWD_EXPLANATIONS_NOT_ASSERTED;
 extern Keyword* KWD_EXPLANATIONS_NO_RULES;
 extern Surrogate* SGT_EXPLANATIONS_LOGIC_EXPLANATION_INFO;
@@ -205,6 +209,7 @@ extern Keyword* KWD_EXPLANATIONS_REALISTIC;
 extern Symbol* SYM_EXPLANATIONS_STELLA_NOT;
 extern Keyword* KWD_EXPLANATIONS_AMPLIFICATION;
 extern Keyword* KWD_EXPLANATIONS_REVERSE;
+extern Surrogate* SGT_EXPLANATIONS_LOGIC_CLASH_JUSTIFICATION;
 extern Keyword* KWD_EXPLANATIONS_PRIMITIVE_STRATEGY;
 extern Keyword* KWD_EXPLANATIONS_SCAN_PROPOSITIONS;
 extern Symbol* SYM_EXPLANATIONS_LOGIC_MASTER_PROPOSITION;

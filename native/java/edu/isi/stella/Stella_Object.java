@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -67,7 +67,7 @@ public abstract class Stella_Object {
         currentDepth = currentDepth;
         depth = depth;
       }
-      stream.nativeStream.println(top);
+      stream.nativeStream.println(top.toString());
     }
   }
 
@@ -1267,6 +1267,9 @@ public abstract class Stella_Object {
           else if (testValue000 == Stella.SYM_STELLA_SETQ) {
             return (Cons.cppTranslateSetqTree(tree000));
           }
+          else if (testValue000 == Stella.SYM_STELLA_SYS_SET_DEFAULT) {
+            return (Cons.cppTranslateSysSetDefault(tree000));
+          }
           else if (testValue000 == Stella.SYM_STELLA_SYS_SLOT_VALUE) {
             return (Cons.cppTranslateSysSlotValue(tree000));
           }
@@ -1857,7 +1860,7 @@ public abstract class Stella_Object {
     { String key = Stella_Object.coerceToString(property);
       Stella_Object renamed_Default = defaultvalue.value;
 
-      return (Stella.lookupConfigurationProperty(key, ((Wrapper)(renamed_Default)), Stella.$SYSTEM_CONFIGURATION_TABLE$));
+      return (Stella.lookupConfigurationProperty(key, renamed_Default, Stella.$SYSTEM_CONFIGURATION_TABLE$));
     }
   }
 
@@ -2390,7 +2393,15 @@ public abstract class Stella_Object {
       }
     }
     else if (type == Stella.SGT_STELLA_FLOAT) {
-      return (FloatWrapper.wrapFloat(Stella_Object.coerceValueToFloat(value, errorP)));
+      { double val = Stella_Object.coerceValueToFloat(value, errorP);
+
+        if (val != Stella.NULL_FLOAT) {
+          return (FloatWrapper.wrapFloat(val));
+        }
+        else {
+          return (null);
+        }
+      }
     }
     else if (type == Stella.SGT_STELLA_NUMBER) {
       { Surrogate testValue001 = Stella_Object.safePrimaryType(value);
@@ -2418,7 +2429,15 @@ public abstract class Stella_Object {
       }
     }
     else if (type == Stella.SGT_STELLA_STRING) {
-      return (StringWrapper.wrapString(Stella_Object.coerceValueToString(value, errorP)));
+      { String val = Stella_Object.coerceValueToString(value, errorP);
+
+        if (val != null) {
+          return (StringWrapper.wrapString(val));
+        }
+        else {
+          return (null);
+        }
+      }
     }
     else if (type == Stella.SGT_STELLA_KEYWORD) {
       { Surrogate testValue002 = Stella_Object.safePrimaryType(value);
@@ -4729,6 +4748,9 @@ public abstract class Stella_Object {
                 else if (testValue001 == Stella.SYM_STELLA_CONCATENATE) {
                   return (Cons.list$(Cons.cons(Stella.SYM_STELLA_APPEND, Cons.cons(args.value, Cons.cons(Cons.cons(args.rest.value, Stella.NIL), Stella.NIL)))));
                 }
+                else if (testValue001 == Stella.SYM_STELLA_WRAP_LITERAL) {
+                  return (args.value);
+                }
                 else {
                   return (Cons.cons(tree000.value, args));
                 }
@@ -6798,7 +6820,7 @@ public abstract class Stella_Object {
   }
 
   public static void po(Stella_Object thing) {
-    System.out.println(thing);
+    System.out.println(thing.toString());
   }
 
   /** Translate a single Stella expression <code>tree</code> and return
@@ -9137,7 +9159,7 @@ public abstract class Stella_Object {
       try {
         Native.setBooleanSpecial(Stella.$PRINTPRETTYp$, ((Boolean)(Stella.$PRINTPRETTYCODEp$.get())).booleanValue());
         Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-        stream.println(tree);
+        stream.println(tree.toString());
 
       } finally {
         Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
@@ -9399,6 +9421,14 @@ public abstract class Stella_Object {
     }
     else {
       return (Stella_Object.eqlP(tree, value));
+    }
+  }
+
+  public static boolean sortObjectsCompareP(Stella_Object x, Stella_Object y) {
+    { StorageSlot slot = ((StorageSlot)(Stella.$SORT_OBJECTS_COMPARE_SLOT$.get()));
+      java.lang.reflect.Method pred = ((java.lang.reflect.Method)(Stella.$SORT_TUPLE_COMPARE_PREDICATE$.get()));
+
+      return (((Boolean)(edu.isi.stella.javalib.Native.funcall(pred, null, new java.lang.Object [] {StandardObject.readSlotValue(((StandardObject)(x)), slot), StandardObject.readSlotValue(((StandardObject)(y)), slot)}))).booleanValue());
     }
   }
 

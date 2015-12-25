@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -121,7 +121,17 @@ public class _StartupIterators {
         Native.setSpecial(Stella.$MODULE$, Stella.$STELLA_MODULE$);
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
+          Stella.SGT_STELLA_CROSS_PRODUCT_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CROSS-PRODUCT-ITERATOR", null, 1)));
+          Stella.SYM_STELLA_DOMAINS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DOMAINS", null, 0)));
+          Stella.SYM_STELLA_CURSORS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CURSORS", null, 0)));
           Stella.SYM_STELLA_STARTUP_ITERATORS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-ITERATORS", null, 0)));
+        }
+        if (Stella.currentStartupTimePhaseP(5)) {
+          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("CROSS-PRODUCT-ITERATOR", "(DEFCLASS CROSS-PRODUCT-ITERATOR (ITERATOR) :DOCUMENTATION \"Iterator class that generates the cross product of a list of domains.\nEach value tuple is represented as a CONS.  CAUTION: the value tuple will be modified\ndestructively, hence, it needs to be copied in case it needs to persist beyond a single\niteration.\" :PUBLIC? TRUE :PARAMETERS ((ANY-VALUE :TYPE CONS)) :SLOTS ((DOMAINS :TYPE (CONS OF CONS) :INITIALLY NIL) (CURSORS :TYPE (CONS OF CONS) :INITIALLY NIL)))");
+
+            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.stella.CrossProductIterator", "newCrossProductIterator", new java.lang.Class [] {});
+            renamed_Class.classSlotAccessorCode = Native.find_java_method("edu.isi.stella.CrossProductIterator", "accessCrossProductIteratorSlotValue", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.CrossProductIterator"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE});
+          }
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();
@@ -132,6 +142,9 @@ public class _StartupIterators {
           Stella.defineFunctionObject("CLASS-TABLES", "(DEFUN (CLASS-TABLES (ITERATOR OF TABLE)) ((CLASS CLASS) (FILTERS (CONS OF FUNCTION-CODE-WRAPPER))))", Native.find_java_method("edu.isi.stella.Stella_Class", "classTables", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Class"), Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("PUBLIC-CLASS-STORAGE-SLOTS", "(DEFUN (PUBLIC-CLASS-STORAGE-SLOTS (ITERATOR OF STORAGE-SLOT)) ((CLASS CLASS)) :DOCUMENTATION \"Iterate over all public storage-slots attached to 'class'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Class", "publicClassStorageSlots", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Class")}), null);
           Stella.defineFunctionObject("PRIVATE-CLASS-STORAGE-SLOTS", "(DEFUN (PRIVATE-CLASS-STORAGE-SLOTS (ITERATOR OF STORAGE-SLOT)) ((CLASS CLASS)) :DOCUMENTATION \"Iterate over all private storage-slots attached to 'class'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella_Class", "privateClassStorageSlots", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Class")}), null);
+          Stella.defineFunctionObject("ALLOCATE-CROSS-PRODUCT-ITERATOR", "(DEFUN (ALLOCATE-CROSS-PRODUCT-ITERATOR CROSS-PRODUCT-ITERATOR) ((DOMAINS (CONS OF CONS))) :DOCUMENTATION \"Allocate a cross product iterator for a list of `domains'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Cons", "allocateCrossProductIterator", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
+          Stella.defineMethodObject("(DEFMETHOD RESET ((SELF CROSS-PRODUCT-ITERATOR)) :DOCUMENTATION \"Reset `self' to its initially allocated state.  Note, that\nthis is somewhat expensive, costing almost as much as allocating the iterator.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.CrossProductIterator", "reset", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
+          Stella.defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF CROSS-PRODUCT-ITERATOR)))", Native.find_java_method("edu.isi.stella.CrossProductIterator", "nextP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
           Stella.defineFunctionObject("STARTUP-ITERATORS", "(DEFUN STARTUP-ITERATORS () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella._StartupIterators", "startupIterators", new java.lang.Class [] {}), null);
           { MethodSlot function = Symbol.lookupFunction(Stella.SYM_STELLA_STARTUP_ITERATORS);
 

@@ -12,7 +12,23 @@
 
 // System-wide forward declarations:
 
+namespace units {
+  using namespace stella_utilities;
+  using namespace stella;
+  using namespace logic;
 
+class DimNumberLogicWrapper;
+
+} // end of namespace units
+
+namespace timepoint {
+  using namespace stella_utilities;
+  using namespace stella;
+  using namespace logic;
+
+class DateTimeLogicWrapper;
+
+} // end of namespace timepoint
 
 // System components:
 #include "logic/extensions/extensions.hh"

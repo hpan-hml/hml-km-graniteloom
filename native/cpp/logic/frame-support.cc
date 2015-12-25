@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -79,7 +79,7 @@ Object* coerceToInstanceInModule(Object* self, Module* module, boolean localP, O
               module = modulefromstring;
             }
             else {
-              module = oMODULEo.get();
+              module = oMODULEo;
             }
           }
           { Surrogate* surrogate = lookupSurrogateInModule(name, module, localP);
@@ -116,8 +116,8 @@ Object* coerceToInstanceInModule(Object* self, Module* module, boolean localP, O
           if (((boolean)(value))) {
             return (value);
           }
-          else if (!(module == oMODULEo.get())) {
-            return (coerceToInstanceInModule(lookupSurrogateInModule(self->symbolName, oMODULEo.get(), localP), oMODULEo.get(), localP, original));
+          else if (!(module == oMODULEo)) {
+            return (coerceToInstanceInModule(lookupSurrogateInModule(self->symbolName, oMODULEo, localP), oMODULEo, localP, original));
           }
           else if (((boolean)(original))) {
             return (coerceToInstanceInModule(NULL, NULL, false, original));
@@ -514,7 +514,7 @@ Cons* allTaxonomicTypes(Object* self) {
         initializeMemoizationTable(SGT_FRAME_SUPPORT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_FRAME_SUPPORT_LOGIC_F_ALL_TAXONOMIC_TYPES_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, NULL, 2);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo, MEMOIZED_NULL_VALUE, NULL, 2);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -548,7 +548,7 @@ Cons* allTypes(Object* self) {
         initializeMemoizationTable(SGT_FRAME_SUPPORT_LOGIC_F_ALL_TYPES_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_FRAME_SUPPORT_LOGIC_F_ALL_TYPES_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, NULL, 2);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo, MEMOIZED_NULL_VALUE, NULL, 2);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -697,7 +697,7 @@ Cons* allEquivalentRelations(NamedDescription* relation, boolean reflexiveP) {
         initializeMemoizationTable(SGT_FRAME_SUPPORT_LOGIC_F_ALL_EQUIVALENT_RELATIONS_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:META-KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_FRAME_SUPPORT_LOGIC_F_ALL_EQUIVALENT_RELATIONS_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo.get(), (reflexiveP ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo, (reflexiveP ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -756,7 +756,7 @@ Cons* allSuperrelations(NamedDescription* relation, boolean removeequivalentsP) 
         initializeMemoizationTable(SGT_FRAME_SUPPORT_LOGIC_F_ALL_SUPERRELATIONS_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:META-KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_FRAME_SUPPORT_LOGIC_F_ALL_SUPERRELATIONS_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo.get(), (removeequivalentsP ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo, (removeequivalentsP ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -802,7 +802,7 @@ Cons* allSubrelations(NamedDescription* relation, boolean removeequivalentsP) {
         initializeMemoizationTable(SGT_FRAME_SUPPORT_LOGIC_F_ALL_SUBRELATIONS_MEMO_TABLE_000, "(:MAX-VALUES 1000 :TIMESTAMPS (:META-KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_FRAME_SUPPORT_LOGIC_F_ALL_SUBRELATIONS_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo.get(), (removeequivalentsP ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo, (removeequivalentsP ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -837,7 +837,7 @@ Cons* allDirectSuperrelations(NamedDescription* relation, boolean removeequivale
         initializeMemoizationTable(SGT_FRAME_SUPPORT_LOGIC_F_ALL_DIRECT_SUPERRELATIONS_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:META-KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_FRAME_SUPPORT_LOGIC_F_ALL_DIRECT_SUPERRELATIONS_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo.get(), (removeequivalentsP ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo, (removeequivalentsP ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -872,7 +872,7 @@ Cons* allDirectSubrelations(NamedDescription* relation, boolean removeequivalent
         initializeMemoizationTable(SGT_FRAME_SUPPORT_LOGIC_F_ALL_DIRECT_SUBRELATIONS_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:META-KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_FRAME_SUPPORT_LOGIC_F_ALL_DIRECT_SUBRELATIONS_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo.get(), (removeequivalentsP ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo, (removeequivalentsP ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -1561,7 +1561,7 @@ void helpStartupFrameSupport2() {
 void startupFrameSupport() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupFrameSupport1();
     }

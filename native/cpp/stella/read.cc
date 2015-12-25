@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -1378,11 +1378,11 @@ Object* withTokenizer(Object* table, Object* input, Cons* body) {
 }
 
 boolean withTokenizerStringInputP() {
-  return (oWITHTOKENIZERINPUTTYPEo.get() == SGT_READ_STELLA_STRING);
+  return (oWITHTOKENIZERINPUTTYPEo == SGT_READ_STELLA_STRING);
 }
 
 boolean insideWithTokenizerP() {
-  return (((boolean)(oWITHTOKENIZERINPUTTYPEo.get())));
+  return (((boolean)(oWITHTOKENIZERINPUTTYPEo)));
 }
 
 Object* endOfTokensP() {
@@ -1500,6 +1500,8 @@ Object* saveTokenizerStreamState() {
   return (listO(6, SYM_READ_STELLA_WHEN, listO(3, SYM_READ_STELLA_DEFINEDp, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), listO(4, SYM_READ_STELLA_SETF, listO(3, SYM_READ_STELLA_CURSOR, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), SYM_READ_STELLA_TOK_CURSOR_, NIL), listO(4, SYM_READ_STELLA_SETF, listO(3, SYM_READ_STELLA_TABLE, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), SYM_READ_STELLA_TOK_TABLE_, NIL), listO(4, SYM_READ_STELLA_SETF, listO(3, SYM_READ_STELLA_STATE, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), SYM_READ_STELLA_TOK_STATE_, NIL), NIL));
 }
 
+boolean oTRACE_GET_NEXT_TOKENpo = false;
+
 Object* getNextToken(Cons* options) {
   if (!insideWithTokenizerP()) {
     { 
@@ -1524,7 +1526,7 @@ Object* getNextToken(Cons* options) {
     else {
       savestreamstatetree = cons(listO(3, SYM_READ_STELLA_WHEN, savestreamstateP, savestreamstatetree->concatenate(NIL, 0)), NIL);
     }
-    return (listO(4, SYM_READ_STELLA_PROGN, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(3, SYM_READ_STELLA_LOOP, (withTokenizerStringInputP() ? listO(5, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(5, SYM_READ_STELLA_COND, listO(3, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_TRUE, NIL), NIL), listO(4, listO(4, SYM_READ_STELLA_NTH, listO(3, SYM_READ_STELLA_LEGAL_EOF_STATES, SYM_READ_STELLA_TOK_TABLE_, NIL), SYM_READ_STELLA_TOK_STATE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_TRUE, NIL), NIL), NIL), listO(4, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), NIL), cons(SYM_READ_STELLA_BREAK, NIL), NIL) : listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_CHECKPOINT_, NIL), listO(4, SYM_READ_STELLA_COND, listO(10, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETF, listO(3, SYM_READ_STELLA_CURSOR, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), SYM_READ_STELLA_TOK_CURSOR_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, listO(5, SYM_READ_STELLA_READ_INTO_TOKENIZER_BUFFER, SYM_READ_STELLA_TOK_INPUTSTREAM_, SYM_READ_STELLA_TOK_STREAMSTATE_, SYM_READ_STELLA_TOK_TOKENSTART_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_BUFFER_, listO(3, SYM_READ_STELLA_BUFFER, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_SIZE_, listO(3, SYM_READ_STELLA_BUFFER_SIZE, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CURSOR_, listO(4, SYM_READ_STELLA_MOD, listO(3, SYM_READ_STELLA_CURSOR, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), SYM_READ_STELLA_TOK_SIZE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_END_, listO(3, SYM_READ_STELLA_END, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(6, SYM_READ_STELLA_WHEN, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_CURSOR_, NIL), listO(5, SYM_READ_STELLA_COND, cons(listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), listO(4, listO(4, SYM_READ_STELLA_NTH, listO(3, SYM_READ_STELLA_LEGAL_EOF_STATES, SYM_READ_STELLA_TOK_TABLE_, NIL), SYM_READ_STELLA_TOK_STATE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_UNLESS, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_FALSE, NIL), NIL), NIL), listO(5, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_FALSE, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), NIL), cons(SYM_READ_STELLA_BREAK, NIL), NIL), listO(5, SYM_READ_STELLA_IF, listO(4, SYM_READ_STELLA_ge, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_SIZE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_END_, NIL), NIL), NIL), listO(4, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CURSOR_, wrapInteger(0), NIL), NIL), NIL), NIL)), listO(3, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, listO(3, SYM_READ_STELLA_CHARACTER_CODE, listO(4, SYM_READ_STELLA_NTH, SYM_READ_STELLA_TOK_TRANSITIONS_, listO(4, SYM_READ_STELLA_LOGOR, listO(4, SYM_READ_STELLA_SHIFT_LEFT, SYM_READ_STELLA_TOK_STATE_, wrapInteger(8), NIL), listO(3, SYM_READ_STELLA_CHARACTER_CODE, listO(4, SYM_READ_STELLA_BYTE_ARRAY_NTH, SYM_READ_STELLA_TOK_BUFFER_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), NIL), NIL), NIL), NIL), listO(5, SYM_READ_STELLA_COND, listO(4, listO(4, SYM_READ_STELLA_e, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(128), NIL), wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, SYM_READ_STELLA_TOK_NEXTSTATE_, NIL), listO(3, SYM_READ_STELLA_ii, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(5, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(64), NIL), wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_TOKENSTART_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(63), NIL), NIL), listO(3, SYM_READ_STELLA_ii, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(3, SYM_READ_STELLA_OTHERWISE, cons(SYM_READ_STELLA_BREAK, NIL), NIL), NIL), (((!withTokenizerStringInputP()) ? cons(listO(4, SYM_READ_STELLA_WHEN, listO(3, SYM_READ_STELLA_DEFINEDp, SYM_READ_STELLA_TOK_ECHOSTREAM_, NIL), listO(4, SYM_READ_STELLA_PRINT_STREAM, SYM_READ_STELLA_TOK_ECHOSTREAM_, listO(4, SYM_READ_STELLA_BYTE_ARRAY_NTH, SYM_READ_STELLA_TOK_BUFFER_, listO(3, SYM_READ_STELLA_1_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), NIL), NIL), NIL) : NIL))->concatenate(NIL, 0))), savestreamstatetree->concatenate(NIL, 0)));
+    return (listO(4, SYM_READ_STELLA_PROGN, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(3, SYM_READ_STELLA_LOOP, (withTokenizerStringInputP() ? listO(5, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(5, SYM_READ_STELLA_COND, listO(3, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_TRUE, NIL), NIL), listO(4, listO(4, SYM_READ_STELLA_NTH, listO(3, SYM_READ_STELLA_LEGAL_EOF_STATES, SYM_READ_STELLA_TOK_TABLE_, NIL), SYM_READ_STELLA_TOK_STATE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_TRUE, NIL), NIL), NIL), listO(4, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), NIL), cons(SYM_READ_STELLA_BREAK, NIL), NIL) : listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_CHECKPOINT_, NIL), listO(4, SYM_READ_STELLA_COND, listO(10, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETF, listO(3, SYM_READ_STELLA_CURSOR, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), SYM_READ_STELLA_TOK_CURSOR_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, listO(5, SYM_READ_STELLA_READ_INTO_TOKENIZER_BUFFER, SYM_READ_STELLA_TOK_INPUTSTREAM_, SYM_READ_STELLA_TOK_STREAMSTATE_, SYM_READ_STELLA_TOK_TOKENSTART_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_BUFFER_, listO(3, SYM_READ_STELLA_BUFFER, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_SIZE_, listO(3, SYM_READ_STELLA_BUFFER_SIZE, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CURSOR_, listO(4, SYM_READ_STELLA_MOD, listO(3, SYM_READ_STELLA_CURSOR, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), SYM_READ_STELLA_TOK_SIZE_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_END_, listO(3, SYM_READ_STELLA_END, SYM_READ_STELLA_TOK_STREAMSTATE_, NIL), NIL), listO(6, SYM_READ_STELLA_WHEN, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_CURSOR_, NIL), listO(5, SYM_READ_STELLA_COND, cons(listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), listO(4, listO(4, SYM_READ_STELLA_NTH, listO(3, SYM_READ_STELLA_LEGAL_EOF_STATES, SYM_READ_STELLA_TOK_TABLE_, NIL), SYM_READ_STELLA_TOK_STATE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_UNLESS, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_FALSE, NIL), NIL), NIL), listO(5, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_ENDOFTOKENSp_, SYM_READ_STELLA_FALSE, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(-1), NIL), NIL), NIL), cons(SYM_READ_STELLA_BREAK, NIL), NIL), listO(5, SYM_READ_STELLA_IF, listO(4, SYM_READ_STELLA_ge, SYM_READ_STELLA_TOK_CURSOR_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_SIZE_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_END_, NIL), NIL), NIL), listO(4, SYM_READ_STELLA_OTHERWISE, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CHECKPOINT_, SYM_READ_STELLA_TOK_END_, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_CURSOR_, wrapInteger(0), NIL), NIL), NIL), NIL)), listO(5, listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, listO(3, SYM_READ_STELLA_CHARACTER_CODE, listO(4, SYM_READ_STELLA_BYTE_ARRAY_NTH, SYM_READ_STELLA_TOK_BUFFER_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), NIL), listO(5, SYM_READ_STELLA_IF_OUTPUT_LANGUAGE, KWD_READ_COMMON_LISP, listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_g, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(255), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(255), NIL), NIL), SYM_READ_STELLA_NULL, NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_NEXTSTATE_, listO(3, SYM_READ_STELLA_CHARACTER_CODE, listO(4, SYM_READ_STELLA_NTH, SYM_READ_STELLA_TOK_TRANSITIONS_, listO(4, SYM_READ_STELLA_LOGOR, listO(4, SYM_READ_STELLA_SHIFT_LEFT, SYM_READ_STELLA_TOK_STATE_, wrapInteger(8), NIL), SYM_READ_STELLA_TOK_NEXTSTATE_, NIL), NIL), NIL), NIL), listO(5, SYM_READ_STELLA_COND, listO(4, listO(4, SYM_READ_STELLA_e, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(128), NIL), wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, SYM_READ_STELLA_TOK_NEXTSTATE_, NIL), listO(3, SYM_READ_STELLA_ii, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(5, listO(4, SYM_READ_STELLA_e, SYM_READ_STELLA_TOK_TOKENSTART_, wrapInteger(-1), NIL), listO(4, SYM_READ_STELLA_WHEN, listO(4, SYM_READ_STELLA_e, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(64), NIL), wrapInteger(0), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_TOKENSTART_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(4, SYM_READ_STELLA_SETQ, SYM_READ_STELLA_TOK_STATE_, listO(4, SYM_READ_STELLA_LOGAND, SYM_READ_STELLA_TOK_NEXTSTATE_, wrapInteger(63), NIL), NIL), listO(3, SYM_READ_STELLA_ii, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), listO(3, SYM_READ_STELLA_OTHERWISE, cons(SYM_READ_STELLA_BREAK, NIL), NIL), NIL), (((!withTokenizerStringInputP()) ? cons(listO(4, SYM_READ_STELLA_WHEN, listO(3, SYM_READ_STELLA_DEFINEDp, SYM_READ_STELLA_TOK_ECHOSTREAM_, NIL), listO(4, SYM_READ_STELLA_PRINT_STREAM, SYM_READ_STELLA_TOK_ECHOSTREAM_, listO(4, SYM_READ_STELLA_BYTE_ARRAY_NTH, SYM_READ_STELLA_TOK_BUFFER_, listO(3, SYM_READ_STELLA_1_, SYM_READ_STELLA_TOK_CURSOR_, NIL), NIL), NIL), NIL), NIL) : NIL))->concatenate(NIL, 0))), savestreamstatetree->concatenate(NIL, 0)));
   }
 }
 
@@ -1678,7 +1680,8 @@ boolean StreamTokenizer::nextP() {
               tok_cursor_ = 0;
             }
           }
-          tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | ((int)(unsigned char) (tok_buffer_[tok_cursor_]))))]);
+          tok_nextstate_ = (int)(unsigned char) (tok_buffer_[tok_cursor_]);
+          tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | tok_nextstate_))]);
           if ((tok_nextstate_ & 128) == 0) {
             tok_state_ = tok_nextstate_;
             tok_cursor_ = tok_cursor_ + 1;
@@ -2061,7 +2064,7 @@ Object* accessStellaTokenSlotValue(StellaToken* self, Symbol* slotname, Object* 
 }
 
 StellaToken* tokenizeSExpression(InputStream* stream, StellaToken* tokenlist) {
-  { boolean upcaseP = !oMODULEo.get()->caseSensitiveP;
+  { boolean upcaseP = !oMODULEo->caseSensitiveP;
     int parenbalance = 0;
     boolean endoffileP = true;
     boolean skipclosingquoteP = false;
@@ -2136,7 +2139,8 @@ StellaToken* tokenizeSExpression(InputStream* stream, StellaToken* tokenlist) {
                     tok_cursor_ = 0;
                   }
                 }
-                tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | ((int)(unsigned char) (tok_buffer_[tok_cursor_]))))]);
+                tok_nextstate_ = (int)(unsigned char) (tok_buffer_[tok_cursor_]);
+                tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | tok_nextstate_))]);
                 if ((tok_nextstate_ & 128) == 0) {
                   tok_state_ = tok_nextstate_;
                   tok_cursor_ = tok_cursor_ + 1;
@@ -2452,7 +2456,7 @@ char* parseStellaName(char* name, boolean enablecaseconversionP, char*& _Return1
     Keyword* symboltype = NULL;
     int separatorpos = 0;
     boolean upcaseP = enablecaseconversionP &&
-        (!oMODULEo.get()->caseSensitiveP);
+        (!oMODULEo->caseSensitiveP);
 
     { TokenizerTable* tok_table_ = oSTELLA_TOKENIZER_TABLEo;
       char* tok_transitions_ = tok_table_->transitions;
@@ -2495,7 +2499,8 @@ char* parseStellaName(char* name, boolean enablecaseconversionP, char*& _Return1
                 }
                 break;
               }
-              tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | ((int)(unsigned char) (tok_buffer_[tok_cursor_]))))]);
+              tok_nextstate_ = (int)(unsigned char) (tok_buffer_[tok_cursor_]);
+              tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | tok_nextstate_))]);
               if ((tok_nextstate_ & 128) == 0) {
                 tok_state_ = tok_nextstate_;
                 tok_cursor_ = tok_cursor_ + 1;
@@ -2677,7 +2682,8 @@ char* parseStellaName(char* name, boolean enablecaseconversionP, char*& _Return1
                 }
                 break;
               }
-              tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | ((int)(unsigned char) (tok_buffer_[tok_cursor_]))))]);
+              tok_nextstate_ = (int)(unsigned char) (tok_buffer_[tok_cursor_]);
+              tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | tok_nextstate_))]);
               if ((tok_nextstate_ & 128) == 0) {
                 tok_state_ = tok_nextstate_;
                 tok_cursor_ = tok_cursor_ + 1;
@@ -2760,7 +2766,8 @@ boolean qualifiedStellaNameP(char* name) {
               }
               break;
             }
-            tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | ((int)(unsigned char) (tok_buffer_[tok_cursor_]))))]);
+            tok_nextstate_ = (int)(unsigned char) (tok_buffer_[tok_cursor_]);
+            tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | tok_nextstate_))]);
             if ((tok_nextstate_ & 128) == 0) {
               tok_state_ = tok_nextstate_;
               tok_cursor_ = tok_cursor_ + 1;
@@ -2841,7 +2848,7 @@ Object* stellaTokenListToSExpression(StellaToken* tokenlist) {
           (tokentype == KWD_READ_SURROGATE)) {
         { char* modulename = tokenlist->module;
           char* name = tokenlist->content;
-          Module* module = ((modulename != NULL) ? getStellaModule(modulename, false) : oMODULEo.get());
+          Module* module = ((modulename != NULL) ? getStellaModule(modulename, false) : oMODULEo);
 
           if (!((boolean)(module))) {
             { OutputStringStream* stream000 = newOutputStringStream();
@@ -2854,7 +2861,7 @@ Object* stellaTokenListToSExpression(StellaToken* tokenlist) {
             parsedtoken = internSurrogateInModule(name, module, false);
           }
           else {
-            parsedtoken = ((oTRANSIENTOBJECTSpo.get() &&
+            parsedtoken = ((oTRANSIENTOBJECTSpo &&
                 (modulename == NULL)) ? internTransientSymbol(name) : internSymbolInModule(name, module, false));
           }
         }
@@ -3467,7 +3474,8 @@ char* readLine(InputStream* stream) {
               tok_cursor_ = 0;
             }
           }
-          tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | ((int)(unsigned char) (tok_buffer_[tok_cursor_]))))]);
+          tok_nextstate_ = (int)(unsigned char) (tok_buffer_[tok_cursor_]);
+          tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | tok_nextstate_))]);
           if ((tok_nextstate_ & 128) == 0) {
             tok_state_ = tok_nextstate_;
             tok_cursor_ = tok_cursor_ + 1;
@@ -3612,7 +3620,8 @@ char* readLine2(InputStream* stream, Keyword*& _Return1) {
                 tok_cursor_ = 0;
               }
             }
-            tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | ((int)(unsigned char) (tok_buffer_[tok_cursor_]))))]);
+            tok_nextstate_ = (int)(unsigned char) (tok_buffer_[tok_cursor_]);
+            tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | tok_nextstate_))]);
             if ((tok_nextstate_ & 128) == 0) {
               tok_state_ = tok_nextstate_;
               tok_cursor_ = tok_cursor_ + 1;
@@ -3752,21 +3761,21 @@ boolean yesOrNoP(char* message) {
   // if the input was `yes' or `false' if the input was `no'.  Loop until either
   // `yes' or `no' was entered.  If 'message' is non-`null' prompt with it before
   // the input is read.  See also special variable `*USER-QUERY-ACTION*'.
-  if (oUSER_QUERY_ACTIONo.get() == KWD_READ_YES) {
+  if (oUSER_QUERY_ACTIONo == KWD_READ_YES) {
     return (true);
   }
-  else if (oUSER_QUERY_ACTIONo.get() == KWD_READ_NO) {
+  else if (oUSER_QUERY_ACTIONo == KWD_READ_NO) {
     return (false);
   }
-  else if (oUSER_QUERY_ACTIONo.get() == KWD_READ_YES_VERBOSE) {
+  else if (oUSER_QUERY_ACTIONo == KWD_READ_YES_VERBOSE) {
     std::cout << message << " [Auto => YES]" << std::endl;
     return (true);
   }
-  else if (oUSER_QUERY_ACTIONo.get() == KWD_READ_NO_VERBOSE) {
+  else if (oUSER_QUERY_ACTIONo == KWD_READ_NO_VERBOSE) {
     std::cout << message << " [Auto => NO]" << std::endl;
     return (false);
   }
-  else if (oUSER_QUERY_ACTIONo.get() == KWD_READ_ASK) {
+  else if (oUSER_QUERY_ACTIONo == KWD_READ_ASK) {
     { char* input = NULL;
       int start = 0;
 
@@ -3809,7 +3818,7 @@ boolean yesOrNoP(char* message) {
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oUSER_QUERY_ACTIONo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oUSER_QUERY_ACTIONo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -3820,21 +3829,21 @@ boolean yOrNP(char* message) {
   // if the input was `y' or `false' if the input was `n'.  Loop until either
   // `y' or `n' was entered.  If 'message' is non-`null' prompt with it before
   // the input is read.  See also special variable `*USER-QUERY-ACTION*'.
-  if (oUSER_QUERY_ACTIONo.get() == KWD_READ_YES) {
+  if (oUSER_QUERY_ACTIONo == KWD_READ_YES) {
     return (true);
   }
-  else if (oUSER_QUERY_ACTIONo.get() == KWD_READ_NO) {
+  else if (oUSER_QUERY_ACTIONo == KWD_READ_NO) {
     return (false);
   }
-  else if (oUSER_QUERY_ACTIONo.get() == KWD_READ_YES_VERBOSE) {
+  else if (oUSER_QUERY_ACTIONo == KWD_READ_YES_VERBOSE) {
     std::cout << message << " [Auto => Y]" << std::endl;
     return (true);
   }
-  else if (oUSER_QUERY_ACTIONo.get() == KWD_READ_NO_VERBOSE) {
+  else if (oUSER_QUERY_ACTIONo == KWD_READ_NO_VERBOSE) {
     std::cout << message << " [Auto => N]" << std::endl;
     return (false);
   }
-  else if (oUSER_QUERY_ACTIONo.get() == KWD_READ_ASK) {
+  else if (oUSER_QUERY_ACTIONo == KWD_READ_ASK) {
     { char* input = NULL;
       int start = 0;
 
@@ -3880,7 +3889,7 @@ boolean yOrNP(char* message) {
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oUSER_QUERY_ACTIONo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oUSER_QUERY_ACTIONo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -3891,19 +3900,29 @@ char* InputStream::streamToString() {
   { InputStream* from = this;
 
     { OutputStringStream* to = newOutputStringStream();
-      char* buffer = new (PointerFreeGC) char[oTOKENIZER_INITIAL_BUFFER_SIZEo];
-      int bytesRead = 0;
 
-      for (;;) {
-        bytesRead = byteArrayReadSequence(buffer, from, 0, oTOKENIZER_INITIAL_BUFFER_SIZEo);
-        if (bytesRead > 0) {
-          byteArrayWriteSequence(buffer, to->nativeStream, 0, bytesRead);
-        }
-        else {
-          break;
-        }
-      }
+      copyStreamToStream(from, to);
       return (to->theStringReader());
+    }
+  }
+}
+
+char* fileToString(char* file) {
+  // Read the content of `file' and return it as a string.
+  { InputFileStream* in = NULL;
+
+    try {
+      in = openInputFile(file, 0);
+      return (in->streamToString());
+    }
+catch (...) {
+      if (((boolean)(in))) {
+        in->free();
+      }
+      throw;
+    }
+    if (((boolean)(in))) {
+      in->free();
     }
   }
 }
@@ -3993,9 +4012,12 @@ void helpStartupRead2() {
     SYM_READ_STELLA_SETQ = ((Symbol*)(internRigidSymbolWrtModule("SETQ", NULL, 0)));
     SYM_READ_STELLA_LOOP = ((Symbol*)(internRigidSymbolWrtModule("LOOP", NULL, 0)));
     SYM_READ_STELLA_CHARACTER_CODE = ((Symbol*)(internRigidSymbolWrtModule("CHARACTER-CODE", NULL, 0)));
+    SYM_READ_STELLA_BYTE_ARRAY_NTH = ((Symbol*)(internRigidSymbolWrtModule("BYTE-ARRAY-NTH", NULL, 0)));
+    SYM_READ_STELLA_IF_OUTPUT_LANGUAGE = ((Symbol*)(internRigidSymbolWrtModule("IF-OUTPUT-LANGUAGE", NULL, 0)));
+    KWD_READ_COMMON_LISP = ((Keyword*)(internRigidSymbolWrtModule("COMMON-LISP", NULL, 2)));
+    SYM_READ_STELLA_g = ((Symbol*)(internRigidSymbolWrtModule(">", NULL, 0)));
     SYM_READ_STELLA_LOGOR = ((Symbol*)(internRigidSymbolWrtModule("LOGOR", NULL, 0)));
     SYM_READ_STELLA_SHIFT_LEFT = ((Symbol*)(internRigidSymbolWrtModule("SHIFT-LEFT", NULL, 0)));
-    SYM_READ_STELLA_BYTE_ARRAY_NTH = ((Symbol*)(internRigidSymbolWrtModule("BYTE-ARRAY-NTH", NULL, 0)));
     SYM_READ_STELLA_COND = ((Symbol*)(internRigidSymbolWrtModule("COND", NULL, 0)));
     SYM_READ_STELLA_e = ((Symbol*)(internRigidSymbolWrtModule("=", NULL, 0)));
     SYM_READ_STELLA_LOGAND = ((Symbol*)(internRigidSymbolWrtModule("LOGAND", NULL, 0)));
@@ -4032,14 +4054,14 @@ void helpStartupRead2() {
     KWD_READ_PAREN_COMMENT_BAR = ((Keyword*)(internRigidSymbolWrtModule("PAREN-COMMENT-BAR", NULL, 2)));
     KWD_READ_ANY = ((Keyword*)(internRigidSymbolWrtModule("ANY", NULL, 2)));
     KWD_READ_COMMA_SPLICE = ((Keyword*)(internRigidSymbolWrtModule("COMMA-SPLICE", NULL, 2)));
-    KWD_READ_SYMBOL_OR_SIGNED_NUMBER = ((Keyword*)(internRigidSymbolWrtModule("SYMBOL-OR-SIGNED-NUMBER", NULL, 2)));
-    KWD_READ_SYMBOL = ((Keyword*)(internRigidSymbolWrtModule("SYMBOL", NULL, 2)));
-    KWD_READ_SYMBOL_OR_NUMBER = ((Keyword*)(internRigidSymbolWrtModule("SYMBOL-OR-NUMBER", NULL, 2)));
   }
 }
 
 void helpStartupRead3() {
   {
+    KWD_READ_SYMBOL_OR_SIGNED_NUMBER = ((Keyword*)(internRigidSymbolWrtModule("SYMBOL-OR-SIGNED-NUMBER", NULL, 2)));
+    KWD_READ_SYMBOL = ((Keyword*)(internRigidSymbolWrtModule("SYMBOL", NULL, 2)));
+    KWD_READ_SYMBOL_OR_NUMBER = ((Keyword*)(internRigidSymbolWrtModule("SYMBOL-OR-NUMBER", NULL, 2)));
     KWD_READ_INTEGER = ((Keyword*)(internRigidSymbolWrtModule("INTEGER", NULL, 2)));
     KWD_READ_SYMBOL_OR_CL_SYMBOL = ((Keyword*)(internRigidSymbolWrtModule("SYMBOL-OR-CL-SYMBOL", NULL, 2)));
     KWD_READ_OPEN_FULLY_ESCAPED_SYMBOL = ((Keyword*)(internRigidSymbolWrtModule("OPEN-FULLY-ESCAPED-SYMBOL", NULL, 2)));
@@ -4097,14 +4119,14 @@ void helpStartupRead3() {
     SYM_READ_STELLA_GET_TOKEN_INTEGER = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-INTEGER", NULL, 0)));
     SYM_READ_STELLA_GET_TOKEN_INTEGER_INTERNAL = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-INTEGER-INTERNAL", NULL, 0)));
     SYM_READ_STELLA_GET_TOKEN_LONG_INTEGER = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-LONG-INTEGER", NULL, 0)));
-    SYM_READ_STELLA_GET_TOKEN_LONG_INTEGER_INTERNAL = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-LONG-INTEGER-INTERNAL", NULL, 0)));
-    SYM_READ_STELLA_GET_TOKEN_FLOAT = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-FLOAT", NULL, 0)));
-    SYM_READ_STELLA_GET_TOKEN_FLOAT_INTERNAL = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-FLOAT-INTERNAL", NULL, 0)));
   }
 }
 
 void helpStartupRead4() {
   {
+    SYM_READ_STELLA_GET_TOKEN_LONG_INTEGER_INTERNAL = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-LONG-INTEGER-INTERNAL", NULL, 0)));
+    SYM_READ_STELLA_GET_TOKEN_FLOAT = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-FLOAT", NULL, 0)));
+    SYM_READ_STELLA_GET_TOKEN_FLOAT_INTERNAL = ((Symbol*)(internRigidSymbolWrtModule("GET-TOKEN-FLOAT-INTERNAL", NULL, 0)));
     SGT_READ_STELLA_STELLA_TOKEN = ((Surrogate*)(internRigidSymbolWrtModule("STELLA-TOKEN", NULL, 1)));
     SYM_READ_STELLA_LOGICAL_TOKEN_TYPE = ((Symbol*)(internRigidSymbolWrtModule("LOGICAL-TOKEN-TYPE", NULL, 0)));
     SYM_READ_STELLA_MODULE = ((Symbol*)(internRigidSymbolWrtModule("MODULE", NULL, 0)));
@@ -4166,7 +4188,7 @@ void helpStartupRead5() {
     oSTELLA_TOKENIZER_WHITE_SPACE_STATEo = oSTELLA_TOKENIZER_TABLEo->stateNames->position(KWD_READ_WHITE_SPACE, 0);
     oREAD_LINE_TOKENIZER_TABLE_DEFINITIONo = listO(8, listO(13, KWD_READ_START, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_INITIAL_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_INITIAL_RETURN, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(4, KWD_READ_INITIAL_LINEFEED, KWD_READ_INCLUDE, KWD_READ_LINEFEED, NIL), listO(4, KWD_READ_INITIAL_RETURN, KWD_READ_INCLUDE, KWD_READ_RETURN, NIL), listO(13, KWD_READ_RETURN, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_INITIAL_RETURN, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(13, KWD_READ_LINEFEED, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_INITIAL_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_INITIAL_RETURN, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(13, KWD_READ_LINE, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_EOF, KWD_READ_EOF, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(4, KWD_READ_ERROR, KWD_READ_INCLUDE, KWD_READ_START, NIL), NIL);
     oREAD_LINE2_TOKENIZER_TABLE_DEFINITIONo = listO(7, listO(13, KWD_READ_START, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(13, KWD_READ_LINE, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_EOF, KWD_READ_EOF, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(13, KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_EOF, KWD_READ_EOF, cons(wrapCharacter('\n'), NIL), KWD_READ_RETURN_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(13, KWD_READ_LINEFEED, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(14, KWD_READ_RETURN_LINEFEED, SYM_READ_STELLA_o, KWD_READ_EOF, KWD_READ_EOF, SYM_READ_STELLA_o, cons(wrapCharacter('\n'), NIL), KWD_READ_LINEFEED, SYM_READ_STELLA_o, cons(wrapCharacter('\r'), NIL), KWD_READ_RETURN, SYM_READ_STELLA_o, KWD_READ_OTHERWISE, KWD_READ_LINE, NIL), listO(4, KWD_READ_ERROR, KWD_READ_INCLUDE, KWD_READ_START, NIL), NIL);
-    oUSER_QUERY_ACTIONo.set(KWD_READ_ASK);
+    oUSER_QUERY_ACTIONo = KWD_READ_ASK;
   }
 }
 
@@ -4271,7 +4293,7 @@ void helpStartupRead7() {
 void startupRead() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupRead1();
       helpStartupRead2();
@@ -4301,7 +4323,8 @@ void startupRead() {
       defineFunctionObject("UNREAD-CHARACTER", "(DEFUN UNREAD-CHARACTER ((CH CHARACTER) (INPUTSTREAM INPUT-STREAM)) :DOCUMENTATION \"Unread `ch' from `inputStream'.  Signal an error if `ch'\nwas not the last character read.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unreadCharacter)), NULL);
       defineFunctionObject("YES-OR-NO?", "(DEFUN (YES-OR-NO? BOOLEAN) ((MESSAGE STRING)) :DOCUMENTATION \"Read a line of input from STANDARD-INPUT and return `true'\nif the input was `yes' or `false' if the input was `no'.  Loop until either\n`yes' or `no' was entered.  If 'message' is non-`null' prompt with it before\nthe input is read.  See also special variable `*USER-QUERY-ACTION*'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&yesOrNoP)), NULL);
       defineFunctionObject("Y-OR-N?", "(DEFUN (Y-OR-N? BOOLEAN) ((MESSAGE STRING)) :DOCUMENTATION \"Read a line of input from STANDARD-INPUT and return `true'\nif the input was `y' or `false' if the input was `n'.  Loop until either\n`y' or `n' was entered.  If 'message' is non-`null' prompt with it before\nthe input is read.  See also special variable `*USER-QUERY-ACTION*'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&yOrNP)), NULL);
-      defineMethodObject("(DEFMETHOD (STREAM-TO-STRING STRING) ((FROM INPUT-STREAM)) :PUBLIC? TRUE :DOCUMENTATION \"Read all of the input from `stream' and return it as a string.\")", ((cpp_method_code)(&InputStream::streamToString)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (STREAM-TO-STRING STRING) ((FROM INPUT-STREAM)) :DOCUMENTATION \"Read all of the input from `stream' and return it as a string.\" :PUBLIC? TRUE)", ((cpp_method_code)(&InputStream::streamToString)), ((cpp_method_code)(NULL)));
+      defineFunctionObject("FILE-TO-STRING", "(DEFUN (FILE-TO-STRING STRING) ((FILE STRING)) :DOCUMENTATION \"Read the content of `file' and return it as a string.\" :PUBLIC? TRUE)", ((cpp_function_code)(&fileToString)), NULL);
       defineFunctionObject("STARTUP-READ", "(DEFUN STARTUP-READ () :PUBLIC? TRUE)", ((cpp_function_code)(&startupRead)), NULL);
       { MethodSlot* function = lookupFunction(SYM_READ_STELLA_STARTUP_READ);
 
@@ -4318,6 +4341,7 @@ void startupRead() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAX-TOKENIZER-CHARACTERS* INTEGER 256)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TOKENIZER-INITIAL-BUFFER-SIZE* INTEGER 2048)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *WITHTOKENIZERINPUTTYPE* TYPE NULL)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TRACE-GET-NEXT-TOKEN?* BOOLEAN FALSE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-TOKENIZER-TABLE-DEFINITION* CONS (BQUOTE ((:START :INCLUDE :DELIMITER :INCLUDE :ATOM) (:DELIMITER * \"(\" :OPEN-PAREN * \")\" :CLOSE-PAREN * \"\\\"\" (:OPEN-STRING :STRING) * \"'\" :SINGLE-QUOTE * \"`\" :BACK-QUOTE * \",\" :COMMA ! \";\" :COMMENT ! \"#\" :HASH ! (#\\  #\\Tab #\\Linefeed #\\Return) :WHITE-SPACE :EOF :EOF) (:WHITE-SPACE :INCLUDE :START) (:COMMENT (#\\Linefeed #\\Return) :START :EOF :EOF :OTHERWISE :COMMENT) (:PAREN-COMMENT \"\\\\\" :PAREN-COMMENT-ESCAPE \"|\" :PAREN-COMMENT-BAR :OTHERWISE :PAREN-COMMENT) (:PAREN-COMMENT-ESCAPE :ANY :PAREN-COMMENT) (:PAREN-COMMENT-BAR \"#\" :START \"\\\\\" :PAREN-COMMENT-ESCAPE \"|\" :PAREN-COMMENT-BAR :OTHERWISE :PAREN-COMMENT) (:OPEN-PAREN :INCLUDE :START) (:CLOSE-PAREN :INCLUDE :START) (:SINGLE-QUOTE :INCLUDE :START) (:BACK-QUOTE :INCLUDE :START) (:COMMA \".\" :COMMA-SPLICE :INCLUDE :DELIMITER * \"-+\" (:SYMBOL-OR-SIGNED-NUMBER :SYMBOL) * \"0123456789\" (:SYMBOL-OR-NUMBER :INTEGER) * \"cC\" (:SYMBOL-OR-CL-SYMBOL :SYMBOL) * \"|\" (:OPEN-FUL" "LY-ESCAPED-SYMBOL :FULLY-ESCAPED-SYMBOL) * \"\\\\\" :ESCAPED-SYMBOL-ESCAPE * \"/\" :QUALIFIED-NAME * \":\" (:OPEN-KEYWORD :KEYWORD) * \"@\" (:OPEN-SURROGATE :SURROGATE) * :OTHERWISE :SYMBOL) (:COMMA-SPLICE :INCLUDE :START) (:OPEN-STRING * \"\\\"\" :CLOSE-STRING \"\\\\\" :STRING-ESCAPE :OTHERWISE :STRING) (:STRING * \"\\\"\" :CLOSE-STRING \"\\\\\" :STRING-ESCAPE :OTHERWISE :STRING) (:CLOSE-STRING :INCLUDE :START) (:STRING-ESCAPE :ANY :ESCAPED-STRING) (:ESCAPED-STRING * \"\\\"\" :CLOSE-STRING \"\\\\\" :STRING-ESCAPE :OTHERWISE :ESCAPED-STRING) (:HASH \"\\\\\" :CHARACTER-CONSTANT \"|\" :PAREN-COMMENT) (:CHARACTER-CONSTANT * :ANY :CHARACTER) (:CHARACTER :INCLUDE :DELIMITER :OTHERWISE :CHARACTER) (:ATOM * \"-+\" (:SYMBOL-OR-SIGNED-NUMBER :SYMBOL) * \"0123456789\" (:SYMBOL-OR-NUMBER :INTEGER) * \".\" (:SYMBOL-OR-MANTISSA :SYMBOL) * \"cC\" (:SYMBOL-OR-CL-SYMBOL :SYMBOL) * \"|\" (:OPEN-FULLY-ESCAPED-SYMBOL :FULLY-ESCAPED-SYMBOL) * \"\\\\\" :ESCAPED-SYMBOL-ESCAPE * \"/\" :QUALIFIED-NAME * \":\" (:OPEN-KEYWORD :KEYWOR" "D) * \"@\" (:OPEN-SURROGATE :SURROGATE) * :OTHERWISE :SYMBOL) (:SYMBOL-OR-SIGNED-NUMBER :INCLUDE :DELIMITER \"/\" :QUALIFIED-NAME \"\\\\\" :ESCAPED-SYMBOL-ESCAPE \"0123456789\" (:SYMBOL-OR-NUMBER :INTEGER) \".\" (:SYMBOL-OR-MANTISSA :SYMBOL) \"|\" :ERROR :OTHERWISE :SYMBOL) (:SYMBOL-OR-NUMBER :INCLUDE :DELIMITER \"/\" :QUALIFIED-NAME \"\\\\\" :ESCAPED-SYMBOL-ESCAPE \"0123456789\" (:SYMBOL-OR-NUMBER :INTEGER) \".\" (:SYMBOL-OR-MANTISSA2 :FLOAT) \"eE\" (:SYMBOL-OR-EXPONENT-DELIMITER :SYMBOL) \"|\" :ERROR :OTHERWISE :SYMBOL) (:SYMBOL-OR-MANTISSA :INCLUDE :DELIMITER \"/\" :QUALIFIED-NAME \"\\\\\" :ESCAPED-SYMBOL-ESCAPE \"0123456789\" (:SYMBOL-OR-MANTISSA2 :FLOAT) \"eE\" (:SYMBOL-OR-EXPONENT-DELIMITER :SYMBOL) \"|\" :ERROR :OTHERWISE :SYMBOL) (:SYMBOL-OR-MANTISSA2 :INCLUDE :SYMBOL-OR-MANTISSA) (:SYMBOL-OR-EXPONENT-DELIMITER :INCLUDE :DELIMITER \"/\" :QUALIFIED-NAME \"\\\\\" :ESCAPED-SYMBOL-ESCAPE \"+-\" (:SYMBOL-OR-EXPONENT :SYMBOL) \"0123456789\" (:SYMBOL-OR-EXPONENT2 :FLOAT) \"|\" :ERROR :OTHERWISE :SYMBOL) (:S" "YMBOL-OR-EXPONENT :INCLUDE :DELIMITER \"/\" :QUALIFIED-NAME \"\\\\\" :ESCAPED-SYMBOL-ESCAPE \"0123456789\" (:SYMBOL-OR-EXPONENT2 :FLOAT) \"|\" :ERROR :OTHERWISE :SYMBOL) (:SYMBOL-OR-EXPONENT2 :INCLUDE :SYMBOL-OR-EXPONENT) (:SYMBOL-OR-CL-SYMBOL :INCLUDE :DELIMITER \"/\" :QUALIFIED-NAME \"\\\\\" :ESCAPED-SYMBOL-ESCAPE \"lL\" (:SYMBOL-OR-CL-SYMBOL2 :SYMBOL) \"|\" :ERROR :OTHERWISE :SYMBOL) (:SYMBOL-OR-CL-SYMBOL2 :INCLUDE :DELIMITER \"/\" :QUALIFIED-NAME \"\\\\\" :ESCAPED-SYMBOL-ESCAPE \":\" (:SYMBOL-OR-CL-SYMBOL3 :SYMBOL) \"|\" :ERROR :OTHERWISE :SYMBOL) (:SYMBOL-OR-CL-SYMBOL3 :INCLUDE :DELIMITER \"|\" :ERROR :OTHERWISE :CL-SYMBOL) (:CL-SYMBOL :INCLUDE :DELIMITER \"|\" :ERROR :OTHERWISE :CL-SYMBOL) (:ESCAPED-SYMBOL-ESCAPE :ANY :ESCAPED-SYMBOL) (:ESCAPED-SYMBOL :INCLUDE :DELIMITER \"/|\" :ERROR \"\\\\\" :ESCAPED-SYMBOL-ESCAPE :OTHERWISE :ESCAPED-SYMBOL) (:OPEN-FULLY-ESCAPED-SYMBOL * \"|\" :CLOSE-FULLY-ESCAPED-NAME \"\\\\\" :FULLY-ESCAPED-SYMBOL-ESCAPE :OTHERWISE :FULLY-ESCAPED-SYMBOL) (:FULLY-ESCAPED-SYMBOL-ESCA" "PE :ANY :FULLY-ESCAPED-SYMBOL) (:FULLY-ESCAPED-SYMBOL * \"|\" :CLOSE-FULLY-ESCAPED-NAME \"\\\\\" :FULLY-ESCAPED-SYMBOL-ESCAPE :OTHERWISE :FULLY-ESCAPED-SYMBOL) (:CLOSE-FULLY-ESCAPED-NAME :INCLUDE :START) (:SYMBOL :INCLUDE :DELIMITER \"/\" :QUALIFIED-NAME \"\\\\\" :ESCAPED-SYMBOL-ESCAPE \"|\" :ERROR :OTHERWISE :SYMBOL) (:OPEN-KEYWORD :INCLUDE :DELIMITER \"|\" :FULLY-ESCAPED-KEYWORD \"\\\\\" :ESCAPED-KEYWORD-ESCAPE :OTHERWISE :KEYWORD) (:KEYWORD :INCLUDE :DELIMITER \"\\\\\" :ESCAPED-KEYWORD-ESCAPE \"|\" :ERROR :OTHERWISE :KEYWORD) (:ESCAPED-KEYWORD-ESCAPE :ANY :ESCAPED-KEYWORD) (:ESCAPED-KEYWORD :INCLUDE :DELIMITER \"\\\\\" :ESCAPED-KEYWORD-ESCAPE \"|\" :ERROR :OTHERWISE :ESCAPED-KEYWORD) (:FULLY-ESCAPED-KEYWORD * \"|\" :CLOSE-FULLY-ESCAPED-NAME \"\\\\\" :FULLY-ESCAPED-KEYWORD-ESCAPE :OTHERWISE :FULLY-ESCAPED-KEYWORD) (:FULLY-ESCAPED-KEYWORD-ESCAPE :ANY :FULLY-ESCAPED-KEYWORD) (:OPEN-SURROGATE :INCLUDE :DELIMITER \"|\" :FULLY-ESCAPED-SURROGATE \"\\\\\" :ESCAPED-SURROGATE-ESCAPE :OTHERWISE :SURROGATE) (:SURROGA" "TE :INCLUDE :DELIMITER \"/|\" :ERROR \"\\\\\" :ESCAPED-SURROGATE-ESCAPE :OTHERWISE :SURROGATE) (:ESCAPED-SURROGATE :INCLUDE :DELIMITER \"/|\" :ERROR \"\\\\\" :ESCAPED-SURROGATE-ESCAPE :OTHERWISE :ESCAPED-SURROGATE) (:ESCAPED-SURROGATE-ESCAPE :ANY :ESCAPED-SURROGATE) (:FULLY-ESCAPED-SURROGATE * \"|\" :CLOSE-FULLY-ESCAPED-NAME \"\\\\\" :FULLY-ESCAPED-SURROGATE-ESCAPE :OTHERWISE :FULLY-ESCAPED-SURROGATE) (:FULLY-ESCAPED-SURROGATE-ESCAPE :ANY :FULLY-ESCAPED-SURROGATE) (:QUALIFIED-NAME :INCLUDE :DELIMITER \"@\" :QUALIFIED-SURROGATE \":\" :ERROR \"\\\\\" :QUALIFIED-ESCAPED-SYMBOL-ESCAPE \"|\" :QUALIFIED-FULLY-ESCAPED-SYMBOL \"/\" :QUALIFIED-NAME :OTHERWISE :QUALIFIED-SYMBOL) (:QUALIFIED-SYMBOL :INCLUDE :DELIMITER \"/\" :QUALIFIED-NAME \"\\\\\" :QUALIFIED-ESCAPED-SYMBOL-ESCAPE \"|\" :ERROR :OTHERWISE :QUALIFIED-SYMBOL) (:QUALIFIED-SURROGATE :INCLUDE :DELIMITER \"/\" :ERROR \"\\\\\" :QUALIFIED-ESCAPED-SURROGATE-ESCAPE \"|\" :QUALIFIED-FULLY-ESCAPED-SURROGATE :OTHERWISE :QUALIFIED-SURROGATE) (:QUALIFIED-ESCAPED-SYMBO" "L :INCLUDE :DELIMITER \"/|\" :ERROR \"\\\\\" :QUALIFIED-ESCAPED-SYMBOL-ESCAPE :OTHERWISE :QUALIFIED-ESCAPED-SYMBOL) (:QUALIFIED-ESCAPED-SYMBOL-ESCAPE :ANY :QUALIFIED-ESCAPED-SYMBOL) (:QUALIFIED-ESCAPED-SURROGATE :INCLUDE :DELIMITER \"/|\" :ERROR \"\\\\\" :QUALIFIED-ESCAPED-SURROGATE-ESCAPE :OTHERWISE :QUALIFIED-ESCAPED-SURROGATE) (:QUALIFIED-ESCAPED-SURROGATE-ESCAPE :ANY :QUALIFIED-ESCAPED-SURROGATE) (:QUALIFIED-FULLY-ESCAPED-SYMBOL * \"|\" :CLOSE-FULLY-ESCAPED-NAME \"\\\\\" :QUALIFIED-FULLY-ESCAPED-SYMBOL-ESCAPE :OTHERWISE :QUALIFIED-FULLY-ESCAPED-SYMBOL) (:QUALIFIED-FULLY-ESCAPED-SYMBOL-ESCAPE :ANY :QUALIFIED-FULLY-ESCAPED-SYMBOL) (:QUALIFIED-FULLY-ESCAPED-SURROGATE * \"|\" :CLOSE-FULLY-ESCAPED-NAME \"\\\\\" :QUALIFIED-FULLY-ESCAPED-SURROGATE-ESCAPE :OTHERWISE :QUALIFIED-FULLY-ESCAPED-SURROGATE) (:QUALIFIED-FULLY-ESCAPED-SURROGATE-ESCAPE :ANY :QUALIFIED-FULLY-ESCAPED-SURROGATE) (:ERROR :INCLUDE :START))))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-TOKENIZER-TABLE* TOKENIZER-TABLE NULL)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-LOGICAL-STATE-NAMES* (VECTOR OF KEYWORD) NULL)");
@@ -4492,11 +4516,17 @@ Symbol* SYM_READ_STELLA_LOOP = NULL;
 
 Symbol* SYM_READ_STELLA_CHARACTER_CODE = NULL;
 
+Symbol* SYM_READ_STELLA_BYTE_ARRAY_NTH = NULL;
+
+Symbol* SYM_READ_STELLA_IF_OUTPUT_LANGUAGE = NULL;
+
+Keyword* KWD_READ_COMMON_LISP = NULL;
+
+Symbol* SYM_READ_STELLA_g = NULL;
+
 Symbol* SYM_READ_STELLA_LOGOR = NULL;
 
 Symbol* SYM_READ_STELLA_SHIFT_LEFT = NULL;
-
-Symbol* SYM_READ_STELLA_BYTE_ARRAY_NTH = NULL;
 
 Symbol* SYM_READ_STELLA_COND = NULL;
 

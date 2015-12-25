@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -61,7 +61,7 @@ void printStellaFeatures() {
   // Print the list of enabled and disabled STELLA features.
   std::cout << "Enabled STELLA features:" << std::endl;
   { Keyword* feature = NULL;
-    Cons* iter000 = oCURRENT_STELLA_FEATURESo.get()->theConsList;
+    Cons* iter000 = oCURRENT_STELLA_FEATURESo->theConsList;
 
     for (feature, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       feature = ((Keyword*)(iter000->value));
@@ -74,7 +74,7 @@ void printStellaFeatures() {
 
     for (feature, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
       feature = ((Keyword*)(iter001->value));
-      if (!oCURRENT_STELLA_FEATURESo.get()->memberP(feature)) {
+      if (!oCURRENT_STELLA_FEATURESo->memberP(feature)) {
         std::cout << "  :" << stringDowncase(feature->symbolName) << std::endl;
       }
     }
@@ -97,7 +97,7 @@ void setStellaFeature(Cons* features) {
       else if (f == KWD_WALK_USE_HARDCODED_SYMBOLS) {
       }
       else if (f == KWD_WALK_USE_COMMON_LISP_STRUCTS) {
-        oCURRENT_STELLA_FEATURESo.get()->remove(KWD_WALK_USE_COMMON_LISP_VECTOR_STRUCTS);
+        oCURRENT_STELLA_FEATURESo->remove(KWD_WALK_USE_COMMON_LISP_VECTOR_STRUCTS);
       }
       else if (f == KWD_WALK_USE_COMMON_LISP_CONSES) {
       }
@@ -106,6 +106,8 @@ void setStellaFeature(Cons* features) {
       else if (f == KWD_WALK_MINIMIZE_JAVA_PREFIXES) {
       }
       else if (f == KWD_WALK_TRANSLATE_WITH_COPYRIGHT_HEADER) {
+      }
+      else if (f == KWD_WALK_SUPPORT_UNEXEC) {
       }
       else {
         if (oAVAILABLE_STELLA_FEATURESo->memberP(f)) {
@@ -120,7 +122,7 @@ void setStellaFeature(Cons* features) {
         }
         continue;
       }
-      oCURRENT_STELLA_FEATURESo.get()->insertNew(f);
+      oCURRENT_STELLA_FEATURESo->insertNew(f);
     }
   }
 }
@@ -154,6 +156,8 @@ void unsetStellaFeature(Cons* features) {
       }
       else if (f == KWD_WALK_TRANSLATE_WITH_COPYRIGHT_HEADER) {
       }
+      else if (f == KWD_WALK_SUPPORT_UNEXEC) {
+      }
       else {
         if (oAVAILABLE_STELLA_FEATURESo->memberP(f)) {
           { OutputStringStream* stream000 = newOutputStringStream();
@@ -167,7 +171,7 @@ void unsetStellaFeature(Cons* features) {
         }
         continue;
       }
-      oCURRENT_STELLA_FEATURESo.get()->remove(f);
+      oCURRENT_STELLA_FEATURESo->remove(f);
     }
   }
 }
@@ -179,7 +183,7 @@ void unsetStellaFeatureEvaluatorWrapper(Cons* arguments) {
 void resetStellaFeatures() {
   // Reset STELLA features to their default settings.
   { Keyword* f = NULL;
-    Cons* iter000 = oCURRENT_STELLA_FEATURESo.get()->theConsList;
+    Cons* iter000 = oCURRENT_STELLA_FEATURESo->theConsList;
 
     for (f, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       f = ((Keyword*)(iter000->value));
@@ -193,7 +197,7 @@ void resetStellaFeatures() {
 
     for (f, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
       f = ((Keyword*)(iter001->value));
-      if (!oCURRENT_STELLA_FEATURESo.get()->memberP(f)) {
+      if (!oCURRENT_STELLA_FEATURESo->memberP(f)) {
         setStellaFeature(consList(1, f));
       }
     }
@@ -202,12 +206,12 @@ void resetStellaFeatures() {
 
 boolean enabledStellaFeatureP(Keyword* feature) {
   // Return true if the STELLA `feature' is currently enabled.
-  return (oCURRENT_STELLA_FEATURESo.get()->membP(feature));
+  return (oCURRENT_STELLA_FEATURESo->membP(feature));
 }
 
 boolean disabledStellaFeatureP(Keyword* feature) {
   // Return true if the STELLA `feature' is currently disabled.
-  return (!oCURRENT_STELLA_FEATURESo.get()->membP(feature));
+  return (!oCURRENT_STELLA_FEATURESo->membP(feature));
 }
 
 List* oTRACED_KEYWORDSo = NULL;
@@ -277,7 +281,7 @@ Object* traceIf(Object* keyword, Cons* body) {
         test = listO(4, SYM_WALK_STELLA_MEMBp, SYM_WALK_STELLA_oTRACED_KEYWORDSo, keyword, NIL);
       }
       return (listO(4, SYM_WALK_STELLA_WHEN, listO(4, SYM_WALK_STELLA_AND, listO(3, SYM_WALK_STELLA_DEFINEDp, SYM_WALK_STELLA_oTRACED_KEYWORDSo, NIL), test, NIL), cons(SYM_WALK_STELLA_PRINT, copyConsList(elements)->concatenate(NIL, 0)), ((((elements->last() == SYM_WALK_STELLA_EOL) ||
-          (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP)) ? NIL : cons(listO(3, SYM_WALK_STELLA_FLUSH_OUTPUT, SYM_WALK_STELLA_STANDARD_OUTPUT, NIL), NIL)))->concatenate(NIL, 0)));
+          (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP)) ? NIL : cons(listO(3, SYM_WALK_STELLA_FLUSH_OUTPUT, SYM_WALK_STELLA_STANDARD_OUTPUT, NIL), NIL)))->concatenate(NIL, 0)));
     }
   }
 }
@@ -392,48 +396,53 @@ void setOptimizationLevels(int safety, int debug, int speed, int space) {
   if ((safety != NULL_INTEGER) &&
       ((safety >= 0) &&
        (safety <= 3))) {
-    oSAFETYo.set(safety);
+    oSAFETYo = safety;
   }
   if ((debug != NULL_INTEGER) &&
       ((debug >= 0) &&
        (debug <= 3))) {
-    oDEBUGLEVELo.set(debug);
+    oDEBUGLEVELo = debug;
   }
   if ((speed != NULL_INTEGER) &&
       ((speed >= 0) &&
        (speed <= 3))) {
-    oOPTIMIZESPEEDLEVELo.set(speed);
+    oOPTIMIZESPEEDLEVELo = speed;
   }
   if ((space != NULL_INTEGER) &&
       ((space >= 0) &&
        (space <= 3))) {
-    oOPTIMIZESPACELEVELo.set(space);
+    oOPTIMIZESPACELEVELo = space;
   }
 }
 
 boolean preserveTailMergeOptimizabilityP() {
-  return ((oOPTIMIZESPEEDLEVELo.get() >= 3) &&
-      (oDEBUGLEVELo.get() <= 0));
+  return ((oOPTIMIZESPEEDLEVELo >= 3) &&
+      (oDEBUGLEVELo <= 0));
 }
 
 boolean methodCallInliningEnabledP() {
-  return ((oOPTIMIZESPEEDLEVELo.get() >= 3) &&
-      (oDEBUGLEVELo.get() <= 1));
+  return ((oOPTIMIZESPEEDLEVELo >= 3) &&
+      (oDEBUGLEVELo <= 1));
 }
 
 boolean optimizeBooleanTestsP() {
-  return ((oOPTIMIZESPEEDLEVELo.get() >= 2) &&
-      (oDEBUGLEVELo.get() <= 2));
+  return ((oOPTIMIZESPEEDLEVELo >= 2) &&
+      (oDEBUGLEVELo <= 2));
 }
 
 boolean checkForIllegalReturnP() {
-  return ((oSAFETYo.get() >= 3) &&
-      ((!(oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA)) &&
+  return ((oSAFETYo >= 3) &&
+      ((!(oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA)) &&
        (!preserveTailMergeOptimizabilityP())));
 }
 
+boolean supportUnexecP() {
+  return (oCURRENT_STELLA_FEATURESo->membP(KWD_WALK_SUPPORT_UNEXEC) &&
+      translateToCppP());
+}
+
 char* nameQuotedTree(Cons* tree) {
-  { Cons* nametree = cons(tree, cons(wrapString(oMODULEo.get()->moduleFullName), NIL));
+  { Cons* nametree = cons(tree, cons(wrapString(oMODULEo->moduleFullName), NIL));
     char* name = stringify(nametree);
 
     return (name);
@@ -626,8 +635,8 @@ DEFINE_STELLA_SPECIAL(oTRANSLATIONVERBOSITYLEVELo, int , 1);
 DEFINE_STELLA_SPECIAL(oUSEHARDCODEDSYMBOLSpo, boolean , false);
 
 boolean useHardcodedSymbolsP() {
-  return (oCURRENT_STELLA_FEATURESo.get()->memberP(KWD_WALK_USE_HARDCODED_SYMBOLS) ||
-      oUSEHARDCODEDSYMBOLSpo.get());
+  return (oCURRENT_STELLA_FEATURESo->memberP(KWD_WALK_USE_HARDCODED_SYMBOLS) ||
+      oUSEHARDCODEDSYMBOLSpo);
 }
 
 // Specifies the current translator output language; either
@@ -636,61 +645,61 @@ boolean useHardcodedSymbolsP() {
 DEFINE_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword* , NULL);
 
 Keyword* translatorOutputLanguage() {
-  return (oTRANSLATOROUTPUTLANGUAGEo.get());
+  return (oTRANSLATOROUTPUTLANGUAGEo);
 }
 
 char* translatorOutputLanguageName() {
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
     return ("Common Lisp");
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) {
     return ("C++");
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) {
     return ("Java");
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE) {
     return ("standalone-C++");
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_IDL) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_IDL) {
     return ("IDL");
   }
   else {
-    return (oTRANSLATOROUTPUTLANGUAGEo.get()->symbolName);
+    return (oTRANSLATOROUTPUTLANGUAGEo->symbolName);
   }
 }
 
 Keyword* setTranslatorOutputLanguage(Keyword* newLanguage) {
   // Set output language to `new-language'.  Return previous language.
-  { Keyword* oldlanguage = oTRANSLATOROUTPUTLANGUAGEo.get();
+  { Keyword* oldlanguage = oTRANSLATOROUTPUTLANGUAGEo;
 
     if (!(listO(6, KWD_WALK_CPP, KWD_WALK_CPP_STANDALONE, KWD_WALK_COMMON_LISP, KWD_WALK_JAVA, KWD_WALK_IDL, NIL)->memberP(newLanguage))) {
       *(STANDARD_WARNING->nativeStream) << "Warning: " << "`" << newLanguage << "'" << " is not a legal translation language" << std::endl;
     }
-    oTRANSLATOROUTPUTLANGUAGEo.set(newLanguage);
+    oTRANSLATOROUTPUTLANGUAGEo = newLanguage;
     return (oldlanguage);
   }
 }
 
 boolean translateToCommonLispP() {
   // Return `true' if current output language is Common-Lisp.
-  return (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP);
+  return (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP);
 }
 
 boolean translateToCppP() {
   // Return `true' if current output language is C++
-  return (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP);
+  return (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP);
 }
 
 boolean translateToJavaP() {
   // Return `true' if current output language is Java
-  return (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA);
+  return (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA);
 }
 
 boolean translateToSingleInheritanceLanguageP() {
-  if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) ||
-      ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) ||
-       (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA))) {
+  if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) ||
+      ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) ||
+       (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA))) {
     return (true);
   }
   else {
@@ -701,15 +710,15 @@ boolean translateToSingleInheritanceLanguageP() {
 Keyword* toggleOutputLanguage() {
   // Switch between Common Lisp and C++ as output languages.
   if (translateToCommonLispP()) {
-    oTRANSLATOROUTPUTLANGUAGEo.set(KWD_WALK_CPP);
+    oTRANSLATOROUTPUTLANGUAGEo = KWD_WALK_CPP;
     return (KWD_WALK_CPP);
   }
   else if (translateToCppP()) {
-    oTRANSLATOROUTPUTLANGUAGEo.set(KWD_WALK_JAVA);
+    oTRANSLATOROUTPUTLANGUAGEo = KWD_WALK_JAVA;
     return (KWD_WALK_JAVA);
   }
   else {
-    oTRANSLATOROUTPUTLANGUAGEo.set(KWD_WALK_COMMON_LISP);
+    oTRANSLATOROUTPUTLANGUAGEo = KWD_WALK_COMMON_LISP;
     return (KWD_WALK_COMMON_LISP);
   }
 }
@@ -792,7 +801,7 @@ void walkTopLevelTree(Cons* tree, boolean createannotationP) {
 
       if (createannotationP) {
         annotation = createAnnotation(tree);
-        if (oTRANSLATIONVERBOSITYLEVELo.get() >= 2) {
+        if (oTRANSLATIONVERBOSITYLEVELo >= 2) {
           std::cout << "Defining " << "`" << annotation << "'" << std::endl;
         }
       }
@@ -870,9 +879,9 @@ void walkTopLevelTree(Cons* tree, boolean createannotationP) {
           return;
         }
       }
-      if (((boolean)(oCURRENTTRANSLATIONUNITo.get()))) {
-        oTRANSLATIONUNITSo.get()->push(oCURRENTTRANSLATIONUNITo.get());
-        oCURRENTTRANSLATIONUNITo.get()->annotation = annotation;
+      if (((boolean)(oCURRENTTRANSLATIONUNITo))) {
+        oTRANSLATIONUNITSo->push(oCURRENTTRANSLATIONUNITo);
+        oCURRENTTRANSLATIONUNITo->annotation = annotation;
       }
     }
   }
@@ -949,7 +958,7 @@ TranslationUnit* helpWalkAuxiliaryTree(Cons* tree, boolean finalizeP) {
   if (finalizeP) {
     finalizeClassesAndSlots();
   }
-  { TranslationUnit* unit = ((TranslationUnit*)(oTRANSLATIONUNITSo.get()->pop()));
+  { TranslationUnit* unit = ((TranslationUnit*)(oTRANSLATIONUNITSo->pop()));
 
     unit->auxiliaryP = true;
     walkPhaseOneUnit(unit);
@@ -958,15 +967,15 @@ TranslationUnit* helpWalkAuxiliaryTree(Cons* tree, boolean finalizeP) {
 }
 
 void walkAllPhaseOneUnits() {
-  { List* phaseoneunits = oTRANSLATIONUNITSo.get();
+  { List* phaseoneunits = oTRANSLATIONUNITSo;
 
-    oTRANSLATIONUNITSo.set(newList());
+    oTRANSLATIONUNITSo = newList();
     { TranslationUnit* unit = NULL;
       Cons* iter000 = phaseoneunits->theConsList;
 
       for (unit, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         unit = ((TranslationUnit*)(iter000->value));
-        if ((oTRANSLATIONVERBOSITYLEVELo.get() >= 2) &&
+        if ((oTRANSLATIONVERBOSITYLEVELo >= 2) &&
             (unit->annotation != NULL)) {
           std::cout << "Walking " << "`" << unit->annotation << "'" << std::endl;
         }
@@ -976,42 +985,42 @@ void walkAllPhaseOneUnits() {
     createFinalizationUnits();
     createStartupFunctionUnits();
     phaseoneunits->clear();
-    oTRANSLATIONUNITSo.get()->reverse();
+    oTRANSLATIONUNITSo->reverse();
   }
 }
 
 void translateAllUnits() {
   { TranslationUnit* unit = NULL;
-    Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+    Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
 
     for (unit, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       unit = ((TranslationUnit*)(iter000->value));
       { 
         BIND_STELLA_SPECIAL(oCURRENTTRANSLATIONUNITo, TranslationUnit*, unit);
-        if ((oTRANSLATIONVERBOSITYLEVELo.get() >= 2) &&
+        if ((oTRANSLATIONVERBOSITYLEVELo >= 2) &&
             (unit->annotation != NULL)) {
           std::cout << "Translating " << "`" << unit->annotation << "'" << std::endl;
         }
-        if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+        if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
           unit->translation = clTranslateUnit(unit);
         }
-        else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_IDL) {
+        else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_IDL) {
           unit->translation = idlTranslateUnit(unit);
         }
-        else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) ||
-            (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA_STANDALONE)) {
+        else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) ||
+            (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA_STANDALONE)) {
           if (!((boolean)(unit->translation))) {
             unit->translation = javaTranslateUnit(unit);
           }
         }
-        else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) ||
-            (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE)) {
+        else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) ||
+            (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE)) {
           unit->translation = cppTranslateUnit(unit);
         }
         else {
           { OutputStringStream* stream000 = newOutputStringStream();
 
-            *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+            *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
             throw *newStellaException(stream000->theStringReader());
           }
         }
@@ -1031,7 +1040,7 @@ boolean unitIncludedInOtherUnitsP(TranslationUnit* unit) {
         method = ((MethodSlot*)(unit->theObject));
         if (((BooleanWrapper*)(dynamicSlotValue(method->dynamicSlots, SYM_WALK_STELLA_METHOD_CONSTRUCTORp, FALSE_WRAPPER)))->wrapperValue) {
           { TranslationUnit* otherUnit = NULL;
-            Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+            Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
 
             for (otherUnit, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
               otherUnit = ((TranslationUnit*)(iter000->value));
@@ -1045,7 +1054,7 @@ boolean unitIncludedInOtherUnitsP(TranslationUnit* unit) {
         }
         else {
           { TranslationUnit* otherUnit = NULL;
-            Cons* iter001 = oTRANSLATIONUNITSo.get()->theConsList;
+            Cons* iter001 = oTRANSLATIONUNITSo->theConsList;
 
             for (otherUnit, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
               otherUnit = ((TranslationUnit*)(iter001->value));
@@ -1065,12 +1074,12 @@ boolean unitIncludedInOtherUnitsP(TranslationUnit* unit) {
 Cons* combineTranslatedTrees() {
   { Cons* otree = NIL;
 
-    if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) ||
-        ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) ||
-         ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE) ||
-          (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_IDL)))) {
+    if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) ||
+        ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) ||
+         ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE) ||
+          (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_IDL)))) {
       { TranslationUnit* unit = NULL;
-        Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+        Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
         Cons* collect000 = NULL;
 
         for  (unit, iter000, collect000; 
@@ -1097,10 +1106,10 @@ Cons* combineTranslatedTrees() {
         }
       }
     }
-    else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) ||
-        (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA_STANDALONE)) {
+    else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) ||
+        (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA_STANDALONE)) {
       { TranslationUnit* unit = NULL;
-        Cons* iter001 = oTRANSLATIONUNITSo.get()->theConsList;
+        Cons* iter001 = oTRANSLATIONUNITSo->theConsList;
         Cons* collect001 = NULL;
 
         for  (unit, iter001, collect001; 
@@ -1132,22 +1141,22 @@ Cons* combineTranslatedTrees() {
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
 
-        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
         throw *newStellaException(stream000->theStringReader());
       }
     }
-    if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+    if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
       otree = cons(internCommonLispSymbol("PROGN"), otree->concatenate(NIL, 0));
     }
-    else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) ||
-        ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE) ||
-         ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) ||
-          (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_IDL)))) {
+    else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) ||
+        ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE) ||
+         ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) ||
+          (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_IDL)))) {
     }
     else {
       { OutputStringStream* stream001 = newOutputStringStream();
 
-        *(stream001->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+        *(stream001->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
         throw *newStellaException(stream001->theStringReader());
       }
     }
@@ -1156,23 +1165,23 @@ Cons* combineTranslatedTrees() {
 }
 
 Object* translateWalkedTree(Object* codetree) {
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
     return (clTranslateATree(codetree));
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_IDL) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_IDL) {
     return (idlTranslateATree(codetree));
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) {
     return (javaTranslateATree(codetree));
   }
-  else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) ||
-      (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE)) {
+  else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) ||
+      (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE)) {
     return (cppTranslateATree(codetree));
   }
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -1182,7 +1191,7 @@ Object* incrementallyTranslate(Object* tree) {
   // Translate a single Stella expression `tree' and return
   // the result.  For C++ and Java print the translation to standard output and
   // return NIL instead.
-  { boolean toplevelinvocationP = !((boolean)(oTRANSLATIONUNITSo.get()));
+  { boolean toplevelinvocationP = !((boolean)(oTRANSLATIONUNITSo));
     Object* ocode = NULL;
     boolean declarationP = consP(tree) &&
         declarationTreeP(((Cons*)(tree)));
@@ -1195,23 +1204,23 @@ Object* incrementallyTranslate(Object* tree) {
       BIND_STELLA_SPECIAL(oTRANSLATIONWARNINGSo, int, 0);
       BIND_STELLA_SPECIAL(oTRANSLATIONNOTESo, int, 0);
       if (declarationP) {
-        oTRANSLATIONPHASEo.set(KWD_WALK_DEFINE);
+        oTRANSLATIONPHASEo = KWD_WALK_DEFINE;
         walkTopLevelTree(((Cons*)(tree)), false);
         if (translationErrorsP()) {
           summarizeTranslationErrors();
           return (NIL);
         }
-        oTRANSLATIONUNITSo.get()->reverse();
-        oTRANSLATIONPHASEo.set(KWD_WALK_FINALIZE);
+        oTRANSLATIONUNITSo->reverse();
+        oTRANSLATIONPHASEo = KWD_WALK_FINALIZE;
         finalizeClassesAndSlots();
-        oTRANSLATIONPHASEo.set(KWD_WALK_WALK);
+        oTRANSLATIONPHASEo = KWD_WALK_WALK;
         if (!(useHardcodedSymbolsP())) {
           clearSymbolRegistry();
         }
         walkAllPhaseOneUnits();
       }
       else {
-        oTRANSLATIONPHASEo.set(KWD_WALK_WALK);
+        oTRANSLATIONPHASEo = KWD_WALK_WALK;
         { 
           BIND_STELLA_SPECIAL(oUSEHARDCODEDSYMBOLSpo, boolean, true);
           ocode = walkTopLevelExpression(tree);
@@ -1221,7 +1230,7 @@ Object* incrementallyTranslate(Object* tree) {
         summarizeTranslationErrors();
         return (NIL);
       }
-      oTRANSLATIONPHASEo.set(KWD_WALK_TRANSLATE);
+      oTRANSLATIONPHASEo = KWD_WALK_TRANSLATE;
       if (declarationP) {
         translateAllUnits();
         ocode = combineTranslatedTrees();
@@ -1236,37 +1245,37 @@ Object* incrementallyTranslate(Object* tree) {
         summarizeTranslationErrors();
         return (NIL);
       }
-      if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+      if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
       }
-      else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_IDL) {
+      else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_IDL) {
         idlOutputParseTree(((Cons*)(ocode)));
         ocode = NIL;
       }
-      else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) {
+      else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) {
         javaOutputParseTree(((Cons*)(ocode)));
         ocode = NIL;
       }
-      else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) ||
-          (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE)) {
+      else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) ||
+          (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE)) {
         cppOutputParseTree(((Cons*)(ocode)));
         ocode = NIL;
       }
       else {
         { OutputStringStream* stream000 = newOutputStringStream();
 
-          *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+          *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
           throw *newStellaException(stream000->theStringReader());
         }
       }
       { TranslationUnit* unit = NULL;
-        Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+        Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
 
         for (unit, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
           unit = ((TranslationUnit*)(iter000->value));
           unit->free();
         }
       }
-      oTRANSLATIONUNITSo.get()->clear();
+      oTRANSLATIONUNITSo->clear();
       if (toplevelinvocationP) {
         sweepTransients();
       }
@@ -1303,84 +1312,84 @@ DEFINE_STELLA_SPECIAL(oTRANSLATIONWARNINGSo, int , 0);
 DEFINE_STELLA_SPECIAL(oTRANSLATIONNOTESo, int , 0);
 
 void resetTranslationErrors() {
-  oTRANSLATIONERRORSo.set(0);
-  oTRANSLATIONWARNINGSo.set(0);
-  oTRANSLATIONNOTESo.set(0);
+  oTRANSLATIONERRORSo = 0;
+  oTRANSLATIONWARNINGSo = 0;
+  oTRANSLATIONNOTESo = 0;
 }
 
 void signalTranslationError() {
-  oTRANSLATIONERRORSo.set(oTRANSLATIONERRORSo.get() + 1);
+  oTRANSLATIONERRORSo = oTRANSLATIONERRORSo + 1;
 }
 
 void signalTranslationWarning() {
-  oTRANSLATIONWARNINGSo.set(oTRANSLATIONWARNINGSo.get() + 1);
+  oTRANSLATIONWARNINGSo = oTRANSLATIONWARNINGSo + 1;
 }
 
 void signalTranslationNote() {
-  oTRANSLATIONNOTESo.set(oTRANSLATIONNOTESo.get() + 1);
+  oTRANSLATIONNOTESo = oTRANSLATIONNOTESo + 1;
 }
 
 boolean ignoreTranslationErrorsP() {
-  return (oIGNORETRANSLATIONERRORSpo.get());
+  return (oIGNORETRANSLATIONERRORSpo);
 }
 
 boolean translationErrorsP() {
-  return ((oTRANSLATIONERRORSo.get() > 0) &&
+  return ((oTRANSLATIONERRORSo > 0) &&
       (!ignoreTranslationErrorsP()));
 }
 
 void summarizeTranslationErrors() {
-  if (oTRANSLATIONERRORSo.get() > 0) {
-    std::cout << oTRANSLATIONERRORSo.get() << " error";
-    if (oTRANSLATIONERRORSo.get() > 1) {
+  if (oTRANSLATIONERRORSo > 0) {
+    std::cout << oTRANSLATIONERRORSo << " error";
+    if (oTRANSLATIONERRORSo > 1) {
       std::cout << "s";
     }
   }
-  if (oTRANSLATIONWARNINGSo.get() > 0) {
-    if (oTRANSLATIONERRORSo.get() > 0) {
+  if (oTRANSLATIONWARNINGSo > 0) {
+    if (oTRANSLATIONERRORSo > 0) {
       std::cout << ", ";
     }
-    std::cout << oTRANSLATIONWARNINGSo.get() << " warning";
-    if (oTRANSLATIONWARNINGSo.get() > 1) {
+    std::cout << oTRANSLATIONWARNINGSo << " warning";
+    if (oTRANSLATIONWARNINGSo > 1) {
       std::cout << "s";
     }
   }
-  if (oTRANSLATIONNOTESo.get() > 0) {
-    if ((oTRANSLATIONERRORSo.get() > 0) ||
-        (oTRANSLATIONWARNINGSo.get() > 0)) {
+  if (oTRANSLATIONNOTESo > 0) {
+    if ((oTRANSLATIONERRORSo > 0) ||
+        (oTRANSLATIONWARNINGSo > 0)) {
       std::cout << ", ";
     }
-    std::cout << oTRANSLATIONNOTESo.get() << " note";
-    if (oTRANSLATIONNOTESo.get() > 1) {
+    std::cout << oTRANSLATIONNOTESo << " note";
+    if (oTRANSLATIONNOTESo > 1) {
       std::cout << "s";
     }
   }
-  if ((oTRANSLATIONERRORSo.get() > 0) ||
-      ((oTRANSLATIONWARNINGSo.get() > 0) ||
-       (oTRANSLATIONNOTESo.get() > 0))) {
+  if ((oTRANSLATIONERRORSo > 0) ||
+      ((oTRANSLATIONWARNINGSo > 0) ||
+       (oTRANSLATIONNOTESo > 0))) {
     std::cout << "." << std::endl;
   }
 }
 
 void printErrorContext(char* prefix, OutputStream* stream) {
   *(stream->nativeStream) << prefix << "While ";
-  if (((boolean)(oTRANSLATIONPHASEo.get()))) {
-    if (oTRANSLATIONPHASEo.get() == KWD_WALK_DEFINE) {
+  if (((boolean)(oTRANSLATIONPHASEo))) {
+    if (oTRANSLATIONPHASEo == KWD_WALK_DEFINE) {
       *(stream->nativeStream) << "defining ";
     }
-    else if (oTRANSLATIONPHASEo.get() == KWD_WALK_FINALIZE) {
+    else if (oTRANSLATIONPHASEo == KWD_WALK_FINALIZE) {
       *(stream->nativeStream) << "finalizing ";
     }
-    else if (oTRANSLATIONPHASEo.get() == KWD_WALK_WALK) {
+    else if (oTRANSLATIONPHASEo == KWD_WALK_WALK) {
       *(stream->nativeStream) << "walking ";
     }
-    else if (oTRANSLATIONPHASEo.get() == KWD_WALK_TRANSLATE) {
+    else if (oTRANSLATIONPHASEo == KWD_WALK_TRANSLATE) {
       *(stream->nativeStream) << "translating ";
     }
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
 
-        *(stream000->nativeStream) << "`" << oTRANSLATIONPHASEo.get() << "'" << " is not a valid case option";
+        *(stream000->nativeStream) << "`" << oTRANSLATIONPHASEo << "'" << " is not a valid case option";
         throw *newStellaException(stream000->theStringReader());
       }
     }
@@ -1388,9 +1397,9 @@ void printErrorContext(char* prefix, OutputStream* stream) {
   else {
     *(stream->nativeStream) << "processing ";
   }
-  if (((boolean)(oCURRENTTRANSLATIONUNITo.get()))) {
-    { Object* object = oCURRENTTRANSLATIONUNITo.get()->theObject;
-      Symbol* category = oCURRENTTRANSLATIONUNITo.get()->category;
+  if (((boolean)(oCURRENTTRANSLATIONUNITo))) {
+    { Object* object = oCURRENTTRANSLATIONUNITo->theObject;
+      Symbol* category = oCURRENTTRANSLATIONUNITo->category;
 
       if (category == SYM_WALK_STELLA_CLASS) {
         *(stream->nativeStream) << "class ";
@@ -1664,9 +1673,9 @@ boolean logFunctionCallP(MethodSlot* method) {
                         testValue001 = foundP001;
                       }
                       if (!testValue001) {
-                        testValue001 = (oCURRENTFILEo.get() != NULL) &&
-                            ((stringSearch(oCURRENTFILEo.get(), "cl-primal", 0) != NULL_INTEGER) ||
-                             (stringSearch(oCURRENTFILEo.get(), "stella-to-cl", 0) != NULL_INTEGER));
+                        testValue001 = (oCURRENTFILEo != NULL) &&
+                            ((stringSearch(oCURRENTFILEo, "cl-primal", 0) != NULL_INTEGER) ||
+                             (stringSearch(oCURRENTFILEo, "stella-to-cl", 0) != NULL_INTEGER));
                       }
                     }
                   }
@@ -1826,9 +1835,9 @@ void pushVariableBinding(Symbol* variable, StandardObject* type) {
         (!(oMIXIN_IMPLEMENTATION_STYLEo == KWD_WALK_SECOND_CLASS)))) &&
         (((boolean)(clasS)) &&
          (clasS->mixinP &&
-          ((!((boolean)(oMETHODBEINGWALKEDo.get()))) ||
-           ((!mixinMethodP(oMETHODBEINGWALKEDo.get())) ||
-            oLOCALVARIABLETYPETABLEo.get()->nonEmptyP()))))) {
+          ((!((boolean)(oMETHODBEINGWALKEDo))) ||
+           ((!mixinMethodP(oMETHODBEINGWALKEDo)) ||
+            oLOCALVARIABLETYPETABLEo->nonEmptyP()))))) {
       { 
         BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
         signalTranslationError();
@@ -1838,15 +1847,15 @@ void pushVariableBinding(Symbol* variable, StandardObject* type) {
         }
       }
     }
-    oLOCALVARIABLETYPETABLEo.get()->theKvList = kvCons(variable, type, oLOCALVARIABLETYPETABLEo.get()->theKvList);
+    oLOCALVARIABLETYPETABLEo->theKvList = kvCons(variable, type, oLOCALVARIABLETYPETABLEo->theKvList);
     maybeRenameLocalVariable(variable);
   }
 }
 
 void popVariableBinding() {
-  { KvCons* kvlist = oLOCALVARIABLETYPETABLEo.get()->theKvList;
+  { KvCons* kvlist = oLOCALVARIABLETYPETABLEo->theKvList;
 
-    oLOCALVARIABLETYPETABLEo.get()->theKvList = kvlist->rest;
+    oLOCALVARIABLETYPETABLEo->theKvList = kvlist->rest;
     if (subtypeOfP(safePrimaryType(kvlist->value), SGT_WALK_STELLA_KEY_VALUE_LIST)) {
       kvlist->value->free();
     }
@@ -1857,7 +1866,7 @@ void popVariableBinding() {
 }
 
 StandardObject* lookupVariableType(Symbol* variablename) {
-  { StandardObject* entry = (((boolean)(oLOCALVARIABLETYPETABLEo.get())) ? ((StandardObject*)(lookupVariableTable(oLOCALVARIABLETYPETABLEo.get(), variablename))) : ((StandardObject*)(NULL)));
+  { StandardObject* entry = (((boolean)(oLOCALVARIABLETYPETABLEo)) ? ((StandardObject*)(lookupVariableTable(oLOCALVARIABLETYPETABLEo, variablename))) : ((StandardObject*)(NULL)));
     StandardObject* type = NULL;
 
     if (!((boolean)(entry))) {
@@ -1906,7 +1915,7 @@ StandardObject* lookupVariableType(Symbol* variablename) {
 }
 
 void setLocalVariableInfo(Symbol* variable, Keyword* key, Object* info) {
-  { StandardObject* entry = ((StandardObject*)(lookupVariableTable(oLOCALVARIABLETYPETABLEo.get(), variable)));
+  { StandardObject* entry = ((StandardObject*)(lookupVariableTable(oLOCALVARIABLETYPETABLEo, variable)));
 
     if (((boolean)(entry))) {
       if (subtypeOfP(safePrimaryType(entry), SGT_WALK_STELLA_KEY_VALUE_LIST)) {
@@ -1921,7 +1930,7 @@ void setLocalVariableInfo(Symbol* variable, Keyword* key, Object* info) {
 
           variableinfo->insertAt(key, info);
           variableinfo->insertAt(KWD_WALK_TYPE, entry);
-          insertAtVariableTable(oLOCALVARIABLETYPETABLEo.get(), variable, variableinfo);
+          insertAtVariableTable(oLOCALVARIABLETYPETABLEo, variable, variableinfo);
         }
       }
     }
@@ -1929,7 +1938,7 @@ void setLocalVariableInfo(Symbol* variable, Keyword* key, Object* info) {
 }
 
 Object* getLocalVariableInfo(Symbol* variable, Keyword* key) {
-  { StandardObject* entry = (((boolean)(oLOCALVARIABLETYPETABLEo.get())) ? ((StandardObject*)(lookupVariableTable(oLOCALVARIABLETYPETABLEo.get(), variable))) : ((StandardObject*)(NULL)));
+  { StandardObject* entry = (((boolean)(oLOCALVARIABLETYPETABLEo)) ? ((StandardObject*)(lookupVariableTable(oLOCALVARIABLETYPETABLEo, variable))) : ((StandardObject*)(NULL)));
 
     if (((boolean)(entry))) {
       if (subtypeOfP(safePrimaryType(entry), SGT_WALK_STELLA_KEY_VALUE_LIST)) {
@@ -1950,9 +1959,9 @@ Object* getLocalVariableInfo(Symbol* variable, Keyword* key) {
 }
 
 void registerReferenceToGlobalVariable(Symbol* variablename) {
-  if (((boolean)(oCURRENTTRANSLATIONUNITo.get()))) {
+  if (((boolean)(oCURRENTTRANSLATIONUNITo))) {
     { GlobalVariable* global = variablename->lookupGlobalVariable();
-      List* referencedglobals = oCURRENTTRANSLATIONUNITo.get()->referencedGlobals;
+      List* referencedglobals = oCURRENTTRANSLATIONUNITo->referencedGlobals;
 
       if (((boolean)(global)) &&
           (!referencedglobals->memberP(global))) {
@@ -1963,10 +1972,10 @@ void registerReferenceToGlobalVariable(Symbol* variablename) {
 }
 
 Symbol* localGensym(char* prefix) {
-  if (!((boolean)(oLOCALGENSYMTABLEo.get()))) {
+  if (!((boolean)(oLOCALGENSYMTABLEo))) {
     return (gensym(prefix));
   }
-  { IntegerWrapper* prefixcounter = ((IntegerWrapper*)(oLOCALGENSYMTABLEo.get()->lookup(wrapString(prefix))));
+  { IntegerWrapper* prefixcounter = ((IntegerWrapper*)(oLOCALGENSYMTABLEo->lookup(wrapString(prefix))));
 
     if (!((boolean)(prefixcounter))) {
       prefixcounter = wrapInteger(0);
@@ -1974,13 +1983,13 @@ Symbol* localGensym(char* prefix) {
     else {
       prefixcounter = wrapInteger(prefixcounter->wrapperValue + 1);
     }
-    oLOCALGENSYMTABLEo.get()->insertAt(wrapString(prefix), prefixcounter);
+    oLOCALGENSYMTABLEo->insertAt(wrapString(prefix), prefixcounter);
     return (internTransientSymbol(yieldGensymName(prefix, prefixcounter->wrapperValue)));
   }
 }
 
 Symbol* methodGensym(char* prefix) {
-  { MethodSlot* method = oMETHODBEINGWALKEDo.get();
+  { MethodSlot* method = oMETHODBEINGWALKEDo;
     boolean localP = false;
 
     if (((boolean)(method))) {
@@ -2005,10 +2014,10 @@ Symbol* yieldLocalVariableAlias(Symbol* variable, int level) {
   if (!(level >= 1)) {
     std::cerr << "Safety violation: " << "INTERNAL ERROR: Variable level must be >= 1";
   }
-  if (!((boolean)(oLOCALGENSYMTABLEo.get()))) {
+  if (!((boolean)(oLOCALGENSYMTABLEo))) {
     return (localGensym(variable->symbolName));
   }
-  { Cons* aliases = ((Cons*)(oLOCALGENSYMTABLEo.get()->lookup(variable)));
+  { Cons* aliases = ((Cons*)(oLOCALGENSYMTABLEo->lookup(variable)));
     Symbol* alias = NULL;
 
     if (!((boolean)(aliases))) {
@@ -2016,7 +2025,7 @@ Symbol* yieldLocalVariableAlias(Symbol* variable, int level) {
     }
     if (aliases->length() < level) {
       alias = localGensym(variable->symbolName);
-      oLOCALGENSYMTABLEo.get()->insertAt(variable, aliases->concatenate(cons(alias, NIL), 0));
+      oLOCALGENSYMTABLEo->insertAt(variable, aliases->concatenate(cons(alias, NIL), 0));
       return (alias);
     }
     else {
@@ -2026,12 +2035,12 @@ Symbol* yieldLocalVariableAlias(Symbol* variable, int level) {
 }
 
 boolean renameShadowingLocalVariablesP() {
-  return (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA);
+  return (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA);
 }
 
 void maybeRenameLocalVariable(Symbol* variable) {
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) {
-    { KvCons* cursor = oLOCALVARIABLETYPETABLEo.get()->theKvList;
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) {
+    { KvCons* cursor = oLOCALVARIABLETYPETABLEo->theKvList;
       int level = -1;
 
       while (((boolean)(cursor))) {
@@ -2048,7 +2057,7 @@ void maybeRenameLocalVariable(Symbol* variable) {
 }
 
 Symbol* trueVariableName(Symbol* variable) {
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) {
     { Object* alias = getLocalVariableInfo(variable, KWD_WALK_ALIAS);
 
       if (((boolean)(alias))) {
@@ -2060,7 +2069,7 @@ Symbol* trueVariableName(Symbol* variable) {
 }
 
 boolean suppressWarningsP() {
-  return (oCURRENT_STELLA_FEATURESo.get()->memberP(KWD_WALK_SUPPRESS_WARNINGS));
+  return (oCURRENT_STELLA_FEATURESo->memberP(KWD_WALK_SUPPRESS_WARNINGS));
 }
 
 boolean badArgumentRangeP(Cons* tree, int minarity, int maxarity) {
@@ -2124,19 +2133,19 @@ boolean illegalTreeP(Object* tree) {
 }
 
 boolean nativeClassMethodInliningP() {
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
     return (false);
   }
-  else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) ||
-      ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) ||
-       ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE) ||
-        (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_IDL)))) {
+  else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) ||
+      ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) ||
+       ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE) ||
+        (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_IDL)))) {
     return (true);
   }
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -2331,8 +2340,8 @@ Object* applyCoercionMethod(Object* expression, Surrogate* sourcetype, Surrogate
 }
 
 boolean translatingCodeP() {
-  return ((oTRANSLATIONPHASEo.get() == KWD_WALK_WALK) ||
-      (oTRANSLATIONPHASEo.get() == KWD_WALK_TRANSLATE));
+  return ((oTRANSLATIONPHASEo == KWD_WALK_WALK) ||
+      (oTRANSLATIONPHASEo == KWD_WALK_TRANSLATE));
 }
 
 Surrogate* verifyType(Surrogate* self) {
@@ -2590,7 +2599,7 @@ boolean coercibleP(Object* tree, StandardObject* sourcetype, StandardObject* tar
 }
 
 boolean walkingExpressionP() {
-  return (!(oTARGETTYPEo.get() == SGT_WALK_STELLA_VOID));
+  return (!(oTARGETTYPEo == SGT_WALK_STELLA_VOID));
 }
 
 Object* walkExpressionTree(Object* exptree, StandardObject* targettype, Symbol* operatorname, boolean vrletisokP, StandardObject*& _Return1) {
@@ -2844,9 +2853,9 @@ Object* walkedExpressionExpression(Object* tree) {
 }
 
 boolean needIdenticalMethodSignaturesP() {
-  if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) ||
-      ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE) ||
-       (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA))) {
+  if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) ||
+      ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE) ||
+       (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA))) {
     return (true);
   }
   else {
@@ -2973,7 +2982,7 @@ Object* sysTreeIfNeeded(Slot* slot, Object* tree, StandardObject* firstargtype, 
           }
           if (testValue001) {
             if (anchoredTypeSpecifierP(slottype) &&
-                (!(oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP))) {
+                (!(oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP))) {
               return (setTargetLanguageType(sysTree(tree, returntype, dummy3), ((slot->slotBaseType == SGT_WALK_STELLA_UNKNOWN) ? typeSpecToBaseType(returntype) : slot->slotBaseType), _Return1));
             }
             else {
@@ -3309,7 +3318,7 @@ List* oSYMBOL_SETo = NULL;
 DEFINE_STELLA_SPECIAL(oCURRENTFILEo, char* , NULL);
 
 boolean incrementalTranslationP() {
-  return (oCURRENTFILEo.get() == NULL);
+  return (oCURRENTFILEo == NULL);
 }
 
 char* constructSymbolConstantName(GeneralizedSymbol* symbol) {
@@ -3320,8 +3329,8 @@ char* constructSymbolConstantName(GeneralizedSymbol* symbol) {
       environmentname = stringConcatenate(((Module*)(symbol->homeContext))->moduleName, "-", 0);
     }
     if (!(incrementalTranslationP() ||
-        (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA))) {
-      environmentname = stringConcatenate(stringUpcase(oCURRENTFILEo.get()), "-", 1, environmentname);
+        (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA))) {
+      environmentname = stringConcatenate(stringUpcase(oCURRENTFILEo), "-", 1, environmentname);
     }
     { Surrogate* testValue000 = safePrimaryType(symbol);
 
@@ -3359,11 +3368,11 @@ char* constructSymbolConstantName(GeneralizedSymbol* symbol) {
 }
 
 Symbol* yieldSymbolConstantName(GeneralizedSymbol* symbol) {
-  return (internSymbolInModule(constructSymbolConstantName(((GeneralizedSymbol*)(symbol->permanentify()))), oMODULEo.get(), true));
+  return (internSymbolInModule(constructSymbolConstantName(((GeneralizedSymbol*)(symbol->permanentify()))), oMODULEo, true));
 }
 
 Symbol* createStartupSymbol(GeneralizedSymbol* symbol) {
-  { Module* symbolmodule = oMODULEo.get();
+  { Module* symbolmodule = oMODULEo;
     Symbol* symbolconstant = yieldSymbolConstantName(symbol);
     char* symbolconstantname = symbolconstant->symbolName;
     Object* symbolconstanttypetree = yieldTypeSpecTree(symbol->primaryType());
@@ -3374,7 +3383,7 @@ Symbol* createStartupSymbol(GeneralizedSymbol* symbol) {
     }
     tree = listO(3, SYM_WALK_STELLA_DEFGLOBAL, symbolconstant, cons(symbolconstanttypetree, listO(4, SYM_WALK_STELLA_NULL, KWD_WALK_PUBLICp, SYM_WALK_STELLA_TRUE, NIL)));
     walkAuxiliaryTree(tree);
-    tree = listO(4, SYM_WALK_STELLA_STARTUP_TIME_PROGN, KWD_WALK_SYMBOLS, listO(3, SYM_WALK_STELLA_SETQ, symbolconstant, cons(listO(4, SYM_WALK_STELLA_SAFE_CAST, listO(3, SYM_WALK_STELLA_INTERN_RIGID_SYMBOL_WRT_MODULE, wrapString(symbol->symbolName), cons((((((Module*)(symbol->homeContext)) == oMODULEo.get()) ||
+    tree = listO(4, SYM_WALK_STELLA_STARTUP_TIME_PROGN, KWD_WALK_SYMBOLS, listO(3, SYM_WALK_STELLA_SETQ, symbolconstant, cons(listO(4, SYM_WALK_STELLA_SAFE_CAST, listO(3, SYM_WALK_STELLA_INTERN_RIGID_SYMBOL_WRT_MODULE, wrapString(symbol->symbolName), cons((((((Module*)(symbol->homeContext)) == oMODULEo) ||
         keywordP(symbol)) ? ((StandardObject*)(SYM_WALK_STELLA_NULL)) : ((StandardObject*)(listO(3, SYM_WALK_STELLA_GET_STELLA_MODULE, wrapString(((Module*)(symbol->homeContext))->moduleFullName), cons(SYM_WALK_STELLA_TRUE, NIL))))), cons(wrapInteger((keywordP(symbol) ? KEYWORD_SYM : ((surrogateP(symbol) ? SURROGATE_SYM : SYMBOL_SYM)))), NIL))), symbolconstanttypetree, NIL), NIL)), NIL);
     walkAuxiliaryTree(tree);
     return (symbolconstant);
@@ -3507,7 +3516,7 @@ Object* Symbol::walkAtomicTree(StandardObject*& _Return1) {
         return (value000);
       }
     }
-    if (oINLININGMETHODCALLpo.get() &&
+    if (oINLININGMETHODCALLpo &&
         ((boolean)(getLocalVariableInfo(self, KWD_WALK_INLINE_ARGUMENT)))) {
       return (walkInlineVariableReference(self, _Return1));
     }
@@ -3815,7 +3824,7 @@ Cons* walkSetqTree(Cons* tree, StandardObject*& _Return1) {
       if (!(proceduralExpressionP(ovalue))) {
         tree->secondSetter(trueVariableName(((Symbol*)(variable))));
         if (walkingExpressionP() &&
-            (!(oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP))) {
+            (!(oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP))) {
           return (setTargetLanguageType(sysTree(tree, otype, dummy1), typeSpecToBaseType(variabletype), _Return1));
         }
         if (!eqlP(variable, tree->rest->value)) {
@@ -4462,7 +4471,7 @@ StandardObject* safeYieldTypeSpecifier(Object* typetree) {
 Cons* walkADeclaration(Symbol* variable, Object* typetree, Object* value, boolean inputparameterP) {
   { StandardObject* sourcetype = NULL;
     StandardObject* targettype = safeYieldTypeSpecifier(typetree);
-    Surrogate* methodownertype = (((boolean)(oMETHODBEINGWALKEDo.get())) ? oMETHODBEINGWALKEDo.get()->slotOwner : ((Surrogate*)(NULL)));
+    Surrogate* methodownertype = (((boolean)(oMETHODBEINGWALKEDo)) ? oMETHODBEINGWALKEDo->slotOwner : ((Surrogate*)(NULL)));
     Object* ovalue = NULL;
 
     if (((boolean)(targettype)) &&
@@ -4693,13 +4702,13 @@ DEFINE_STELLA_SPECIAL(oSPECIALSENABLEDpo, boolean , true);
 DEFINE_STELLA_SPECIAL(oNOFSPECIALSATLOOPENTRYo, int , 0);
 
 Keyword* specialImplementationStyle() {
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
     return (KWD_WALK_COMMON_LISP);
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) {
     return (KWD_WALK_UNBIND_WITH_DESTRUCTORS);
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) {
     return (KWD_WALK_COMMON_LISP);
   }
   else {
@@ -4708,24 +4717,24 @@ Keyword* specialImplementationStyle() {
 }
 
 void pushSpecial(Symbol* variable, Symbol* oldvaluevariable) {
-  oSPECIALVARIABLESTACKo.get()->theKvList = kvCons(variable, oldvaluevariable, oSPECIALVARIABLESTACKo.get()->theKvList);
+  oSPECIALVARIABLESTACKo->theKvList = kvCons(variable, oldvaluevariable, oSPECIALVARIABLESTACKo->theKvList);
 }
 
 void popSpecial() {
-  { KvCons* kvlist = oSPECIALVARIABLESTACKo.get()->theKvList;
+  { KvCons* kvlist = oSPECIALVARIABLESTACKo->theKvList;
 
-    oSPECIALVARIABLESTACKo.get()->theKvList = kvlist->rest;
+    oSPECIALVARIABLESTACKo->theKvList = kvlist->rest;
     freeKvCons(kvlist);
   }
 }
 
 Symbol* lookupOldValueVariable(Symbol* variable) {
-  return (((Symbol*)(lookupVariableTable(oSPECIALVARIABLESTACKo.get(), variable))));
+  return (((Symbol*)(lookupVariableTable(oSPECIALVARIABLESTACKo, variable))));
 }
 
 boolean needToUnbindSpecialsP() {
-  return (oSPECIALSENABLEDpo.get() &&
-      ((oSPECIALVARIABLESTACKo.get()->length() > 0) &&
+  return (oSPECIALSENABLEDpo &&
+      ((oSPECIALVARIABLESTACKo->length() > 0) &&
        (!getQuotedTree("((:COMMON-LISP :UNBIND-WITH-DESTRUCTORS) \"/STELLA\")", "/STELLA")->memberP(specialImplementationStyle()))));
 }
 
@@ -4735,7 +4744,7 @@ Cons* yieldSpecialUnbindTree(int nofbindings) {
     if (specialImplementationStyle() == KWD_WALK_UNWIND_PROTECT) {
       { Symbol* variable = NULL;
         Symbol* oldvaluevariable = NULL;
-        KvCons* iter000 = oSPECIALVARIABLESTACKo.get()->theKvList;
+        KvCons* iter000 = oSPECIALVARIABLESTACKo->theKvList;
 
         for  (variable, oldvaluevariable, iter000; 
               ((boolean)(iter000)); 
@@ -4771,15 +4780,15 @@ Cons* yieldSpecialUnbindTree(int nofbindings) {
 }
 
 Cons* yieldReturnSpecialUnbindTree() {
-  return (yieldSpecialUnbindTree(oSPECIALVARIABLESTACKo.get()->length()));
+  return (yieldSpecialUnbindTree(oSPECIALVARIABLESTACKo->length()));
 }
 
 Cons* yieldLoopExitSpecialUnbindTree() {
-  return (yieldSpecialUnbindTree(oSPECIALVARIABLESTACKo.get()->length() - oNOFSPECIALSATLOOPENTRYo.get()));
+  return (yieldSpecialUnbindTree(oSPECIALVARIABLESTACKo->length() - oNOFSPECIALSATLOOPENTRYo));
 }
 
 Cons* walkSpecialTree(Cons* tree, StandardObject*& _Return1) {
-  if (!(oSPECIALSENABLEDpo.get())) {
+  if (!(oSPECIALSENABLEDpo)) {
     { 
       BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
       signalTranslationError();
@@ -4978,9 +4987,9 @@ Cons* walkCastTree(Cons* tree, StandardObject*& _Return1) {
         return (percolateOutVrletExpression(tree, ((Cons*)(tree->rest->value)), typespec, _Return1));
       }
       tree->thirdSetter(typespec);
-      if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) &&
+      if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) &&
           ((tree->value == SYM_WALK_STELLA_CAST) &&
-           (oSAFETYo.get() >= 2))) {
+           (oSAFETYo >= 2))) {
         registerSymbol(typeSpecToBaseType(typespec));
       }
       _Return1 = typespec;
@@ -5293,7 +5302,7 @@ Object* coerceMvTree(Object* tree, Symbol* operatoR, List* sourcetypes, List* ta
           if ((!eqlP(otree, it->value)) ||
               ((i > 1) &&
                ((!valuestreeP) &&
-                ((!(oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP)) &&
+                ((!(oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP)) &&
                  ((!(typeSpecToBaseType(tgtts) == SGT_WALK_STELLA_UNKNOWN)) &&
                   (!(typeSpecToBaseType(srcts) == typeSpecToBaseType(tgtts)))))))) {
             needtemporariesP = true;
@@ -5396,10 +5405,10 @@ Cons* walkReturnAndUnbindSpecials(Cons* tree, StandardObject*& _Return1) {
         return (walkAConsTree(listO(3, SYM_WALK_STELLA_PROGN, unbindtree, cons(tree, NIL)), _Return1));
       }
       if ((valuetrees->length() == 1) &&
-          (!(oMETHODBEINGWALKEDo.get()->methodReturnTypeSpecifiers_reader()->rest() == NIL))) {
+          (!(oMETHODBEINGWALKEDo->methodReturnTypeSpecifiers_reader()->rest() == NIL))) {
         { int i = NULL_INTEGER;
           int iter000 = 0;
-          int upperBound000 = oMETHODBEINGWALKEDo.get()->methodReturnTypeSpecifiers_reader()->length() - 1;
+          int upperBound000 = oMETHODBEINGWALKEDo->methodReturnTypeSpecifiers_reader()->length() - 1;
           Cons* collect000 = NULL;
 
           for  (i, iter000, upperBound000, collect000; 
@@ -5446,7 +5455,7 @@ Cons* walkReturnAndUnbindSpecials(Cons* tree, StandardObject*& _Return1) {
 }
 
 Cons* walkReturnTree(Cons* tree, StandardObject*& _Return1) {
-  if (!((boolean)(oMETHODBEINGWALKEDo.get()))) {
+  if (!((boolean)(oMETHODBEINGWALKEDo))) {
     { 
       BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
       signalTranslationError();
@@ -5457,11 +5466,11 @@ Cons* walkReturnTree(Cons* tree, StandardObject*& _Return1) {
     }
     return (walkDontCallMeTree(tree, SGT_WALK_STELLA_VOID, _Return1));
   }
-  oFOUNDRETURNpo.set(true);
+  oFOUNDRETURNpo = true;
   if (needToUnbindSpecialsP()) {
     return (walkReturnAndUnbindSpecials(tree, _Return1));
   }
-  { MethodSlot* method = oMETHODBEINGWALKEDo.get();
+  { MethodSlot* method = oMETHODBEINGWALKEDo;
     List* targettypes = newList();
 
     { StandardObject* rtype = NULL;
@@ -5752,7 +5761,7 @@ Cons* walkMvBindTree(Cons* tree, StandardObject*& _Return1) {
 
 Cons* walkLoopTree(Cons* tree, StandardObject*& _Return1) {
   { 
-    BIND_STELLA_SPECIAL(oNOFSPECIALSATLOOPENTRYo, int, oSPECIALVARIABLESTACKo.get()->length());
+    BIND_STELLA_SPECIAL(oNOFSPECIALSATLOOPENTRYo, int, oSPECIALVARIABLESTACKo->length());
     tree->rest = walkListOfStatements(tree->rest);
     return (sysTree(tree, SGT_WALK_STELLA_VOID, _Return1));
   }
@@ -5779,7 +5788,7 @@ Cons* walkWhileTree(Cons* tree, StandardObject*& _Return1) {
   { StandardObject* dummy1;
 
     { 
-      BIND_STELLA_SPECIAL(oNOFSPECIALSATLOOPENTRYo, int, oSPECIALVARIABLESTACKo.get()->length());
+      BIND_STELLA_SPECIAL(oNOFSPECIALSATLOOPENTRYo, int, oSPECIALVARIABLESTACKo->length());
       { Object* test = walkExpressionTree(tree->rest->value, SGT_WALK_STELLA_BOOLEAN, SYM_WALK_STELLA_WHILE, true, dummy1);
         Cons* body = tree->rest->rest;
 
@@ -5857,9 +5866,9 @@ Cons* walkChooseTree(Cons* tree, StandardObject*& _Return1) {
       if (badArgumentCountP(tree, 3)) {
         return (walkDontCallMeTree(tree, SGT_WALK_STELLA_UNKNOWN, _Return1));
       }
-      temp = walkExpressionTree(tree->rest->rest->value, oTARGETTYPEo.get(), SYM_WALK_STELLA_CHOOSE, true, type1);
+      temp = walkExpressionTree(tree->rest->rest->value, oTARGETTYPEo, SYM_WALK_STELLA_CHOOSE, true, type1);
       tree->thirdSetter(temp);
-      temp = walkExpressionTree(tree->fourth(), oTARGETTYPEo.get(), SYM_WALK_STELLA_CHOOSE, true, type2);
+      temp = walkExpressionTree(tree->fourth(), oTARGETTYPEo, SYM_WALK_STELLA_CHOOSE, true, type2);
       tree->fourthSetter(temp);
       if (type1 == SGT_WALK_STELLA_UNKNOWN) {
         type = type2;
@@ -5897,7 +5906,7 @@ Cons* walkChooseTree(Cons* tree, StandardObject*& _Return1) {
           }
         }
       }
-      if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+      if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
       }
       else {
         if ((!(type1 == type)) &&
@@ -6406,7 +6415,7 @@ Cons* walkCaseTree(Cons* tree, StandardObject*& _Return1) {
            (caseconstanttype == SGT_WALK_STELLA_CHARACTER)))) {
         return (walkNonBuiltInCaseTree(tree, ((caseconstanttype == SGT_WALK_STELLA_STRING) ? SYM_WALK_STELLA_STRING_EQLp : SYM_WALK_STELLA_EQLp), _Return1));
       }
-      if (!(oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP)) {
+      if (!(oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP)) {
         tree = attachUnhandledCaseErrorClause(tree, tree->rest->value);
       }
       { Cons* cursor = tree->rest->rest;
@@ -6599,8 +6608,8 @@ Cons* yieldCastedTypecaseClauseTrees(Symbol* testvariable, StandardObject* claus
   { StandardObject* dummy1;
 
     { StandardObject* testvariabletype = lookupVariableType(testvariable);
-      boolean needrealcastP = !(oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP);
-      Symbol* auxvariable = (((!(oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA)) &&
+      boolean needrealcastP = !(oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP);
+      Symbol* auxvariable = (((!(oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA)) &&
           needrealcastP) ? localGensym(testvariable->symbolName) : ((Symbol*)(NULL)));
       Cons* castedclausetrees = NULL;
 
@@ -7000,7 +7009,7 @@ Object* walkArithmeticTree(Cons* tree, Surrogate*& _Return1) {
       returntype = SGT_WALK_STELLA_FLOAT;
     }
     if ((nofoperands > 2) &&
-        (!(oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP))) {
+        (!(oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP))) {
       { Cons* value004 = NULL;
         StandardObject* value005 = NULL;
 
@@ -7040,7 +7049,7 @@ Object* walkQuotedTree(Cons* tree, StandardObject*& _Return1) {
       }
     }
     objectname = nameQuotedTree(((Cons*)(argument)));
-    return (walkATree(listO(3, SYM_WALK_STELLA_GET_QUOTED_TREE, wrapString(objectname), cons(wrapString(oMODULEo.get()->moduleFullName), NIL)), _Return1));
+    return (walkATree(listO(3, SYM_WALK_STELLA_GET_QUOTED_TREE, wrapString(objectname), cons(wrapString(oMODULEo->moduleFullName), NIL)), _Return1));
   }
 }
 
@@ -7219,22 +7228,22 @@ Cons* walkPrintStreamTree(Cons* tree, StandardObject*& _Return1) {
 }
 
 boolean warnAboutUndefinedMethodsP() {
-  return (oCURRENT_STELLA_FEATURESo.get()->memberP(KWD_WALK_WARN_ABOUT_UNDEFINED_METHODS));
+  return (oCURRENT_STELLA_FEATURESo->memberP(KWD_WALK_WARN_ABOUT_UNDEFINED_METHODS));
 }
 
 boolean warnAboutMissingMethodsP() {
-  return ((!(oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP)) ||
-      oCURRENT_STELLA_FEATURESo.get()->memberP(KWD_WALK_WARN_ABOUT_MISSING_METHODS));
+  return ((!(oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP)) ||
+      oCURRENT_STELLA_FEATURESo->memberP(KWD_WALK_WARN_ABOUT_MISSING_METHODS));
 }
 
 boolean walkTypeSpecIsNativeTypeP(StandardObject* thetype) {
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
     return (((StringWrapper*)(dynamicSlotValue(typeSpecToClass(thetype)->dynamicSlots, SYM_WALK_STELLA_CLASS_CL_NATIVE_TYPE, NULL_STRING_WRAPPER)))->wrapperValue != NULL);
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) {
     return (((StringWrapper*)(dynamicSlotValue(typeSpecToClass(thetype)->dynamicSlots, SYM_WALK_STELLA_CLASS_CPP_NATIVE_TYPE, NULL_STRING_WRAPPER)))->wrapperValue != NULL);
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) {
     return (((StringWrapper*)(dynamicSlotValue(typeSpecToClass(thetype)->dynamicSlots, SYM_WALK_STELLA_CLASS_JAVA_NATIVE_TYPE, NULL_STRING_WRAPPER)))->wrapperValue != NULL);
   }
   else {
@@ -7488,8 +7497,8 @@ boolean stringConcatenateMethodP(MethodSlot* method) {
 
 boolean passVariableArgumentsAsListP(MethodSlot* method) {
   return (methodMustBeEvaluableP(method) ||
-      ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) &&
-       ((oMETHODBEINGWALKEDo.get() == method) ||
+      ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) &&
+       ((oMETHODBEINGWALKEDo == method) ||
         (!stringConcatenateMethodP(method)))));
 }
 
@@ -7508,7 +7517,7 @@ StandardObject* yieldListifiedVariableArgumentsType(MethodSlot* method) {
   { Surrogate* listbasetype = SGT_WALK_STELLA_CONS;
     StandardObject* elementtype = variableArgumentsType(method);
 
-    if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) &&
+    if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) &&
         (!methodMustBeEvaluableP(method))) {
     }
     if (typeP(elementtype)) {
@@ -7545,7 +7554,7 @@ Cons* yieldListifiedVariableArguments(Cons* walkedargs, StandardObject* targetty
             }
           }
         }
-        if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) {
+        if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) {
           { Object* arg = NULL;
             Cons* iter000 = walkedargs->reverse();
 
@@ -7588,11 +7597,11 @@ Object* finishWalkingArgumentListTree(Slot* self, Cons* tree, StandardObject* fi
         std::cout << std::endl << " " << "Applying CONS-methods to &rest-arguments is deprecated." << std::endl << "   " << "`" << deUglifyParseTree(tree) << "'" << std::endl << " Use `foreach' or explicitly coerce with `coerce-&rest-to-cons'" << "." << std::endl;
       }
     }
-    firstargtype = yieldListifiedVariableArgumentsType(oMETHODBEINGWALKEDo.get());
+    firstargtype = yieldListifiedVariableArgumentsType(oMETHODBEINGWALKEDo);
   }
-  if (passVariableArgumentsAsListP(oMETHODBEINGWALKEDo.get())) {
+  if (passVariableArgumentsAsListP(oMETHODBEINGWALKEDo)) {
     if (self->slotName == SYM_WALK_STELLA_LENGTH) {
-      return (sysTree(listO(3, SYM_WALK_STELLA_SYS_CALL_METHOD, typeSpecToBaseType(yieldListifiedVariableArgumentsType(oMETHODBEINGWALKEDo.get())), tree->concatenate(NIL, 0)), SGT_WALK_STELLA_INTEGER, _Return1));
+      return (sysTree(listO(3, SYM_WALK_STELLA_SYS_CALL_METHOD, typeSpecToBaseType(yieldListifiedVariableArgumentsType(oMETHODBEINGWALKEDo)), tree->concatenate(NIL, 0)), SGT_WALK_STELLA_INTEGER, _Return1));
     }
     else {
       return (self->finishWalkingCallSlotTree(tree, firstargtype, _Return1));
@@ -7798,11 +7807,11 @@ Object* walkCallSlotTree(Cons* tree, StandardObject*& _Return1) {
       StandardObject* firstargtype = SGT_WALK_STELLA_VOID;
       Class* firstargclass = NULL;
       boolean illegalfirstargP = false;
-      int previouserrors = oTRANSLATIONERRORSo.get();
+      int previouserrors = oTRANSLATIONERRORSo;
       Slot* slot = NULL;
 
       if (slotname == SYM_WALK_STELLA_ERROR) {
-        oFOUNDRETURNpo.set(true);
+        oFOUNDRETURNpo = true;
       }
       slot = lookupFunction(((Symbol*)(slotname)));
       if (((boolean)(slot))) {
@@ -7832,7 +7841,7 @@ Object* walkCallSlotTree(Cons* tree, StandardObject*& _Return1) {
           slot = lookupSlot(firstargclass, ((Symbol*)(slotname)));
         }
       }
-      illegalfirstargP = oTRANSLATIONERRORSo.get() > previouserrors;
+      illegalfirstargP = oTRANSLATIONERRORSo > previouserrors;
       if (vrletExpressionP(tree->rest->value)) {
         return (percolateOutVrletExpression(tree, ((Cons*)(tree->rest->value)), SGT_WALK_STELLA_UNKNOWN, _Return1));
       }
@@ -7896,8 +7905,8 @@ Object* walkCallSlotTree(Cons* tree, StandardObject*& _Return1) {
 boolean inlineMethodCallP(MethodSlot* method) {
   return (methodCallInliningEnabledP() &&
       ((((BooleanWrapper*)(dynamicSlotValue(method->dynamicSlots, SYM_WALK_STELLA_METHOD_GLOBALLY_INLINEp, FALSE_WRAPPER)))->wrapperValue ||
-      (((boolean)(oMETHODBEINGWALKEDo.get())) &&
-       oMETHODBEINGWALKEDo.get()->methodInlinedFunctions_reader()->memberP(method->slotName))) &&
+      (((boolean)(oMETHODBEINGWALKEDo)) &&
+       oMETHODBEINGWALKEDo->methodInlinedFunctions_reader()->memberP(method->slotName))) &&
        methodInlinableP(method)));
 }
 
@@ -8128,7 +8137,7 @@ Cons* yieldVerbatimInlineCallTree(MethodSlot* method, Cons* walkedargs) {
 }
 
 boolean inlineVariableReferenceP(Symbol* self) {
-  return (oINLININGMETHODCALLpo.get() &&
+  return (oINLININGMETHODCALLpo &&
       ((boolean)(getLocalVariableInfo(self, KWD_WALK_INLINE_ARGUMENT))));
 }
 
@@ -8350,7 +8359,7 @@ Cons* walkMethodObject(TranslationUnit* unit) {
         body = walkListOfStatements(body);
         if ((!voidP(method->type())) &&
             ((!method->abstractP) &&
-             (!oFOUNDRETURNpo.get()))) {
+             (!oFOUNDRETURNpo))) {
           { 
             BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
             signalTranslationError();
@@ -8361,9 +8370,9 @@ Cons* walkMethodObject(TranslationUnit* unit) {
           }
         }
       }
-      oLOCALVARIABLETYPETABLEo.get()->free();
-      oLOCALGENSYMTABLEo.get()->free();
-      oSPECIALVARIABLESTACKo.get()->free();
+      oLOCALVARIABLETYPETABLEo->free();
+      oLOCALGENSYMTABLEo->free();
+      oSPECIALVARIABLESTACKo->free();
       unit->codeRegister = body;
       return (body);
     }
@@ -8377,8 +8386,8 @@ void walkDefmethodTree(Cons* tree) {
 
       self000->category = SYM_WALK_STELLA_METHOD;
       self000->theObject = tree;
-      self000->tuHomeModule = oMODULEo.get();
-      oCURRENTTRANSLATIONUNITo.set(self000);
+      self000->tuHomeModule = oMODULEo;
+      oCURRENTTRANSLATIONUNITo = self000;
     }
     method = defineMethodFromParseTree(tree);
     if ((!method->methodFunctionP) &&
@@ -8393,12 +8402,12 @@ void walkDefmethodTree(Cons* tree) {
         }
       }
       method->free();
-      clearTranslationUnit(oCURRENTTRANSLATIONUNITo.get());
-      oCURRENTTRANSLATIONUNITo.set(NULL);
+      clearTranslationUnit(oCURRENTTRANSLATIONUNITo);
+      oCURRENTTRANSLATIONUNITo = NULL;
     }
     else {
-      oCURRENTTRANSLATIONUNITo.get()->theObject = method;
-      oCURRENTTRANSLATIONUNITo.get()->codeRegister = tree->nthRest(3);
+      oCURRENTTRANSLATIONUNITo->theObject = method;
+      oCURRENTTRANSLATIONUNITo->codeRegister = tree->nthRest(3);
       if (methodNeedsLispMacroP(method)) {
         registerNativeName(method->slotName, KWD_WALK_COMMON_LISP, KWD_WALK_FUNCTION);
       }
@@ -8428,7 +8437,7 @@ void walkMethodUnit(TranslationUnit* unit) {
       if ((!method->methodFunctionP) &&
           ((!((BooleanWrapper*)(dynamicSlotValue(method->dynamicSlots, SYM_WALK_STELLA_METHOD_NATIVEp, FALSE_WRAPPER)))->wrapperValue) &&
            (!(method->homeModule() == ((Class*)(method->owner()->surrogateValue))->homeModule())))) {
-        if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+        if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
           { 
             BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
             signalTranslationWarning();
@@ -8458,7 +8467,7 @@ void walkMethodUnit(TranslationUnit* unit) {
             method->abstractP)) {
           createmethodobjectP = false;
           setDynamicSlotValue(method->dynamicSlots, SYM_WALK_STELLA_FORWARD_DECLARATIONp, TRUE_WRAPPER, FALSE_WRAPPER);
-          if (oTRANSLATIONVERBOSITYLEVELo.get() >= 3) {
+          if (oTRANSLATIONVERBOSITYLEVELo >= 3) {
             std::cout << "Forward declaration of " << "`" << method << "'" << std::endl;
           }
         }
@@ -8467,11 +8476,11 @@ void walkMethodUnit(TranslationUnit* unit) {
       else if (((BooleanWrapper*)(dynamicSlotValue(method->dynamicSlots, SYM_WALK_STELLA_SLOT_AUXILIARYp, FALSE_WRAPPER)))->wrapperValue ||
           unit->auxiliaryP) {
         createmethodobjectP = false;
-        oTRANSLATIONUNITSo.get()->push(unit);
+        oTRANSLATIONUNITSo->push(unit);
         walkMethodObject(unit);
       }
       else {
-        oTRANSLATIONUNITSo.get()->push(unit);
+        oTRANSLATIONUNITSo->push(unit);
         walkMethodObject(unit);
       }
       if (createmethodobjectP) {
@@ -8636,13 +8645,13 @@ void walkDefclassTree(Cons* tree) {
 
     self000->category = SYM_WALK_STELLA_CLASS;
     self000->theObject = tree->rest->value;
-    self000->tuHomeModule = oMODULEo.get();
-    oCURRENTTRANSLATIONUNITo.set(self000);
+    self000->tuHomeModule = oMODULEo;
+    oCURRENTTRANSLATIONUNITo = self000;
   }
-  oCURRENTTRANSLATIONUNITo.get()->theObject = defineClassFromParseTree(tree);
-  if (!((boolean)(oCURRENTTRANSLATIONUNITo.get()->theObject))) {
-    clearTranslationUnit(oCURRENTTRANSLATIONUNITo.get());
-    oCURRENTTRANSLATIONUNITo.set(NULL);
+  oCURRENTTRANSLATIONUNITo->theObject = defineClassFromParseTree(tree);
+  if (!((boolean)(oCURRENTTRANSLATIONUNITo->theObject))) {
+    clearTranslationUnit(oCURRENTTRANSLATIONUNITo);
+    oCURRENTTRANSLATIONUNITo = NULL;
   }
 }
 
@@ -8686,15 +8695,15 @@ Object* yieldInitialValueExpression(StorageSlot* slot) {
     if (((boolean)(initialvalueexpression))) {
       return (copyConsTree(initialvalueexpression));
     }
-    if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+    if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
       if (slot->allocation() == KWD_WALK_EMBEDDED) {
         return (listO(3, SYM_WALK_STELLA_ALLOCATE, typeToSymbol(slot->type()), NIL));
       }
     }
-    else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) ||
-        ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) ||
-         ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE) ||
-          (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_IDL)))) {
+    else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) ||
+        ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) ||
+         ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE) ||
+          (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_IDL)))) {
       if (slot->allocation() == KWD_WALK_EMBEDDED) {
         return (listO(3, SYM_WALK_STELLA_ALLOCATE, typeToSymbol(slot->type()), NIL));
       }
@@ -8702,7 +8711,7 @@ Object* yieldInitialValueExpression(StorageSlot* slot) {
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
 
-        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
         throw *newStellaException(stream000->theStringReader());
       }
     }
@@ -8838,7 +8847,7 @@ void createAccessorUnitsForSlot(StorageSlot* slot, Class* clasS, boolean mixinac
       if (signaturesonlyP) {
         { 
           BIND_STELLA_SPECIAL(oMODULEo, Module*, slot->homeModule());
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
           method = defineMethodFromParseTree(methodtree);
         }
       }
@@ -8852,7 +8861,7 @@ void createAccessorUnitsForSlot(StorageSlot* slot, Class* clasS, boolean mixinac
       if (signaturesonlyP) {
         { 
           BIND_STELLA_SPECIAL(oMODULEo, Module*, slot->homeModule());
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
           method = defineMethodFromParseTree(methodtree);
         }
       }
@@ -8867,7 +8876,7 @@ void createAccessorUnitsForSlot(StorageSlot* slot, Class* clasS, boolean mixinac
       if (signaturesonlyP) {
         { 
           BIND_STELLA_SPECIAL(oMODULEo, Module*, slot->homeModule());
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
           method = defineMethodFromParseTree(methodtree);
         }
       }
@@ -8880,7 +8889,7 @@ void createAccessorUnitsForSlot(StorageSlot* slot, Class* clasS, boolean mixinac
         if (signaturesonlyP) {
           { 
             BIND_STELLA_SPECIAL(oMODULEo, Module*, slot->homeModule());
-            BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+            BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
             method = defineMethodFromParseTree(methodtree);
           }
         }
@@ -9002,7 +9011,7 @@ void createInlineMethodUnits(Class* clasS) {
             self000->category = SYM_WALK_STELLA_METHOD;
             self000->codeRegister = body;
             self000->auxiliaryP = true;
-            self000->tuHomeModule = oMODULEo.get();
+            self000->tuHomeModule = oMODULEo;
             walkMethodUnit(self000);
           }
         }
@@ -9100,7 +9109,7 @@ void createDefprintUnit(Class* clasS) {
       walkAuxiliaryTree(listO(7, SYM_WALK_STELLA_DEFMETHOD, SYM_WALK_STELLA_PRINT_OBJECT, listO(3, listO(3, SYM_WALK_STELLA_SELF, clasS->classType, NIL), listO(3, SYM_WALK_STELLA_STREAM, SYM_WALK_STELLA_NATIVE_OUTPUT_STREAM, NIL), NIL), KWD_WALK_PUBLICp, SYM_WALK_STELLA_TRUE, copyConsTree(dynamicSlotValue(clasS->dynamicSlots, SYM_WALK_STELLA_PRINT_FORM, NULL)), NIL));
       { boolean testValue000 = false;
 
-        testValue000 = oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP;
+        testValue000 = oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP;
         if (testValue000) {
           { boolean foundP000 = false;
 
@@ -9126,10 +9135,10 @@ void createDefprintUnit(Class* clasS) {
 
             self000->theObject = clasS;
             self000->category = SYM_WALK_STELLA_PRINT_METHOD;
-            self000->tuHomeModule = oMODULEo.get();
+            self000->tuHomeModule = oMODULEo;
             self000->codeRegister = walkATree(listO(5, SYM_WALK_STELLA_IF, listO(3, SYM_WALK_STELLA_NULLp, SYM_WALK_STELLA_SELF, NIL), listO(4, SYM_WALK_STELLA_PRINT_NATIVE_STREAM, SYM_WALK_STELLA_STREAM, wrapString("!NULL!"), NIL), listO(4, SYM_WALK_STELLA_PRINT_OBJECT, SYM_WALK_STELLA_SELF, SYM_WALK_STELLA_STREAM, NIL), NIL), dummy1);
             self000->auxiliaryP = true;
-            oTRANSLATIONUNITSo.get()->push(self000);
+            oTRANSLATIONUNITSo->push(self000);
           }
           popVariableBinding();
           popVariableBinding();
@@ -9137,7 +9146,7 @@ void createDefprintUnit(Class* clasS) {
       }
       { boolean testValue001 = false;
 
-        testValue001 = oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA;
+        testValue001 = oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA;
         if (testValue001) {
           { boolean foundP001 = false;
 
@@ -9159,16 +9168,16 @@ void createDefprintUnit(Class* clasS) {
         if (testValue001) {
           { 
             BIND_STELLA_SPECIAL(oMETHODBEINGWALKEDo, MethodSlot*, newMethodSlot());
-            oMETHODBEINGWALKEDo.get()->methodReturnTypeSpecifiers = list(1, SGT_WALK_STELLA_STRING);
+            oMETHODBEINGWALKEDo->methodReturnTypeSpecifiers = list(1, SGT_WALK_STELLA_STRING);
             pushVariableBinding(SYM_WALK_STELLA_SELF, clasS->classType);
             { TranslationUnit* self002 = newTranslationUnit();
 
               self002->theObject = clasS;
               self002->category = SYM_WALK_STELLA_PRINT_METHOD;
-              self002->tuHomeModule = oMODULEo.get();
+              self002->tuHomeModule = oMODULEo;
               self002->codeRegister = walkATree(listO(5, SYM_WALK_STELLA_IF, listO(3, SYM_WALK_STELLA_NULLp, SYM_WALK_STELLA_SELF, NIL), listO(3, SYM_WALK_STELLA_RETURN, wrapString("!NULL!"), NIL), listO(3, SYM_WALK_STELLA_RETURN, listO(4, SYM_WALK_STELLA_VERBATIM, KWD_WALK_JAVA, wrapString("#$(STELLAROOT).javalib.Native.stringify_via_print(self)"), NIL), NIL), NIL), dummy2);
               self002->auxiliaryP = true;
-              oTRANSLATIONUNITSo.get()->push(self002);
+              oTRANSLATIONUNITSo->push(self002);
             }
             popVariableBinding();
           }
@@ -9200,7 +9209,7 @@ void walkClassUnit(TranslationUnit* unit) {
       cleanupAuxiliaryMethods(clasS);
       if (!(clasS->mixinP &&
           translateToSingleInheritanceLanguageP())) {
-        oTRANSLATIONUNITSo.get()->push(unit);
+        oTRANSLATIONUNITSo->push(unit);
         createConstructorAndDestructorUnits(clasS);
         createInlineMethodUnits(clasS);
       }
@@ -9218,7 +9227,7 @@ void walkClassUnit(TranslationUnit* unit) {
                ((nativeSlotHome(slot, clasS) == clasS) &&
                 ((!(clasS->homeModule() == slot->homeModule())) &&
                  slotNameConflictP(slot, clasS))))) {
-            if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_COMMON_LISP) {
+            if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_COMMON_LISP) {
               { 
                 BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
                 signalTranslationWarning();
@@ -9237,7 +9246,7 @@ void walkClassUnit(TranslationUnit* unit) {
                   *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Slot " << "`" << deUglifyParseTree(slot) << "'" << " is defined outside the home module of " << std::endl << "   its owner class " << "`" << deUglifyParseTree(clasS) << "'" << ", and the name of" << std::endl << "   the slot conflicts with another slot." << "." << std::endl;
                 }
               }
-              while (!(((TranslationUnit*)(oTRANSLATIONUNITSo.get()->pop())) == unit)) {
+              while (!(((TranslationUnit*)(oTRANSLATIONUNITSo->pop())) == unit)) {
               }
               clearTranslationUnit(unit);
               return;
@@ -9270,19 +9279,19 @@ void walkDefslotTree(Cons* tree) {
 
     self000->category = SYM_WALK_STELLA_SLOT;
     self000->theObject = tree;
-    self000->tuHomeModule = oMODULEo.get();
-    oCURRENTTRANSLATIONUNITo.set(self000);
+    self000->tuHomeModule = oMODULEo;
+    oCURRENTTRANSLATIONUNITo = self000;
   }
   { StorageSlot* slot = NULL;
 
     slot = defineExternalSlotFromParseTree(tree);
     if (!((boolean)(slot))) {
-      clearTranslationUnit(oCURRENTTRANSLATIONUNITo.get());
-      oCURRENTTRANSLATIONUNITo.set(NULL);
+      clearTranslationUnit(oCURRENTTRANSLATIONUNITo);
+      oCURRENTTRANSLATIONUNITo = NULL;
       return;
     }
-    oCURRENTTRANSLATIONUNITo.get()->theObject = slot;
-    oCURRENTTRANSLATIONUNITo.get()->codeRegister = tree;
+    oCURRENTTRANSLATIONUNITo->theObject = slot;
+    oCURRENTTRANSLATIONUNITo->codeRegister = tree;
   }
 }
 
@@ -9346,8 +9355,8 @@ void walkDefmacroTree(Cons* tree) {
         options->insertAt(KWD_WALK_TYPE, SYM_WALK_STELLA_OBJECT);
         tree->rest->rest->rest = options->thePlist->concatenate(tree->rest->rest->rest, 0);
         walkDefmethodTree(tree);
-        if (((boolean)(oCURRENTTRANSLATIONUNITo.get()))) {
-          method = ((MethodSlot*)(oCURRENTTRANSLATIONUNITo.get()->theObject));
+        if (((boolean)(oCURRENTTRANSLATIONUNITo))) {
+          method = ((MethodSlot*)(oCURRENTTRANSLATIONUNITo->theObject));
           if (method->methodArgumentCount() > 5) {
             { 
               BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
@@ -9357,7 +9366,7 @@ void walkDefmacroTree(Cons* tree) {
                 *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Too many arguments in macro definition, maximum is 5" << "." << std::endl;
               }
             }
-            oCURRENTTRANSLATIONUNITo.set(NULL);
+            oCURRENTTRANSLATIONUNITo = NULL;
           }
         }
       }
@@ -9370,22 +9379,22 @@ void walkDefglobalTree(Cons* tree) {
 
     self000->category = SYM_WALK_STELLA_GLOBAL_VARIABLE;
     self000->theObject = tree;
-    self000->tuHomeModule = oMODULEo.get();
-    oCURRENTTRANSLATIONUNITo.set(self000);
+    self000->tuHomeModule = oMODULEo;
+    oCURRENTTRANSLATIONUNITo = self000;
   }
   if (tree->length() < 3) {
     badArgumentCountP(tree, 3);
-    clearTranslationUnit(oCURRENTTRANSLATIONUNITo.get());
-    oCURRENTTRANSLATIONUNITo.set(NULL);
+    clearTranslationUnit(oCURRENTTRANSLATIONUNITo);
+    oCURRENTTRANSLATIONUNITo = NULL;
     return;
   }
   { GlobalVariable* global = NULL;
     Object* initialvaluetree = NULL;
 
     global = defineStellaGlobalVariableFromParseTree(tree, stringify(tree), initialvaluetree);
-    oCURRENTTRANSLATIONUNITo.get()->theObject = global;
-    oCURRENTTRANSLATIONUNITo.get()->codeRegister = initialvaluetree;
-    oCURRENTTRANSLATIONUNITo.get()->auxiliaryP = global->variableAuxiliaryP;
+    oCURRENTTRANSLATIONUNITo->theObject = global;
+    oCURRENTTRANSLATIONUNITo->codeRegister = initialvaluetree;
+    oCURRENTTRANSLATIONUNITo->auxiliaryP = global->variableAuxiliaryP;
   }
 }
 
@@ -9396,10 +9405,11 @@ void walkGlobalUnit(TranslationUnit* unit) {
       Object* initialvaluetree = unit->codeRegister;
       char* stringifiedsource = global->variableStringifiedSource;
 
-      oTRANSLATIONUNITSo.get()->push(unit);
+      oTRANSLATIONUNITSo->push(unit);
       if (!(initialvaluetree == KWD_WALK_UNBOUND_SPECIAL_VARIABLE)) {
         if (global->variableSpecialP &&
-            translateToJavaP()) {
+            (translateToJavaP() ||
+             supportUnexecP())) {
           global->variableConstantP = false;
           walkAuxiliaryTree(listO(4, SYM_WALK_STELLA_STARTUP_TIME_PROGN, KWD_WALK_GLOBALS, listO(3, SYM_WALK_STELLA_SYS_SET_DEFAULT, global->variableName, cons(initialvaluetree, NIL)), NIL));
           initialvaluetree = KWD_WALK_UNBOUND_SPECIAL_VARIABLE;
@@ -9416,7 +9426,12 @@ void walkGlobalUnit(TranslationUnit* unit) {
         else {
           global->variableConstantP = false;
           walkAuxiliaryTree(listO(4, SYM_WALK_STELLA_STARTUP_TIME_PROGN, KWD_WALK_GLOBALS, listO(3, SYM_WALK_STELLA_SETQ, global->variableName, cons(initialvaluetree, NIL)), NIL));
-          initialvaluetree = typeToWalkedNullValueTree(globalVariableTypeSpec(global), typeSpecToBaseType(global->variableType));
+          if (supportUnexecP()) {
+            initialvaluetree = KWD_WALK_UNBOUND_SPECIAL_VARIABLE;
+          }
+          else {
+            initialvaluetree = typeToWalkedNullValueTree(globalVariableTypeSpec(global), typeSpecToBaseType(global->variableType));
+          }
         }
       }
       unit->codeRegister = initialvaluetree;
@@ -9432,27 +9447,27 @@ void walkDeftypeTree(Cons* tree) {
 
     self000->category = SYM_WALK_STELLA_TYPE;
     self000->theObject = tree;
-    self000->tuHomeModule = oMODULEo.get();
-    oCURRENTTRANSLATIONUNITo.set(self000);
+    self000->tuHomeModule = oMODULEo;
+    oCURRENTTRANSLATIONUNITo = self000;
   }
   if (tree->length() < 3) {
     badArgumentCountP(tree, 3);
-    clearTranslationUnit(oCURRENTTRANSLATIONUNITo.get());
-    oCURRENTTRANSLATIONUNITo.set(NULL);
+    clearTranslationUnit(oCURRENTTRANSLATIONUNITo);
+    oCURRENTTRANSLATIONUNITo = NULL;
     return;
   }
   { Surrogate* type = NULL;
 
     type = defineStellaTypeFromParseTree(tree);
-    oCURRENTTRANSLATIONUNITo.get()->theObject = type;
-    oCURRENTTRANSLATIONUNITo.get()->codeRegister = tree;
+    oCURRENTTRANSLATIONUNITo->theObject = type;
+    oCURRENTTRANSLATIONUNITo->codeRegister = tree;
   }
 }
 
 void walkTypeUnit(TranslationUnit* unit) {
   { char* stringifieddefinition = stringify(unit->codeRegister);
 
-    oTRANSLATIONUNITSo.get()->push(unit);
+    oTRANSLATIONUNITSo->push(unit);
     walkAuxiliaryTree(listO(4, SYM_WALK_STELLA_STARTUP_TIME_PROGN, KWD_WALK_CLASSES, listO(3, SYM_WALK_STELLA_DEFINE_STELLA_TYPE_FROM_STRINGIFIED_SOURCE, wrapString(stringifieddefinition), NIL), NIL));
     registerSymbol(internSymbolInModule(((Surrogate*)(unit->theObject))->symbolName, ((Module*)(((Surrogate*)(unit->theObject))->homeContext)), true));
   }
@@ -9462,9 +9477,9 @@ void walkStartupTimePrognTree(Cons* tree) {
   { TranslationUnit* self000 = newTranslationUnit();
 
     self000->category = SYM_WALK_STELLA_STARTUP_TIME_PROGN;
-    self000->tuHomeModule = oMODULEo.get();
+    self000->tuHomeModule = oMODULEo;
     self000->codeRegister = tree;
-    oCURRENTTRANSLATIONUNITo.set(self000);
+    oCURRENTTRANSLATIONUNITo = self000;
   }
 }
 
@@ -9488,7 +9503,7 @@ void walkStartupTimePrognUnit(TranslationUnit* unit) {
   { Cons* tree = ((Cons*)(unit->codeRegister));
     Keyword* phase = extractStartupTimePhase(tree);
 
-    oTRANSLATIONUNITSo.get()->push(unit);
+    oTRANSLATIONUNITSo->push(unit);
     unit->theObject = walkListOfStatements(tree->rest);
     unit->codeRegister = phase;
   }
@@ -9509,7 +9524,7 @@ Cons* combineStartupFunctionUnits(Symbol* startupfnname) {
     Cons* startupphasetrees = NIL;
     List* startupunits = newList();
 
-    { ListIterator* it = ((ListIterator*)(oTRANSLATIONUNITSo.get()->allocateIterator()));
+    { ListIterator* it = ((ListIterator*)(oTRANSLATIONUNITSo->allocateIterator()));
 
       for (it; it->nextP(); ) {
         if (((TranslationUnit*)(it->value))->category == SYM_WALK_STELLA_STARTUP_TIME_PROGN) {
@@ -9518,7 +9533,7 @@ Cons* combineStartupFunctionUnits(Symbol* startupfnname) {
         }
       }
     }
-    oTRANSLATIONUNITSo.get()->remove(NULL);
+    oTRANSLATIONUNITSo->remove(NULL);
     startupunits->sort(((cpp_function_code)(&earlierStartupUnitP)));
     if (((boolean)(startupfnname)) &&
         (startupunits->length() > oMAX_NUMBER_OF_STARTUP_UNITSo)) {
@@ -9547,7 +9562,7 @@ Cons* combineStartupFunctionUnits(Symbol* startupfnname) {
       }
     }
     if (!(startuptrees == NIL)) {
-      startuptrees = cons(listO(3, SYM_WALK_STELLA_WITHIN_MODULE, ((oMODULEo.get() == oSTELLA_MODULEo) ? ((StandardObject*)(SYM_WALK_STELLA_oSTELLA_MODULEo)) : ((StandardObject*)(listO(3, SYM_WALK_STELLA_GET_STELLA_MODULE, wrapString(oMODULEo.get()->moduleFullName), cons(listO(4, SYM_WALK_STELLA_g, SYM_WALK_STELLA_oSTARTUP_TIME_PHASEo, wrapInteger(encodeStartupTimePhase(KWD_WALK_MODULES)), NIL), NIL))))), startuptrees->reverse()->concatenate(NIL, 0)), NIL);
+      startuptrees = cons(listO(3, SYM_WALK_STELLA_WITHIN_MODULE, ((oMODULEo == oSTELLA_MODULEo) ? ((StandardObject*)(SYM_WALK_STELLA_oSTELLA_MODULEo)) : ((StandardObject*)(listO(3, SYM_WALK_STELLA_GET_STELLA_MODULE, wrapString(oMODULEo->moduleFullName), cons(listO(4, SYM_WALK_STELLA_g, SYM_WALK_STELLA_oSTARTUP_TIME_PHASEo, wrapInteger(encodeStartupTimePhase(KWD_WALK_MODULES)), NIL), NIL))))), startuptrees->reverse()->concatenate(NIL, 0)), NIL);
     }
     if ((!(earlystartuptrees == NIL)) ||
         (!(startuptrees == NIL))) {
@@ -9631,19 +9646,19 @@ void extractStartupFunctionUnits(List* startupunits, Symbol* startupfnname) {
 }
 
 Symbol* yieldStartupFunctionName(char* file) {
-  file = ((file == NULL) ? oCURRENTFILEo.get() : file);
+  file = ((file == NULL) ? oCURRENTFILEo : file);
   if (systemStartupFileP(file)) {
-    return (systemStartupFunctionSymbol(oCURRENTSYSTEMDEFINITIONo.get()));
+    return (systemStartupFunctionSymbol(oCURRENTSYSTEMDEFINITIONo));
   }
   else {
-    return (internSymbolInModule(stringConcatenate("STARTUP-", stringUpcase(fileBaseName(file)), 0), oMODULEo.get(), true));
+    return (internSymbolInModule(stringConcatenate("STARTUP-", stringUpcase(fileBaseName(file)), 0), oMODULEo, true));
   }
 }
 
 char* yieldStartupFunctionClassname(Symbol* functionName) {
   { StringWrapper* baseName = javaTranslateClassNamestring(wrapString(functionName->symbolName));
 
-    if (systemStartupFileP(oCURRENTFILEo.get())) {
+    if (systemStartupFileP(oCURRENTFILEo)) {
       return (baseName->wrapperValue);
     }
     else {
@@ -9653,7 +9668,7 @@ char* yieldStartupFunctionClassname(Symbol* functionName) {
 }
 
 void createStartupFunctionUnits() {
-  { Symbol* startupfnname = (incrementalTranslationP() ? ((Symbol*)(NULL)) : yieldStartupFunctionName(oCURRENTFILEo.get()));
+  { Symbol* startupfnname = (incrementalTranslationP() ? ((Symbol*)(NULL)) : yieldStartupFunctionName(oCURRENTFILEo));
     Cons* tree = NULL;
     MethodSlot* method = NULL;
 
@@ -9667,7 +9682,7 @@ void createStartupFunctionUnits() {
       setDynamicSlotValue(method->dynamicSlots, SYM_WALK_STELLA_METHOD_STARTUP_CLASSNAME, wrapString(yieldStartupFunctionClassname(startupfnname)), NULL_STRING_WRAPPER);
       tree = listO(4, SYM_WALK_STELLA_STARTUP_TIME_PROGN, KWD_WALK_METHODS, yieldDefineStellaMethodObject(method, method, NULL), cons(listO(4, SYM_WALK_STELLA_LET, cons(listO(3, SYM_WALK_STELLA_FUNCTION, listO(3, SYM_WALK_STELLA_LOOKUP_FUNCTION, listO(3, SYM_WALK_STELLA_QUOTE, startupfnname, NIL), NIL), NIL), NIL), listO(4, SYM_WALK_STELLA_SETF, listO(3, SYM_WALK_STELLA_METHOD_STARTUP_CLASSNAME, SYM_WALK_STELLA_FUNCTION, NIL), wrapString(((StringWrapper*)(dynamicSlotValue(method->dynamicSlots, SYM_WALK_STELLA_METHOD_STARTUP_CLASSNAME, NULL_STRING_WRAPPER)))->wrapperValue), NIL), NIL), NIL));
       walkAuxiliaryTree(tree);
-      if (systemStartupFileP(oCURRENTFILEo.get())) {
+      if (systemStartupFileP(oCURRENTFILEo)) {
         tree = listO(3, SYM_WALK_STELLA_DEFUN, startupfnname, listO(7, NIL, KWD_WALK_PUBLICp, SYM_WALK_STELLA_TRUE, KWD_WALK_AUXILIARYp, SYM_WALK_STELLA_TRUE, listO(3, SYM_WALK_STELLA_WITH_PROCESS_LOCK, SYM_WALK_STELLA_oBOOTSTRAP_LOCKo, combineStartupFunctionUnits(startupfnname)->concatenate(NIL, 0)), NIL));
       }
       else {
@@ -9678,20 +9693,20 @@ void createStartupFunctionUnits() {
     else {
       tree = cons(SYM_WALK_STELLA_STARTUP_TIME_PROGN, combineStartupFunctionUnits(startupfnname)->concatenate(NIL, 0));
       walkAuxiliaryTree(tree);
-      tree = cons(SYM_WALK_STELLA_PROGN, ((Cons*)(((TranslationUnit*)(oTRANSLATIONUNITSo.get()->first()))->theObject)));
-      ((TranslationUnit*)(oTRANSLATIONUNITSo.get()->first()))->theObject = tree;
+      tree = cons(SYM_WALK_STELLA_PROGN, ((Cons*)(((TranslationUnit*)(oTRANSLATIONUNITSo->first()))->theObject)));
+      ((TranslationUnit*)(oTRANSLATIONUNITSo->first()))->theObject = tree;
     }
   }
 }
 
 boolean dontGenerateStartupCodeP() {
-  return (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE);
+  return (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE);
 }
 
 void removeAllStartupTimePrognUnits() {
   { TranslationUnit* placeholderunit = NULL;
 
-    { ListIterator* it = ((ListIterator*)(oTRANSLATIONUNITSo.get()->allocateIterator()));
+    { ListIterator* it = ((ListIterator*)(oTRANSLATIONUNITSo->allocateIterator()));
 
       for (it; it->nextP(); ) {
         if (((TranslationUnit*)(it->value))->category == SYM_WALK_STELLA_STARTUP_TIME_PROGN) {
@@ -9708,13 +9723,13 @@ void removeAllStartupTimePrognUnits() {
         }
       }
     }
-    oTRANSLATIONUNITSo.get()->remove(placeholderunit);
+    oTRANSLATIONUNITSo->remove(placeholderunit);
     clearTranslationUnit(placeholderunit);
   }
 }
 
 Cons* walkSignalExceptionTree(Cons* tree, StandardObject*& _Return1) {
-  oFOUNDRETURNpo.set(true);
+  oFOUNDRETURNpo = true;
   { Object* expression = NULL;
     StandardObject* itsType = NULL;
 
@@ -9881,7 +9896,7 @@ void walkVerbatimDefinitionTree(Cons* tree) {
 
     self000->category = SYM_WALK_STELLA_VERBATIM;
     self000->codeRegister = tree;
-    oCURRENTTRANSLATIONUNITo.set(self000);
+    oCURRENTTRANSLATIONUNITo = self000;
   }
 }
 
@@ -9890,7 +9905,7 @@ void walkVerbatimUnit(TranslationUnit* unit) {
 
     unit->theObject = walkATree(unit->codeRegister, dummy1);
     if (((boolean)(unit->theObject))) {
-      oTRANSLATIONUNITSo.get()->push(unit);
+      oTRANSLATIONUNITSo->push(unit);
       unit->codeRegister = NULL;
     }
     else {
@@ -9905,7 +9920,7 @@ Object* walkVerbatimTree(Cons* tree, StandardObject*& _Return1) {
 
     self000->thePlist = tree->rest;
     { PropertyList* options = self000;
-      Object* verbatimtree = options->lookup(oTRANSLATOROUTPUTLANGUAGEo.get());
+      Object* verbatimtree = options->lookup(oTRANSLATOROUTPUTLANGUAGEo);
 
       if (!((boolean)(verbatimtree))) {
         verbatimtree = options->lookup(KWD_WALK_OTHERWISE);
@@ -9915,7 +9930,7 @@ Object* walkVerbatimTree(Cons* tree, StandardObject*& _Return1) {
             signalTranslationError();
             if (!(suppressWarningsP())) {
               printErrorContext(">> ERROR: ", STANDARD_ERROR);
-              *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Verbatim statement has no " << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " option." << "." << std::endl;
+              *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Verbatim statement has no " << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " option." << "." << std::endl;
             }
           }
           _Return1 = SGT_WALK_STELLA_UNKNOWN;
@@ -9933,7 +9948,7 @@ Object* walkVerbatimTree(Cons* tree, StandardObject*& _Return1) {
         { Object* verbatimtree000 = verbatimtree;
           StringWrapper* verbatimtree = ((StringWrapper*)(verbatimtree000));
 
-          options->insertAt(oTRANSLATOROUTPUTLANGUAGEo.get(), newVerbatimStringWrapper(verbatimtree->wrapperValue));
+          options->insertAt(oTRANSLATOROUTPUTLANGUAGEo, newVerbatimStringWrapper(verbatimtree->wrapperValue));
         }
       }
       else {
@@ -9946,7 +9961,7 @@ Object* walkVerbatimTree(Cons* tree, StandardObject*& _Return1) {
 
 Object* lookupVerbatimTree(Cons* tree, Keyword* language) {
   if (!((boolean)(language))) {
-    language = oTRANSLATOROUTPUTLANGUAGEo.get();
+    language = oTRANSLATOROUTPUTLANGUAGEo;
   }
   return (searchPlist(tree->rest, language));
 }
@@ -9961,7 +9976,7 @@ void walkDefmoduleTree(Cons* tree) {
 
     self000->category = SYM_WALK_STELLA_MODULE;
     self000->theObject = tree;
-    oCURRENTTRANSLATIONUNITo.set(self000);
+    oCURRENTTRANSLATIONUNITo = self000;
   }
   { Module* module = NULL;
     char* modulename = coerceToModuleName(tree->rest->value, false);
@@ -9975,12 +9990,12 @@ void walkDefmoduleTree(Cons* tree) {
           *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Illegal module name: " << "`" << tree->rest->value << "'" << "." << std::endl;
         }
       }
-      clearTranslationUnit(oCURRENTTRANSLATIONUNITo.get());
-      oCURRENTTRANSLATIONUNITo.set(NULL);
+      clearTranslationUnit(oCURRENTTRANSLATIONUNITo);
+      oCURRENTTRANSLATIONUNITo = NULL;
       return;
     }
     module = defineModule(modulename, tree->rest->rest);
-    oCURRENTTRANSLATIONUNITo.get()->theObject = module;
+    oCURRENTTRANSLATIONUNITo->theObject = module;
   }
 }
 
@@ -10210,19 +10225,27 @@ Cons* yieldNewArgumentsTree(Cons* keywordsandvalues, StandardObject* classtype, 
         { PropertyListIterator* it = ((PropertyListIterator*)(plist->allocateIterator()));
 
           for (it; it->nextP(); ) {
-            if (!keywordP(it->key)) {
-              { 
-                BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-                signalTranslationError();
-                if (!(suppressWarningsP())) {
-                  printErrorContext(">> ERROR: ", STANDARD_ERROR);
-                  *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Illegal slot keyword " << "`" << it->key << "'" << " in NEW expression" << "." << std::endl;
-                }
+            { Surrogate* testValue000 = safePrimaryType(it->key);
+
+              if (subtypeOfKeywordP(testValue000)) {
+                slotname = internSymbolInModule(((Keyword*)(it->key))->symbolName, clasS->homeModule(), false);
               }
-              _Return1 = NIL;
-              return (NIL);
+              else if (subtypeOfSymbolP(testValue000)) {
+                slotname = ((Symbol*)(it->key));
+              }
+              else {
+                { 
+                  BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+                  signalTranslationError();
+                  if (!(suppressWarningsP())) {
+                    printErrorContext(">> ERROR: ", STANDARD_ERROR);
+                    *(STANDARD_ERROR->nativeStream) << std::endl << " " << "Illegal slot keyword " << "`" << it->key << "'" << " in NEW expression" << "." << std::endl;
+                  }
+                }
+                _Return1 = NIL;
+                return (NIL);
+              }
             }
-            slotname = internSymbolInModule(((Keyword*)(it->key))->symbolName, clasS->homeModule(), false);
             slot = lookupSlot(clasS, slotname);
             if (!((boolean)(slot))) {
               { 
@@ -10285,7 +10308,7 @@ Cons* yieldNewArgumentsTree(Cons* keywordsandvalues, StandardObject* classtype, 
 }
 
 Surrogate* getCurrentSelfType() {
-  { MethodSlot* method = oMETHODBEINGWALKEDo.get();
+  { MethodSlot* method = oMETHODBEINGWALKEDo;
     Surrogate* owner = SGT_WALK_STELLA_UNKNOWN;
 
     if (((boolean)(method))) {
@@ -10407,7 +10430,7 @@ Cons* walkMakeTree(Cons* tree, StandardObject*& _Return1) {
     }
     if ((!(arguments == NIL)) &&
         (!exceptionClassP(clasS))) {
-      if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) {
+      if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) {
         if (!(((StringWrapper*)(dynamicSlotValue(clasS->dynamicSlots, SYM_WALK_STELLA_CLASS_CPP_NATIVE_TYPE, NULL_STRING_WRAPPER)))->wrapperValue != NULL)) {
           { 
             BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
@@ -10420,7 +10443,7 @@ Cons* walkMakeTree(Cons* tree, StandardObject*& _Return1) {
           return (walkDontCallMeTree(tree, type, _Return1));
         }
       }
-      else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_JAVA) {
+      else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_JAVA) {
         if (!(((StringWrapper*)(dynamicSlotValue(clasS->dynamicSlots, SYM_WALK_STELLA_CLASS_JAVA_NATIVE_TYPE, NULL_STRING_WRAPPER)))->wrapperValue != NULL)) {
           { 
             BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
@@ -10457,7 +10480,7 @@ Cons* walkFuncallTree(Cons* tree, StandardObject*& _Return1) {
     _Return1 = ((StandardObject*)(((Cons*)(((Cons*)(tree->rest->value))->value))->value));
     return (tree);
   }
-  { StandardObject* returntype = ((oTARGETTYPEo.get() == SGT_WALK_STELLA_UNKNOWN) ? SGT_WALK_STELLA_VOID : ((StandardObject*)(oTARGETTYPEo.get())));
+  { StandardObject* returntype = ((oTARGETTYPEo == SGT_WALK_STELLA_UNKNOWN) ? SGT_WALK_STELLA_VOID : ((StandardObject*)(oTARGETTYPEo)));
     Cons* signature = cons(cons(returntype, NIL), NIL);
 
     { Object* otree = NULL;
@@ -10493,8 +10516,8 @@ Cons* walkTheCodeTree(Cons* tree, StandardObject*& _Return1) {
         return (walkDontCallMeTree(tree, SGT_WALK_STELLA_FUNCTION_CODE, _Return1));
       }
       if (tree->rest->rest->value == SYM_WALK_STELLA_MAIN) {
-        if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) ||
-            (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE)) {
+        if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) ||
+            (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE)) {
           { 
             BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
             signalTranslationError();
@@ -10537,8 +10560,8 @@ Cons* walkTheCodeTree(Cons* tree, StandardObject*& _Return1) {
           }
         }
         else {
-          if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP) ||
-              (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_WALK_CPP_STANDALONE)) {
+          if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP) ||
+              (oTRANSLATOROUTPUTLANGUAGEo == KWD_WALK_CPP_STANDALONE)) {
             if (subtypeOfP(type, SGT_WALK_STELLA_LITERAL)) {
               { 
                 BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
@@ -10785,7 +10808,7 @@ boolean methodNeedsLispMacroP(MethodSlot* method) {
 }
 
 Cons* yieldLispMacroTrees(Symbol* name, MethodSlot* method, Cons*& _Return1) {
-  { Module* module = (((boolean)(((Module*)(name->homeContext)))) ? ((Module*)(name->homeContext)) : oMODULEo.get());
+  { Module* module = (((boolean)(((Module*)(name->homeContext)))) ? ((Module*)(name->homeContext)) : oMODULEo);
     Object* translatedname = yieldGlobalLispSymbol(module, name->symbolName);
     Object* translatedfullname = yieldGlobalLispSymbol(module, computeFullName(name->symbolName, module));
     char* documentation = ((StringWrapper*)(dynamicSlotValue(method->dynamicSlots, SYM_WALK_STELLA_DOCUMENTATION, NULL_STRING_WRAPPER)))->wrapperValue;
@@ -10836,57 +10859,75 @@ MethodSlot* lookupCommand(Symbol* name) {
   }
 }
 
+MethodSlot* lookupCommandLikeFunction(Symbol* name) {
+  // Look up a function with `name' that can be evaluated via `apply'
+  // just like a command, regardless of whether it was marked as such.
+  { MethodSlot* function = lookupFunction(name);
+
+    if (((boolean)(function)) &&
+        methodCallableViaApplyP(function)) {
+      return (function);
+    }
+    else {
+      return (NULL);
+    }
+  }
+}
+
 boolean methodMustBeEvaluableP(MethodSlot* method) {
   return (commandP(method) &&
       (!((BooleanWrapper*)(dynamicSlotValue(method->dynamicSlots, SYM_WALK_STELLA_METHOD_NATIVEp, FALSE_WRAPPER)))->wrapperValue));
 }
 
-boolean methodNeedsEvaluatorWrapperP(MethodSlot* method) {
+boolean methodCallableViaApplyP(MethodSlot* method) {
   { boolean testValue000 = false;
 
-    testValue000 = methodMustBeEvaluableP(method);
-    if (testValue000) {
-      if (((BooleanWrapper*)(dynamicSlotValue(method->dynamicSlots, SYM_WALK_STELLA_METHOD_VARIABLE_ARGUMENTSp, FALSE_WRAPPER)))->wrapperValue) {
+    if (((BooleanWrapper*)(dynamicSlotValue(method->dynamicSlots, SYM_WALK_STELLA_METHOD_VARIABLE_ARGUMENTSp, FALSE_WRAPPER)))->wrapperValue) {
+      testValue000 = true;
+    }
+    else {
+      if (method->methodParameterNames_reader()->length() > 10) {
         testValue000 = true;
       }
       else {
-        if (method->methodParameterNames_reader()->length() > 5) {
+        if (method->methodReturnTypeSpecifiers_reader()->length() > 1) {
           testValue000 = true;
         }
         else {
-          if (method->methodReturnTypeSpecifiers_reader()->length() > 1) {
+          if (subtypeOfP(method->type(), SGT_WALK_STELLA_LITERAL)) {
             testValue000 = true;
           }
           else {
-            if (subtypeOfP(method->type(), SGT_WALK_STELLA_LITERAL)) {
-              testValue000 = true;
-            }
-            else {
-              { boolean foundP000 = false;
+            { boolean foundP000 = false;
 
-                { StandardObject* tspec = NULL;
-                  Cons* iter000 = method->methodParameterTypeSpecifiers_reader()->theConsList;
+              { StandardObject* tspec = NULL;
+                Cons* iter000 = method->methodParameterTypeSpecifiers_reader()->theConsList;
 
-                  for (tspec, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-                    tspec = ((StandardObject*)(iter000->value));
-                    if (subtypeOfP(typeSpecToBaseType(tspec), SGT_WALK_STELLA_LITERAL)) {
-                      foundP000 = true;
-                      break;
-                    }
+                for (tspec, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+                  tspec = ((StandardObject*)(iter000->value));
+                  if (subtypeOfP(typeSpecToBaseType(tspec), SGT_WALK_STELLA_LITERAL)) {
+                    foundP000 = true;
+                    break;
                   }
                 }
-                testValue000 = foundP000;
               }
+              testValue000 = foundP000;
             }
           }
         }
       }
     }
+    testValue000 = !testValue000;
     { boolean value000 = testValue000;
 
       return (value000);
     }
   }
+}
+
+boolean methodNeedsEvaluatorWrapperP(MethodSlot* method) {
+  return (methodMustBeEvaluableP(method) &&
+      (!methodCallableViaApplyP(method)));
 }
 
 Symbol* yieldEvaluatorWrapperName(Symbol* methodname) {
@@ -10955,8 +10996,8 @@ Cons* yieldEvaluatorWrapperTree(MethodSlot* method) {
           index = iter000;
           if (!((boolean)(collect000))) {
             {
-              collect000 = cons(yieldArgumentAccessTree(SYM_WALK_STELLA_ARGUMENTS, index, variableargumentsP &&
-                  (index == nofparameters)), NIL);
+              collect000 = cons(yieldArgumentAccessTree(SYM_WALK_STELLA_ARGUMENTS, index, (index == nofparameters) &&
+                  variableargumentsP), NIL);
               if (calltree == NIL) {
                 calltree = collect000;
               }
@@ -10967,8 +11008,8 @@ Cons* yieldEvaluatorWrapperTree(MethodSlot* method) {
           }
           else {
             {
-              collect000->rest = cons(yieldArgumentAccessTree(SYM_WALK_STELLA_ARGUMENTS, index, variableargumentsP &&
-                  (index == nofparameters)), NIL);
+              collect000->rest = cons(yieldArgumentAccessTree(SYM_WALK_STELLA_ARGUMENTS, index, (index == nofparameters) &&
+                  variableargumentsP), NIL);
               collect000 = collect000->rest;
             }
           }
@@ -11139,7 +11180,7 @@ Object* evaluateConsTree(Cons* tree, StandardObject*& _Return1) {
     StandardObject* dummy4;
 
     { 
-      BIND_STELLA_SPECIAL(oEVALUATIONPARENTTREEo, Object*, oEVALUATIONTREEo.get());
+      BIND_STELLA_SPECIAL(oEVALUATIONPARENTTREEo, Object*, oEVALUATIONTREEo);
       BIND_STELLA_SPECIAL(oEVALUATIONTREEo, Object*, tree);
       { Object* operatorname = tree->value;
         Cons* arguments = tree->rest;
@@ -11159,9 +11200,9 @@ Object* evaluateConsTree(Cons* tree, StandardObject*& _Return1) {
               }
               { OutputStringStream* stream000 = newOutputStringStream();
 
-                *(stream000->nativeStream) << "While evaluating '" << oEVALUATIONTREEo.get();
-                if (((boolean)(oEVALUATIONPARENTTREEo.get()))) {
-                  *(stream000->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo.get();
+                *(stream000->nativeStream) << "While evaluating '" << oEVALUATIONTREEo;
+                if (((boolean)(oEVALUATIONPARENTTREEo))) {
+                  *(stream000->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo;
                 }
                 *(stream000->nativeStream) << "':" << std::endl;
                 *(stream000->nativeStream) << "Illegal QUOTE expression";
@@ -11185,9 +11226,9 @@ Object* evaluateConsTree(Cons* tree, StandardObject*& _Return1) {
                 }
                 { OutputStringStream* stream001 = newOutputStringStream();
 
-                  *(stream001->nativeStream) << "While evaluating '" << oEVALUATIONTREEo.get();
-                  if (((boolean)(oEVALUATIONPARENTTREEo.get()))) {
-                    *(stream001->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo.get();
+                  *(stream001->nativeStream) << "While evaluating '" << oEVALUATIONTREEo;
+                  if (((boolean)(oEVALUATIONPARENTTREEo))) {
+                    *(stream001->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo;
                   }
                   *(stream001->nativeStream) << "':" << std::endl;
                   *(stream001->nativeStream) << "Illegal CONS expression";
@@ -11210,9 +11251,9 @@ Object* evaluateConsTree(Cons* tree, StandardObject*& _Return1) {
                 }
                 { OutputStringStream* stream002 = newOutputStringStream();
 
-                  *(stream002->nativeStream) << "While evaluating '" << oEVALUATIONTREEo.get();
-                  if (((boolean)(oEVALUATIONPARENTTREEo.get()))) {
-                    *(stream002->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo.get();
+                  *(stream002->nativeStream) << "While evaluating '" << oEVALUATIONTREEo;
+                  if (((boolean)(oEVALUATIONPARENTTREEo))) {
+                    *(stream002->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo;
                   }
                   *(stream002->nativeStream) << "':" << std::endl;
                   *(stream002->nativeStream) << "Illegal APPEND expression";
@@ -11233,24 +11274,20 @@ Object* evaluateConsTree(Cons* tree, StandardObject*& _Return1) {
               return (NULL);
             }
             else {
-              { boolean testValue000 = false;
+              operatoR = lookupCommand(operatorname);
+              if (!((boolean)(operatoR))) {
+                operatoR = lookupCommandLikeFunction(operatorname);
+              }
+              if (!((boolean)(operatoR))) {
+                { OutputStringStream* stream003 = newOutputStringStream();
 
-                { 
-                  operatoR = lookupCommand(operatorname);
-                  testValue000 = ((boolean)(operatoR));
-                }
-                testValue000 = !testValue000;
-                if (testValue000) {
-                  { OutputStringStream* stream003 = newOutputStringStream();
-
-                    *(stream003->nativeStream) << "While evaluating '" << oEVALUATIONTREEo.get();
-                    if (((boolean)(oEVALUATIONPARENTTREEo.get()))) {
-                      *(stream003->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo.get();
-                    }
-                    *(stream003->nativeStream) << "':" << std::endl;
-                    *(stream003->nativeStream) << "Undefined operator: " << "`" << operatorname << "'";
-                    throw *newEvaluationException(stream003->theStringReader());
+                  *(stream003->nativeStream) << "While evaluating '" << oEVALUATIONTREEo;
+                  if (((boolean)(oEVALUATIONPARENTTREEo))) {
+                    *(stream003->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo;
                   }
+                  *(stream003->nativeStream) << "':" << std::endl;
+                  *(stream003->nativeStream) << "Undefined operator: " << "`" << operatorname << "'";
+                  throw *newEvaluationException(stream003->theStringReader());
                 }
               }
             }
@@ -11259,9 +11296,9 @@ Object* evaluateConsTree(Cons* tree, StandardObject*& _Return1) {
         else {
           { OutputStringStream* stream004 = newOutputStringStream();
 
-            *(stream004->nativeStream) << "While evaluating '" << oEVALUATIONTREEo.get();
-            if (((boolean)(oEVALUATIONPARENTTREEo.get()))) {
-              *(stream004->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo.get();
+            *(stream004->nativeStream) << "While evaluating '" << oEVALUATIONTREEo;
+            if (((boolean)(oEVALUATIONPARENTTREEo))) {
+              *(stream004->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo;
             }
             *(stream004->nativeStream) << "':" << std::endl;
             *(stream004->nativeStream) << "Illegal operator: " << "`" << operatorname << "'";
@@ -11297,9 +11334,9 @@ Object* evaluateConsTree(Cons* tree, StandardObject*& _Return1) {
               }
               { OutputStringStream* stream005 = newOutputStringStream();
 
-                *(stream005->nativeStream) << "While evaluating '" << oEVALUATIONTREEo.get();
-                if (((boolean)(oEVALUATIONPARENTTREEo.get()))) {
-                  *(stream005->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo.get();
+                *(stream005->nativeStream) << "While evaluating '" << oEVALUATIONTREEo;
+                if (((boolean)(oEVALUATIONPARENTTREEo))) {
+                  *(stream005->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo;
                 }
                 *(stream005->nativeStream) << "':" << std::endl;
                 *(stream005->nativeStream) << "Wrong number of arguments.  Expected " << "`" << minstring << "'" << "`" << maxstring << "'" << " but got " << "`" << nofargs << "'";
@@ -11385,7 +11422,7 @@ Object* evaluateArgumentTree(Object* tree, boolean evaluateP, StandardObject*& _
 
 Object* evaluateAtomicTree(Object* tree, StandardObject*& _Return1) {
   { 
-    BIND_STELLA_SPECIAL(oEVALUATIONPARENTTREEo, Object*, oEVALUATIONTREEo.get());
+    BIND_STELLA_SPECIAL(oEVALUATIONPARENTTREEo, Object*, oEVALUATIONTREEo);
     BIND_STELLA_SPECIAL(oEVALUATIONTREEo, Object*, tree);
     { Surrogate* testValue000 = safePrimaryType(tree);
 
@@ -11412,9 +11449,9 @@ Object* evaluateAtomicTree(Object* tree, StandardObject*& _Return1) {
           else {
             { OutputStringStream* stream000 = newOutputStringStream();
 
-              *(stream000->nativeStream) << "While evaluating '" << oEVALUATIONTREEo.get();
-              if (((boolean)(oEVALUATIONPARENTTREEo.get()))) {
-                *(stream000->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo.get();
+              *(stream000->nativeStream) << "While evaluating '" << oEVALUATIONTREEo;
+              if (((boolean)(oEVALUATIONPARENTTREEo))) {
+                *(stream000->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo;
               }
               *(stream000->nativeStream) << "':" << std::endl;
               *(stream000->nativeStream) << "Variable evaluation not yet implemented";
@@ -11453,9 +11490,9 @@ Object* evaluateAtomicTree(Object* tree, StandardObject*& _Return1) {
       else {
         { OutputStringStream* stream001 = newOutputStringStream();
 
-          *(stream001->nativeStream) << "While evaluating '" << oEVALUATIONTREEo.get();
-          if (((boolean)(oEVALUATIONPARENTTREEo.get()))) {
-            *(stream001->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo.get();
+          *(stream001->nativeStream) << "While evaluating '" << oEVALUATIONTREEo;
+          if (((boolean)(oEVALUATIONPARENTTREEo))) {
+            *(stream001->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo;
           }
           *(stream001->nativeStream) << "':" << std::endl;
           *(stream001->nativeStream) << "Unknown atomic expression type: " << "`" << tree << "'";
@@ -11535,6 +11572,9 @@ Object* makeEvaluatableBquoteTree(Object* tree) {
               else if (testValue001 == SYM_WALK_STELLA_CONCATENATE) {
                 return (listO(3, SYM_WALK_STELLA_APPEND, args->value, cons(args->rest->value, NIL)));
               }
+              else if (testValue001 == SYM_WALK_STELLA_WRAP_LITERAL) {
+                return (args->value);
+              }
               else {
                 return (cons(tree->value, args));
               }
@@ -11562,7 +11602,7 @@ Object* evaluateBquoteTree(Cons* tree, StandardObject*& _Return1) {
 
 Object* coerceEvaluatedTree(Object* tree, Object* sourcetree, StandardObject* sourcetype, StandardObject* targettype, boolean evaluateP, StandardObject*& _Return1) {
   { 
-    BIND_STELLA_SPECIAL(oEVALUATIONPARENTTREEo, Object*, oEVALUATIONTREEo.get());
+    BIND_STELLA_SPECIAL(oEVALUATIONPARENTTREEo, Object*, oEVALUATIONTREEo);
     BIND_STELLA_SPECIAL(oEVALUATIONTREEo, Object*, sourcetree);
     { Surrogate* sourcebasetype = typeSpecToBaseType(sourcetype);
       Surrogate* targetbasetype = typeSpecToBaseType(targettype);
@@ -11629,9 +11669,9 @@ Object* coerceEvaluatedTree(Object* tree, Object* sourcetree, StandardObject* so
       if (voidP(sourcetype)) {
         { OutputStringStream* stream000 = newOutputStringStream();
 
-          *(stream000->nativeStream) << "While evaluating '" << oEVALUATIONTREEo.get();
-          if (((boolean)(oEVALUATIONPARENTTREEo.get()))) {
-            *(stream000->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo.get();
+          *(stream000->nativeStream) << "While evaluating '" << oEVALUATIONTREEo;
+          if (((boolean)(oEVALUATIONPARENTTREEo))) {
+            *(stream000->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo;
           }
           *(stream000->nativeStream) << "':" << std::endl;
           *(stream000->nativeStream) << "`" << sourcetree << "'" << " does not return a value";
@@ -11641,9 +11681,9 @@ Object* coerceEvaluatedTree(Object* tree, Object* sourcetree, StandardObject* so
       else {
         { OutputStringStream* stream001 = newOutputStringStream();
 
-          *(stream001->nativeStream) << "While evaluating '" << oEVALUATIONTREEo.get();
-          if (((boolean)(oEVALUATIONPARENTTREEo.get()))) {
-            *(stream001->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo.get();
+          *(stream001->nativeStream) << "While evaluating '" << oEVALUATIONTREEo;
+          if (((boolean)(oEVALUATIONPARENTTREEo))) {
+            *(stream001->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo;
           }
           *(stream001->nativeStream) << "':" << std::endl;
           *(stream001->nativeStream) << "Type conflict: " << "`" << yieldTypeSpecTree(sourcetype) << "'" << " found where " << "`" << yieldTypeSpecTree(targettype) << "'" << " expected";
@@ -11665,6 +11705,7 @@ void helpStartupWalk1() {
     KWD_WALK_USE_CPP_GARBAGE_COLLECTOR = ((Keyword*)(internRigidSymbolWrtModule("USE-CPP-GARBAGE-COLLECTOR", NULL, 2)));
     KWD_WALK_MINIMIZE_JAVA_PREFIXES = ((Keyword*)(internRigidSymbolWrtModule("MINIMIZE-JAVA-PREFIXES", NULL, 2)));
     KWD_WALK_TRANSLATE_WITH_COPYRIGHT_HEADER = ((Keyword*)(internRigidSymbolWrtModule("TRANSLATE-WITH-COPYRIGHT-HEADER", NULL, 2)));
+    KWD_WALK_SUPPORT_UNEXEC = ((Keyword*)(internRigidSymbolWrtModule("SUPPORT-UNEXEC", NULL, 2)));
     KWD_WALK_USE_COMMON_LISP_VECTOR_STRUCTS = ((Keyword*)(internRigidSymbolWrtModule("USE-COMMON-LISP-VECTOR-STRUCTS", NULL, 2)));
     SGT_WALK_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", NULL, 1)));
     SYM_WALK_STELLA_MEMBp = ((Symbol*)(internRigidSymbolWrtModule("MEMB?", NULL, 0)));
@@ -11715,12 +11756,12 @@ void helpStartupWalk1() {
     SYM_WALK_STELLA_PRINT_METHOD = ((Symbol*)(internRigidSymbolWrtModule("PRINT-METHOD", NULL, 0)));
     SYM_WALK_STELLA_SLOT = ((Symbol*)(internRigidSymbolWrtModule("SLOT", NULL, 0)));
     KWD_WALK_JAVA_STANDALONE = ((Keyword*)(internRigidSymbolWrtModule("JAVA-STANDALONE", NULL, 2)));
-    SYM_WALK_STELLA_METHOD_CONSTRUCTORp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-CONSTRUCTOR?", NULL, 0)));
   }
 }
 
 void helpStartupWalk2() {
   {
+    SYM_WALK_STELLA_METHOD_CONSTRUCTORp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-CONSTRUCTOR?", NULL, 0)));
     KWD_WALK_DEFINE = ((Keyword*)(internRigidSymbolWrtModule("DEFINE", NULL, 2)));
     KWD_WALK_FINALIZE = ((Keyword*)(internRigidSymbolWrtModule("FINALIZE", NULL, 2)));
     KWD_WALK_WALK = ((Keyword*)(internRigidSymbolWrtModule("WALK", NULL, 2)));
@@ -11780,12 +11821,12 @@ void helpStartupWalk2() {
     SGT_WALK_STELLA_FUNCTION_CODE = ((Surrogate*)(internRigidSymbolWrtModule("FUNCTION-CODE", NULL, 1)));
     SGT_WALK_STELLA_METHOD_CODE_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("METHOD-CODE-WRAPPER", NULL, 1)));
     SGT_WALK_STELLA_METHOD_CODE = ((Surrogate*)(internRigidSymbolWrtModule("METHOD-CODE", NULL, 1)));
-    SGT_WALK_STELLA_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("OBJECT", NULL, 1)));
   }
 }
 
 void helpStartupWalk3() {
   {
+    SGT_WALK_STELLA_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("OBJECT", NULL, 1)));
     SYM_WALK_STELLA_INLINE_WRAP_BOOLEAN = ((Symbol*)(internRigidSymbolWrtModule("INLINE-WRAP-BOOLEAN", NULL, 0)));
     SYM_WALK_STELLA_WRAP_LITERAL = ((Symbol*)(internRigidSymbolWrtModule("WRAP-LITERAL", NULL, 0)));
     SYM_WALK_STELLA_INTEGER_TO_BOOLEAN_WRAPPER = ((Symbol*)(internRigidSymbolWrtModule("INTEGER-TO-BOOLEAN-WRAPPER", NULL, 0)));
@@ -11845,12 +11886,12 @@ void helpStartupWalk3() {
     SYM_WALK_STELLA_CONTINUE = ((Symbol*)(internRigidSymbolWrtModule("CONTINUE", NULL, 0)));
     SYM_WALK_STELLA_WHILE = ((Symbol*)(internRigidSymbolWrtModule("WHILE", NULL, 0)));
     SYM_WALK_STELLA_FOREACH = ((Symbol*)(internRigidSymbolWrtModule("FOREACH", NULL, 0)));
-    SYM_WALK_STELLA_EXISTS = ((Symbol*)(internRigidSymbolWrtModule("EXISTS", NULL, 0)));
   }
 }
 
 void helpStartupWalk4() {
   {
+    SYM_WALK_STELLA_EXISTS = ((Symbol*)(internRigidSymbolWrtModule("EXISTS", NULL, 0)));
     SYM_WALK_STELLA_FORALL = ((Symbol*)(internRigidSymbolWrtModule("FORALL", NULL, 0)));
     SYM_WALK_STELLA_SOME = ((Symbol*)(internRigidSymbolWrtModule("SOME", NULL, 0)));
     SYM_WALK_STELLA_SETOF = ((Symbol*)(internRigidSymbolWrtModule("SETOF", NULL, 0)));
@@ -11910,12 +11951,12 @@ void helpStartupWalk4() {
     SYM_WALK_STELLA_DO = ((Symbol*)(internRigidSymbolWrtModule("DO", NULL, 0)));
     SYM_WALK_STELLA_WRAPPEDVALUE = ((Symbol*)(internRigidSymbolWrtModule("WRAPPEDVALUE", NULL, 0)));
     SYM_WALK_STELLA_VALUE = ((Symbol*)(internRigidSymbolWrtModule("VALUE", NULL, 0)));
-    KWD_WALK_BIT = ((Keyword*)(internRigidSymbolWrtModule("BIT", NULL, 2)));
   }
 }
 
 void helpStartupWalk5() {
   {
+    KWD_WALK_BIT = ((Keyword*)(internRigidSymbolWrtModule("BIT", NULL, 2)));
     SYM_WALK_STELLA_DYNAMICSLOTS = ((Symbol*)(internRigidSymbolWrtModule("DYNAMICSLOTS", NULL, 0)));
     SYM_WALK_STELLA_NEWVALUE = ((Symbol*)(internRigidSymbolWrtModule("NEWVALUE", NULL, 0)));
     SYM_WALK_STELLA_FOUNDMATCHINGENTRYp = ((Symbol*)(internRigidSymbolWrtModule("FOUNDMATCHINGENTRY?", NULL, 0)));
@@ -11975,12 +12016,12 @@ void helpStartupWalk5() {
     SGT_WALK_STELLA_STORAGE_SLOT = ((Surrogate*)(internRigidSymbolWrtModule("STORAGE-SLOT", NULL, 1)));
     SYM_WALK_STELLA_STORAGE_SLOTp = ((Symbol*)(internRigidSymbolWrtModule("STORAGE-SLOT?", NULL, 0)));
     SYM_WALK_STELLA_SUBTYPE_OF_STORAGE_SLOTp = ((Symbol*)(internRigidSymbolWrtModule("SUBTYPE-OF-STORAGE-SLOT?", NULL, 0)));
-    SYM_WALK_STELLA_METHOD_SLOTp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-SLOT?", NULL, 0)));
   }
 }
 
 void helpStartupWalk6() {
   {
+    SYM_WALK_STELLA_METHOD_SLOTp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-SLOT?", NULL, 0)));
     SYM_WALK_STELLA_SUBTYPE_OF_METHOD_SLOTp = ((Symbol*)(internRigidSymbolWrtModule("SUBTYPE-OF-METHOD-SLOT?", NULL, 0)));
     SGT_WALK_STELLA_ANCHORED_TYPE_SPECIFIER = ((Surrogate*)(internRigidSymbolWrtModule("ANCHORED-TYPE-SPECIFIER", NULL, 1)));
     SYM_WALK_STELLA_ANCHORED_TYPE_SPECIFIERp = ((Symbol*)(internRigidSymbolWrtModule("ANCHORED-TYPE-SPECIFIER?", NULL, 0)));
@@ -12040,12 +12081,12 @@ void helpStartupWalk6() {
     KWD_WALK_FIRST_CLASS_WITH_TYPECASE = ((Keyword*)(internRigidSymbolWrtModule("FIRST-CLASS-WITH-TYPECASE", NULL, 2)));
     KWD_WALK_AUXILIARYp = ((Keyword*)(internRigidSymbolWrtModule("AUXILIARY?", NULL, 2)));
     SYM_WALK_STELLA_PRINT_FORM = ((Symbol*)(internRigidSymbolWrtModule("PRINT-FORM", NULL, 0)));
-    SYM_WALK_STELLA_PRINT_OBJECT = ((Symbol*)(internRigidSymbolWrtModule("PRINT-OBJECT", NULL, 0)));
   }
 }
 
 void helpStartupWalk7() {
   {
+    SYM_WALK_STELLA_PRINT_OBJECT = ((Symbol*)(internRigidSymbolWrtModule("PRINT-OBJECT", NULL, 0)));
     SYM_WALK_STELLA_SELF = ((Symbol*)(internRigidSymbolWrtModule("SELF", NULL, 0)));
     SYM_WALK_STELLA_STREAM = ((Symbol*)(internRigidSymbolWrtModule("STREAM", NULL, 0)));
     SYM_WALK_STELLA_NATIVE_OUTPUT_STREAM = ((Symbol*)(internRigidSymbolWrtModule("NATIVE-OUTPUT-STREAM", NULL, 0)));
@@ -12107,19 +12148,19 @@ void helpStartupWalk7() {
 
 void helpStartupWalk8() {
   {
-    oAVAILABLE_STELLA_FEATURESo = list(9, KWD_WALK_WARN_ABOUT_UNDEFINED_METHODS, KWD_WALK_WARN_ABOUT_MISSING_METHODS, KWD_WALK_SUPPRESS_WARNINGS, KWD_WALK_USE_HARDCODED_SYMBOLS, KWD_WALK_USE_COMMON_LISP_STRUCTS, KWD_WALK_USE_COMMON_LISP_CONSES, KWD_WALK_USE_CPP_GARBAGE_COLLECTOR, KWD_WALK_MINIMIZE_JAVA_PREFIXES, KWD_WALK_TRANSLATE_WITH_COPYRIGHT_HEADER);
-    oCURRENT_STELLA_FEATURESo.set(list(0));
+    oAVAILABLE_STELLA_FEATURESo = list(10, KWD_WALK_WARN_ABOUT_UNDEFINED_METHODS, KWD_WALK_WARN_ABOUT_MISSING_METHODS, KWD_WALK_SUPPRESS_WARNINGS, KWD_WALK_USE_HARDCODED_SYMBOLS, KWD_WALK_USE_COMMON_LISP_STRUCTS, KWD_WALK_USE_COMMON_LISP_CONSES, KWD_WALK_USE_CPP_GARBAGE_COLLECTOR, KWD_WALK_MINIMIZE_JAVA_PREFIXES, KWD_WALK_TRANSLATE_WITH_COPYRIGHT_HEADER, KWD_WALK_SUPPORT_UNEXEC);
+    oCURRENT_STELLA_FEATURESo = list(0);
     oDEFAULT_STELLA_FEATURESo = list(5, KWD_WALK_WARN_ABOUT_UNDEFINED_METHODS, KWD_WALK_WARN_ABOUT_MISSING_METHODS, KWD_WALK_USE_CPP_GARBAGE_COLLECTOR, KWD_WALK_USE_COMMON_LISP_CONSES, KWD_WALK_MINIMIZE_JAVA_PREFIXES);
     resetStellaFeatures();
-    oTRANSLATOROUTPUTLANGUAGEo.set(runningInLanguage());
-    oTARGETTYPEo.set(SGT_WALK_STELLA_VOID);
+    oTRANSLATOROUTPUTLANGUAGEo = runningInLanguage();
+    oTARGETTYPEo = SGT_WALK_STELLA_VOID;
     oLOG_BREAK_POINT_COUNTERo = NULL_INTEGER;
     oWRAPPED_TYPE_TABLEo = listO(11, listO(3, SGT_WALK_STELLA_INTEGER_WRAPPER, SGT_WALK_STELLA_INTEGER, NIL), listO(3, SGT_WALK_STELLA_LONG_INTEGER_WRAPPER, SGT_WALK_STELLA_LONG_INTEGER, NIL), listO(3, SGT_WALK_STELLA_FLOAT_WRAPPER, SGT_WALK_STELLA_FLOAT, NIL), listO(3, SGT_WALK_STELLA_NUMBER_WRAPPER, SGT_WALK_STELLA_NUMBER, NIL), listO(3, SGT_WALK_STELLA_STRING_WRAPPER, SGT_WALK_STELLA_STRING, NIL), listO(3, SGT_WALK_STELLA_MUTABLE_STRING_WRAPPER, SGT_WALK_STELLA_MUTABLE_STRING, NIL), listO(3, SGT_WALK_STELLA_CHARACTER_WRAPPER, SGT_WALK_STELLA_CHARACTER, NIL), listO(3, SGT_WALK_STELLA_BOOLEAN_WRAPPER, SGT_WALK_STELLA_BOOLEAN, NIL), listO(3, SGT_WALK_STELLA_FUNCTION_CODE_WRAPPER, SGT_WALK_STELLA_FUNCTION_CODE, NIL), listO(3, SGT_WALK_STELLA_METHOD_CODE_WRAPPER, SGT_WALK_STELLA_METHOD_CODE, NIL), NIL);
     oCOERSION_TABLEo = listO(45, listO(4, SGT_WALK_STELLA_BOOLEAN, SGT_WALK_STELLA_BOOLEAN_WRAPPER, SYM_WALK_STELLA_INLINE_WRAP_BOOLEAN, NIL), listO(4, SGT_WALK_STELLA_INTEGER, SGT_WALK_STELLA_INTEGER_WRAPPER, SYM_WALK_STELLA_WRAP_LITERAL, NIL), listO(4, SGT_WALK_STELLA_LONG_INTEGER, SGT_WALK_STELLA_LONG_INTEGER_WRAPPER, SYM_WALK_STELLA_WRAP_LITERAL, NIL), listO(4, SGT_WALK_STELLA_INTEGER, SGT_WALK_STELLA_BOOLEAN_WRAPPER, SYM_WALK_STELLA_INTEGER_TO_BOOLEAN_WRAPPER, NIL), listO(4, SGT_WALK_STELLA_INTEGER, SGT_WALK_STELLA_BOOLEAN, SYM_WALK_STELLA_INTEGER_TO_BOOLEAN, NIL), listO(4, SGT_WALK_STELLA_FLOAT, SGT_WALK_STELLA_FLOAT_WRAPPER, SYM_WALK_STELLA_WRAP_LITERAL, NIL), listO(4, SGT_WALK_STELLA_MUTABLE_STRING, SGT_WALK_STELLA_STRING, SYM_WALK_STELLA_MUTABLE_STRING_TO_STRING, NIL), listO(4, SGT_WALK_STELLA_MUTABLE_STRING, SGT_WALK_STELLA_MUTABLE_STRING_WRAPPER, SYM_WALK_STELLA_WRAP_LITERAL, NIL), listO(4, SGT_WALK_STELLA_STRING, SGT_WALK_STELLA_STRING_WRAPPER, SYM_WALK_STELLA_WRAP_LITERAL, NIL), listO(4, SGT_WALK_STELLA_STRING, SGT_WALK_STELLA_MUTABLE_STRING, SYM_WALK_STELLA_STRING_TO_MUTABLE_STRING, NIL), listO(4, SGT_WALK_STELLA_STRING, SGT_WALK_STELLA_SYMBOL, SYM_WALK_STELLA_INTERN_SYMBOL, NIL), listO(4, SGT_WALK_STELLA_CHARACTER, SGT_WALK_STELLA_CHARACTER_WRAPPER, SYM_WALK_STELLA_WRAP_LITERAL, NIL), listO(4, SGT_WALK_STELLA_CHARACTER, SGT_WALK_STELLA_STRING, SYM_WALK_STELLA_CHARACTER_TO_STRING, NIL), listO(4, SGT_WALK_STELLA_FUNCTION_CODE, SGT_WALK_STELLA_FUNCTION_CODE_WRAPPER, SYM_WALK_STELLA_WRAP_LITERAL, NIL), listO(4, SGT_WALK_STELLA_METHOD_CODE, SGT_WALK_STELLA_METHOD_CODE_WRAPPER, SYM_WALK_STELLA_WRAP_LITERAL, NIL), listO(4, SGT_WALK_STELLA_SYMBOL, SGT_WALK_STELLA_STRING, SYM_WALK_STELLA_SYMBOL_NAME, NIL), listO(4, SGT_WALK_STELLA_BOOLEAN_WRAPPER, SGT_WALK_STELLA_BOOLEAN, SYM_WALK_STELLA_INLINE_UNWRAP_BOOLEAN, NIL), listO(4, SGT_WALK_STELLA_INTEGER_WRAPPER, SGT_WALK_STELLA_INTEGER, SYM_WALK_STELLA_WRAPPER_VALUE, NIL), listO(4, SGT_WALK_STELLA_INTEGER_WRAPPER, SGT_WALK_STELLA_LONG_INTEGER, SYM_WALK_STELLA_WRAPPER_VALUE, NIL), listO(4, SGT_WALK_STELLA_LONG_INTEGER_WRAPPER, SGT_WALK_STELLA_LONG_INTEGER, SYM_WALK_STELLA_WRAPPER_VALUE, NIL), listO(4, SGT_WALK_STELLA_FLOAT_WRAPPER, SGT_WALK_STELLA_FLOAT, SYM_WALK_STELLA_WRAPPER_VALUE, NIL), listO(4, SGT_WALK_STELLA_NUMBER_WRAPPER, SGT_WALK_STELLA_FLOAT, SYM_WALK_STELLA_NUMBER_WRAPPER_TO_FLOAT, NIL), listO(4, SGT_WALK_STELLA_STRING_WRAPPER, SGT_WALK_STELLA_STRING, SYM_WALK_STELLA_WRAPPER_VALUE, NIL), listO(4, SGT_WALK_STELLA_MUTABLE_STRING_WRAPPER, SGT_WALK_STELLA_MUTABLE_STRING, SYM_WALK_STELLA_WRAPPER_VALUE, NIL), listO(4, SGT_WALK_STELLA_CHARACTER_WRAPPER, SGT_WALK_STELLA_CHARACTER, SYM_WALK_STELLA_WRAPPER_VALUE, NIL), listO(4, SGT_WALK_STELLA_FUNCTION_CODE_WRAPPER, SGT_WALK_STELLA_FUNCTION_CODE, SYM_WALK_STELLA_WRAPPER_VALUE, NIL), listO(4, SGT_WALK_STELLA_METHOD_CODE_WRAPPER, SGT_WALK_STELLA_METHOD_CODE, SYM_WALK_STELLA_WRAPPER_VALUE, NIL), listO(4, SGT_WALK_STELLA_SURROGATE, SGT_WALK_STELLA_CLASS, SYM_WALK_STELLA_SURROGATE_VALUE, NIL), listO(4, SGT_WALK_STELLA_SURROGATE, SGT_WALK_STELLA_MODULE, SYM_WALK_STELLA_SURROGATE_VALUE, NIL), listO(4, SGT_WALK_STELLA_INPUT_STREAM, SGT_WALK_STELLA_NATIVE_INPUT_STREAM, SYM_WALK_STELLA_NATIVE_STREAM, NIL), listO(4, SGT_WALK_STELLA_OUTPUT_STREAM, SGT_WALK_STELLA_NATIVE_OUTPUT_STREAM, SYM_WALK_STELLA_NATIVE_STREAM, NIL), listO(4, SGT_WALK_STELLA_NUMBER, SGT_WALK_STELLA_INTEGER, listO(4, SYM_WALK_STELLA_CAST, SYM_WALK_STELLA_lXg, SGT_WALK_STELLA_INTEGER, NIL), NIL), listO(4, SGT_WALK_STELLA_NUMBER, SGT_WALK_STELLA_LONG_INTEGER, listO(4, SYM_WALK_STELLA_CAST, SYM_WALK_STELLA_lXg, SGT_WALK_STELLA_LONG_INTEGER, NIL), NIL), listO(4, SGT_WALK_STELLA_NUMBER, SGT_WALK_STELLA_FLOAT, listO(4, SYM_WALK_STELLA_CAST, SYM_WALK_STELLA_lXg, SGT_WALK_STELLA_FLOAT, NIL), NIL), listO(4, SGT_WALK_STELLA_INTEGER, SGT_WALK_STELLA_FLOAT, listO(4, SYM_WALK_STELLA_CAST, SYM_WALK_STELLA_lXg, SGT_WALK_STELLA_FLOAT, NIL), NIL), listO(4, SGT_WALK_STELLA_INTEGER, SGT_WALK_STELLA_SINGLE_FLOAT, listO(4, SYM_WALK_STELLA_CAST, SYM_WALK_STELLA_lXg, SGT_WALK_STELLA_SINGLE_FLOAT, NIL), NIL), listO(4, SGT_WALK_STELLA_LONG_INTEGER, SGT_WALK_STELLA_FLOAT, listO(4, SYM_WALK_STELLA_CAST, SYM_WALK_STELLA_lXg, SGT_WALK_STELLA_FLOAT, NIL), NIL), listO(4, SGT_WALK_STELLA_LONG_INTEGER, SGT_WALK_STELLA_SINGLE_FLOAT, listO(4, SYM_WALK_STELLA_CAST, SYM_WALK_STELLA_lXg, SGT_WALK_STELLA_SINGLE_FLOAT, NIL), NIL), listO(4, SGT_WALK_STELLA_FLOAT, SGT_WALK_STELLA_SINGLE_FLOAT, SYM_WALK_STELLA_IDENTITY, NIL), listO(4, SGT_WALK_STELLA_FLOAT, SGT_WALK_STELLA_DOUBLE_FLOAT, SYM_WALK_STELLA_IDENTITY, NIL), listO(4, SGT_WALK_STELLA_INTEGER, SGT_WALK_STELLA_SHORT_INTEGER, SYM_WALK_STELLA_IDENTITY, NIL), listO(4, SGT_WALK_STELLA_INTEGER, SGT_WALK_STELLA_LONG_INTEGER, SYM_WALK_STELLA_IDENTITY, NIL), listO(4, SGT_WALK_STELLA_INTEGER, SGT_WALK_STELLA_UNSIGNED_SHORT_INTEGER, SYM_WALK_STELLA_IDENTITY, NIL), listO(4, SGT_WALK_STELLA_INTEGER, SGT_WALK_STELLA_UNSIGNED_LONG_INTEGER, SYM_WALK_STELLA_IDENTITY, NIL), NIL);
     oSYMBOL_REGISTRYo = newHashTable();
     oSYMBOL_SETo = newList();
-    oCURRENTFILEo.set(NULL);
-    oSPECIALVARIABLESTACKo.set(newKeyValueList());
+    oCURRENTFILEo = NULL;
+    oSPECIALVARIABLESTACKo = newKeyValueList();
     oTYPE_PREDICATE_TABLEo = listO(26, listO(4, SGT_WALK_STELLA_BOOLEAN, SYM_WALK_STELLA_BOOLEANp, SYM_WALK_STELLA_SUBTYPE_OF_BOOLEANp, NIL), listO(4, SGT_WALK_STELLA_INTEGER, SYM_WALK_STELLA_INTEGERp, SYM_WALK_STELLA_SUBTYPE_OF_INTEGERp, NIL), listO(4, SGT_WALK_STELLA_LONG_INTEGER, SYM_WALK_STELLA_LONG_INTEGERp, SYM_WALK_STELLA_SUBTYPE_OF_LONG_INTEGERp, NIL), listO(4, SGT_WALK_STELLA_FLOAT, SYM_WALK_STELLA_FLOATp, SYM_WALK_STELLA_SUBTYPE_OF_FLOATp, NIL), listO(4, SGT_WALK_STELLA_STRING, SYM_WALK_STELLA_STRINGp, SYM_WALK_STELLA_SUBTYPE_OF_STRINGp, NIL), listO(4, SGT_WALK_STELLA_CHARACTER, SYM_WALK_STELLA_CHARACTERp, SYM_WALK_STELLA_SUBTYPE_OF_CHARACTERp, NIL), listO(4, SGT_WALK_STELLA_WRAPPER, SYM_WALK_STELLA_WRAPPERp, SYM_WALK_STELLA_SUBTYPE_OF_WRAPPERp, NIL), listO(4, SGT_WALK_STELLA_BOOLEAN_WRAPPER, SYM_WALK_STELLA_BOOLEANp, SYM_WALK_STELLA_SUBTYPE_OF_BOOLEANp, NIL), listO(4, SGT_WALK_STELLA_INTEGER_WRAPPER, SYM_WALK_STELLA_INTEGERp, SYM_WALK_STELLA_SUBTYPE_OF_INTEGERp, NIL), listO(4, SGT_WALK_STELLA_LONG_INTEGER_WRAPPER, SYM_WALK_STELLA_LONG_INTEGERp, SYM_WALK_STELLA_SUBTYPE_OF_LONG_INTEGERp, NIL), listO(4, SGT_WALK_STELLA_FLOAT_WRAPPER, SYM_WALK_STELLA_FLOATp, SYM_WALK_STELLA_SUBTYPE_OF_FLOATp, NIL), listO(4, SGT_WALK_STELLA_STRING_WRAPPER, SYM_WALK_STELLA_STRINGp, SYM_WALK_STELLA_SUBTYPE_OF_STRINGp, NIL), listO(4, SGT_WALK_STELLA_CHARACTER_WRAPPER, SYM_WALK_STELLA_CHARACTERp, SYM_WALK_STELLA_SUBTYPE_OF_CHARACTERp, NIL), listO(4, SGT_WALK_STELLA_VERBATIM_STRING_WRAPPER, SYM_WALK_STELLA_VERBATIM_STRINGp, SYM_WALK_STELLA_SUBTYPE_OF_VERBATIM_STRINGp, NIL), listO(4, SGT_WALK_STELLA_SURROGATE, SYM_WALK_STELLA_SURROGATEp, SYM_WALK_STELLA_SUBTYPE_OF_SURROGATEp, NIL), listO(4, SGT_WALK_STELLA_TYPE, SYM_WALK_STELLA_TYPEp, SYM_WALK_STELLA_SUBTYPE_OF_TYPEp, NIL), listO(4, SGT_WALK_STELLA_SYMBOL, SYM_WALK_STELLA_SYMBOLp, SYM_WALK_STELLA_SUBTYPE_OF_SYMBOLp, NIL), listO(4, SGT_WALK_STELLA_TRANSIENT_SYMBOL, SYM_WALK_STELLA_TRANSIENT_SYMBOLp, SYM_WALK_STELLA_SUBTYPE_OF_TRANSIENT_SYMBOLp, NIL), listO(4, SGT_WALK_STELLA_KEYWORD, SYM_WALK_STELLA_KEYWORDp, SYM_WALK_STELLA_SUBTYPE_OF_KEYWORDp, NIL), listO(4, SGT_WALK_STELLA_CONS, SYM_WALK_STELLA_CONSp, SYM_WALK_STELLA_SUBTYPE_OF_CONSp, NIL), listO(4, SGT_WALK_STELLA_CLASS, SYM_WALK_STELLA_STELLA_CLASSp, SYM_WALK_STELLA_SUBTYPE_OF_CLASSp, NIL), listO(4, SGT_WALK_STELLA_STORAGE_SLOT, SYM_WALK_STELLA_STORAGE_SLOTp, SYM_WALK_STELLA_SUBTYPE_OF_STORAGE_SLOTp, NIL), listO(4, SGT_WALK_STELLA_METHOD_SLOT, SYM_WALK_STELLA_METHOD_SLOTp, SYM_WALK_STELLA_SUBTYPE_OF_METHOD_SLOTp, NIL), listO(4, SGT_WALK_STELLA_ANCHORED_TYPE_SPECIFIER, SYM_WALK_STELLA_ANCHORED_TYPE_SPECIFIERp, SYM_WALK_STELLA_SUBTYPE_OF_ANCHORED_TYPE_SPECIFIERp, NIL), listO(4, SGT_WALK_STELLA_PARAMETRIC_TYPE_SPECIFIER, SYM_WALK_STELLA_PARAMETRIC_TYPE_SPECIFIERp, SYM_WALK_STELLA_SUBTYPE_OF_PARAMETRIC_TYPE_SPECIFIERp, NIL), NIL);
     oNUMERIC_TYPE_HIERARCHYo = list(4, SGT_WALK_STELLA_INTEGER, SGT_WALK_STELLA_LONG_INTEGER, SGT_WALK_STELLA_FLOAT, SGT_WALK_STELLA_NUMBER);
     oMIXIN_IMPLEMENTATION_STYLEo = KWD_WALK_SECOND_CLASS;
@@ -12145,6 +12186,7 @@ void helpStartupWalk9() {
     defineFunctionObject("METHOD-CALL-INLINING-ENABLED?", "(DEFUN (METHOD-CALL-INLINING-ENABLED? BOOLEAN) ())", ((cpp_function_code)(&methodCallInliningEnabledP)), NULL);
     defineFunctionObject("OPTIMIZE-BOOLEAN-TESTS?", "(DEFUN (OPTIMIZE-BOOLEAN-TESTS? BOOLEAN) ())", ((cpp_function_code)(&optimizeBooleanTestsP)), NULL);
     defineFunctionObject("CHECK-FOR-ILLEGAL-RETURN?", "(DEFUN (CHECK-FOR-ILLEGAL-RETURN? BOOLEAN) ())", ((cpp_function_code)(&checkForIllegalReturnP)), NULL);
+    defineFunctionObject("SUPPORT-UNEXEC?", "(DEFUN (SUPPORT-UNEXEC? BOOLEAN) ())", ((cpp_function_code)(&supportUnexecP)), NULL);
     defineFunctionObject("NAME-QUOTED-TREE", "(DEFUN (NAME-QUOTED-TREE STRING) ((TREE CONS)))", ((cpp_function_code)(&nameQuotedTree)), NULL);
     defineFunctionObject("GET-QUOTED-TREE", "(DEFUN (GET-QUOTED-TREE CONS) ((TREE-NAME STRING) (MODULENAME STRING)) :DOCUMENTATION \"Return the quoted tree with name `tree-name'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getQuotedTree)), NULL);
     defineFunctionObject("CLEAR-TRANSLATION-UNIT", "(DEFUN CLEAR-TRANSLATION-UNIT ((SELF TRANSLATION-UNIT)))", ((cpp_function_code)(&clearTranslationUnit)), NULL);
@@ -12188,12 +12230,12 @@ void helpStartupWalk9() {
     defineFunctionObject("START-FUNCTION-CALL-LOGGING", "(DEFUN START-FUNCTION-CALL-LOGGING ((FILENAME STRING)) :DOCUMENTATION \"Start function call logging to `fileName'.\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&startFunctionCallLogging)), ((cpp_function_code)(&startFunctionCallLoggingEvaluatorWrapper)));
     defineFunctionObject("STOP-FUNCTION-CALL-LOGGING", "(DEFUN STOP-FUNCTION-CALL-LOGGING () :DOCUMENTATION \"Stop function call logging and close the current log file.\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&stopFunctionCallLogging)), NULL);
     defineFunctionObject("SET-CALL-LOG-BREAK-POINT", "(DEFUN SET-CALL-LOG-BREAK-POINT ((COUNT INTEGER)) :DOCUMENTATION \"Set a call log break point to `count'.  Execution will be\ninterrupted right at the entry of the `count'th logged function call.\" :COMMAND? TRUE :PUBLIC? TRUE)", ((cpp_function_code)(&setCallLogBreakPoint)), ((cpp_function_code)(&setCallLogBreakPointEvaluatorWrapper)));
-    defineFunctionObject("BREAK-PROGRAM", "(DEFUN BREAK-PROGRAM ((MESSAGE STRING)) :DOCUMENTATION \"Interrupt the program and print `message'.  Continue after\nconfirmation with the user.\" :PUBLIC? TRUE)", ((cpp_function_code)(&breakProgram)), NULL);
   }
 }
 
 void helpStartupWalk10() {
   {
+    defineFunctionObject("BREAK-PROGRAM", "(DEFUN BREAK-PROGRAM ((MESSAGE STRING)) :DOCUMENTATION \"Interrupt the program and print `message'.  Continue after\nconfirmation with the user.\" :PUBLIC? TRUE)", ((cpp_function_code)(&breakProgram)), NULL);
     defineFunctionObject("TERMINATE-PROGRAM", "(DEFUN TERMINATE-PROGRAM () :DOCUMENTATION \"Terminate and exit the program with normal exit code.\" :PUBLIC? TRUE)", ((cpp_function_code)(&terminateProgram)), NULL);
     defineFunctionObject("PO", "(DEFUN PO ((THING OBJECT)))", ((cpp_function_code)(&po)), NULL);
     defineFunctionObject("VARIABLE-EQL?", "(DEFUN (VARIABLE-EQL? BOOLEAN) ((VAR1 SYMBOL) (VAR2 SYMBOL)))", ((cpp_function_code)(&variableEqlP)), NULL);
@@ -12253,12 +12295,12 @@ void helpStartupWalk10() {
     defineFunctionObject("SET-TARGET-LANGUAGE-TYPE", "(DEFUN (SET-TARGET-LANGUAGE-TYPE CONS TYPE-SPEC) ((SYSTREE CONS) (TYPE TYPE)))", ((cpp_function_code)(&setTargetLanguageType)), NULL);
     defineFunctionObject("WALK-A-TREE", "(DEFUN (WALK-A-TREE OBJECT TYPE-SPEC) ((TREE OBJECT)))", ((cpp_function_code)(&walkATree)), NULL);
     defineFunctionObject("HELP-WALK-A-TREE", "(DEFUN (HELP-WALK-A-TREE OBJECT TYPE-SPEC) ((TREE OBJECT)))", ((cpp_function_code)(&helpWalkATree)), NULL);
-    defineFunctionObject("WALK-A-CONS-TREE", "(DEFUN (WALK-A-CONS-TREE CONS TYPE-SPEC) ((TREE CONS)))", ((cpp_function_code)(&walkAConsTree)), NULL);
   }
 }
 
 void helpStartupWalk11() {
   {
+    defineFunctionObject("WALK-A-CONS-TREE", "(DEFUN (WALK-A-CONS-TREE CONS TYPE-SPEC) ((TREE CONS)))", ((cpp_function_code)(&walkAConsTree)), NULL);
     defineFunctionObject("INCREMENTAL-TRANSLATION?", "(DEFUN (INCREMENTAL-TRANSLATION? BOOLEAN) ())", ((cpp_function_code)(&incrementalTranslationP)), NULL);
     defineFunctionObject("CONSTRUCT-SYMBOL-CONSTANT-NAME", "(DEFUN (CONSTRUCT-SYMBOL-CONSTANT-NAME STRING) ((SYMBOL GENERALIZED-SYMBOL)))", ((cpp_function_code)(&constructSymbolConstantName)), NULL);
     defineFunctionObject("YIELD-SYMBOL-CONSTANT-NAME", "(DEFUN (YIELD-SYMBOL-CONSTANT-NAME SYMBOL) ((SYMBOL GENERALIZED-SYMBOL)))", ((cpp_function_code)(&yieldSymbolConstantName)), NULL);
@@ -12318,12 +12360,12 @@ void helpStartupWalk11() {
     defineFunctionObject("WALK-UNWIND-PROTECT-SPECIAL-TREE", "(DEFUN (WALK-UNWIND-PROTECT-SPECIAL-TREE CONS TYPE-SPEC) ((TREE CONS)))", ((cpp_function_code)(&walkUnwindProtectSpecialTree)), NULL);
     defineFunctionObject("WALK-CAST-TREE", "(DEFUN (WALK-CAST-TREE CONS TYPE-SPEC) ((TREE CONS)))", ((cpp_function_code)(&walkCastTree)), NULL);
     defineFunctionObject("VALUES-TREE?", "(DEFUN (VALUES-TREE? BOOLEAN) ((TREE OBJECT)))", ((cpp_function_code)(&valuesTreeP)), NULL);
-    defineFunctionObject("WALK-VALUES-TREE", "(DEFUN (WALK-VALUES-TREE CONS TYPE-SPEC) ((TREE CONS)))", ((cpp_function_code)(&walkValuesTree)), NULL);
   }
 }
 
 void helpStartupWalk12() {
   {
+    defineFunctionObject("WALK-VALUES-TREE", "(DEFUN (WALK-VALUES-TREE CONS TYPE-SPEC) ((TREE CONS)))", ((cpp_function_code)(&walkValuesTree)), NULL);
     defineFunctionObject("WALK-MV-EXPRESSION-TREE", "(DEFUN (WALK-MV-EXPRESSION-TREE OBJECT CONS (LIST OF TYPE-SPEC)) ((TREE OBJECT) (TARGETTYPES (LIST OF TYPE-SPEC)) (OPERATOR SYMBOL)))", ((cpp_function_code)(&walkMvExpressionTree)), NULL);
     defineFunctionObject("LISTIFY-TYPE-SPEC", "(DEFUN (LISTIFY-TYPE-SPEC (LIST OF TYPE-SPEC)) ((TYPESPEC TYPE-SPEC)))", ((cpp_function_code)(&listifyTypeSpec)), NULL);
     defineFunctionObject("SLOT-FROM-EXPRESSION-TREE", "(DEFUN (SLOT-FROM-EXPRESSION-TREE SLOT) ((TREE CONS)))", ((cpp_function_code)(&slotFromExpressionTree)), NULL);
@@ -12383,12 +12425,12 @@ void helpStartupWalk12() {
     defineFunctionObject("PASS-VARIABLE-ARGUMENTS-AS-LIST?", "(DEFUN (PASS-VARIABLE-ARGUMENTS-AS-LIST? BOOLEAN) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&passVariableArgumentsAsListP)), NULL);
     defineFunctionObject("VARIABLE-ARGUMENTS-TYPE", "(DEFUN (VARIABLE-ARGUMENTS-TYPE TYPE-SPEC) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&variableArgumentsType)), NULL);
     defineFunctionObject("VARIABLE-ARGUMENTS-NAME", "(DEFUN (VARIABLE-ARGUMENTS-NAME SYMBOL) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&variableArgumentsName)), NULL);
-    defineFunctionObject("YIELD-LISTIFIED-VARIABLE-ARGUMENTS-TYPE", "(DEFUN (YIELD-LISTIFIED-VARIABLE-ARGUMENTS-TYPE TYPE-SPEC) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&yieldListifiedVariableArgumentsType)), NULL);
   }
 }
 
 void helpStartupWalk13() {
   {
+    defineFunctionObject("YIELD-LISTIFIED-VARIABLE-ARGUMENTS-TYPE", "(DEFUN (YIELD-LISTIFIED-VARIABLE-ARGUMENTS-TYPE TYPE-SPEC) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&yieldListifiedVariableArgumentsType)), NULL);
     defineFunctionObject("YIELD-LISTIFIED-VARIABLE-ARGUMENTS", "(DEFUN (YIELD-LISTIFIED-VARIABLE-ARGUMENTS CONS) ((WALKEDARGS CONS) (TARGETTYPE TYPE-SPEC) (WRAPARGS? BOOLEAN)))", ((cpp_function_code)(&yieldListifiedVariableArguments)), NULL);
     defineFunctionObject("FINISH-WALKING-ARGUMENT-LIST-TREE", "(DEFUN (FINISH-WALKING-ARGUMENT-LIST-TREE OBJECT TYPE-SPEC) ((SELF SLOT) (TREE CONS) (FIRSTARGTYPE TYPE-SPEC)))", ((cpp_function_code)(&finishWalkingArgumentListTree)), NULL);
     defineFunctionObject("WALK-VARIABLE-ARGUMENTS", "(DEFUN (WALK-VARIABLE-ARGUMENTS CONS) ((ARGUMENTS CONS) (METHOD METHOD-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", ((cpp_function_code)(&walkVariableArguments)), NULL);
@@ -12448,12 +12490,12 @@ void helpStartupWalk13() {
     defineFunctionObject("WALK-STARTUP-TIME-PROGN-UNIT", "(DEFUN WALK-STARTUP-TIME-PROGN-UNIT ((UNIT TRANSLATION-UNIT)))", ((cpp_function_code)(&walkStartupTimePrognUnit)), NULL);
     defineFunctionObject("EARLIER-STARTUP-UNIT?", "(DEFUN (EARLIER-STARTUP-UNIT? BOOLEAN) ((UNIT1 TRANSLATION-UNIT) (UNIT2 TRANSLATION-UNIT)))", ((cpp_function_code)(&earlierStartupUnitP)), NULL);
     defineFunctionObject("COMBINE-STARTUP-FUNCTION-UNITS", "(DEFUN (COMBINE-STARTUP-FUNCTION-UNITS CONS) ((STARTUPFNNAME SYMBOL)))", ((cpp_function_code)(&combineStartupFunctionUnits)), NULL);
-    defineExternalSlotFromStringifiedSource("(DEFSLOT METHOD-SLOT METHOD-STARTUP-CLASSNAME :TYPE STRING :ALLOCATION :DYNAMIC)");
   }
 }
 
 void helpStartupWalk14() {
   {
+    defineExternalSlotFromStringifiedSource("(DEFSLOT METHOD-SLOT METHOD-STARTUP-CLASSNAME :TYPE STRING :ALLOCATION :DYNAMIC)");
     defineMethodObject("(DEFMETHOD (METHOD-STARTUP-FUNCTION? BOOLEAN) ((METHOD METHOD-SLOT)))", ((cpp_method_code)(&MethodSlot::methodStartupFunctionP)), ((cpp_method_code)(NULL)));
     defineFunctionObject("EXTRACT-STARTUP-FUNCTION-UNITS", "(DEFUN EXTRACT-STARTUP-FUNCTION-UNITS ((STARTUPUNITS (LIST OF TRANSLATION-UNIT)) (STARTUPFNNAME SYMBOL)))", ((cpp_function_code)(&extractStartupFunctionUnits)), NULL);
     defineFunctionObject("YIELD-STARTUP-FUNCTION-NAME", "(DEFUN (YIELD-STARTUP-FUNCTION-NAME SYMBOL) ((FILE STRING)))", ((cpp_function_code)(&yieldStartupFunctionName)), NULL);
@@ -12491,7 +12533,9 @@ void helpStartupWalk14() {
     defineFunctionObject("CREATE-LISP-MACRO-UNITS", "(DEFUN CREATE-LISP-MACRO-UNITS ((NAME SYMBOL) (METHOD METHOD-SLOT)))", ((cpp_function_code)(&createLispMacroUnits)), NULL);
     defineFunctionObject("COMMAND?", "(DEFUN (COMMAND? BOOLEAN) ((METHOD METHOD-SLOT)) :DOCUMENTATION \"Return `true' if `method' is an evaluable command.\" :PUBLIC? TRUE)", ((cpp_function_code)(&commandP)), NULL);
     defineFunctionObject("LOOKUP-COMMAND", "(DEFUN (LOOKUP-COMMAND METHOD-SLOT) ((NAME SYMBOL)) :DOCUMENTATION \"If `name' names an evaluable command return its associated\ncommand object;  otherwise, return `null'.  Currently, commands are not\npolymorphic, i.e., they can only be implemented by functions.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupCommand)), NULL);
+    defineFunctionObject("LOOKUP-COMMAND-LIKE-FUNCTION", "(DEFUN (LOOKUP-COMMAND-LIKE-FUNCTION METHOD-SLOT) ((NAME SYMBOL)) :DOCUMENTATION \"Look up a function with `name' that can be evaluated via `apply'\njust like a command, regardless of whether it was marked as such.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupCommandLikeFunction)), NULL);
     defineFunctionObject("METHOD-MUST-BE-EVALUABLE?", "(DEFUN (METHOD-MUST-BE-EVALUABLE? BOOLEAN) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&methodMustBeEvaluableP)), NULL);
+    defineFunctionObject("METHOD-CALLABLE-VIA-APPLY?", "(DEFUN (METHOD-CALLABLE-VIA-APPLY? BOOLEAN) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&methodCallableViaApplyP)), NULL);
     defineFunctionObject("METHOD-NEEDS-EVALUATOR-WRAPPER?", "(DEFUN (METHOD-NEEDS-EVALUATOR-WRAPPER? BOOLEAN) ((METHOD METHOD-SLOT)))", ((cpp_function_code)(&methodNeedsEvaluatorWrapperP)), NULL);
     defineFunctionObject("YIELD-EVALUATOR-WRAPPER-NAME", "(DEFUN (YIELD-EVALUATOR-WRAPPER-NAME SYMBOL) ((METHODNAME SYMBOL)))", ((cpp_function_code)(&yieldEvaluatorWrapperName)), NULL);
     defineFunctionObject("YIELD-ARGUMENT-ACCESS-TREE", "(DEFUN (YIELD-ARGUMENT-ACCESS-TREE OBJECT) ((ARGUMENTSVARIABLE SYMBOL) (INDEX INTEGER) (RESTARGUMENT? BOOLEAN)))", ((cpp_function_code)(&yieldArgumentAccessTree)), NULL);
@@ -12517,7 +12561,7 @@ void helpStartupWalk14() {
 void startupWalk() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupWalk1();
       helpStartupWalk2();
@@ -12554,7 +12598,7 @@ void startupWalk() {
     }
     if (currentStartupTimePhaseP(9)) {
       inModule(((StringWrapper*)(copyConsTree(wrapString("/STELLA")))));
-      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AVAILABLE-STELLA-FEATURES* (LIST OF KEYWORD) (LIST :WARN-ABOUT-UNDEFINED-METHODS :WARN-ABOUT-MISSING-METHODS :SUPPRESS-WARNINGS :USE-HARDCODED-SYMBOLS :USE-COMMON-LISP-STRUCTS :USE-COMMON-LISP-CONSES :USE-CPP-GARBAGE-COLLECTOR :MINIMIZE-JAVA-PREFIXES :TRANSLATE-WITH-COPYRIGHT-HEADER) :DOCUMENTATION \"List of available STELLA features.\" :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AVAILABLE-STELLA-FEATURES* (LIST OF KEYWORD) (LIST :WARN-ABOUT-UNDEFINED-METHODS :WARN-ABOUT-MISSING-METHODS :SUPPRESS-WARNINGS :USE-HARDCODED-SYMBOLS :USE-COMMON-LISP-STRUCTS :USE-COMMON-LISP-CONSES :USE-CPP-GARBAGE-COLLECTOR :MINIMIZE-JAVA-PREFIXES :TRANSLATE-WITH-COPYRIGHT-HEADER :SUPPORT-UNEXEC) :DOCUMENTATION \"List of available STELLA features.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CURRENT-STELLA-FEATURES* (LIST OF KEYWORD) (LIST) :DOCUMENTATION \"List of currently enabled STELLA features.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEFAULT-STELLA-FEATURES* (LIST OF KEYWORD) (LIST :WARN-ABOUT-UNDEFINED-METHODS :WARN-ABOUT-MISSING-METHODS :USE-CPP-GARBAGE-COLLECTOR :USE-COMMON-LISP-CONSES :MINIMIZE-JAVA-PREFIXES) :DOCUMENTATION \"List of STELLA features enabled by default and after resetting them\nwith `reset-stella-features'.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TRACED-KEYWORDS* (LIST OF KEYWORD) NULL :PUBLIC? TRUE)");
@@ -12616,6 +12660,8 @@ Keyword* KWD_WALK_USE_CPP_GARBAGE_COLLECTOR = NULL;
 Keyword* KWD_WALK_MINIMIZE_JAVA_PREFIXES = NULL;
 
 Keyword* KWD_WALK_TRANSLATE_WITH_COPYRIGHT_HEADER = NULL;
+
+Keyword* KWD_WALK_SUPPORT_UNEXEC = NULL;
 
 Keyword* KWD_WALK_USE_COMMON_LISP_VECTOR_STRUCTS = NULL;
 

@@ -4,6 +4,7 @@
 #define _STELLA_STELLA_SYSTEM_HH
 
 // System-wide forward declarations:
+
 namespace stella {
 
 class Cons;
@@ -88,6 +89,7 @@ class oneDArray;
 class oneDFloatArray;
 class twoDArray;
 class twoDFloatArray;
+class CrossProductIterator;
 class Object;
 class StandardObject;
 class SetMixin;
@@ -175,7 +177,6 @@ class StreamIterator;
 class DateTimeObject;
 
 } // end of namespace stella
-
 
 // System components:
 #include "stella/cpp-lib/cpp-primal.hh"

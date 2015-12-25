@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: primal.ste,v 1.156 2010/10/16 19:23:49 hans Exp
+;;; Version: primal.ste,v 1.161 2014/04/15 22:13:01 hans Exp
 
 ;;; Declarations for objects implemented by native constructs.
 
@@ -694,7 +694,10 @@ or from Hour-Minute-Second format to decimal hours."
 
 (defun (random INTEGER) ((n INTEGER))
   :public? TRUE
-  :documentation "Generate a random integer in the interval [0..n-1]."
+  :documentation "Generate a random integer in the interval [0..n-1].
+The random number generator is seeded based on the current time every
+time STELLA starts up; however, your mileage may vary depending on
+the native language implementation."
   (let ((rNum INTEGER
               (verbatim
                   :common-lisp (CL:random n)
@@ -704,11 +707,12 @@ or from Hour-Minute-Second format to decimal hours."
     (return rNum)))
 
 (defun seed-random-number-generator ()
+  :documentation "Seeds the random number generator based on the current time."
   :public? TRUE
-  :documentation "Seeds the random number generator with the current time."
   (verbatim
+      :common-lisp (setq CL:*random-state* (CL:make-random-state CL:t))
       :cpp "::srandom(time(NULL));"
-      :otherwise NULL))
+      :java "Native.RNG = new java.util.Random(System.currentTimeMillis() ^ System.nanoTime())"))
 
 (startup-time-progn
   (seed-random-number-generator))
@@ -787,6 +791,10 @@ or from Hour-Minute-Second format to decimal hours."
 	:cpp "::atan2(x,y)"
         :java "Math.atan2(x,y)")))
 
+(defconstant RECIPROCAL-NL2 FLOAT (/ 1.0 (log 2.0))
+  :documentation "1 / (log 2) Reciprocal of the Log base e of 2.
+Used for log 2 conversions.")
+
 (defconstant RECIPROCAL-NL10 FLOAT (/ 1.0 (log 10.0))
   :documentation "1 / (log 10) Reciprocal of the Log base e of 10.
 Used for log 10 conversions.")
@@ -800,12 +808,20 @@ Used for log 10 conversions.")
 	:cpp "::log(n)"
         :java "Math.log(n)")))
 
+(defun (log2 FLOAT) ((n FLOAT))
+  :public? TRUE :globally-inline? TRUE
+  :documentation "Return the logarithm (base 2) of `n'."
+  (return
+    (verbatim
+	:common-lisp "(CL:LOG n 2.0d0)"
+	:otherwise (* (log n) RECIPROCAL-NL2))))
+
 (defun (log10 FLOAT) ((n FLOAT))
   :public? TRUE :globally-inline? TRUE
   :documentation "Return the logarithm (base 10) of `n'."
   (return
     (verbatim
-	:common-lisp (CL:log n 10.0d0)
+	:common-lisp "(CL:LOG n 10.0d0)"
 	:otherwise (* (log n) RECIPROCAL-NL10))))
 
 (defun (exp FLOAT) ((n FLOAT))
@@ -1132,51 +1148,110 @@ contains white space characters."
 		    :otherwise (> (string-compare x y false) 0))))
 
 #|
-;; Test function for the string comparison:
-
-(defun test-string-functions ()
-  (let ((w "abc")
-	(x "def")
-	(y "ABC")
-	(z "DEF"))
-    (print "  x     y     =   equal?  <     >    <=    >=   less great leseq grteq" EOL)
-    (print " " w "  " x " " 
-	   (string-eql? w x) (string-equal? w x)
-	   (string< w x) (string> w x) (string<= w x) (string>= w x)
-	   (string-less? w x) (string-greater? w x)
-	   (string-less-equal? w x) (string-greater-equal? w x) EOL)
-    (print " " x "  " y " " 
-	   (string-eql? x y) (string-equal? x y)
-	   (string< x y) (string> x y) (string<= x y) (string>= x y)
-	   (string-less? x y) (string-greater? x y)
-	   (string-less-equal? x y) (string-greater-equal? x y) EOL)
-    (print " " w "  " y " " 
-	   (string-eql? w y) (string-equal? w y)
-	   (string< w y) (string> w y) (string<= w y) (string>= w y)
-	   (string-less? w y) (string-greater? w y)
-	   (string-less-equal? w y) (string-greater-equal? w y) EOL)
-    (print " " w "  " z " " 
-	   (string-eql? w z) (string-equal? w z)
-	   (string< w z) (string> w z) (string<= w z) (string>= w z)
-	   (string-less? w z) (string-greater? w z)
-	   (string-less-equal? w z) (string-greater-equal? w z) EOL)
-    (print " " w "  " w " " 
-	   (string-eql? w w) (string-equal? w w)
-	   (string< w w) (string> w w) (string<= w w) (string>= w w)
-	   (string-less? w w) (string-greater? w w)
-	   (string-less-equal? w w) (string-greater-equal? w w) EOL)
-    ))
+(defun test-string-comparisons ()
+  ;; Tester for the string comparison functions.
+  (let ((strings (quote ("abc" "def" "ABC" "DEF"))))
+    (print " x    y   =   equal?  <    >    <=   >=   lt   gt  leq  geq  cnorm" EOL)
+    (foreach x in strings
+        do (foreach y in strings
+               do (print (unwrap-string x) "  "
+                         (unwrap-string y) "  "
+                         (choose (string-eql? x y) "T" "F") "    "
+                         (choose (string-equal? x y) "T" "F") "      "
+                         (choose (string< x y) "T" "F") "    "
+                         (choose (string> x y) "T" "F") "    "
+                         (choose (string<= x y) "T" "F") "    "
+                         (choose (string>= x y) "T" "F") "    "
+                         (choose (string-less? x y) "T" "F") "    "
+                         (choose (string-greater? x y) "T" "F") "    "
+                         (choose (string-less-equal? x y) "T" "F") "    "
+                         (choose (string-greater-equal? x y) "T" "F") "    "
+                         (string-compare-case-normalized x y)
+                         EOL)))))
 
 ;; Should produce the following output:
 
-  x     y    =   equal?  <     >     <=    >=   less great leseq grteq
- abc  def  FALSE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE
- def  ABC  FALSE FALSE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE
- abc  ABC  FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE  TRUE
- abc  DEF  FALSE FALSE FALSE  TRUE FALSE  TRUE  TRUE FALSE  TRUE FALSE
- abc  abc   TRUE  TRUE FALSE FALSE  TRUE  TRUE FALSE FALSE  TRUE  TRUE
-
+ x    y   =   equal?  <    >    <=   >=   lt   gt  leq  geq  cnorm
+abc  abc  T    T      F    F    T    T    F    F    T    T    0
+abc  def  F    F      T    F    T    F    T    F    T    F    -1
+abc  ABC  F    T      F    T    F    T    F    F    T    T    -1
+abc  DEF  F    F      F    T    F    T    T    F    T    F    -1
+def  abc  F    F      F    T    F    T    F    T    F    T    1
+def  def  T    T      F    F    T    T    F    F    T    T    0
+def  ABC  F    F      F    T    F    T    F    T    F    T    1
+def  DEF  F    T      F    T    F    T    F    F    T    T    -1
+ABC  abc  F    T      T    F    T    F    F    F    T    T    1
+ABC  def  F    F      T    F    T    F    T    F    T    F    -1
+ABC  ABC  T    T      F    F    T    T    F    F    T    T    0
+ABC  DEF  F    F      T    F    T    F    T    F    T    F    -1
+DEF  abc  F    F      T    F    T    F    F    T    F    T    1
+DEF  def  F    T      T    F    T    F    F    F    T    T    1
+DEF  ABC  F    F      F    T    F    T    F    T    F    T    1
+DEF  DEF  T    T      F    F    T    T    F    F    T    T    0
 |#
+
+(defun (string-compare-case-normalized INTEGER) ((x STRING) (y STRING))
+  :documentation "Compare `x' and `y' and return -1, 0, or 1, depending on whether
+`x' is less than, equal, or greater than `y' relative to the :ascii-case-normalized
+collation.  In this collation `a < A < b' which gives strings that only differ in case a
+definite order while otherwise behaving identically to :ascii-case-insensitive.  This is
+similar to using a Java Collator for Locale.US with strength set to TERTIARY (which see)."
+  :public? TRUE
+  (let ((xLength (length x))
+        (yLength (length y))
+        (xCh CHARACTER NULL)
+        (yCh CHARACTER NULL))
+    (foreach i in (interval 0 (1- (min xLength yLength)))
+        do (setq xCh (nth x i))
+           (setq yCh (nth y i))
+           (when (not (eql? xCh yCh))
+             (let ((xChDown (downcase-character xCh))
+                   (yChDown (downcase-character yCh)))
+               (if (eql? xChDown yChDown)
+                   ;; two letter characters only differing in case:
+                   (if (< (character-code xCh) (character-code yCh))
+                       (return 1) ;; a < A but charCode('a') > charCode('A')
+                     (return -1))
+                 (if (< (character-code xChDown) (character-code yChDown))
+                     (return -1)
+                   (return 1))))))
+    (cond ((= xLength yLength)
+           (return 0))
+          ((< xLength yLength)
+           (return -1))
+          (otherwise
+           (return 1)))))
+
+(defun (compare-strings INTEGER) ((x STRING) (y STRING) (collation KEYWORD))
+  :documentation "Compare `x' and `y' and return -1, 0, or 1, depending on whether
+`x' is less than, equal, or greater than `y' relative to `collation'.  Currently
+supported values for `collation' are :ascii-case-sensitive, :ascii-case-insensitive
+:ascii-case-normalized.  The first two correspond to `string-compare' called with
+the appropriate third argument.  :ascii-case-normalized calls the function
+`string-compare-case-normalized' (which see)."
+  :public? TRUE
+  (case collation
+    (:ascii-case-sensitive
+     (return (string-compare x y TRUE)))
+    (:ascii-case-insensitive
+     (return (string-compare x y FALSE)))
+    (:ascii-case-normalized
+     (return (string-compare-case-normalized x y)))
+    (otherwise
+     (error "compare-strings: unsupported collation: " collation))))
+
+(defun (safe-compare-strings INTEGER) ((x STRING) (y STRING) (collation KEYWORD))
+  :documentation "Variant of `compare-strings' that also tolerates NULL values.
+NULL sorts after everything else in any collation."
+  :public? TRUE
+  (cond ((null? x)
+         (if (null? y)
+             (return 0)
+           (return 1)))
+        ((null? y)
+         (return -1))
+        (otherwise
+         (return (compare-strings x y collation)))))
 
 
 (defun (make-string STRING) ((size INTEGER) (initchar CHARACTER))
@@ -1425,6 +1500,13 @@ unmodified and uncopied."
  This is more efficient than using a string stream."
   :native? TRUE :public? TRUE)
 
+(defun (int-to-string STRING) ((i INTEGER))
+  :documentation "Convert `i' to its string representation and return the result.
+This is a convenience function that expects regular integers as opposed to longs
+which is useful in contexts where we do automatic unwrapping based on the target."
+  :public? TRUE :globally-inline? TRUE
+  (return (integer-to-string i)))
+
 (defun (integer-to-hex-string STRING) ((i LONG-INTEGER))
   :documentation "Convert `i' to a string representation in hexadecimal notation and return the result."
   :native? TRUE :public? TRUE)
@@ -1448,10 +1530,65 @@ efficient than using a string stream."
   :public? TRUE :globally-inline? TRUE
   (return (make-string 1 c)))
 
+(defun (stella-integer-to-string-in-base STRING) ((integer LONG-INTEGER) (base INTEGER))
+  :documentation "STELLA version of `integer-to-string-in-base' which is faster than
+the C++ version we have but slower than the native Java version."
+  :public? TRUE
+  (safety 1 (and (>= base 2) (<= base 36))
+          "integer-to-string-in-base: illegal base: " base)
+  (when (= integer 0)
+    (return "0"))
+  (let ((offset (choose (< integer 0) 1 0)))
+    (when (= offset 1)
+      (setq integer (- integer)))
+    (let ((integerBits (integer-length integer))
+          (baseBits (integer-length base))
+          ;; compute a close buffer length without using fp ops:
+          (bufferLength
+           (+ offset (div integerBits (1- baseBits)) 1))
+          (buffer (make-raw-mutable-string bufferLength))
+          (index bufferLength)
+          (table "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+          (remainder LONG-INTEGER 0)
+          (digit 0)
+          (base-1 (1- base)))
+      (cond ((= (logand base base-1) 0)
+             ;; we have a power-of-2 base
+             (-- baseBits)
+             (while (> integer 0)
+               (-- index)
+               (setq digit (logand integer base-1))
+               (setq integer (shift-right integer baseBits))
+               (setf (nth buffer index) (nth table digit))))
+            (otherwise
+             ;; we have to use regular division:
+             (while (> integer 0)
+               (-- index)
+               (setq remainder (div integer base))
+               (setq digit (- integer (* remainder base)))
+               (setq integer remainder)
+               (setf (nth buffer index) (nth table digit)))))
+      (when (= offset 1)
+        (-- index)
+        (setf (nth buffer index) #\-))
+      (if (= index 0)
+          ;; avoid copying if native language permits:
+          (return (verbatim :common-lisp buffer
+                            :cpp "buffer"
+                            :otherwise buffer))
+        (return (subsequence buffer index bufferLength))))))
+
 (defun (string-to-integer LONG-INTEGER) ((string STRING))
   :documentation
   "Convert a `string' representation of an integer into an integer."
   :native? TRUE :public? TRUE)
+
+(defun (string-to-int INTEGER) ((string STRING))
+  :documentation "Convert a `string' representation of an integer into an integer.
+This is a convenience function that ensures a regular integer return value.  If
+`string' represents a long integer, the behavior is undefined."
+  :globally-inline? TRUE :public? TRUE
+  (return (string-to-integer string)))
 
 (defun (string-to-float FLOAT) ((string STRING))
   :documentation
@@ -2302,9 +2439,7 @@ do not necessarily generate different hash codes."
 
 (defmethod (hash-code INTEGER) ((self LONG-INTEGER-WRAPPER))
   :public? TRUE :globally-inline? TRUE
-  ;; what we should really do here is XOR the high 4 bytes with low ones;
-  ;; for now we are only looking at the least significant bits.
-  (return (hash-code (cast (wrapper-value self) INTEGER))))
+  (return (hash-code (wrapper-value self))))
 
 (defmethod (hash-code INTEGER) ((self FLOAT-WRAPPER))
   :public? TRUE :globally-inline? TRUE
@@ -2335,8 +2470,7 @@ do not necessarily generate different hash codes."
 
 (defmethod (hash-code INTEGER) ((self LONG-INTEGER))
   :public? TRUE :globally-inline? TRUE
-  ;; see comment for LONG-INTEGER-WRAPPER.hash-code.
-  (return (cast self INTEGER)))
+  (return (cast (logand (logxor self (shift-right self 32)) MOST-POSITIVE-INTEGER) INTEGER)))
 
 (defmethod (hash-code INTEGER) ((self FLOAT))
   :public? TRUE :globally-inline? TRUE
@@ -2551,16 +2685,56 @@ will be initialized to NULL."
 ;;;;;; File operations
   ;;
 
+;;; See http://www.informit.com/guides/content.aspx?g=cplusplus&seqNum=245 which
+;;; states that most implementations today support <dir.h> or <dirent.h> for
+;;; directory manipulation (but it is not part of the C++ standard):
+(verbatim
+    ;; we might need to conditionalize this:
+    :cpp "# include <dirent.h>
+"
+    :otherwise NULL)
+
 (defun (native-probe-file? BOOLEAN) ((fileName FILE-NAME))
   :documentation "Return true if file `fileName' exists.  Note that this does
 not necessarily mean that the file can also be read.  This does not handle any
 necessary pathname translations or error conditions."
   :native? TRUE :public? TRUE)
 
+(defun (native-probe-directory? BOOLEAN) ((fileName FILE-NAME))
+  :documentation "Return true if file `fileName' exists and is a directory.
+Note that this does not necessarily mean that the directory can also be read.
+This does not handle any necessary pathname translations or error conditions."
+  :public? TRUE
+  (let ((result FALSE))
+    (verbatim
+        :cpp
+        "DIR *dirptr;
+         dirptr = opendir(filename);
+         if (dirptr != NULL) {
+            result=true;
+            closedir(dirptr);
+         }"
+        :java "result = (new java.io.File(filename)).isDirectory()"
+        :otherwise
+        ;; there doesn't seem to be a good Lisp-specific test, this works:
+        (setq result (probe-file? (file-name-as-directory fileName))))
+    (return result)))
+
 (defun (probe-file? BOOLEAN) ((fileName FILE-NAME))
   :documentation "Return true if file `fileName' exists.  Note that this does
-not necessarily mean that the file can also be read."
+not necessarily mean that the file can also be read.
+IMPORTANT Java idiosyncrasy: if file `foo/bar' exists and is not a directory,
+Java will also say `foo/bar/' exists, which is different behavior than in Lisp
+and C++.  For this reason, make sure to always use `probe-directory?' to test
+whether a directory exists."
+  :public? TRUE
   (return (native-probe-file? (translate-logical-pathname fileName))))
+
+(defun (probe-directory? BOOLEAN) ((fileName FILE-NAME))
+  :documentation "Return true if file `fileName' exists and is a directory.
+Note that this does not necessarily mean that the directory can also be read."
+  :public? TRUE
+  (return (native-probe-directory? (translate-logical-pathname fileName))))
 
 (defun (native-file-write-date CALENDAR-DATE) ((fileName FILE-NAME))
   :documentation "Return the time at which file `fileName' was last modified or
@@ -2656,6 +2830,22 @@ any data already in `toFile'."
     (with-output-file (to toFile)
       (copy-stream-to-stream from to))))
 
+(defun (get-temp-directory STRING) ()
+  :documentation "Return a suitable directory for temporary files.
+Uses the value of `stella.tempDirectory' if defined; otherwise, it
+will use a suitable OS-specific default.  The returned directory will
+end in a separator for immediate concatenation with a physical filename."
+  :public? TRUE
+  (let ((dir (get-property "stella.tempDirectory")))
+    (when (null? dir)
+      (case (operating-system)
+        ((:UNIX :MAC)
+         (setq dir "/tmp/"))
+        (:WINDOWS
+         ;; to do this right, we should look at the TEMP environment var:
+         (setq dir "C:\\WINDOWS\\TEMP\\"))))
+    (return dir)))
+
 (defun (make-temporary-file-name STRING) ((prefix STRING) (suffix STRING))
   :documentation "Return a file name of the form `<prefix>NNNNNN<suffix>'
 which is guaranteed to not refer to any existing file.  A null `prefix'
@@ -2687,7 +2877,6 @@ or OS process.  If necessary, this case can be handled by the caller."
   ;; wildcarding to get files with or without extensions and/or directories,
   ;; and that they generate different output for different kinds of files.
   (let ((files (CONS OF STRING-WRAPPER) NULL)
-        (dirnameLength (length directory))
         (dirsep (directory-separator-string))
         (checkDuplicates? FALSE)
         (normFile STRING NULL)
@@ -2716,11 +2905,11 @@ or OS process.  If necessary, this case can be handled by the caller."
     ;; normalize different Lisps to have bare filenames without trailing directory separators:
     (foreach file in files
         do (setq normFile file)
-           (when (starts-with? normFile directory 0)
-             (setq normFile (subsequence normFile dirnameLength NULL)))
            (when (ends-with? normFile dirsep NULL)
              ;; this is wrong for files that have a directory separator in their name:
              (setq normFile (subsequence normFile 0 (- (length normFile) (length dirsep)))))
+           ;; this should be safe, given we removed a trailing directory separator:
+           (setq normFile (file-name-without-directory normFile))
            (when (or (eql? normFile ".")
                      (eql? normFile ".."))
              (continue))
@@ -2795,6 +2984,25 @@ e.g., Lisp will convert . or .. into absolute pathnames."
                  (java-list-directory-files directory)
                  (cpp-list-directory-files directory)))))
     (return (sort files NULL))))
+
+(defun (list-directory-files-recursively (CONS OF STRING-WRAPPER)) ((directory STRING))
+  :documentation "Just like `list-directory-files' (which see) but also recurses into
+subdirectories.  Files at the top level of `directory' will be bare file names without
+a `directory' component.  Files in subdirectories will be prefixed with the relative
+subdirectory path starting right below `directory'.  The sort order is lexicographic
+within directories which results in a depth-first presentation order of files."
+  :public? TRUE :command? TRUE
+  (setq directory (translate-logical-pathname (file-name-as-directory directory)))
+  (ensure-file-exists directory "list-directory-files")
+  (let ((files NIL))
+    (foreach file in (list-directory-files directory)
+        do (cond ((probe-directory? (concatenate directory file))
+                  (setq file (file-name-as-directory file))
+                  (foreach subfile in (list-directory-files-recursively (concatenate directory file))
+                      do (pushq files (concatenate (unwrap-string file) subfile))))
+                 (otherwise
+                  (pushq files file))))
+    (return (reverse files))))
 
 
   ;;
@@ -3054,9 +3262,13 @@ bytes 7 and 8, - bytes 9 and 10, - then followed by bytes 11-16."
       :common-lisp
       "(CL:typecase self
         (CL:NULL (cl:setq result STELLA::NIL))
-        (CL:CONS (cl:setq result (stella::cons (stellify (CL:car self))
-                                               (stellify (CL:cdr self)))))
-        (CL:KEYWORD (cl:setq result (intern-keyword (CL:symbol-name self))))
+        (CL:CONS
+          (CL:setq result STELLA::NIL)
+          (CL:dolist (x self)
+            (CL:setq result (STELLA::cons (stellify x) result)))
+          (CL:setq result (STELLA::reverse result)))
+        (CL:KEYWORD
+          (CL:setq result (intern-keyword (CL:symbol-name self))))
         (CL:SYMBOL
          (CL:if (cl:eq self CL:t)
            (cl:setq result TRUE-WRAPPER)

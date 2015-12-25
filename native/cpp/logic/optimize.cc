@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -393,7 +393,7 @@ boolean computedPredicateP(Proposition* goal) {
 }
 
 int simulateCreateChoicePoint() {
-  return (oQUERYITERATORo.get()->currentPatternRecord->topUnbindingStackOffset + 1);
+  return (oQUERYITERATORo->currentPatternRecord->topUnbindingStackOffset + 1);
 }
 
 boolean relationSupportsExtensionP(NamedDescription* self) {
@@ -402,7 +402,7 @@ boolean relationSupportsExtensionP(NamedDescription* self) {
 }
 
 boolean generatorCollectionP(Object* collection) {
-  if (oREVERSEPOLARITYpo.get() &&
+  if (oREVERSEPOLARITYpo &&
       (!closedTermP(collection))) {
     return (false);
   }
@@ -448,11 +448,11 @@ boolean generatorCollectionP(Object* collection) {
 }
 
 void initializeOptimizerGoalRecords(int size) {
-  { ExtensibleVector* stack = ((ExtensibleVector*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_OPTIMIZER_GOAL_RECORDS, NULL)));
+  { ExtensibleVector* stack = ((ExtensibleVector*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_OPTIMIZER_GOAL_RECORDS, NULL)));
 
     if (!((boolean)(stack))) {
       stack = newExtensibleVector(20);
-      setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_OPTIMIZER_GOAL_RECORDS, stack, NULL);
+      setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_OPTIMIZER_GOAL_RECORDS, stack, NULL);
     }
     if (size > stack->length()) {
       stack->insertAt(size, NULL);
@@ -480,7 +480,7 @@ void initializeOptimizerGoalRecords(int size) {
 }
 
 GoalRecord* goalRecord(PatternVariable* variable) {
-  return (((GoalRecord*)((((ExtensibleVector*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_OPTIMIZER_GOAL_RECORDS, NULL)))->theArray)[(variable->boundToOffset)])));
+  return (((GoalRecord*)((((ExtensibleVector*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_OPTIMIZER_GOAL_RECORDS, NULL)))->theArray)[(variable->boundToOffset)])));
 }
 
 // Used by 'distribute-open-goal' to signal that
@@ -509,7 +509,7 @@ void helpDistributeGoal(Object* argument, Proposition* parentgoal, boolean gener
           else {
             goalrecord->otherGoals->insert(parentgoal);
           }
-          oDISTRIBUTEDOPENGOALpo.set(true);
+          oDISTRIBUTEDOPENGOALpo = true;
         }
       }
     }
@@ -604,8 +604,8 @@ void distributeOpenGoal(Proposition* goal) {
       else {
       }
     }
-    if (!oDISTRIBUTEDOPENGOALpo.get()) {
-      oQUERYITERATORo.get()->residueGoals_reader()->insert(goal);
+    if (!oDISTRIBUTEDOPENGOALpo) {
+      oQUERYITERATORo->residueGoals_reader()->insert(goal);
     }
   }
 }
@@ -760,8 +760,8 @@ double ESTIMATED_CARDINALITY_OF_SUBSET_OF = 40.0;
 
 void updateObservedCardinality(NamedDescription* self, int cardinality) {
   { 
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
-    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
+    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
     { 
       BIND_STELLA_SPECIAL(oINVISIBLEASSERTIONpo, boolean, true);
       assertTuple(SGT_OPTIMIZE_PL_KERNEL_KB_OBSERVED_CARDINALITY_OF, consList(2, self, wrapInteger(cardinality)));
@@ -771,8 +771,8 @@ void updateObservedCardinality(NamedDescription* self, int cardinality) {
 
 int accessObservedCardinality(Description* self) {
   { 
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
-    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
+    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
     { Object* value = accessBinaryValue(self, SGT_OPTIMIZE_PL_KERNEL_KB_OBSERVED_CARDINALITY_OF);
 
       if (((boolean)(value)) &&
@@ -1183,14 +1183,14 @@ void computeOptimalOpenGoalOrdering(List* optimizervariables, int numberofopengo
     double cumulativecost = NULL_FLOAT;
     double cumulativefanout = NULL_FLOAT;
 
-    if (oOPTIMALGOALORDERINGRECURSIONSo.get() >= oOPTIMAL_GOAL_ORDERING_CUTOFFo) {
+    if (oOPTIMALGOALORDERINGRECURSIONSo >= oOPTIMAL_GOAL_ORDERING_CUTOFFo) {
       return;
     }
     else {
-      oOPTIMALGOALORDERINGRECURSIONSo.set(oOPTIMALGOALORDERINGRECURSIONSo.get() + 1);
+      oOPTIMALGOALORDERINGRECURSIONSo = oOPTIMALGOALORDERINGRECURSIONSo + 1;
     }
     if (optimizervariables->emptyP()) {
-      setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_GOAL_SEQUENCE, goalsequence, NULL);
+      setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_GOAL_SEQUENCE, goalsequence, NULL);
       return;
     }
     { PatternVariable* vbl = NULL;
@@ -1213,8 +1213,8 @@ void computeOptimalOpenGoalOrdering(List* optimizervariables, int numberofopengo
                 (cumulativecost < priorcost)) {
               continue;
             }
-            if ((((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, NULL_FLOAT_WRAPPER)))->wrapperValue != NULL_FLOAT) &&
-                (cumulativecost >= ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, NULL_FLOAT_WRAPPER)))->wrapperValue)) {
+            if ((((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, NULL_FLOAT_WRAPPER)))->wrapperValue != NULL_FLOAT) &&
+                (cumulativecost >= ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, NULL_FLOAT_WRAPPER)))->wrapperValue)) {
               continue;
             }
             goalsequencecheckpoint = goalsequence->theConsList;
@@ -1223,17 +1223,17 @@ void computeOptimalOpenGoalOrdering(List* optimizervariables, int numberofopengo
             bindAllVariablesInGeneratorGoal(generatorgoal, goalsequence);
           }
           if (goalsequence->length() == numberofopengoals) {
-            if ((((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, NULL_FLOAT_WRAPPER)))->wrapperValue == NULL_FLOAT) ||
-                (cumulativecost < ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, NULL_FLOAT_WRAPPER)))->wrapperValue)) {
-              setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, wrapFloat(cumulativecost), NULL_FLOAT_WRAPPER);
-              setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_GOAL_SEQUENCE, goalsequence->copy(), NULL);
+            if ((((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, NULL_FLOAT_WRAPPER)))->wrapperValue == NULL_FLOAT) ||
+                (cumulativecost < ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, NULL_FLOAT_WRAPPER)))->wrapperValue)) {
+              setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, wrapFloat(cumulativecost), NULL_FLOAT_WRAPPER);
+              setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_GOAL_SEQUENCE, goalsequence->copy(), NULL);
             }
           }
           else {
             computeOptimalOpenGoalOrdering(optimizervariables, numberofopengoals, goalsequence, cumulativecost, cumulativefanout);
           }
           goalsequence->theConsList = goalsequencecheckpoint;
-          unbindVariablesBeginningAt(oQUERYITERATORo.get()->currentPatternRecord, choicepointunbindingoffset);
+          unbindVariablesBeginningAt(oQUERYITERATORo->currentPatternRecord, choicepointunbindingoffset);
         }
       }
     }
@@ -1249,7 +1249,7 @@ void computeGreedyOpenGoalOrdering(List* optimizervariables, int numberofopengoa
     int opengoalreduction = NULL_INTEGER;
 
     if (optimizervariables->emptyP()) {
-      setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_GOAL_SEQUENCE, goalsequence, NULL);
+      setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_GOAL_SEQUENCE, goalsequence, NULL);
       return;
     }
     for (;;) {
@@ -1285,15 +1285,15 @@ void computeGreedyOpenGoalOrdering(List* optimizervariables, int numberofopengoa
                 }
               }
               goalsequence->theConsList = goalsequencecheckpoint;
-              unbindVariablesBeginningAt(oQUERYITERATORo.get()->currentPatternRecord, choicepointunbindingoffset);
+              unbindVariablesBeginningAt(oQUERYITERATORo->currentPatternRecord, choicepointunbindingoffset);
             }
           }
         }
       }
       if (!((boolean)(bestgeneratorgoal))) {
         if (goalsequence->length() == numberofopengoals) {
-          setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, wrapFloat(priorcost), NULL_FLOAT_WRAPPER);
-          setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_GOAL_SEQUENCE, goalsequence, NULL);
+          setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, wrapFloat(priorcost), NULL_FLOAT_WRAPPER);
+          setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_GOAL_SEQUENCE, goalsequence, NULL);
         }
         return;
       }
@@ -1312,10 +1312,10 @@ void computeBackupOpenGoalOrdering(List* goalsequence) {
       g = ((Proposition*)(iter000->value));
       if ((estimateGoalCost(g) == NULL_FLOAT) &&
           coerceWrappedBooleanToBoolean(g->variableTypeP_reader())) {
-        oQUERYITERATORo.get()->residueGoals_reader()->insertLast(g);
+        oQUERYITERATORo->residueGoals_reader()->insertLast(g);
       }
       else {
-        oQUERYITERATORo.get()->bestGoalSequence_reader()->push(g);
+        oQUERYITERATORo->bestGoalSequence_reader()->push(g);
       }
     }
   }
@@ -1621,7 +1621,7 @@ void computeOpenGoalOrdering(Proposition* andproposition, List* opengoals, List*
     }
     opengoalclusters->free();
     initialgoalsequence = goalsequence->theConsList;
-    initialresiduegoals = oQUERYITERATORo.get()->residueGoals_reader()->theConsList;
+    initialresiduegoals = oQUERYITERATORo->residueGoals_reader()->theConsList;
     { Proposition* goal = NULL;
       Cons* iter002 = opengoals->theConsList;
 
@@ -1633,15 +1633,15 @@ void computeOpenGoalOrdering(Proposition* andproposition, List* opengoals, List*
     { 
       BIND_STELLA_SPECIAL(oOPTIMALGOALORDERINGRECURSIONSo, int, 0);
       computeOptimalOpenGoalOrdering(optimizervariables, opengoals->length(), goalsequence, 1.0, 1.0);
-      if (oOPTIMALGOALORDERINGRECURSIONSo.get() >= oOPTIMAL_GOAL_ORDERING_CUTOFFo) {
+      if (oOPTIMALGOALORDERINGRECURSIONSo >= oOPTIMAL_GOAL_ORDERING_CUTOFFo) {
         goalsequence->theConsList = initialgoalsequence;
-        oQUERYITERATORo.get()->residueGoals_reader()->theConsList = initialresiduegoals;
-        oQUERYITERATORo.get()->bestGoalSequence_reader()->clear();
-        setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, wrapFloat(NULL_FLOAT), NULL_FLOAT_WRAPPER);
+        oQUERYITERATORo->residueGoals_reader()->theConsList = initialresiduegoals;
+        oQUERYITERATORo->bestGoalSequence_reader()->clear();
+        setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, wrapFloat(NULL_FLOAT), NULL_FLOAT_WRAPPER);
         computeGreedyOpenGoalOrdering(optimizervariables, opengoals->length(), goalsequence, 1.0, 1.0);
       }
     }
-    if (oQUERYITERATORo.get()->bestGoalSequence_reader()->emptyP() &&
+    if (oQUERYITERATORo->bestGoalSequence_reader()->emptyP() &&
         (!opengoals->emptyP())) {
       computeBackupOpenGoalOrdering(opengoals->reverse());
       if (((boolean)(oTRACED_KEYWORDSo)) &&
@@ -1655,7 +1655,7 @@ void computeOpenGoalOrdering(Proposition* andproposition, List* opengoals, List*
       for (prop, iter003; !(iter003 == NIL); iter003 = iter003->rest) {
         prop = ((Proposition*)(iter003->value));
         if (prop->kind == KWD_OPTIMIZE_AND) {
-          oQUERYITERATORo.get()->bestGoalSequence_reader()->push(prop);
+          oQUERYITERATORo->bestGoalSequence_reader()->push(prop);
         }
       }
     }
@@ -1681,7 +1681,7 @@ void optimizeOrderingOfConjuncts(Proposition* andproposition) {
         }
         else if (hasDisjunctionP(((Proposition*)(g))) ||
             (((Proposition*)(g))->kind == KWD_OPTIMIZE_FORALL)) {
-          oQUERYITERATORo.get()->residueGoals_reader()->insert(((Proposition*)(g)));
+          oQUERYITERATORo->residueGoals_reader()->insert(((Proposition*)(g)));
         }
         else {
           opengoals->insert(((Proposition*)(g)));
@@ -1725,7 +1725,7 @@ void optimizeOrderingOfConjuncts(Proposition* andproposition) {
       }
     }
     computeOpenGoalOrdering(andproposition, opengoals, goalsequence);
-    reorderGoals(andproposition, initiallyclosedgoals->reverse(), oQUERYITERATORo.get()->bestGoalSequence_reader()->reverse(), oQUERYITERATORo.get()->residueGoals_reader());
+    reorderGoals(andproposition, initiallyclosedgoals->reverse(), oQUERYITERATORo->bestGoalSequence_reader()->reverse(), oQUERYITERATORo->residueGoals_reader());
     if (((boolean)(oTRACED_KEYWORDSo)) &&
         oTRACED_KEYWORDSo->membP(KWD_OPTIMIZE_OPTIMIZER)) {
       std::cout << "Optimized goal: " << andproposition << std::endl;
@@ -1962,7 +1962,7 @@ void simulateAndOptimizeQuery(Proposition* proposition) {
   { Vector* arguments = proposition->arguments;
     Keyword* kind = proposition->kind;
 
-    if (oREVERSEPOLARITYpo.get()) {
+    if (oREVERSEPOLARITYpo) {
       if (kind == KWD_OPTIMIZE_AND) {
         kind = KWD_OPTIMIZE_OR;
       }
@@ -2002,7 +2002,7 @@ void simulateAndOptimizeQuery(Proposition* proposition) {
 
         initializeOptimizerMemory(-1);
         optimizeOrderingOfConjuncts(proposition);
-        unbindVariablesBeginningAt(oQUERYITERATORo.get()->currentPatternRecord, choicepointunbindingoffset);
+        unbindVariablesBeginningAt(oQUERYITERATORo->currentPatternRecord, choicepointunbindingoffset);
       }
       { Object* arg = NULL;
         Vector* vector001 = proposition->arguments;
@@ -2030,17 +2030,17 @@ void simulateAndOptimizeQuery(Proposition* proposition) {
           { int choicepointunbindingoffset = simulateCreateChoicePoint();
 
             simulateAndOptimizeQuery(((Proposition*)(arg)));
-            unbindVariablesBeginningAt(oQUERYITERATORo.get()->currentPatternRecord, choicepointunbindingoffset);
+            unbindVariablesBeginningAt(oQUERYITERATORo->currentPatternRecord, choicepointunbindingoffset);
           }
         }
       }
     }
     else if (kind == KWD_OPTIMIZE_NOT) {
-      { boolean oldreversepolarityP = oREVERSEPOLARITYpo.get();
+      { boolean oldreversepolarityP = oREVERSEPOLARITYpo;
 
         { 
           BIND_STELLA_SPECIAL(oREVERSEPOLARITYpo, boolean, !oldreversepolarityP);
-          if (oREVERSEPOLARITYpo.get()) {
+          if (oREVERSEPOLARITYpo) {
             warnOfUnboundVariableArgument(proposition);
           }
           simulateAndOptimizeQuery(((Proposition*)((arguments->theArray)[0])));
@@ -2080,7 +2080,7 @@ void simulateAndOptimizeQuery(Proposition* proposition) {
             simulateAndOptimizeArgument(arg);
           }
         }
-        unbindVariablesBeginningAt(oQUERYITERATORo.get()->currentPatternRecord, choicepointunbindingoffset);
+        unbindVariablesBeginningAt(oQUERYITERATORo->currentPatternRecord, choicepointunbindingoffset);
       }
     }
     else {
@@ -2090,13 +2090,13 @@ void simulateAndOptimizeQuery(Proposition* proposition) {
 
 void initializeOptimizerMemory(int stacksize) {
   if ((stacksize <= 0) &&
-      ((boolean)(((ExtensibleVector*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_OPTIMIZER_GOAL_RECORDS, NULL)))))) {
-    stacksize = ((ExtensibleVector*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_OPTIMIZER_GOAL_RECORDS, NULL)))->length();
+      ((boolean)(((ExtensibleVector*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_OPTIMIZER_GOAL_RECORDS, NULL)))))) {
+    stacksize = ((ExtensibleVector*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_OPTIMIZER_GOAL_RECORDS, NULL)))->length();
   }
   initializeOptimizerGoalRecords(stacksize);
-  setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_RESIDUE_GOALS, list(0), NULL);
-  setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_GOAL_SEQUENCE, list(0), NULL);
-  setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, wrapFloat(NULL_FLOAT), NULL_FLOAT_WRAPPER);
+  setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_RESIDUE_GOALS, list(0), NULL);
+  setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_GOAL_SEQUENCE, list(0), NULL);
+  setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_OPTIMIZE_LOGIC_BEST_COST, wrapFloat(NULL_FLOAT), NULL_FLOAT_WRAPPER);
 }
 
 // Keeps track of last control frame allocated by
@@ -2228,7 +2228,7 @@ double dynamicallyEstimateInferenceCost(NamedDescription* self) {
         initializeMemoizationTable(SGT_OPTIMIZE_LOGIC_F_DYNAMICALLY_ESTIMATE_INFERENCE_COST_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:IMPLIES-PROPOSITION-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_OPTIMIZE_LOGIC_F_DYNAMICALLY_ESTIMATE_INFERENCE_COST_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, NULL, -1);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo, MEMOIZED_NULL_VALUE, NULL, -1);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -2816,7 +2816,7 @@ boolean conjunctCancelsIsaPropositionP(Proposition* isaconjunct, Proposition* ot
 
     if (testValue000 == KWD_OPTIMIZE_ISA) {
       return (eqlP((otherconjunct->arguments->theArray)[0], (isaconjunct->arguments->theArray)[0]) &&
-          ((oPOSTOPTIMIZATIONpo.get() ? relationrefSpecializesRelationrefP(((Surrogate*)(otherconjunct->operatoR)), ((Surrogate*)(isaconjunct->operatoR))) : (((Surrogate*)(otherconjunct->operatoR)) == ((Surrogate*)(isaconjunct->operatoR))))));
+          ((oPOSTOPTIMIZATIONpo ? relationrefSpecializesRelationrefP(((Surrogate*)(otherconjunct->operatoR)), ((Surrogate*)(isaconjunct->operatoR))) : (((Surrogate*)(otherconjunct->operatoR)) == ((Surrogate*)(isaconjunct->operatoR))))));
     }
     else if ((testValue000 == KWD_OPTIMIZE_FUNCTION) ||
         (testValue000 == KWD_OPTIMIZE_PREDICATE)) {
@@ -2825,7 +2825,7 @@ boolean conjunctCancelsIsaPropositionP(Proposition* isaconjunct, Proposition* ot
 
         { boolean testValue001 = false;
 
-          testValue001 = oPOSTOPTIMIZATIONpo.get();
+          testValue001 = oPOSTOPTIMIZATIONpo;
           if (testValue001) {
             testValue001 = typeP(intype);
             if (testValue001) {
@@ -3031,7 +3031,7 @@ void simplifyProposition(Proposition* proposition) {
               { Object* arg001 = arg;
                 Description* arg = ((Description*)(arg001));
 
-                simplifyDescription(arg, oPOSTOPTIMIZATIONpo.get());
+                simplifyDescription(arg, oPOSTOPTIMIZATIONpo);
               }
             }
             else {
@@ -3046,7 +3046,7 @@ void simplifyProposition(Proposition* proposition) {
 Description* copyDescription(Description* self, KeyValueMap* parentmapping, boolean addbacklinksP) {
   { 
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, self->homeContext);
-    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
     { Description* copy = createDescription(NULL_INTEGER, false);
       KeyValueMap* mapping = newKeyValueMap();
 
@@ -3140,8 +3140,8 @@ PatternVariable* copyVariable(PatternVariable* self, KeyValueMap* mapping) {
       return (copy);
     }
     copy = createVariable(self->skolemType, self->skolemName, false);
-    if ((oPRINTMODEo.get() == KWD_OPTIMIZE_REALISTIC) ||
-        (oPRINTMODEo.get() == KWD_OPTIMIZE_FLAT)) {
+    if ((oPRINTMODEo == KWD_OPTIMIZE_REALISTIC) ||
+        (oPRINTMODEo == KWD_OPTIMIZE_FLAT)) {
       copy->skolemName = self->skolemName;
     }
     else {
@@ -3189,9 +3189,9 @@ Vector* copyVariablesVector(Vector* self, KeyValueMap* mapping) {
         i = iter000;
         { PatternVariable* vblcopy = copyVariable(vbl, mapping);
 
-          if (oBOUNDTOOFFSETCOUNTERo.get() != NULL_INTEGER) {
-            vblcopy->boundToOffset = oBOUNDTOOFFSETCOUNTERo.get();
-            oBOUNDTOOFFSETCOUNTERo.set(oBOUNDTOOFFSETCOUNTERo.get() + 1);
+          if (oBOUNDTOOFFSETCOUNTERo != NULL_INTEGER) {
+            vblcopy->boundToOffset = oBOUNDTOOFFSETCOUNTERo;
+            oBOUNDTOOFFSETCOUNTERo = oBOUNDTOOFFSETCOUNTERo + 1;
           }
           (copy->theArray)[i] = vblcopy;
         }
@@ -3211,7 +3211,7 @@ Proposition* copyProposition(Proposition* self, KeyValueMap* mapping) {
       return (self);
     }
     copy = createProposition(SYM_OPTIMIZE_STELLA_PREDICATE, self->arguments->length());
-    copy->homeContext = oMODULEo.get();
+    copy->homeContext = oMODULEo;
     copy->kind = self->kind;
     copy->operatoR = ((GeneralizedSymbol*)(copyPropositionArgument(self->operatoR, mapping)));
     { Proposition* object000 = copy;
@@ -3327,7 +3327,15 @@ Object* copyPropositionArgument(Object* self, KeyValueMap* mapping) {
         { Object* self002 = self;
           PatternVariable* self = ((PatternVariable*)(self002));
 
-          throw *newStellaException("OOPS -- BUG IN 'copy-description'");
+          { Object* value = mappedValueOf(self, mapping, false);
+
+            if (((boolean)(value))) {
+              return (copyPropositionArgument(value, mapping));
+            }
+            else {
+              throw *newStellaException("INTERNAL ERROR: BUG IN 'copy-description'");
+            }
+          }
         }
       }
       else {
@@ -3343,7 +3351,7 @@ Object* mappedValueOf(Object* self, KeyValueMap* mapping, boolean createskolemP)
     if (((boolean)(value))) {
       return (value);
     }
-    if (((boolean)(oQUERYITERATORo.get())) &&
+    if (((boolean)(oQUERYITERATORo)) &&
         ((!variableP(self)) ||
          (((PatternVariable*)(self))->boundToOffset != NULL_INTEGER))) {
       value = argumentBoundTo(self);
@@ -3651,7 +3659,7 @@ Proposition* newFindSimilarProposition(Proposition* proposition, KeyValueMap* ma
   if (proposition->kind == KWD_OPTIMIZE_CONSTANT) {
     return (NULL);
   }
-  { IntegerWrapper* index = wrapInteger(propositionHashIndex(proposition, mapping));
+  { IntegerWrapper* index = wrapInteger(propositionHashIndex(proposition, mapping, false));
     List* bucket = ((List*)(oSTRUCTURED_OBJECTS_INDEXo->lookup(index)));
     boolean functionP = proposition->kind == KWD_OPTIMIZE_FUNCTION;
 
@@ -3719,7 +3727,7 @@ Proposition* newFindSimilarProposition(Proposition* proposition, KeyValueMap* ma
                           equivalentPropositionsP(proposition, p, mapping);
                     }
                     if (testValue000) {
-                      testValue000 = subcontextP(oMODULEo.get(), p->homeContext->baseModule);
+                      testValue000 = subcontextP(oMODULEo, p->homeContext->baseModule);
                     }
                   }
                 }
@@ -4061,8 +4069,8 @@ Cons* createSkolemPropositionsQuery(Cons* inheritedprops, Description* descripti
     Cons* filteredpropsindices = NIL;
 
     { 
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo.get());
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       { Keyword* testValue000 = description->proposition->kind;
 
         if (testValue000 == KWD_OPTIMIZE_AND) {
@@ -4559,17 +4567,17 @@ void vectorDinheritUnnamedDescription(Vector* arguments, Description* descriptio
         prop = ((Proposition*)(iter000->value));
         if (!trueP(prop)) {
           assignTruthValue(prop, (defaulttrueP ? DEFAULT_TRUE_TRUTH_VALUE : TRUE_TRUTH_VALUE));
-          if (!(((boolean)(oCOLLECTFORWARDPROPOSITIONSo.get())))) {
+          if (!(((boolean)(oCOLLECTFORWARDPROPOSITIONSo)))) {
             continue;
           }
           if (!((boolean)(collect000))) {
             {
               collect000 = cons(prop, NIL);
-              if (oCOLLECTFORWARDPROPOSITIONSo.get() == NIL) {
-                oCOLLECTFORWARDPROPOSITIONSo.set(collect000);
+              if (oCOLLECTFORWARDPROPOSITIONSo == NIL) {
+                oCOLLECTFORWARDPROPOSITIONSo = collect000;
               }
               else {
-                addConsToEndOfConsList(oCOLLECTFORWARDPROPOSITIONSo.get(), collect000);
+                addConsToEndOfConsList(oCOLLECTFORWARDPROPOSITIONSo, collect000);
               }
             }
           }
@@ -4601,8 +4609,8 @@ void inheritDescription(Vector* arguments, Description* description, boolean def
       { Proposition* prop = updateTuple(description->surrogateValueInverse, arguments->consify(), KWD_OPTIMIZE_CONCEIVE);
 
         if (!(trueP(prop))) {
-          if (((boolean)(oCOLLECTFORWARDPROPOSITIONSo.get()))) {
-            oCOLLECTFORWARDPROPOSITIONSo.set(cons(prop, oCOLLECTFORWARDPROPOSITIONSo.get()));
+          if (((boolean)(oCOLLECTFORWARDPROPOSITIONSo))) {
+            oCOLLECTFORWARDPROPOSITIONSo = cons(prop, oCOLLECTFORWARDPROPOSITIONSo);
           }
           assignTruthValue(prop, (defaulttrueP ? DEFAULT_TRUE_TRUTH_VALUE : TRUE_TRUTH_VALUE));
         }
@@ -4710,8 +4718,8 @@ void helpStartupOptimize3() {
     V_1_0_AND_V_0_1 = list(2, V_1_0, V_0_1);
     V_1_0_SINGLETON = list(1, V_1_0);
     V_0_1_SINGLETON = list(1, V_0_1);
-    oOPTIMALGOALORDERINGRECURSIONSo.set(NULL_INTEGER);
-    oBOUNDTOOFFSETCOUNTERo.set(NULL_INTEGER);
+    oOPTIMALGOALORDERINGRECURSIONSo = NULL_INTEGER;
+    oBOUNDTOOFFSETCOUNTERo = NULL_INTEGER;
     oQUERY_OPTIMIZATION_STRATEGYo = KWD_OPTIMIZE_DYNAMIC;
   }
 }
@@ -4839,7 +4847,7 @@ void helpStartupOptimize5() {
 void startupOptimize() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupOptimize1();
       helpStartupOptimize2();

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -107,7 +107,7 @@ Cons* yieldDownCastTree(Cons* tree, StandardObject* returntype) {
 
     { Cons* otree = sysTree(tree, returntype, dummy1);
 
-      if (!(oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_DYNAMIC_SLOTS_COMMON_LISP)) {
+      if (!(oTRANSLATOROUTPUTLANGUAGEo == KWD_DYNAMIC_SLOTS_COMMON_LISP)) {
         setTargetLanguageType(otree, SGT_DYNAMIC_SLOTS_STELLA_OBJECT, dummy2);
       }
       return (otree);
@@ -159,7 +159,7 @@ Cons* yieldStandardDynamicSlotValueSetterTree(StorageSlot* slot, Object* objectr
 void startupDynamicSlots() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       KWD_DYNAMIC_SLOTS_DYNAMIC = ((Keyword*)(internRigidSymbolWrtModule("DYNAMIC", NULL, 2)));
       KWD_DYNAMIC_SLOTS_NULL_WRAPPER = ((Keyword*)(internRigidSymbolWrtModule("NULL-WRAPPER", NULL, 2)));

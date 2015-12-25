@@ -124,6 +124,13 @@ of the official PowerLoom interface.  So beware!
      Only instances that haven't been deleted will be considered.  If
      LOCAL?, only return instances created locally in MODULE.
 
+ -- Function: all-locally-modified-propositions ((module MODULE)) :
+          (ITERATOR OF PROPOSITION)
+     Iterate over all conceived propositions visible from MODULE that
+     had their truth value locally modified (initialized, asserted,
+     retracted).  Note, that this will always include all locally
+     conceived propositions.
+
  -- Function: all-named-descriptions ((module MODULE) (local? BOOLEAN))
           : (ITERATOR OF NAMED-DESCRIPTION)
      Iterate over all named descriptions visible from MODULE.  If
@@ -334,6 +341,11 @@ of the official PowerLoom interface.  So beware!
  -- Function: collection? ((objectRef OBJECT)) : BOOLEAN
      Return TRUE if OBJECTREF denotes a relation or a class.
 
+ -- Function: conceive-inverted-proposition ((prop PROPOSITION)) :
+          PROPOSITION
+     Return the simplest inversion of PROP, trying to reuse existing
+     negations or negated arguments of PROP if possible.
+
  -- Command: conceive-term ((tree OBJECT)) : OBJECT
      TREE is a term expression (a string or an s-expression), or is a
      class reference (a symbol or surrogate).  Return a (possibly
@@ -376,6 +388,9 @@ of the official PowerLoom interface.  So beware!
      structure literally, :VERBOSE keeps AND- introductions but
      suppresses all auxiliary (non-logical) nodes such as pattern
      nodes, and :BRIEF additionally suppresses AND-introduction nodes.
+
+ -- Function: constant-proposition? ((self PROPOSITION)) : BOOLEAN
+     Return true if SELF is a constant such as TRUE or FALSE.
 
  -- Function: constant? ((objectRef OBJECT)) : BOOLEAN
      Return TRUE if OBJECTREF denotes a literal or scalar.
@@ -420,6 +435,10 @@ of the official PowerLoom interface.  So beware!
  -- Command: current-inference-level () : NORMAL-INFERENCE-LEVEL
      Return the current inference level that is active in the current
      query, the current module, or, otherwise, globally.
+
+ -- Method on QUERY-ITERATOR: debug-id-setter (self (id STRING)) :
+     Set the debug ID of SELF to ID.  If ID is NULL, simply use the
+     current ID counter and increment it appropriately.
 
  -- Function: default-false? ((self PROPOSITION)) : BOOLEAN
      Return true if SELF is default false.
@@ -486,6 +505,9 @@ of the official PowerLoom interface.  So beware!
 
  -- Method on DESCRIPTION: description-name (self) : SYMBOL
      Return the name of the description SELF, if it has one.
+
+ -- Function: description? ((self OBJECT)) : BOOLEAN
+     Return TRUE if SELF is a description.
 
  -- Function: destroy-instance ((self OBJECT)) :
      Destroy all propositions that reference SELF, and mark it as
@@ -555,6 +577,11 @@ of the official PowerLoom interface.  So beware!
           (state KEYWORD)) :
      Record the evaluation STATE of PROPOSITION.
 
+ -- Function: explain-proposition ((prop PROPOSITION) (style KEYWORD)
+          (maxdepth INTEGER) (stream OUTPUT-STREAM)) :
+     Print an explanation for PROP if there is one.  This will only
+     happen for forward-chained propositions.
+
  -- Function: explain-why ((label STRING) (style KEYWORD)
           (maxdepth INTEGER) (stream OUTPUT-STREAM)) :
      Programmer's interface to WHY function.
@@ -570,6 +597,13 @@ of the official PowerLoom interface.  So beware!
  -- Function: false? ((self PROPOSITION)) : BOOLEAN
      Return true if SELF is false (or default-false if we are
      considering default assertions).
+
+ -- Method on OBJECT-STORE: fetch-duplicate-proposition (store
+          (prop PROPOSITION)) : PROPOSITION
+     Fetch a duplicate of PROP if defined by STORE.  EXPERIMENTAL!  The
+     exact semantics of this still needs to be worked out.  This needs
+     to be appropriately specialized on actual OBJECT-STORE
+     implementations.
 
  -- Method on OBJECT-STORE: fetch-instance (store (name OBJECT)) :
           OBJECT
@@ -687,6 +721,12 @@ of the official PowerLoom interface.  So beware!
      Return a most specific type for fillers of the slot RELATION (a
      surrogate) applied to SELF. If there is more than one, pick one.
 
+ -- Function: get-visible-clash-exceptions
+          ((incoherentProp PROPOSITION)) : (CONS OF EXCEPTION-RECORD)
+     Return the set of clash exceptions for INCOHERENTPROP that are
+     visible from the current context.  These are recorded most-recent
+     first in order of occurrance.
+
  -- Function: get-why-justification ((label STRING)) : JUSTIFICATION
      Returns the current WHY justification.  May also throw one of the
      following subtypes of EXPLAIN-EXCEPTION:
@@ -705,6 +745,11 @@ of the official PowerLoom interface.  So beware!
  -- Function: has-forward-justifications? ((proposition PROPOSITION)) :
           BOOLEAN
      Return TRUE if PROPOSITION has any forward justifications.
+
+ -- Function: have-active-object-stores? () : BOOLEAN
+     Return TRUE if we have at least one object store opened/linked into
+     PowerLoom, which changes some index access routines to be
+     considerate of that.
 
  -- Method on NAMED-DESCRIPTION: help-print-outline (top
           (stream OUTPUT-STREAM) (current-depth INTEGER)
@@ -749,26 +794,6 @@ of the official PowerLoom interface.  So beware!
      Return a list containing two lists, a list of currently enabled
      PowerLoom features, and a list of all available PowerLoom features.
 
- -- N-Command: list-unclassified-instances ((module NAME)
-          (local? BOOLEAN)) : (CONS OF LOGIC-OBJECT)
-     Collect all instances in MODULE (or in any module if MODULE is
-     NULL) that were not (or will not be) classified due to their lack
-     of non-inferable/primitive type assertions.
-
- -- N-Command: list-unclassified-relations ((module NAME)
-          (local? BOOLEAN)) : (CONS OF NAMED-DESCRIPTION)
-     Collect all named description in MODULE (or in any module if MODULE
-     is NULL) that were not (or will not be) classified due to their
-     lack of non-inferable/primitive ancestor relations.
-
- -- N-Command: list-undefined-relations ((module NAME)
-          (local? BOOLEAN)) : (CONS OF NAMED-DESCRIPTION)
-     Return a list of as yet undefined concepts and relations in MODULE.
-     These relations were defined by the system, since they were
-     referenced but have not yet been defined by the user.  If MODULE
-     is NULL look in the current module.  If LOCAL? only look in MODULE
-     but not in any modules it inherits.
-
  -- Method on QUERY-ITERATOR: listify (self) : LIST
      Just like `QUERY-ITERATOR.consify' but return a LIST instead.
 
@@ -794,6 +819,13 @@ of the official PowerLoom interface.  So beware!
      will over-ride the default value.  If noe DEFAULT-MODULE is
      specified, and the input stream does not have an `in-module' form,
      an error is signaled.
+
+ -- Function: locally-modified-proposition? ((proposition PROPOSITION)
+          (module MODULE)) : BOOLEAN
+     Return true if proposition's truth-value has been locally modified
+     in MODULE (initialized, asserted, retracted).  This will always
+     succeed for locally conceived propositions regardless of whether
+     their truth value is defined or not.
 
  -- Function: logic-class? ((self CLASS)) : BOOLEAN
      Return TRUE if the class SELF or one of its supers supports
@@ -828,6 +860,16 @@ of the official PowerLoom interface.  So beware!
      Returns the native funtion code for NATIVE-NAME if it exists and
      the underlying programming languages supports such lookups.  Uses
      the signature of a specialist function.
+
+ -- Function: merge-truth-values ((tv1 TRUTH-VALUE) (tv2 TRUTH-VALUE))
+          : TRUTH-VALUE
+     Merge two truth values that are describing the "same" logical
+     proposition.  This handles subordination of default to strict
+     values, known over unknown and potential inconsistent values.
+
+     In particular, this can be used to check for negated values by
+     asking for the truth of a proposition and its negation, inverting
+     the negation and then using merge to come up with an answer.
 
  -- Function: named-description? ((self DESCRIPTION)) : BOOLEAN
      Return TRUE if SELF is the description of a named class or
@@ -900,8 +942,8 @@ of the official PowerLoom interface.  So beware!
      extensions with size less than SIZECUTOFF (default is 10).
 
  -- N-Command: print-facts ((instanceref OBJECT)) :
-     Like ALL-FACTS-OF, but prints each fact on a separate line on the
-     standard output stream.
+     Like `all-facts-of', but sorts and prints each fact on a separate
+     line on the standard output stream.
 
  -- Function: print-goal-stack ((frame CONTROL-FRAME)
           (verbose? BOOLEAN)) :
@@ -968,6 +1010,9 @@ of the official PowerLoom interface.  So beware!
      function should have the signature `((self OBJECT) (stream
      OUTPUT-STREAM))'.  Any return values will be ignored.
 
+ -- Function: register-object-store ((store OBJECT-STORE)) :
+     Register STORE as an active object store.
+
  -- Function: register-specialist-function ((name STRING)
           (code FUNCTION-CODE)) :
      Creates a registration entry for NAME as a specialist which
@@ -1000,6 +1045,9 @@ of the official PowerLoom interface.  So beware!
  -- Method on PAGING-INDEX: remove-deleted-members (self) : (LIKE SELF)
      Destructively remove all deleted members of SELF.
 
+ -- Function: reset-clash-exceptions () :
+     Resets the collection of clash exceptions
+
  -- Function: reset-query-caches () :
      Zero out all caches managed by the query optimizer, so that it
      will reoptimize subgoal queries upon next invocation.
@@ -1024,13 +1072,15 @@ of the official PowerLoom interface.  So beware!
      `:MAXIMIZE-SCORE? TRUE' (this is not yet implemented - you can use
      `ask-partial' to maximize scores for individual solutions by hand).
 
- -- N-Command: run-forward-rules ((moduleRef NAME)
-          &rest (force KEYWORD)) :
-     Run forward inference rules in module MODULEREF. If MODULEREF is
-     NULL, the current module will be used.  If forward inferencing is
-     already up-to-date in the designated module, no additional
-     inferencing will occur, unless the optional keyword `:force' is
-     included, in which case all forward rules are run or rerun.
+ -- N-Command: run-forward-rules (&rest (options OBJECT)) :
+     Run forward inference rules in the module defined by the :module
+     option (which defaults to the current module).  If forward
+     inferencing is already up-to-date in the designated module, no
+     additional inferencing will occur, unless the :force?  option is
+     specified as TRUE, in which case all forward rules are run or
+     rerun.  For backwards compatibility, this command also supports
+     the old <module> :force arguments specified with a non-standard
+     keyword notation.
 
      Calling `run-forward-rules' temporarily puts the module into a
      mode where future assertional (monotonic) updates will trigger
@@ -1102,6 +1152,9 @@ of the official PowerLoom interface.  So beware!
      established by the last call to `save-all-neural-networks'.  A
      number <= 0 or a NULL number turns off periodic saving.
 
+ -- Method on JUSTIFICATION: shallow-copy (self) : (LIKE SELF)
+     Similar to `copy' but does not copy antecedent justifications.
+
  -- Method on QUERY-SOLUTION-TABLE: sort (self
           (predicate FUNCTION-CODE)) : (LIKE SELF)
      Perform a stable, destructive sort of SELF according to PREDICATE,
@@ -1157,6 +1210,13 @@ of the official PowerLoom interface.  So beware!
 
  -- Function: strict-truth-value? ((self TRUTH-VALUE)) : BOOLEAN
      Return TRUE if SELF is a strict truth value.
+
+ -- Function: stronger-truth-value? ((tv1 TRUTH-VALUE)
+          (tv2 TRUTH-VALUE)) : BOOLEAN
+     Compare the two truth values and return `true' if TV1 is strictly
+     stronger than TV2.  Stronger uses the following partial order:
+     INCONSISTENT > STRICT > DEFAULT > UNKNOWN.  Truth values at the
+     same level are equal in strength.
 
  -- Function: termify ((self OBJECT)) : OBJECT
      Convert SELF into an equivalent PowerLoom object that can be
@@ -1232,6 +1292,12 @@ of the official PowerLoom interface.  So beware!
  -- Function: unknown? ((self PROPOSITION)) : BOOLEAN
      Return true if the truth of SELF is unknown.
 
+ -- Function: unnamed-description? ((self OBJECT)) : BOOLEAN
+     Return TRUE if SELF is an unnamed description.
+
+ -- Function: unregister-object-store ((store OBJECT-STORE)) :
+     Remove STORE from the list of active object stores.
+
  -- Function: unset-powerloom-feature ((feature KEYWORD)) :
      Disable the PowerLoom environment feature FEATURE.
 
@@ -1296,6 +1362,10 @@ of the official PowerLoom interface.  So beware!
      MODULE is case insensitive. This should generally not be necessary
      to do.
 
+ -- Function: get-inconsistent-propositions ((module MODULE)
+          (environment ENVIRONMENT)) : (PL-ITERATOR OF PROPOSITION)
+     Return inconsistent propositions visible in MODULE.
+
  -- Function: get-keyword ((name STRING)) : KEYWORD
      Returns the Stella KEYWORD NAME if it exists.  Case sensitive.
 
@@ -1312,6 +1382,11 @@ of the official PowerLoom interface.  So beware!
           (environment ENVIRONMENT)) : SYMBOL
      Returns the Stella SYMBOL NAME visible in MODULE if it exists.
      NAME is ALWAYS treated case sensitively.
+
+ -- Function: get-undefined-relations ((module MODULE)
+          (environment ENVIRONMENT)) : (PL-ITERATOR OF LOGIC-OBJECT)
+     Return relations that have been referenced but not defined in
+     MODULE.
 
  -- Function: is-known ((tv TRUTH-VALUE)) : BOOLEAN
      Tests whether TV is a known truth value (i.e., true or false).
@@ -1356,9 +1431,6 @@ of the official PowerLoom interface.  So beware!
      declaration, an error will be signaled.  The remaining commands
      are evaluated one-by-one, applying the function `evaluate' to each
      of them.
-
- -- Function: main () :
-     Main PowerLoom entry point for your code in C++ and Java.
 
  -- Function: register-computation-function ((name STRING)
           (function-reference FUNCTION-CODE) (arity INTEGER)
@@ -1712,7 +1784,7 @@ follows:
 
    `<termop> ::= listof | setof | the | setofall | kappa'
 
-   ` <sentop> ::= = | /= | not | and | or | forall | exists
+   ` <sentop> ::= = | /= | not | fail | and | or | forall | exists
 | <= | => | <=> |<<= | =>> | <~ | ~> | <<~ | ~>> '
 
    ` <defop> ::= defconcept | deffunction | defrelation | defrule |
@@ -1792,6 +1864,7 @@ Sentences are used to express propositions about the world:
 <term>)' instead).
 
    ` <logsent> ::= (not <sentence>) |
+(fail <sentence>) |
 (and <sentence>*) |
 (or <sentence>*) |
 (=> <sentence>* <sentence>) | (=>> <sentence>* <sentence>) |
@@ -1900,30 +1973,31 @@ Function Index
 * all-facts-of-n:                        Miscellaneous.      (line   79)
 * all-inconsistent-propositions:         Miscellaneous.      (line  102)
 * all-instances:                         Miscellaneous.      (line  108)
-* all-named-descriptions:                Miscellaneous.      (line  114)
-* all-named-instances:                   Miscellaneous.      (line  120)
-* all-named-terms:                       Miscellaneous.      (line  127)
-* all-propositions:                      Miscellaneous.      (line  134)
-* all-relation-values:                   Miscellaneous.      (line  140)
-* all-sentences-of:                      Miscellaneous.      (line  145)
-* all-slot-value-types:                  Miscellaneous.      (line  149)
-* all-slot-values:                       Miscellaneous.      (line  154)
-* all-subrelations:                      Miscellaneous.      (line  159)
-* all-superrelations:                    Miscellaneous.      (line  163)
-* all-taxonomic-types:                   Miscellaneous.      (line  167)
-* all-terms:                             Miscellaneous.      (line  172)
-* all-types:                             Miscellaneous.      (line  178)
-* all-unnamed-terms:                     Miscellaneous.      (line  182)
-* allocate-supported-closure-iterator:   Miscellaneous.      (line  190)
-* allocate-transitive-closure-iterator:  Miscellaneous.      (line  196)
+* all-locally-modified-propositions:     Miscellaneous.      (line  114)
+* all-named-descriptions:                Miscellaneous.      (line  121)
+* all-named-instances:                   Miscellaneous.      (line  127)
+* all-named-terms:                       Miscellaneous.      (line  134)
+* all-propositions:                      Miscellaneous.      (line  141)
+* all-relation-values:                   Miscellaneous.      (line  147)
+* all-sentences-of:                      Miscellaneous.      (line  152)
+* all-slot-value-types:                  Miscellaneous.      (line  156)
+* all-slot-values:                       Miscellaneous.      (line  161)
+* all-subrelations:                      Miscellaneous.      (line  166)
+* all-superrelations:                    Miscellaneous.      (line  170)
+* all-taxonomic-types:                   Miscellaneous.      (line  174)
+* all-terms:                             Miscellaneous.      (line  179)
+* all-types:                             Miscellaneous.      (line  185)
+* all-unnamed-terms:                     Miscellaneous.      (line  189)
+* allocate-supported-closure-iterator:   Miscellaneous.      (line  197)
+* allocate-transitive-closure-iterator:  Miscellaneous.      (line  203)
 * ANTISYMMETRIC:                         Built-In Relations. (line   42)
-* apply-ask:                             Miscellaneous.      (line  203)
-* apply-kappa?:                          Miscellaneous.      (line  210)
-* apply-retrieve:                        Miscellaneous.      (line  216)
+* apply-ask:                             Miscellaneous.      (line  210)
+* apply-kappa?:                          Miscellaneous.      (line  217)
+* apply-retrieve:                        Miscellaneous.      (line  223)
 * ARITY:                                 Built-In Relations. (line   46)
 * ask <1>:                               API Functions.      (line   30)
 * ask:                                   Commands.           (line   78)
-* ask-partial:                           Miscellaneous.      (line  226)
+* ask-partial:                           Miscellaneous.      (line  233)
 * assert:                                Commands.           (line  106)
 * assert-binary-proposition:             API Functions.      (line   56)
 * assert-from-query:                     Commands.           (line  115)
@@ -1934,167 +2008,174 @@ Function Index
 * ASSERTION-QUERY:                       Built-In Relations. (line   49)
 * BACKTRACKING-QUERY:                    Built-In Relations. (line   53)
 * BINARY-RELATION:                       Built-In Relations. (line   58)
-* bottom?:                               Miscellaneous.      (line  232)
+* bottom?:                               Miscellaneous.      (line  239)
 * BOUND-VARIABLES:                       Built-In Relations. (line   61)
-* call-all-facts-of:                     Miscellaneous.      (line  236)
-* call-ask:                              Miscellaneous.      (line  240)
-* call-defconcept:                       Miscellaneous.      (line  246)
-* call-deffunction:                      Miscellaneous.      (line  250)
-* call-defobject:                        Miscellaneous.      (line  254)
-* call-defproposition:                   Miscellaneous.      (line  258)
-* call-defrelation:                      Miscellaneous.      (line  263)
-* call-list-undefined-relations:         Miscellaneous.      (line  268)
-* call-propagate-constraints:            Miscellaneous.      (line  271)
-* call-retrieve:                         Miscellaneous.      (line  275)
-* call-retrieve-partial:                 Miscellaneous.      (line  282)
-* call-run-forward-rules:                Miscellaneous.      (line  290)
-* call-set-inference-level:              Miscellaneous.      (line  298)
+* call-all-facts-of:                     Miscellaneous.      (line  243)
+* call-ask:                              Miscellaneous.      (line  247)
+* call-defconcept:                       Miscellaneous.      (line  253)
+* call-deffunction:                      Miscellaneous.      (line  257)
+* call-defobject:                        Miscellaneous.      (line  261)
+* call-defproposition:                   Miscellaneous.      (line  265)
+* call-defrelation:                      Miscellaneous.      (line  270)
+* call-list-undefined-relations:         Miscellaneous.      (line  275)
+* call-propagate-constraints:            Miscellaneous.      (line  278)
+* call-retrieve:                         Miscellaneous.      (line  282)
+* call-retrieve-partial:                 Miscellaneous.      (line  289)
+* call-run-forward-rules:                Miscellaneous.      (line  297)
+* call-set-inference-level:              Miscellaneous.      (line  305)
 * CARDINALITY:                           Built-In Relations. (line   73)
 * cc:                                    Commands.           (line  167)
 * change-module:                         API Functions.      (line   76)
-* class?:                                Miscellaneous.      (line  304)
-* classify-instances:                    Commands.           (line  190)
+* class?:                                Miscellaneous.      (line  311)
+* classify-instances:                    Commands.           (line  193)
 * classify-relations:                    Commands.           (line  173)
 * clear-caches <1>:                      API Functions.      (line   81)
-* clear-caches:                          Commands.           (line  207)
-* clear-instances:                       Commands.           (line  210)
+* clear-caches:                          Commands.           (line  213)
+* clear-instances:                       Commands.           (line  216)
 * clear-module <1>:                      API Functions.      (line   84)
-* clear-module:                          Commands.           (line  216)
+* clear-module:                          Commands.           (line  222)
 * CLOSED:                                Built-In Relations. (line   76)
-* coerce-to-instance:                    Miscellaneous.      (line  308)
-* coerce-to-instance-or-literal:         Miscellaneous.      (line  312)
-* coerce-to-vector:                      Miscellaneous.      (line  316)
+* coerce-to-instance:                    Miscellaneous.      (line  315)
+* coerce-to-instance-or-literal:         Miscellaneous.      (line  319)
+* coerce-to-vector:                      Miscellaneous.      (line  323)
 * COLLECT-INTO-ASCENDING-SET:            Built-In Relations. (line   89)
 * COLLECT-INTO-DESCENDING-SET:           Built-In Relations. (line  102)
 * COLLECT-INTO-LIST:                     Built-In Relations. (line  114)
 * COLLECT-INTO-ORDERED-SET:              Built-In Relations. (line  122)
 * COLLECT-INTO-SET:                      Built-In Relations. (line  127)
-* collection?:                           Miscellaneous.      (line  320)
+* collection?:                           Miscellaneous.      (line  327)
 * COLLECTIONOF:                          Built-In Relations. (line  150)
 * COMMENT:                               Built-In Relations. (line  153)
 * COMMUTATIVE:                           Built-In Relations. (line  157)
 * conceive <1>:                          API Functions.      (line   89)
-* conceive:                              Commands.           (line  222)
-* conceive-term:                         Miscellaneous.      (line  323)
+* conceive:                              Commands.           (line  228)
+* conceive-inverted-proposition:         Miscellaneous.      (line  331)
+* conceive-term:                         Miscellaneous.      (line  335)
 * CONCEPT:                               Built-In Relations. (line  161)
 * CONCEPT-PROTOTYPE:                     Built-In Relations. (line  171)
-* conjoin-truth-values:                  Miscellaneous.      (line  330)
+* conjoin-truth-values:                  Miscellaneous.      (line  342)
 * cons-to-pl-iterator:                   API Functions.      (line  101)
-* consify on JUSTIFICATION:              Miscellaneous.      (line  333)
-* consify on PL-ITERATOR:                Miscellaneous.      (line 1417)
-* consify on QUERY-ITERATOR:             Miscellaneous.      (line  341)
-* consify on QUERY-SOLUTION-TABLE:       Miscellaneous.      (line  346)
+* consify on JUSTIFICATION:              Miscellaneous.      (line  345)
+* consify on PL-ITERATOR:                Miscellaneous.      (line 1489)
+* consify on QUERY-ITERATOR:             Miscellaneous.      (line  353)
+* consify on QUERY-SOLUTION-TABLE:       Miscellaneous.      (line  358)
 * consify-current-solutions on QUERY-ITERATOR: Miscellaneous.
-                                                             (line  350)
-* consify-justification:                 Miscellaneous.      (line  356)
-* constant?:                             Miscellaneous.      (line  366)
-* copy on JUSTIFICATION:                 Miscellaneous.      (line  369)
-* copyright:                             Commands.           (line  234)
+                                                             (line  362)
+* consify-justification:                 Miscellaneous.      (line  368)
+* constant-proposition?:                 Miscellaneous.      (line  378)
+* constant?:                             Miscellaneous.      (line  381)
+* copy on JUSTIFICATION:                 Miscellaneous.      (line  384)
+* copyright:                             Commands.           (line  240)
 * COVERING:                              Built-In Relations. (line  193)
-* create:                                Miscellaneous.      (line  375)
-* create-2_d_array:                      Miscellaneous.      (line  380)
-* create-2_d_float-array:                Miscellaneous.      (line  387)
+* create:                                Miscellaneous.      (line  390)
+* create-2_d_array:                      Miscellaneous.      (line  395)
+* create-2_d_float-array:                Miscellaneous.      (line  402)
 * create-concept:                        API Functions.      (line  105)
 * create-enumerated-list:                API Functions.      (line  117)
 * create-enumerated-set:                 API Functions.      (line  123)
-* create-float-vector:                   Miscellaneous.      (line  393)
+* create-float-vector:                   Miscellaneous.      (line  408)
 * create-function:                       API Functions.      (line  128)
-* create-keyword:                        Miscellaneous.      (line 1273)
-* create-marker-storage:                 Miscellaneous.      (line  397)
+* create-keyword:                        Miscellaneous.      (line 1339)
+* create-marker-storage:                 Miscellaneous.      (line  412)
 * create-module:                         API Functions.      (line  138)
 * create-object:                         API Functions.      (line  144)
 * create-relation:                       API Functions.      (line  165)
-* create-symbol:                         Miscellaneous.      (line 1279)
-* create-vector:                         Miscellaneous.      (line  403)
-* current-inference-level:               Miscellaneous.      (line  406)
+* create-symbol:                         Miscellaneous.      (line 1345)
+* create-vector:                         Miscellaneous.      (line  418)
+* current-inference-level:               Miscellaneous.      (line  421)
 * CUT:                                   Built-In Relations. (line  197)
-* default-false?:                        Miscellaneous.      (line  410)
-* default-true?:                         Miscellaneous.      (line  413)
-* default-truth-value?:                  Miscellaneous.      (line  416)
-* defconcept:                            Commands.           (line  237)
-* deffunction:                           Commands.           (line  260)
-* define-arithmetic-operation-on-wrappers: Miscellaneous.    (line  420)
-* define-arithmetic-test-on-wrappers:    Miscellaneous.      (line  434)
-* define-computed-constraint:            Miscellaneous.      (line  442)
-* definstance:                           Commands.           (line  279)
-* defmodule:                             Commands.           (line  283)
-* defobject:                             Commands.           (line  377)
-* defproposition:                        Commands.           (line  393)
-* defrelation:                           Commands.           (line  424)
-* defrule:                               Commands.           (line  446)
-* delete-rules:                          Commands.           (line  450)
-* demo:                                  Commands.           (line  455)
-* deny:                                  Commands.           (line  466)
-* deobjectify-tree:                      Miscellaneous.      (line  460)
-* describe:                              Commands.           (line  473)
-* describe-object on NAMED-DESCRIPTION:  Miscellaneous.      (line  466)
-* description-name on DESCRIPTION:       Miscellaneous.      (line  473)
-* description-name on NAMED-DESCRIPTION: Miscellaneous.      (line  470)
-* destroy:                               Commands.           (line  477)
-* destroy-instance:                      Miscellaneous.      (line  476)
-* destroy-object <1>:                    Miscellaneous.      (line  480)
+* debug-id-setter on QUERY-ITERATOR:     Miscellaneous.      (line  425)
+* default-false?:                        Miscellaneous.      (line  429)
+* default-true?:                         Miscellaneous.      (line  432)
+* default-truth-value?:                  Miscellaneous.      (line  435)
+* defconcept:                            Commands.           (line  243)
+* deffunction:                           Commands.           (line  266)
+* define-arithmetic-operation-on-wrappers: Miscellaneous.    (line  439)
+* define-arithmetic-test-on-wrappers:    Miscellaneous.      (line  453)
+* define-computed-constraint:            Miscellaneous.      (line  461)
+* definstance:                           Commands.           (line  285)
+* defmodule:                             Commands.           (line  289)
+* defobject:                             Commands.           (line  383)
+* defproposition:                        Commands.           (line  399)
+* defrelation:                           Commands.           (line  430)
+* defrule:                               Commands.           (line  452)
+* delete-rules:                          Commands.           (line  456)
+* demo:                                  Commands.           (line  461)
+* deny:                                  Commands.           (line  472)
+* deobjectify-tree:                      Miscellaneous.      (line  479)
+* describe:                              Commands.           (line  479)
+* describe-object on NAMED-DESCRIPTION:  Miscellaneous.      (line  485)
+* description-name on DESCRIPTION:       Miscellaneous.      (line  492)
+* description-name on NAMED-DESCRIPTION: Miscellaneous.      (line  489)
+* description?:                          Miscellaneous.      (line  495)
+* destroy:                               Commands.           (line  483)
+* destroy-instance:                      Miscellaneous.      (line  498)
+* destroy-object <1>:                    Miscellaneous.      (line  502)
 * destroy-object:                        API Functions.      (line  174)
-* destroy-proposition:                   Miscellaneous.      (line  486)
-* destroy-term:                          Miscellaneous.      (line  491)
+* destroy-proposition:                   Miscellaneous.      (line  508)
+* destroy-term:                          Miscellaneous.      (line  513)
 * DIRECT-SUBRELATION:                    Built-In Relations. (line  201)
 * DIRECT-SUPERRELATION:                  Built-In Relations. (line  207)
-* direct-superrelations:                 Miscellaneous.      (line  497)
-* disabled-powerloom-feature?:           Miscellaneous.      (line  500)
-* disjoin-truth-values:                  Miscellaneous.      (line  504)
+* direct-superrelations:                 Miscellaneous.      (line  519)
+* disabled-powerloom-feature?:           Miscellaneous.      (line  522)
+* disjoin-truth-values:                  Miscellaneous.      (line  526)
 * DISJOINT:                              Built-In Relations. (line  212)
 * DISJOINT-COVERING:                     Built-In Relations. (line  215)
-* disjoint-terms?:                       Miscellaneous.      (line  508)
-* do-clear-instances:                    Miscellaneous.      (line  511)
-* do-save-module:                        Miscellaneous.      (line  514)
+* disjoint-terms?:                       Miscellaneous.      (line  530)
+* do-clear-instances:                    Miscellaneous.      (line  533)
+* do-save-module:                        Miscellaneous.      (line  536)
 * DOCUMENTATION:                         Built-In Relations. (line  222)
 * DOMAIN:                                Built-In Relations. (line  227)
-* drop-load-path:                        Commands.           (line  484)
+* drop-load-path:                        Commands.           (line  490)
 * DUPLICATE-FREE:                        Built-In Relations. (line  234)
 * DUPLICATE-FREE-COLLECTION:             Built-In Relations. (line  237)
 * EMPTY:                                 Built-In Relations. (line  240)
-* empty? on FLOAT-VECTOR:                Miscellaneous.      (line  521)
+* empty? on FLOAT-VECTOR:                Miscellaneous.      (line  543)
 * empty? on PL-ITERATOR:                 API Functions.      (line  177)
-* empty? on QUERY-SOLUTION-TABLE:        Miscellaneous.      (line  518)
-* enabled-powerloom-feature?:            Miscellaneous.      (line  524)
+* empty? on QUERY-SOLUTION-TABLE:        Miscellaneous.      (line  540)
+* enabled-powerloom-feature?:            Miscellaneous.      (line  546)
 * EQUIVALENT-RELATION:                   Built-In Relations. (line  246)
-* estimated-length on PAGING-INDEX:      Miscellaneous.      (line  527)
+* estimated-length on PAGING-INDEX:      Miscellaneous.      (line  549)
 * evaluate <1>:                          API Functions.      (line  181)
 * evaluate:                              Command Interpreter.
                                                              (line   33)
-* evaluate-proposition:                  Miscellaneous.      (line  531)
+* evaluate-proposition:                  Miscellaneous.      (line  553)
 * evaluate-string:                       Command Interpreter.
                                                              (line   41)
-* evaluation-state:                      Miscellaneous.      (line  535)
-* evaluation-state-setter:               Miscellaneous.      (line  541)
+* evaluation-state:                      Miscellaneous.      (line  557)
+* evaluation-state-setter:               Miscellaneous.      (line  563)
 * EXAMPLE:                               Built-In Relations. (line  251)
-* explain-why:                           Miscellaneous.      (line  545)
-* explain-whynot:                        Miscellaneous.      (line  550)
-* false-truth-value?:                    Miscellaneous.      (line  553)
-* false?:                                Miscellaneous.      (line  556)
-* fetch-instance on OBJECT-STORE:        Miscellaneous.      (line  561)
-* fetch-relation on OBJECT-STORE:        Miscellaneous.      (line  568)
+* explain-proposition:                   Miscellaneous.      (line  567)
+* explain-why:                           Miscellaneous.      (line  572)
+* explain-whynot:                        Miscellaneous.      (line  577)
+* false-truth-value?:                    Miscellaneous.      (line  580)
+* false?:                                Miscellaneous.      (line  583)
+* fetch-duplicate-proposition on OBJECT-STORE: Miscellaneous.
+                                                             (line  588)
+* fetch-instance on OBJECT-STORE:        Miscellaneous.      (line  595)
+* fetch-relation on OBJECT-STORE:        Miscellaneous.      (line  602)
 * FIFTH-ELEMENT:                         Built-In Relations. (line  254)
-* fill-array on 2_D_ARRAY:               Miscellaneous.      (line  573)
-* fill-array on 2_D_FLOAT-ARRAY:         Miscellaneous.      (line  578)
+* fill-array on 2_D_ARRAY:               Miscellaneous.      (line  607)
+* fill-array on 2_D_FLOAT-ARRAY:         Miscellaneous.      (line  612)
 * FILLERS:                               Built-In Relations. (line  257)
-* finalize-objects:                      Miscellaneous.      (line  583)
-* find-direct-supers-and-subs:           Miscellaneous.      (line  589)
-* find-direct-supers-of-instance:        Miscellaneous.      (line  598)
-* find-instance:                         Miscellaneous.      (line  602)
-* find-rule:                             Miscellaneous.      (line  608)
+* finalize-objects:                      Miscellaneous.      (line  617)
+* find-direct-supers-and-subs:           Miscellaneous.      (line  623)
+* find-direct-supers-of-instance:        Miscellaneous.      (line  632)
+* find-instance:                         Miscellaneous.      (line  636)
+* find-rule:                             Miscellaneous.      (line  642)
 * FIRST-ELEMENT:                         Built-In Relations. (line  263)
 * FORK:                                  Built-In Relations. (line  267)
 * FOURTH-ELEMENT:                        Built-In Relations. (line  271)
 * FRAME-PREDICATE:                       Built-In Relations. (line  274)
-* function?:                             Miscellaneous.      (line  612)
-* generate-expression:                   Miscellaneous.      (line  616)
-* generate-specialized-term on LOGIC-THING: Miscellaneous.   (line  619)
+* function?:                             Miscellaneous.      (line  646)
+* generate-expression:                   Miscellaneous.      (line  650)
+* generate-specialized-term on LOGIC-THING: Miscellaneous.   (line  653)
 * generate-unique-name:                  API Functions.      (line  190)
 * get-arity:                             API Functions.      (line  196)
 * get-binary-proposition:                API Functions.      (line  201)
 * get-binary-propositions:               API Functions.      (line  211)
 * get-child-modules:                     API Functions.      (line  218)
-* get-class:                             Miscellaneous.      (line  625)
+* get-class:                             Miscellaneous.      (line  659)
 * get-column-count:                      API Functions.      (line  221)
 * get-concept:                           API Functions.      (line  232)
 * get-concept-instance-matching-value:   API Functions.      (line  239)
@@ -2107,17 +2188,18 @@ Function Index
 * get-direct-types:                      API Functions.      (line  278)
 * get-domain:                            API Functions.      (line  281)
 * get-enumerated-collection-members:     API Functions.      (line  286)
-* get-forward-justifications:            Miscellaneous.      (line  632)
+* get-forward-justifications:            Miscellaneous.      (line  666)
 * get-home-module:                       API Functions.      (line  290)
+* get-inconsistent-propositions:         Miscellaneous.      (line 1352)
 * get-inferred-binary-proposition-values: API Functions.     (line  295)
-* get-instance:                          Miscellaneous.      (line  635)
-* get-keyword:                           Miscellaneous.      (line 1285)
-* get-load-path:                         Commands.           (line  488)
-* get-module <1>:                        Miscellaneous.      (line  641)
+* get-instance:                          Miscellaneous.      (line  669)
+* get-keyword:                           Miscellaneous.      (line 1355)
+* get-load-path:                         Commands.           (line  494)
+* get-module <1>:                        Miscellaneous.      (line  675)
 * get-module:                            API Functions.      (line  300)
 * get-modules:                           API Functions.      (line  304)
 * get-name:                              API Functions.      (line  309)
-* get-name-in-module:                    Miscellaneous.      (line 1289)
+* get-name-in-module:                    Miscellaneous.      (line 1359)
 * get-nth-domain:                        API Functions.      (line  314)
 * get-nth-float:                         API Functions.      (line  322)
 * get-nth-integer:                       API Functions.      (line  338)
@@ -2135,42 +2217,45 @@ Function Index
 * get-propositions-in-module:            API Functions.      (line  448)
 * get-propositions-of:                   API Functions.      (line  453)
 * get-range:                             API Functions.      (line  457)
-* get-relation <1>:                      Miscellaneous.      (line  644)
+* get-relation <1>:                      Miscellaneous.      (line  678)
 * get-relation:                          API Functions.      (line  462)
 * get-relation-extension:                API Functions.      (line  468)
 * get-rules <1>:                         API Functions.      (line  473)
-* get-rules:                             Commands.           (line  491)
-* get-self-or-prototype:                 Miscellaneous.      (line  651)
-* get-short-name:                        Miscellaneous.      (line 1293)
-* get-slot-maximum-cardinality:          Miscellaneous.      (line  657)
-* get-slot-minimum-cardinality:          Miscellaneous.      (line  662)
-* get-slot-value:                        Miscellaneous.      (line  667)
-* get-slot-value-type:                   Miscellaneous.      (line  672)
-* get-symbol:                            Miscellaneous.      (line 1298)
+* get-rules:                             Commands.           (line  497)
+* get-self-or-prototype:                 Miscellaneous.      (line  685)
+* get-short-name:                        Miscellaneous.      (line 1363)
+* get-slot-maximum-cardinality:          Miscellaneous.      (line  691)
+* get-slot-minimum-cardinality:          Miscellaneous.      (line  696)
+* get-slot-value:                        Miscellaneous.      (line  701)
+* get-slot-value-type:                   Miscellaneous.      (line  706)
+* get-symbol:                            Miscellaneous.      (line 1368)
 * get-types:                             API Functions.      (line  478)
-* get-why-justification:                 Miscellaneous.      (line  676)
-* get-whynot-justifications:             Miscellaneous.      (line  686)
+* get-undefined-relations:               Miscellaneous.      (line 1373)
+* get-visible-clash-exceptions:          Miscellaneous.      (line  711)
+* get-why-justification:                 Miscellaneous.      (line  716)
+* get-whynot-justifications:             Miscellaneous.      (line  726)
 * GOES-FALSE-DEMON:                      Built-In Relations. (line  312)
 * GOES-TRUE-DEMON:                       Built-In Relations. (line  318)
 * GOES-UNKNOWN-DEMON:                    Built-In Relations. (line  324)
-* has-forward-justifications?:           Miscellaneous.      (line  692)
-* help:                                  Commands.           (line  494)
-* help-print-outline on DESCRIPTION:     Miscellaneous.      (line  702)
-* help-print-outline on NAMED-DESCRIPTION: Miscellaneous.    (line  697)
+* has-forward-justifications?:           Miscellaneous.      (line  732)
+* have-active-object-stores?:            Miscellaneous.      (line  735)
+* help:                                  Commands.           (line  500)
+* help-print-outline on DESCRIPTION:     Miscellaneous.      (line  747)
+* help-print-outline on NAMED-DESCRIPTION: Miscellaneous.    (line  742)
 * HOLDS:                                 Built-In Relations. (line  329)
 * IMAGE-URL:                             Built-In Relations. (line  348)
-* in-dialect:                            Miscellaneous.      (line  705)
-* in-module:                             Commands.           (line  497)
-* inconsistent-truth-value?:             Miscellaneous.      (line  711)
-* inconsistent?:                         Miscellaneous.      (line  714)
+* in-dialect:                            Miscellaneous.      (line  750)
+* in-module:                             Commands.           (line  503)
+* inconsistent-truth-value?:             Miscellaneous.      (line  756)
+* inconsistent?:                         Miscellaneous.      (line  759)
 * INEQUALITY:                            Built-In Relations. (line  354)
 * initialize:                            API Functions.      (line  481)
-* initialize-kernel-kb:                  Miscellaneous.      (line 1423)
-* insert-at on QUERY-SOLUTION-TABLE:     Miscellaneous.      (line  718)
+* initialize-kernel-kb:                  Miscellaneous.      (line 1495)
+* insert-at on QUERY-SOLUTION-TABLE:     Miscellaneous.      (line  763)
 * INSERT-ELEMENT:                        Built-In Relations. (line  358)
 * INSTANCE-OF:                           Built-In Relations. (line  364)
 * INVERSE:                               Built-In Relations. (line  369)
-* invert-truth-value:                    Miscellaneous.      (line  724)
+* invert-truth-value:                    Miscellaneous.      (line  769)
 * IRREFLEXIVE:                           Built-In Relations. (line  385)
 * is-a:                                  API Functions.      (line  487)
 * is-default:                            API Functions.      (line  490)
@@ -2181,7 +2266,7 @@ Function Index
 * is-float:                              API Functions.      (line  507)
 * is-inconsistent:                       API Functions.      (line  510)
 * is-integer:                            API Functions.      (line  513)
-* is-known:                              Miscellaneous.      (line 1302)
+* is-known:                              Miscellaneous.      (line 1377)
 * is-logic-object:                       API Functions.      (line  516)
 * is-number:                             API Functions.      (line  519)
 * is-strict:                             API Functions.      (line  524)
@@ -2190,157 +2275,160 @@ Function Index
 * is-true:                               API Functions.      (line  534)
 * is-true-binary-proposition:            API Functions.      (line  540)
 * is-true-proposition:                   API Functions.      (line  545)
-* is-true-proposition1:                  Miscellaneous.      (line 1306)
+* is-true-proposition1:                  Miscellaneous.      (line 1381)
 * is-true-unary-proposition:             API Functions.      (line  550)
 * is-unknown:                            API Functions.      (line  554)
 * ISSUE:                                 Built-In Relations. (line  389)
 * IST:                                   Built-In Relations. (line  393)
 * iterator-to-pl-iterator:               API Functions.      (line  557)
-* known-truth-value?:                    Miscellaneous.      (line  727)
+* known-truth-value?:                    Miscellaneous.      (line  772)
 * LENGTH:                                Built-In Relations. (line  408)
 * length on PL-ITERATOR:                 API Functions.      (line  560)
-* length on QUERY-SOLUTION-TABLE:        Miscellaneous.      (line  731)
-* LENGTH-OF-LIST:                        Built-In Relations. (line  412)
-* LEXEME:                                Built-In Relations. (line  415)
-* LIST-CONCATENATE:                      Built-In Relations. (line  431)
-* list-features:                         Miscellaneous.      (line  734)
-* list-modules:                          Commands.           (line  500)
+* length on QUERY-SOLUTION-TABLE:        Miscellaneous.      (line  776)
+* LEXEME:                                Built-In Relations. (line  414)
+* LIST-CONCATENATE:                      Built-In Relations. (line  430)
+* list-features:                         Miscellaneous.      (line  779)
+* list-inconsistent-propositions:        Commands.           (line  507)
+* list-modules:                          Commands.           (line  516)
 * list-to-pl-iterator:                   API Functions.      (line  563)
-* list-unclassified-instances:           Miscellaneous.      (line  739)
-* list-unclassified-relations:           Miscellaneous.      (line  745)
-* list-undefined-relations:              Miscellaneous.      (line  751)
-* listify on PL-ITERATOR:                Miscellaneous.      (line 1420)
-* listify on QUERY-ITERATOR:             Miscellaneous.      (line  758)
-* LISTOF:                                Built-In Relations. (line  436)
+* list-unclassified-instances:           Commands.           (line  522)
+* list-unclassified-relations:           Commands.           (line  533)
+* list-undefined-relations:              Commands.           (line  545)
+* listify on PL-ITERATOR:                Miscellaneous.      (line 1492)
+* listify on QUERY-ITERATOR:             Miscellaneous.      (line  783)
+* LISTOF:                                Built-In Relations. (line  435)
 * load <1>:                              API Functions.      (line  566)
-* load:                                  Commands.           (line  505)
-* load-cmd-line-files:                   Miscellaneous.      (line  761)
-* load-directory:                        Miscellaneous.      (line  768)
-* load-file:                             Commands.           (line  520)
-* load-in-module:                        Miscellaneous.      (line 1311)
+* load:                                  Commands.           (line  555)
+* load-cmd-line-files:                   Miscellaneous.      (line  786)
+* load-directory:                        Miscellaneous.      (line  793)
+* load-file:                             Commands.           (line  570)
+* load-in-module:                        Miscellaneous.      (line 1386)
 * load-native-stream:                    API Functions.      (line  582)
-* load-native-stream-in-module:          Miscellaneous.      (line 1323)
-* load-stream <1>:                       Miscellaneous.      (line  772)
+* load-native-stream-in-module:          Miscellaneous.      (line 1398)
+* load-stream <1>:                       Miscellaneous.      (line  797)
 * load-stream:                           API Functions.      (line  574)
-* load-stream-in-module:                 Miscellaneous.      (line  776)
-* logic-class?:                          Miscellaneous.      (line  784)
-* logic-form-less?:                      Miscellaneous.      (line  789)
-* logic-module?:                         Miscellaneous.      (line  795)
-* lookup on QUERY-SOLUTION-TABLE:        Miscellaneous.      (line  801)
-* lookup-native-computation:             Miscellaneous.      (line  806)
-* lookup-native-specialist:              Miscellaneous.      (line  813)
-* main:                                  Miscellaneous.      (line 1346)
-* MAXIMUM-ELEMENT:                       Built-In Relations. (line  447)
-* MAXIMUM-VALUE:                         Built-In Relations. (line  452)
-* MEAN-VALUE:                            Built-In Relations. (line  455)
-* MEDIAN-VALUE:                          Built-In Relations. (line  458)
-* MEMBER-OF:                             Built-In Relations. (line  461)
-* MINIMUM-ELEMENT:                       Built-In Relations. (line  467)
-* MINIMUM-VALUE:                         Built-In Relations. (line  472)
-* MUTUALLY-DISJOINT-COLLECTION:          Built-In Relations. (line  475)
-* NAME-TO-OBJECT:                        Built-In Relations. (line  484)
-* named-description?:                    Miscellaneous.      (line  818)
-* natural-deduction-mode?:               Miscellaneous.      (line  822)
+* load-stream-in-module:                 Miscellaneous.      (line  801)
+* locally-modified-proposition?:         Miscellaneous.      (line  810)
+* logic-class?:                          Miscellaneous.      (line  816)
+* logic-form-less?:                      Miscellaneous.      (line  821)
+* logic-module?:                         Miscellaneous.      (line  827)
+* lookup on QUERY-SOLUTION-TABLE:        Miscellaneous.      (line  833)
+* lookup-native-computation:             Miscellaneous.      (line  838)
+* lookup-native-specialist:              Miscellaneous.      (line  845)
+* MAXIMUM-ELEMENT:                       Built-In Relations. (line  446)
+* MAXIMUM-VALUE:                         Built-In Relations. (line  451)
+* MEAN-VALUE:                            Built-In Relations. (line  454)
+* MEDIAN-VALUE:                          Built-In Relations. (line  457)
+* MEMBER-OF:                             Built-In Relations. (line  460)
+* merge-truth-values:                    Miscellaneous.      (line  851)
+* MINIMUM-ELEMENT:                       Built-In Relations. (line  466)
+* MINIMUM-VALUE:                         Built-In Relations. (line  471)
+* MUTUALLY-DISJOINT-COLLECTION:          Built-In Relations. (line  474)
+* NAME-TO-OBJECT:                        Built-In Relations. (line  483)
+* named-description?:                    Miscellaneous.      (line  860)
+* natural-deduction-mode?:               Miscellaneous.      (line  864)
 * next? on PL-ITERATOR:                  API Functions.      (line  592)
-* non-empty? on FLOAT-VECTOR:            Miscellaneous.      (line  828)
-* non-empty? on QUERY-SOLUTION-TABLE:    Miscellaneous.      (line  825)
-* NORMAL-QUERY:                          Built-In Relations. (line  495)
-* nth on QUERY-SOLUTION-TABLE:           Miscellaneous.      (line  832)
-* NTH-DOMAIN:                            Built-In Relations. (line  499)
-* NTH-ELEMENT:                           Built-In Relations. (line  503)
-* NTH-HEAD:                              Built-In Relations. (line  509)
-* NTH-REST:                              Built-In Relations. (line  513)
-* NUMERIC-MAXIMUM:                       Built-In Relations. (line  517)
-* NUMERIC-MINIMUM:                       Built-In Relations. (line  522)
-* NUMERIC-SET:                           Built-In Relations. (line  526)
-* object-name:                           Miscellaneous.      (line  835)
-* OBJECT-NAME:                           Built-In Relations. (line  529)
-* object-name-string:                    Miscellaneous.      (line  838)
-* object-surrogate:                      Miscellaneous.      (line  841)
-* object-surrogate-setter:               Miscellaneous.      (line  847)
+* non-empty? on FLOAT-VECTOR:            Miscellaneous.      (line  870)
+* non-empty? on QUERY-SOLUTION-TABLE:    Miscellaneous.      (line  867)
+* NORMAL-QUERY:                          Built-In Relations. (line  494)
+* nth on QUERY-SOLUTION-TABLE:           Miscellaneous.      (line  874)
+* NTH-DOMAIN:                            Built-In Relations. (line  498)
+* NTH-ELEMENT:                           Built-In Relations. (line  502)
+* NTH-HEAD:                              Built-In Relations. (line  508)
+* NTH-REST:                              Built-In Relations. (line  512)
+* NUMERIC-MAXIMUM:                       Built-In Relations. (line  516)
+* NUMERIC-MINIMUM:                       Built-In Relations. (line  521)
+* NUMERIC-SET:                           Built-In Relations. (line  525)
+* object-name:                           Miscellaneous.      (line  877)
+* OBJECT-NAME:                           Built-In Relations. (line  528)
+* object-name-string:                    Miscellaneous.      (line  880)
+* object-surrogate:                      Miscellaneous.      (line  883)
+* object-surrogate-setter:               Miscellaneous.      (line  889)
 * object-to-float:                       API Functions.      (line  596)
 * object-to-integer:                     API Functions.      (line  600)
 * object-to-parsable-string:             API Functions.      (line  605)
 * object-to-string:                      API Functions.      (line  610)
-* ORDERED:                               Built-In Relations. (line  533)
-* PHRASE:                                Built-In Relations. (line  537)
-* pop on QUERY-SOLUTION-TABLE:           Miscellaneous.      (line  850)
-* pop-load-path:                         Commands.           (line  527)
-* post-for-evaluation:                   Miscellaneous.      (line  854)
-* powerloom:                             Miscellaneous.      (line  857)
-* powerloom-gui-exit-hook:               Miscellaneous.      (line  862)
-* powerloom-information:                 Miscellaneous.      (line  865)
-* presume:                               Commands.           (line  531)
-* pretty-print-logical-form:             Miscellaneous.      (line  870)
-* print-array on 2_D_ARRAY:              Miscellaneous.      (line  875)
-* print-array on 2_D_FLOAT-ARRAY:        Miscellaneous.      (line  879)
-* print-extension-sizes:                 Miscellaneous.      (line  883)
-* print-facts:                           Miscellaneous.      (line  888)
-* print-features:                        Commands.           (line  537)
-* print-goal-stack:                      Miscellaneous.      (line  893)
-* print-logical-form:                    Miscellaneous.      (line  898)
-* print-logical-form-in-dialect:         Miscellaneous.      (line  904)
+* ORDERED:                               Built-In Relations. (line  532)
+* PHRASE:                                Built-In Relations. (line  536)
+* pop on QUERY-SOLUTION-TABLE:           Miscellaneous.      (line  892)
+* pop-load-path:                         Commands.           (line  577)
+* post-for-evaluation:                   Miscellaneous.      (line  896)
+* powerloom:                             Miscellaneous.      (line  899)
+* powerloom-gui-exit-hook:               Miscellaneous.      (line  904)
+* powerloom-information:                 Miscellaneous.      (line  907)
+* presume:                               Commands.           (line  581)
+* pretty-print-logical-form:             Miscellaneous.      (line  912)
+* print-array on 2_D_ARRAY:              Miscellaneous.      (line  917)
+* print-array on 2_D_FLOAT-ARRAY:        Miscellaneous.      (line  921)
+* print-extension-sizes:                 Miscellaneous.      (line  925)
+* print-facts:                           Miscellaneous.      (line  930)
+* print-features:                        Commands.           (line  587)
+* print-goal-stack:                      Miscellaneous.      (line  935)
+* print-logical-form:                    Miscellaneous.      (line  940)
+* print-logical-form-in-dialect:         Miscellaneous.      (line  946)
 * print-rules <1>:                       API Functions.      (line  613)
-* print-rules:                           Commands.           (line  541)
-* print-unformatted-logical-form:        Miscellaneous.      (line  910)
-* print-whynot-justification:            Miscellaneous.      (line  917)
-* process-definitions:                   Commands.           (line  544)
-* PROJECT-COLUMN:                        Built-In Relations. (line  548)
-* propagate-constraints:                 Commands.           (line  556)
-* PROPER-SUBRELATION:                    Built-In Relations. (line  552)
-* PROPER-SUPERRELATION:                  Built-In Relations. (line  557)
-* PROPOSITION-ARGUMENT:                  Built-In Relations. (line  584)
-* PROPOSITION-ARGUMENTS:                 Built-In Relations. (line  587)
-* PROPOSITION-ARITY:                     Built-In Relations. (line  590)
-* PROPOSITION-RELATION:                  Built-In Relations. (line  593)
-* push-load-path:                        Commands.           (line  565)
-* QUERY:                                 Built-In Relations. (line  596)
-* random-float:                          Miscellaneous.      (line  921)
-* RANGE:                                 Built-In Relations. (line  613)
-* RANGE-CARDINALITY:                     Built-In Relations. (line  621)
-* RANGE-CARDINALITY-LOWER-BOUND:         Built-In Relations. (line  631)
-* RANGE-CARDINALITY-UPPER-BOUND:         Built-In Relations. (line  651)
-* RANGE-MAX-CARDINALITY:                 Built-In Relations. (line  657)
-* RANGE-MIN-CARDINALITY:                 Built-In Relations. (line  663)
-* RANGE-TYPE:                            Built-In Relations. (line  668)
-* recall-marked-objects on MARKER-TABLE: Miscellaneous.      (line  925)
-* record-justifications?:                Miscellaneous.      (line  929)
-* REFLEXIVE:                             Built-In Relations. (line  676)
-* REFUTATION-QUERY:                      Built-In Relations. (line  680)
-* register-computation-function:         Miscellaneous.      (line  934)
-* register-computation-function-name:    Miscellaneous.      (line  945)
-* register-logic-dialect-print-function: Miscellaneous.      (line  952)
-* register-specialist-function:          Miscellaneous.      (line  958)
-* register-specialist-function-name:     Miscellaneous.      (line  968)
-* RELATION-COMPUTATION:                  Built-In Relations. (line  691)
-* RELATION-CONSTRAINT:                   Built-In Relations. (line  699)
-* RELATION-EVALUATOR:                    Built-In Relations. (line  710)
-* relation-name:                         Miscellaneous.      (line  974)
-* RELATION-SPECIALIST:                   Built-In Relations. (line  722)
-* relation?:                             Miscellaneous.      (line  977)
-* remove-at on QUERY-SOLUTION-TABLE:     Miscellaneous.      (line  981)
-* remove-deleted-members on PAGING-INDEX: Miscellaneous.     (line  986)
-* repropagate-constraints:               Commands.           (line  569)
-* reset-features:                        Commands.           (line  576)
+* print-rules:                           Commands.           (line  591)
+* print-unformatted-logical-form:        Miscellaneous.      (line  952)
+* print-whynot-justification:            Miscellaneous.      (line  959)
+* process-definitions:                   Commands.           (line  594)
+* PROJECT-COLUMN:                        Built-In Relations. (line  547)
+* propagate-constraints:                 Commands.           (line  606)
+* PROPER-SUBRELATION:                    Built-In Relations. (line  551)
+* PROPER-SUPERRELATION:                  Built-In Relations. (line  556)
+* PROPOSITION-ARGUMENT:                  Built-In Relations. (line  583)
+* PROPOSITION-ARGUMENTS:                 Built-In Relations. (line  586)
+* PROPOSITION-ARITY:                     Built-In Relations. (line  589)
+* PROPOSITION-RELATION:                  Built-In Relations. (line  592)
+* push-load-path:                        Commands.           (line  615)
+* QUERY:                                 Built-In Relations. (line  595)
+* random-float:                          Miscellaneous.      (line  963)
+* RANGE:                                 Built-In Relations. (line  612)
+* RANGE-CARDINALITY:                     Built-In Relations. (line  620)
+* RANGE-CARDINALITY-LOWER-BOUND:         Built-In Relations. (line  630)
+* RANGE-CARDINALITY-UPPER-BOUND:         Built-In Relations. (line  650)
+* RANGE-MAX-CARDINALITY:                 Built-In Relations. (line  656)
+* RANGE-MIN-CARDINALITY:                 Built-In Relations. (line  662)
+* RANGE-TYPE:                            Built-In Relations. (line  667)
+* recall-marked-objects on MARKER-TABLE: Miscellaneous.      (line  967)
+* record-justifications?:                Miscellaneous.      (line  971)
+* REFLEXIVE:                             Built-In Relations. (line  675)
+* REFUTATION-QUERY:                      Built-In Relations. (line  679)
+* register-computation-function:         Miscellaneous.      (line  976)
+* register-computation-function-name:    Miscellaneous.      (line  987)
+* register-logic-dialect-print-function: Miscellaneous.      (line  994)
+* register-object-store:                 Miscellaneous.      (line  999)
+* register-specialist-function:          Miscellaneous.      (line 1003)
+* register-specialist-function-name:     Miscellaneous.      (line 1013)
+* RELATION-COMPUTATION:                  Built-In Relations. (line  690)
+* RELATION-CONSTRAINT:                   Built-In Relations. (line  698)
+* RELATION-EVALUATOR:                    Built-In Relations. (line  709)
+* relation-name:                         Miscellaneous.      (line 1019)
+* RELATION-SPECIALIST:                   Built-In Relations. (line  721)
+* relation?:                             Miscellaneous.      (line 1022)
+* remove-at on QUERY-SOLUTION-TABLE:     Miscellaneous.      (line 1026)
+* remove-deleted-members on PAGING-INDEX: Miscellaneous.     (line 1031)
+* repropagate-constraints:               Commands.           (line  619)
+* reset-clash-exceptions:                Miscellaneous.      (line 1034)
+* reset-features:                        Commands.           (line  626)
 * reset-powerloom <1>:                   API Functions.      (line  616)
-* reset-powerloom:                       Commands.           (line  579)
-* reset-query-caches:                    Miscellaneous.      (line  989)
+* reset-powerloom:                       Commands.           (line  629)
+* reset-query-caches:                    Miscellaneous.      (line 1037)
 * retract <1>:                           API Functions.      (line  621)
-* retract:                               Commands.           (line  584)
+* retract:                               Commands.           (line  634)
 * retract-binary-proposition:            API Functions.      (line  631)
-* retract-facts-of:                      Commands.           (line  592)
-* retract-facts-of-instance:             Miscellaneous.      (line  993)
-* retract-from-query:                    Commands.           (line  597)
+* retract-facts-of:                      Commands.           (line  642)
+* retract-facts-of-instance:             Miscellaneous.      (line 1041)
+* retract-from-query:                    Commands.           (line  647)
 * retract-nary-proposition:              API Functions.      (line  636)
 * retract-proposition:                   API Functions.      (line  641)
-* retract-rule:                          Commands.           (line  603)
+* retract-rule:                          Commands.           (line  653)
 * retract-unary-proposition:             API Functions.      (line  647)
 * retrieve <1>:                          API Functions.      (line  652)
-* retrieve:                              Commands.           (line  612)
-* retrieve-partial:                      Miscellaneous.      (line  997)
-* run-forward-rules <1>:                 Miscellaneous.      (line 1014)
+* retrieve:                              Commands.           (line  662)
+* retrieve-partial:                      Miscellaneous.      (line 1045)
+* run-forward-rules <1>:                 Miscellaneous.      (line 1061)
 * run-forward-rules:                     API Functions.      (line  684)
-* run-powerloom-tests:                   Miscellaneous.      (line 1028)
+* run-powerloom-tests:                   Miscellaneous.      (line 1078)
 * s-ask:                                 API Functions.      (line  699)
 * s-assert-proposition:                  API Functions.      (line  721)
 * s-change-module:                       API Functions.      (line  731)
@@ -2372,95 +2460,99 @@ Function Index
 * s-get-rules:                           API Functions.      (line 1008)
 * s-is-true-proposition:                 API Functions.      (line 1017)
 * s-print-rules:                         API Functions.      (line 1025)
-* s-register-computation-function:       Miscellaneous.      (line 1382)
-* s-register-specialist-function:        Miscellaneous.      (line 1399)
+* s-register-computation-function:       Miscellaneous.      (line 1454)
+* s-register-specialist-function:        Miscellaneous.      (line 1471)
 * s-retract-proposition:                 API Functions.      (line 1034)
 * s-retrieve:                            API Functions.      (line 1045)
 * s-save-module:                         API Functions.      (line 1084)
-* satisfies?:                            Miscellaneous.      (line 1035)
-* save-all-neural-networks:              Miscellaneous.      (line 1043)
+* satisfies?:                            Miscellaneous.      (line 1085)
+* save-all-neural-networks:              Miscellaneous.      (line 1093)
 * save-module <1>:                       API Functions.      (line 1101)
-* save-module:                           Commands.           (line  700)
-* SCALAR:                                Built-In Relations. (line  731)
-* SCALAR-INTERVAL:                       Built-In Relations. (line  734)
-* SECOND-ELEMENT:                        Built-In Relations. (line  737)
-* select-proof-result:                   Miscellaneous.      (line 1049)
-* select-test-result:                    Miscellaneous.      (line 1054)
-* set-error-print-cycle:                 Miscellaneous.      (line 1062)
-* set-feature:                           Commands.           (line  703)
-* set-inference-level:                   Miscellaneous.      (line 1069)
-* set-load-path:                         Commands.           (line  739)
-* set-marker on MARKER-TABLE:            Miscellaneous.      (line 1073)
-* set-num-neighbors:                     Miscellaneous.      (line 1076)
-* set-num-training-per-case:             Miscellaneous.      (line 1079)
-* set-powerloom-feature:                 Miscellaneous.      (line 1083)
-* set-save-network-cycle:                Miscellaneous.      (line 1086)
-* SETOF:                                 Built-In Relations. (line  746)
-* SHALLOW-QUERY:                         Built-In Relations. (line  751)
-* SINGLE-VALUED:                         Built-In Relations. (line  755)
-* sort on QUERY-SOLUTION-TABLE:          Miscellaneous.      (line 1092)
-* specializes?:                          Miscellaneous.      (line 1098)
-* SQUARE-ROOT:                           Built-In Relations. (line  760)
-* STANDARD-DEVIATION:                    Built-In Relations. (line  764)
-* start-ontosaurus:                      Miscellaneous.      (line 1103)
-* start-powerloom-gui:                   Miscellaneous.      (line 1108)
-* start-powerloom-server:                Miscellaneous.      (line 1120)
-* stop-ontosaurus:                       Miscellaneous.      (line 1125)
-* stop-powerloom-gui:                    Miscellaneous.      (line 1129)
-* stop-powerloom-server:                 Miscellaneous.      (line 1134)
-* strengthen-truth-value:                Miscellaneous.      (line 1139)
-* strict-truth-value?:                   Miscellaneous.      (line 1144)
-* STRING-CONCATENATE:                    Built-In Relations. (line  767)
-* STRING-MATCH:                          Built-In Relations. (line  773)
-* STRING-MATCH-IGNORE-CASE:              Built-In Relations. (line  786)
+* save-module:                           Commands.           (line  772)
+* SCALAR:                                Built-In Relations. (line  730)
+* SCALAR-INTERVAL:                       Built-In Relations. (line  733)
+* SECOND-ELEMENT:                        Built-In Relations. (line  736)
+* select-proof-result:                   Miscellaneous.      (line 1099)
+* select-test-result:                    Miscellaneous.      (line 1104)
+* set-error-print-cycle:                 Miscellaneous.      (line 1112)
+* set-feature:                           Commands.           (line  784)
+* set-inference-level:                   Miscellaneous.      (line 1119)
+* set-load-path:                         Commands.           (line  820)
+* set-marker on MARKER-TABLE:            Miscellaneous.      (line 1123)
+* set-num-neighbors:                     Miscellaneous.      (line 1126)
+* set-num-training-per-case:             Miscellaneous.      (line 1129)
+* set-powerloom-feature:                 Miscellaneous.      (line 1133)
+* set-save-network-cycle:                Miscellaneous.      (line 1136)
+* SETOF:                                 Built-In Relations. (line  745)
+* shallow-copy on JUSTIFICATION:         Miscellaneous.      (line 1141)
+* SHALLOW-QUERY:                         Built-In Relations. (line  750)
+* SINGLE-VALUED:                         Built-In Relations. (line  754)
+* sort on QUERY-SOLUTION-TABLE:          Miscellaneous.      (line 1145)
+* specializes?:                          Miscellaneous.      (line 1151)
+* SQUARE-ROOT:                           Built-In Relations. (line  759)
+* STANDARD-DEVIATION:                    Built-In Relations. (line  763)
+* start-ontosaurus:                      Miscellaneous.      (line 1156)
+* start-powerloom-gui:                   Miscellaneous.      (line 1161)
+* start-powerloom-server:                Miscellaneous.      (line 1173)
+* stop-ontosaurus:                       Miscellaneous.      (line 1178)
+* stop-powerloom-gui:                    Miscellaneous.      (line 1182)
+* stop-powerloom-server:                 Miscellaneous.      (line 1187)
+* strengthen-truth-value:                Miscellaneous.      (line 1192)
+* strict-truth-value?:                   Miscellaneous.      (line 1197)
+* STRING-CONCATENATE:                    Built-In Relations. (line  766)
+* STRING-MATCH:                          Built-In Relations. (line  772)
+* STRING-MATCH-IGNORE-CASE:              Built-In Relations. (line  785)
 * string-to-object:                      API Functions.      (line 1114)
-* SUBRELATION:                           Built-In Relations. (line  793)
-* SUBSET-OF:                             Built-In Relations. (line  798)
-* SUBSTRING:                             Built-In Relations. (line  808)
-* SUBSUMPTION-QUERY:                     Built-In Relations. (line  819)
-* SUM:                                   Built-In Relations. (line  824)
-* SUPERRELATION:                         Built-In Relations. (line  827)
-* SYMMETRIC:                             Built-In Relations. (line  832)
-* SYNONYM:                               Built-In Relations. (line  835)
-* termify:                               Miscellaneous.      (line 1147)
-* test-closed-slot?:                     Miscellaneous.      (line 1151)
-* test-environment-level?:               Miscellaneous.      (line 1414)
-* test-function-slot?:                   Miscellaneous.      (line 1155)
-* test-marker? on MARKER-TABLE:          Miscellaneous.      (line 1159)
-* test-relation-on-arguments?:           Miscellaneous.      (line 1163)
-* test-slot-value?:                      Miscellaneous.      (line 1168)
-* test-special-marker-table?:            Miscellaneous.      (line 1172)
-* test-subrelation?:                     Miscellaneous.      (line 1178)
-* test-type-on-instance?:                Miscellaneous.      (line 1182)
-* THIRD-ELEMENT:                         Built-In Relations. (line  847)
-* time-command:                          Commands.           (line  743)
-* TOTAL:                                 Built-In Relations. (line  850)
-* TRANSITIVE:                            Built-In Relations. (line  867)
-* translate-loom-file:                   Miscellaneous.      (line 1186)
-* true-truth-value?:                     Miscellaneous.      (line 1193)
-* true?:                                 Miscellaneous.      (line 1196)
-* TYPE-OF:                               Built-In Relations. (line  874)
-* unassert:                              Miscellaneous.      (line 1200)
-* unassert-proposition:                  Miscellaneous.      (line 1211)
-* unknown-truth-value?:                  Miscellaneous.      (line 1215)
-* unknown?:                              Miscellaneous.      (line 1218)
-* unset-feature:                         Commands.           (line  747)
-* unset-powerloom-feature:               Miscellaneous.      (line 1221)
-* upclassify-all-descriptions:           Miscellaneous.      (line 1224)
-* upclassify-all-instances:              Miscellaneous.      (line 1227)
-* upclassify-instances:                  Miscellaneous.      (line 1230)
-* upclassify-named-descriptions:         Miscellaneous.      (line 1236)
+* stronger-truth-value?:                 Miscellaneous.      (line 1201)
+* SUBRELATION:                           Built-In Relations. (line  788)
+* SUBSET-OF:                             Built-In Relations. (line  793)
+* SUBSTRING:                             Built-In Relations. (line  803)
+* SUBSUMPTION-QUERY:                     Built-In Relations. (line  820)
+* SUM:                                   Built-In Relations. (line  825)
+* SUPERRELATION:                         Built-In Relations. (line  828)
+* SYMMETRIC:                             Built-In Relations. (line  833)
+* SYNONYM:                               Built-In Relations. (line  836)
+* termify:                               Miscellaneous.      (line 1207)
+* test-closed-slot?:                     Miscellaneous.      (line 1211)
+* test-environment-level?:               Miscellaneous.      (line 1486)
+* test-function-slot?:                   Miscellaneous.      (line 1215)
+* test-marker? on MARKER-TABLE:          Miscellaneous.      (line 1219)
+* test-relation-on-arguments?:           Miscellaneous.      (line 1223)
+* test-slot-value?:                      Miscellaneous.      (line 1228)
+* test-special-marker-table?:            Miscellaneous.      (line 1232)
+* test-subrelation?:                     Miscellaneous.      (line 1238)
+* test-type-on-instance?:                Miscellaneous.      (line 1242)
+* THIRD-ELEMENT:                         Built-In Relations. (line  848)
+* time-command:                          Commands.           (line  824)
+* TOTAL:                                 Built-In Relations. (line  851)
+* TRANSITIVE:                            Built-In Relations. (line  868)
+* translate-loom-file:                   Miscellaneous.      (line 1246)
+* true-truth-value?:                     Miscellaneous.      (line 1253)
+* true?:                                 Miscellaneous.      (line 1256)
+* TYPE-OF:                               Built-In Relations. (line  875)
+* unassert:                              Miscellaneous.      (line 1260)
+* unassert-proposition:                  Miscellaneous.      (line 1271)
+* unknown-truth-value?:                  Miscellaneous.      (line 1275)
+* unknown?:                              Miscellaneous.      (line 1278)
+* unnamed-description?:                  Miscellaneous.      (line 1281)
+* unregister-object-store:               Miscellaneous.      (line 1284)
+* unset-feature:                         Commands.           (line  828)
+* unset-powerloom-feature:               Miscellaneous.      (line 1287)
+* upclassify-all-descriptions:           Miscellaneous.      (line 1290)
+* upclassify-all-instances:              Miscellaneous.      (line 1293)
+* upclassify-instances:                  Miscellaneous.      (line 1296)
+* upclassify-named-descriptions:         Miscellaneous.      (line 1302)
 * update-proposition-in-store on OBJECT-STORE: Miscellaneous.
-                                                             (line 1242)
-* update-tuple:                          Miscellaneous.      (line 1248)
-* VALUE:                                 Built-In Relations. (line  878)
-* VARIABLE-ARITY:                        Built-In Relations. (line  883)
-* VARIANCE:                              Built-In Relations. (line  887)
-* weaken-truth-value:                    Miscellaneous.      (line 1252)
-* why:                                   Commands.           (line  754)
-* with-logic-environment:                Miscellaneous.      (line 1258)
-* within-classification-session:         Miscellaneous.      (line 1265)
-* within-meta-cache:                     Miscellaneous.      (line 1269)
+                                                             (line 1308)
+* update-tuple:                          Miscellaneous.      (line 1314)
+* VALUE:                                 Built-In Relations. (line  879)
+* VARIABLE-ARITY:                        Built-In Relations. (line  884)
+* VARIANCE:                              Built-In Relations. (line  888)
+* weaken-truth-value:                    Miscellaneous.      (line 1318)
+* why:                                   Commands.           (line  835)
+* with-logic-environment:                Miscellaneous.      (line 1324)
+* within-classification-session:         Miscellaneous.      (line 1331)
+* within-meta-cache:                     Miscellaneous.      (line 1335)
 
 
 File: manual.info,  Node: Variable Index,  Next: Concept Index,  Prev: Function Index,  Up: Top
@@ -2471,17 +2563,17 @@ Variable Index
  [index ]
 * Menu:
 
-* abstract?:                             Built-In Relations.  (line 687)
+* abstract?:                             Built-In Relations.  (line 686)
 * all-super-contexts:                    Built-In Relations.  (line 185)
 * any-value:                             Built-In Relations.  (line 147)
-* arguments:                             Built-In Relations.  (line 573)
+* arguments:                             Built-In Relations.  (line 572)
 * base-module:                           Built-In Relations.  (line 182)
 * child-contexts:                        Built-In Relations.  (line 179)
 * context-number:                        Built-In Relations.  (line 188)
-* dependent-propositions:                Built-In Relations.  (line 580)
+* dependent-propositions:                Built-In Relations.  (line 579)
 * function-code:                         Built-In Relations.  (line 305)
-* home-context:                          Built-In Relations.  (line 564)
-* kind:                                  Built-In Relations.  (line 567)
+* home-context:                          Built-In Relations.  (line 563)
+* kind:                                  Built-In Relations.  (line 566)
 * method-code:                           Built-In Relations.  (line 302)
 * method-function?:                      Built-In Relations.  (line 308)
 * method-parameter-names:                Built-In Relations.  (line 289)
@@ -2489,10 +2581,10 @@ Variable Index
 * method-return-type-specifiers:         Built-In Relations.  (line 296)
 * method-setter?:                        Built-In Relations.  (line 286)
 * method-stringified-source:             Built-In Relations.  (line 299)
-* operator:                              Built-In Relations.  (line 576)
-* surrogate-value-inverse:               Built-In Relations.  (line 844)
-* the-cons-list:                         Built-In Relations.  (line 427)
-* truth-value:                           Built-In Relations.  (line 570)
+* operator:                              Built-In Relations.  (line 575)
+* surrogate-value-inverse:               Built-In Relations.  (line 845)
+* the-cons-list:                         Built-In Relations.  (line 426)
+* truth-value:                           Built-In Relations.  (line 569)
 
 
 File: manual.info,  Node: Concept Index,  Prev: Variable Index,  Up: Top

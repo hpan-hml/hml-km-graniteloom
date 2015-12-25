@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -213,7 +213,7 @@ boolean inferableWithCycleCheckP(Description* self, Cons* alreadyvisitedlist) {
               initializeMemoizationTable(SGT_CLASSIFY_LOGIC_F_INFERABLE_WITH_CYCLE_CHECKp_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:IMPLIES-PROPOSITION-UPDATE))");
               memoTable000 = ((MemoizationTable*)(SGT_CLASSIFY_LOGIC_F_INFERABLE_WITH_CYCLE_CHECKp_MEMO_TABLE_000->surrogateValue));
             }
-            memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, NULL, -1);
+            memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo, MEMOIZED_NULL_VALUE, NULL, -1);
             memoizedValue000 = memoizedEntry000->value;
           }
           if (((boolean)(memoizedValue000))) {
@@ -267,7 +267,7 @@ boolean inferableWithCycleCheckP(Description* self, Cons* alreadyvisitedlist) {
 boolean inferableP(Description* self) {
   { 
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getInferableTestContext());
-    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
     return (inferableWithCycleCheckP(self, NIL));
   }
 }
@@ -378,7 +378,7 @@ boolean testSpecialMarkerTableP(Object* self) {
   // Return TRUE if the object 'self' is stored (marked)
   // in the table pointed at by the special variable *specialMarkerTable*.
   // Designed for use by 'remove-if'.
-  return (oSPECIALMARKERTABLEo.get()->testMarkerP(self));
+  return (oSPECIALMARKERTABLEo->testMarkerP(self));
 }
 
 ListIterator* MarkerTable::recallMarkedObjects() {
@@ -547,7 +547,7 @@ DEFINE_STELLA_SPECIAL(oFINDSUPERSANDSUBSDESCRIPTIONo, Description* , NULL);
 
 boolean namedCollectionP(LogicObject* self) {
   return (((boolean)(self->surrogateValueInverse)) ||
-      (self == oFINDSUPERSANDSUBSDESCRIPTIONo.get()));
+      (self == oFINDSUPERSANDSUBSDESCRIPTIONo));
 }
 
 Cons* mostSpecificNamedCollections(Cons* descriptions) {
@@ -765,21 +765,21 @@ Object* accessClassificationSessionSlotValue(ClassificationSession* self, Symbol
 DEFINE_STELLA_SPECIAL(oCLASSIFICATIONSESSIONo, ClassificationSession* , NULL);
 
 World* getClassificationWorld() {
-  return (oCLASSIFICATIONSESSIONo.get()->classificationWorld);
+  return (oCLASSIFICATIONSESSIONo->classificationWorld);
 }
 
 ClassificationSession* getClassificationSession(Keyword* instanceordescription) {
-  if (((boolean)(oCLASSIFICATIONSESSIONo.get()))) {
-    return (oCLASSIFICATIONSESSIONo.get());
+  if (((boolean)(oCLASSIFICATIONSESSIONo))) {
+    return (oCLASSIFICATIONSESSIONo);
   }
   { World* world = NULL;
     ClassificationSession* session = NULL;
 
     if (instanceordescription == KWD_CLASSIFY_DESCRIPTION) {
-      world = getInferenceCache(oMODULEo.get(), KWD_CLASSIFY_META);
+      world = getInferenceCache(oMODULEo, KWD_CLASSIFY_META);
     }
     else if (instanceordescription == KWD_CLASSIFY_INSTANCE) {
-      world = getInferenceCache(oMODULEo.get(), KWD_CLASSIFY_TMS);
+      world = getInferenceCache(oMODULEo, KWD_CLASSIFY_TMS);
     }
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
@@ -799,7 +799,7 @@ ClassificationSession* getClassificationSession(Keyword* instanceordescription) 
 }
 
 ClassificationCache* getClassificationCache(Object* self) {
-  { ClassificationSession* session = oCLASSIFICATIONSESSIONo.get();
+  { ClassificationSession* session = oCLASSIFICATIONSESSIONo;
     ClassificationCache* cache = NULL;
 
     if (session->lastCacheTableKey == self) {
@@ -849,7 +849,7 @@ List* allInferableDirectSubcollections(LogicObject* self) {
 }
 
 void flushInferableDirectSubdescriptionsCache(Proposition* impliesproposition) {
-  if (!((boolean)(oCLASSIFICATIONSESSIONo.get()))) {
+  if (!((boolean)(oCLASSIFICATIONSESSIONo))) {
     return;
   }
   { ClassificationCache* cache = getClassificationCache((impliesproposition->arguments->theArray)[1]);
@@ -861,11 +861,11 @@ void flushInferableDirectSubdescriptionsCache(Proposition* impliesproposition) {
 }
 
 int currentClassificationTime() {
-  return (oCLASSIFICATIONSESSIONo.get()->classificationTimeclock);
+  return (oCLASSIFICATIONSESSIONo->classificationTimeclock);
 }
 
 int bumpClassificationTimeclock() {
-  return (oCLASSIFICATIONSESSIONo.get()->classificationTimeclock = oCLASSIFICATIONSESSIONo.get()->classificationTimeclock + 1);
+  return (oCLASSIFICATIONSESSIONo->classificationTimeclock = oCLASSIFICATIONSESSIONo->classificationTimeclock + 1);
 }
 
 int LogicObject::introductionTimestamp() {
@@ -876,7 +876,7 @@ int LogicObject::introductionTimestamp() {
 }
 
 void introduceIntoClassificationSession(Description* self) {
-  { World* world = ((World*)(dynamicSlotValue(oMODULEo.get()->dynamicSlots, SYM_CLASSIFY_LOGIC_META_INFERENCE_CACHE, NULL)));
+  { World* world = ((World*)(dynamicSlotValue(oMODULEo->dynamicSlots, SYM_CLASSIFY_LOGIC_META_INFERENCE_CACHE, NULL)));
 
     if ((!((boolean)(world))) ||
         (!((boolean)(((ClassificationSession*)(dynamicSlotValue(world->dynamicSlots, SYM_CLASSIFY_LOGIC_CLASSIFICATION_SESSION, NULL))))))) {
@@ -885,13 +885,13 @@ void introduceIntoClassificationSession(Description* self) {
     { int newtimestamp = bumpClassificationTimeclock();
 
       getClassificationCache(self)->introductionTimestamp = newtimestamp;
-      oCLASSIFICATIONSESSIONo.get()->introductionTimestampStack->push(wrapInteger(newtimestamp));
+      oCLASSIFICATIONSESSIONo->introductionTimestampStack->push(wrapInteger(newtimestamp));
     }
   }
 }
 
 int youngestIntroductionTimestamp() {
-  return (((IntegerWrapper*)(oCLASSIFICATIONSESSIONo.get()->introductionTimestampStack->first()))->wrapperValue);
+  return (((IntegerWrapper*)(oCLASSIFICATIONSESSIONo->introductionTimestampStack->first()))->wrapperValue);
 }
 
 int upclassificationTimestamp(Object* self) {
@@ -911,9 +911,9 @@ void refreshDownclassificationTimestamp(LogicObject* self) {
 }
 
 void flushClassificationSessions() {
-  { World* jitworld = lookupInferenceCache(oMODULEo.get(), KWD_CLASSIFY_JUST_IN_TIME);
-    World* metaworld = lookupInferenceCache(oMODULEo.get(), KWD_CLASSIFY_META);
-    World* tmsworld = lookupInferenceCache(oMODULEo.get(), KWD_CLASSIFY_TMS);
+  { World* jitworld = lookupInferenceCache(oMODULEo, KWD_CLASSIFY_JUST_IN_TIME);
+    World* metaworld = lookupInferenceCache(oMODULEo, KWD_CLASSIFY_META);
+    World* tmsworld = lookupInferenceCache(oMODULEo, KWD_CLASSIFY_TMS);
 
     if (((boolean)(jitworld))) {
       setDynamicSlotValue(jitworld->dynamicSlots, SYM_CLASSIFY_LOGIC_CLASSIFICATION_SESSION, NULL, NULL);
@@ -1119,7 +1119,7 @@ void helpUpclassifyOneEntity(LogicObject* self, Keyword* instanceordescription) 
     }
     if (((boolean)(oTRACED_KEYWORDSo)) &&
         oTRACED_KEYWORDSo->membP(KWD_CLASSIFY_CLASSIFIER)) {
-      std::cout << "   WORLD: " << oCONTEXTo.get() << "  self: " << self << std::endl << "   ANCESTORS: " << allAncestorCollections(self, instanceordescription)->consify() << std::endl;
+      std::cout << "   WORLD: " << oCONTEXTo << "  self: " << self << std::endl << "   ANCESTORS: " << allAncestorCollections(self, instanceordescription)->consify() << std::endl;
     }
     { LogicObject* super = NULL;
       Iterator* iter001 = allAncestorCollections(self, instanceordescription);
@@ -1127,7 +1127,7 @@ void helpUpclassifyOneEntity(LogicObject* self, Keyword* instanceordescription) 
       for (super, iter001; iter001->nextP(); ) {
         super = ((LogicObject*)(iter001->value));
         if (isaP(super, SGT_CLASSIFY_LOGIC_DESCRIPTION) &&
-            (((!oCLASSIFY_FROM_NON_INFERABLE_PARENTS_ONLYpo.get()) ||
+            (((!oCLASSIFY_FROM_NON_INFERABLE_PARENTS_ONLYpo) ||
             nonInferableP(((Description*)(super)))) &&
              (!alreadyvisitedtable->testMarkerP(super)))) {
           alreadyvisitedtable->setMarker(super);
@@ -1502,7 +1502,7 @@ Cons* findDirectSupersAndSubs(Description* self, boolean onlysupersP, Cons*& _Re
     BIND_STELLA_SPECIAL(oFINDSUPERSANDSUBSDESCRIPTIONo, Description*, self);
     { 
       BIND_STELLA_SPECIAL(oCLASSIFICATIONSESSIONo, ClassificationSession*, getClassificationSession(KWD_CLASSIFY_DESCRIPTION));
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo.get()->classificationWorld);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo->classificationWorld);
       { boolean virginP = self->virginP();
         int oldcurrenttime = currentClassificationTime();
         Cons* supers = NIL;
@@ -1557,7 +1557,7 @@ Cons* findDirectSupersAndSubs(Description* self, boolean onlysupersP, Cons*& _Re
         }
         if (virginP) {
           evaporateVirgin(self);
-          oCLASSIFICATIONSESSIONo.get()->introductionTimestampStack->pop();
+          oCLASSIFICATIONSESSIONo->introductionTimestampStack->pop();
         }
         _Return1 = subs;
         _Return2 = equivalents;
@@ -1576,7 +1576,7 @@ Cons* findDirectSupersOfInstance(Object* self) {
   }
   { 
     BIND_STELLA_SPECIAL(oCLASSIFICATIONSESSIONo, ClassificationSession*, getClassificationSession(KWD_CLASSIFY_INSTANCE));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo.get()->classificationWorld);
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo->classificationWorld);
     upclassifyOneInstance(((LogicObject*)(self)));
     return (mostSpecificNamedCollections(allIsaCollections(self)));
   }
@@ -1588,10 +1588,10 @@ void upclassifyNamedDescriptions(Module* module, boolean localP) {
   // 'module' is NULL, classify descriptions in all modules.
   { 
     BIND_STELLA_SPECIAL(oCLASSIFICATIONSESSIONo, ClassificationSession*, getClassificationSession(KWD_CLASSIFY_DESCRIPTION));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo.get()->classificationWorld);
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo->classificationWorld);
     { 
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, ((!((boolean)(module))) ? oMODULEo.get() : module));
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, ((!((boolean)(module))) ? oMODULEo : module));
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       if (!((boolean)(module))) {
         upclassifyAllDescriptions();
       }
@@ -1606,7 +1606,7 @@ void upclassifyNamedDescriptions(Module* module, boolean localP) {
         }
       }
       else {
-        { ClassificationSession* session = oCLASSIFICATIONSESSIONo.get();
+        { ClassificationSession* session = oCLASSIFICATIONSESSIONo;
 
           if (!session->everythingClassifiedP) {
             { Module* m = NULL;
@@ -1632,11 +1632,13 @@ void upclassifyNamedDescriptions(Module* module, boolean localP) {
   }
 }
 
-void classifyRelations(Object* module, boolean localP) {
-  // Classify named relations visible in `module'.
-  // If `local?', only classify descriptions defined within `module', i.e.,
-  // don't classify descriptions inherited from ancestor modules.
-  // If `module' is NULL, classify relations in all modules.
+void classifyRelations(Cons* options) {
+  // Classify relations visible in the module defined by the :module option (which
+  // defaults to the current module).  If :module was explicitly specified as NULL,
+  // classify relations in all modules.  If `:local?' is specified as TRUE only classify
+  // relations that belong to the specified module but not any modules it inherits.  For
+  // backwards compatibility, this command also supports the old <module> <local?>
+  // arguments specified without keywords.
   // 
   // Conceptually, the classifier operates by comparing each concept or relation
   // with all other concepts/relations, searching for a proof that a
@@ -1649,87 +1651,94 @@ void classifyRelations(Object* module, boolean localP) {
   // relationships.
   // 
   finalizeObjects();
-  { Module* themodule = coerceToModule(module, true);
+  { Cons* optionslist = options;
+    PropertyList* theoptions = parseOptions((keywordP(optionslist->value) ? optionslist : consList(4, KWD_CLASSIFY_MODULE, optionslist->value, KWD_CLASSIFY_LOCALp, optionslist->rest->value)), listO(5, KWD_CLASSIFY_MODULE, SGT_CLASSIFY_STELLA_MODULE, KWD_CLASSIFY_LOCALp, SGT_CLASSIFY_STELLA_BOOLEAN, NIL), true, false);
+    Module* themodule = ((Module*)(theoptions->lookupWithDefault(KWD_CLASSIFY_MODULE, NULL)));
+    boolean localP = coerceWrappedBooleanToBoolean(((BooleanWrapper*)(theoptions->lookupWithDefault(KWD_CLASSIFY_LOCALp, FALSE_WRAPPER))));
 
-    if (((boolean)(themodule))) {
-      if (!((boolean)(module))) {
-        themodule = NULL;
-      }
-      upclassifyNamedDescriptions(themodule, localP);
+    if ((!((boolean)(themodule))) &&
+        (!optionslist->memberP(KWD_CLASSIFY_MODULE))) {
+      themodule = oMODULEo;
     }
+    upclassifyNamedDescriptions(themodule, localP);
   }
 }
 
 void classifyRelationsEvaluatorWrapper(Cons* arguments) {
-  classifyRelations(arguments->value, ((BooleanWrapper*)(arguments->rest->value))->wrapperValue);
+  classifyRelations(arguments);
 }
 
-Cons* listUnclassifiedRelations(Object* module, boolean localP) {
-  // Collect all named description in `module' (or in any module if `module'
-  // is NULL) that were not (or will not be) classified due to their lack of
-  // non-inferable/primitive ancestor relations.
-  if (!oCLASSIFY_FROM_NON_INFERABLE_PARENTS_ONLYpo.get()) {
+Cons* listUnclassifiedRelations(Cons* options) {
+  // Collect all named description in the module defined by the :module option (which defaults
+  // to the current module) that were not (or will not be) classified due to their lack of
+  // non-inferable/primitive ancestor relations.  If :module was explicitly specified as NULL,
+  // look in all currently defined modules.  If `:local?' is specified as TRUE only look
+  // in the specified module but not any modules it inherits.  For backwards compatibility,
+  // this command also supports the old <module> <local?> arguments specified without keywords.
+  if (!oCLASSIFY_FROM_NON_INFERABLE_PARENTS_ONLYpo) {
     return (NIL);
   }
   finalizeObjects();
-  { Module* themodule = coerceToModule(module, true);
+  { Cons* optionslist = options;
+    PropertyList* theoptions = parseOptions((keywordP(optionslist->value) ? optionslist : consList(4, KWD_CLASSIFY_MODULE, optionslist->value, KWD_CLASSIFY_LOCALp, optionslist->rest->value)), listO(5, KWD_CLASSIFY_MODULE, SGT_CLASSIFY_STELLA_MODULE, KWD_CLASSIFY_LOCALp, SGT_CLASSIFY_STELLA_BOOLEAN, NIL), true, false);
+    Module* themodule = ((Module*)(theoptions->lookupWithDefault(KWD_CLASSIFY_MODULE, NULL)));
+    boolean localP = coerceWrappedBooleanToBoolean(((BooleanWrapper*)(theoptions->lookupWithDefault(KWD_CLASSIFY_LOCALp, FALSE_WRAPPER))));
     Cons* unclassified = NIL;
 
-    if (((boolean)(themodule))) {
-      if (!((boolean)(module))) {
-        themodule = NULL;
-      }
+    if ((!((boolean)(themodule))) &&
+        (!optionslist->memberP(KWD_CLASSIFY_MODULE))) {
+      themodule = oMODULEo;
+    }
+    { 
+      BIND_STELLA_SPECIAL(oCLASSIFICATIONSESSIONo, ClassificationSession*, getClassificationSession(KWD_CLASSIFY_DESCRIPTION));
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo->classificationWorld);
       { 
-        BIND_STELLA_SPECIAL(oCLASSIFICATIONSESSIONo, ClassificationSession*, getClassificationSession(KWD_CLASSIFY_DESCRIPTION));
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo.get()->classificationWorld);
-        { 
-          BIND_STELLA_SPECIAL(oMODULEo, Module*, ((!((boolean)(themodule))) ? oMODULEo.get() : themodule));
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
-          { NamedDescription* d = NULL;
-            Iterator* iter000 = allNamedDescriptions(themodule, localP);
-            Cons* collect000 = NULL;
+        BIND_STELLA_SPECIAL(oMODULEo, Module*, ((!((boolean)(themodule))) ? oMODULEo : themodule));
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
+        { NamedDescription* d = NULL;
+          Iterator* iter000 = allNamedDescriptions(themodule, localP);
+          Cons* collect000 = NULL;
 
-            for  (d, iter000, collect000; 
-                  iter000->nextP(); ) {
-              d = ((NamedDescription*)(iter000->value));
-              { boolean testValue000 = false;
+          for  (d, iter000, collect000; 
+                iter000->nextP(); ) {
+            d = ((NamedDescription*)(iter000->value));
+            { boolean testValue000 = false;
 
-                testValue000 = inferableP(d);
-                if (testValue000) {
-                  { boolean foundP000 = false;
+              testValue000 = inferableP(d);
+              if (testValue000) {
+                { boolean foundP000 = false;
 
-                    { LogicObject* super = NULL;
-                      Iterator* iter001 = allAncestorCollections(d, KWD_CLASSIFY_DESCRIPTION);
+                  { LogicObject* super = NULL;
+                    Iterator* iter001 = allAncestorCollections(d, KWD_CLASSIFY_DESCRIPTION);
 
-                      for (super, iter001; iter001->nextP(); ) {
-                        super = ((LogicObject*)(iter001->value));
-                        if (nonInferableP(((Description*)(super)))) {
-                          foundP000 = true;
-                          break;
-                        }
+                    for (super, iter001; iter001->nextP(); ) {
+                      super = ((LogicObject*)(iter001->value));
+                      if (nonInferableP(((Description*)(super)))) {
+                        foundP000 = true;
+                        break;
                       }
                     }
-                    testValue000 = foundP000;
                   }
-                  testValue000 = !testValue000;
+                  testValue000 = foundP000;
                 }
-                if (testValue000) {
-                  if (!((boolean)(collect000))) {
-                    {
-                      collect000 = cons(d, NIL);
-                      if (unclassified == NIL) {
-                        unclassified = collect000;
-                      }
-                      else {
-                        addConsToEndOfConsList(unclassified, collect000);
-                      }
+                testValue000 = !testValue000;
+              }
+              if (testValue000) {
+                if (!((boolean)(collect000))) {
+                  {
+                    collect000 = cons(d, NIL);
+                    if (unclassified == NIL) {
+                      unclassified = collect000;
+                    }
+                    else {
+                      addConsToEndOfConsList(unclassified, collect000);
                     }
                   }
-                  else {
-                    {
-                      collect000->rest = cons(d, NIL);
-                      collect000 = collect000->rest;
-                    }
+                }
+                else {
+                  {
+                    collect000->rest = cons(d, NIL);
+                    collect000 = collect000->rest;
                   }
                 }
               }
@@ -1743,7 +1752,7 @@ Cons* listUnclassifiedRelations(Object* module, boolean localP) {
 }
 
 Cons* listUnclassifiedRelationsEvaluatorWrapper(Cons* arguments) {
-  return (listUnclassifiedRelations(arguments->value, ((BooleanWrapper*)(arguments->rest->value))->wrapperValue));
+  return (listUnclassifiedRelations(arguments));
 }
 
 void upclassifyInstances(Module* module, boolean localP) {
@@ -1752,10 +1761,10 @@ void upclassifyInstances(Module* module, boolean localP) {
   // 'module' is NULL, classify descriptions in all modules.
   { 
     BIND_STELLA_SPECIAL(oCLASSIFICATIONSESSIONo, ClassificationSession*, getClassificationSession(KWD_CLASSIFY_INSTANCE));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo.get()->classificationWorld);
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo->classificationWorld);
     { 
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, ((!((boolean)(module))) ? oMODULEo.get() : module));
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, ((!((boolean)(module))) ? oMODULEo : module));
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       if (!((boolean)(module))) {
         upclassifyAllInstances();
       }
@@ -1790,104 +1799,112 @@ void upclassifyInstances(Module* module, boolean localP) {
   }
 }
 
-void classifyInstances(Object* module, boolean localP) {
-  // Classify instances visible in `module'.
-  // If `local?', only classify instances that belong to `module',
-  // i.e., don't classify instances inherited from ancestor modules.
-  // If `module' is NULL, classify instances in all modules.
+void classifyInstances(Cons* options) {
+  // Classify instances visible in the module defined by the :module option (which
+  // defaults to the current module).  If :module was explicitly specified as NULL,
+  // classify instances in all modules.  If `:local?' is specified as TRUE only classify
+  // instances that belong to the specified module but not any modules it inherits.  For
+  // backwards compatibility, this command also supports the old <module> <local?>
+  // arguments specified without keywords.
   // 
-  // Conceptually, the classifier operates by comparing each instance
-  // with all concepts in the hierarchy, searching for a
-  // proof for each pairing indicating that the instance belongs to the concept.
-  // Whenever a new `is-a' relation is discovered, the classifier
-  // adds an `is-a' link between the instance and the concept, thereby
-  // recording an additional fact about the instance.  The implemented
-  // classification algorithm is relatively efficient -- it works hard
-  // at limiting the number of concepts or relations that need to
-  // be checked for possible is-a relationships.
+  // Conceptually, the classifier operates by comparing each instance with all
+  // concepts in the hierarchy, searching for a proof for each pairing indicating
+  // that the instance belongs to the concept.  Whenever a new `is-a' relation is
+  // discovered, the classifier adds an `is-a' link between the instance and the
+  // concept, thereby recording an additional fact about the instance.  The
+  // implemented classification algorithm is relatively efficient -- it works hard at
+  // limiting the number of concepts or relations that need to be checked for
+  // possible is-a relationships.
   // 
   finalizeObjects();
-  { Module* themodule = coerceToModule(module, true);
+  { Cons* optionslist = options;
+    PropertyList* theoptions = parseOptions((keywordP(optionslist->value) ? optionslist : consList(4, KWD_CLASSIFY_MODULE, optionslist->value, KWD_CLASSIFY_LOCALp, optionslist->rest->value)), listO(5, KWD_CLASSIFY_MODULE, SGT_CLASSIFY_STELLA_MODULE, KWD_CLASSIFY_LOCALp, SGT_CLASSIFY_STELLA_BOOLEAN, NIL), true, false);
+    Module* themodule = ((Module*)(theoptions->lookupWithDefault(KWD_CLASSIFY_MODULE, NULL)));
+    boolean localP = coerceWrappedBooleanToBoolean(((BooleanWrapper*)(theoptions->lookupWithDefault(KWD_CLASSIFY_LOCALp, FALSE_WRAPPER))));
 
-    if (((boolean)(themodule))) {
-      if (!((boolean)(module))) {
-        themodule = NULL;
-      }
-      upclassifyInstances(themodule, localP);
+    if ((!((boolean)(themodule))) &&
+        (!optionslist->memberP(KWD_CLASSIFY_MODULE))) {
+      themodule = oMODULEo;
     }
+    upclassifyInstances(themodule, localP);
   }
 }
 
 void classifyInstancesEvaluatorWrapper(Cons* arguments) {
-  classifyInstances(arguments->value, ((BooleanWrapper*)(arguments->rest->value))->wrapperValue);
+  classifyInstances(arguments);
 }
 
-Cons* listUnclassifiedInstances(Object* module, boolean localP) {
-  // Collect all instances in `module' (or in any module if `module'
-  // is NULL) that were not (or will not be) classified due to their lack of
-  // non-inferable/primitive type assertions.
-  if (!oCLASSIFY_FROM_NON_INFERABLE_PARENTS_ONLYpo.get()) {
+Cons* listUnclassifiedInstances(Cons* options) {
+  // Collect all instances in the module defined by the :module option (which defaults
+  // to the current module) that were not (or will not be) classified due to their lack of
+  // non-inferable/primitive type assertions.  If :module was explicitly specified as NULL,
+  // look in all currently defined modules.  If `:local?' is specified as TRUE only look
+  // in the specified module but not any modules it inherits.  For backwards compatibility,
+  // this command also supports the old <module> <local?> arguments specified without keywords.
+  if (!oCLASSIFY_FROM_NON_INFERABLE_PARENTS_ONLYpo) {
     return (NIL);
   }
   finalizeObjects();
-  { Module* themodule = coerceToModule(module, true);
+  { Cons* optionslist = options;
+    PropertyList* theoptions = parseOptions((keywordP(optionslist->value) ? optionslist : consList(4, KWD_CLASSIFY_MODULE, optionslist->value, KWD_CLASSIFY_LOCALp, optionslist->rest->value)), listO(5, KWD_CLASSIFY_MODULE, SGT_CLASSIFY_STELLA_MODULE, KWD_CLASSIFY_LOCALp, SGT_CLASSIFY_STELLA_BOOLEAN, NIL), true, false);
+    Module* themodule = ((Module*)(theoptions->lookupWithDefault(KWD_CLASSIFY_MODULE, NULL)));
+    boolean localP = coerceWrappedBooleanToBoolean(((BooleanWrapper*)(theoptions->lookupWithDefault(KWD_CLASSIFY_LOCALp, FALSE_WRAPPER))));
     Cons* unclassified = NIL;
 
-    if (((boolean)(themodule))) {
-      if (!((boolean)(module))) {
-        themodule = NULL;
-      }
+    if ((!((boolean)(themodule))) &&
+        (!optionslist->memberP(KWD_CLASSIFY_MODULE))) {
+      themodule = oMODULEo;
+    }
+    { 
+      BIND_STELLA_SPECIAL(oCLASSIFICATIONSESSIONo, ClassificationSession*, getClassificationSession(KWD_CLASSIFY_INSTANCE));
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo->classificationWorld);
       { 
-        BIND_STELLA_SPECIAL(oCLASSIFICATIONSESSIONo, ClassificationSession*, getClassificationSession(KWD_CLASSIFY_INSTANCE));
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo.get()->classificationWorld);
-        { 
-          BIND_STELLA_SPECIAL(oMODULEo, Module*, ((!((boolean)(themodule))) ? oMODULEo.get() : themodule));
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
-          { LogicObject* i = NULL;
-            Iterator* iter000 = allInstances(themodule, localP);
-            Cons* collect000 = NULL;
+        BIND_STELLA_SPECIAL(oMODULEo, Module*, ((!((boolean)(themodule))) ? oMODULEo : themodule));
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
+        { LogicObject* i = NULL;
+          Iterator* iter000 = allInstances(themodule, localP);
+          Cons* collect000 = NULL;
 
-            for  (i, iter000, collect000; 
-                  iter000->nextP(); ) {
-              i = ((LogicObject*)(iter000->value));
-              { boolean testValue000 = false;
+          for  (i, iter000, collect000; 
+                iter000->nextP(); ) {
+            i = ((LogicObject*)(iter000->value));
+            { boolean testValue000 = false;
 
-                testValue000 = !functionOutputSkolemP(i);
-                if (testValue000) {
-                  { boolean foundP000 = false;
+              testValue000 = !functionOutputSkolemP(i);
+              if (testValue000) {
+                { boolean foundP000 = false;
 
-                    { LogicObject* type = NULL;
-                      Iterator* iter001 = allAncestorCollections(i, KWD_CLASSIFY_INSTANCE);
+                  { LogicObject* type = NULL;
+                    Iterator* iter001 = allAncestorCollections(i, KWD_CLASSIFY_INSTANCE);
 
-                      for (type, iter001; iter001->nextP(); ) {
-                        type = ((LogicObject*)(iter001->value));
-                        if (nonInferableP(((Description*)(type)))) {
-                          foundP000 = true;
-                          break;
-                        }
+                    for (type, iter001; iter001->nextP(); ) {
+                      type = ((LogicObject*)(iter001->value));
+                      if (nonInferableP(((Description*)(type)))) {
+                        foundP000 = true;
+                        break;
                       }
                     }
-                    testValue000 = foundP000;
                   }
-                  testValue000 = !testValue000;
+                  testValue000 = foundP000;
                 }
-                if (testValue000) {
-                  if (!((boolean)(collect000))) {
-                    {
-                      collect000 = cons(i, NIL);
-                      if (unclassified == NIL) {
-                        unclassified = collect000;
-                      }
-                      else {
-                        addConsToEndOfConsList(unclassified, collect000);
-                      }
+                testValue000 = !testValue000;
+              }
+              if (testValue000) {
+                if (!((boolean)(collect000))) {
+                  {
+                    collect000 = cons(i, NIL);
+                    if (unclassified == NIL) {
+                      unclassified = collect000;
+                    }
+                    else {
+                      addConsToEndOfConsList(unclassified, collect000);
                     }
                   }
-                  else {
-                    {
-                      collect000->rest = cons(i, NIL);
-                      collect000 = collect000->rest;
-                    }
+                }
+                else {
+                  {
+                    collect000->rest = cons(i, NIL);
+                    collect000 = collect000->rest;
                   }
                 }
               }
@@ -1901,7 +1918,7 @@ Cons* listUnclassifiedInstances(Object* module, boolean localP) {
 }
 
 Cons* listUnclassifiedInstancesEvaluatorWrapper(Cons* arguments) {
-  return (listUnclassifiedInstances(arguments->value, ((BooleanWrapper*)(arguments->rest->value))->wrapperValue));
+  return (listUnclassifiedInstances(arguments));
 }
 
 void upclassifyAllDescriptions() {
@@ -1909,7 +1926,7 @@ void upclassifyAllDescriptions() {
   finalizeObjects();
   { 
     BIND_STELLA_SPECIAL(oCLASSIFICATIONSESSIONo, ClassificationSession*, getClassificationSession(KWD_CLASSIFY_DESCRIPTION));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo.get()->classificationWorld);
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo->classificationWorld);
     { NamedDescription* d = NULL;
       Iterator* iter000 = allNamedDescriptions(NULL, false);
 
@@ -1926,7 +1943,7 @@ void upclassifyAllInstances() {
   finalizeObjects();
   { 
     BIND_STELLA_SPECIAL(oCLASSIFICATIONSESSIONo, ClassificationSession*, getClassificationSession(KWD_CLASSIFY_INSTANCE));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo.get()->classificationWorld);
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oCLASSIFICATIONSESSIONo->classificationWorld);
     { LogicObject* i = NULL;
       Iterator* iter000 = allInstances(NULL, false);
 
@@ -2024,6 +2041,10 @@ void helpStartupClassify1() {
     KWD_CLASSIFY_DOWNCLASSIFY = ((Keyword*)(internRigidSymbolWrtModule("DOWNCLASSIFY", NULL, 2)));
     SYM_CLASSIFY_LOGIC_SUBRELATION_LINKp = ((Symbol*)(internRigidSymbolWrtModule("SUBRELATION-LINK?", NULL, 0)));
     KWD_CLASSIFY_ASSERT_TRUE = ((Keyword*)(internRigidSymbolWrtModule("ASSERT-TRUE", NULL, 2)));
+    KWD_CLASSIFY_MODULE = ((Keyword*)(internRigidSymbolWrtModule("MODULE", NULL, 2)));
+    KWD_CLASSIFY_LOCALp = ((Keyword*)(internRigidSymbolWrtModule("LOCAL?", NULL, 2)));
+    SGT_CLASSIFY_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 1)));
+    SGT_CLASSIFY_STELLA_BOOLEAN = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN", getStellaModule("/STELLA", true), 1)));
     SYM_CLASSIFY_LOGIC_STARTUP_CLASSIFY = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-CLASSIFY", NULL, 0)));
     SYM_CLASSIFY_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
   }
@@ -2090,14 +2111,14 @@ void helpStartupClassify2() {
     defineFunctionObject("FIND-DIRECT-SUPERS-AND-SUBS", "(DEFUN (FIND-DIRECT-SUPERS-AND-SUBS (CONS OF DESCRIPTION) (CONS OF DESCRIPTION) (CONS OF DESCRIPTION)) ((SELF DESCRIPTION) (ONLYSUPERS? BOOLEAN)) :DOCUMENTATION \"Classify 'self' and return three values, its direct\nsupers, direct subs, and a list of equivalent descriptions.\nSetting 'supersOnly?' may speed up the computation (perhaps by a lot).\nIf 'description' is nameless and has no dependent propositions, then\nit is automatically removed from the hierarchy after classification.\" :PUBLIC? TRUE)", ((cpp_function_code)(&findDirectSupersAndSubs)), NULL);
     defineFunctionObject("FIND-DIRECT-SUPERS-OF-INSTANCE", "(DEFUN (FIND-DIRECT-SUPERS-OF-INSTANCE (CONS OF LOGIC-OBJECT)) ((SELF OBJECT)) :DOCUMENTATION \"Classify 'self' and return a list of most specific \nnamed descriptions among all descriptions that it satisfies.\" :PUBLIC? TRUE)", ((cpp_function_code)(&findDirectSupersOfInstance)), NULL);
     defineFunctionObject("UPCLASSIFY-NAMED-DESCRIPTIONS", "(DEFUN UPCLASSIFY-NAMED-DESCRIPTIONS ((MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Classify named descriptions local to 'module' and inherited\nby 'module'.  If 'local?', don't classify inherited descriptions.  If\n'module' is NULL, classify descriptions in all modules.\")", ((cpp_function_code)(&upclassifyNamedDescriptions)), NULL);
-    defineFunctionObject("CLASSIFY-RELATIONS", "(DEFUN CLASSIFY-RELATIONS ((MODULE NAME) (LOCAL? BOOLEAN)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Classify named relations visible in `module'.\nIf `local?', only classify descriptions defined within `module', i.e.,\ndon't classify descriptions inherited from ancestor modules.\nIf `module' is NULL, classify relations in all modules.\n\nConceptually, the classifier operates by comparing each concept or relation\nwith all other concepts/relations, searching for a proof that a\nsubsumption relation exists between each pair. Whenever a new subsumption\nrelation is discovered, the classifier adds an `implication' link between\nmembers of the pair, thereby augmenting the structure of the\nconcept or relation hierarchy. The implemented classification algorithm is\nrelatively efficient -- it works hard at limiting the number of concepts\nor relations that need to be checked for possible subsumption\nrelationships.\n\")", ((cpp_function_code)(&classifyRelations)), ((cpp_function_code)(&classifyRelationsEvaluatorWrapper)));
+    defineFunctionObject("CLASSIFY-RELATIONS", "(DEFUN CLASSIFY-RELATIONS (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Classify relations visible in the module defined by the :module option (which\ndefaults to the current module).  If :module was explicitly specified as NULL,\nclassify relations in all modules.  If `:local?' is specified as TRUE only classify\nrelations that belong to the specified module but not any modules it inherits.  For\nbackwards compatibility, this command also supports the old <module> <local?>\narguments specified without keywords.\n\nConceptually, the classifier operates by comparing each concept or relation\nwith all other concepts/relations, searching for a proof that a\nsubsumption relation exists between each pair. Whenever a new subsumption\nrelation is discovered, the classifier adds an `implication' link between\nmembers of the pair, thereby augmenting the structure of the\nconcept or relation hierarchy. The implemented classification algorithm is\nrelatively efficient -- it works hard at limiting the number of concepts\n" "or relations that need to be checked for possible subsumption\nrelationships.\n\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&classifyRelations)), ((cpp_function_code)(&classifyRelationsEvaluatorWrapper)));
   }
 }
 
 void startupClassify() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupClassify1();
     }
@@ -2123,10 +2144,10 @@ void startupClassify() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupClassify2();
-      defineFunctionObject("LIST-UNCLASSIFIED-RELATIONS", "(DEFUN (LIST-UNCLASSIFIED-RELATIONS (CONS OF NAMED-DESCRIPTION)) ((MODULE NAME) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Collect all named description in `module' (or in any module if `module'\nis NULL) that were not (or will not be) classified due to their lack of\nnon-inferable/primitive ancestor relations.\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&listUnclassifiedRelations)), ((cpp_function_code)(&listUnclassifiedRelationsEvaluatorWrapper)));
+      defineFunctionObject("LIST-UNCLASSIFIED-RELATIONS", "(DEFUN (LIST-UNCLASSIFIED-RELATIONS (CONS OF NAMED-DESCRIPTION)) (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Collect all named description in the module defined by the :module option (which defaults\nto the current module) that were not (or will not be) classified due to their lack of\nnon-inferable/primitive ancestor relations.  If :module was explicitly specified as NULL,\nlook in all currently defined modules.  If `:local?' is specified as TRUE only look\nin the specified module but not any modules it inherits.  For backwards compatibility,\nthis command also supports the old <module> <local?> arguments specified without keywords.\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&listUnclassifiedRelations)), ((cpp_function_code)(&listUnclassifiedRelationsEvaluatorWrapper)));
       defineFunctionObject("UPCLASSIFY-INSTANCES", "(DEFUN UPCLASSIFY-INSTANCES ((MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Classify instances local to 'module' and inherited\nby 'module'.  If 'local?', don't classify inherited descriptions.  If\n'module' is NULL, classify descriptions in all modules.\")", ((cpp_function_code)(&upclassifyInstances)), NULL);
-      defineFunctionObject("CLASSIFY-INSTANCES", "(DEFUN CLASSIFY-INSTANCES ((MODULE NAME) (LOCAL? BOOLEAN)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Classify instances visible in `module'.\nIf `local?', only classify instances that belong to `module',\ni.e., don't classify instances inherited from ancestor modules.\nIf `module' is NULL, classify instances in all modules.\n\nConceptually, the classifier operates by comparing each instance\nwith all concepts in the hierarchy, searching for a\nproof for each pairing indicating that the instance belongs to the concept.\nWhenever a new `is-a' relation is discovered, the classifier\nadds an `is-a' link between the instance and the concept, thereby\nrecording an additional fact about the instance.  The implemented\nclassification algorithm is relatively efficient -- it works hard\nat limiting the number of concepts or relations that need to\nbe checked for possible is-a relationships.\n\")", ((cpp_function_code)(&classifyInstances)), ((cpp_function_code)(&classifyInstancesEvaluatorWrapper)));
-      defineFunctionObject("LIST-UNCLASSIFIED-INSTANCES", "(DEFUN (LIST-UNCLASSIFIED-INSTANCES (CONS OF LOGIC-OBJECT)) ((MODULE NAME) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Collect all instances in `module' (or in any module if `module'\nis NULL) that were not (or will not be) classified due to their lack of\nnon-inferable/primitive type assertions.\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&listUnclassifiedInstances)), ((cpp_function_code)(&listUnclassifiedInstancesEvaluatorWrapper)));
+      defineFunctionObject("CLASSIFY-INSTANCES", "(DEFUN CLASSIFY-INSTANCES (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Classify instances visible in the module defined by the :module option (which\ndefaults to the current module).  If :module was explicitly specified as NULL,\nclassify instances in all modules.  If `:local?' is specified as TRUE only classify\ninstances that belong to the specified module but not any modules it inherits.  For\nbackwards compatibility, this command also supports the old <module> <local?>\narguments specified without keywords.\n\nConceptually, the classifier operates by comparing each instance with all\nconcepts in the hierarchy, searching for a proof for each pairing indicating\nthat the instance belongs to the concept.  Whenever a new `is-a' relation is\ndiscovered, the classifier adds an `is-a' link between the instance and the\nconcept, thereby recording an additional fact about the instance.  The\nimplemented classification algorithm is relatively efficient -- it works hard at\nlimiting the number of concepts or relatio" "ns that need to be checked for\npossible is-a relationships.\n\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&classifyInstances)), ((cpp_function_code)(&classifyInstancesEvaluatorWrapper)));
+      defineFunctionObject("LIST-UNCLASSIFIED-INSTANCES", "(DEFUN (LIST-UNCLASSIFIED-INSTANCES (CONS OF LOGIC-OBJECT)) (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Collect all instances in the module defined by the :module option (which defaults\nto the current module) that were not (or will not be) classified due to their lack of\nnon-inferable/primitive type assertions.  If :module was explicitly specified as NULL,\nlook in all currently defined modules.  If `:local?' is specified as TRUE only look\nin the specified module but not any modules it inherits.  For backwards compatibility,\nthis command also supports the old <module> <local?> arguments specified without keywords.\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&listUnclassifiedInstances)), ((cpp_function_code)(&listUnclassifiedInstancesEvaluatorWrapper)));
       defineFunctionObject("UPCLASSIFY-ALL-DESCRIPTIONS", "(DEFUN UPCLASSIFY-ALL-DESCRIPTIONS () :DOCUMENTATION \"Classify all named descriptions.\")", ((cpp_function_code)(&upclassifyAllDescriptions)), NULL);
       defineFunctionObject("UPCLASSIFY-ALL-INSTANCES", "(DEFUN UPCLASSIFY-ALL-INSTANCES () :DOCUMENTATION \"Classify all named instances.\")", ((cpp_function_code)(&upclassifyAllInstances)), NULL);
       defineFunctionObject("ALL-EQUIVALENT-COLLECTIONS", "(DEFUN (ALL-EQUIVALENT-COLLECTIONS (CONS OF LOGIC-OBJECT)) ((SELF LOGIC-OBJECT) (REFLEXIVE? BOOLEAN)) :PUBLIC? TRUE)", ((cpp_function_code)(&allEquivalentCollections)), NULL);
@@ -2239,6 +2260,14 @@ Keyword* KWD_CLASSIFY_DOWNCLASSIFY = NULL;
 Symbol* SYM_CLASSIFY_LOGIC_SUBRELATION_LINKp = NULL;
 
 Keyword* KWD_CLASSIFY_ASSERT_TRUE = NULL;
+
+Keyword* KWD_CLASSIFY_MODULE = NULL;
+
+Keyword* KWD_CLASSIFY_LOCALp = NULL;
+
+Surrogate* SGT_CLASSIFY_STELLA_MODULE = NULL;
+
+Surrogate* SGT_CLASSIFY_STELLA_BOOLEAN = NULL;
 
 Symbol* SYM_CLASSIFY_LOGIC_STARTUP_CLASSIFY = NULL;
 

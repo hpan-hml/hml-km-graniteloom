@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: optimize.ste,v 1.83 2010/09/10 00:27:17 hans Exp
+;;; Version: optimize.ste,v 1.87 2014/04/16 00:42:59 hans Exp
 
 ;;; PowerLoom Query Optimizer
 
@@ -2187,8 +2187,13 @@ of order-dependent optimizations.")
          ;; if 'self is a self-contained description, don't make a copy:
          (return self)))
       (PATTERN-VARIABLE
-       ;; all variables are copied up front in 'copy-description':
-       (error "OOPS -- BUG IN 'copy-description'"))
+       (let ((value (mapped-value-of self mapping FALSE)))
+         ;; in `try-disjunctive-implication-proof' we call `inherit-proposition' directly
+         ;; and we need to copy external propositon variables bound by the query iterator:
+         (if (defined? value)
+             (return (copy-proposition-argument value mapping))
+           ;; all unbound variables are copied up front in 'copy-description':
+           (error "INTERNAL ERROR: BUG IN 'copy-description'"))))
       (otherwise (return self))) ))
 
 
@@ -2419,7 +2424,7 @@ of order-dependent optimizations.")
   ;;    unintended consequences.
   (when (eql? (kind proposition) :CONSTANT)
     (return NULL))
-  (let ((index (wrap-integer (proposition-hash-index proposition mapping)))
+  (let ((index (wrap-integer (proposition-hash-index proposition mapping FALSE)))
         (bucket (lookup *structured-objects-index* index))
         (function? (eql? (kind proposition) :FUNCTION)))
     (when (null? bucket)

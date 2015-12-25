@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2013      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: conses.ste,v 1.97 2010/09/08 20:50:11 hans Exp
+;;; Version: conses.ste,v 1.99 2013/10/21 23:46:30 hans Exp
 
 ;;; Procedures that manipulate cons lists.
 
@@ -250,7 +250,9 @@ Preserves the original order of the remaining members.  Runs in linear time."
        (return self) )))
 
 (defmethod (remove-duplicates-equal (LIKE self)) ((self CONS))
-  :documentation "`remove-duplicates' (which see) using an `equal?' test."
+  :documentation "`remove-duplicates' (which see) using an `equal?' test.
+IMPORTANT: since this uses hashing to speed things up, an `equal-hash-code'
+method needs to be defined for this to work."
   :public? TRUE
   (return (remove-duplicates-from-long-list self TRUE)))
 
@@ -273,7 +275,10 @@ Preserves the original order of the remaining members.  Runs in linear time."
         do (setf (aref table i) NIL))
     (while (non-empty? cursor)
       (setq item (value cursor))
-      (setq bucketIndex (hashmod (hash-code item) tableSize))
+      (if equalTest?
+          (setq bucketIndex (equal-hash-code item))
+        (setq bucketIndex (hash-code item)))
+      (setq bucketIndex (hashmod bucketIndex tableSize))
       (setq bucket (aref table bucketIndex))
       (if (exists it in bucket
             where (choose equalTest?
@@ -739,6 +744,16 @@ this does not check whether `self' and `otherList' actually are sets."
                (forall item in self
                    always (member? otherList item)))) )
 
+(defmethod (disjoint-sets? BOOLEAN) ((self CONS) (otherList CONS))
+  :documentation
+  "Return true if the intersection of `self' and `otherList' is empty.
+This is always true if at least one of the two sets is the empty set.
+Uses an `eql?' test and a simple quadratic-time algorithm.  Note that
+this does not check whether `self' and `otherList' actually are sets."
+  :public? TRUE
+  (return (forall item in self
+              always (not (member? otherList item)))))
+
 (defmethod (intersection CONS) ((self CONS) (otherList CONS))
   :documentation
   "Return the set intersection of `self' and `otherList'.  Uses an `eql?'
@@ -969,6 +984,31 @@ whose `n'-th element (0-based) will be used for comparison."
              self
              (length self)
              (the-code :function sort-tuple-compare?)))))
+
+(defspecial *sort-objects-compare-slot* STORAGE-SLOT NULL)
+
+(defun (sort-objects-compare? BOOLEAN) ((x OBJECT) (y OBJECT))
+  ;; KLUDGE: passes in a sort predicate and slot via specials (see above).
+  (let ((slot *sort-objects-compare-slot*)
+        (pred *sort-tuple-compare-predicate*))
+    (return (funcall pred (read-slot-value x slot) (read-slot-value y slot)))))
+
+(defmethod (sort-objects (CONS OF (LIKE (any-value self))))
+    ((self CONS) (slot STORAGE-SLOT) (predicate FUNCTION-CODE))
+  :documentation "Just like `sort' but assumes each element of `self' has a `slot'
+whose value will be used for comparison.  Elements must be descendants of
+STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+it will cause value wrapping everytime `slot' is read."
+  :public? TRUE
+  (when (and (null? predicate)
+             (non-empty? self))
+    (setq predicate (choose-sort-predicate (read-slot-value (first self) slot))))
+  (special ((*sort-tuple-compare-predicate* predicate)
+            (*sort-objects-compare-slot* slot))
+    (return (help-sort-cons-list
+             self
+             (length self)
+             (the-code :function sort-objects-compare?)))))
 
 
   ;;

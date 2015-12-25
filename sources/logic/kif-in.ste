@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2012      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: kif-in.ste,v 1.54 2006/05/11 07:05:15 hans Exp
+;;; Version: kif-in.ste,v 1.56 2012/05/07 23:42:28 hans Exp
 
 ;;; Translation of KIF parse trees to logical STELLA parse trees.
 
@@ -61,9 +61,8 @@
 ;;;    variable typing is optional, and concept membership has the same
 ;;;    syntax as a property test.
 ;;; Strategy:
-;;;    First, we a convert KIF parse tree to an UNTYPED PREFIX STELLA tree.
-;;;    Then, we convert an UNTYPED PREFIX STELLA tree to an ordinary PREFIX STELLA
-;;;    tree.
+;;;    First, we convert a KIF parse tree to an UNTYPED PREFIX STELLA tree.
+;;;    Then, we convert an UNTYPED PREFIX STELLA tree to an ordinary PREFIX STELLA tree.
 ;;; Rationale:  By first converting to UNTYPED STELLA, the procedure that
 ;;;    infers variable types can be applied logics other than KIF.  We choose
 ;;;    to translate to PREFIX STELLA because that form is easier to parse

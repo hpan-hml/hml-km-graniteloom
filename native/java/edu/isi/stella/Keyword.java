@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -262,6 +262,75 @@ public class Keyword extends GeneralizedSymbol {
       }
       else {
         return (GeneralizedSymbol.yieldSymbolConstantName(tree).cppTranslateAtomicTree());
+      }
+    }
+  }
+
+  /** A test demon for the property demon machinery which simply prints arguments.
+   * @param action
+   * @param property
+   * @param value
+   * @param table
+   */
+  public static void testPropertyDemon(Keyword action, String property, Stella_Object value, KeyValueList table) {
+    table = table;
+    System.out.println("test-property-demon: action=" + action + ", property=" + property + ", value-arg=" + value + ", prop-value=" + Stella.lookupConfigurationProperty(property, null, table));
+  }
+
+  public static void runConfigurationPropertyDemon(Keyword action, String property, Stella_Object value, KeyValueList table) {
+    { MappableObject demon = ((MappableObject)(Stella.$REGISTERED_PROPERTY_DEMONS$.lookup(StringWrapper.wrapString(property))));
+
+      { Surrogate testValue000 = Stella_Object.safePrimaryType(demon);
+
+        if (Surrogate.subtypeOfMethodSlotP(testValue000)) {
+          { MethodSlot demon000 = ((MethodSlot)(demon));
+
+            edu.isi.stella.javalib.Native.funcall(demon000.functionCode, null, new java.lang.Object [] {action, property, value, table});
+          }
+        }
+        else if (Surrogate.subtypeOfP(testValue000, Stella.SGT_STELLA_GLOBAL_VARIABLE)) {
+          { GlobalVariable demon000 = ((GlobalVariable)(demon));
+
+            { MethodSlot setter = GlobalVariable.lookupVariableDemonSetter(demon000);
+
+              if (setter != null) {
+                value = Stella.lookupConfigurationProperty(property, null, table);
+                { Surrogate variabletype = StandardObject.typeSpecToBaseType(GlobalVariable.globalVariableTypeSpec(demon000));
+                  Stella_Object coercedvalue = ((value != null) ? Stella_Object.coerceValueToType(value, variabletype, false) : ((Stella_Object)(null)));
+
+                  if ((value != null) &&
+                      (coercedvalue == null)) {
+                    Stella.STANDARD_WARNING.nativeStream.println("Warning: run-configuration-property-demon: cannot coerce `" + value + "' to type `" + variabletype + "'");
+                    return;
+                  }
+                  if (variabletype == Stella.SGT_STELLA_INTEGER) {
+                    edu.isi.stella.javalib.Native.funcall(setter.functionCode, null, new java.lang.Object [] {new Integer(IntegerWrapper.unwrapInteger(((IntegerWrapper)(coercedvalue))))});
+                  }
+                  else if (variabletype == Stella.SGT_STELLA_LONG_INTEGER) {
+                    edu.isi.stella.javalib.Native.funcall(setter.functionCode, null, new java.lang.Object [] {new Integer(IntegerWrapper.unwrapInteger(((IntegerWrapper)(coercedvalue))))});
+                  }
+                  else if (variabletype == Stella.SGT_STELLA_FLOAT) {
+                    edu.isi.stella.javalib.Native.funcall(setter.functionCode, null, new java.lang.Object [] {new Double(FloatWrapper.unwrapFloat(((FloatWrapper)(coercedvalue))))});
+                  }
+                  else if (variabletype == Stella.SGT_STELLA_STRING) {
+                    edu.isi.stella.javalib.Native.funcall(setter.functionCode, null, new java.lang.Object [] {new Integer(IntegerWrapper.unwrapInteger(((IntegerWrapper)(coercedvalue))))});
+                  }
+                  else if (variabletype == Stella.SGT_STELLA_BOOLEAN) {
+                    edu.isi.stella.javalib.Native.funcall(setter.functionCode, null, new java.lang.Object [] {new Integer(IntegerWrapper.unwrapInteger(((IntegerWrapper)(coercedvalue))))});
+                  }
+                  else {
+                    edu.isi.stella.javalib.Native.funcall(setter.functionCode, null, new java.lang.Object [] {coercedvalue});
+                  }
+                }
+              }
+              else {
+                Stella.STANDARD_WARNING.nativeStream.println("Warning: run-configuration-property-demon: cannot find setter function for `" + demon000.variableName + "'");
+              }
+            }
+          }
+        }
+        else {
+        }
       }
     }
   }

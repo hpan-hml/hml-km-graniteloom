@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2003-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -80,14 +80,16 @@
     (CL:SETQ SYM-ASERVE-INIT-STELLA-STARTUP-ASERVE-INIT
      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-ASERVE-INIT" NULL 0))
     (CL:SETQ SYM-ASERVE-INIT-STELLA-METHOD-STARTUP-CLASSNAME
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME" NULL 0)))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME" NULL
+      0)))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7)
     (DEFINE-FUNCTION-OBJECT "STARTUP-ASERVE-INIT"
      "(DEFUN STARTUP-ASERVE-INIT () :PUBLIC? TRUE)"
      (CL:FUNCTION STARTUP-ASERVE-INIT) NULL)
     (CL:LET*
-     ((FUNCTION (LOOKUP-FUNCTION SYM-ASERVE-INIT-STELLA-STARTUP-ASERVE-INIT)))
+     ((FUNCTION
+       (LOOKUP-FUNCTION SYM-ASERVE-INIT-STELLA-STARTUP-ASERVE-INIT)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
       SYM-ASERVE-INIT-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupAserveInit") NULL-STRING-WRAPPER)))

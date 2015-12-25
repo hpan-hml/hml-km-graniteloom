@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -183,6 +183,7 @@ public class _StartupSdbc {
     {
       Stella.defineFunctionObject("CONNECT", "(DEFUN (CONNECT CONNECTION) (|&REST| (KEYS-AND-VALUES OBJECT)) :DOCUMENTATION \"Create a connection to a database.  Currently-supported parameters\nare (values need to be strings):\n  :PROTOCOL          - \\\"ODBC\\\", \\\"JDBC\\\", \\\"CLSQL\\\" or \\\"MYSQL\\\" (defaults to \\\"ODBC\\\")\n  :SERVER-TYPE       - Type of database server (for JDBC strings)\n  :DSN               - Name of ODBC Datasource\n  :DB-NAME           - Name of physical database\n  :USER              - Database user id.\n  :PASSWORD          - Database password\n  :HOST              - Host database server runs on\n  :PORT              - Port to use to connect to the server\n  :CONNECTION-STRING - Connection string to be used by ODBC or JDBC drivers\n                       instead of DSN, USER, PASSWORD, etc.\nA DATABASE-EXCEPTION is thrown if the connection is unsuccessful.\" :PUBLIC? TRUE :COMMAND? TRUE)", Native.find_java_method("edu.isi.sdbc.Sdbc", "connect", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.sdbc.Sdbc", "connectEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
       Stella.defineFunctionObject("CALL-CONNECT", "(DEFUN (CALL-CONNECT CONNECTION) ((KEYS-AND-VALUES CONS)) :PUBLIC? TRUE :DOCUMENTATION \"Functional interface to `connect'.  See its documentation\")", Native.find_java_method("edu.isi.sdbc.Sdbc", "callConnect", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
+      Stella.defineFunctionObject("*DB-CONNECTION-RENEWAL-INTERVAL*-SETTER", "(DEFUN (*DB-CONNECTION-RENEWAL-INTERVAL*-SETTER INTEGER) ((VALUE INTEGER)))", Native.find_java_method("edu.isi.sdbc.Sdbc", "$DbConnectionRenewalInterval$Setter", new java.lang.Class [] {java.lang.Integer.TYPE}), null);
       Stella.defineFunctionObject("GET-MAX-CONNECTION-LIFETIME", "(DEFUN (GET-MAX-CONNECTION-LIFETIME INTEGER) ((CON CONNECTION)))", Native.find_java_method("edu.isi.sdbc.Connection", "getMaxConnectionLifetime", new java.lang.Class [] {Native.find_java_class("edu.isi.sdbc.Connection")}), null);
       Stella.defineFunctionObject("MAYBE-RENEW-CONNECTION", "(DEFUN MAYBE-RENEW-CONNECTION ((CON CONNECTION)))", Native.find_java_method("edu.isi.sdbc.Connection", "maybeRenewConnection", new java.lang.Class [] {Native.find_java_class("edu.isi.sdbc.Connection")}), null);
       Stella.defineFunctionObject("JDBC-CONNECTION-STRING?", "(DEFUN (JDBC-CONNECTION-STRING? BOOLEAN) ((STRING STRING)))", Native.find_java_method("edu.isi.sdbc.Sdbc", "jdbcConnectionStringP", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), null);
@@ -240,11 +241,6 @@ public class _StartupSdbc {
       Stella.defineFunctionObject("TEST-RESULT-SET", "(DEFUN TEST-RESULT-SET ())", Native.find_java_method("edu.isi.sdbc.Sdbc", "testResultSet", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("TEST-RETRIEVE-ALL", "(DEFUN TEST-RETRIEVE-ALL ())", Native.find_java_method("edu.isi.sdbc.Sdbc", "testRetrieveAll", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("MAIN", "(DEFUN MAIN ((ARGV-001 (ARRAY () OF STRING))) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.sdbc.Sdbc", "main", new java.lang.Class [] {Native.find_java_class("[Ljava.lang.String;")}), null);
-      Stella.defineFunctionObject("STARTUP-SDBC", "(DEFUN STARTUP-SDBC () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.sdbc._StartupSdbc", "startupSdbc", new java.lang.Class [] {}), null);
-      { MethodSlot function = Symbol.lookupFunction(Sdbc.SYM_SDBC_STARTUP_SDBC);
-
-        KeyValueList.setDynamicSlotValue(function.dynamicSlots, Sdbc.SYM_STELLA_METHOD_STARTUP_CLASSNAME, StringWrapper.wrapString("_StartupSdbc"), Stella.NULL_STRING_WRAPPER);
-      }
     }
   }
 
@@ -270,6 +266,11 @@ public class _StartupSdbc {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupSdbc.helpStartupSdbc4();
+          Stella.defineFunctionObject("STARTUP-SDBC", "(DEFUN STARTUP-SDBC () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.sdbc._StartupSdbc", "startupSdbc", new java.lang.Class [] {}), null);
+          { MethodSlot function = Symbol.lookupFunction(Sdbc.SYM_SDBC_STARTUP_SDBC);
+
+            KeyValueList.setDynamicSlotValue(function.dynamicSlots, Sdbc.SYM_STELLA_METHOD_STARTUP_CLASSNAME, StringWrapper.wrapString("_StartupSdbc"), Stella.NULL_STRING_WRAPPER);
+          }
         }
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
@@ -278,6 +279,7 @@ public class _StartupSdbc {
         if (Stella.currentStartupTimePhaseP(9)) {
           Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/SDBC")))));
           Stella.setLoggingParameters("SDBC", Cons.cons(Sdbc.KWD_LOG_LEVELS, Cons.cons(Stella.getQuotedTree("((:NONE :LOW :MEDIUM :HIGH) \"/SDBC\")", "/SDBC"), Cons.cons(Sdbc.KWD_LEVEL, Cons.cons(Sdbc.KWD_NONE, Cons.cons(Sdbc.KWD_MAX_WIDTH, Cons.cons(IntegerWrapper.wrapInteger(250), Stella.NIL)))))));
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DB-CONNECTION-RENEWAL-INTERVAL* INTEGER 60 :DOCUMENTATION \"The maximum lifetime of a database connection (in seconds) after which\nit gets automatically renewed.  Auto-renewals avoid connection timeout errors which are\notherwise tricky to catch, e.g., we might just see a `bad handle passed' error.\" :DEMON-PROPERTY \"sdbc.dbConnectionRenewalInterval\" :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SQL-COMMAND-TEMPLATES* (KEY-VALUE-MAP OF OBJECT (KEY-VALUE-LIST OF OBJECT PROPERTY-LIST)) (NEW KEY-VALUE-MAP))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SQL-CMD-TEMPLATE-VARIABLE-PREFIX* STRING \"#$\")");
         }

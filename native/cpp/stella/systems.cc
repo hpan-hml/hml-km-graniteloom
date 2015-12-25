@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -416,7 +416,15 @@ Object* coerceValueToType(Object* value, Surrogate* type, boolean errorP) {
     }
   }
   else if (type == SGT_SYSTEMS_STELLA_FLOAT) {
-    return (wrapFloat(coerceValueToFloat(value, errorP)));
+    { double val = coerceValueToFloat(value, errorP);
+
+      if (val != NULL_FLOAT) {
+        return (wrapFloat(val));
+      }
+      else {
+        return (NULL);
+      }
+    }
   }
   else if (type == SGT_SYSTEMS_STELLA_NUMBER) {
     { Surrogate* testValue001 = safePrimaryType(value);
@@ -447,7 +455,15 @@ Object* coerceValueToType(Object* value, Surrogate* type, boolean errorP) {
     }
   }
   else if (type == SGT_SYSTEMS_STELLA_STRING) {
-    return (wrapString(coerceValueToString(value, errorP)));
+    { char* val = coerceValueToString(value, errorP);
+
+      if (val != NULL) {
+        return (wrapString(val));
+      }
+      else {
+        return (NULL);
+      }
+    }
   }
   else if (type == SGT_SYSTEMS_STELLA_KEYWORD) {
     { Surrogate* testValue002 = safePrimaryType(value);
@@ -749,15 +765,15 @@ Object* evaluateCommand(Object* command, boolean finalizeP) {
                   }
                   else {
                     if (declarationTreeP(command)) {
-                      oTRANSLATIONUNITSo.set(list(0));
+                      oTRANSLATIONUNITSo = list(0);
                       walkTopLevelTree(command, false);
-                      switch (oTRANSLATIONUNITSo.get()->reverse()->length()) {
+                      switch (oTRANSLATIONUNITSo->reverse()->length()) {
                         case 0: 
                           { OutputStringStream* stream000 = newOutputStringStream();
 
-                            *(stream000->nativeStream) << "While evaluating '" << oEVALUATIONTREEo.get();
-                            if (((boolean)(oEVALUATIONPARENTTREEo.get()))) {
-                              *(stream000->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo.get();
+                            *(stream000->nativeStream) << "While evaluating '" << oEVALUATIONTREEo;
+                            if (((boolean)(oEVALUATIONPARENTTREEo))) {
+                              *(stream000->nativeStream) << std::endl << "' inside '" << oEVALUATIONPARENTTREEo;
                             }
                             *(stream000->nativeStream) << "':" << std::endl;
                             *(stream000->nativeStream) << "Couldn't translate " << "`" << command << "'";
@@ -765,13 +781,13 @@ Object* evaluateCommand(Object* command, boolean finalizeP) {
                           }
                         break;
                         case 1: 
-                          result = ((TranslationUnit*)(oTRANSLATIONUNITSo.get()->first()))->theObject;
+                          result = ((TranslationUnit*)(oTRANSLATIONUNITSo->first()))->theObject;
                         break;
                         default:
                           { Cons* results = NIL;
 
                             { TranslationUnit* unit = NULL;
-                              Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+                              Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
                               Cons* collect000 = NULL;
 
                               for  (unit, iter000, collect000; 
@@ -835,9 +851,9 @@ Object* evaluateCommand(Object* command, boolean finalizeP) {
         }
         if ((!translationErrorsP()) &&
             finalizeP) {
-          oTRANSLATIONPHASEo.set(KWD_SYSTEMS_FINALIZE);
-          if (((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
-            runSystemFinalization(oCURRENTSYSTEMDEFINITIONo.get());
+          oTRANSLATIONPHASEo = KWD_SYSTEMS_FINALIZE;
+          if (((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
+            runSystemFinalization(oCURRENTSYSTEMDEFINITIONo);
           }
           else {
             std::cout << "Can't run finalization because *currentSystemDefinition* is not set." << std::endl;
@@ -860,7 +876,7 @@ void loadFile(char* file) {
     file = ((temp000 != NULL) ? temp000 : file);
   }
   ensureFileExists(file, "load-file");
-  { boolean toplevelinvocationP = oCURRENTFILEo.get() == NULL;
+  { boolean toplevelinvocationP = oCURRENTFILEo == NULL;
     boolean skipcommandP = false;
     boolean seeninmoduleP = false;
     Cons* commands = NIL;
@@ -871,8 +887,8 @@ void loadFile(char* file) {
         BIND_STELLA_SPECIAL(oCURRENTFILEo, char*, fileBaseName(file));
         inputstream = newInputFileStream(file);
         { 
-          BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo.get());
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+          BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo);
+          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
           { Object* tree = NULL;
             SExpressionIterator* iter000 = sExpressions(inputstream);
 
@@ -923,9 +939,9 @@ void loadFile(char* file) {
           }
           { 
             BIND_STELLA_SPECIAL(oTRANSLATIONPHASEo, Keyword*, KWD_SYSTEMS_FINALIZE);
-            runSystemFinalization(oCURRENTSYSTEMDEFINITIONo.get());
+            runSystemFinalization(oCURRENTSYSTEMDEFINITIONo);
           }
-          { boolean finalizeP = ((boolean)(oCURRENTSYSTEMDEFINITIONo.get()));
+          { boolean finalizeP = ((boolean)(oCURRENTSYSTEMDEFINITIONo));
 
             { Object* tree = NULL;
               Cons* iter001 = commands->reverse();
@@ -1061,9 +1077,9 @@ SystemDefinition* defineSystem(Object* name, Cons* options) {
                               { Keyword* currentaction = KWD_SYSTEMS_LOAD_SYSTEM;
                                 Keyword* currentlanguage = runningInLanguage();
 
-                                if (((boolean)(oCURRENT_SYSTEM_ACTIONo.get()))) {
-                                  currentaction = ((Keyword*)(oCURRENT_SYSTEM_ACTIONo.get()->lookupWithDefault(KWD_SYSTEMS_ACTION, currentaction)));
-                                  currentlanguage = ((Keyword*)(oCURRENT_SYSTEM_ACTIONo.get()->lookupWithDefault(KWD_SYSTEMS_LANGUAGE, currentlanguage)));
+                                if (((boolean)(oCURRENT_SYSTEM_ACTIONo))) {
+                                  currentaction = ((Keyword*)(oCURRENT_SYSTEM_ACTIONo->lookupWithDefault(KWD_SYSTEMS_ACTION, currentaction)));
+                                  currentlanguage = ((Keyword*)(oCURRENT_SYSTEM_ACTIONo->lookupWithDefault(KWD_SYSTEMS_LANGUAGE, currentlanguage)));
                                 }
                                 if (currentaction == KWD_SYSTEMS_MAKE_SYSTEM) {
                                   std::cout << "Making required system " << unwrapString(((StringWrapper*)(sys))) << std::endl;
@@ -1255,11 +1271,11 @@ List* getSystemFiles(SystemDefinition* system, Keyword* type, boolean probefiles
 
     { 
       BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONo, SystemDefinition*, getSystemDefinition(system->name));
-      BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo.get())) ? oCURRENTSYSTEMDEFINITIONo.get()->directory : NULL));
-      if (((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
+      BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo)) ? oCURRENTSYSTEMDEFINITIONo->directory : NULL));
+      if (((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
         {
           { StringWrapper* f = NULL;
-            Cons* iter000 = oCURRENTSYSTEMDEFINITIONo.get()->files;
+            Cons* iter000 = oCURRENTSYSTEMDEFINITIONo->files;
 
             for (f, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
               f = ((StringWrapper*)(iter000->value));
@@ -1273,12 +1289,12 @@ List* getSystemFiles(SystemDefinition* system, Keyword* type, boolean probefiles
             }
           }
           if (type == KWD_SYSTEMS_JAVA) {
-            if (!((boolean)(getCardinalModule(oCURRENTSYSTEMDEFINITIONo.get())))) {
+            if (!((boolean)(getCardinalModule(oCURRENTSYSTEMDEFINITIONo)))) {
               std::cout << "No cardinal module defined for system " << "`" << system->name << "'" << std::endl << std::endl;
               return (NIL_LIST);
             }
             { Class* clasS = NULL;
-              Iterator* iter001 = allClasses(getCardinalModule(oCURRENTSYSTEMDEFINITIONo.get()), true);
+              Iterator* iter001 = allClasses(getCardinalModule(oCURRENTSYSTEMDEFINITIONo), true);
 
               for (clasS, iter001; iter001->nextP(); ) {
                 clasS = ((Class*)(iter001->value));
@@ -1286,7 +1302,7 @@ List* getSystemFiles(SystemDefinition* system, Keyword* type, boolean probefiles
                 helpGetSystemFiles(filename, files, probefilesP);
               }
             }
-            filename = stringJavaMakeCodeOutputFileName(javaYieldFlotsamClassName(getCardinalModule(oCURRENTSYSTEMDEFINITIONo.get())), false);
+            filename = stringJavaMakeCodeOutputFileName(javaYieldFlotsamClassName(getCardinalModule(oCURRENTSYSTEMDEFINITIONo)), false);
             helpGetSystemFiles(filename, files, probefilesP);
           }
           else {
@@ -1499,22 +1515,22 @@ void runSystemFinalization(SystemDefinition* system) {
 Cons* systemDefinitionSourceFiles(SystemDefinition* system) {
   { Cons* files = copyConsList(system->files);
 
-    if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_SYSTEMS_COMMON_LISP) {
+    if (oTRANSLATOROUTPUTLANGUAGEo == KWD_SYSTEMS_COMMON_LISP) {
       files = files->subtract(system->javaOnlyFiles);
       files = files->subtract(system->cppOnlyFiles);
     }
-    else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_SYSTEMS_JAVA) {
+    else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_SYSTEMS_JAVA) {
       files = files->subtract(system->lispOnlyFiles);
       files = files->subtract(system->cppOnlyFiles);
     }
-    else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_SYSTEMS_CPP) {
+    else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_SYSTEMS_CPP) {
       files = files->subtract(system->lispOnlyFiles);
       files = files->subtract(system->javaOnlyFiles);
     }
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
 
-        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
         throw *newStellaException(stream000->theStringReader());
       }
     }
@@ -1529,22 +1545,22 @@ Cons* filesPlusSystemStartup(Cons* files) {
 Cons* systemDefinitionNativeFiles(SystemDefinition* system) {
   { Cons* files = copyConsList(system->files);
 
-    if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_SYSTEMS_COMMON_LISP) {
+    if (oTRANSLATOROUTPUTLANGUAGEo == KWD_SYSTEMS_COMMON_LISP) {
       files = files->unioN(system->lispOnlyFiles);
-      if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_SYSTEMS_USE_COMMON_LISP_STRUCTS)) {
+      if (oCURRENT_STELLA_FEATURESo->membP(KWD_SYSTEMS_USE_COMMON_LISP_STRUCTS)) {
         files = cons(wrapString(clYieldStructClassFileName(system->name)), files);
       }
     }
-    else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_SYSTEMS_JAVA) {
+    else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_SYSTEMS_JAVA) {
       files = files->unioN(system->javaOnlyFiles);
     }
-    else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_SYSTEMS_CPP) {
+    else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_SYSTEMS_CPP) {
       files = files->unioN(system->cppOnlyFiles);
     }
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
 
-        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+        *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
         throw *newStellaException(stream000->theStringReader());
       }
     }
@@ -1659,13 +1675,13 @@ void loadPreprocessedFiles(char* systemname) {
     BIND_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword*, KWD_SYSTEMS_COMMON_LISP);
     { 
       BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONo, SystemDefinition*, getSystemDefinition(systemname));
-      BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo.get())) ? oCURRENTSYSTEMDEFINITIONo.get()->directory : NULL));
-      if (((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
+      BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo)) ? oCURRENTSYSTEMDEFINITIONo->directory : NULL));
+      if (((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
         {
           { Cons* preprocessedfiles = NIL;
 
             { StringWrapper* f = NULL;
-              Cons* iter000 = oCURRENTSYSTEMDEFINITIONo.get()->preprocessedFiles;
+              Cons* iter000 = oCURRENTSYSTEMDEFINITIONo->preprocessedFiles;
               Cons* collect000 = NULL;
 
               for  (f, iter000, collect000; 
@@ -1692,21 +1708,21 @@ void loadPreprocessedFiles(char* systemname) {
               }
             }
             { 
-              BIND_STELLA_SPECIAL(oCURRENT_STELLA_FEATURESo, List*, oCURRENT_STELLA_FEATURESo.get()->copy());
+              BIND_STELLA_SPECIAL(oCURRENT_STELLA_FEATURESo, List*, oCURRENT_STELLA_FEATURESo->copy());
               unsetStellaFeature(consList(1, KWD_SYSTEMS_WARN_ABOUT_UNDEFINED_METHODS));
               { Object* f = NULL;
                 Cons* iter001 = preprocessedfiles;
 
                 for (f, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
                   f = iter001->value;
-                  translateFile(((StringWrapper*)(f))->wrapperValue, oTRANSLATOROUTPUTLANGUAGEo.get(), false);
+                  translateFile(((StringWrapper*)(f))->wrapperValue, oTRANSLATOROUTPUTLANGUAGEo, false);
                 }
               }
             }
-            compileAndLoadFiles(oCURRENTSYSTEMDEFINITIONo.get()->preprocessedFiles, oTRANSLATOROUTPUTLANGUAGEo.get(), false);
-            if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_SYSTEMS_USE_COMMON_LISP_STRUCTS)) {
+            compileAndLoadFiles(oCURRENTSYSTEMDEFINITIONo->preprocessedFiles, oTRANSLATOROUTPUTLANGUAGEo, false);
+            if (oCURRENT_STELLA_FEATURESo->membP(KWD_SYSTEMS_USE_COMMON_LISP_STRUCTS)) {
               { StringWrapper* f = NULL;
-                Cons* iter002 = oCURRENTSYSTEMDEFINITIONo.get()->preprocessedFiles;
+                Cons* iter002 = oCURRENTSYSTEMDEFINITIONo->preprocessedFiles;
 
                 for (f, iter002; !(iter002 == NIL); iter002 = iter002->rest) {
                   f = ((StringWrapper*)(iter002->value));
@@ -1715,7 +1731,7 @@ void loadPreprocessedFiles(char* systemname) {
               }
             }
             { Symbol* startupfn = NULL;
-              Cons* iter003 = startupNamesFromFiles(oCURRENTSYSTEMDEFINITIONo.get()->preprocessedFiles);
+              Cons* iter003 = startupNamesFromFiles(oCURRENTSYSTEMDEFINITIONo->preprocessedFiles);
 
               for (startupfn, iter003; !(iter003 == NIL); iter003 = iter003->rest) {
                 startupfn = ((Symbol*)(iter003->value));
@@ -1781,18 +1797,18 @@ boolean loadSystem(char* systemname, Cons* languageAoptions) {
       BIND_STELLA_SPECIAL(oCURRENT_SYSTEM_ACTIONo, PropertyList*, plist->copy());
       { 
         BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONo, SystemDefinition*, getSystemDefinition(systemname));
-        BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo.get())) ? oCURRENTSYSTEMDEFINITIONo.get()->directory : NULL));
-        if (((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
+        BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo)) ? oCURRENTSYSTEMDEFINITIONo->directory : NULL));
+        if (((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
           {
-            if (oCURRENTSYSTEMDEFINITIONo.get()->loadedP) {
+            if (oCURRENTSYSTEMDEFINITIONo->loadedP) {
               std::cout << "Loading system " << "`" << systemname << "'" << " over top of itself." << std::endl << std::endl;
             }
             if (runningAsLispP()) {
-              translatedfileP = compileAndLoadFiles(filesPlusSystemStartup(systemDefinitionNativeFiles(oCURRENTSYSTEMDEFINITIONo.get())), language, forcerecompilationP);
+              translatedfileP = compileAndLoadFiles(filesPlusSystemStartup(systemDefinitionNativeFiles(oCURRENTSYSTEMDEFINITIONo)), language, forcerecompilationP);
             }
-            oCURRENTSYSTEMDEFINITIONo.get()->loadedP = true;
+            oCURRENTSYSTEMDEFINITIONo->loadedP = true;
             if (startupsystemP) {
-              runSystemStartupFunction(oCURRENTSYSTEMDEFINITIONo.get());
+              runSystemStartupFunction(oCURRENTSYSTEMDEFINITIONo);
             }
           }
         }
@@ -1850,7 +1866,7 @@ Symbol* startupNameFromFile(char* file) {
     }
   }
   { char* longname = makeFileName(file, KWD_SYSTEMS_STELLA, true);
-    Module* savedmodule = oMODULEo.get();
+    Module* savedmodule = oMODULEo;
     boolean seeninmoduleP = false;
     boolean unusedP = false;
     Symbol* startupfnname = NULL;
@@ -1939,7 +1955,7 @@ Cons* startupNamesFromFiles(Cons* files) {
 
 char* systemStartupFileName(SystemDefinition* system) {
   if (!((boolean)(system))) {
-    system = oCURRENTSYSTEMDEFINITIONo.get();
+    system = oCURRENTSYSTEMDEFINITIONo;
   }
   if (((boolean)(system))) {
     return ("startup-system");
@@ -1951,7 +1967,7 @@ char* systemStartupFileName(SystemDefinition* system) {
 
 boolean systemStartupFileP(char* file) {
   if (file == NULL) {
-    file = oCURRENTFILEo.get();
+    file = oCURRENTFILEo;
   }
   return ((file != NULL) &&
       stringEqlP(fileBaseName(file), systemStartupFileName(NULL)));
@@ -2016,8 +2032,8 @@ Cons* collectStartupFormsFromSystemFile(SystemDefinition* system) {
     Cons* startupforms = NIL;
 
     { 
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo.get());
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       { InputFileStream* inputstream = NULL;
 
         try {
@@ -2086,14 +2102,46 @@ catch (...) {
   }
 }
 
+Cons* collectDefinedModulesFromSystemFile(SystemDefinition* system) {
+  { Cons* startupforms = collectStartupFormsFromSystemFile(system);
+    Module* module = NULL;
+    Cons* modules = NIL;
+
+    { Cons* form = NULL;
+      Cons* iter000 = startupforms;
+
+      for (form, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+        form = ((Cons*)(iter000->value));
+        if (form->rest->value == KWD_SYSTEMS_MODULES) {
+          { Object* def = NULL;
+            Cons* iter001 = form->rest->rest;
+
+            for (def, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+              def = iter001->value;
+              if (consP(def) &&
+                  (((Cons*)(def))->value == SYM_SYSTEMS_STELLA_DEFINE_MODULE_FROM_STRINGIFIED_SOURCE)) {
+                module = getStellaModule(((StringWrapper*)(((Cons*)(def))->rest->value))->wrapperValue, false);
+                if (((boolean)(module))) {
+                  modules = cons(module, modules);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return (modules->reverse());
+  }
+}
+
 void createSystemStartupFile(SystemDefinition* system) {
-  if (!((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
+  if (!((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
     std::cout << "Must be within a system environment to create startup file " << std::endl << "   for system " << "`" << system->name << "'" << "." << std::endl << std::endl;
     return;
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getCardinalModule(system));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     { char* file = makeFileName(systemStartupFileName(system), KWD_SYSTEMS_STELLA, true);
       Cons* startupfnnames = NIL;
       Cons* startupforms = NIL;
@@ -2155,7 +2203,7 @@ void createSystemStartupFile(SystemDefinition* system) {
                 if (!((boolean)(lookupFunction(startupfn)))) {
                   { 
                     BIND_STELLA_SPECIAL(oMODULEo, Module*, startupfn->homeModule());
-                    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+                    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
                     defineMethodFromParseTree(listO(3, SYM_SYSTEMS_STELLA_DEFUN, startupfn, listO(4, NIL, KWD_SYSTEMS_PUBLICp, SYM_SYSTEMS_STELLA_TRUE, NIL)));
                   }
                 }
@@ -2299,7 +2347,7 @@ cpp_function_code autoload(char* qualifiedname, char* systemname, Surrogate* cac
               (!systemLoadedP(systemname))) {
             { 
               BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
               loadSystem(systemname, NIL);
             }
             return (autoload(qualifiedname, NULL, cache, errorP));
@@ -2614,7 +2662,7 @@ catch (...) {
   }
 }
 
-Object* lookupConfigurationProperty(char* property, Wrapper* defaultvalue, KeyValueList* configuration) {
+Object* lookupConfigurationProperty(char* property, Object* defaultvalue, KeyValueList* configuration) {
   // Lookup `property' in `configuration' and return its value.
   // Use the global system configuration table if `configuration' is NULL.  Return
   // `defaultValue' if `property' is not defined.
@@ -2661,6 +2709,7 @@ Object* setConfigurationProperty(char* property, Object* value, KeyValueList* co
     configuration = oSYSTEM_CONFIGURATION_TABLEo;
   }
   configuration->insertAt(wrapString(property), value);
+  runConfigurationPropertyDemon(KWD_SYSTEMS_SET, property, value, configuration);
   return (value);
 }
 
@@ -2676,6 +2725,7 @@ Object* addConfigurationProperty(char* property, Object* value, KeyValueList* co
 
     configuration->insertAt(wrapString(property), ((((boolean)(temp000)) ? temp000 : NIL))->consify()->concatenate(cons(value, NIL), 0));
   }
+  runConfigurationPropertyDemon(KWD_SYSTEMS_ADD, property, value, configuration);
   return (value);
 }
 
@@ -2689,6 +2739,7 @@ Object* clearConfigurationProperty(char* property, KeyValueList* configuration) 
   { Object* currentValue = configuration->lookup(wrapString(property));
 
     configuration->removeAt(wrapString(property));
+    runConfigurationPropertyDemon(KWD_SYSTEMS_CLEAR, property, currentValue, configuration);
     return (currentValue);
   }
 }
@@ -2704,6 +2755,7 @@ Object* removeConfigurationProperty(char* property, Object* value, KeyValueList*
     if (((boolean)(currentValue))) {
       configuration->insertAt(wrapString(property), currentValue->remove(value));
     }
+    runConfigurationPropertyDemon(KWD_SYSTEMS_REMOVE, property, value, configuration);
     return (value);
   }
 }
@@ -2748,7 +2800,7 @@ Object* getProperty(Object* property, Cons* defaultvalue) {
   { char* key = coerceToString(property);
     Object* defaulT = defaultvalue->value;
 
-    return (lookupConfigurationProperty(key, ((Wrapper*)(defaulT)), oSYSTEM_CONFIGURATION_TABLEo));
+    return (lookupConfigurationProperty(key, defaulT, oSYSTEM_CONFIGURATION_TABLEo));
   }
 }
 
@@ -2786,6 +2838,115 @@ void printProperties() {
   std::cout << "------------------------------------------------------------" << std::endl << "# Loaded System Configuration" << std::endl;
   printConfigurationProperties(oSYSTEM_CONFIGURATION_TABLEo, STANDARD_OUTPUT);
   std::cout << "------------------------------------------------------------" << std::endl;
+}
+
+KeyValueMap* oREGISTERED_PROPERTY_DEMONSo = NULL;
+
+void registerPropertyDemon(char* property, Symbol* demonname) {
+  // Register the function named `demonName' as the demon for `property'.
+  // Demons will be run as after demons on every configuration table update.  Set the
+  // property `stella.test.propertyDemon' to see a test demon in action.
+  { MappableObject* demon = lookupFunction(demonname);
+
+    if (!((boolean)(demon))) {
+      demon = demonname->lookupGlobalVariable();
+    }
+    if (((boolean)(demon))) {
+      oREGISTERED_PROPERTY_DEMONSo->insertAt(wrapString(property), demon);
+    }
+    else {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "register-property-demon: cannot find a function or variable with this name: " << "`" << demonname << "'";
+        throw *newStellaException(stream000->theStringReader());
+      }
+    }
+  }
+}
+
+void unregisterPropertyDemon(char* property) {
+  // Unregister any demon for `property'.
+  oREGISTERED_PROPERTY_DEMONSo->removeAt(wrapString(property));
+}
+
+MethodSlot* lookupVariableDemonSetter(GlobalVariable* demon) {
+  { Symbol* variablename = demon->variableName;
+    char* postfix = (demon->homeModule()->caseSensitiveP ? (char*)"-setter" : (char*)"-SETTER");
+    Symbol* settername = internDerivedSymbol(variablename, stringConcatenate(variablename->symbolName, postfix, 0));
+
+    return (lookupFunction(settername));
+  }
+}
+
+void runConfigurationPropertyDemon(Keyword* action, char* property, Object* value, KeyValueList* table) {
+  { MappableObject* demon = ((MappableObject*)(oREGISTERED_PROPERTY_DEMONSo->lookup(wrapString(property))));
+
+    { Surrogate* testValue000 = safePrimaryType(demon);
+
+      if (subtypeOfMethodSlotP(testValue000)) {
+        { MappableObject* demon000 = demon;
+          MethodSlot* demon = ((MethodSlot*)(demon000));
+
+          ((void  (*) (Keyword*, char*, Object*, KeyValueList*))demon->functionCode)(action, property, value, table);
+        }
+      }
+      else if (subtypeOfP(testValue000, SGT_SYSTEMS_STELLA_GLOBAL_VARIABLE)) {
+        { MappableObject* demon001 = demon;
+          GlobalVariable* demon = ((GlobalVariable*)(demon001));
+
+          { MethodSlot* setter = lookupVariableDemonSetter(demon);
+
+            if (((boolean)(setter))) {
+              value = lookupConfigurationProperty(property, NULL, table);
+              { Surrogate* variabletype = typeSpecToBaseType(globalVariableTypeSpec(demon));
+                Object* coercedvalue = (((boolean)(value)) ? coerceValueToType(value, variabletype, false) : ((Object*)(NULL)));
+
+                if (((boolean)(value)) &&
+                    (!((boolean)(coercedvalue)))) {
+                  *(STANDARD_WARNING->nativeStream) << "Warning: " << "run-configuration-property-demon: cannot coerce " << "`" << value << "'" << " to type " << "`" << variabletype << "'" << std::endl;
+                  return;
+                }
+                if (variabletype == SGT_SYSTEMS_STELLA_INTEGER) {
+                  ((void  (*) (int))setter->functionCode)(unwrapInteger(((IntegerWrapper*)(coercedvalue))));
+                }
+                else if (variabletype == SGT_SYSTEMS_STELLA_LONG_INTEGER) {
+                  ((void  (*) (int))setter->functionCode)(unwrapInteger(((IntegerWrapper*)(coercedvalue))));
+                }
+                else if (variabletype == SGT_SYSTEMS_STELLA_FLOAT) {
+                  ((void  (*) (double))setter->functionCode)(unwrapFloat(((FloatWrapper*)(coercedvalue))));
+                }
+                else if (variabletype == SGT_SYSTEMS_STELLA_STRING) {
+                  ((void  (*) (int))setter->functionCode)(unwrapInteger(((IntegerWrapper*)(coercedvalue))));
+                }
+                else if (variabletype == SGT_SYSTEMS_STELLA_BOOLEAN) {
+                  ((void  (*) (int))setter->functionCode)(unwrapInteger(((IntegerWrapper*)(coercedvalue))));
+                }
+                else {
+                  ((void  (*) (Object*))setter->functionCode)(coercedvalue);
+                }
+              }
+            }
+            else {
+              *(STANDARD_WARNING->nativeStream) << "Warning: " << "run-configuration-property-demon: cannot find setter function for " << "`" << demon->variableName << "'" << std::endl;
+            }
+          }
+        }
+      }
+      else {
+      }
+    }
+  }
+}
+
+void demonPropertyHandler(MappableObject* demon, StorageSlot* slot, Object* property) {
+  defaultOptionHandler(demon, slot, property);
+  oREGISTERED_PROPERTY_DEMONSo->insertAt(wrapString(coerceToString(property)), demon);
+}
+
+void testPropertyDemon(Keyword* action, char* property, Object* value, KeyValueList* table) {
+  // A test demon for the property demon machinery which simply prints arguments.
+  table = table;
+  std::cout << "test-property-demon: action=" << action << ", property=" << property << ", value-arg=" << value << ", prop-value=" << lookupConfigurationProperty(property, NULL, table) << std::endl;
 }
 
 CmdLineOption* newCmdLineOption() {
@@ -3274,7 +3435,7 @@ void evalInModuleOptionHandler(CmdLineOption* option, Object* value) {
 
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, coerceToModule(value->value, true));
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         evalOptionHandler(option, value->rest->value);
       }
     }
@@ -3494,6 +3655,7 @@ void helpStartupSystems2() {
     SYM_SYSTEMS_STELLA_STARTUP_TIME_PROGN = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-TIME-PROGN", NULL, 0)));
     KWD_SYSTEMS_EARLY_INITS = ((Keyword*)(internRigidSymbolWrtModule("EARLY-INITS", NULL, 2)));
     KWD_SYSTEMS_MODULES = ((Keyword*)(internRigidSymbolWrtModule("MODULES", NULL, 2)));
+    SYM_SYSTEMS_STELLA_DEFINE_MODULE_FROM_STRINGIFIED_SOURCE = ((Symbol*)(internRigidSymbolWrtModule("DEFINE-MODULE-FROM-STRINGIFIED-SOURCE", NULL, 0)));
     KWD_SYSTEMS_PUBLICp = ((Keyword*)(internRigidSymbolWrtModule("PUBLIC?", NULL, 2)));
     SYM_SYSTEMS_STELLA_STARTUP = ((Symbol*)(internRigidSymbolWrtModule("STARTUP", NULL, 0)));
     SYM_SYSTEMS_STELLA_FOREACH = ((Symbol*)(internRigidSymbolWrtModule("FOREACH", NULL, 0)));
@@ -3509,7 +3671,12 @@ void helpStartupSystems2() {
     KWD_SYSTEMS_WHITE_SPACE = ((Keyword*)(internRigidSymbolWrtModule("WHITE-SPACE", NULL, 2)));
     KWD_SYSTEMS_ADD = ((Keyword*)(internRigidSymbolWrtModule("ADD", NULL, 2)));
     SYM_SYSTEMS_STELLA_CONFIGURATION_TABLE = ((Symbol*)(internRigidSymbolWrtModule("CONFIGURATION-TABLE", NULL, 0)));
+    KWD_SYSTEMS_CLEAR = ((Keyword*)(internRigidSymbolWrtModule("CLEAR", NULL, 2)));
+    KWD_SYSTEMS_REMOVE = ((Keyword*)(internRigidSymbolWrtModule("REMOVE", NULL, 2)));
     KWD_SYSTEMS_ROOT_DIRECTORY = ((Keyword*)(internRigidSymbolWrtModule("ROOT-DIRECTORY", NULL, 2)));
+    SGT_SYSTEMS_STELLA_GLOBAL_VARIABLE = ((Surrogate*)(internRigidSymbolWrtModule("GLOBAL-VARIABLE", NULL, 1)));
+    SGT_SYSTEMS_STELLA_LONG_INTEGER = ((Surrogate*)(internRigidSymbolWrtModule("LONG-INTEGER", NULL, 1)));
+    SYM_SYSTEMS_STELLA_TEST_PROPERTY_DEMON = ((Symbol*)(internRigidSymbolWrtModule("TEST-PROPERTY-DEMON", NULL, 0)));
     KWD_SYSTEMS_ERROR = ((Keyword*)(internRigidSymbolWrtModule("ERROR", NULL, 2)));
     SGT_SYSTEMS_STELLA_CMD_LINE_OPTION = ((Surrogate*)(internRigidSymbolWrtModule("CMD-LINE-OPTION", NULL, 1)));
     SYM_SYSTEMS_STELLA_DOCUMENTATION = ((Symbol*)(internRigidSymbolWrtModule("DOCUMENTATION", NULL, 0)));
@@ -3540,12 +3707,6 @@ void helpStartupSystems2() {
     SYM_SYSTEMS_STELLA_EVAL_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("EVAL-OPTION-HANDLER", NULL, 0)));
     SYM_SYSTEMS_STELLA_EVAL_IN_MODULE_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("EVAL-IN-MODULE-OPTION-HANDLER", NULL, 0)));
     SYM_SYSTEMS_STELLA_LOAD_PATH_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("LOAD-PATH-OPTION-HANDLER", NULL, 0)));
-    SYM_SYSTEMS_STELLA_CONFIG_FILE_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("CONFIG-FILE-OPTION-HANDLER", NULL, 0)));
-    SYM_SYSTEMS_STELLA_LOAD_FILE_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("LOAD-FILE-OPTION-HANDLER", NULL, 0)));
-    SYM_SYSTEMS_STELLA_DEFINE_PROPERTY_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("DEFINE-PROPERTY-OPTION-HANDLER", NULL, 0)));
-    SYM_SYSTEMS_STELLA_HELP_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("HELP-OPTION-HANDLER", NULL, 0)));
-    SYM_SYSTEMS_STELLA_STARTUP_SYSTEMS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-SYSTEMS", NULL, 0)));
-    SYM_SYSTEMS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
   }
 }
 
@@ -3603,6 +3764,7 @@ void helpStartupSystems3() {
     defineFunctionObject("SYSTEM-STARTED-UP?", "(DEFUN (SYSTEM-STARTED-UP? BOOLEAN) ((SYSTEMNAME STRING) (SYSTEMMODULENAME STRING)))", ((cpp_function_code)(&systemStartedUpP)), NULL);
     defineFunctionObject("YIELD-STARTUP-REQUIRED-SYSTEMS", "(DEFUN (YIELD-STARTUP-REQUIRED-SYSTEMS CONS) ((SYSTEM SYSTEM-DEFINITION)))", ((cpp_function_code)(&yieldStartupRequiredSystems)), NULL);
     defineFunctionObject("COLLECT-STARTUP-FORMS-FROM-SYSTEM-FILE", "(DEFUN (COLLECT-STARTUP-FORMS-FROM-SYSTEM-FILE (CONS OF CONS)) ((SYSTEM SYSTEM-DEFINITION)))", ((cpp_function_code)(&collectStartupFormsFromSystemFile)), NULL);
+    defineFunctionObject("COLLECT-DEFINED-MODULES-FROM-SYSTEM-FILE", "(DEFUN (COLLECT-DEFINED-MODULES-FROM-SYSTEM-FILE (CONS OF MODULE)) ((SYSTEM SYSTEM-DEFINITION)))", ((cpp_function_code)(&collectDefinedModulesFromSystemFile)), NULL);
     defineFunctionObject("CREATE-SYSTEM-STARTUP-FILE", "(DEFUN CREATE-SYSTEM-STARTUP-FILE ((SYSTEM SYSTEM-DEFINITION)))", ((cpp_function_code)(&createSystemStartupFile)), NULL);
     defineFunctionObject("HELP-ALL-REQUIRED-SYSTEMS", "(DEFUN (HELP-ALL-REQUIRED-SYSTEMS (LIST OF STRING-WRAPPER)) ((SYSTEM-NAME STRING) (FOUND (LIST OF STRING-WRAPPER))))", ((cpp_function_code)(&helpAllRequiredSystems)), NULL);
     defineFunctionObject("ALL-REQUIRED-SYSTEMS", "(DEFUN (ALL-REQUIRED-SYSTEMS (CONS OF STRING-WRAPPER)) ((SYSTEM-NAME STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Returns a CONS of all of the systems required by `system-name'\")", ((cpp_function_code)(&allRequiredSystems)), NULL);
@@ -3610,23 +3772,74 @@ void helpStartupSystems3() {
     defineFunctionObject("MAKE-STELLA", "(DEFUN MAKE-STELLA ((FORCERECOMPILATION? BOOLEAN)))", ((cpp_function_code)(&makeStella)), NULL);
     defineFunctionObject("PARSE-CONFIGURATION-FILE-LINE", "(DEFUN (PARSE-CONFIGURATION-FILE-LINE STRING-WRAPPER WRAPPER KEYWORD) ((LINE STRING)))", ((cpp_function_code)(&parseConfigurationFileLine)), NULL);
     defineFunctionObject("LOAD-CONFIGURATION-FILE", "(DEFUN (LOAD-CONFIGURATION-FILE CONFIGURATION-TABLE) ((FILE FILE-NAME)) :DOCUMENTATION \"Read a configuration `file' and return its content as a configuration table.\nAlso enter each property read into the global system configuration table.\nAssumes Java-style property file syntax.  Each property name is represented\nas a wrapped string and each value as a wrapped string/integer/float or boolean.\" :PUBLIC? TRUE :CONSTRUCTOR? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&loadConfigurationFile)), ((cpp_function_code)(&loadConfigurationFileEvaluatorWrapper)));
+  }
+}
+
+void helpStartupSystems4() {
+  {
     defineFunctionObject("SAVE-CONFIGURATION-VALUE", "(DEFUN SAVE-CONFIGURATION-VALUE ((STREAM OUTPUT-STREAM) (VALUE OBJECT)) :DOCUMENTATION \"Save `value' to `stream' as a properly formatted configuration\nvalue.\")", ((cpp_function_code)(&saveConfigurationValue)), NULL);
+    defineFunctionObject("SAVE-CONFIGURATION-FILE", "(DEFUN SAVE-CONFIGURATION-FILE ((TABLE CONFIGURATION-TABLE) (FILE FILE-NAME) (TITLE STRING)) :DOCUMENTATION \"Save `table' as a configuration file.  Uses a Java-style property file syntax.\" :PUBLIC? TRUE)", ((cpp_function_code)(&saveConfigurationFile)), NULL);
+    defineFunctionObject("LOOKUP-CONFIGURATION-PROPERTY", "(DEFUN (LOOKUP-CONFIGURATION-PROPERTY OBJECT) ((PROPERTY STRING) (DEFAULTVALUE OBJECT) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Lookup `property' in `configuration' and return its value.\nUse the global system configuration table if `configuration' is NULL.  Return\n`defaultValue' if `property' is not defined.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupConfigurationProperty)), NULL);
+    defineFunctionObject("LOOKUP-CONFIGURATION-PROPERTY-VALUES", "(DEFUN (LOOKUP-CONFIGURATION-PROPERTY-VALUES CONS) ((PROPERTY STRING) (DEFAULTVALUE OBJECT) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Lookup `property' in `configuration', assume it is a multi-valued\nproperty and return its value(s) as a list.  Use the global system configuration table\nif `configuration' is NULL.  Return `defaultValue' if `property' is not defined or\nNIL is no default value is specified.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupConfigurationPropertyValues)), NULL);
+    defineFunctionObject("SET-CONFIGURATION-PROPERTY", "(DEFUN (SET-CONFIGURATION-PROPERTY OBJECT) ((PROPERTY STRING) (VALUE OBJECT) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Set `property' in `configuration' to `value' and return it.\nUse the global system configuration table if `configuration' is NULL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&setConfigurationProperty)), NULL);
+    defineFunctionObject("ADD-CONFIGURATION-PROPERTY", "(DEFUN (ADD-CONFIGURATION-PROPERTY OBJECT) ((PROPERTY STRING) (VALUE OBJECT) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Add `value' to `property' in `configuration' and return it.\nIf a previous value exists add `value' to the end (listify the old value\nif it is not yet a list).  Otherwise, create a new list containing `value'.\nUse the global system configuration table if `configuration' is NULL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&addConfigurationProperty)), NULL);
+    defineFunctionObject("CLEAR-CONFIGURATION-PROPERTY", "(DEFUN (CLEAR-CONFIGURATION-PROPERTY OBJECT) ((PROPERTY STRING) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Remove `property' in `configuration' and return the previous\nvalue.\nUse the global system configuration table if `configuration' is NULL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&clearConfigurationProperty)), NULL);
+    defineFunctionObject("REMOVE-CONFIGURATION-PROPERTY", "(DEFUN (REMOVE-CONFIGURATION-PROPERTY OBJECT) ((PROPERTY STRING) (VALUE OBJECT) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Remove `value' from `property' in `configuration' and return it.\nUse the global system configuration table if `configuration' is NULL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&removeConfigurationProperty)), NULL);
+    defineFunctionObject("PRINT-CONFIGURATION-PROPERTIES", "(DEFUN PRINT-CONFIGURATION-PROPERTIES ((CONFIGURATION CONFIGURATION-TABLE) (STREAM OUTPUT-STREAM)) :DOCUMENTATION \"Print all properties defined in `configuration' to `stream'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&printConfigurationProperties)), NULL);
+    defineFunctionObject("CONFIGURE-STELLA", "(DEFUN CONFIGURE-STELLA ((FILE FILE-NAME)) :DOCUMENTATION \"Perform STELLA run-time configuration.  If supplied, load the\nconfiguration file `file' first which should be supplied with a physical pathname.\" :PUBLIC? TRUE)", ((cpp_function_code)(&configureStella)), NULL);
+    defineFunctionObject("GET-PROPERTY", "(DEFUN (GET-PROPERTY OBJECT) ((PROPERTY NAME) |&REST| (DEFAULTVALUE OBJECT)) :DOCUMENTATION \"Lookup `property' (a string or symbol) in the configuration\ntable and return its value.  If it is undefined, return the optional `defaultValue'.\nNote that `property' is evaluated and will need to be quoted if supplied as a\nsymbol.  Symbols will also be upcased if this command is run in a non-case-\nsensitive module.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&getProperty)), ((cpp_function_code)(&getPropertyEvaluatorWrapper)));
+    defineFunctionObject("SET-PROPERTY", "(DEFUN SET-PROPERTY ((PROPERTY NAME) (VALUE OBJECT)) :DOCUMENTATION \"Set `property' (a string or symbol) in the configuration\ntable to `value'.  Note that `property' is evaluated and will need to be quoted\nif supplied as a symbol.  Symbols will also be upcased if this command is run in\na non-case-sensitive module.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&setProperty)), NULL);
+    defineFunctionObject("ADD-PROPERTY-VALUE", "(DEFUN ADD-PROPERTY-VALUE ((PROPERTY NAME) (VALUE OBJECT)) :DOCUMENTATION \"Add `value' to the end of `property's (a string or symbol) value\nlist in the configuration table.  Coerces the current value to a list or initializes\nthe list if it is as yet undefined.  Allows incremental addition of values to\nlist-valued propertys.  Note that `property' is evaluated and will need to be quoted\nif supplied as a symbol.  Symbols will also be upcased if this command is run in a\nnon-case-sensitive module.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&addPropertyValue)), NULL);
+    defineFunctionObject("PRINT-PROPERTIES", "(DEFUN PRINT-PROPERTIES () :DOCUMENTATION \"Print all current configuration property information to\nstandard output.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&printProperties)), NULL);
+    defineFunctionObject("REGISTER-PROPERTY-DEMON", "(DEFUN REGISTER-PROPERTY-DEMON ((PROPERTY STRING) (DEMONNAME SYMBOL)) :DOCUMENTATION \"Register the function named `demonName' as the demon for `property'.\nDemons will be run as after demons on every configuration table update.  Set the\nproperty `stella.test.propertyDemon' to see a test demon in action.\" :PUBLIC? TRUE)", ((cpp_function_code)(&registerPropertyDemon)), NULL);
+    defineFunctionObject("UNREGISTER-PROPERTY-DEMON", "(DEFUN UNREGISTER-PROPERTY-DEMON ((PROPERTY STRING)) :DOCUMENTATION \"Unregister any demon for `property'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unregisterPropertyDemon)), NULL);
+    defineFunctionObject("LOOKUP-VARIABLE-DEMON-SETTER", "(DEFUN (LOOKUP-VARIABLE-DEMON-SETTER METHOD-SLOT) ((DEMON GLOBAL-VARIABLE)))", ((cpp_function_code)(&lookupVariableDemonSetter)), NULL);
+    defineFunctionObject("RUN-CONFIGURATION-PROPERTY-DEMON", "(DEFUN RUN-CONFIGURATION-PROPERTY-DEMON ((ACTION KEYWORD) (PROPERTY STRING) (VALUE OBJECT) (TABLE CONFIGURATION-TABLE)))", ((cpp_function_code)(&runConfigurationPropertyDemon)), NULL);
+    defineExternalSlotFromStringifiedSource("(DEFSLOT METHOD-SLOT DEMON-PROPERTY :TYPE STRING :OPTION-KEYWORD :DEMON-PROPERTY :OPTION-HANDLER DEMON-PROPERTY-HANDLER :DOCUMENTATION \"Holds the property monitored by a demon function.  This slot is primarily used\nto allow us the use of the :demon-property option handler for demon registration.\" :ALLOCATION :DYNAMIC)");
+    defineExternalSlotFromStringifiedSource("(DEFSLOT GLOBAL-VARIABLE DEMON-PROPERTY :TYPE STRING :OPTION-KEYWORD :DEMON-PROPERTY :OPTION-HANDLER DEMON-PROPERTY-HANDLER :DOCUMENTATION \"Holds the property monitored by a demon for this variable.  This slot is\nprimarily used to allow us the use of the :demon-property option handler for demon registration.\" :ALLOCATION :DYNAMIC)");
+    defineFunctionObject("DEMON-PROPERTY-HANDLER", "(DEFUN DEMON-PROPERTY-HANDLER ((DEMON MAPPABLE-OBJECT) (SLOT STORAGE-SLOT) (PROPERTY OBJECT)))", ((cpp_function_code)(&demonPropertyHandler)), NULL);
+    defineFunctionObject("TEST-PROPERTY-DEMON", "(DEFUN TEST-PROPERTY-DEMON ((ACTION KEYWORD) (PROPERTY STRING) (VALUE OBJECT) (TABLE CONFIGURATION-TABLE)) :DOCUMENTATION \"A test demon for the property demon machinery which simply prints arguments.\" :PUBLIC? TRUE)", ((cpp_function_code)(&testPropertyDemon)), NULL);
+    defineFunctionObject("REGISTER-CMD-LINE-OPTION", "(DEFUN REGISTER-CMD-LINE-OPTION (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Register a command line option.  :key identifies the name of the option which\nwill usually start with a dash such as `-e' or `--eval'.  :key2 and :key3 can be used to supply\nadditional options (e.g., long option formats).  To supply even more keys, a list can be supplied\nwith the :keys option.  If a :property is supplied, this option simply sets or adds to the values\nof the specified system configuration property.  If a :handler name is specified, its function\nwill be used to interpret the values of the option.  :documentation can be used to supply a\ndocumentation string which will be printed by the `help-option-handler' (usually bound to `-?').\n:value-type describes what type an option value should be coerced to before assigning it to the\nspecified configuration :property.  :n-arguments describes how many arguments this option\ntakes.  This will be 0 for simple switches and can be 1 or greater than one for option handlers\nt" "hat need one or more arguments.  :default-value defines the value to use for zero-argument\n:property options.  If :multi-valued? is true, values of multiple occurrences of the option will be\nadded to the specified configuration :property.  :error-action can be one of :ignore, :warn or\n:error to specify what to do in case an error is encountered during option processing.\" :PUBLIC? TRUE)", ((cpp_function_code)(&registerCmdLineOption)), NULL);
+    defineFunctionObject("UNREGISTER-CMD-LINE-OPTION", "(DEFUN UNREGISTER-CMD-LINE-OPTION ((KEY STRING)) :DOCUMENTATION \"Unregister the command line option identified by `key' under all its keys.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unregisterCmdLineOption)), NULL);
+    defineFunctionObject("UNREGISTER-ALL-CMD-LINE-OPTIONS", "(DEFUN UNREGISTER-ALL-CMD-LINE-OPTIONS () :DOCUMENTATION \"Unregister all currently registered command line options.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unregisterAllCmdLineOptions)), NULL);
+    defineFunctionObject("DEFAULT-CMD-LINE-OPTION-HANDLER", "(DEFUN DEFAULT-CMD-LINE-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Default handler that tries to set a system property based on `option' and `value'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&defaultCmdLineOptionHandler)), NULL);
+    defineFunctionObject("PROCESS-COMMAND-LINE-ARGUMENTS", "(DEFUN PROCESS-COMMAND-LINE-ARGUMENTS ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING)) (UNHANDLEDOPTIONACTION KEYWORD)) :DOCUMENTATION \"Interpret any command line `arguments' for which handlers have been registered.\nLeave any remaining unprocessed arguments in `*unprocessed-command-line-arguments*'.\nIf any unprocessed arguments use option syntax (that is they start with a `-'), proceed\naccording to `unhandledOptionAction' which can be one of :ignore, :warn or :error.\nThis ensures that at any point in the option processing, `*unprocessed-command-line-arguments*'\naccurately reflects the arguments which have been either skipped or not handled yet.\" :PUBLIC? TRUE)", ((cpp_function_code)(&processCommandLineArguments)), NULL);
+    defineFunctionObject("UNPROCESSED-COMMAND-LINE-ARGUMENTS", "(DEFUN (UNPROCESSED-COMMAND-LINE-ARGUMENTS (CONS OF STRING-WRAPPER)) () :DOCUMENTATION \"Return all command line arguments which have not yet been processed\nby (or been ignored by) `process-command-line-arguments'.  If arguments have not yet\nbeen processed, this will return NULL.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&unprocessedCommandLineArguments)), NULL);
+    defineFunctionObject("EVAL-OPTION-HANDLER", "(DEFUN EVAL-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Interpret an --eval option by evaluating `value'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&evalOptionHandler)), NULL);
+    defineFunctionObject("EVAL-IN-MODULE-OPTION-HANDLER", "(DEFUN EVAL-IN-MODULE-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Interpret an --eval-in-module option.  `value' is expected\nto be of the form `(<module-name> <s-expression>)'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&evalInModuleOptionHandler)), NULL);
+    defineFunctionObject("LOAD-PATH-OPTION-HANDLER", "(DEFUN LOAD-PATH-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Modify the current file load path according to `option' and `value'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&loadPathOptionHandler)), NULL);
+    defineFunctionObject("CONFIG-FILE-OPTION-HANDLER", "(DEFUN CONFIG-FILE-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Load the configuration file `value'.  This will\nmodify currently set system properties defined in `value' with new\nvalues but leave all other currently set properties as they are.\" :PUBLIC? TRUE)", ((cpp_function_code)(&configFileOptionHandler)), NULL);
+    defineFunctionObject("LOAD-FILE-OPTION-HANDLER", "(DEFUN LOAD-FILE-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Load the file `value' using the STELLA `load-file' command.\" :PUBLIC? TRUE)", ((cpp_function_code)(&loadFileOptionHandler)), NULL);
+    defineFunctionObject("DEFINE-PROPERTY-OPTION-HANDLER", "(DEFUN DEFINE-PROPERTY-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)))", ((cpp_function_code)(&definePropertyOptionHandler)), NULL);
+    defineFunctionObject("HELP-OPTION-HANDLER", "(DEFUN HELP-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Print documentation about all currently registered option handlers.\" :PUBLIC? TRUE)", ((cpp_function_code)(&helpOptionHandler)), NULL);
+    defineFunctionObject("STARTUP-SYSTEMS", "(DEFUN STARTUP-SYSTEMS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupSystems)), NULL);
+    { MethodSlot* function = lookupFunction(SYM_SYSTEMS_STELLA_STARTUP_SYSTEMS);
+
+      setDynamicSlotValue(function->dynamicSlots, SYM_SYSTEMS_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupSystems"), NULL_STRING_WRAPPER);
+    }
   }
 }
 
 void startupSystems() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupSystems1();
       helpStartupSystems2();
+      SYM_SYSTEMS_STELLA_CONFIG_FILE_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("CONFIG-FILE-OPTION-HANDLER", NULL, 0)));
+      SYM_SYSTEMS_STELLA_LOAD_FILE_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("LOAD-FILE-OPTION-HANDLER", NULL, 0)));
+      SYM_SYSTEMS_STELLA_DEFINE_PROPERTY_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("DEFINE-PROPERTY-OPTION-HANDLER", NULL, 0)));
+      SYM_SYSTEMS_STELLA_HELP_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("HELP-OPTION-HANDLER", NULL, 0)));
+      SYM_SYSTEMS_STELLA_STARTUP_SYSTEMS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-SYSTEMS", NULL, 0)));
+      SYM_SYSTEMS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
     }
     if (currentStartupTimePhaseP(4)) {
       oFILE_LOAD_PATHo = NIL;
       oSTELLA_FILE_EXTENSIONSo = consList(1, wrapString(".ste"));
       oSYSTEMDEFINITIONSo = newList();
       oSYSTEM_CONFIGURATION_TABLEo = newKeyValueList();
+      oREGISTERED_PROPERTY_DEMONSo = newKeyValueMap();
       oREGISTERED_COMMAND_LINE_OPTIONSo = newKeyValueMap();
     }
     if (currentStartupTimePhaseP(5)) {
@@ -3642,37 +3855,7 @@ void startupSystems() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupSystems3();
-      defineFunctionObject("SAVE-CONFIGURATION-FILE", "(DEFUN SAVE-CONFIGURATION-FILE ((TABLE CONFIGURATION-TABLE) (FILE FILE-NAME) (TITLE STRING)) :DOCUMENTATION \"Save `table' as a configuration file.  Uses a Java-style property file syntax.\" :PUBLIC? TRUE)", ((cpp_function_code)(&saveConfigurationFile)), NULL);
-      defineFunctionObject("LOOKUP-CONFIGURATION-PROPERTY", "(DEFUN (LOOKUP-CONFIGURATION-PROPERTY OBJECT) ((PROPERTY STRING) (DEFAULTVALUE WRAPPER) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Lookup `property' in `configuration' and return its value.\nUse the global system configuration table if `configuration' is NULL.  Return\n`defaultValue' if `property' is not defined.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupConfigurationProperty)), NULL);
-      defineFunctionObject("LOOKUP-CONFIGURATION-PROPERTY-VALUES", "(DEFUN (LOOKUP-CONFIGURATION-PROPERTY-VALUES CONS) ((PROPERTY STRING) (DEFAULTVALUE OBJECT) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Lookup `property' in `configuration', assume it is a multi-valued\nproperty and return its value(s) as a list.  Use the global system configuration table\nif `configuration' is NULL.  Return `defaultValue' if `property' is not defined or\nNIL is no default value is specified.\" :PUBLIC? TRUE)", ((cpp_function_code)(&lookupConfigurationPropertyValues)), NULL);
-      defineFunctionObject("SET-CONFIGURATION-PROPERTY", "(DEFUN (SET-CONFIGURATION-PROPERTY OBJECT) ((PROPERTY STRING) (VALUE OBJECT) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Set `property' in `configuration' to `value' and return it.\nUse the global system configuration table if `configuration' is NULL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&setConfigurationProperty)), NULL);
-      defineFunctionObject("ADD-CONFIGURATION-PROPERTY", "(DEFUN (ADD-CONFIGURATION-PROPERTY OBJECT) ((PROPERTY STRING) (VALUE OBJECT) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Add `value' to `property' in `configuration' and return it.\nIf a previous value exists add `value' to the end (listify the old value\nif it is not yet a list).  Otherwise, create a new list containing `value'.\nUse the global system configuration table if `configuration' is NULL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&addConfigurationProperty)), NULL);
-      defineFunctionObject("CLEAR-CONFIGURATION-PROPERTY", "(DEFUN (CLEAR-CONFIGURATION-PROPERTY OBJECT) ((PROPERTY STRING) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Remove `property' in `configuration' and return the previous\nvalue.\nUse the global system configuration table if `configuration' is NULL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&clearConfigurationProperty)), NULL);
-      defineFunctionObject("REMOVE-CONFIGURATION-PROPERTY", "(DEFUN (REMOVE-CONFIGURATION-PROPERTY OBJECT) ((PROPERTY STRING) (VALUE OBJECT) (CONFIGURATION CONFIGURATION-TABLE)) :DOCUMENTATION \"Remove `value' from `property' in `configuration' and return it.\nUse the global system configuration table if `configuration' is NULL.\" :PUBLIC? TRUE)", ((cpp_function_code)(&removeConfigurationProperty)), NULL);
-      defineFunctionObject("PRINT-CONFIGURATION-PROPERTIES", "(DEFUN PRINT-CONFIGURATION-PROPERTIES ((CONFIGURATION CONFIGURATION-TABLE) (STREAM OUTPUT-STREAM)) :DOCUMENTATION \"Print all properties defined in `configuration' to `stream'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&printConfigurationProperties)), NULL);
-      defineFunctionObject("CONFIGURE-STELLA", "(DEFUN CONFIGURE-STELLA ((FILE FILE-NAME)) :DOCUMENTATION \"Perform STELLA run-time configuration.  If supplied, load the\nconfiguration file `file' first which should be supplied with a physical pathname.\" :PUBLIC? TRUE)", ((cpp_function_code)(&configureStella)), NULL);
-      defineFunctionObject("GET-PROPERTY", "(DEFUN (GET-PROPERTY OBJECT) ((PROPERTY NAME) |&REST| (DEFAULTVALUE OBJECT)) :DOCUMENTATION \"Lookup `property' (a string or symbol) in the configuration\ntable and return its value.  If it is undefined, return the optional `defaultValue'.\nNote that `property' is evaluated and will need to be quoted if supplied as a\nsymbol.  Symbols will also be upcased if this command is run in a non-case-\nsensitive module.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&getProperty)), ((cpp_function_code)(&getPropertyEvaluatorWrapper)));
-      defineFunctionObject("SET-PROPERTY", "(DEFUN SET-PROPERTY ((PROPERTY NAME) (VALUE OBJECT)) :DOCUMENTATION \"Set `property' (a string or symbol) in the configuration\ntable to `value'.  Note that `property' is evaluated and will need to be quoted\nif supplied as a symbol.  Symbols will also be upcased if this command is run in\na non-case-sensitive module.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&setProperty)), NULL);
-      defineFunctionObject("ADD-PROPERTY-VALUE", "(DEFUN ADD-PROPERTY-VALUE ((PROPERTY NAME) (VALUE OBJECT)) :DOCUMENTATION \"Add `value' to the end of `property's (a string or symbol) value\nlist in the configuration table.  Coerces the current value to a list or initializes\nthe list if it is as yet undefined.  Allows incremental addition of values to\nlist-valued propertys.  Note that `property' is evaluated and will need to be quoted\nif supplied as a symbol.  Symbols will also be upcased if this command is run in a\nnon-case-sensitive module.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&addPropertyValue)), NULL);
-      defineFunctionObject("PRINT-PROPERTIES", "(DEFUN PRINT-PROPERTIES () :DOCUMENTATION \"Print all current configuration property information to\nstandard output.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&printProperties)), NULL);
-      defineFunctionObject("REGISTER-CMD-LINE-OPTION", "(DEFUN REGISTER-CMD-LINE-OPTION (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Register a command line option.  :key identifies the name of the option which\nwill usually start with a dash such as `-e' or `--eval'.  :key2 and :key3 can be used to supply\nadditional options (e.g., long option formats).  To supply even more keys, a list can be supplied\nwith the :keys option.  If a :property is supplied, this option simply sets or adds to the values\nof the specified system configuration property.  If a :handler name is specified, its function\nwill be used to interpret the values of the option.  :documentation can be used to supply a\ndocumentation string which will be printed by the `help-option-handler' (usually bound to `-?').\n:value-type describes what type an option value should be coerced to before assigning it to the\nspecified configuration :property.  :n-arguments describes how many arguments this option\ntakes.  This will be 0 for simple switches and can be 1 or greater than one for option handlers\nt" "hat need one or more arguments.  :default-value defines the value to use for zero-argument\n:property options.  If :multi-valued? is true, values of multiple occurrences of the option will be\nadded to the specified configuration :property.  :error-action can be one of :ignore, :warn or\n:error to specify what to do in case an error is encountered during option processing.\" :PUBLIC? TRUE)", ((cpp_function_code)(&registerCmdLineOption)), NULL);
-      defineFunctionObject("UNREGISTER-CMD-LINE-OPTION", "(DEFUN UNREGISTER-CMD-LINE-OPTION ((KEY STRING)) :DOCUMENTATION \"Unregister the command line option identified by `key' under all its keys.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unregisterCmdLineOption)), NULL);
-      defineFunctionObject("UNREGISTER-ALL-CMD-LINE-OPTIONS", "(DEFUN UNREGISTER-ALL-CMD-LINE-OPTIONS () :DOCUMENTATION \"Unregister all currently registered command line options.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unregisterAllCmdLineOptions)), NULL);
-      defineFunctionObject("DEFAULT-CMD-LINE-OPTION-HANDLER", "(DEFUN DEFAULT-CMD-LINE-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Default handler that tries to set a system property based on `option' and `value'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&defaultCmdLineOptionHandler)), NULL);
-      defineFunctionObject("PROCESS-COMMAND-LINE-ARGUMENTS", "(DEFUN PROCESS-COMMAND-LINE-ARGUMENTS ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING)) (UNHANDLEDOPTIONACTION KEYWORD)) :DOCUMENTATION \"Interpret any command line `arguments' for which handlers have been registered.\nLeave any remaining unprocessed arguments in `*unprocessed-command-line-arguments*'.\nIf any unprocessed arguments use option syntax (that is they start with a `-'), proceed\naccording to `unhandledOptionAction' which can be one of :ignore, :warn or :error.\nThis ensures that at any point in the option processing, `*unprocessed-command-line-arguments*'\naccurately reflects the arguments which have been either skipped or not handled yet.\" :PUBLIC? TRUE)", ((cpp_function_code)(&processCommandLineArguments)), NULL);
-      defineFunctionObject("UNPROCESSED-COMMAND-LINE-ARGUMENTS", "(DEFUN (UNPROCESSED-COMMAND-LINE-ARGUMENTS (CONS OF STRING-WRAPPER)) () :DOCUMENTATION \"Return all command line arguments which have not yet been processed\nby (or been ignored by) `process-command-line-arguments'.  If arguments have not yet\nbeen processed, this will return NULL.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&unprocessedCommandLineArguments)), NULL);
-      defineFunctionObject("EVAL-OPTION-HANDLER", "(DEFUN EVAL-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Interpret an --eval option by evaluating `value'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&evalOptionHandler)), NULL);
-      defineFunctionObject("EVAL-IN-MODULE-OPTION-HANDLER", "(DEFUN EVAL-IN-MODULE-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Interpret an --eval-in-module option.  `value' is expected\nto be of the form `(<module-name> <s-expression>)'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&evalInModuleOptionHandler)), NULL);
-      defineFunctionObject("LOAD-PATH-OPTION-HANDLER", "(DEFUN LOAD-PATH-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Modify the current file load path according to `option' and `value'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&loadPathOptionHandler)), NULL);
-      defineFunctionObject("CONFIG-FILE-OPTION-HANDLER", "(DEFUN CONFIG-FILE-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Load the configuration file `value'.  This will\nmodify currently set system properties defined in `value' with new\nvalues but leave all other currently set properties as they are.\" :PUBLIC? TRUE)", ((cpp_function_code)(&configFileOptionHandler)), NULL);
-      defineFunctionObject("LOAD-FILE-OPTION-HANDLER", "(DEFUN LOAD-FILE-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Load the file `value' using the STELLA `load-file' command.\" :PUBLIC? TRUE)", ((cpp_function_code)(&loadFileOptionHandler)), NULL);
-      defineFunctionObject("DEFINE-PROPERTY-OPTION-HANDLER", "(DEFUN DEFINE-PROPERTY-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)))", ((cpp_function_code)(&definePropertyOptionHandler)), NULL);
-      defineFunctionObject("HELP-OPTION-HANDLER", "(DEFUN HELP-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Print documentation about all currently registered option handlers.\" :PUBLIC? TRUE)", ((cpp_function_code)(&helpOptionHandler)), NULL);
-      defineFunctionObject("STARTUP-SYSTEMS", "(DEFUN STARTUP-SYSTEMS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupSystems)), NULL);
-      { MethodSlot* function = lookupFunction(SYM_SYSTEMS_STELLA_STARTUP_SYSTEMS);
-
-        setDynamicSlotValue(function->dynamicSlots, SYM_SYSTEMS_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupSystems"), NULL_STRING_WRAPPER);
-      }
+      helpStartupSystems4();
     }
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
@@ -3685,6 +3868,8 @@ void startupSystems() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SYSTEMDEFINITIONS* (LIST OF SYSTEM-DEFINITION) (NEW LIST) :DOCUMENTATION \"A list of all defined systems.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CURRENT-SYSTEM-ACTION* PROPERTY-LIST NULL :DOCUMENTATION \"Holds the action and options of the current system action\nsuch as :make-system, :load-system or :translate-system.  This is used to\nperform the appropriate actions on required systems in `define-system'.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SYSTEM-CONFIGURATION-TABLE* CONFIGURATION-TABLE (NEW CONFIGURATION-TABLE))");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *REGISTERED-PROPERTY-DEMONS* (KEY-VALUE-MAP OF STRING-WRAPPER MAPPABLE-OBJECT) (NEW KEY-VALUE-MAP))");
+      registerPropertyDemon("stella.test.propertyDemon", SYM_SYSTEMS_STELLA_TEST_PROPERTY_DEMON);
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *REGISTERED-COMMAND-LINE-OPTIONS* (KEY-VALUE-MAP OF STRING-WRAPPER CMD-LINE-OPTION) (NEW KEY-VALUE-MAP))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *UNPROCESSED-COMMAND-LINE-ARGUMENTS* (CONS OF STRING-WRAPPER) NULL)");
       registerCmdLineOption(14, KWD_SYSTEMS_KEY, wrapString("-e"), KWD_SYSTEMS_KEY2, wrapString("--eval"), KWD_SYSTEMS_KEY3, wrapString("-eval"), KWD_SYSTEMS_DOCUMENTATION, wrapString("<s-expression>\n  Evaluate the STELLA <s-expression> in the current module."), KWD_SYSTEMS_N_ARGUMENTS, wrapInteger(1), KWD_SYSTEMS_HANDLER, SYM_SYSTEMS_STELLA_EVAL_OPTION_HANDLER, KWD_SYSTEMS_ERROR_ACTION, KWD_SYSTEMS_WARN);
@@ -3838,6 +4023,8 @@ Keyword* KWD_SYSTEMS_EARLY_INITS = NULL;
 
 Keyword* KWD_SYSTEMS_MODULES = NULL;
 
+Symbol* SYM_SYSTEMS_STELLA_DEFINE_MODULE_FROM_STRINGIFIED_SOURCE = NULL;
+
 Keyword* KWD_SYSTEMS_PUBLICp = NULL;
 
 Symbol* SYM_SYSTEMS_STELLA_STARTUP = NULL;
@@ -3868,7 +4055,17 @@ Keyword* KWD_SYSTEMS_ADD = NULL;
 
 Symbol* SYM_SYSTEMS_STELLA_CONFIGURATION_TABLE = NULL;
 
+Keyword* KWD_SYSTEMS_CLEAR = NULL;
+
+Keyword* KWD_SYSTEMS_REMOVE = NULL;
+
 Keyword* KWD_SYSTEMS_ROOT_DIRECTORY = NULL;
+
+Surrogate* SGT_SYSTEMS_STELLA_GLOBAL_VARIABLE = NULL;
+
+Surrogate* SGT_SYSTEMS_STELLA_LONG_INTEGER = NULL;
+
+Symbol* SYM_SYSTEMS_STELLA_TEST_PROPERTY_DEMON = NULL;
 
 Keyword* KWD_SYSTEMS_ERROR = NULL;
 

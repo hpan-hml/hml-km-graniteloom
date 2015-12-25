@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -109,7 +109,7 @@ LogicObject* newLogicObject() {
     self->dynamicSlots = newKeyValueList();
     self->surrogateValueInverse = NULL;
     self->variableValueInverse = NULL;
-    self->homeContext = oMODULEo.get();
+    self->homeContext = oMODULEo;
     logLogicObject(self);
     return (self);
   }
@@ -277,8 +277,8 @@ void logLogicObject(LogicObject* self) {
       isaP(self, SGT_PROPOSITIONS_LOGIC_PATTERN_VARIABLE)) {
     return;
   }
-  if (!oLOADINGREGENERABLEOBJECTSpo.get()) {
-    locallyConceivedInstances(oCONTEXTo.get())->push(self);
+  if (!oLOADINGREGENERABLEOBJECTSpo) {
+    locallyConceivedInstances(oCONTEXTo)->push(self);
   }
 }
 
@@ -290,7 +290,7 @@ Skolem* newSkolem() {
     self->dynamicSlots = newKeyValueList();
     self->surrogateValueInverse = NULL;
     self->variableValueInverse = NULL;
-    self->homeContext = oMODULEo.get();
+    self->homeContext = oMODULEo;
     self->definingProposition = NULL;
     self->variableValue = NULL;
     self->skolemName = NULL;
@@ -368,7 +368,7 @@ PatternVariable* newPatternVariable() {
     self->dynamicSlots = newKeyValueList();
     self->surrogateValueInverse = NULL;
     self->variableValueInverse = NULL;
-    self->homeContext = oMODULEo.get();
+    self->homeContext = oMODULEo;
     self->definingProposition = NULL;
     self->variableValue = NULL;
     self->skolemType = NULL;
@@ -522,7 +522,7 @@ Description* newDescription() {
     self->dynamicSlots = newKeyValueList();
     self->surrogateValueInverse = NULL;
     self->variableValueInverse = NULL;
-    self->homeContext = oMODULEo.get();
+    self->homeContext = oMODULEo;
     self->queryPatterns = NULL;
     self->internalVariables = ZERO_VARIABLES_VECTOR;
     self->ioVariables = NULL;
@@ -649,7 +649,7 @@ NamedDescription* newNamedDescription() {
     self->dynamicSlots = newKeyValueList();
     self->surrogateValueInverse = NULL;
     self->variableValueInverse = NULL;
-    self->homeContext = oMODULEo.get();
+    self->homeContext = oMODULEo;
     self->queryPatterns = NULL;
     self->internalVariables = ZERO_VARIABLES_VECTOR;
     self->ioVariables = NULL;
@@ -745,7 +745,7 @@ TruthValue* newTruthValue() {
     self->dynamicSlots = newKeyValueList();
     self->surrogateValueInverse = NULL;
     self->variableValueInverse = NULL;
-    self->homeContext = oMODULEo.get();
+    self->homeContext = oMODULEo;
     self->positiveScore = 0.0;
     self->strength = NULL;
     self->polarity = KWD_PROPOSITIONS_UNKNOWN;
@@ -880,7 +880,7 @@ Proposition* newProposition() {
     self->arguments = NULL;
     self->truthValue = NULL;
     self->kind = NULL;
-    self->homeContext = oMODULEo.get();
+    self->homeContext = oMODULEo;
     return (self);
   }
 }
@@ -1172,7 +1172,7 @@ Object* accessQuantityLogicWrapperSlotValue(QuantityLogicWrapper* self, Symbol* 
 void QuantityLogicWrapper::printObject(std::ostream* stream) {
   { QuantityLogicWrapper* self = this;
 
-    if (oPRINTREADABLYpo.get()) {
+    if (oPRINTREADABLYpo) {
       *(stream) << self->wrapperValue;
     }
     else {
@@ -1201,7 +1201,7 @@ Surrogate* IntegerLogicWrapper::primaryType() {
 void IntegerLogicWrapper::printObject(std::ostream* stream) {
   { IntegerLogicWrapper* self = this;
 
-    if (oPRINTREADABLYpo.get()) {
+    if (oPRINTREADABLYpo) {
       *(stream) << self->wrapperValue;
     }
     else {
@@ -1230,7 +1230,7 @@ Surrogate* FloatLogicWrapper::primaryType() {
 void FloatLogicWrapper::printObject(std::ostream* stream) {
   { FloatLogicWrapper* self = this;
 
-    if (oPRINTREADABLYpo.get()) {
+    if (oPRINTREADABLYpo) {
       *(stream) << self->wrapperValue;
     }
     else {
@@ -1261,7 +1261,7 @@ void StringLogicWrapper::printObject(std::ostream* stream) {
 
     { char* value = self->wrapperValue;
 
-      if (oPRINTREADABLYpo.get()) {
+      if (oPRINTREADABLYpo) {
         printStringReadably(value, stream);
       }
       else {
@@ -1448,12 +1448,12 @@ Proposition* createProposition(Symbol* kind, int argumentcount) {
 }
 
 void enforceCodeOnly() {
-  if (((BooleanWrapper*)(dynamicSlotValue(oMODULEo.get()->dynamicSlots, SYM_PROPOSITIONS_STELLA_CODE_ONLYp, FALSE_WRAPPER)))->wrapperValue) {
+  if (((BooleanWrapper*)(dynamicSlotValue(oMODULEo->dynamicSlots, SYM_PROPOSITIONS_STELLA_CODE_ONLYp, FALSE_WRAPPER)))->wrapperValue) {
     { OutputStringStream* stream000 = newOutputStringStream();
 
       { 
         BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-        *(stream000->nativeStream) << "ERROR: " << "Can't create a relation, instance or proposition in module:" << std::endl << "       " << "`" << oMODULEo.get()->moduleName << "'" << std::endl << "    because it is marked as 'code-only?'" << std::endl << "." << std::endl;
+        *(stream000->nativeStream) << "ERROR: " << "Can't create a relation, instance or proposition in module:" << std::endl << "       " << "`" << oMODULEo->moduleName << "'" << std::endl << "    because it is marked as 'code-only?'" << std::endl << "." << std::endl;
         helpSignalPropositionError(stream000, KWD_PROPOSITIONS_ERROR);
       }
       throw *newPropositionError(stream000->theStringReader());
@@ -1478,6 +1478,151 @@ Surrogate* getPropositionBaseOperator(Proposition* prop) {
     }
   }
   return (((Surrogate*)(prop->operatoR)));
+}
+
+LogicException* newLogicException(char* message) {
+  { LogicException* self = NULL;
+
+    self = new LogicException(message);
+    return (self);
+  }
+}
+
+PropositionError* newPropositionError(char* message) {
+  { PropositionError* self = NULL;
+
+    self = new PropositionError(message);
+    return (self);
+  }
+}
+
+ParsingError* newParsingError(char* message) {
+  { ParsingError* self = NULL;
+
+    self = new ParsingError(message);
+    return (self);
+  }
+}
+
+Clash* newClash(char* message) {
+  { Clash* self = NULL;
+
+    self = new Clash(message);
+    self->context = NULL;
+    self->proposition = NULL;
+    return (self);
+  }
+}
+
+TruthValueClash* newTruthValueClash(char* message) {
+  { TruthValueClash* self = NULL;
+
+    self = new TruthValueClash(message);
+    self->context = NULL;
+    self->proposition = NULL;
+    return (self);
+  }
+}
+
+IntervalClash* newIntervalClash(char* message) {
+  { IntervalClash* self = NULL;
+
+    self = new IntervalClash(message);
+    self->context = NULL;
+    self->proposition = NULL;
+    self->strictUpperBoundP = false;
+    self->strictLowerBoundP = false;
+    self->upperBound = NULL;
+    self->lowerBound = NULL;
+    self->intervalMember = NULL;
+    return (self);
+  }
+}
+
+VariableValueClash* newVariableValueClash(char* message) {
+  { VariableValueClash* self = NULL;
+
+    self = new VariableValueClash(message);
+    self->context = NULL;
+    self->proposition = NULL;
+    self->value2 = NULL;
+    self->value1 = NULL;
+    self->skolem = NULL;
+    return (self);
+  }
+}
+
+UnificationClash* newUnificationClash(char* message) {
+  { UnificationClash* self = NULL;
+
+    self = new UnificationClash(message);
+    self->context = NULL;
+    self->proposition = NULL;
+    self->value2 = NULL;
+    self->value1 = NULL;
+    return (self);
+  }
+}
+
+FailException* newFailException(char* message) {
+  { FailException* self = NULL;
+
+    self = new FailException(message);
+    return (self);
+  }
+}
+
+QueryThreadLimitViolation* newQueryThreadLimitViolation(char* message) {
+  { QueryThreadLimitViolation* self = NULL;
+
+    self = new QueryThreadLimitViolation(message);
+    return (self);
+  }
+}
+
+ExceptionRecord* newExceptionRecord() {
+  { ExceptionRecord* self = NULL;
+
+    self = new ExceptionRecord();
+    self->module = NULL;
+    self->context = NULL;
+    self->exception = NULL;
+    return (self);
+  }
+}
+
+Surrogate* ExceptionRecord::primaryType() {
+  { ExceptionRecord* self = this;
+
+    return (SGT_PROPOSITIONS_LOGIC_EXCEPTION_RECORD);
+  }
+}
+
+Object* accessExceptionRecordSlotValue(ExceptionRecord* self, Symbol* slotname, Object* value, boolean setvalueP) {
+  if (slotname == SYM_PROPOSITIONS_STELLA_CONTEXT) {
+    if (setvalueP) {
+      self->context = ((Context*)(value));
+    }
+    else {
+      value = self->context;
+    }
+  }
+  else if (slotname == SYM_PROPOSITIONS_STELLA_MODULE) {
+    if (setvalueP) {
+      self->module = ((Module*)(value));
+    }
+    else {
+      value = self->module;
+    }
+  }
+  else {
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "`" << slotname << "'" << " is not a valid case option";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
+  return (value);
 }
 
 Module* oLOGIC_MODULEo = NULL;
@@ -1589,8 +1734,8 @@ void updateNowTimestamp(Keyword* kbaction) {
   }
   if (kbaction == KWD_PROPOSITIONS_UPDATE_PROPOSITION) {
     if (descriptionModeP() ||
-        ((!(oMODULEo.get() == oCONTEXTo.get())) ||
-         oINVISIBLEASSERTIONpo.get())) {
+        ((!(oMODULEo == oCONTEXTo)) ||
+         oINVISIBLEASSERTIONpo)) {
       return;
     }
     incrementNowTimestamp();
@@ -1665,7 +1810,7 @@ boolean logicalSubtypeOfLiteralP(Surrogate* type) {
               initializeMemoizationTable(SGT_PROPOSITIONS_LOGIC_F_LOGICAL_SUBTYPE_OF_LITERALp_MEMO_TABLE_000, "(:MAX-VALUES 10 :TIMESTAMPS (:META-KB-UPDATE))");
               memoTable000 = ((MemoizationTable*)(SGT_PROPOSITIONS_LOGIC_F_LOGICAL_SUBTYPE_OF_LITERALp_MEMO_TABLE_000->surrogateValue));
             }
-            memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), oCONTEXTo.get(), MEMOIZED_NULL_VALUE, NULL, NULL, -1);
+            memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), oCONTEXTo, MEMOIZED_NULL_VALUE, NULL, NULL, -1);
             memoizedValue000 = memoizedEntry000->value;
           }
           if (((boolean)(memoizedValue000))) {
@@ -1702,6 +1847,10 @@ boolean literalTypeP(Surrogate* type) {
 boolean booleanTypeP(Surrogate* self) {
   return ((self == SGT_PROPOSITIONS_STELLA_BOOLEAN) ||
       (self == SGT_PROPOSITIONS_STELLA_BOOLEAN_WRAPPER));
+}
+
+boolean propositionTypeP(Surrogate* self) {
+  return (self == SGT_PROPOSITIONS_LOGIC_PROPOSITION);
 }
 
 boolean classDescriptionP(NamedDescription* self) {
@@ -1881,7 +2030,7 @@ char* objectStringName(Object* self) {
 DEFINE_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword* , NULL);
 
 boolean descriptionModeP() {
-  return (oEVALUATIONMODEo.get() == KWD_PROPOSITIONS_DESCRIPTION);
+  return (oEVALUATIONMODEo == KWD_PROPOSITIONS_DESCRIPTION);
 }
 
 // When enabled, slot-value assertions can be retracted
@@ -1895,7 +2044,7 @@ DEFINE_STELLA_SPECIAL(oNATURALDEDUCTIONMODEpo, boolean , true);
 boolean naturalDeductionModeP() {
   // True if normalization is governed by natural
   // deduction semantics.
-  return (oNATURALDEDUCTIONMODEpo.get());
+  return (oNATURALDEDUCTIONMODEpo);
 }
 
 // Signals that we are performing search across multiple
@@ -1973,12 +2122,12 @@ void clipOrClashWithOldPredicateValue(Proposition* proposition) {
           if (alwaysP000) {
             if (eqlP(valueOf((p->arguments->theArray)[(p->arguments->length() - 1)]), valueOf(arguments->last()))) {
             }
-            else if (oCLIPPINGENABLEDpo.get() &&
-                worldStateP(oCONTEXTo.get())) {
+            else if (oCLIPPINGENABLEDpo &&
+                worldStateP(oCONTEXTo)) {
               deassignTruthValue(p, KWD_PROPOSITIONS_RETRACT_TRUE);
             }
             else {
-              equateValues(valueOf((p->arguments->theArray)[(p->arguments->length() - 1)]), valueOf(arguments->last()));
+              equateValues(proposition, valueOf((p->arguments->theArray)[(p->arguments->length() - 1)]), valueOf(arguments->last()));
             }
           }
         }
@@ -1994,7 +2143,7 @@ void runUpdateEquivalencePropositionDemon(Proposition* proposition, Keyword* upd
     Object* demoncomputation = (((boolean)(description)) ? accessBinaryValue(description, SGT_PROPOSITIONS_PL_KERNEL_KB_UPDATE_PROPOSITION_DEMON) : ((Object*)(NULL)));
 
     if (((boolean)(demoncomputation))) {
-      { cpp_function_code functioncode = functionCodeFromProcedure(demoncomputation);
+      { cpp_function_code functioncode = functionCodeFromProcedure(((ComputedProcedure*)(demoncomputation)));
 
         if (functioncode != NULL) {
           ((void  (*) (Proposition*, Keyword*))functioncode)(proposition, updatemode);
@@ -2009,7 +2158,7 @@ void helpRunUpdatePropositionDemon(Proposition* proposition, Keyword* updatemode
     Object* demoncomputation = (((boolean)(description)) ? accessBinaryValue(description, SGT_PROPOSITIONS_PL_KERNEL_KB_UPDATE_PROPOSITION_DEMON) : ((Object*)(NULL)));
 
     if (((boolean)(demoncomputation))) {
-      { cpp_function_code functioncode = functionCodeFromProcedure(demoncomputation);
+      { cpp_function_code functioncode = functionCodeFromProcedure(((ComputedProcedure*)(demoncomputation)));
 
         if (functioncode != NULL) {
           ((void  (*) (Proposition*, Keyword*))functioncode)(proposition, updatemode);
@@ -2020,8 +2169,8 @@ void helpRunUpdatePropositionDemon(Proposition* proposition, Keyword* updatemode
 }
 
 void runUpdatePropositionDemon(Proposition* proposition, Keyword* updatemode) {
-  if (((boolean)(((ObjectStore*)(dynamicSlotValue(oMODULEo.get()->dynamicSlots, SYM_PROPOSITIONS_LOGIC_OBJECT_STORE, NULL)))))) {
-    ((ObjectStore*)(dynamicSlotValue(oMODULEo.get()->dynamicSlots, SYM_PROPOSITIONS_LOGIC_OBJECT_STORE, NULL)))->updatePropositionInStore(proposition, updatemode);
+  if (((boolean)(((ObjectStore*)(dynamicSlotValue(oMODULEo->dynamicSlots, SYM_PROPOSITIONS_LOGIC_OBJECT_STORE, NULL)))))) {
+    ((ObjectStore*)(dynamicSlotValue(oMODULEo->dynamicSlots, SYM_PROPOSITIONS_LOGIC_OBJECT_STORE, NULL)))->updatePropositionInStore(proposition, updatemode);
   }
   if (proposition->kind == KWD_PROPOSITIONS_EQUIVALENT) {
     runUpdateEquivalencePropositionDemon(proposition, updatemode);
@@ -2036,7 +2185,7 @@ void runTruthChangeDemon(Proposition* proposition, Surrogate* truthchangerelatio
     Object* demoncomputation = (((boolean)(description)) ? accessBinaryValue(description, truthchangerelation) : ((Object*)(NULL)));
 
     if (((boolean)(demoncomputation))) {
-      { cpp_function_code functioncode = functionCodeFromProcedure(demoncomputation);
+      { cpp_function_code functioncode = functionCodeFromProcedure(((ComputedProcedure*)(demoncomputation)));
 
         if (functioncode != NULL) {
           ((void  (*) (Proposition*))functioncode)(proposition);
@@ -2071,7 +2220,7 @@ void runGoesTrueDemons(Proposition* proposition) {
         addTaxonomyImpliesSubsumesLink(((Description*)((proposition->arguments->theArray)[0])), ((Description*)((proposition->arguments->theArray)[1])));
       }
       reviseEquivalences(proposition, true);
-      if (oMODULEo.get() == oCONTEXTo.get()) {
+      if (oMODULEo == oCONTEXTo) {
         bumpInferableTimestamp();
       }
       flushInferableDirectSubdescriptionsCache(proposition);
@@ -2252,8 +2401,8 @@ void assignTruthValue(Proposition* self, Object* truthvalue) {
         }
       }
       else if (newtruthvalue == DEFAULT_TRUE_TRUTH_VALUE) {
-        if (oDEFERINGDEFAULTFORWARDINFERENCESpo.get()) {
-          getPropagationEnvironment(oCONTEXTo.get())->deferDefaultProposition(self);
+        if (oDEFERINGDEFAULTFORWARDINFERENCESpo) {
+          getPropagationEnvironment(oCONTEXTo)->deferDefaultProposition(self);
           return;
         }
         else if ((oldtruthvalue == TRUE_TRUTH_VALUE) ||
@@ -2264,8 +2413,8 @@ void assignTruthValue(Proposition* self, Object* truthvalue) {
         }
       }
       else if (newtruthvalue == DEFAULT_FALSE_TRUTH_VALUE) {
-        if (oDEFERINGDEFAULTFORWARDINFERENCESpo.get()) {
-          getPropagationEnvironment(oCONTEXTo.get())->deferDefaultProposition(self);
+        if (oDEFERINGDEFAULTFORWARDINFERENCESpo) {
+          getPropagationEnvironment(oCONTEXTo)->deferDefaultProposition(self);
           return;
         }
         else if ((oldtruthvalue == FALSE_TRUTH_VALUE) ||
@@ -2338,7 +2487,7 @@ void assignTruthValue(Proposition* self, Object* truthvalue) {
       else if (newtruthvalue == DEFAULT_FALSE_TRUTH_VALUE) {
         updateLinksAndTimestamps(self, KWD_PROPOSITIONS_PRESUME_FALSE);
       }
-      reactToKbUpdate(oCONTEXTo.get(), self);
+      reactToKbUpdate(oCONTEXTo, self);
     }
   }
 }
@@ -2434,7 +2583,7 @@ Context* tickleContext() {
 
     assertProperty(description, SGT_PROPOSITIONS_PL_KERNEL_KB_HIDDEN_RELATION);
     updateProperty(description, SGT_PROPOSITIONS_PL_KERNEL_KB_HIDDEN_RELATION, KWD_PROPOSITIONS_RETRACT_TRUE);
-    return (oCONTEXTo.get());
+    return (oCONTEXTo);
   }
 }
 
@@ -2445,9 +2594,28 @@ Context* tickleInstances() {
 
       assertProperty(((LogicObject*)(instance)), SGT_PROPOSITIONS_PL_KERNEL_KB_HIDDEN_RELATION);
       updateProperty(((LogicObject*)(instance)), SGT_PROPOSITIONS_PL_KERNEL_KB_HIDDEN_RELATION, KWD_PROPOSITIONS_RETRACT_TRUE);
-      return (oCONTEXTo.get());
+      return (oCONTEXTo);
     }
   }
+}
+
+Cons* listInconsistentPropositions(Cons* options) {
+  // Return a list of all currently known inconsistent proposition in the module defined
+  // by the :module option (which defaults to the current module).  If `:local?' is specified
+  // as TRUE only look in the specified module but not any modules it inherits.  Note, that
+  // this simply reports propositions that have been assigned an inconsistent truth value so
+  // far (e.g., in clash exceptions), it will not try to detect any new or all inconsistencies
+  // in a module.
+  { PropertyList* theoptions = parseOptions(options, listO(5, KWD_PROPOSITIONS_MODULE, SGT_PROPOSITIONS_STELLA_MODULE, KWD_PROPOSITIONS_LOCALp, SGT_PROPOSITIONS_STELLA_BOOLEAN, NIL), true, false);
+    Module* themodule = ((Module*)(theoptions->lookupWithDefault(KWD_PROPOSITIONS_MODULE, oMODULEo)));
+    boolean localP = coerceWrappedBooleanToBoolean(((BooleanWrapper*)(theoptions->lookupWithDefault(KWD_PROPOSITIONS_LOCALp, FALSE_WRAPPER))));
+
+    return (allInconsistentPropositions(themodule, localP)->consify());
+  }
+}
+
+Cons* listInconsistentPropositionsEvaluatorWrapper(Cons* arguments) {
+  return (listInconsistentPropositions(arguments));
 }
 
 void reactToSkolemValueUpdate(Skolem* skolem, Object* oldvalue, Object* newvalue, boolean toplevelupdateP) {
@@ -2459,7 +2627,7 @@ void reactToSkolemValueUpdate(Skolem* skolem, Object* oldvalue, Object* newvalue
         Object* nativefirstargvalue = valueOf((proposition->arguments->theArray)[0]);
 
         if (((boolean)(newvalue))) {
-          assignNativeSlotValue(((Thing*)(nativefirstargvalue)), ((StorageSlot*)(slot)), newvalue);
+          assignNativeSlotValue(proposition, ((Thing*)(nativefirstargvalue)), ((StorageSlot*)(slot)), newvalue);
         }
         else {
           dropNativeSlotValue(((Thing*)(nativefirstargvalue)), ((StorageSlot*)(slot)), oldvalue);
@@ -2513,10 +2681,10 @@ Cons* updateNativeSlotProposition(Proposition* proposition, Keyword* updatemode)
     Object* value = valueOf((proposition->arguments->theArray)[1]);
 
     if (updatemode == KWD_PROPOSITIONS_ASSERT_TRUE) {
-      if (oCLIPPINGENABLEDpo.get()) {
+      if (oCLIPPINGENABLEDpo) {
         clearNativeSlotValue(((Thing*)(object)), ((StorageSlot*)(slot)));
       }
-      assignNativeSlotValue(((Thing*)(object)), ((StorageSlot*)(slot)), value);
+      assignNativeSlotValue(proposition, ((Thing*)(object)), ((StorageSlot*)(slot)), value);
     }
     else if (updatemode == KWD_PROPOSITIONS_RETRACT_TRUE) {
       dropNativeSlotValue(((Thing*)(object)), ((StorageSlot*)(slot)), value);
@@ -2528,7 +2696,7 @@ Cons* updateNativeSlotProposition(Proposition* proposition, Keyword* updatemode)
   }
 }
 
-void assignNativeSlotValue(Thing* self, StorageSlot* slot, Object* value) {
+void assignNativeSlotValue(Proposition* prop, Thing* self, StorageSlot* slot, Object* value) {
   if (skolemP(value)) {
     return;
   }
@@ -2538,7 +2706,7 @@ void assignNativeSlotValue(Thing* self, StorageSlot* slot, Object* value) {
       return;
     }
     if (((boolean)(oldvalue))) {
-      signalUnificationClash(oldvalue, value);
+      signalUnificationClash(prop, oldvalue, value);
     }
     putSlotValue(self, slot, value);
   }
@@ -2679,7 +2847,7 @@ Object* surrogateDvalueOf(Surrogate* self) {
             }
           }
         }
-        if (!(oSUPPRESSNONLOGICOBJECTWARNINGpo.get())) {
+        if (!(oSUPPRESSNONLOGICOBJECTWARNINGpo)) {
           signalUndefinedTerm(wrapString(self->symbolName));
         }
         return (NULL);
@@ -2706,7 +2874,7 @@ Description* relationDvalueOf(Relation* self) {
     if (((boolean)(description))) {
       return (description);
     }
-    if (!(oSUPPRESSNONLOGICOBJECTWARNINGpo.get())) {
+    if (!(oSUPPRESSNONLOGICOBJECTWARNINGpo)) {
       { 
         BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
         *(STANDARD_WARNING->nativeStream) << "WARNING: " << "value-of: encountered missing description on class or relation " << self->name() << std::endl;
@@ -2752,8 +2920,8 @@ Object* groundValueOf(Object* self) {
         { Object* value = NULL;
 
           if ((self->boundToOffset != NULL_INTEGER) &&
-              oCOMPUTEDQUERYpo.get()) {
-            value = (oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(self->boundToOffset)];
+              oCOMPUTEDQUERYpo) {
+            value = (oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(self->boundToOffset)];
           }
           if (!((boolean)(value))) {
             value = ((Object*)(accessInContext(self->variableValue, self->homeContext, false)));
@@ -3000,7 +3168,7 @@ int oSKOLEM_ID_COUNTERo = 0;
 DEFINE_STELLA_SPECIAL(oVARIABLEIDCOUNTERo, int , 0);
 
 Symbol* yieldAnonymousSkolemName(boolean variableP) {
-  { char* suffix = (variableP ? integerToString(((long long int)(oVARIABLEIDCOUNTERo.set(oVARIABLEIDCOUNTERo.get() + 1)))) : integerToString(((long long int)(oSKOLEM_ID_COUNTERo = oSKOLEM_ID_COUNTERo + 1))));
+  { char* suffix = (variableP ? integerToString(((long long int)(oVARIABLEIDCOUNTERo = oVARIABLEIDCOUNTERo + 1))) : integerToString(((long long int)(oSKOLEM_ID_COUNTERo = oSKOLEM_ID_COUNTERo + 1))));
 
     return (internSymbol(stringConcatenate((variableP ? (char*)"?V" : (char*)"SK"), ((strlen(suffix) == 1) ? (char*)"0" : (char*)""), 1, suffix)));
   }
@@ -3025,8 +3193,8 @@ Skolem* helpCreateSkolem(Skolem* self, Surrogate* type, Symbol* name, boolean as
 Skolem* createSkolem(Surrogate* type, Symbol* name) {
   { Skolem* skolem = newSkolem();
 
-    if (((boolean)(oFREESKOLEMSo.get()))) {
-      oFREESKOLEMSo.set(cons(skolem, oFREESKOLEMSo.get()));
+    if (((boolean)(oFREESKOLEMSo))) {
+      oFREESKOLEMSo = cons(skolem, oFREESKOLEMSo);
     }
     helpCreateSkolem(skolem, type, name, true);
     return (skolem);
@@ -3034,13 +3202,13 @@ Skolem* createSkolem(Surrogate* type, Symbol* name) {
 }
 
 PatternVariable* createVariable(Surrogate* type, Symbol* name, boolean assertisaP) {
-  { Keyword* evaluationmode = oEVALUATIONMODEo.get();
+  { Keyword* evaluationmode = oEVALUATIONMODEo;
 
     { 
       BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, evaluationmode);
       if (assertisaP &&
           (!descriptionModeP())) {
-        oEVALUATIONMODEo.set(KWD_PROPOSITIONS_DESCRIPTION);
+        oEVALUATIONMODEo = KWD_PROPOSITIONS_DESCRIPTION;
       }
       return (((PatternVariable*)(helpCreateSkolem(newPatternVariable(), type, name, assertisaP))));
     }
@@ -3112,13 +3280,13 @@ boolean trueP(Proposition* self) {
       return (true);
     }
     else if (truthvalue == DEFAULT_TRUE_TRUTH_VALUE) {
-      if (!oDONTUSEDEFAULTKNOWLEDGEpo.get()) {
+      if (!oDONTUSEDEFAULTKNOWLEDGEpo) {
         return (true);
       }
     }
     else if (((boolean)(truthvalue)) &&
         ((truthvalue->polarity == KWD_PROPOSITIONS_TRUE) &&
-         ((!oDONTUSEDEFAULTKNOWLEDGEpo.get()) ||
+         ((!oDONTUSEDEFAULTKNOWLEDGEpo) ||
           (truthvalue->strength == KWD_PROPOSITIONS_STRICT)))) {
       return (true);
     }
@@ -3135,13 +3303,13 @@ boolean falseP(Proposition* self) {
       return (true);
     }
     else if (truthvalue == DEFAULT_FALSE_TRUTH_VALUE) {
-      if (!oDONTUSEDEFAULTKNOWLEDGEpo.get()) {
+      if (!oDONTUSEDEFAULTKNOWLEDGEpo) {
         return (true);
       }
     }
     else if (((boolean)(truthvalue)) &&
         ((truthvalue->polarity == KWD_PROPOSITIONS_FALSE) &&
-         ((!oDONTUSEDEFAULTKNOWLEDGEpo.get()) ||
+         ((!oDONTUSEDEFAULTKNOWLEDGEpo) ||
           (truthvalue->strength == KWD_PROPOSITIONS_STRICT)))) {
       return (true);
     }
@@ -3155,7 +3323,7 @@ boolean unknownP(Proposition* self) {
 
     return (((tv == UNKNOWN_TRUTH_VALUE) ||
         (!((boolean)(tv)))) ||
-        (((!(!oDONTUSEDEFAULTKNOWLEDGEpo.get())) &&
+        (((!(!oDONTUSEDEFAULTKNOWLEDGEpo)) &&
         ((tv == DEFAULT_TRUE_TRUTH_VALUE) ||
          (tv == DEFAULT_FALSE_TRUTH_VALUE))) ||
          (tv == INCONSISTENT_TRUTH_VALUE)));
@@ -3265,6 +3433,111 @@ TruthValue* invertTruthValue(TruthValue* self) {
   }
 }
 
+boolean strongerTruthValueP(TruthValue* tv1, TruthValue* tv2) {
+  // Compare the two truth values and return `true' if `tv1' is strictly
+  // stronger than `tv2'.  Stronger uses the following partial order:
+  //   INCONSISTENT > STRICT > DEFAULT > UNKNOWN.
+  // Truth values at the same level are equal in strength.
+  if (tv1 == tv2) {
+    return (false);
+  }
+  else if (tv1 == INCONSISTENT_TRUTH_VALUE) {
+    return (!(tv2 == INCONSISTENT_TRUTH_VALUE));
+  }
+  else if (tv2 == INCONSISTENT_TRUTH_VALUE) {
+    return (false);
+  }
+  else if ((tv1 == TRUE_TRUTH_VALUE) ||
+      (tv1 == FALSE_TRUTH_VALUE)) {
+    return (!((tv2 == TRUE_TRUTH_VALUE) ||
+        (tv2 == FALSE_TRUTH_VALUE)));
+  }
+  else if ((tv2 == TRUE_TRUTH_VALUE) ||
+      (tv2 == FALSE_TRUTH_VALUE)) {
+    return (false);
+  }
+  else if ((tv1 == DEFAULT_TRUE_TRUTH_VALUE) ||
+      (tv1 == DEFAULT_FALSE_TRUTH_VALUE)) {
+    return (!((tv2 == DEFAULT_TRUE_TRUTH_VALUE) ||
+        (tv2 == DEFAULT_FALSE_TRUTH_VALUE)));
+  }
+  else if ((tv2 == DEFAULT_TRUE_TRUTH_VALUE) ||
+      (tv2 == DEFAULT_FALSE_TRUTH_VALUE)) {
+    return (false);
+  }
+  else if (((tv1 == UNKNOWN_TRUTH_VALUE) ||
+      (!((boolean)(tv1)))) &&
+      ((tv2 == UNKNOWN_TRUTH_VALUE) ||
+       (!((boolean)(tv2))))) {
+    return (false);
+  }
+  else {
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "Internal Error: STRONGER-TRUTH-VALUE?: Shouldn't get here. tv1=" << "`" << tv1 << "'" << " tv2=" << "`" << tv2 << "'";
+      throw *newLogicException(stream000->theStringReader());
+    }
+  }
+}
+
+TruthValue* mergeTruthValues(TruthValue* tv1, TruthValue* tv2) {
+  // Merge two truth values that are describing the "same" logical
+  // proposition.  This handles subordination of default to strict values, 
+  // known over unknown and potential inconsistent values.
+  // 
+  // In particular, this can be used to check for negated values by asking for
+  // the truth of a proposition and its negation, inverting the negation and then
+  // using merge to come up with an answer.
+  if (tv1 == tv2) {
+    return (tv1);
+  }
+  else if ((tv1 == INCONSISTENT_TRUTH_VALUE) ||
+      (tv2 == INCONSISTENT_TRUTH_VALUE)) {
+    return (INCONSISTENT_TRUTH_VALUE);
+  }
+  else if (((tv1 == TRUE_TRUTH_VALUE) ||
+      (tv1 == FALSE_TRUTH_VALUE)) &&
+      ((tv2 == DEFAULT_TRUE_TRUTH_VALUE) ||
+       (tv2 == DEFAULT_FALSE_TRUTH_VALUE))) {
+    return (tv1);
+  }
+  else if (((tv1 == DEFAULT_TRUE_TRUTH_VALUE) ||
+      (tv1 == DEFAULT_FALSE_TRUTH_VALUE)) &&
+      ((tv2 == TRUE_TRUTH_VALUE) ||
+       (tv2 == FALSE_TRUTH_VALUE))) {
+    return (tv2);
+  }
+  else if (knownTruthValueP(tv1) &&
+      ((tv2 == UNKNOWN_TRUTH_VALUE) ||
+       (!((boolean)(tv2))))) {
+    return (tv1);
+  }
+  else if (((tv1 == UNKNOWN_TRUTH_VALUE) ||
+      (!((boolean)(tv1)))) &&
+      knownTruthValueP(tv2)) {
+    return (tv2);
+  }
+  else if (((tv1 == DEFAULT_TRUE_TRUTH_VALUE) ||
+      (tv1 == DEFAULT_FALSE_TRUTH_VALUE)) &&
+      ((tv2 == DEFAULT_TRUE_TRUTH_VALUE) ||
+       (tv2 == DEFAULT_FALSE_TRUTH_VALUE))) {
+    return (UNKNOWN_TRUTH_VALUE);
+  }
+  else if (((tv1 == TRUE_TRUTH_VALUE) ||
+      (tv1 == FALSE_TRUTH_VALUE)) &&
+      ((tv2 == TRUE_TRUTH_VALUE) ||
+       (tv2 == FALSE_TRUTH_VALUE))) {
+    return (INCONSISTENT_TRUTH_VALUE);
+  }
+  else {
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "Internal Error: MERGE-TRUTH-VALUES: Shouldn't get here. tv1=" << "`" << tv1 << "'" << " tv2=" << "`" << tv2 << "'";
+      throw *newLogicException(stream000->theStringReader());
+    }
+  }
+}
+
 TruthValue* weakenTruthValue(TruthValue* tv1, TruthValue* tv2) {
   // If `tv2' has lesser strength than `tv1', adapt the strength of `tv1' (not
   // its value!) and return the result.  Otherwise, return `tv1' unmodified.
@@ -3349,55 +3622,98 @@ boolean inconsistentTruthValueP(TruthValue* self) {
   return (self == INCONSISTENT_TRUTH_VALUE);
 }
 
-void printTruthValue(TruthValue* self, OutputStream* stream) {
+char* truthValueToString(TruthValue* self, boolean abbreviateP) {
   if (self == TRUE_TRUTH_VALUE) {
-    *(stream->nativeStream) << "TRUE";
+    return ((abbreviateP ? (char*)"T" : (char*)"TRUE"));
   }
   else if (self == FALSE_TRUTH_VALUE) {
-    *(stream->nativeStream) << "FALSE";
+    return ((abbreviateP ? (char*)"F" : (char*)"FALSE"));
   }
   else if (self == DEFAULT_TRUE_TRUTH_VALUE) {
-    *(stream->nativeStream) << "DEFAULT-TRUE";
+    return ((abbreviateP ? (char*)"t" : (char*)"DEFAULT-TRUE"));
   }
   else if (self == DEFAULT_FALSE_TRUTH_VALUE) {
-    *(stream->nativeStream) << "DEFAULT-FALSE";
+    return ((abbreviateP ? (char*)"f" : (char*)"DEFAULT-FALSE"));
   }
   else if (self == UNKNOWN_TRUTH_VALUE) {
-    *(stream->nativeStream) << "UNKNOWN";
+    return ((abbreviateP ? (char*)"U" : (char*)"UNKNOWN"));
   }
   else if (self == INCONSISTENT_TRUTH_VALUE) {
-    *(stream->nativeStream) << "INCONSISTENT";
+    return ((abbreviateP ? (char*)"#" : (char*)"INCONSISTENT"));
   }
   else {
-    *(stream->nativeStream) << "|i|" << self->primaryType();
+    return (NULL);
   }
 }
 
-void signalUnificationClash(Object* term1, Object* term2) {
-  if (((boolean)(term1)) &&
-      ((boolean)(term2))) {
-    { OutputStringStream* stream000 = newOutputStringStream();
+void printTruthValue(TruthValue* self, OutputStream* stream) {
+  { char* tvString = truthValueToString(self, false);
 
-      *(stream000->nativeStream) << "`" << term1 << "'" << " clashes with " << "`" << term2 << "'";
-      throw *newClash(stream000->theStringReader());
+    if (tvString == NULL) {
+      *(stream->nativeStream) << "|i|" << self->primaryType();
     }
-  }
-  else {
-    throw *newClash("Unification clash.");
+    else {
+      *(stream->nativeStream) << tvString;
+    }
   }
 }
 
-void signalVariableValueClash(Skolem* skolem, Object* value1, Object* value2) {
-  if (((boolean)(value1)) &&
-      ((boolean)(value2))) {
-    { OutputStringStream* stream000 = newOutputStringStream();
+void signalUnificationClash(Proposition* prop, Object* term1, Object* term2) {
+  { char* message = "Unification clash.";
+    UnificationClash* clashObject = NULL;
 
-      *(stream000->nativeStream) << "Skolem " << "`" << skolem << "'" << " is equated with multiple values:" << std::endl << "   " << "`" << value1 << "'" << " and " << "`" << value2 << "'" << ".";
-      throw *newClash(stream000->theStringReader());
+    if (((boolean)(prop))) {
+      assignTruthValue(prop, INCONSISTENT_TRUTH_VALUE);
     }
+    else {
+      *(STANDARD_WARNING->nativeStream) << "Warning: " << "Internal: SIGNAL-UNIFICATION-CLASH doesn't have responsible proposition available." << std::endl;
+    }
+    if (oRECORD_JUSTIFICATIONSpo) {
+      *(STANDARD_WARNING->nativeStream) << "Warning: " << "SIGNAL-UNIFICATION-CLASH doesn't yet have justification support" << std::endl;
+    }
+    if (((boolean)(term1)) &&
+        ((boolean)(term2))) {
+      { char* message000 = NULL;
+
+        { 
+          BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+          message000 = stringConcatenate("`", stringify(term1), 5, "'", " clashes with ", "`", stringify(term2), "'");
+        }
+        message = message000;
+      }
+    }
+    clashObject = newUnificationClash(message);
+    clashObject->proposition = prop;
+    clashObject->context = oCONTEXTo;
+    clashObject->value1 = term1;
+    clashObject->value2 = term2;
+    handleClashException(clashObject);
   }
-  else {
-    throw *newClash("Variable value clash.");
+}
+
+void signalVariableValueClash(Proposition* prop, Skolem* skolem, Object* value1, Object* value2) {
+  assignTruthValue(prop, INCONSISTENT_TRUTH_VALUE);
+  { char* message = "Variable value clash.";
+    VariableValueClash* exception = NULL;
+
+    if (((boolean)(value1)) &&
+        ((boolean)(value2))) {
+      { char* message000 = NULL;
+
+        { 
+          BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+          message000 = stringConcatenate("Skolem ", "`", 13, stringify(skolem), "'", " is equated with multiple values:", "\n", "   ", "`", stringify(value1), "'", " and ", "`", stringify(value2), "'", ".");
+        }
+        message = message000;
+      }
+    }
+    exception = newVariableValueClash(message);
+    exception->proposition = prop;
+    exception->context = oCONTEXTo;
+    exception->skolem = skolem;
+    exception->value1 = value1;
+    exception->value2 = value2;
+    handleClashException(exception);
   }
 }
 
@@ -3405,33 +3721,167 @@ void signalTruthValueClash(Proposition* proposition) {
   if (!((proposition == TRUE_PROPOSITION) ||
       (proposition == FALSE_PROPOSITION))) {
     assignTruthValue(proposition, INCONSISTENT_TRUTH_VALUE);
-  }
-  if (oCONTEXTo.get() == ((World*)(dynamicSlotValue(oMODULEo.get()->dynamicSlots, SYM_PROPOSITIONS_LOGIC_META_INFERENCE_CACHE, NULL)))) {
-    { OutputStringStream* stream000 = newOutputStringStream();
+    if (oRECORD_JUSTIFICATIONSpo) {
+      { Proposition* negatedProposition = conceiveInvertedProposition(proposition);
+        Cons* antecedents = NIL;
 
-      *(stream000->nativeStream) << "Derived both TRUE and FALSE for the proposition " << "`" << proposition << "'" << "." << std::endl << "   Clash occurred in the meta inference cache for module " << "`" << oMODULEo.get() << "'" << ".";
-      throw *newClash(stream000->theStringReader());
+        if (((boolean)(negatedProposition->forwardJustifications_reader())) &&
+            (!negatedProposition->forwardJustifications_reader()->emptyP())) {
+          antecedents = negatedProposition->forwardJustifications_reader()->theConsList;
+        }
+        else {
+          { PrimitiveStrategy* self000 = newPrimitiveStrategy();
+
+            self000->proposition = negatedProposition;
+            self000->strategy = KWD_PROPOSITIONS_LOOKUP_ASSERTIONS;
+            antecedents = cons(self000, antecedents);
+          }
+        }
+        if (((boolean)(proposition->forwardJustifications_reader())) &&
+            (!proposition->forwardJustifications_reader()->emptyP())) {
+          antecedents = append(proposition->forwardJustifications_reader()->theConsList, antecedents);
+        }
+        else {
+          { PrimitiveStrategy* self001 = newPrimitiveStrategy();
+
+            self001->proposition = proposition;
+            self001->strategy = KWD_PROPOSITIONS_LOOKUP_ASSERTIONS;
+            antecedents = cons(self001, antecedents);
+          }
+        }
+        addForwardJustifications(proposition, createClashJustification(proposition, antecedents, KWD_PROPOSITIONS_FORWARD));
+        addForwardJustifications(negatedProposition, createClashJustification(negatedProposition, copyConsList(antecedents)->reverse(), KWD_PROPOSITIONS_FORWARD));
+      }
     }
   }
-  else if (oCONTEXTo.get() == ((World*)(dynamicSlotValue(oMODULEo.get()->dynamicSlots, SYM_PROPOSITIONS_LOGIC_TRUTH_MAINTAINED_INFERENCE_CACHE, NULL)))) {
-    { OutputStringStream* stream001 = newOutputStringStream();
+  { char* message = NULL;
+    Context* exceptionContext = oCONTEXTo;
+    TruthValueClash* exception = NULL;
 
-      *(stream001->nativeStream) << "Derived both TRUE and FALSE for the proposition " << "`" << proposition << "'" << "." << std::endl << "   Clash occurred in the default inference cache for module " << "`" << oMODULEo.get() << "'" << ".";
-      throw *newClash(stream001->theStringReader());
+    if (oCONTEXTo == ((World*)(dynamicSlotValue(oMODULEo->dynamicSlots, SYM_PROPOSITIONS_LOGIC_META_INFERENCE_CACHE, NULL)))) {
+      { char* message000 = NULL;
+
+        { 
+          BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+          message000 = stringConcatenate("Derived both TRUE and FALSE for the proposition ", "`", 9, stringify(proposition), "'", ".", "\n", "   Clash occurred in the meta inference cache for module ", "`", stringify(oMODULEo), "'", ".");
+        }
+        message = message000;
+      }
+    }
+    else if (oCONTEXTo == ((World*)(dynamicSlotValue(oMODULEo->dynamicSlots, SYM_PROPOSITIONS_LOGIC_TRUTH_MAINTAINED_INFERENCE_CACHE, NULL)))) {
+      { char* message001 = NULL;
+
+        { 
+          BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+          message001 = stringConcatenate("Derived both TRUE and FALSE for the proposition ", "`", 9, stringify(proposition), "'", ".", "\n", "   Clash occurred in the default inference cache for module ", "`", stringify(oMODULEo), "'", ".");
+        }
+        message = message001;
+      }
+    }
+    else if (oCONTEXTo == oMODULEo) {
+      { char* message002 = NULL;
+
+        { 
+          BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+          message002 = stringConcatenate("Derived both TRUE and FALSE for the proposition ", "`", 9, stringify(proposition), "'", ".", "\n", "   Clash occurred in module ", "`", stringify(oMODULEo), "'", ".");
+        }
+        message = message002;
+      }
+    }
+    else {
+      { char* message003 = NULL;
+
+        { 
+          BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+          message003 = stringConcatenate("Derived both TRUE and FALSE for the proposition ", "`", 13, stringify(proposition), "'", ".", "\n", "   Clash occurred in the world ", "`", stringify(oCONTEXTo), "'", " in module ", "`", stringify(oMODULEo), "'", ".");
+        }
+        message = message003;
+      }
+    }
+    exception = newTruthValueClash(message);
+    exception->proposition = proposition;
+    exception->context = exceptionContext;
+    handleClashException(exception);
+  }
+}
+
+Cons* Proposition::clashExceptions_reader() {
+  { Proposition* self = this;
+
+    { Cons* answer = ((Cons*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_CLASH_EXCEPTIONS, NULL)));
+
+      if (!((boolean)(answer))) {
+        return (NIL);
+      }
+      else {
+        return (answer);
+      }
     }
   }
-  else if (oCONTEXTo.get() == oMODULEo.get()) {
-    { OutputStringStream* stream002 = newOutputStringStream();
+}
 
-      *(stream002->nativeStream) << "Derived both TRUE and FALSE for the proposition " << "`" << proposition << "'" << "." << std::endl << "   Clash occurred in module " << "`" << oMODULEo.get() << "'" << ".";
-      throw *newClash(stream002->theStringReader());
+Cons* getVisibleClashExceptions(Proposition* incoherentprop) {
+  // Return the set of clash exceptions for 'incoherentProp' that are visible from the
+  // current context.  These are recorded most-recent first in order of occurrance.
+  { Cons* value000 = NIL;
+
+    { ExceptionRecord* record = NULL;
+      Cons* iter000 = incoherentprop->clashExceptions_reader();
+      Cons* collect000 = NULL;
+
+      for  (record, iter000, collect000; 
+            !(iter000 == NIL); 
+            iter000 = iter000->rest) {
+        record = ((ExceptionRecord*)(iter000->value));
+        if ((oCONTEXTo == record->context) ||
+            oCONTEXTo->allSuperContexts->membP(record->context)) {
+          if (!((boolean)(collect000))) {
+            {
+              collect000 = cons(record, NIL);
+              if (value000 == NIL) {
+                value000 = collect000;
+              }
+              else {
+                addConsToEndOfConsList(value000, collect000);
+              }
+            }
+          }
+          else {
+            {
+              collect000->rest = cons(record, NIL);
+              collect000 = collect000->rest;
+            }
+          }
+        }
+      }
+    }
+    { Cons* value001 = value000;
+
+      return (value001);
     }
   }
-  else {
-    { OutputStringStream* stream003 = newOutputStringStream();
+}
 
-      *(stream003->nativeStream) << "Derived both TRUE and FALSE for the proposition " << "`" << proposition << "'" << "." << std::endl << "   Clash occurred in the world " << "`" << oCONTEXTo.get() << "'" << " in module " << "`" << oMODULEo.get() << "'" << ".";
-      throw *newClash(stream003->theStringReader());
+void handleClashException(Clash* clashexception) {
+  { Proposition* proposition = clashexception->proposition;
+    Context* context = getWorldState(clashexception->context);
+    Proposition* incoherentprop = createProposition(SYM_PROPOSITIONS_STELLA_PREDICATE, 2);
+
+    incoherentprop->operatoR = SGT_PROPOSITIONS_PL_KERNEL_KB_INCOHERENT;
+    (incoherentprop->arguments->theArray)[0] = context;
+    (incoherentprop->arguments->theArray)[1] = proposition;
+    incoherentprop = fastenDownOneProposition(incoherentprop, false);
+    { ExceptionRecord* self000 = newExceptionRecord();
+
+      self000->exception = clashexception;
+      self000->context = context;
+      self000->module = context->baseModule;
+      setDynamicSlotValue(incoherentprop->dynamicSlots, SYM_PROPOSITIONS_LOGIC_CLASH_EXCEPTIONS, cons(self000, incoherentprop->clashExceptions_reader()), NULL);
+    }
+    updatePropositionTruthValue(incoherentprop, KWD_PROPOSITIONS_ASSERT_TRUE);
+    if (!(((boolean)(accessBinaryValue(getDescription(SGT_PROPOSITIONS_PL_KERNEL_KB_INCOHERENT), SGT_PROPOSITIONS_PL_KERNEL_KB_GOES_TRUE_DEMON))) ||
+        ((boolean)(accessBinaryValue(getDescription(SGT_PROPOSITIONS_PL_KERNEL_KB_INCOHERENT), SGT_PROPOSITIONS_PL_KERNEL_KB_UPDATE_PROPOSITION_DEMON))))) {
+      throw *clashexception;
     }
   }
 }
@@ -3502,16 +3952,23 @@ Surrogate* logicalType(Object* self) {
         return (SGT_PROPOSITIONS_STELLA_THING);
       }
     }
-    else if (subtypeOfP(testValue000, SGT_PROPOSITIONS_STELLA_LITERAL_WRAPPER)) {
+    else if (subtypeOfP(testValue000, SGT_PROPOSITIONS_LOGIC_PROPOSITION)) {
       { Object* self004 = self;
-        LiteralWrapper* self = ((LiteralWrapper*)(self004));
+        Proposition* self = ((Proposition*)(self004));
+
+        return (SGT_PROPOSITIONS_LOGIC_PROPOSITION);
+      }
+    }
+    else if (subtypeOfP(testValue000, SGT_PROPOSITIONS_STELLA_LITERAL_WRAPPER)) {
+      { Object* self005 = self;
+        LiteralWrapper* self = ((LiteralWrapper*)(self005));
 
         return (wrapperValueType(self));
       }
     }
     else if (subtypeOfSurrogateP(testValue000)) {
-      { Object* self005 = self;
-        Surrogate* self = ((Surrogate*)(self005));
+      { Object* self006 = self;
+        Surrogate* self = ((Surrogate*)(self006));
 
         if (((boolean)(self->surrogateValue)) &&
             (!(self->surrogateValue == BOTTOM))) {
@@ -3523,22 +3980,22 @@ Surrogate* logicalType(Object* self) {
       }
     }
     else if (subtypeOfP(testValue000, SGT_PROPOSITIONS_STELLA_SET)) {
-      { Object* self006 = self;
-        Set* self = ((Set*)(self006));
+      { Object* self007 = self;
+        Set* self = ((Set*)(self007));
 
         return (SGT_PROPOSITIONS_PL_KERNEL_KB_SET);
       }
     }
     else if (subtypeOfClassP(testValue000)) {
-      { Object* self007 = self;
-        Class* self = ((Class*)(self007));
+      { Object* self008 = self;
+        Class* self = ((Class*)(self008));
 
         return (SGT_PROPOSITIONS_PL_KERNEL_KB_CONCEPT);
       }
     }
     else if (subtypeOfP(testValue000, SGT_PROPOSITIONS_STELLA_SLOT)) {
-      { Object* self008 = self;
-        Slot* self = ((Slot*)(self008));
+      { Object* self009 = self;
+        Slot* self = ((Slot*)(self009));
 
         if (booleanTypeP(self->slotBaseType)) {
           return (SGT_PROPOSITIONS_PL_KERNEL_KB_RELATION);
@@ -3569,7 +4026,7 @@ Surrogate* classLogicalType(Class* self) {
   return (self->classType);
 }
 
-void unifyTypes(Skolem* term1, Object* term2) {
+void unifyTypes(Proposition* prop, Skolem* term1, Object* term2) {
   { Surrogate* type1 = logicalType(term1);
     Surrogate* type2 = logicalType(term2);
 
@@ -3591,7 +4048,7 @@ void unifyTypes(Skolem* term1, Object* term2) {
       if (bottomP(term2)) {
         return;
       }
-      signalUnificationClash(term1, term2);
+      signalUnificationClash(prop, term1, term2);
     }
   }
 }
@@ -3632,9 +4089,9 @@ void bindSkolemToValue(Skolem* fromskolem, Object* tovalue, boolean toplevelupda
       equatingproposition = findEquatingProposition(tovalue, fromskolem);
       if (!((boolean)(equatingproposition))) {
         { 
-          BIND_STELLA_SPECIAL(oTERMUNDERCONSTRUCTIONo, Object*, oTERMUNDERCONSTRUCTIONo.get());
-          if (!((boolean)(oTERMUNDERCONSTRUCTIONo.get()))) {
-            oTERMUNDERCONSTRUCTIONo.set(fromskolem->definingProposition);
+          BIND_STELLA_SPECIAL(oTERMUNDERCONSTRUCTIONo, Object*, oTERMUNDERCONSTRUCTIONo);
+          if (!((boolean)(oTERMUNDERCONSTRUCTIONo))) {
+            oTERMUNDERCONSTRUCTIONo = fromskolem->definingProposition;
           }
           { 
             BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
@@ -3746,7 +4203,7 @@ void bindSkolemToValue(Skolem* fromskolem, Object* tovalue, boolean toplevelupda
     }
   }
   handleOutOfDateInferenceCache(KWD_PROPOSITIONS_ASSERT, fromskolem->definingProposition);
-  reactToKbUpdate(oCONTEXTo.get(), fromskolem);
+  reactToKbUpdate(oCONTEXTo, fromskolem);
   if (!skolemP(tovalue)) {
     if (((boolean)(fromskolem->definingProposition))) {
       reactToSkolemValueUpdate(fromskolem, NULL, tovalue, toplevelupdateP);
@@ -3774,9 +4231,9 @@ void unbindSkolemValue(Skolem* skolem, boolean toplevelupdateP) {
   }
 }
 
-void constrainAsSubset(Collection* set1, Collection* set2) {
+void constrainAsSubset(Proposition* prop, Collection* set1, Collection* set2) {
   if (set1->length() > set2->length()) {
-    signalUnificationClash(set1, set2);
+    signalUnificationClash(prop, set1, set2);
   }
   { Cons* copy1 = NIL;
     Cons* copy2 = NIL;
@@ -3809,7 +4266,7 @@ void constrainAsSubset(Collection* set1, Collection* set2) {
       { Object* item1 = copy1->value;
         Object* item2 = copy2->value;
 
-        equateValues(item1, item2);
+        equateValues(prop, item1, item2);
         return;
       }
     }
@@ -3837,13 +4294,13 @@ void constrainAsSubset(Collection* set1, Collection* set2) {
         }
       }
       if ((skolemcount1 + skolemcount2) == 0) {
-        signalUnificationClash(set1, set2);
+        signalUnificationClash(prop, set1, set2);
       }
     }
   }
 }
 
-void equateCollections(Collection* col1, Collection* col2) {
+void equateCollections(Proposition* prop, Collection* col1, Collection* col2) {
   if (col1->orderedP() &&
       col2->orderedP()) {
     { Object* i1 = NULL;
@@ -3856,15 +4313,15 @@ void equateCollections(Collection* col1, Collection* col2) {
                 iter001->nextP(); ) {
         i1 = iter000->value;
         i2 = iter001->value;
-        equateValues(i1, i2);
+        equateValues(prop, i1, i2);
       }
     }
     return;
   }
   if (col1->noDuplicatesP() &&
       col2->noDuplicatesP()) {
-    constrainAsSubset(col1, col2);
-    constrainAsSubset(col2, col1);
+    constrainAsSubset(prop, col1, col2);
+    constrainAsSubset(prop, col2, col1);
   }
 }
 
@@ -3872,7 +4329,7 @@ boolean logicCollectionP(Object* term) {
   return (testTypeOnInstanceP(term, SGT_PROPOSITIONS_STELLA_COLLECTION));
 }
 
-void equateValues(Object* term1, Object* term2) {
+void equateValues(Proposition* prop, Object* term1, Object* term2) {
   if (eqlP(term1, term2)) {
   }
   else if (skolemP(term1)) {
@@ -3883,7 +4340,7 @@ void equateValues(Object* term1, Object* term2) {
   }
   else if (stellaCollectionP(term1) &&
       stellaCollectionP(term2)) {
-    equateCollections(((Collection*)(term1)), ((Collection*)(term2)));
+    equateCollections(prop, ((Collection*)(term1)), ((Collection*)(term2)));
   }
   else if (isaP(term1, SGT_PROPOSITIONS_PL_KERNEL_KB_INTERVAL_CACHE) &&
       isaP(term2, SGT_PROPOSITIONS_PL_KERNEL_KB_INTERVAL_CACHE)) {
@@ -3891,7 +4348,7 @@ void equateValues(Object* term1, Object* term2) {
     pl_kernel_kb::unifyIntervalCaches(((pl_kernel_kb::IntervalCache*)(term2)), ((pl_kernel_kb::IntervalCache*)(term1)), SGT_PROPOSITIONS_PL_KERNEL_KB_ge);
   }
   else {
-    signalUnificationClash(term1, term2);
+    signalUnificationClash(prop, term1, term2);
   }
 }
 
@@ -4272,6 +4729,11 @@ Proposition* TRUE_PROPOSITION = NULL;
 
 Proposition* FALSE_PROPOSITION = NULL;
 
+boolean constantPropositionP(Proposition* self) {
+  // Return true if `self' is a constant such as TRUE or FALSE.
+  return (self->kind == KWD_PROPOSITIONS_CONSTANT);
+}
+
 Object* evaluateTerm(Object* self) {
   { Surrogate* testValue000 = safePrimaryType(self);
 
@@ -4355,11 +4817,16 @@ Object* evaluateTerm(Object* self) {
 }
 
 Object* evaluateLiteralWrapperTerm(LiteralWrapper* self) {
-  return (((LiteralWrapper*)(self->permanentify())));
+  if (oBACKLINK_ALL_PROPOSITION_ARGUMENTSpo) {
+    return (rewrapArgument(self));
+  }
+  else {
+    return (self);
+  }
 }
 
 Object* evaluateSurrogateTerm(Surrogate* self) {
-  if (oEVALUATIONMODEo.get() == KWD_PROPOSITIONS_EXTENSIONAL_ASSERTION) {
+  if (oEVALUATIONMODEo == KWD_PROPOSITIONS_EXTENSIONAL_ASSERTION) {
     { Object* value = self->surrogateValue;
       ObjectStore* store = NULL;
 
@@ -4388,7 +4855,7 @@ Object* evaluateSurrogateTerm(Surrogate* self) {
       }
     }
   }
-  else if (oEVALUATIONMODEo.get() == KWD_PROPOSITIONS_DESCRIPTION) {
+  else if (oEVALUATIONMODEo == KWD_PROPOSITIONS_DESCRIPTION) {
     { Object* surrogatevalue = self->surrogateValue;
       ObjectStore* store = NULL;
 
@@ -4411,7 +4878,7 @@ Object* evaluateSurrogateTerm(Surrogate* self) {
       }
     }
   }
-  else if (oEVALUATIONMODEo.get() == KWD_PROPOSITIONS_INTENSIONAL_ASSERTION) {
+  else if (oEVALUATIONMODEo == KWD_PROPOSITIONS_INTENSIONAL_ASSERTION) {
     { Object* directvalue = self->surrogateValue;
       Skolem* intensionalskolem = NULL;
 
@@ -4427,7 +4894,7 @@ Object* evaluateSurrogateTerm(Surrogate* self) {
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oEVALUATIONMODEo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oEVALUATIONMODEo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -4440,9 +4907,7 @@ Object* evaluateLogicObjectTerm(LogicObject* self) {
       { LogicObject* self000 = self;
         PatternVariable* self = ((PatternVariable*)(self000));
 
-        if (((boolean)(lookupLogicVariableBinding(self->skolemName)))) {
-          return (self);
-        }
+        return (self);
       }
     }
     else if (subtypeOfP(testValue000, SGT_PROPOSITIONS_LOGIC_SKOLEM)) {
@@ -4553,7 +5018,7 @@ KeyValueList* oMISSING_KEY_VALUE_LISTo = NULL;
 DEFINE_STELLA_SPECIAL(oAUTOMATICINSTANCETABLEo, KeyValueList* , NULL);
 
 Object* evaluateAutomaticInstance(Symbol* name) {
-  if (oAUTOMATICINSTANCETABLEo.get() == oMISSING_KEY_VALUE_LISTo) {
+  if (oAUTOMATICINSTANCETABLEo == oMISSING_KEY_VALUE_LISTo) {
     { OutputStringStream* stream000 = newOutputStringStream();
 
       { 
@@ -4564,16 +5029,16 @@ Object* evaluateAutomaticInstance(Symbol* name) {
       throw *newPropositionError(stream000->theStringReader());
     }
   }
-  { LogicObject* instance = (((boolean)(oAUTOMATICINSTANCETABLEo.get())) ? ((LogicObject*)(oAUTOMATICINSTANCETABLEo.get()->lookup(name))) : ((LogicObject*)(NULL)));
+  { LogicObject* instance = (((boolean)(oAUTOMATICINSTANCETABLEo)) ? ((LogicObject*)(oAUTOMATICINSTANCETABLEo->lookup(name))) : ((LogicObject*)(NULL)));
 
     if (!((boolean)(instance))) {
       { Surrogate* surrogate = stringToSurrogate(gensym(stringSubsequence(name->symbolName, 1, NULL_INTEGER))->symbolName);
 
         instance = ((LogicObject*)(createLogicInstance(surrogate, NULL)));
-        if (!((boolean)(oAUTOMATICINSTANCETABLEo.get()))) {
-          oAUTOMATICINSTANCETABLEo.set(newKeyValueList());
+        if (!((boolean)(oAUTOMATICINSTANCETABLEo))) {
+          oAUTOMATICINSTANCETABLEo = newKeyValueList();
         }
-        oAUTOMATICINSTANCETABLEo.get()->insertAt(name, instance);
+        oAUTOMATICINSTANCETABLEo->insertAt(name, instance);
       }
     }
     return (evaluateLogicObjectTerm(instance));
@@ -4593,7 +5058,7 @@ void signalUndefinedTerm(Object* term) {
 }
 
 void signalUntypedTerm(Object* term) {
-  if (!oSUPPRESSUNTYPEDTYPEERRORpo.get()) {
+  if (!oSUPPRESSUNTYPEDTYPEERRORpo) {
     { OutputStringStream* stream000 = newOutputStringStream();
 
       { 
@@ -4691,7 +5156,7 @@ void printExtensionSizes(Module* module, int sizecutoff) {
     sizecutoff = 10;
   }
   if (!((boolean)(module))) {
-    module = oMODULEo.get();
+    module = oMODULEo;
   }
   { List* descriptions = newList();
     char* size = NULL;
@@ -4820,7 +5285,7 @@ void finalizeSuperrelationLinks(Relation* self) {
       BIND_STELLA_SPECIAL(oFILLINGCONSTRAINTPROPAGATIONQUEUESpo, boolean, false);
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, ((Module*)(subdescription->homeContext)));
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         { Relation* super = NULL;
           Iterator* iter000 = directSuperrelations(self);
 
@@ -5003,7 +5468,7 @@ Proposition* updateBinaryValue(Surrogate* relation, Object* self, Object* value,
               if (clipValueP(skolemoutput, value)) {
               }
               else {
-                equateValues(valueOf(skolemoutput), valueOf(value));
+                equateValues(proposition, valueOf(skolemoutput), valueOf(value));
               }
             }
             else if (updatemode == KWD_PROPOSITIONS_RETRACT_TRUE) {
@@ -5068,7 +5533,7 @@ ObjectAlreadyExistsException* newObjectAlreadyExistsException(char* message) {
 Object* helpCreateLogicInstance(Surrogate* name, Surrogate* type) {
   enforceCodeOnly();
   if (!((boolean)(type))) {
-    type = oDEFAULTCREATIONTYPEo.get();
+    type = oDEFAULTCREATIONTYPEo;
   }
   { NamedDescription* description = (((boolean)(type)) ? getDescription(type) : ((NamedDescription*)(NULL)));
     Class* nativeclass = NULL;
@@ -5230,12 +5695,13 @@ void cleanupStructuredObjectsIndex(Module* clearmodule) {
   }
 }
 
-int propositionHashIndex(Proposition* self, KeyValueMap* mapping) {
+int propositionHashIndex(Proposition* self, KeyValueMap* mapping, boolean derefsurrogatesP) {
   { boolean mappedP = ((boolean)(mapping));
     int code = (size_t)(self->operatoR);
     Vector* arguments = self->arguments;
     Object* functionoutput = ((mappedP &&
         (self->kind == KWD_PROPOSITIONS_FUNCTION)) ? arguments->last() : ((Object*)(NULL)));
+    Object* priorarg = NULL;
     int argcode = 0;
     boolean commutativeP = false;
 
@@ -5249,7 +5715,6 @@ int propositionHashIndex(Proposition* self, KeyValueMap* mapping) {
       else {
       }
     }
-    code = (((code & 1) == 0) ? ((unsigned int)code >> 1) : (((code >> 1)) | oINTEGER_MSB_MASKo));
     { Object* arg = NULL;
       Vector* vector000 = arguments;
       int index000 = 0;
@@ -5267,7 +5732,7 @@ int propositionHashIndex(Proposition* self, KeyValueMap* mapping) {
             arg = mappedValueOf(arg, mapping, false);
           }
         }
-        if (((boolean)(oQUERYITERATORo.get())) &&
+        if (((boolean)(oQUERYITERATORo)) &&
             variableP(arg)) {
           { Object* temp000 = safeBoundTo(((PatternVariable*)(arg)));
 
@@ -5284,7 +5749,7 @@ int propositionHashIndex(Proposition* self, KeyValueMap* mapping) {
               { Object* arg000 = arg;
                 Proposition* arg = ((Proposition*)(arg000));
 
-                argcode = propositionHashIndex(arg, mapping);
+                argcode = propositionHashIndex(arg, mapping, derefsurrogatesP);
               }
             }
             else if (subtypeOfP(testValue001, SGT_PROPOSITIONS_LOGIC_NAMED_DESCRIPTION)) {
@@ -5298,7 +5763,7 @@ int propositionHashIndex(Proposition* self, KeyValueMap* mapping) {
               { Object* arg002 = arg;
                 Description* arg = ((Description*)(arg002));
 
-                argcode = propositionHashIndex(arg->proposition, mapping);
+                argcode = propositionHashIndex(arg->proposition, mapping, derefsurrogatesP);
               }
             }
             else if (subtypeOfP(testValue001, SGT_PROPOSITIONS_LOGIC_PATTERN_VARIABLE)) {
@@ -5316,7 +5781,7 @@ int propositionHashIndex(Proposition* self, KeyValueMap* mapping) {
 
                   if (((boolean)(definingprop)) &&
                       (!(definingprop == self))) {
-                    argcode = propositionHashIndex(definingprop, mapping);
+                    argcode = propositionHashIndex(definingprop, mapping, derefsurrogatesP);
                   }
                   else {
                     argcode = (size_t)SGT_PROPOSITIONS_LOGIC_SKOLEM;
@@ -5324,9 +5789,19 @@ int propositionHashIndex(Proposition* self, KeyValueMap* mapping) {
                 }
               }
             }
-            else if (subtypeOfWrapperP(testValue001)) {
+            else if (subtypeOfSurrogateP(testValue001)) {
               { Object* arg005 = arg;
-                Wrapper* arg = ((Wrapper*)(arg005));
+                Surrogate* arg = ((Surrogate*)(arg005));
+
+                if (derefsurrogatesP) {
+                  arg = ((Surrogate*)(arg->surrogateValue));
+                }
+                argcode = arg->hashCode();
+              }
+            }
+            else if (subtypeOfWrapperP(testValue001)) {
+              { Object* arg006 = arg;
+                Wrapper* arg = ((Wrapper*)(arg006));
 
                 argcode = arg->hashCode();
               }
@@ -5336,112 +5811,83 @@ int propositionHashIndex(Proposition* self, KeyValueMap* mapping) {
             }
           }
         }
-        code = (code ^ argcode);
-        if (!(commutativeP)) {
+        if ((!((boolean)(priorarg))) ||
+            ((!commutativeP) ||
+             eqlP(arg, priorarg))) {
           code = (((code & 1) == 0) ? ((unsigned int)code >> 1) : (((code >> 1)) | oINTEGER_MSB_MASKo));
         }
+        code = (code ^ argcode);
+        priorarg = arg;
       }
     }
     return (code);
   }
 }
 
-Proposition* findDuplicateComplexProposition(Proposition* self) {
-  { IntegerWrapper* index = wrapInteger(propositionHashIndex(self, NULL));
-    List* bucket = ((List*)(oSTRUCTURED_OBJECTS_INDEXo->lookup(index)));
-    Module* homemodule = self->homeContext->baseModule;
+Proposition* lookupMatchingPropositionInBucket(List* bucket, Proposition* self, KeyValueMap* mapping) {
+  { Module* homemodule = self->homeContext->baseModule;
     boolean functionP = self->kind == KWD_PROPOSITIONS_FUNCTION;
+    GeneralizedSymbol* operatoR = self->operatoR;
+    Vector* arguments = self->arguments;
+    int arity = arguments->length();
+    boolean rewrappedP = false;
+
+    bucket->removeDeletedMembers();
+    { Object* p = NULL;
+      Cons* iter000 = bucket->theConsList;
+
+      for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+        p = iter000->value;
+        if (subtypeOfP(safePrimaryType(p), SGT_PROPOSITIONS_LOGIC_PROPOSITION)) {
+          { Object* p000 = p;
+            Proposition* p = ((Proposition*)(p000));
+
+            if ((operatoR == p->operatoR) &&
+                (arity == p->arguments->length())) {
+              for (;;) {
+                if ((functionP &&
+                    equivalentFunctionPropositionsP(self, p, mapping)) ||
+                    ((!functionP) &&
+                     equivalentPropositionsP(self, p, mapping))) {
+                  if (subcontextP(homemodule, p->homeContext->baseModule)) {
+                    return (p);
+                  }
+                  else {
+                    break;
+                  }
+                }
+                if (rewrappedP) {
+                  break;
+                }
+                else {
+                  rewrapPropositionArguments(self);
+                  rewrappedP = true;
+                  continue;
+                }
+              }
+            }
+          }
+        }
+        else {
+        }
+      }
+    }
+    return (NULL);
+  }
+}
+
+Proposition* findDuplicateComplexProposition(Proposition* self) {
+  { IntegerWrapper* index = wrapInteger(propositionHashIndex(self, NULL, false));
+    List* bucket = ((List*)(oSTRUCTURED_OBJECTS_INDEXo->lookup(index)));
+    Proposition* duplicate = NULL;
 
     if (!((boolean)(bucket))) {
       oSTRUCTURED_OBJECTS_INDEXo->insertAt(index, list(1, self));
       return (NULL);
     }
-    bucket->removeDeletedMembers();
-    { GeneralizedSymbol* operatoR = self->operatoR;
-      Vector* arguments = self->arguments;
-      int arity = arguments->length();
-      boolean rewrappedP = false;
-
-      { ContextSensitiveObject* p = NULL;
-        Cons* iter000 = bucket->theConsList;
-
-        for (p, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-          p = ((ContextSensitiveObject*)(iter000->value));
-          if (subtypeOfP(safePrimaryType(p), SGT_PROPOSITIONS_LOGIC_PROPOSITION)) {
-            { ContextSensitiveObject* p000 = p;
-              Proposition* p = ((Proposition*)(p000));
-
-              if ((operatoR == p->operatoR) &&
-                  (arity == p->arguments->length())) {
-                for (;;) {
-                  { boolean testValue000 = false;
-
-                    testValue000 = functionP;
-                    if (testValue000) {
-                      { boolean alwaysP000 = true;
-
-                        { Object* arg1 = NULL;
-                          Vector* vector000 = arguments;
-                          int index000 = 0;
-                          int length000 = vector000->length();
-                          Object* arg2 = NULL;
-                          Vector* vector001 = p->arguments;
-                          int index001 = 0;
-                          int length001 = vector001->length();
-                          int i = NULL_INTEGER;
-                          int iter001 = 2;
-                          int upperBound000 = arity;
-                          boolean unboundedP000 = upperBound000 == NULL_INTEGER;
-
-                          for  (arg1, vector000, index000, length000, arg2, vector001, index001, length001, i, iter001, upperBound000, unboundedP000; 
-                                (index000 < length000) &&
-                                    ((index001 < length001) &&
-                                     (unboundedP000 ||
-                                      (iter001 <= upperBound000))); 
-                                index000 = index000 + 1,
-                                index001 = index001 + 1,
-                                iter001 = iter001 + 1) {
-                            arg1 = (vector000->theArray)[index000];
-                            arg2 = (vector001->theArray)[index001];
-                            i = iter001;
-                            if (!eqlP(valueOf(arg1), valueOf(arg2))) {
-                              alwaysP000 = false;
-                              break;
-                            }
-                          }
-                        }
-                        testValue000 = alwaysP000;
-                      }
-                    }
-                    if (!testValue000) {
-                      testValue000 = (!functionP) &&
-                          equivalentPropositionsP(self, p, NULL);
-                    }
-                    if (testValue000) {
-                      if (subcontextP(homemodule, p->homeContext->baseModule)) {
-                        return (p);
-                      }
-                      else {
-                        break;
-                      }
-                    }
-                  }
-                  if (rewrappedP) {
-                    break;
-                  }
-                  else {
-                    rewrapPropositionArguments(self);
-                    rewrappedP = true;
-                    continue;
-                  }
-                }
-              }
-            }
-          }
-          else {
-          }
-        }
-      }
+    duplicate = lookupMatchingPropositionInBucket(bucket, self, NULL);
+    if (((boolean)(duplicate))) {
+      return (duplicate);
     }
     bucket->push(self);
     return (NULL);
@@ -5475,7 +5921,31 @@ Proposition* findDuplicateProposition(Proposition* self) {
     }
   }
   else {
-    return (findDuplicateComplexProposition(self));
+    { ObjectStore* store = homeObjectStore(self);
+
+      if (((boolean)(store))) {
+        return (store->fetchDuplicateProposition(self));
+      }
+      else {
+        return (findDuplicateComplexProposition(self));
+      }
+    }
+  }
+}
+
+Proposition* findMatchingNonDescriptiveProposition(Proposition* self, KeyValueMap* mapping) {
+  if (!((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue) {
+    return (self);
+  }
+  { IntegerWrapper* index = wrapInteger(propositionHashIndex(self, mapping, true));
+    List* bucket = ((List*)(oSTRUCTURED_OBJECTS_INDEXo->lookup(index)));
+
+    if (((boolean)(bucket))) {
+      return (lookupMatchingPropositionInBucket(bucket, self, mapping));
+    }
+    else {
+      return (NULL);
+    }
   }
 }
 
@@ -5487,14 +5957,14 @@ Proposition* fastenDownOneProposition(Proposition* self, boolean dontcheckfordup
   if (nativeSlotPropositionP(self)) {
     return (self);
   }
-  if (!(oLOADINGREGENERABLEOBJECTSpo.get())) {
+  if (!(oLOADINGREGENERABLEOBJECTSpo)) {
     surrogatifyDiscouragedArguments(self);
   }
   { Proposition* duplicate = NULL;
 
     if (!(dontcheckforduplicatesP ||
-        (oDONT_CHECK_FOR_DUPLICATE_PROPOSITIONSpo.get() ||
-         oLOADINGREGENERABLEOBJECTSpo.get()))) {
+        (oDONT_CHECK_FOR_DUPLICATE_PROPOSITIONSpo &&
+         (!(self->kind == KWD_PROPOSITIONS_FUNCTION))))) {
       duplicate = findDuplicateProposition(self);
     }
     if (((boolean)(duplicate))) {
@@ -5512,14 +5982,14 @@ Proposition* fastenDownOneProposition(Proposition* self, boolean dontcheckfordup
       {
         if (!(((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue ||
             descriptionModeP())) {
-          if (!oLOADINGREGENERABLEOBJECTSpo.get()) {
-            logNewlyConceivedProposition(oMODULEo.get(), self);
+          if (!oLOADINGREGENERABLEOBJECTSpo) {
+            logNewlyConceivedProposition(oMODULEo, self);
           }
         }
-        if (!oLOADINGREGENERABLEOBJECTSpo.get()) {
+        if (!oLOADINGREGENERABLEOBJECTSpo) {
           rewrapPropositionArguments(self);
         }
-        if (!oLOADINGREGENERABLEOBJECTSpo.get()) {
+        if (!oLOADINGREGENERABLEOBJECTSpo) {
           { Object* arg = NULL;
             Vector* vector000 = self->arguments;
             int index000 = 0;
@@ -5593,8 +6063,8 @@ Proposition* helpFastenDownPropositions(Proposition* self, boolean dontcheckford
 
                 if (((boolean)(definingprop)) &&
                     (coerceWrappedBooleanToBoolean(definingprop->unfastenedP_reader()) &&
-                     (!oVISITEDUNFASTENEDDEFININGPROPOSITIONSo.get()->memberP(definingprop)))) {
-                  oVISITEDUNFASTENEDDEFININGPROPOSITIONSo.get()->insert(definingprop);
+                     (!oVISITEDUNFASTENEDDEFININGPROPOSITIONSo->memberP(definingprop)))) {
+                  oVISITEDUNFASTENEDDEFININGPROPOSITIONSo->insert(definingprop);
                   helpFastenDownPropositions(definingprop, dontcheckargsforduplicatesP);
                 }
               }
@@ -5691,11 +6161,11 @@ Proposition* buildTopLevelProposition(Object* tree, boolean trueassertionP) {
     return (buildTopLevelProposition(readSExpressionFromString(((StringWrapper*)(tree))->wrapperValue), trueassertionP));
   }
   { Proposition* proposition = NULL;
-    Cons* logicvariabletable = oLOGICVARIABLETABLEo.get();
+    Cons* logicvariabletable = oLOGICVARIABLETABLEo;
 
     { 
       BIND_STELLA_SPECIAL(oLOGICVARIABLETABLEo, Cons*, ((Cons*)((((boolean)(logicvariabletable)) ? logicvariabletable : NIL))));
-      BIND_STELLA_SPECIAL(oVARIABLEIDCOUNTERo, int, oVARIABLEIDCOUNTERo.get());
+      BIND_STELLA_SPECIAL(oVARIABLEIDCOUNTERo, int, oVARIABLEIDCOUNTERo);
       BIND_STELLA_SPECIAL(oTERMUNDERCONSTRUCTIONo, Object*, tree);
       proposition = ((Proposition*)(buildProposition(tree)));
       if (((boolean)(proposition))) {
@@ -5741,6 +6211,20 @@ Object* buildProposition(Object* tree) {
         Symbol* tree = ((Symbol*)(tree002));
 
         return (symbolDbuildProposition(tree));
+      }
+    }
+    else if (subtypeOfP(testValue000, SGT_PROPOSITIONS_LOGIC_PATTERN_VARIABLE)) {
+      { Object* tree003 = tree;
+        PatternVariable* tree = ((PatternVariable*)(tree003));
+
+        return (tree);
+      }
+    }
+    else if (subtypeOfP(testValue000, SGT_PROPOSITIONS_LOGIC_PROPOSITION)) {
+      { Object* tree004 = tree;
+        Proposition* tree = ((Proposition*)(tree004));
+
+        return (tree);
       }
     }
     else {
@@ -6484,6 +6968,42 @@ Proposition* buildAndOrNotProposition(Cons* tree) {
   }
 }
 
+Proposition* conceiveInvertedProposition(Proposition* prop) {
+  // Return the simplest inversion of `prop', trying to reuse existing
+  // negations or negated arguments of `prop' if possible.
+  if (!(!(prop->kind == KWD_PROPOSITIONS_FUNCTION))) {
+    std::cerr << "Safety violation: " << "INTERNAL ERROR: conceive-inverted-proposition: can't invert function terms: " << "`" << prop << "'";
+  }
+  if (!coerceWrappedBooleanToBoolean(prop->unfastenedP_reader())) {
+    if (prop->kind == KWD_PROPOSITIONS_NOT) {
+      return (((Proposition*)((prop->arguments->theArray)[0])));
+    }
+    { Proposition* parent = NULL;
+      Iterator* iter000 = prop->dependentPropositions->allocateIterator();
+
+      for (parent, iter000; iter000->nextP(); ) {
+        parent = ((Proposition*)(iter000->value));
+        if ((parent->kind == KWD_PROPOSITIONS_NOT) &&
+            ((parent->arguments->theArray)[0] == prop)) {
+          return (parent);
+        }
+      }
+    }
+  }
+  prop = safelyInvertProposition(prop);
+  { Proposition* object000 = prop;
+    TruthValue* value000 = NULL;
+    Object* oldValue000 = object000->truthValue;
+    Object* newValue000 = updateInContext(oldValue000, value000, object000->homeContext, false);
+
+    if (!(((boolean)(oldValue000)) &&
+        (oldValue000->primaryType() == SGT_PROPOSITIONS_STELLA_CS_VALUE))) {
+      object000->truthValue = newValue000;
+    }
+  }
+  return (recursivelyFastenDownPropositions(prop, false));
+}
+
 boolean functionalTermP(Object* term) {
   if (safePrimaryType(term) == SGT_PROPOSITIONS_STELLA_CONS) {
     { Object* term000 = term;
@@ -6521,7 +7041,7 @@ boolean clipValueP(Object* term1, Object* term2) {
         }
         if ((!skolemP(value1)) &&
             (((boolean)(term1->definingProposition)) &&
-             oCLIPPINGENABLEDpo.get())) {
+             oCLIPPINGENABLEDpo)) {
           unbindSkolemValue(term1, true);
           bindSkolemToValue(term1, valueOf(term2), true);
           return (true);
@@ -6666,7 +7186,16 @@ Proposition* buildHoldsProposition(Cons* tree) {
               iter001 = iter001 + 1) {
           arg = iter000->value;
           i = iter001;
-          (proposition->arguments->theArray)[i] = (((i == 0) ? evaluateFirstArgument(arg, SYM_PROPOSITIONS_PL_KERNEL_KB_HOLDS) : evaluateTerm(arg)));
+          if (i == 0) {
+            arg = evaluateFirstArgument(arg, SYM_PROPOSITIONS_PL_KERNEL_KB_HOLDS);
+          }
+          else if (propositionalArgumentP(arg)) {
+            arg = evaluatePropositionTerm(arg);
+          }
+          else {
+            arg = evaluateTerm(arg);
+          }
+          (proposition->arguments->theArray)[i] = arg;
         }
       }
       return (proposition);
@@ -6854,6 +7383,10 @@ LogicObject* evaluatePredicate(GeneralizedSymbol* name, Object* firstargument) {
 // doesn't indicate that.
 boolean oAUTO_COERCE_PROPOSITIONAL_ARGUMENTSpo = false;
 
+boolean OAutoCoercePropositionalArgumentsPOSetter(boolean value) {
+  return (oAUTO_COERCE_PROPOSITIONAL_ARGUMENTSpo = value);
+}
+
 boolean propositionalArgumentP(Object* argument) {
   if (safePrimaryType(argument) == SGT_PROPOSITIONS_STELLA_CONS) {
     { Object* argument000 = argument;
@@ -7012,6 +7545,9 @@ Object* evaluateFirstArgument(Object* argument, Symbol* relationname) {
     Surrogate* type = NULL;
     Object* firstargument = NULL;
 
+    if (!((boolean)(argument))) {
+      return (NULL);
+    }
     if (((boolean)(predicatevalue)) &&
         isaP(predicatevalue, SGT_PROPOSITIONS_LOGIC_NAMED_DESCRIPTION)) {
       type = ((Surrogate*)(((NamedDescription*)(predicatevalue))->ioVariableTypes->first()));
@@ -7262,8 +7798,8 @@ boolean checkStrictTypeP(Object* self, Surrogate* type, boolean shallowP) {
 }
 
 boolean checkTypeP(Object* self, Surrogate* type, boolean shallowP) {
-  return ((((boolean)(oQUERYITERATORo.get())) &&
-      ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) ||
+  return ((((boolean)(oQUERYITERATORo)) &&
+      ((boolean)(oQUERYITERATORo->partialMatchStrategy))) ||
       checkStrictTypeP(self, type, shallowP));
 }
 
@@ -7279,8 +7815,8 @@ boolean checkCoercedTypeP(Object* self, Surrogate* type, boolean shallowP, Objec
       return (true);
     }
   }
-  if (((boolean)(oQUERYITERATORo.get())) &&
-      ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+  if (((boolean)(oQUERYITERATORo)) &&
+      ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
     _Return1 = self;
     return (true);
   }
@@ -7366,7 +7902,7 @@ Keyword* oTYPE_CHECK_POLICYo = NULL;
 DEFINE_STELLA_SPECIAL(oTYPECHECKMODEo, Keyword* , NULL);
 
 void verifyOneArgumentType(Object* arg, Surrogate* type, Proposition* proposition, NamedDescription* description) {
-  if ((oTYPECHECKMODEo.get() == KWD_PROPOSITIONS_IGNORE_TYPE_VIOLATIONS) ||
+  if ((oTYPECHECKMODEo == KWD_PROPOSITIONS_IGNORE_TYPE_VIOLATIONS) ||
       (!((boolean)(type->surrogateValue)))) {
     return;
   }
@@ -7408,8 +7944,8 @@ void verifyOneArgumentType(Object* arg, Surrogate* type, Proposition* propositio
 }
 
 void verifyArgumentTypesAndCount(Proposition* proposition) {
-  if ((oTYPECHECKMODEo.get() == KWD_PROPOSITIONS_IGNORE_TYPE_VIOLATIONS) ||
-      ((!worldStateP(oCONTEXTo.get())) ||
+  if ((oTYPECHECKMODEo == KWD_PROPOSITIONS_IGNORE_TYPE_VIOLATIONS) ||
+      ((!worldStateP(oCONTEXTo)) ||
        (!isaP(proposition->operatoR, SGT_PROPOSITIONS_STELLA_SURROGATE)))) {
     return;
   }
@@ -7493,10 +8029,10 @@ void verifyArgumentTypesAndCount(Proposition* proposition) {
           }
           if (!(typeisokP)) {
             { 
-              BIND_STELLA_SPECIAL(oTERMUNDERCONSTRUCTIONo, Object*, oTERMUNDERCONSTRUCTIONo.get());
-              if ((!((boolean)(oTERMUNDERCONSTRUCTIONo.get()))) &&
+              BIND_STELLA_SPECIAL(oTERMUNDERCONSTRUCTIONo, Object*, oTERMUNDERCONSTRUCTIONo);
+              if ((!((boolean)(oTERMUNDERCONSTRUCTIONo))) &&
                   skolemP(constrainingarg)) {
-                oTERMUNDERCONSTRUCTIONo.set(((Skolem*)(constrainingarg))->definingProposition);
+                oTERMUNDERCONSTRUCTIONo = ((Skolem*)(constrainingarg))->definingProposition;
               }
               handleArgumentTypeViolation(proposition, offendingarg, requiredtype);
             }
@@ -7510,17 +8046,17 @@ void verifyArgumentTypesAndCount(Proposition* proposition) {
 }
 
 void handleArgumentTypeViolation(Proposition* proposition, Object* arg, Surrogate* requiredtype) {
-  if (oTYPECHECKMODEo.get() == KWD_PROPOSITIONS_POST_TYPE_VIOLATIONS) {
+  if (oTYPECHECKMODEo == KWD_PROPOSITIONS_POST_TYPE_VIOLATIONS) {
     postToCheckTypesAgenda(proposition);
   }
-  else if (oTYPECHECKMODEo.get() == KWD_PROPOSITIONS_REPORT_TYPE_VIOLATIONS) {
+  else if (oTYPECHECKMODEo == KWD_PROPOSITIONS_REPORT_TYPE_VIOLATIONS) {
     { 
       BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
       *(STANDARD_WARNING->nativeStream) << "WARNING: " << "Type check violation on argument `" << arg << "' in proposition" << std::endl << "   " << proposition << "." << std::endl << "   Argument must have type `" << requiredtype->symbolName << "'." << std::endl;
       helpSignalPropositionError(STANDARD_WARNING, KWD_PROPOSITIONS_WARNING);
     }
   }
-  else if (oTYPECHECKMODEo.get() == KWD_PROPOSITIONS_SIGNAL_TYPE_VIOLATIONS) {
+  else if (oTYPECHECKMODEo == KWD_PROPOSITIONS_SIGNAL_TYPE_VIOLATIONS) {
     { OutputStringStream* stream000 = newOutputStringStream();
 
       { 
@@ -7531,7 +8067,7 @@ void handleArgumentTypeViolation(Proposition* proposition, Object* arg, Surrogat
       throw *newPropositionError(stream000->theStringReader());
     }
   }
-  else if (oTYPECHECKMODEo.get() == KWD_PROPOSITIONS_AUTOMATICALLY_FIX_TYPE_VIOLATIONS) {
+  else if (oTYPECHECKMODEo == KWD_PROPOSITIONS_AUTOMATICALLY_FIX_TYPE_VIOLATIONS) {
     { Proposition* isaproposition = assertIsaProposition(arg, requiredtype);
 
       setDynamicSlotValue(isaproposition->dynamicSlots, SYM_PROPOSITIONS_LOGIC_ASSERTED_BY_TYPE_CHECKERp, TRUE_WRAPPER, FALSE_WRAPPER);
@@ -7540,19 +8076,19 @@ void handleArgumentTypeViolation(Proposition* proposition, Object* arg, Surrogat
   else {
     { OutputStringStream* stream001 = newOutputStringStream();
 
-      *(stream001->nativeStream) << "`" << oTYPECHECKMODEo.get() << "'" << " is not a valid case option";
+      *(stream001->nativeStream) << "`" << oTYPECHECKMODEo << "'" << " is not a valid case option";
       throw *newStellaException(stream001->theStringReader());
     }
   }
 }
 
 void handleArityViolation(Proposition* proposition, int requiredarity) {
-  if (oTYPECHECKMODEo.get() == KWD_PROPOSITIONS_POST_TYPE_VIOLATIONS) {
+  if (oTYPECHECKMODEo == KWD_PROPOSITIONS_POST_TYPE_VIOLATIONS) {
     postToCheckTypesAgenda(proposition);
   }
-  else if ((oTYPECHECKMODEo.get() == KWD_PROPOSITIONS_SIGNAL_TYPE_VIOLATIONS) ||
-      ((oTYPECHECKMODEo.get() == KWD_PROPOSITIONS_REPORT_TYPE_VIOLATIONS) ||
-       (oTYPECHECKMODEo.get() == KWD_PROPOSITIONS_AUTOMATICALLY_FIX_TYPE_VIOLATIONS))) {
+  else if ((oTYPECHECKMODEo == KWD_PROPOSITIONS_SIGNAL_TYPE_VIOLATIONS) ||
+      ((oTYPECHECKMODEo == KWD_PROPOSITIONS_REPORT_TYPE_VIOLATIONS) ||
+       (oTYPECHECKMODEo == KWD_PROPOSITIONS_AUTOMATICALLY_FIX_TYPE_VIOLATIONS))) {
     { OutputStringStream* stream000 = newOutputStringStream();
 
       { 
@@ -7566,7 +8102,7 @@ void handleArityViolation(Proposition* proposition, int requiredarity) {
   else {
     { OutputStringStream* stream001 = newOutputStringStream();
 
-      *(stream001->nativeStream) << "`" << oTYPECHECKMODEo.get() << "'" << " is not a valid case option";
+      *(stream001->nativeStream) << "`" << oTYPECHECKMODEo << "'" << " is not a valid case option";
       throw *newStellaException(stream001->theStringReader());
     }
   }
@@ -7646,9 +8182,9 @@ void postToCheckTypesAgenda(Proposition* self) {
       { CheckTypesRecord* self000 = newCheckTypesRecord();
 
         self000->proposition = self;
-        self000->parentProposition = oTERMUNDERCONSTRUCTIONo.get();
-        self000->parentDescription = ((Description*)(oDESCRIPTIONUNDERCONSTRUCTIONo.get()));
-        self000->module = oMODULEo.get();
+        self000->parentProposition = oTERMUNDERCONSTRUCTIONo;
+        self000->parentDescription = ((Description*)(oDESCRIPTIONUNDERCONSTRUCTIONo));
+        self000->module = oMODULEo;
         oCHECK_TYPES_AGENDAo->insert(self000);
       }
       length = length + 1;
@@ -7665,7 +8201,7 @@ void postToCheckTypesAgenda(Proposition* self) {
 
 void processCheckTypesAgenda() {
   if ((oCHECK_TYPES_AGENDAo->sequenceLength == 0) ||
-      oINHIBITOBJECTFINALIZATIONpo.get()) {
+      oINHIBITOBJECTFINALIZATIONpo) {
     return;
   }
   plLog(KWD_PROPOSITIONS_MEDIUM, 1, wrapString("Processing check-types agenda..."));
@@ -7690,16 +8226,16 @@ void processCheckTypesAgenda() {
             BIND_STELLA_SPECIAL(oTERMUNDERCONSTRUCTIONo, Object*, record->parentProposition);
             BIND_STELLA_SPECIAL(oDESCRIPTIONUNDERCONSTRUCTIONo, Object*, record->parentDescription);
             BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_PROPOSITIONS_EXTENSIONAL_ASSERTION);
-            if ((((boolean)(oTERMUNDERCONSTRUCTIONo.get())) &&
-                oTERMUNDERCONSTRUCTIONo.get()->deletedP()) ||
-                (((boolean)(oDESCRIPTIONUNDERCONSTRUCTIONo.get())) &&
-                 oDESCRIPTIONUNDERCONSTRUCTIONo.get()->deletedP())) {
+            if ((((boolean)(oTERMUNDERCONSTRUCTIONo)) &&
+                oTERMUNDERCONSTRUCTIONo->deletedP()) ||
+                (((boolean)(oDESCRIPTIONUNDERCONSTRUCTIONo)) &&
+                 oDESCRIPTIONUNDERCONSTRUCTIONo->deletedP())) {
               continue;
             }
             try {
               { 
                 BIND_STELLA_SPECIAL(oMODULEo, Module*, record->module);
-                BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+                BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
                 verifyArgumentTypesAndCount(proposition);
               }
             }
@@ -7977,8 +8513,7 @@ Proposition* buildImpliesProposition(Cons* tree) {
 }
 
 Proposition* findDuplicateFunctionProposition(Proposition* proposition) {
-  if (oLOADINGREGENERABLEOBJECTSpo.get() ||
-      (!isaP(proposition->operatoR, SGT_PROPOSITIONS_STELLA_SURROGATE))) {
+  if (!isaP(proposition->operatoR, SGT_PROPOSITIONS_STELLA_SURROGATE)) {
     return (NULL);
   }
   else {
@@ -8030,7 +8565,7 @@ Proposition* finishCreatingFunctionProposition(Proposition* proposition) {
     }
     { 
       BIND_STELLA_SPECIAL(oCONTEXTo, Context*, proposition->homeContext);
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
       skolem = createVariableOrSkolem(type, NULL);
     }
     (proposition->arguments->theArray)[(argcount - 1)] = skolem;
@@ -8135,10 +8670,12 @@ Object* evaluateFunctionTerm(Cons* tree) {
         throw *newPropositionError(stream001->theStringReader());
       }
     }
-    inputarguments = cons(firstargument, inputarguments);
+    if (((boolean)(firstargument))) {
+      inputarguments = cons(firstargument, inputarguments);
+    }
     if (((boolean)(predicatevalue)) &&
         (objectSurrogate(predicatevalue) == SGT_PROPOSITIONS_PL_KERNEL_KB_SETOF)) {
-      inputarguments = inputarguments->sort(((cpp_function_code)(&logicFormLessP)));
+      inputarguments = normalizeSetofArguments(inputarguments);
     }
     { Proposition* functionproposition = findOrCreateFunctionProposition((((boolean)(predicatevalue)) ? predicatevalue->surrogateValueInverse : name), inputarguments);
 
@@ -8177,7 +8714,7 @@ boolean extensionalIndividualP(Object* individual) {
                 prop = ((Proposition*)(iter000->value));
                 if ((!(prop == definingproposition)) &&
                     ((!prop->deletedP()) &&
-                     ((oREVERSEPOLARITYpo.get() ? falseP(prop) : (trueP(prop) ||
+                     ((oREVERSEPOLARITYpo ? falseP(prop) : (trueP(prop) ||
                     functionWithDefinedValueP(prop)))))) {
                   foundP000 = true;
                   break;
@@ -8224,7 +8761,7 @@ boolean functionWithDefinedValueP(Proposition* proposition) {
         extensionalIndividualP(valueOf(lastargument));
 
     if (resultP &&
-        (!worldStateP(oCONTEXTo.get()))) {
+        (!worldStateP(oCONTEXTo))) {
       assignTruthValue(proposition, TRUE_WRAPPER);
       if (subtypeOfP(safePrimaryType(lastargument), SGT_PROPOSITIONS_LOGIC_SKOLEM)) {
         { Object* lastargument000 = lastargument;
@@ -8247,16 +8784,25 @@ boolean functionWithDefinedValueP(Proposition* proposition) {
   }
 }
 
+Cons* normalizeSetofArguments(Cons* args) {
+  return (copyConsList(args)->removeDuplicates()->sort(((cpp_function_code)(&logicFormLessP))));
+}
+
 Skolem* createEnumeratedSet(List* set) {
-  { Proposition* setprop = beginCreatingFunctionProposition(SGT_PROPOSITIONS_PL_KERNEL_KB_SETOF, copyConsList(set->theConsList)->sort(((cpp_function_code)(&logicFormLessP))));
+  { Cons* setelements = normalizeSetofArguments(set->theConsList);
+    Proposition* setprop = beginCreatingFunctionProposition(SGT_PROPOSITIONS_PL_KERNEL_KB_SETOF, setelements);
     Proposition* duplicate = ((!descriptionModeP()) ? findDuplicateFunctionProposition(setprop) : ((Proposition*)(NULL)));
     Skolem* skolem = NULL;
 
     if (((boolean)(duplicate))) {
       return (((Skolem*)((duplicate->arguments->theArray)[(duplicate->arguments->length() - 1)])));
     }
-    skolem = createSkolem(SGT_PROPOSITIONS_PL_KERNEL_KB_SET, NULL);
-    (setprop->arguments->theArray)[(set->length())] = skolem;
+    { 
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, setprop->homeContext);
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
+      skolem = createSkolem(SGT_PROPOSITIONS_PL_KERNEL_KB_SET, NULL);
+    }
+    (setprop->arguments->theArray)[(setprop->arguments->length() - 1)] = skolem;
     skolem->definingProposition = setprop;
     addDependentPropositionLink(skolem, setprop);
     setDynamicSlotValue(setprop->dynamicSlots, SYM_PROPOSITIONS_LOGIC_UNFASTENEDp, NULL, NULL);
@@ -8272,7 +8818,11 @@ Skolem* createLogicalList(List* list) {
     if (((boolean)(duplicate))) {
       return (((Skolem*)((duplicate->arguments->theArray)[(duplicate->arguments->length() - 1)])));
     }
-    skolem = createSkolem(SGT_PROPOSITIONS_PL_KERNEL_KB_LIST, NULL);
+    { 
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, listprop->homeContext);
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
+      skolem = createSkolem(SGT_PROPOSITIONS_PL_KERNEL_KB_LIST, NULL);
+    }
     (listprop->arguments->theArray)[(list->length())] = skolem;
     skolem->definingProposition = listprop;
     addDependentPropositionLink(skolem, listprop);
@@ -8386,7 +8936,7 @@ Proposition* updateEquivalenceProposition(Proposition* proposition, Keyword* upd
       else if (clipValueP(term2, term1)) {
       }
       else {
-        equateValues(valueOf(term1), valueOf(term2));
+        equateValues(proposition, valueOf(term1), valueOf(term2));
       }
     }
     else if (updatemode == KWD_PROPOSITIONS_RETRACT_TRUE) {
@@ -8942,6 +9492,8 @@ boolean deletedPropositionP(Proposition* self) {
   return (false);
 }
 
+DEFINE_STELLA_SPECIAL(oDEFERRED_TERMS_TO_UNLINKo, HashSet* , NULL);
+
 Proposition* destroyProposition(Proposition* proposition) {
   // Retract and destroy the proposition 'proposition'.
   // Recursively destroy all propositions that reference 'proposition'.
@@ -8968,7 +9520,12 @@ Proposition* destroyProposition(Proposition* proposition) {
             (((Skolem*)(arg))->definingProposition == proposition)) {
           destroyTerm(((LogicObject*)(arg)));
         }
-        removeDependentPropositionLink(arg, proposition);
+        if (((boolean)(oDEFERRED_TERMS_TO_UNLINKo))) {
+          oDEFERRED_TERMS_TO_UNLINKo->insert(arg);
+        }
+        else {
+          removeDependentPropositionLink(arg, proposition);
+        }
       }
     }
   }
@@ -9278,14 +9835,14 @@ Object* destroy(Object* objectspec) {
 }
 
 boolean relationInModuleP(NamedDescription* self) {
-  return (self->homeContext == oMODULEo.get());
+  return (self->homeContext == oMODULEo);
 }
 
 void introduceModule(Module* module) {
   module->surrogateValueInverse = NULL;
   { 
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oPL_KERNEL_MODULEo);
-    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
     if (!((boolean)(module->surrogateValueInverse))) {
       { boolean successP = false;
         Object* unused = NULL;
@@ -9305,32 +9862,64 @@ void introduceModule(Module* module) {
 void clearLogicModuleHook(Module* module) {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
-    destroyInferenceCaches(module);
-    clearInlineQueryCaches();
-    { Object* term = NULL;
-      Cons* iter000 = allTerms(module, true)->listify()->theConsList;
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
+    { 
+      BIND_STELLA_SPECIAL(oDEFERRED_TERMS_TO_UNLINKo, HashSet*, newHashSet());
+      destroyInferenceCaches(module);
+      clearInlineQueryCaches();
+      { Object* term = NULL;
+        Cons* iter000 = allTerms(module, true)->listify()->theConsList;
 
-      for (term, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
-        term = iter000->value;
-        destroyInstance(term);
+        for (term, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+          term = iter000->value;
+          destroyInstance(term);
+        }
       }
-    }
-    { Proposition* proposition = NULL;
-      Iterator* iter001 = allPropositions(module, true);
+      { Proposition* proposition = NULL;
+        Iterator* iter001 = allPropositions(module, true);
 
-      for (proposition, iter001; iter001->nextP(); ) {
-        proposition = ((Proposition*)(iter001->value));
-        destroyProposition(proposition);
+        for (proposition, iter001; iter001->nextP(); ) {
+          proposition = ((Proposition*)(iter001->value));
+          destroyProposition(proposition);
+        }
       }
+      { Object* term = NULL;
+        DictionaryIterator* iter002 = ((DictionaryIterator*)(oDEFERRED_TERMS_TO_UNLINKo->allocateIterator()));
+
+        for (term, iter002; iter002->nextP(); ) {
+          term = iter002->value;
+          if (!term->deletedP()) {
+            { BacklinksIndex* index = getBacklinksIndex(term);
+
+              if (((boolean)(index))) {
+                index->removeDeletedMembers();
+              }
+            }
+          }
+        }
+      }
+      cleanupStructuredObjectsIndex(module);
+      locallyConceivedPropositions(module)->removeDeletedMembers();
+      locallyConceivedInstances(module)->removeDeletedMembers();
+      cleanupAllDescriptionExtensions();
+      cleanupUnfinalizedObjects();
+      { Proposition* proposition = NULL;
+        Iterator* iter003 = allLocallyModifiedPropositions(module);
+
+        for (proposition, iter003; iter003->nextP(); ) {
+          proposition = ((Proposition*)(iter003->value));
+          { Object* truthvalue = proposition->truthValue;
+
+            if (((boolean)(truthvalue)) &&
+                isaP(truthvalue, SGT_PROPOSITIONS_STELLA_KEY_VALUE_LIST)) {
+              ((KeyValueList*)(truthvalue))->removeAt(module);
+            }
+          }
+        }
+      }
+      clearMemoizationTables(KWD_PROPOSITIONS_KB_UPDATE);
+      clearMemoizationTables(KWD_PROPOSITIONS_META_KB_UPDATE);
     }
-    cleanupStructuredObjectsIndex(module);
-    locallyConceivedPropositions(module)->removeDeletedMembers();
-    locallyConceivedInstances(module)->removeDeletedMembers();
-    cleanupAllDescriptionExtensions();
-    cleanupUnfinalizedObjects();
-    clearMemoizationTables(KWD_PROPOSITIONS_KB_UPDATE);
-    clearMemoizationTables(KWD_PROPOSITIONS_META_KB_UPDATE);
   }
 }
 
@@ -9369,7 +9958,7 @@ void doClearInstances(Module* module) {
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     destroyInferenceCaches(module);
     { LogicObject* instance = NULL;
       Iterator* iter001 = allInstances(module, true);
@@ -9387,7 +9976,7 @@ void destroyLogicContextHook(Context* self) {
   setDynamicSlotValue(self->dynamicSlots, SYM_PROPOSITIONS_LOGIC_MONOTONICp, FALSE_WRAPPER, FALSE_WRAPPER);
   { 
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, self);
-    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
     { LogicObject* i = NULL;
       Iterator* iter000 = locallyConceivedInstances(self)->allocateIterator();
 
@@ -9421,7 +10010,7 @@ void resetPowerloom() {
   // loaded STELLA systems if they do reference PowerLoom symbols in their code.
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     { List* modules = list(4, getStellaModule("PLI", true), oPL_ANONYMOUS_MODULEo, oPL_KERNEL_MODULEo, oLOGIC_MODULEo);
 
       { Module* mod = NULL;
@@ -9503,10 +10092,14 @@ boolean consLessThanP(Cons* o1, Cons* o2) {
   return (o1->length() < o2->length());
 }
 
-boolean safeStringLessP(char* s1, char* s2) {
+boolean stringTermLessP(char* s1, char* s2) {
+  return (stringCompareCaseNormalized(s1, s2) < 0);
+}
+
+boolean safeStringTermLessP(char* s1, char* s2) {
   if ((s1 != NULL) &&
       (s2 != NULL)) {
-    return (stringLessP(s1, s2));
+    return (stringCompareCaseNormalized(s1, s2) < 0);
   }
   else if (s2 != NULL) {
     return (false);
@@ -9553,11 +10146,11 @@ boolean safeQuantityGreaterEqualP(Quantity* q1, Object* o2) {
 }
 
 boolean objectNameLessThanP(LogicObject* o1, LogicObject* o2) {
-  return (safeStringLessP(objectName(o1)->symbolName, objectName(o2)->symbolName));
+  return (safeStringTermLessP(objectName(o1)->symbolName, objectName(o2)->symbolName));
 }
 
 boolean moduleNameLessThanP(Context* m1, Context* m2) {
-  return (safeStringLessP(m1->contextName(), m2->contextName()));
+  return (safeStringTermLessP(m1->contextName(), m2->contextName()));
 }
 
 boolean propositionLessThanP(Proposition* p1, Proposition* p2) {
@@ -9570,10 +10163,10 @@ boolean propositionLessThanP(Proposition* p1, Proposition* p2) {
     Object* a1 = NULL;
     Object* a2 = NULL;
 
-    if (stringLessP(operator1, operator2)) {
+    if (stringTermLessP(operator1, operator2)) {
       return (true);
     }
-    if (stringLessP(operator2, operator1)) {
+    if (stringTermLessP(operator2, operator1)) {
       return (false);
     }
     { int i1 = NULL_INTEGER;
@@ -9890,7 +10483,7 @@ boolean logicFormLessP(Object* o1, Object* o2) {
             { Object* o2009 = o2;
               NamedDescription* o2 = ((NamedDescription*)(o2009));
 
-              return (stringLessP(propositionHeadSortString(o1), objectSortString(o2)));
+              return (stringTermLessP(propositionHeadSortString(o1), objectSortString(o2)));
             }
           }
           else if (subtypeOfP(testValue004, SGT_PROPOSITIONS_LOGIC_DESCRIPTION)) {
@@ -9901,7 +10494,7 @@ boolean logicFormLessP(Object* o1, Object* o2) {
             }
           }
           else {
-            return (stringLessP(propositionHeadSortString(o1), objectSortString(o2)));
+            return (stringTermLessP(propositionHeadSortString(o1), objectSortString(o2)));
           }
         }
       }
@@ -9916,25 +10509,25 @@ boolean logicFormLessP(Object* o1, Object* o2) {
             { Object* o2011 = o2;
               Proposition* o2 = ((Proposition*)(o2011));
 
-              return (stringLessP(objectSortString(o1), propositionHeadSortString(o2)));
+              return (stringTermLessP(objectSortString(o1), propositionHeadSortString(o2)));
             }
           }
           else if (subtypeOfP(testValue005, SGT_PROPOSITIONS_LOGIC_NAMED_DESCRIPTION)) {
             { Object* o2012 = o2;
               NamedDescription* o2 = ((NamedDescription*)(o2012));
 
-              return (stringLessP(objectSortString(o1), objectSortString(o2)));
+              return (stringTermLessP(objectSortString(o1), objectSortString(o2)));
             }
           }
           else if (subtypeOfP(testValue005, SGT_PROPOSITIONS_LOGIC_DESCRIPTION)) {
             { Object* o2013 = o2;
               Description* o2 = ((Description*)(o2013));
 
-              return (stringLessP(objectSortString(o1), propositionHeadSortString(o2->proposition)));
+              return (stringTermLessP(objectSortString(o1), propositionHeadSortString(o2->proposition)));
             }
           }
           else {
-            return (stringLessP(objectSortString(o1), objectSortString(o2)));
+            return (stringTermLessP(objectSortString(o1), objectSortString(o2)));
           }
         }
       }
@@ -9953,25 +10546,25 @@ boolean logicFormLessP(Object* o1, Object* o2) {
           { Object* o2014 = o2;
             Proposition* o2 = ((Proposition*)(o2014));
 
-            return (!stringLessP(objectSortString(o1), propositionHeadSortString(o2)));
+            return (!stringTermLessP(objectSortString(o1), propositionHeadSortString(o2)));
           }
         }
         else if (subtypeOfP(testValue006, SGT_PROPOSITIONS_LOGIC_NAMED_DESCRIPTION)) {
           { Object* o2015 = o2;
             NamedDescription* o2 = ((NamedDescription*)(o2015));
 
-            return (stringLessP(objectSortString(o1), objectSortString(o2)));
+            return (stringTermLessP(objectSortString(o1), objectSortString(o2)));
           }
         }
         else if (subtypeOfP(testValue006, SGT_PROPOSITIONS_LOGIC_DESCRIPTION)) {
           { Object* o2016 = o2;
             Description* o2 = ((Description*)(o2016));
 
-            return (stringLessP(objectSortString(o1), propositionHeadSortString(o2->proposition)));
+            return (stringTermLessP(objectSortString(o1), propositionHeadSortString(o2->proposition)));
           }
         }
         else {
-          return (stringLessP(objectSortString(o1), objectSortString(o2)));
+          return (stringTermLessP(objectSortString(o1), objectSortString(o2)));
         }
       }
     }
@@ -10092,6 +10685,9 @@ void helpStartupPropositions2() {
     SYM_PROPOSITIONS_LOGIC_DESCRIPTIVEp = ((Symbol*)(internRigidSymbolWrtModule("DESCRIPTIVE?", NULL, 0)));
     SYM_PROPOSITIONS_STELLA_CODE_ONLYp = ((Symbol*)(internRigidSymbolWrtModule("CODE-ONLY?", getStellaModule("/STELLA", true), 0)));
     KWD_PROPOSITIONS_ERROR = ((Keyword*)(internRigidSymbolWrtModule("ERROR", NULL, 2)));
+    SGT_PROPOSITIONS_LOGIC_EXCEPTION_RECORD = ((Surrogate*)(internRigidSymbolWrtModule("EXCEPTION-RECORD", NULL, 1)));
+    SYM_PROPOSITIONS_STELLA_CONTEXT = ((Symbol*)(internRigidSymbolWrtModule("CONTEXT", getStellaModule("/STELLA", true), 0)));
+    SYM_PROPOSITIONS_STELLA_MODULE = ((Symbol*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 0)));
     SYM_PROPOSITIONS_LOGIC_LOCALLY_CONCEIVED_PROPOSITIONS_INTERNAL = ((Symbol*)(internRigidSymbolWrtModule("LOCALLY-CONCEIVED-PROPOSITIONS-INTERNAL", NULL, 0)));
     KWD_PROPOSITIONS_PAGING = ((Keyword*)(internRigidSymbolWrtModule("PAGING", NULL, 2)));
     KWD_PROPOSITIONS_CONTEXT_PROPOSITIONS = ((Keyword*)(internRigidSymbolWrtModule("CONTEXT-PROPOSITIONS", NULL, 2)));
@@ -10102,14 +10698,14 @@ void helpStartupPropositions2() {
     SYM_PROPOSITIONS_LOGIC_BOTTOM = ((Symbol*)(internRigidSymbolWrtModule("BOTTOM", NULL, 0)));
     SGT_PROPOSITIONS_STELLA_LITERAL = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL", getStellaModule("/STELLA", true), 1)));
     SGT_PROPOSITIONS_LOGIC_F_LOGICAL_SUBTYPE_OF_LITERALp_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-LOGICAL-SUBTYPE-OF-LITERAL?-MEMO-TABLE-000", NULL, 1)));
-    SGT_PROPOSITIONS_STELLA_CLASS = ((Surrogate*)(internRigidSymbolWrtModule("CLASS", getStellaModule("/STELLA", true), 1)));
-    SGT_PROPOSITIONS_STELLA_LITERAL_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL-WRAPPER", getStellaModule("/STELLA", true), 1)));
-    SGT_PROPOSITIONS_STELLA_BOOLEAN = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN", getStellaModule("/STELLA", true), 1)));
   }
 }
 
 void helpStartupPropositions3() {
   {
+    SGT_PROPOSITIONS_STELLA_CLASS = ((Surrogate*)(internRigidSymbolWrtModule("CLASS", getStellaModule("/STELLA", true), 1)));
+    SGT_PROPOSITIONS_STELLA_LITERAL_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL-WRAPPER", getStellaModule("/STELLA", true), 1)));
+    SGT_PROPOSITIONS_STELLA_BOOLEAN = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN", getStellaModule("/STELLA", true), 1)));
     SGT_PROPOSITIONS_STELLA_BOOLEAN_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN-WRAPPER", getStellaModule("/STELLA", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_VARIABLE_ARITY = ((Surrogate*)(internRigidSymbolWrtModule("VARIABLE-ARITY", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_STELLA_COLLECTION = ((Surrogate*)(internRigidSymbolWrtModule("COLLECTION", getStellaModule("/STELLA", true), 1)));
@@ -10140,6 +10736,9 @@ void helpStartupPropositions3() {
     KWD_PROPOSITIONS_CONCEIVE = ((Keyword*)(internRigidSymbolWrtModule("CONCEIVE", NULL, 2)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_HIDDEN_RELATION = ((Surrogate*)(internRigidSymbolWrtModule("HIDDEN-RELATION", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_LOGIC_HIDDEN_INSTANCE = ((Surrogate*)(internRigidSymbolWrtModule("HIDDEN-INSTANCE", NULL, 1)));
+    KWD_PROPOSITIONS_MODULE = ((Keyword*)(internRigidSymbolWrtModule("MODULE", NULL, 2)));
+    SGT_PROPOSITIONS_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 1)));
+    KWD_PROPOSITIONS_LOCALp = ((Keyword*)(internRigidSymbolWrtModule("LOCAL?", NULL, 2)));
     KWD_PROPOSITIONS_KB_UPDATE = ((Keyword*)(internRigidSymbolWrtModule("KB-UPDATE", NULL, 2)));
     KWD_PROPOSITIONS_META_KB_UPDATE = ((Keyword*)(internRigidSymbolWrtModule("META-KB-UPDATE", NULL, 2)));
     SGT_PROPOSITIONS_STELLA_STORAGE_SLOT = ((Surrogate*)(internRigidSymbolWrtModule("STORAGE-SLOT", getStellaModule("/STELLA", true), 1)));
@@ -10152,14 +10751,23 @@ void helpStartupPropositions3() {
     KWD_PROPOSITIONS_FALSE = ((Keyword*)(internRigidSymbolWrtModule("FALSE", NULL, 2)));
     KWD_PROPOSITIONS_DEFAULT = ((Keyword*)(internRigidSymbolWrtModule("DEFAULT", NULL, 2)));
     KWD_PROPOSITIONS_INCONSISTENT = ((Keyword*)(internRigidSymbolWrtModule("INCONSISTENT", NULL, 2)));
+    KWD_PROPOSITIONS_LOOKUP_ASSERTIONS = ((Keyword*)(internRigidSymbolWrtModule("LOOKUP-ASSERTIONS", NULL, 2)));
+    KWD_PROPOSITIONS_FORWARD = ((Keyword*)(internRigidSymbolWrtModule("FORWARD", NULL, 2)));
     SYM_PROPOSITIONS_LOGIC_META_INFERENCE_CACHE = ((Symbol*)(internRigidSymbolWrtModule("META-INFERENCE-CACHE", NULL, 0)));
     SYM_PROPOSITIONS_LOGIC_TRUTH_MAINTAINED_INFERENCE_CACHE = ((Symbol*)(internRigidSymbolWrtModule("TRUTH-MAINTAINED-INFERENCE-CACHE", NULL, 0)));
+    SYM_PROPOSITIONS_LOGIC_CLASH_EXCEPTIONS = ((Symbol*)(internRigidSymbolWrtModule("CLASH-EXCEPTIONS", NULL, 0)));
+    SGT_PROPOSITIONS_PL_KERNEL_KB_INCOHERENT = ((Surrogate*)(internRigidSymbolWrtModule("INCOHERENT", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SYM_PROPOSITIONS_LOGIC_IOTAp = ((Symbol*)(internRigidSymbolWrtModule("IOTA?", NULL, 0)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_CONCEPT = ((Surrogate*)(internRigidSymbolWrtModule("CONCEPT", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_RELATION = ((Surrogate*)(internRigidSymbolWrtModule("RELATION", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_STELLA_SET = ((Surrogate*)(internRigidSymbolWrtModule("SET", getStellaModule("/STELLA", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_SET = ((Surrogate*)(internRigidSymbolWrtModule("SET", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_STELLA_SLOT = ((Surrogate*)(internRigidSymbolWrtModule("SLOT", getStellaModule("/STELLA", true), 1)));
+  }
+}
+
+void helpStartupPropositions4() {
+  {
     SGT_PROPOSITIONS_PL_KERNEL_KB_FUNCTION = ((Surrogate*)(internRigidSymbolWrtModule("FUNCTION", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_INTERVAL_CACHE = ((Surrogate*)(internRigidSymbolWrtModule("INTERVAL-CACHE", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_ge = ((Surrogate*)(internRigidSymbolWrtModule(">=", getStellaModule("/PL-KERNEL-KB", true), 1)));
@@ -10170,11 +10778,6 @@ void helpStartupPropositions3() {
     SGT_PROPOSITIONS_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", getStellaModule("/STELLA", true), 1)));
     SYM_PROPOSITIONS_LOGIC_SETOFALL = ((Symbol*)(internRigidSymbolWrtModule("SETOFALL", NULL, 0)));
     SYM_PROPOSITIONS_LOGIC_THE_ONLY = ((Symbol*)(internRigidSymbolWrtModule("THE-ONLY", NULL, 0)));
-  }
-}
-
-void helpStartupPropositions4() {
-  {
     SYM_PROPOSITIONS_LOGIC_KAPPA = ((Symbol*)(internRigidSymbolWrtModule("KAPPA", NULL, 0)));
     SYM_PROPOSITIONS_LOGIC_CREATE = ((Symbol*)(internRigidSymbolWrtModule("CREATE", NULL, 0)));
     KWD_PROPOSITIONS_INTENSIONAL_ASSERTION = ((Keyword*)(internRigidSymbolWrtModule("INTENSIONAL-ASSERTION", NULL, 2)));
@@ -10225,21 +10828,20 @@ void helpStartupPropositions4() {
     KWD_PROPOSITIONS_AUTOMATICALLY_FIX_TYPE_VIOLATIONS = ((Keyword*)(internRigidSymbolWrtModule("AUTOMATICALLY-FIX-TYPE-VIOLATIONS", NULL, 2)));
     KWD_PROPOSITIONS_POST_TYPE_VIOLATIONS = ((Keyword*)(internRigidSymbolWrtModule("POST-TYPE-VIOLATIONS", NULL, 2)));
     KWD_PROPOSITIONS_IGNORE_TYPE_VIOLATIONS = ((Keyword*)(internRigidSymbolWrtModule("IGNORE-TYPE-VIOLATIONS", NULL, 2)));
+  }
+}
+
+void helpStartupPropositions5() {
+  {
     KWD_PROPOSITIONS_REPORT_TYPE_VIOLATIONS = ((Keyword*)(internRigidSymbolWrtModule("REPORT-TYPE-VIOLATIONS", NULL, 2)));
     KWD_PROPOSITIONS_SIGNAL_TYPE_VIOLATIONS = ((Keyword*)(internRigidSymbolWrtModule("SIGNAL-TYPE-VIOLATIONS", NULL, 2)));
     SYM_PROPOSITIONS_LOGIC_ASSERTED_BY_TYPE_CHECKERp = ((Symbol*)(internRigidSymbolWrtModule("ASSERTED-BY-TYPE-CHECKER?", NULL, 0)));
     SGT_PROPOSITIONS_LOGIC_CHECK_TYPES_RECORD = ((Surrogate*)(internRigidSymbolWrtModule("CHECK-TYPES-RECORD", NULL, 1)));
     SYM_PROPOSITIONS_LOGIC_PARENT_PROPOSITION = ((Symbol*)(internRigidSymbolWrtModule("PARENT-PROPOSITION", NULL, 0)));
     SYM_PROPOSITIONS_LOGIC_PARENT_DESCRIPTION = ((Symbol*)(internRigidSymbolWrtModule("PARENT-DESCRIPTION", NULL, 0)));
-    SYM_PROPOSITIONS_STELLA_MODULE = ((Symbol*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 0)));
     KWD_PROPOSITIONS_MEDIUM = ((Keyword*)(internRigidSymbolWrtModule("MEDIUM", NULL, 2)));
     KWD_PROPOSITIONS_REALISTIC = ((Keyword*)(internRigidSymbolWrtModule("REALISTIC", NULL, 2)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_SETOF = ((Surrogate*)(internRigidSymbolWrtModule("SETOF", getStellaModule("/PL-KERNEL-KB", true), 1)));
-  }
-}
-
-void helpStartupPropositions5() {
-  {
     SGT_PROPOSITIONS_PL_KERNEL_KB_TOTAL = ((Surrogate*)(internRigidSymbolWrtModule("TOTAL", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_LISTOF = ((Surrogate*)(internRigidSymbolWrtModule("LISTOF", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_PROPOSITIONS_PL_KERNEL_KB_LIST = ((Surrogate*)(internRigidSymbolWrtModule("LIST", getStellaModule("/PL-KERNEL-KB", true), 1)));
@@ -10250,8 +10852,8 @@ void helpStartupPropositions5() {
     SYM_PROPOSITIONS_STELLA_ASSERT = ((Symbol*)(internRigidSymbolWrtModule("ASSERT", getStellaModule("/STELLA", true), 0)));
     KWD_PROPOSITIONS_CPP = ((Keyword*)(internRigidSymbolWrtModule("CPP", NULL, 2)));
     KWD_PROPOSITIONS_DELETED = ((Keyword*)(internRigidSymbolWrtModule("DELETED", NULL, 2)));
-    SGT_PROPOSITIONS_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 1)));
     SYM_PROPOSITIONS_LOGIC_INTRODUCE_MODULE = ((Symbol*)(internRigidSymbolWrtModule("INTRODUCE-MODULE", NULL, 0)));
+    SGT_PROPOSITIONS_STELLA_KEY_VALUE_LIST = ((Surrogate*)(internRigidSymbolWrtModule("KEY-VALUE-LIST", getStellaModule("/STELLA", true), 1)));
     SYM_PROPOSITIONS_LOGIC_CLEAR_LOGIC_MODULE_HOOK = ((Symbol*)(internRigidSymbolWrtModule("CLEAR-LOGIC-MODULE-HOOK", NULL, 0)));
     SYM_PROPOSITIONS_LOGIC_MONOTONICp = ((Symbol*)(internRigidSymbolWrtModule("MONOTONIC?", NULL, 0)));
     SGT_PROPOSITIONS_STELLA_WORLD = ((Surrogate*)(internRigidSymbolWrtModule("WORLD", getStellaModule("/STELLA", true), 1)));
@@ -10279,7 +10881,7 @@ void helpStartupPropositions6() {
     oLOGIC_MODULEo = getStellaModule("LOGIC", true);
     oPL_KERNEL_MODULEo = getStellaModule("PL-KERNEL", true);
     oLAST_KB_ACTIONo = KWD_PROPOSITIONS_UPDATE_PROPOSITION;
-    oEVALUATIONMODEo.set(KWD_PROPOSITIONS_EXTENSIONAL_ASSERTION);
+    oEVALUATIONMODEo = KWD_PROPOSITIONS_EXTENSIONAL_ASSERTION;
     { TruthValue* self004 = newTruthValue();
 
       self004->polarity = KWD_PROPOSITIONS_TRUE;
@@ -10357,10 +10959,10 @@ void helpStartupPropositions6() {
     }
     ANONYMOUS_VARIABLE_NAME = SYM_PROPOSITIONS_STELLA_p;
     oMISSING_KEY_VALUE_LISTo = newKeyValueList();
-    oAUTOMATICINSTANCETABLEo.set(oMISSING_KEY_VALUE_LISTo);
+    oAUTOMATICINSTANCETABLEo = oMISSING_KEY_VALUE_LISTo;
     oSTRUCTURED_OBJECTS_INDEXo = newKeyValueMap();
     oTYPE_CHECK_POLICYo = KWD_PROPOSITIONS_AUTOMATICALLY_FIX_TYPE_VIOLATIONS;
-    oTYPECHECKMODEo.set(KWD_PROPOSITIONS_POST_TYPE_VIOLATIONS);
+    oTYPECHECKMODEo = KWD_PROPOSITIONS_POST_TYPE_VIOLATIONS;
     oCHECK_TYPES_AGENDAo = newVectorSequence(4);
   }
 }
@@ -10448,6 +11050,51 @@ void helpStartupPropositions7() {
       clasS->classConstructorCode = ((cpp_function_code)(&newStringLogicWrapper));
     }
     defineStellaTypeFromStringifiedSource("(DEFTYPE ENTITY-MAPPING (KEY-VALUE-MAP OF OBJECT OBJECT) :DOCUMENTATION \"Used to keep track of copied or substituted variables\nand propositions within 'copy-description', etc.  This needs to be a\nsubtype of DICTIONARY.  KEY-VALUE-LIST is a good choice for most cases,\nhowever, for very high-arity relations and descriptions we do get bad performance\nduring copying and equivalence checking and KEY-VALUE-MAP (though more\nheavy-weight) would be the better option.\")");
+    { Class* clasS = defineClassFromStringifiedSource("LOGIC-EXCEPTION", "(DEFCLASS LOGIC-EXCEPTION (STELLA-EXCEPTION))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newLogicException));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("PROPOSITION-ERROR", "(DEFCLASS PROPOSITION-ERROR (LOGIC-EXCEPTION))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newPropositionError));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("PARSING-ERROR", "(DEFCLASS PARSING-ERROR (LOGIC-EXCEPTION))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newParsingError));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("CLASH", "(DEFCLASS CLASH (LOGIC-EXCEPTION) :PUBLIC-SLOTS ((PROPOSITION :TYPE PROPOSITION :DOCUMENTATION \"The main proposition involved in the clash\") (CONTEXT :TYPE CONTEXT :DOCUMENTATION \"The context in which the clash occurred\")))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newClash));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("TRUTH-VALUE-CLASH", "(DEFCLASS TRUTH-VALUE-CLASH (CLASH))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newTruthValueClash));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("INTERVAL-CLASH", "(DEFCLASS INTERVAL-CLASH (CLASH) :PUBLIC-SLOTS ((INTERVAL-MEMBER :TYPE LOGIC-OBJECT :DOCUMENTATION \"The owner of the interval cache that is unsatisfiable.\") (LOWER-BOUND :TYPE OBJECT) (UPPER-BOUND :TYPE OBJECT) (STRICT-LOWER-BOUND? :TYPE BOOLEAN) (STRICT-UPPER-BOUND? :TYPE BOOLEAN)))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newIntervalClash));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("VARIABLE-VALUE-CLASH", "(DEFCLASS VARIABLE-VALUE-CLASH (CLASH) :PUBLIC-SLOTS ((SKOLEM :TYPE SKOLEM :DOCUMENTATION \"Skolem which is getting multiple values.\") (VALUE1 :TYPE OBJECT :DOCUMENTATION \"First value in value clash\") (VALUE2 :TYPE OBJECT :DOCUMENTATION \"Second value in value clash\")))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newVariableValueClash));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("UNIFICATION-CLASH", "(DEFCLASS UNIFICATION-CLASH (CLASH) :PUBLIC-SLOTS ((VALUE1 :TYPE OBJECT :DOCUMENTATION \"First value in unification clash\") (VALUE2 :TYPE OBJECT :DOCUMENTATION \"Second value in unification clash\")))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newUnificationClash));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("FAIL-EXCEPTION", "(DEFCLASS FAIL-EXCEPTION (LOGIC-EXCEPTION))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newFailException));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("QUERY-THREAD-LIMIT-VIOLATION", "(DEFCLASS QUERY-THREAD-LIMIT-VIOLATION (LOGIC-EXCEPTION))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newQueryThreadLimitViolation));
+    }
+    { Class* clasS = defineClassFromStringifiedSource("EXCEPTION-RECORD", "(DEFCLASS EXCEPTION-RECORD (STANDARD-OBJECT) :SLOTS ((EXCEPTION :TYPE STELLA-EXCEPTION) (CONTEXT :TYPE CONTEXT) (MODULE :TYPE MODULE)))");
+
+      clasS->classConstructorCode = ((cpp_function_code)(&newExceptionRecord));
+      clasS->classSlotAccessorCode = ((cpp_function_code)(&accessExceptionRecordSlotValue));
+    }
     { Class* clasS = defineClassFromStringifiedSource("OBJECT-ALREADY-EXISTS-EXCEPTION", "(DEFCLASS OBJECT-ALREADY-EXISTS-EXCEPTION (STELLA-EXCEPTION) :PUBLIC? TRUE :PUBLIC-SLOTS ((EXISTING-OBJECT :TYPE OBJECT)))");
 
       clasS->classConstructorCode = ((cpp_function_code)(&newObjectAlreadyExistsException));
@@ -10490,6 +11137,7 @@ void helpStartupPropositions8() {
     defineFunctionObject("LOGICAL-SUBTYPE-OF-LITERAL?", "(DEFUN (LOGICAL-SUBTYPE-OF-LITERAL? BOOLEAN) ((TYPE SURROGATE)) :PUBLIC? TRUE)", ((cpp_function_code)(&logicalSubtypeOfLiteralP)), NULL);
     defineFunctionObject("LITERAL-TYPE?", "(DEFUN (LITERAL-TYPE? BOOLEAN) ((TYPE SURROGATE)) :PUBLIC? TRUE)", ((cpp_function_code)(&literalTypeP)), NULL);
     defineFunctionObject("BOOLEAN-TYPE?", "(DEFUN (BOOLEAN-TYPE? BOOLEAN) ((SELF TYPE)) :PUBLIC? TRUE)", ((cpp_function_code)(&booleanTypeP)), NULL);
+    defineFunctionObject("PROPOSITION-TYPE?", "(DEFUN (PROPOSITION-TYPE? BOOLEAN) ((SELF TYPE)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (EQL? SELF @PROPOSITION)))", ((cpp_function_code)(&propositionTypeP)), NULL);
     defineFunctionObject("CLASS-DESCRIPTION?", "(DEFUN (CLASS-DESCRIPTION? BOOLEAN) ((SELF NAMED-DESCRIPTION)) :PUBLIC? TRUE)", ((cpp_function_code)(&classDescriptionP)), NULL);
     defineFunctionObject("FUNCTION-DESCRIPTION?", "(DEFUN (FUNCTION-DESCRIPTION? BOOLEAN) ((SELF NAMED-DESCRIPTION)) :PUBLIC? TRUE)", ((cpp_function_code)(&functionDescriptionP)), NULL);
     defineFunctionObject("VARIABLE-ARITY?", "(DEFUN (VARIABLE-ARITY? BOOLEAN) ((SELF DESCRIPTION)) :PUBLIC? TRUE)", ((cpp_function_code)(&variableArityP)), NULL);
@@ -10521,16 +11169,17 @@ void helpStartupPropositions8() {
     defineFunctionObject("UPDATE-PROPOSITION-TRUTH-VALUE", "(DEFUN UPDATE-PROPOSITION-TRUTH-VALUE ((SELF PROPOSITION) (UPDATEMODE KEYWORD)))", ((cpp_function_code)(&updatePropositionTruthValue)), NULL);
     defineFunctionObject("ASSIGN-PROPOSITION-WEIGHT", "(DEFUN ASSIGN-PROPOSITION-WEIGHT ((SELF PROPOSITION) (WEIGHT PARTIAL-MATCH-SCORE)))", ((cpp_function_code)(&assignPropositionWeight)), NULL);
     defineFunctionObject("TICKLE-CONTEXT", "(DEFUN (TICKLE-CONTEXT CONTEXT) ())", ((cpp_function_code)(&tickleContext)), NULL);
-    defineFunctionObject("TICKLE-INSTANCES", "(DEFUN (TICKLE-INSTANCES CONTEXT) ())", ((cpp_function_code)(&tickleInstances)), NULL);
   }
 }
 
 void helpStartupPropositions9() {
   {
+    defineFunctionObject("TICKLE-INSTANCES", "(DEFUN (TICKLE-INSTANCES CONTEXT) ())", ((cpp_function_code)(&tickleInstances)), NULL);
+    defineFunctionObject("LIST-INCONSISTENT-PROPOSITIONS", "(DEFUN (LIST-INCONSISTENT-PROPOSITIONS (CONS OF PROPOSITION)) (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Return a list of all currently known inconsistent proposition in the module defined\nby the :module option (which defaults to the current module).  If `:local?' is specified\nas TRUE only look in the specified module but not any modules it inherits.  Note, that\nthis simply reports propositions that have been assigned an inconsistent truth value so\nfar (e.g., in clash exceptions), it will not try to detect any new or all inconsistencies\nin a module.\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&listInconsistentPropositions)), ((cpp_function_code)(&listInconsistentPropositionsEvaluatorWrapper)));
     defineFunctionObject("REACT-TO-SKOLEM-VALUE-UPDATE", "(DEFUN REACT-TO-SKOLEM-VALUE-UPDATE ((SKOLEM SKOLEM) (OLDVALUE OBJECT) (NEWVALUE OBJECT) (TOPLEVELUPDATE? BOOLEAN)))", ((cpp_function_code)(&reactToSkolemValueUpdate)), NULL);
     defineFunctionObject("NATIVE-SLOT-PROPOSITION?", "(DEFUN (NATIVE-SLOT-PROPOSITION? BOOLEAN) ((SELF PROPOSITION)))", ((cpp_function_code)(&nativeSlotPropositionP)), NULL);
     defineFunctionObject("UPDATE-NATIVE-SLOT-PROPOSITION", "(DEFUN (UPDATE-NATIVE-SLOT-PROPOSITION (CONS OF PROPOSITION)) ((PROPOSITION PROPOSITION) (UPDATEMODE KEYWORD)))", ((cpp_function_code)(&updateNativeSlotProposition)), NULL);
-    defineFunctionObject("ASSIGN-NATIVE-SLOT-VALUE", "(DEFUN ASSIGN-NATIVE-SLOT-VALUE ((SELF THING) (SLOT STORAGE-SLOT) (VALUE OBJECT)))", ((cpp_function_code)(&assignNativeSlotValue)), NULL);
+    defineFunctionObject("ASSIGN-NATIVE-SLOT-VALUE", "(DEFUN ASSIGN-NATIVE-SLOT-VALUE ((PROP PROPOSITION) (SELF THING) (SLOT STORAGE-SLOT) (VALUE OBJECT)))", ((cpp_function_code)(&assignNativeSlotValue)), NULL);
     defineFunctionObject("CLEAR-NATIVE-SLOT-VALUE", "(DEFUN CLEAR-NATIVE-SLOT-VALUE ((OBJECT THING) (SLOT STORAGE-SLOT)))", ((cpp_function_code)(&clearNativeSlotValue)), NULL);
     defineFunctionObject("DROP-NATIVE-SLOT-VALUE", "(DEFUN DROP-NATIVE-SLOT-VALUE ((SELF THING) (SLOT STORAGE-SLOT) (VALUE OBJECT)))", ((cpp_function_code)(&dropNativeSlotValue)), NULL);
     defineFunctionObject("LOOKUP-SLOTREF-ON-INSTANCE", "(DEFUN (LOOKUP-SLOTREF-ON-INSTANCE SURROGATE) ((TERM OBJECT) (SLOTNAME SYMBOL)))", ((cpp_function_code)(&lookupSlotrefOnInstance)), NULL);
@@ -10562,6 +11211,8 @@ void helpStartupPropositions9() {
     defineFunctionObject("CONJOIN-TRUTH-VALUES", "(DEFUN (CONJOIN-TRUTH-VALUES TRUTH-VALUE) ((TV1 TRUTH-VALUE) (TV2 TRUTH-VALUE)) :DOCUMENTATION \"Return the logical conjunction of truth values `tv1' and `tv2'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&conjoinTruthValues)), NULL);
     defineFunctionObject("DISJOIN-TRUTH-VALUES", "(DEFUN (DISJOIN-TRUTH-VALUES TRUTH-VALUE) ((TV1 TRUTH-VALUE) (TV2 TRUTH-VALUE)) :DOCUMENTATION \"Return the logical disjunction of truth values `tv1' and `tv2'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&disjoinTruthValues)), NULL);
     defineFunctionObject("INVERT-TRUTH-VALUE", "(DEFUN (INVERT-TRUTH-VALUE TRUTH-VALUE) ((SELF TRUTH-VALUE)) :DOCUMENTATION \"Return the logical negation of `self'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&invertTruthValue)), NULL);
+    defineFunctionObject("STRONGER-TRUTH-VALUE?", "(DEFUN (STRONGER-TRUTH-VALUE? BOOLEAN) ((TV1 TRUTH-VALUE) (TV2 TRUTH-VALUE)) :DOCUMENTATION \"Compare the two truth values and return `true' if `tv1' is strictly\nstronger than `tv2'.  Stronger uses the following partial order:\n  INCONSISTENT > STRICT > DEFAULT > UNKNOWN.\nTruth values at the same level are equal in strength.\" :PUBLIC? TRUE)", ((cpp_function_code)(&strongerTruthValueP)), NULL);
+    defineFunctionObject("MERGE-TRUTH-VALUES", "(DEFUN (MERGE-TRUTH-VALUES TRUTH-VALUE) ((TV1 TRUTH-VALUE) (TV2 TRUTH-VALUE)) :DOCUMENTATION \"Merge two truth values that are describing the \\\"same\\\" logical\nproposition.  This handles subordination of default to strict values, \nknown over unknown and potential inconsistent values.\n\nIn particular, this can be used to check for negated values by asking for\nthe truth of a proposition and its negation, inverting the negation and then\nusing merge to come up with an answer.\" :PUBLIC? TRUE)", ((cpp_function_code)(&mergeTruthValues)), NULL);
     defineFunctionObject("WEAKEN-TRUTH-VALUE", "(DEFUN (WEAKEN-TRUTH-VALUE TRUTH-VALUE) ((TV1 TRUTH-VALUE) (TV2 TRUTH-VALUE)) :DOCUMENTATION \"If `tv2' has lesser strength than `tv1', adapt the strength of `tv1' (not\nits value!) and return the result.  Otherwise, return `tv1' unmodified.\" :PUBLIC? TRUE)", ((cpp_function_code)(&weakenTruthValue)), NULL);
     defineFunctionObject("STRENGTHEN-TRUTH-VALUE", "(DEFUN (STRENGTHEN-TRUTH-VALUE TRUTH-VALUE) ((TV1 TRUTH-VALUE) (TV2 TRUTH-VALUE)) :DOCUMENTATION \"If `tv2' has greater strength than `tv1', adapt the strength of `tv1' (not\nits value!) and return the result.  Otherwise, return `tv1' unmodified.\" :PUBLIC? TRUE)", ((cpp_function_code)(&strengthenTruthValue)), NULL);
     defineFunctionObject("TRUE-TRUTH-VALUE?", "(DEFUN (TRUE-TRUTH-VALUE? BOOLEAN) ((SELF TRUTH-VALUE)) :DOCUMENTATION \"Return TRUE if `self' represents some form of truth.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (OR (EQL? SELF TRUE-TRUTH-VALUE) (EQL? SELF DEFAULT-TRUE-TRUTH-VALUE))))", ((cpp_function_code)(&trueTruthValueP)), NULL);
@@ -10571,27 +11222,31 @@ void helpStartupPropositions9() {
     defineFunctionObject("UNKNOWN-TRUTH-VALUE?", "(DEFUN (UNKNOWN-TRUTH-VALUE? BOOLEAN) ((SELF TRUTH-VALUE)) :DOCUMENTATION \"Return TRUE if `self' represents UNKNOWN.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (OR (EQL? SELF UNKNOWN-TRUTH-VALUE) (NULL? SELF))))", ((cpp_function_code)(&unknownTruthValueP)), NULL);
     defineFunctionObject("KNOWN-TRUTH-VALUE?", "(DEFUN (KNOWN-TRUTH-VALUE? BOOLEAN) ((SELF TRUTH-VALUE)) :DOCUMENTATION \"Return TRUE if `self' is a known truth value, that is\neither TRUE or FALSE, but not UNKNOWN, INCONSISTENT, etc.\")", ((cpp_function_code)(&knownTruthValueP)), NULL);
     defineFunctionObject("INCONSISTENT-TRUTH-VALUE?", "(DEFUN (INCONSISTENT-TRUTH-VALUE? BOOLEAN) ((SELF TRUTH-VALUE)) :DOCUMENTATION \"Return TRUE if `self' represents INCONSISTENT.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (EQL? SELF INCONSISTENT-TRUTH-VALUE)))", ((cpp_function_code)(&inconsistentTruthValueP)), NULL);
+    defineFunctionObject("TRUTH-VALUE-TO-STRING", "(DEFUN (TRUTH-VALUE-TO-STRING STRING) ((SELF TRUTH-VALUE) (ABBREVIATE? BOOLEAN)))", ((cpp_function_code)(&truthValueToString)), NULL);
     defineFunctionObject("PRINT-TRUTH-VALUE", "(DEFUN PRINT-TRUTH-VALUE ((SELF TRUTH-VALUE) (STREAM OUTPUT-STREAM)))", ((cpp_function_code)(&printTruthValue)), NULL);
-    defineFunctionObject("SIGNAL-UNIFICATION-CLASH", "(DEFUN SIGNAL-UNIFICATION-CLASH ((TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&signalUnificationClash)), NULL);
-    defineFunctionObject("SIGNAL-VARIABLE-VALUE-CLASH", "(DEFUN SIGNAL-VARIABLE-VALUE-CLASH ((SKOLEM SKOLEM) (VALUE1 OBJECT) (VALUE2 OBJECT)))", ((cpp_function_code)(&signalVariableValueClash)), NULL);
+    defineFunctionObject("SIGNAL-UNIFICATION-CLASH", "(DEFUN SIGNAL-UNIFICATION-CLASH ((PROP PROPOSITION) (TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&signalUnificationClash)), NULL);
+    defineFunctionObject("SIGNAL-VARIABLE-VALUE-CLASH", "(DEFUN SIGNAL-VARIABLE-VALUE-CLASH ((PROP PROPOSITION) (SKOLEM SKOLEM) (VALUE1 OBJECT) (VALUE2 OBJECT)))", ((cpp_function_code)(&signalVariableValueClash)), NULL);
     defineFunctionObject("SIGNAL-TRUTH-VALUE-CLASH", "(DEFUN SIGNAL-TRUTH-VALUE-CLASH ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&signalTruthValueClash)), NULL);
+    defineExternalSlotFromStringifiedSource("(DEFSLOT PROPOSITION CLASH-EXCEPTIONS :TYPE (CONS OF EXCEPTION-RECORD) :DEFAULT NIL :DOCUMENTATION \"Stores a set of clash exception records that occurred for a\nparticular 'inchoherent' proposition.\" :ALLOCATION :DYNAMIC)");
+    defineFunctionObject("GET-VISIBLE-CLASH-EXCEPTIONS", "(DEFUN (GET-VISIBLE-CLASH-EXCEPTIONS (CONS OF EXCEPTION-RECORD)) ((INCOHERENTPROP PROPOSITION)) :DOCUMENTATION \"Return the set of clash exceptions for 'incoherentProp' that are visible from the\ncurrent context.  These are recorded most-recent first in order of occurrance.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getVisibleClashExceptions)), NULL);
+    defineFunctionObject("HANDLE-CLASH-EXCEPTION", "(DEFUN HANDLE-CLASH-EXCEPTION ((CLASHEXCEPTION CLASH)))", ((cpp_function_code)(&handleClashException)), NULL);
     defineFunctionObject("LOGICAL-TYPE", "(DEFUN (LOGICAL-TYPE TYPE) ((SELF OBJECT)))", ((cpp_function_code)(&logicalType)), NULL);
     defineFunctionObject("SAFE-LOGICAL-TYPE", "(DEFUN (SAFE-LOGICAL-TYPE TYPE) ((SELF OBJECT)))", ((cpp_function_code)(&safeLogicalType)), NULL);
     defineFunctionObject("CLASS-LOGICAL-TYPE", "(DEFUN (CLASS-LOGICAL-TYPE TYPE) ((SELF CLASS)))", ((cpp_function_code)(&classLogicalType)), NULL);
-    defineFunctionObject("UNIFY-TYPES", "(DEFUN UNIFY-TYPES ((TERM1 SKOLEM) (TERM2 OBJECT)))", ((cpp_function_code)(&unifyTypes)), NULL);
-    defineFunctionObject("UNIFY-SKOLEM-AND-VALUE", "(DEFUN UNIFY-SKOLEM-AND-VALUE ((SKOLEM SKOLEM) (VALUE OBJECT)))", ((cpp_function_code)(&unifySkolemAndValue)), NULL);
-    defineFunctionObject("BIND-SKOLEM-TO-VALUE", "(DEFUN BIND-SKOLEM-TO-VALUE ((FROMSKOLEM SKOLEM) (TOVALUE OBJECT) (TOPLEVELUPDATE? BOOLEAN)))", ((cpp_function_code)(&bindSkolemToValue)), NULL);
-    defineFunctionObject("UNBIND-SKOLEM-VALUE", "(DEFUN UNBIND-SKOLEM-VALUE ((SKOLEM SKOLEM) (TOPLEVELUPDATE? BOOLEAN)))", ((cpp_function_code)(&unbindSkolemValue)), NULL);
-    defineFunctionObject("CONSTRAIN-AS-SUBSET", "(DEFUN CONSTRAIN-AS-SUBSET ((SET1 COLLECTION) (SET2 COLLECTION)))", ((cpp_function_code)(&constrainAsSubset)), NULL);
-    defineFunctionObject("EQUATE-COLLECTIONS", "(DEFUN EQUATE-COLLECTIONS ((COL1 COLLECTION) (COL2 COLLECTION)))", ((cpp_function_code)(&equateCollections)), NULL);
-    defineFunctionObject("LOGIC-COLLECTION?", "(DEFUN (LOGIC-COLLECTION? BOOLEAN) ((TERM OBJECT)))", ((cpp_function_code)(&logicCollectionP)), NULL);
-    defineFunctionObject("EQUATE-VALUES", "(DEFUN EQUATE-VALUES ((TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&equateValues)), NULL);
-    defineExternalSlotFromStringifiedSource("(DEFSLOT SKOLEM CONFLICTING-DEFAULT-VALUES :TYPE (CONS OF PROPOSITION) :DEFAULT NIL :ALLOCATION :DYNAMIC)");
+    defineFunctionObject("UNIFY-TYPES", "(DEFUN UNIFY-TYPES ((PROP PROPOSITION) (TERM1 SKOLEM) (TERM2 OBJECT)))", ((cpp_function_code)(&unifyTypes)), NULL);
   }
 }
 
 void helpStartupPropositions10() {
   {
+    defineFunctionObject("UNIFY-SKOLEM-AND-VALUE", "(DEFUN UNIFY-SKOLEM-AND-VALUE ((SKOLEM SKOLEM) (VALUE OBJECT)))", ((cpp_function_code)(&unifySkolemAndValue)), NULL);
+    defineFunctionObject("BIND-SKOLEM-TO-VALUE", "(DEFUN BIND-SKOLEM-TO-VALUE ((FROMSKOLEM SKOLEM) (TOVALUE OBJECT) (TOPLEVELUPDATE? BOOLEAN)))", ((cpp_function_code)(&bindSkolemToValue)), NULL);
+    defineFunctionObject("UNBIND-SKOLEM-VALUE", "(DEFUN UNBIND-SKOLEM-VALUE ((SKOLEM SKOLEM) (TOPLEVELUPDATE? BOOLEAN)))", ((cpp_function_code)(&unbindSkolemValue)), NULL);
+    defineFunctionObject("CONSTRAIN-AS-SUBSET", "(DEFUN CONSTRAIN-AS-SUBSET ((PROP PROPOSITION) (SET1 COLLECTION) (SET2 COLLECTION)))", ((cpp_function_code)(&constrainAsSubset)), NULL);
+    defineFunctionObject("EQUATE-COLLECTIONS", "(DEFUN EQUATE-COLLECTIONS ((PROP PROPOSITION) (COL1 COLLECTION) (COL2 COLLECTION)))", ((cpp_function_code)(&equateCollections)), NULL);
+    defineFunctionObject("LOGIC-COLLECTION?", "(DEFUN (LOGIC-COLLECTION? BOOLEAN) ((TERM OBJECT)))", ((cpp_function_code)(&logicCollectionP)), NULL);
+    defineFunctionObject("EQUATE-VALUES", "(DEFUN EQUATE-VALUES ((PROP PROPOSITION) (TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&equateValues)), NULL);
+    defineExternalSlotFromStringifiedSource("(DEFSLOT SKOLEM CONFLICTING-DEFAULT-VALUES :TYPE (CONS OF PROPOSITION) :DEFAULT NIL :ALLOCATION :DYNAMIC)");
     defineFunctionObject("UNEQUATE-CONFLICTING-DEFAULT-VALUES?", "(DEFUN (UNEQUATE-CONFLICTING-DEFAULT-VALUES? BOOLEAN) ((NEWEQUATINGPROP PROPOSITION)))", ((cpp_function_code)(&unequateConflictingDefaultValuesP)), NULL);
     defineFunctionObject("UNEQUATE-VALUES?", "(DEFUN (UNEQUATE-VALUES? BOOLEAN) ((TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&unequateValuesP)), NULL);
     defineFunctionObject("BIND-TO-EQUIVALENT-VALUE", "(DEFUN BIND-TO-EQUIVALENT-VALUE ((FROM LOGIC-OBJECT) (TO DESCRIPTION)))", ((cpp_function_code)(&bindToEquivalentValue)), NULL);
@@ -10601,6 +11256,7 @@ void helpStartupPropositions10() {
     defineFunctionObject("EQUIVALENCE-COLLECTIONS", "(DEFUN EQUIVALENCE-COLLECTIONS ((COLLECTION1 LOGIC-OBJECT) (COLLECTION2 LOGIC-OBJECT)))", ((cpp_function_code)(&equivalenceCollections)), NULL);
     defineFunctionObject("REVISE-EQUIVALENCES", "(DEFUN REVISE-EQUIVALENCES ((PROPOSITION PROPOSITION) (GOESTRUE? BOOLEAN)))", ((cpp_function_code)(&reviseEquivalences)), NULL);
     defineFunctionObject("FIND-EQUATING-PROPOSITION", "(DEFUN (FIND-EQUATING-PROPOSITION PROPOSITION) ((DIRECTOBJECT OBJECT) (INDIRECTOBJECT LOGIC-OBJECT)))", ((cpp_function_code)(&findEquatingProposition)), NULL);
+    defineFunctionObject("CONSTANT-PROPOSITION?", "(DEFUN (CONSTANT-PROPOSITION? BOOLEAN) ((SELF PROPOSITION)) :DOCUMENTATION \"Return true if `self' is a constant such as TRUE or FALSE.\" :PUBLIC? TRUE)", ((cpp_function_code)(&constantPropositionP)), NULL);
     defineFunctionObject("EVALUATE-TERM", "(DEFUN (EVALUATE-TERM OBJECT) ((SELF OBJECT)))", ((cpp_function_code)(&evaluateTerm)), NULL);
     defineFunctionObject("EVALUATE-LITERAL-WRAPPER-TERM", "(DEFUN (EVALUATE-LITERAL-WRAPPER-TERM OBJECT) ((SELF LITERAL-WRAPPER)))", ((cpp_function_code)(&evaluateLiteralWrapperTerm)), NULL);
     defineFunctionObject("EVALUATE-SURROGATE-TERM", "(DEFUN (EVALUATE-SURROGATE-TERM OBJECT) ((SELF SURROGATE)))", ((cpp_function_code)(&evaluateSurrogateTerm)), NULL);
@@ -10636,11 +11292,18 @@ void helpStartupPropositions10() {
     defineFunctionObject("HELP-CREATE-LOGIC-INSTANCE", "(DEFUN (HELP-CREATE-LOGIC-INSTANCE OBJECT) ((NAME SURROGATE) (TYPE SURROGATE)) :PUBLIC? TRUE)", ((cpp_function_code)(&helpCreateLogicInstance)), NULL);
     defineFunctionObject("CREATE-LOGIC-INSTANCE", "(DEFUN (CREATE-LOGIC-INSTANCE OBJECT) ((NAME SURROGATE) (TYPE SURROGATE)) :PUBLIC? TRUE)", ((cpp_function_code)(&createLogicInstance)), NULL);
     defineFunctionObject("CLEANUP-STRUCTURED-OBJECTS-INDEX", "(DEFUN CLEANUP-STRUCTURED-OBJECTS-INDEX ((CLEARMODULE MODULE)))", ((cpp_function_code)(&cleanupStructuredObjectsIndex)), NULL);
-    defineFunctionObject("PROPOSITION-HASH-INDEX", "(DEFUN (PROPOSITION-HASH-INDEX INTEGER) ((SELF PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&propositionHashIndex)), NULL);
+    defineFunctionObject("PROPOSITION-HASH-INDEX", "(DEFUN (PROPOSITION-HASH-INDEX INTEGER) ((SELF PROPOSITION) (MAPPING ENTITY-MAPPING) (DEREFSURROGATES? BOOLEAN)))", ((cpp_function_code)(&propositionHashIndex)), NULL);
+    defineFunctionObject("LOOKUP-MATCHING-PROPOSITION-IN-BUCKET", "(DEFUN (LOOKUP-MATCHING-PROPOSITION-IN-BUCKET PROPOSITION) ((BUCKET LIST) (SELF PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&lookupMatchingPropositionInBucket)), NULL);
     defineFunctionObject("FIND-DUPLICATE-COMPLEX-PROPOSITION", "(DEFUN (FIND-DUPLICATE-COMPLEX-PROPOSITION PROPOSITION) ((SELF PROPOSITION)))", ((cpp_function_code)(&findDuplicateComplexProposition)), NULL);
     defineFunctionObject("FIND-DUPLICATE-PROPOSITION", "(DEFUN (FIND-DUPLICATE-PROPOSITION PROPOSITION) ((SELF PROPOSITION)))", ((cpp_function_code)(&findDuplicateProposition)), NULL);
+    defineFunctionObject("FIND-MATCHING-NON-DESCRIPTIVE-PROPOSITION", "(DEFUN (FIND-MATCHING-NON-DESCRIPTIVE-PROPOSITION PROPOSITION) ((SELF PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&findMatchingNonDescriptiveProposition)), NULL);
     defineFunctionObject("FASTEN-DOWN-ONE-PROPOSITION", "(DEFUN (FASTEN-DOWN-ONE-PROPOSITION PROPOSITION) ((SELF PROPOSITION) (DONTCHECKFORDUPLICATES? BOOLEAN)))", ((cpp_function_code)(&fastenDownOneProposition)), NULL);
     defineFunctionObject("HELP-FASTEN-DOWN-PROPOSITIONS", "(DEFUN (HELP-FASTEN-DOWN-PROPOSITIONS PROPOSITION) ((SELF PROPOSITION) (DONTCHECKFORDUPLICATES? BOOLEAN)))", ((cpp_function_code)(&helpFastenDownPropositions)), NULL);
+  }
+}
+
+void helpStartupPropositions11() {
+  {
     defineFunctionObject("RECURSIVELY-FASTEN-DOWN-PROPOSITIONS", "(DEFUN (RECURSIVELY-FASTEN-DOWN-PROPOSITIONS PROPOSITION) ((SELF PROPOSITION) (DONTCHECKFORDUPLICATES? BOOLEAN)))", ((cpp_function_code)(&recursivelyFastenDownPropositions)), NULL);
     defineFunctionObject("UNFASTEN-PROPOSITION", "(DEFUN UNFASTEN-PROPOSITION ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&unfastenProposition)), NULL);
     defineFunctionObject("INSTANTIATE-UNDEFINED-SURROGATES", "(DEFUN INSTANTIATE-UNDEFINED-SURROGATES ((SELF PROPOSITION)))", ((cpp_function_code)(&instantiateUndefinedSurrogates)), NULL);
@@ -10652,11 +11315,6 @@ void helpStartupPropositions10() {
     defineFunctionObject("VERIFY-NUMBER-OF-PROPOSITION-ARGUMENTS", "(DEFUN VERIFY-NUMBER-OF-PROPOSITION-ARGUMENTS ((TREE CONS) (CORRECTNUMBER INTEGER)))", ((cpp_function_code)(&verifyNumberOfPropositionArguments)), NULL);
     defineMethodObject("(DEFMETHOD (DESCRIPTION-SURROGATE TYPE) ((SELF DESCRIPTION)))", ((cpp_method_code)(&Description::descriptionSurrogate)), ((cpp_method_code)(NULL)));
     defineFunctionObject("BUILD-ISA-PROPOSITION", "(DEFUN (BUILD-ISA-PROPOSITION PROPOSITION) ((TREE CONS)))", ((cpp_function_code)(&buildIsaProposition)), NULL);
-  }
-}
-
-void helpStartupPropositions11() {
-  {
     defineFunctionObject("BUILD-MEMBER-OF-PROPOSITION", "(DEFUN (BUILD-MEMBER-OF-PROPOSITION PROPOSITION) ((TREE CONS)))", ((cpp_function_code)(&buildMemberOfProposition)), NULL);
     defineFunctionObject("MEMBER-OF-PROPOSITION?", "(DEFUN (MEMBER-OF-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)) :GLOBALLY-INLINE? TRUE (RETURN (EQL? (OPERATOR PROPOSITION) /PL-KERNEL-KB/@MEMBER-OF)))", ((cpp_function_code)(&memberOfPropositionP)), NULL);
     defineFunctionObject("SUBSET-OF-PROPOSITION?", "(DEFUN (SUBSET-OF-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)) :GLOBALLY-INLINE? TRUE (RETURN (EQL? (OPERATOR PROPOSITION) /PL-KERNEL-KB/@SUBSET-OF)))", ((cpp_function_code)(&subsetOfPropositionP)), NULL);
@@ -10673,6 +11331,7 @@ void helpStartupPropositions11() {
     defineFunctionObject("PREDICATE-OF-FUNCTION-INDUCED-EXISTS", "(DEFUN (PREDICATE-OF-FUNCTION-INDUCED-EXISTS PROPOSITION) ((EXISTSPROPOSITION PROPOSITION)))", ((cpp_function_code)(&predicateOfFunctionInducedExists)), NULL);
     defineFunctionObject("EMBED-NEGATION-WITHIN-FUNCTION-INDUCED-EXISTS", "(DEFUN (EMBED-NEGATION-WITHIN-FUNCTION-INDUCED-EXISTS PROPOSITION) ((EXISTSPROPOSITION PROPOSITION)))", ((cpp_function_code)(&embedNegationWithinFunctionInducedExists)), NULL);
     defineFunctionObject("BUILD-AND-OR-NOT-PROPOSITION", "(DEFUN (BUILD-AND-OR-NOT-PROPOSITION PROPOSITION) ((TREE CONS)))", ((cpp_function_code)(&buildAndOrNotProposition)), NULL);
+    defineFunctionObject("CONCEIVE-INVERTED-PROPOSITION", "(DEFUN (CONCEIVE-INVERTED-PROPOSITION PROPOSITION) ((PROP PROPOSITION)) :DOCUMENTATION \"Return the simplest inversion of `prop', trying to reuse existing\nnegations or negated arguments of `prop' if possible.\" :PUBLIC? TRUE)", ((cpp_function_code)(&conceiveInvertedProposition)), NULL);
     defineFunctionObject("FUNCTIONAL-TERM?", "(DEFUN (FUNCTIONAL-TERM? BOOLEAN) ((TERM OBJECT)))", ((cpp_function_code)(&functionalTermP)), NULL);
     defineFunctionObject("CLIP-VALUE?", "(DEFUN (CLIP-VALUE? BOOLEAN) ((TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&clipValueP)), NULL);
     defineFunctionObject("CREATE-EQUIVALENCE-PROPOSITION", "(DEFUN (CREATE-EQUIVALENCE-PROPOSITION PROPOSITION) ((TERM1 OBJECT) (TERM2 OBJECT)))", ((cpp_function_code)(&createEquivalenceProposition)), NULL);
@@ -10687,6 +11346,7 @@ void helpStartupPropositions11() {
     defineFunctionObject("POLYMORPHIC-RELATION?", "(DEFUN (POLYMORPHIC-RELATION? BOOLEAN) ((SELF RELATION)))", ((cpp_function_code)(&polymorphicRelationP)), NULL);
     defineFunctionObject("NON-POLYMORPHIC-PREDICATE?", "(DEFUN (NON-POLYMORPHIC-PREDICATE? BOOLEAN) ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&nonPolymorphicPredicateP)), NULL);
     defineFunctionObject("EVALUATE-PREDICATE", "(DEFUN (EVALUATE-PREDICATE LOGIC-OBJECT) ((NAME GENERALIZED-SYMBOL) (FIRSTARGUMENT OBJECT)))", ((cpp_function_code)(&evaluatePredicate)), NULL);
+    defineFunctionObject("*AUTO-COERCE-PROPOSITIONAL-ARGUMENTS?*-SETTER", "(DEFUN (*AUTO-COERCE-PROPOSITIONAL-ARGUMENTS?*-SETTER BOOLEAN) ((VALUE BOOLEAN)))", ((cpp_function_code)(&OAutoCoercePropositionalArgumentsPOSetter)), NULL);
     defineFunctionObject("PROPOSITIONAL-ARGUMENT?", "(DEFUN (PROPOSITIONAL-ARGUMENT? BOOLEAN) ((ARGUMENT OBJECT)))", ((cpp_function_code)(&propositionalArgumentP)), NULL);
     defineFunctionObject("EVALUATE-TYPED-ARGUMENT", "(DEFUN (EVALUATE-TYPED-ARGUMENT OBJECT) ((ARGUMENT OBJECT) (TYPE SURROGATE)))", ((cpp_function_code)(&evaluateTypedArgument)), NULL);
     defineFunctionObject("EVALUATE-PROPOSITION-TERM", "(DEFUN (EVALUATE-PROPOSITION-TERM OBJECT) ((TREE OBJECT)))", ((cpp_function_code)(&evaluatePropositionTerm)), NULL);
@@ -10704,6 +11364,11 @@ void helpStartupPropositions11() {
     defineFunctionObject("VERIFY-ONE-ARGUMENT-TYPE", "(DEFUN VERIFY-ONE-ARGUMENT-TYPE ((ARG OBJECT) (TYPE SURROGATE) (PROPOSITION PROPOSITION) (DESCRIPTION NAMED-DESCRIPTION)))", ((cpp_function_code)(&verifyOneArgumentType)), NULL);
     defineFunctionObject("VERIFY-ARGUMENT-TYPES-AND-COUNT", "(DEFUN VERIFY-ARGUMENT-TYPES-AND-COUNT ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&verifyArgumentTypesAndCount)), NULL);
     defineFunctionObject("HANDLE-ARGUMENT-TYPE-VIOLATION", "(DEFUN HANDLE-ARGUMENT-TYPE-VIOLATION ((PROPOSITION PROPOSITION) (ARG OBJECT) (REQUIREDTYPE SURROGATE)))", ((cpp_function_code)(&handleArgumentTypeViolation)), NULL);
+  }
+}
+
+void helpStartupPropositions12() {
+  {
     defineFunctionObject("HANDLE-ARITY-VIOLATION", "(DEFUN HANDLE-ARITY-VIOLATION ((PROPOSITION PROPOSITION) (REQUIREDARITY INTEGER)))", ((cpp_function_code)(&handleArityViolation)), NULL);
     defineFunctionObject("POST-TO-CHECK-TYPES-AGENDA", "(DEFUN POST-TO-CHECK-TYPES-AGENDA ((SELF PROPOSITION)))", ((cpp_function_code)(&postToCheckTypesAgenda)), NULL);
     defineFunctionObject("PROCESS-CHECK-TYPES-AGENDA", "(DEFUN PROCESS-CHECK-TYPES-AGENDA ())", ((cpp_function_code)(&processCheckTypesAgenda)), NULL);
@@ -10717,11 +11382,6 @@ void helpStartupPropositions11() {
     defineFunctionObject("MAYBE-SUBSTITUTE-SURROGATE-ARGUMENT", "(DEFUN (MAYBE-SUBSTITUTE-SURROGATE-ARGUMENT OBJECT) ((ARG1 OBJECT) (ARG2 OBJECT)))", ((cpp_function_code)(&maybeSubstituteSurrogateArgument)), NULL);
     defineFunctionObject("CREATE-IMPLIES-PROPOSITION", "(DEFUN (CREATE-IMPLIES-PROPOSITION PROPOSITION) ((TAIL OBJECT) (HEAD OBJECT)))", ((cpp_function_code)(&createImpliesProposition)), NULL);
     defineFunctionObject("BUILD-IMPLIES-PROPOSITION", "(DEFUN (BUILD-IMPLIES-PROPOSITION PROPOSITION) ((TREE CONS)))", ((cpp_function_code)(&buildImpliesProposition)), NULL);
-  }
-}
-
-void helpStartupPropositions12() {
-  {
     defineFunctionObject("FIND-DUPLICATE-FUNCTION-PROPOSITION", "(DEFUN (FIND-DUPLICATE-FUNCTION-PROPOSITION PROPOSITION) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&findDuplicateFunctionProposition)), NULL);
     defineFunctionObject("UNWRAP-WRAPPED-TYPE", "(DEFUN (UNWRAP-WRAPPED-TYPE TYPE) ((TYPE TYPE)))", ((cpp_function_code)(&unwrapWrappedType)), NULL);
     defineFunctionObject("BEGIN-CREATING-FUNCTION-PROPOSITION", "(DEFUN (BEGIN-CREATING-FUNCTION-PROPOSITION PROPOSITION) ((SURROGATE GENERALIZED-SYMBOL) (INPUTARGUMENTS CONS)))", ((cpp_function_code)(&beginCreatingFunctionProposition)), NULL);
@@ -10731,6 +11391,7 @@ void helpStartupPropositions12() {
     defineFunctionObject("EVALUATE-FUNCTION-TERM", "(DEFUN (EVALUATE-FUNCTION-TERM OBJECT) ((TREE CONS)))", ((cpp_function_code)(&evaluateFunctionTerm)), NULL);
     defineFunctionObject("EXTENSIONAL-INDIVIDUAL?", "(DEFUN (EXTENSIONAL-INDIVIDUAL? BOOLEAN) ((INDIVIDUAL OBJECT)))", ((cpp_function_code)(&extensionalIndividualP)), NULL);
     defineFunctionObject("FUNCTION-WITH-DEFINED-VALUE?", "(DEFUN (FUNCTION-WITH-DEFINED-VALUE? BOOLEAN) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&functionWithDefinedValueP)), NULL);
+    defineFunctionObject("NORMALIZE-SETOF-ARGUMENTS", "(DEFUN (NORMALIZE-SETOF-ARGUMENTS CONS) ((ARGS CONS)))", ((cpp_function_code)(&normalizeSetofArguments)), NULL);
     defineFunctionObject("CREATE-ENUMERATED-SET", "(DEFUN (CREATE-ENUMERATED-SET SKOLEM) ((SET LIST)))", ((cpp_function_code)(&createEnumeratedSet)), NULL);
     defineFunctionObject("CREATE-LOGICAL-LIST", "(DEFUN (CREATE-LOGICAL-LIST SKOLEM) ((LIST LIST)))", ((cpp_function_code)(&createLogicalList)), NULL);
     defineFunctionObject("LOGICAL-COLLECTION?", "(DEFUN (LOGICAL-COLLECTION? BOOLEAN) ((SELF OBJECT)))", ((cpp_function_code)(&logicalCollectionP)), NULL);
@@ -10768,6 +11429,11 @@ void helpStartupPropositions12() {
     defineFunctionObject("DESTROY-LOGIC-INSTANCE", "(DEFUN DESTROY-LOGIC-INSTANCE ((SELF OBJECT)))", ((cpp_function_code)(&destroyLogicInstance)), NULL);
     defineFunctionObject("DESTROY-TERM", "(DEFUN DESTROY-TERM ((SELF LOGIC-OBJECT)) :DOCUMENTATION \"Destroy all propositions that reference 'self',\nand mark it as 'deleted?', thereby making it invisible within class\nextensions.  Unlink descriptions from native relations.\" :PUBLIC? TRUE)", ((cpp_function_code)(&destroyTerm)), NULL);
     defineFunctionObject("DESTROY-INSTANCE", "(DEFUN DESTROY-INSTANCE ((SELF OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Destroy all propositions that reference 'self',\nand mark it as 'deleted?', thereby making it invisible within class\nextensions.\")", ((cpp_function_code)(&destroyInstance)), NULL);
+  }
+}
+
+void helpStartupPropositions13() {
+  {
     defineFunctionObject("DESTROY-OBJECT", "(DEFUN DESTROY-OBJECT ((SELF OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Destroy `self' which can be a term or a proposition.  Destroy all\npropositions that reference 'self' and mark it as 'deleted?' (thereby\nmaking it invisible within class extensions).\")", ((cpp_function_code)(&destroyObject)), NULL);
     defineFunctionObject("DESTROY", "(DEFUN (DESTROY OBJECT) ((OBJECTSPEC PARSE-TREE)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Find an object or proposition as specified by `objectSpec', and destroy all\npropositions and indices that reference it.  `objectSpec' must be a name or\na parse tree that evaluates to a proposition.  Return the deleted object, or\nNULL if no matching object was found.\")", ((cpp_function_code)(&destroy)), NULL);
     defineFunctionObject("RELATION-IN-MODULE?", "(DEFUN (RELATION-IN-MODULE? BOOLEAN) ((SELF NAMED-DESCRIPTION)))", ((cpp_function_code)(&relationInModuleP)), NULL);
@@ -10779,14 +11445,10 @@ void helpStartupPropositions12() {
     defineFunctionObject("CLEAR-CACHES", "(DEFUN CLEAR-CACHES () :DOCUMENTATION \"Clear all query and memoization caches.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&clearCaches)), NULL);
     defineFunctionObject("RESET-POWERLOOM", "(DEFUN RESET-POWERLOOM () :DOCUMENTATION \"Reset PowerLoom to its initial state.\nCAUTION: This will destroy all loaded knowledge bases and might break other\nloaded STELLA systems if they do reference PowerLoom symbols in their code.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&resetPowerloom)), NULL);
     defineFunctionObject("CONS-LESS-THAN?", "(DEFUN (CONS-LESS-THAN? BOOLEAN) ((O1 CONS) (O2 CONS)))", ((cpp_function_code)(&consLessThanP)), NULL);
-    defineFunctionObject("SAFE-STRING-LESS?", "(DEFUN (SAFE-STRING-LESS? BOOLEAN) ((S1 STRING) (S2 STRING)))", ((cpp_function_code)(&safeStringLessP)), NULL);
+    defineFunctionObject("STRING-TERM-LESS?", "(DEFUN (STRING-TERM-LESS? BOOLEAN) ((S1 STRING) (S2 STRING)))", ((cpp_function_code)(&stringTermLessP)), NULL);
+    defineFunctionObject("SAFE-STRING-TERM-LESS?", "(DEFUN (SAFE-STRING-TERM-LESS? BOOLEAN) ((S1 STRING) (S2 STRING)))", ((cpp_function_code)(&safeStringTermLessP)), NULL);
     defineFunctionObject("SAFE-QUANTITY-LESS?", "(DEFUN (SAFE-QUANTITY-LESS? BOOLEAN) ((Q1 QUANTITY) (O2 OBJECT)))", ((cpp_function_code)(&safeQuantityLessP)), NULL);
     defineFunctionObject("SAFE-QUANTITY-GREATER-EQUAL?", "(DEFUN (SAFE-QUANTITY-GREATER-EQUAL? BOOLEAN) ((Q1 QUANTITY) (O2 OBJECT)))", ((cpp_function_code)(&safeQuantityGreaterEqualP)), NULL);
-  }
-}
-
-void helpStartupPropositions13() {
-  {
     defineFunctionObject("OBJECT-NAME-LESS-THAN?", "(DEFUN (OBJECT-NAME-LESS-THAN? BOOLEAN) ((O1 LOGIC-OBJECT) (O2 LOGIC-OBJECT)))", ((cpp_function_code)(&objectNameLessThanP)), NULL);
     defineFunctionObject("MODULE-NAME-LESS-THAN?", "(DEFUN (MODULE-NAME-LESS-THAN? BOOLEAN) ((M1 CONTEXT) (M2 CONTEXT)))", ((cpp_function_code)(&moduleNameLessThanP)), NULL);
     defineFunctionObject("PROPOSITION-LESS-THAN?", "(DEFUN (PROPOSITION-LESS-THAN? BOOLEAN) ((P1 PROPOSITION) (P2 PROPOSITION)))", ((cpp_function_code)(&propositionLessThanP)), NULL);
@@ -10804,7 +11466,7 @@ void helpStartupPropositions13() {
 void startupPropositions() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupPropositions1();
       helpStartupPropositions2();
@@ -10874,11 +11536,12 @@ void startupPropositions() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STRUCTURED-OBJECTS-INDEX* (KEY-VALUE-MAP OF INTEGER-WRAPPER (LIST OF CONTEXT-SENSITIVE-OBJECT)) (NEW KEY-VALUE-MAP) :DOCUMENTATION \"Contains a table of propositions and descriptions, indexed by a\nstructure hash code which might be shared by different objects.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *DONT-CHECK-FOR-DUPLICATE-PROPOSITIONS?* BOOLEAN FALSE :DOCUMENTATION \"If TRUE never check for the existence of duplicate\npropositions when building a new proposition.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *VISITEDUNFASTENEDDEFININGPROPOSITIONS* LIST NULL :DOCUMENTATION \"Used by 'recursively-fasten-down-propositions'.\")");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AUTO-COERCE-PROPOSITIONAL-ARGUMENTS?* BOOLEAN FALSE :DOCUMENTATION \"If TRUE, automatically coerce propositional arguments of a\nproposition, even if the corresponding argument type of the hosting relation\ndoesn't indicate that.\" :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AUTO-COERCE-PROPOSITIONAL-ARGUMENTS?* BOOLEAN FALSE :DOCUMENTATION \"If TRUE, automatically coerce propositional arguments of a\nproposition, even if the corresponding argument type of the hosting relation\ndoesn't indicate that.\" :DEMON-PROPERTY \"powerloom.autoCoercePropositionalArguments\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TYPE-CHECK-POLICY* KEYWORD :AUTOMATICALLY-FIX-TYPE-VIOLATIONS :DOCUMENTATION \"Three policies are implemented:\n   :AUTOMATICALLY-FIX-TYPE-VIOLATIONS asserts missing types to fix type\n       violations (default),\n   :REPORT-TYPE-VIOLATIONS complains about missing or incorrect types,\n   :SIGNAL-TYPE-VIOLATIONS throws exception for missing or incorrect types, and\n   :IGNORE-TYPE-VIOLATIONS which disables all type checking.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *TYPECHECKMODE* KEYWORD :POST-TYPE-VIOLATIONS :DOCUMENTATION \"Controls the behavior of the type-checking\nroutines in the event that a type-check fails.  Options are:\n  :POST-TYPE-VIOLATIONS              push offending proposition onto queue,\n  :REPORT-TYPE-VIOLATIONS            print occasions of failed type checks,\n  :SIGNAL-TYPE-VIOLATIONS            throw exception for failed type checks,\n  :AUTOMATICALLY-FIX-TYPE-VIOLATIONS assert missing types on propositions, and\n  :IGNORE-TYPE-VIOLATIONS            don't perform any type checking at all.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CHECK-TYPES-AGENDA* (VECTOR-SEQUENCE OF CHECK-TYPES-RECORD) (NEW VECTOR-SEQUENCE :ARRAY-SIZE 4) :DOCUMENTATION \"List of propositions that have failed a type check,\nbut might pass once finalization is complete.\")");
       registerNativeName(SYM_PROPOSITIONS_STELLA_ASSERT, KWD_PROPOSITIONS_CPP, KWD_PROPOSITIONS_FUNCTION);
+      defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *DEFERRED-TERMS-TO-UNLINK* HASH-SET NULL)");
       addHook(oDEFINE_MODULE_HOOKSo, SYM_PROPOSITIONS_LOGIC_INTRODUCE_MODULE);
       addHook(oCLEAR_MODULE_HOOKSo, SYM_PROPOSITIONS_LOGIC_CLEAR_LOGIC_MODULE_HOOK);
       addHook(oDESTROY_CONTEXT_HOOKSo, SYM_PROPOSITIONS_LOGIC_DESTROY_LOGIC_CONTEXT_HOOK);
@@ -11100,6 +11763,12 @@ Symbol* SYM_PROPOSITIONS_STELLA_CODE_ONLYp = NULL;
 
 Keyword* KWD_PROPOSITIONS_ERROR = NULL;
 
+Surrogate* SGT_PROPOSITIONS_LOGIC_EXCEPTION_RECORD = NULL;
+
+Symbol* SYM_PROPOSITIONS_STELLA_CONTEXT = NULL;
+
+Symbol* SYM_PROPOSITIONS_STELLA_MODULE = NULL;
+
 Symbol* SYM_PROPOSITIONS_LOGIC_LOCALLY_CONCEIVED_PROPOSITIONS_INTERNAL = NULL;
 
 Keyword* KWD_PROPOSITIONS_PAGING = NULL;
@@ -11186,6 +11855,12 @@ Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_HIDDEN_RELATION = NULL;
 
 Surrogate* SGT_PROPOSITIONS_LOGIC_HIDDEN_INSTANCE = NULL;
 
+Keyword* KWD_PROPOSITIONS_MODULE = NULL;
+
+Surrogate* SGT_PROPOSITIONS_STELLA_MODULE = NULL;
+
+Keyword* KWD_PROPOSITIONS_LOCALp = NULL;
+
 Keyword* KWD_PROPOSITIONS_KB_UPDATE = NULL;
 
 Keyword* KWD_PROPOSITIONS_META_KB_UPDATE = NULL;
@@ -11210,9 +11885,17 @@ Keyword* KWD_PROPOSITIONS_DEFAULT = NULL;
 
 Keyword* KWD_PROPOSITIONS_INCONSISTENT = NULL;
 
+Keyword* KWD_PROPOSITIONS_LOOKUP_ASSERTIONS = NULL;
+
+Keyword* KWD_PROPOSITIONS_FORWARD = NULL;
+
 Symbol* SYM_PROPOSITIONS_LOGIC_META_INFERENCE_CACHE = NULL;
 
 Symbol* SYM_PROPOSITIONS_LOGIC_TRUTH_MAINTAINED_INFERENCE_CACHE = NULL;
+
+Symbol* SYM_PROPOSITIONS_LOGIC_CLASH_EXCEPTIONS = NULL;
+
+Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_INCOHERENT = NULL;
 
 Symbol* SYM_PROPOSITIONS_LOGIC_IOTAp = NULL;
 
@@ -11358,8 +12041,6 @@ Symbol* SYM_PROPOSITIONS_LOGIC_PARENT_PROPOSITION = NULL;
 
 Symbol* SYM_PROPOSITIONS_LOGIC_PARENT_DESCRIPTION = NULL;
 
-Symbol* SYM_PROPOSITIONS_STELLA_MODULE = NULL;
-
 Keyword* KWD_PROPOSITIONS_MEDIUM = NULL;
 
 Keyword* KWD_PROPOSITIONS_REALISTIC = NULL;
@@ -11386,9 +12067,9 @@ Keyword* KWD_PROPOSITIONS_CPP = NULL;
 
 Keyword* KWD_PROPOSITIONS_DELETED = NULL;
 
-Surrogate* SGT_PROPOSITIONS_STELLA_MODULE = NULL;
-
 Symbol* SYM_PROPOSITIONS_LOGIC_INTRODUCE_MODULE = NULL;
+
+Surrogate* SGT_PROPOSITIONS_STELLA_KEY_VALUE_LIST = NULL;
 
 Symbol* SYM_PROPOSITIONS_LOGIC_CLEAR_LOGIC_MODULE_HOOK = NULL;
 

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -538,8 +538,7 @@ public class QueryIterator extends Iterator {
         try {
           Native.setSpecial(Stella.$MODULE$, module);
           Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
-          dontcheckduplicatesP = Description.namedDescriptionP(description) &&
-              NamedDescription.getDescriptionExtension(((NamedDescription)(description)), false).emptyP();
+          dontcheckduplicatesP = false;
           { QuerySolution solution = null;
             DictionaryIterator iter000 = ((DictionaryIterator)(solutions.allocateIterator()));
             int i = Stella.NULL_INTEGER;
@@ -932,6 +931,10 @@ public class QueryIterator extends Iterator {
               value = Stella_Object.coerceToBoolean(value);
               theoptions.insertAt(key, value);
             }
+            else if (testValue000 == Logic.KWD_FOUR_VALUEDp) {
+              value = Stella_Object.coerceToBoolean(value);
+              theoptions.insertAt(key, value);
+            }
             else if (testValue000 == Logic.KWD_ITERATIVE_DEEPENINGp) {
               value = Stella_Object.coerceToBoolean(value);
               theoptions.insertAt(key, value);
@@ -1061,10 +1064,104 @@ public class QueryIterator extends Iterator {
                 }
               }
             }
-            else if (testValue000 == Logic.KWD_MATCH_MODE) {
+            else if (testValue000 == Logic.KWD_FORMAT) {
+              theoptions.removeAt(key);
               { Surrogate testValue006 = Stella_Object.safePrimaryType(value);
 
                 if (Surrogate.subtypeOfP(testValue006, Logic.SGT_STELLA_GENERALIZED_SYMBOL)) {
+                  { GeneralizedSymbol value000 = ((GeneralizedSymbol)(value));
+
+                    if (Stella.stringEqlP(value000.symbolName, "HORIZONTAL")) {
+                      theoptions.insertAt(key, Logic.KWD_HORIZONTAL);
+                    }
+                    else if (Stella.stringEqlP(value000.symbolName, "VERTICAL")) {
+                      theoptions.insertAt(key, Logic.KWD_VERTICAL);
+                    }
+                    else if (Stella.stringEqlP(value000.symbolName, "TSV")) {
+                      theoptions.insertAt(key, Logic.KWD_TSV);
+                    }
+                    else if (Stella.stringEqlP(value000.symbolName, "LIST") ||
+                        Stella.stringEqlP(value000.symbolName, "CONS")) {
+                      theoptions.insertAt(key, Logic.KWD_LIST);
+                    }
+                  }
+                }
+                else if (testValue006 == Logic.SGT_STELLA_CONS) {
+                  { Cons value000 = ((Cons)(value));
+
+                    theoptions.insertAt(key, value000);
+                  }
+                }
+                else if (Surrogate.subtypeOfStringP(testValue006)) {
+                  { StringWrapper value000 = ((StringWrapper)(value));
+
+                    theoptions.insertAt(key, value000);
+                  }
+                }
+                else {
+                }
+              }
+              if (!(theoptions.lookup(key) != null)) {
+                { OutputStringStream stream008 = OutputStringStream.newOutputStringStream();
+
+                  { Object old$PrintreadablyP$008 = Stella.$PRINTREADABLYp$.get();
+
+                    try {
+                      Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+                      stream008.nativeStream.println("PARSING ERROR: Illegal :FORMAT value: `" + value + "'.");
+                      Logic.helpSignalPropositionError(stream008, Logic.KWD_ERROR);
+
+                    } finally {
+                      Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$008);
+                    }
+                  }
+                  throw ((ParsingError)(ParsingError.newParsingError(stream008.theStringReader()).fillInStackTrace()));
+                }
+              }
+            }
+            else if (testValue000 == Logic.KWD_READABLE_VALUESp) {
+              theoptions.insertAt(key, Stella_Object.coerceToBoolean(value));
+            }
+            else if (testValue000 == Logic.KWD_OUTPUT_FILE) {
+              theoptions.insertAt(key, StringWrapper.wrapString(Stella_Object.coerceToString(value)));
+            }
+            else if (testValue000 == Logic.KWD_IF_EXISTS) {
+              theoptions.removeAt(key);
+              if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(value), Logic.SGT_STELLA_GENERALIZED_SYMBOL)) {
+                { GeneralizedSymbol value000 = ((GeneralizedSymbol)(value));
+
+                  if (Stella.stringEqlP(value000.symbolName, "APPEND")) {
+                    theoptions.insertAt(key, Logic.KWD_APPEND);
+                  }
+                  else if (Stella.stringEqlP(value000.symbolName, "SUPERSEDE")) {
+                    theoptions.insertAt(key, Logic.KWD_SUPERSEDE);
+                  }
+                }
+              }
+              else {
+              }
+              if (!(theoptions.lookup(key) != null)) {
+                { OutputStringStream stream009 = OutputStringStream.newOutputStringStream();
+
+                  { Object old$PrintreadablyP$009 = Stella.$PRINTREADABLYp$.get();
+
+                    try {
+                      Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+                      stream009.nativeStream.println("PARSING ERROR: Illegal :IF-EXISTS value: `" + value + "'.");
+                      Logic.helpSignalPropositionError(stream009, Logic.KWD_ERROR);
+
+                    } finally {
+                      Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$009);
+                    }
+                  }
+                  throw ((ParsingError)(ParsingError.newParsingError(stream009.theStringReader()).fillInStackTrace()));
+                }
+              }
+            }
+            else if (testValue000 == Logic.KWD_MATCH_MODE) {
+              { Surrogate testValue007 = Stella_Object.safePrimaryType(value);
+
+                if (Surrogate.subtypeOfP(testValue007, Logic.SGT_STELLA_GENERALIZED_SYMBOL)) {
                   { GeneralizedSymbol value000 = ((GeneralizedSymbol)(value));
 
                     if (Stella_Object.stringP(value000)) {
@@ -1075,7 +1172,7 @@ public class QueryIterator extends Iterator {
                     }
                   }
                 }
-                else if (Surrogate.subtypeOfStringP(testValue006)) {
+                else if (Surrogate.subtypeOfStringP(testValue007)) {
                   { StringWrapper value000 = ((StringWrapper)(value));
 
                     if (Stella_Object.stringP(value000)) {
@@ -1087,53 +1184,53 @@ public class QueryIterator extends Iterator {
                   }
                 }
                 else {
-                  { OutputStringStream stream008 = OutputStringStream.newOutputStringStream();
+                  { OutputStringStream stream010 = OutputStringStream.newOutputStringStream();
 
-                    { Object old$PrintreadablyP$008 = Stella.$PRINTREADABLYp$.get();
+                    { Object old$PrintreadablyP$010 = Stella.$PRINTREADABLYp$.get();
 
                       try {
                         Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-                        stream008.nativeStream.println("PARSING ERROR: Illegal :MATCH-MODE value: `" + value + "'.");
-                        Logic.helpSignalPropositionError(stream008, Logic.KWD_ERROR);
+                        stream010.nativeStream.println("PARSING ERROR: Illegal :MATCH-MODE value: `" + value + "'.");
+                        Logic.helpSignalPropositionError(stream010, Logic.KWD_ERROR);
 
                       } finally {
-                        Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$008);
+                        Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$010);
                       }
                     }
-                    throw ((ParsingError)(ParsingError.newParsingError(stream008.theStringReader()).fillInStackTrace()));
+                    throw ((ParsingError)(ParsingError.newParsingError(stream010.theStringReader()).fillInStackTrace()));
                   }
                 }
               }
             }
             else if (testValue000 == Logic.KWD_MINIMUM_SCORE) {
-              { Surrogate testValue007 = Stella_Object.safePrimaryType(value);
+              { Surrogate testValue008 = Stella_Object.safePrimaryType(value);
 
-                if (Surrogate.subtypeOfIntegerP(testValue007)) {
+                if (Surrogate.subtypeOfIntegerP(testValue008)) {
                   { IntegerWrapper value000 = ((IntegerWrapper)(value));
 
                     theoptions.insertAt(key, FloatWrapper.wrapFloat(((double)(value000.wrapperValue))));
                   }
                 }
-                else if (Surrogate.subtypeOfFloatP(testValue007)) {
+                else if (Surrogate.subtypeOfFloatP(testValue008)) {
                   { FloatWrapper value000 = ((FloatWrapper)(value));
 
                   }
                 }
                 else {
-                  { OutputStringStream stream009 = OutputStringStream.newOutputStringStream();
+                  { OutputStringStream stream011 = OutputStringStream.newOutputStringStream();
 
-                    { Object old$PrintreadablyP$009 = Stella.$PRINTREADABLYp$.get();
+                    { Object old$PrintreadablyP$011 = Stella.$PRINTREADABLYp$.get();
 
                       try {
                         Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-                        stream009.nativeStream.println("PARSING ERROR: Illegal :MINIMUM-SCORE value: `" + value + "'.");
-                        Logic.helpSignalPropositionError(stream009, Logic.KWD_ERROR);
+                        stream011.nativeStream.println("PARSING ERROR: Illegal :MINIMUM-SCORE value: `" + value + "'.");
+                        Logic.helpSignalPropositionError(stream011, Logic.KWD_ERROR);
 
                       } finally {
-                        Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$009);
+                        Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$011);
                       }
                     }
-                    throw ((ParsingError)(ParsingError.newParsingError(stream009.theStringReader()).fillInStackTrace()));
+                    throw ((ParsingError)(ParsingError.newParsingError(stream011.theStringReader()).fillInStackTrace()));
                   }
                 }
               }
@@ -1142,34 +1239,34 @@ public class QueryIterator extends Iterator {
               theoptions.insertAt(key, Stella_Object.coerceToBoolean(value));
             }
             else if (testValue000 == Logic.KWD_MAXIMUM_UNKNOWNS) {
-              { Surrogate testValue008 = Stella_Object.safePrimaryType(value);
+              { Surrogate testValue009 = Stella_Object.safePrimaryType(value);
 
-                if (Surrogate.subtypeOfIntegerP(testValue008)) {
+                if (Surrogate.subtypeOfIntegerP(testValue009)) {
                   { IntegerWrapper value000 = ((IntegerWrapper)(value));
 
                   }
                 }
-                else if (Surrogate.subtypeOfFloatP(testValue008)) {
+                else if (Surrogate.subtypeOfFloatP(testValue009)) {
                   { FloatWrapper value000 = ((FloatWrapper)(value));
 
                     theoptions.insertAt(key, IntegerWrapper.wrapInteger(((int)(value000.wrapperValue))));
                   }
                 }
                 else {
-                  { OutputStringStream stream010 = OutputStringStream.newOutputStringStream();
+                  { OutputStringStream stream012 = OutputStringStream.newOutputStringStream();
 
-                    { Object old$PrintreadablyP$010 = Stella.$PRINTREADABLYp$.get();
+                    { Object old$PrintreadablyP$012 = Stella.$PRINTREADABLYp$.get();
 
                       try {
                         Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-                        stream010.nativeStream.println("PARSING ERROR: Illegal :MAXIMUM-UNKNOWNS value: `" + value + "'.");
-                        Logic.helpSignalPropositionError(stream010, Logic.KWD_ERROR);
+                        stream012.nativeStream.println("PARSING ERROR: Illegal :MAXIMUM-UNKNOWNS value: `" + value + "'.");
+                        Logic.helpSignalPropositionError(stream012, Logic.KWD_ERROR);
 
                       } finally {
-                        Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$010);
+                        Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$012);
                       }
                     }
-                    throw ((ParsingError)(ParsingError.newParsingError(stream010.theStringReader()).fillInStackTrace()));
+                    throw ((ParsingError)(ParsingError.newParsingError(stream012.theStringReader()).fillInStackTrace()));
                   }
                 }
               }
@@ -1256,20 +1353,26 @@ public class QueryIterator extends Iterator {
     }
   }
 
-  public static boolean tryToDefeatLastAnswerP(QueryIterator self) {
+  public static boolean tryToDefeatLastAnswerP(QueryIterator self, Object [] MV_returnarray) {
     { QueryIterator negatedquery = (self.queryIsTrueFalseP() ? self : ((QueryIterator)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_AUXILIARY_QUERY, null))));
       Context querycontext = self.queryContext;
       boolean strictpositiveanswerP = false;
       boolean strictnegativeanswerP = false;
       boolean defeatedP = false;
+      Justification negativejustification = null;
 
       if (negatedquery == null) {
         negatedquery = Description.createQueryIterator(self.queryDescription(), ((QuerySolution)(self.value)).bindings);
+        negatedquery.debugIdSetter("negatedQuery");
         negatedquery.queryContext = querycontext;
       }
       else {
         if (self == ((QueryIterator)(KeyValueList.dynamicSlotValue(negatedquery.dynamicSlots, Logic.SYM_LOGIC_AUXILIARY_QUERY, null)))) {
-          return (false);
+          { boolean _return_temp = false;
+
+            MV_returnarray[0] = null;
+            return (_return_temp);
+          }
         }
         KeyValueList.setDynamicSlotValue(negatedquery.dynamicSlots, Logic.SYM_LOGIC_INITIAL_BINDINGS, ((QuerySolution)(self.value)).bindings, null);
       }
@@ -1292,6 +1395,7 @@ public class QueryIterator extends Iterator {
               System.out.println("Looking for conflicting strict conclusion:");
             }
             strictnegativeanswerP = negatedquery.nextP();
+            negativejustification = ((Justification)(KeyValueList.dynamicSlotValue(negatedquery.baseControlFrame.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)));
 
           } finally {
             Logic.$DONTUSEDEFAULTKNOWLEDGEp$.set(old$DontusedefaultknowledgeP$000);
@@ -1319,20 +1423,12 @@ public class QueryIterator extends Iterator {
 
               try {
                 Native.setSpecial(Logic.$QUERYITERATOR$, negatedquery);
-                {
-                  System.out.println();
-                  System.out.println("CONTRADICTION: Discovered strict arguments for");
-                  System.out.println("    `" + negatedquery.baseControlFrame.proposition + "'");
-                  System.out.println("and its negation.");
-                  System.out.println();
-                }
-;
+                defeatedP = true;
 
               } finally {
                 Logic.$QUERYITERATOR$.set(old$Queryiterator$000);
               }
             }
-            defeatedP = true;
           }
           else {
             defeatedP = false;
@@ -1343,7 +1439,11 @@ public class QueryIterator extends Iterator {
         }
       }
       KeyValueList.setDynamicSlotValue(negatedquery.dynamicSlots, Logic.SYM_LOGIC_AUXILIARY_QUERY, null, null);
-      return (defeatedP);
+      { boolean _return_temp = defeatedP;
+
+        MV_returnarray[0] = negativejustification;
+        return (_return_temp);
+      }
     }
   }
 
@@ -1436,12 +1536,43 @@ public class QueryIterator extends Iterator {
                     }
                     if (((baseframe.truthValue == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
                         (baseframe.truthValue == Logic.DEFAULT_FALSE_TRUTH_VALUE)) &&
-                        QueryIterator.tryToDefeatLastAnswerP(self)) {
+                        QueryIterator.tryToDefeatLastAnswerP(self, new Object[1])) {
                       continue loop001;
                     }
-                    baseframe.truthValue = solution.truthValue;
+                    if (Logic.testQueryOptionP(((QueryIterator)(Logic.$QUERYITERATOR$.get())), Logic.KWD_FOUR_VALUEDp)) {
+                      { boolean answer = false;
+                        Justification negativeJustification = null;
+
+                        { Object [] caller_MV_returnarray = new Object[1];
+
+                          answer = QueryIterator.tryToDefeatLastAnswerP(self, caller_MV_returnarray);
+                          negativeJustification = ((Justification)(caller_MV_returnarray[0]));
+                        }
+                        if (answer) {
+                          if (self.queryIsTrueFalseP()) {
+                            {
+                              solution.truthValue = Logic.INCONSISTENT_TRUTH_VALUE;
+                              if (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue()) {
+                                solution.justification = Proposition.createClashJustification(baseframe.proposition, Cons.consList(Cons.cons(solution.justification, Cons.cons(negativeJustification, Stella.NIL))), Logic.KWD_BACKWARD);
+                              }
+                              baseframe.truthValue = Logic.INCONSISTENT_TRUTH_VALUE;
+                              KeyValueList.setDynamicSlotValue(baseframe.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, solution.justification, null);
+                              self.solutions.insertAt(solution.bindings, solution);
+                              self.exhaustedP = false;
+                              self.value = solution;
+                              return (true);
+                            }
+                          }
+                          else {
+                            continue loop001;
+                          }
+                        }
+                      }
+                    }
                     KeyValueList.setDynamicSlotValue(baseframe.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, solution.justification, null);
                     self.solutions.insertAt(solution.bindings, solution);
+                    self.value = solution;
+                    self.exhaustedP = false;
                     return (true);
                   }
 
@@ -1574,6 +1705,7 @@ public class QueryIterator extends Iterator {
           queryiterator.baseControlFrame = basecontrolframe;
           queryiterator.currentControlFrame = basecontrolframe;
           Logic.$CONTROL_FRAME_ID_COUNTER$ = 0;
+          queryiterator.debugIdSetter(null);
           basecontrolframe.proposition = description.proposition;
           basecontrolframe.up = null;
           KeyValueList.setDynamicSlotValue(basecontrolframe.dynamicSlots, Logic.SYM_LOGIC_GOAL_CACHE, null, null);
@@ -1665,126 +1797,408 @@ public class QueryIterator extends Iterator {
     }
   }
 
+  public static void printQueryIteratorViaTemplate(QueryIterator self, java.io.PrintStream stream) {
+    { Stella_Object template = Logic.lookupQueryOption(self, Logic.KWD_FORMAT);
+      Cons parsedtemplate = null;
+      Vector variables = self.externalVariables;
+      QuerySolutionTable solutions = self.solutions;
+
+      { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+
+        try {
+          Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+          { QuerySolution solution = null;
+            DictionaryIterator iter000 = ((DictionaryIterator)(solutions.allocateIterator()));
+            int i = Stella.NULL_INTEGER;
+            int iter001 = 1;
+            int upperBound000 = ((Integer)(Stella.$PRINTLENGTH$.get())).intValue();
+            boolean unboundedP000 = upperBound000 == Stella.NULL_INTEGER;
+
+            for (;iter000.nextP() &&
+                      (unboundedP000 ||
+                       (iter001 <= upperBound000)); iter001 = iter001 + 1) {
+              solution = ((QuerySolution)(iter000.value));
+              i = iter001;
+              { Surrogate testValue000 = Stella_Object.safePrimaryType(template);
+
+                if (testValue000 == Logic.SGT_STELLA_CONS) {
+                  { Cons template000 = ((Cons)(template));
+
+                    parsedtemplate = ((Cons)(Stella_Object.copyConsTree(template000)));
+                    { Stella_Object value = null;
+                      Vector vector000 = solution.bindings;
+                      int index000 = 0;
+                      int length000 = vector000.length();
+                      PatternVariable var = null;
+                      Vector vector001 = variables;
+                      int index001 = 0;
+                      int length001 = vector001.length();
+
+                      for (;(index000 < length000) &&
+                                (index001 < length001); index000 = index000 + 1, index001 = index001 + 1) {
+                        value = (vector000.theArray)[index000];
+                        var = ((PatternVariable)((vector001.theArray)[index001]));
+                        Stella_Object.substituteConsTree(parsedtemplate, value, var.skolemName);
+                      }
+                    }
+                    if (self.partialMatchStrategy != null) {
+                      Stella_Object.substituteConsTree(parsedtemplate, FloatWrapper.wrapFloat(solution.matchScore), Logic.SYM_PL_KERNEL_KB_pMATCH_SCORE);
+                    }
+                    stream.println(parsedtemplate.toString());
+                  }
+                }
+                else if (Surrogate.subtypeOfStringP(testValue000)) {
+                  { StringWrapper template000 = ((StringWrapper)(template));
+
+                    if (parsedtemplate == null) {
+                      parsedtemplate = QueryIterator.parseQueryIteratorStringTemplate(self, template000.wrapperValue);
+                    }
+                    { Stella_Object elt = null;
+                      Cons iter002 = parsedtemplate;
+
+                      for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
+                        elt = iter002.value;
+                        { Surrogate testValue001 = Stella_Object.safePrimaryType(elt);
+
+                          if (Surrogate.subtypeOfStringP(testValue001)) {
+                            { StringWrapper elt000 = ((StringWrapper)(elt));
+
+                              stream.print(elt000.wrapperValue);
+                            }
+                          }
+                          else if (Surrogate.subtypeOfIntegerP(testValue001)) {
+                            { IntegerWrapper elt000 = ((IntegerWrapper)(elt));
+
+                              stream.print((solution.bindings.theArray)[(elt000.wrapperValue)]);
+                            }
+                          }
+                          else {
+                            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+                              stream000.nativeStream.print("`" + testValue001 + "' is not a valid case option");
+                              throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+                            }
+                          }
+                        }
+                      }
+                    }
+                    stream.println();
+                  }
+                }
+                else {
+                  { OutputStringStream stream001 = OutputStringStream.newOutputStringStream();
+
+                    stream001.nativeStream.print("`" + testValue000 + "' is not a valid case option");
+                    throw ((StellaException)(StellaException.newStellaException(stream001.theStringReader()).fillInStackTrace()));
+                  }
+                }
+              }
+              if ((i == ((Integer)(Stella.$PRINTLENGTH$.get())).intValue()) &&
+                  (i < solutions.length())) {
+                stream.print(";;; ...");
+              }
+            }
+          }
+
+        } finally {
+          Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+        }
+      }
+    }
+  }
+
+  public static Cons parseQueryIteratorStringTemplate(QueryIterator self, String template) {
+    { String normalizedtemplate = Native.stringUpcase(template);
+      Vector variables = self.externalVariables;
+
+      { Cons value000 = Stella.NIL;
+
+        { PatternVariable var = null;
+          Vector vector000 = variables;
+          int index000 = 0;
+          int length000 = vector000.length();
+          Cons collect000 = null;
+
+          for (;index000 < length000; index000 = index000 + 1) {
+            var = ((PatternVariable)((vector000.theArray)[index000]));
+            if (collect000 == null) {
+              {
+                collect000 = Cons.cons(StringWrapper.wrapString(Native.stringUpcase(var.skolemName.symbolName)), Stella.NIL);
+                if (value000 == Stella.NIL) {
+                  value000 = collect000;
+                }
+                else {
+                  Cons.addConsToEndOfConsList(value000, collect000);
+                }
+              }
+            }
+            else {
+              {
+                collect000.rest = Cons.cons(StringWrapper.wrapString(Native.stringUpcase(var.skolemName.symbolName)), Stella.NIL);
+                collect000 = collect000.rest;
+              }
+            }
+          }
+        }
+        { Cons variablenames = value000;
+          int start = 0;
+          int varstart = 0;
+          Cons result = Stella.NIL;
+
+          loop001 : for (;;) {
+            varstart = Native.string_position(normalizedtemplate, '?', start);
+            if (varstart == Stella.NULL_INTEGER) {
+              result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(template, start, Stella.NULL_INTEGER)), result);
+              break loop001;
+            }
+            else {
+              { Stella_Object name = null;
+                Cons iter000 = variablenames;
+                int i = Stella.NULL_INTEGER;
+                int iter001 = 0;
+
+                loop002 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest, iter001 = iter001 + 1) {
+                  name = iter000.value;
+                  i = iter001;
+                  if (Stella.startsWithP(normalizedtemplate, ((StringWrapper)(name)).wrapperValue, varstart)) {
+                    result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(template, start, varstart)), result);
+                    result = Cons.cons(IntegerWrapper.wrapInteger(i), result);
+                    start = varstart + (StringWrapper.unwrapString(((StringWrapper)(name)))).length();
+                    break loop002;
+                  }
+                }
+              }
+              if (start <= varstart) {
+                result = Cons.cons(StringWrapper.wrapString(Native.string_subsequence(template, start, varstart + 1)), result);
+                start = varstart + 1;
+              }
+            }
+          }
+          return (result.reverse());
+        }
+      }
+    }
+  }
+
+  public static void printQueryIteratorTabSeparated(QueryIterator self, java.io.PrintStream stream) {
+    { QuerySolutionTable solutions = self.solutions;
+      char separator = '\t';
+
+      { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+
+        try {
+          Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+          { QuerySolution solution = null;
+            DictionaryIterator iter000 = ((DictionaryIterator)(solutions.allocateIterator()));
+            int i = Stella.NULL_INTEGER;
+            int iter001 = 1;
+            int upperBound000 = ((Integer)(Stella.$PRINTLENGTH$.get())).intValue();
+            boolean unboundedP000 = upperBound000 == Stella.NULL_INTEGER;
+
+            for (;iter000.nextP() &&
+                      (unboundedP000 ||
+                       (iter001 <= upperBound000)); iter001 = iter001 + 1) {
+              solution = ((QuerySolution)(iter000.value));
+              i = iter001;
+              { Stella_Object value = null;
+                Vector vector000 = solution.bindings;
+                int index000 = 0;
+                int length000 = vector000.length();
+                int vi = Stella.NULL_INTEGER;
+                int iter002 = 0;
+
+                for (;index000 < length000; index000 = index000 + 1, iter002 = iter002 + 1) {
+                  value = (vector000.theArray)[index000];
+                  vi = iter002;
+                  if (vi > 0) {
+                    stream.print(separator);
+                  }
+                  stream.print(value);
+                  if (self.partialMatchStrategy != null) {
+                    stream.print("" + separator + solution.matchScore);
+                  }
+                }
+              }
+              stream.println();
+              if ((i == ((Integer)(Stella.$PRINTLENGTH$.get())).intValue()) &&
+                  (i < solutions.length())) {
+                stream.println("...");
+              }
+            }
+          }
+
+        } finally {
+          Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+        }
+      }
+    }
+  }
+
   public static void printQueryIteratorReadably(QueryIterator self, java.io.PrintStream stream) {
     { QuerySolutionTable solutions = self.solutions;
       boolean firstP = true;
       boolean atomicsingletonsP = ((BooleanWrapper)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_ATOMIC_SINGLETONSp, Stella.FALSE_WRAPPER))).wrapperValue &&
           (self.partialMatchStrategy == null);
 
-      stream.print("(");
-      { QuerySolution solution = null;
-        DictionaryIterator iter000 = ((DictionaryIterator)(solutions.allocateIterator()));
-        int i = Stella.NULL_INTEGER;
-        int iter001 = 1;
-        int upperBound000 = ((Integer)(Stella.$PRINTLENGTH$.get())).intValue();
-        boolean unboundedP000 = upperBound000 == Stella.NULL_INTEGER;
+      { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
 
-        for (;iter000.nextP() &&
-                  (unboundedP000 ||
-                   (iter001 <= upperBound000)); iter001 = iter001 + 1) {
-          solution = ((QuerySolution)(iter000.value));
-          i = iter001;
-          if (!(firstP)) {
-            if (atomicsingletonsP) {
-              stream.print(" ");
-            }
-            else {
-              {
-                stream.println();
-                stream.print(" ");
-              }
+        try {
+          Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+          stream.print("(");
+          { QuerySolution solution = null;
+            DictionaryIterator iter000 = ((DictionaryIterator)(solutions.allocateIterator()));
+            int i = Stella.NULL_INTEGER;
+            int iter001 = 1;
+            int upperBound000 = ((Integer)(Stella.$PRINTLENGTH$.get())).intValue();
+            boolean unboundedP000 = upperBound000 == Stella.NULL_INTEGER;
+
+            for (;iter000.nextP() &&
+                      (unboundedP000 ||
+                       (iter001 <= upperBound000)); iter001 = iter001 + 1) {
+              solution = ((QuerySolution)(iter000.value));
+              i = iter001;
+              if (!(firstP)) {
+                if (atomicsingletonsP) {
+                  stream.print(" ");
+                }
+                else {
+                  {
+                    stream.println();
+                    stream.print(" ");
+                  }
 ;
-            }
-          }
-          firstP = false;
-          if (!(atomicsingletonsP)) {
-            stream.print("(");
-          }
-          { Stella_Object value = null;
-            Vector vector000 = solution.bindings;
-            int index000 = 0;
-            int length000 = vector000.length();
-            int vi = Stella.NULL_INTEGER;
-            int iter002 = 0;
+                }
+              }
+              firstP = false;
+              if (!(atomicsingletonsP)) {
+                stream.print("(");
+              }
+              { Stella_Object value = null;
+                Vector vector000 = solution.bindings;
+                int index000 = 0;
+                int length000 = vector000.length();
+                int vi = Stella.NULL_INTEGER;
+                int iter002 = 0;
 
-            for (;index000 < length000; index000 = index000 + 1, iter002 = iter002 + 1) {
-              value = (vector000.theArray)[index000];
-              vi = iter002;
-              stream.print((((vi == 0) ? "" : " ")) + value);
-              if (self.partialMatchStrategy != null) {
-                stream.print(" " + solution.matchScore);
+                for (;index000 < length000; index000 = index000 + 1, iter002 = iter002 + 1) {
+                  value = (vector000.theArray)[index000];
+                  vi = iter002;
+                  stream.print((((vi == 0) ? "" : " ")) + value);
+                  if (self.partialMatchStrategy != null) {
+                    stream.print(" " + solution.matchScore);
+                  }
+                }
+              }
+              if (!(atomicsingletonsP)) {
+                stream.print(")");
+              }
+              if ((i == ((Integer)(Stella.$PRINTLENGTH$.get())).intValue()) &&
+                  (i < solutions.length())) {
+                stream.print(" ...");
               }
             }
           }
-          if (!(atomicsingletonsP)) {
-            stream.print(")");
-          }
-          if ((i == ((Integer)(Stella.$PRINTLENGTH$.get())).intValue()) &&
-              (i < solutions.length())) {
-            stream.print(" ...");
-          }
+          stream.println(")");
+
+        } finally {
+          Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
         }
       }
-      stream.println(")");
     }
   }
 
   public static void traceSolution(QueryIterator self, QuerySolution solution, int solutionnumber) {
     if (Stella_Object.traceKeywordP(Logic.KWD_TRACE_SOLUTIONS)) {
       System.out.print("SOLUTION ");
-      QueryIterator.printQueryIteratorSolutionOrnately(((QueryIterator)(Logic.$QUERYITERATOR$.get())), solution, solutionnumber, Stella.STANDARD_OUTPUT.nativeStream);
+      QueryIterator.printQueryIteratorSolutionOrnately(self, solution, solutionnumber, Stella.STANDARD_OUTPUT.nativeStream);
       System.out.println();
     }
   }
 
   public static void printQueryIteratorSolutionOrnately(QueryIterator self, QuerySolution solution, int solutionnumber, java.io.PrintStream stream) {
-    if (solutionnumber == Stella.NULL_INTEGER) {
-      solutionnumber = 0;
-      { QuerySolution solution000 = null;
-        DictionaryIterator iter000 = ((DictionaryIterator)(self.solutions.allocateIterator()));
+    { int nsolutions = self.solutions.length();
+      boolean verticalP = Logic.testQueryOptionValueP(self, Logic.KWD_FORMAT, Logic.KWD_VERTICAL);
+      int maxdigits = Native.floor(Math.log((((double)(nsolutions)))) * Stella.RECIPROCAL_NL10) + 1;
+      int solnumberdigits = 0;
 
-        while (iter000.nextP()) {
-          solution000 = ((QuerySolution)(iter000.value));
-          if (!Stella_Object.equalP(solution000.bindings, solution000)) {
-            solutionnumber = solutionnumber + 1;
+      if (solutionnumber == Stella.NULL_INTEGER) {
+        solutionnumber = 0;
+        { QuerySolution solution000 = null;
+          DictionaryIterator iter000 = ((DictionaryIterator)(self.solutions.allocateIterator()));
+
+          while (iter000.nextP()) {
+            solution000 = ((QuerySolution)(iter000.value));
+            if (!Stella_Object.equalP(solution000.bindings, solution000)) {
+              solutionnumber = solutionnumber + 1;
+            }
           }
         }
       }
-    }
-    { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+      solnumberdigits = Native.floor(Math.log((((double)(solutionnumber)))) * Stella.RECIPROCAL_NL10) + 1;
+      { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
 
-      try {
-        Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-        stream.print("  #" + solutionnumber + ": ");
-        { Stella_Object value = null;
-          Vector vector000 = solution.bindings;
-          int index000 = 0;
-          int length000 = vector000.length();
-          PatternVariable variable = null;
-          Vector vector001 = self.externalVariables;
-          int index001 = 0;
-          int length001 = vector001.length();
-          int vi = Stella.NULL_INTEGER;
-          int iter001 = 0;
+        try {
+          Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+          if (!(verticalP)) {
+            { int i = Stella.NULL_INTEGER;
+              int iter001 = solnumberdigits;
+              int upperBound000 = maxdigits - 1;
 
-          for (;(index000 < length000) &&
-                    (index001 < length001); 
-                index000 = index000 + 1,
-                index001 = index001 + 1,
-                iter001 = iter001 + 1) {
-            value = (vector000.theArray)[index000];
-            variable = ((PatternVariable)((vector001.theArray)[index001]));
-            vi = iter001;
-            stream.print((((vi == 0) ? "" : ", ")) + variable.skolemName + "=" + value);
+              for (;iter001 <= upperBound000; iter001 = iter001 + 1) {
+                i = iter001;
+                i = i;
+                stream.print(" ");
+              }
+            }
           }
-        }
-        if ((self.partialMatchStrategy != null) &&
-            (solution.matchScore != Stella.NULL_FLOAT)) {
-          stream.print(" " + solution.matchScore);
-        }
+          stream.print("#" + solutionnumber + ": ");
+          { Stella_Object value = null;
+            Vector vector000 = solution.bindings;
+            int index000 = 0;
+            int length000 = vector000.length();
+            PatternVariable variable = null;
+            Vector vector001 = self.externalVariables;
+            int index001 = 0;
+            int length001 = vector001.length();
+            int vi = Stella.NULL_INTEGER;
+            int iter002 = 0;
 
-      } finally {
-        Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+            for (;(index000 < length000) &&
+                      (index001 < length001); 
+                  index000 = index000 + 1,
+                  index001 = index001 + 1,
+                  iter002 = iter002 + 1) {
+              value = (vector000.theArray)[index000];
+              variable = ((PatternVariable)((vector001.theArray)[index001]));
+              vi = iter002;
+              if (verticalP) {
+                {
+                  stream.println();
+                  stream.print("  ");
+                }
+;
+              }
+              else if (vi > 0) {
+                stream.print(", ");
+              }
+              stream.print(variable.skolemName + "=" + value);
+            }
+          }
+          if ((self.partialMatchStrategy != null) &&
+              (solution.matchScore != Stella.NULL_FLOAT)) {
+            if (verticalP) {
+              {
+                stream.println();
+                stream.print(" ");
+              }
+;
+            }
+            stream.print(" " + solution.matchScore);
+          }
+
+        } finally {
+          Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+        }
       }
     }
   }
@@ -1844,9 +2258,7 @@ public class QueryIterator extends Iterator {
               solution = ((QuerySolution)(iter000.value));
               i = iter001;
               QueryIterator.printQueryIteratorSolutionOrnately(self, solution, i, stream);
-              if (i < nofsolutions) {
-                stream.println();
-              }
+              stream.println();
               if ((i == ((Integer)(Stella.$PRINTLENGTH$.get())).intValue()) &&
                   (i < nofsolutions)) {
                 stream.println("  ......");
@@ -1862,11 +2274,77 @@ public class QueryIterator extends Iterator {
   }
 
   public static void printQueryIterator(QueryIterator self, java.io.PrintStream stream) {
-    if (((Boolean)(Stella.$PRINTREADABLYp$.get())).booleanValue()) {
-      QueryIterator.printQueryIteratorReadably(self, stream);
+    { Stella_Object format = Logic.lookupQueryOption(self, Logic.KWD_FORMAT);
+      Stella_Object file = Logic.lookupQueryOption(self, Logic.KWD_OUTPUT_FILE);
+      Stella_Object ifexists = Logic.lookupQueryOptionWithDefault(self, Logic.KWD_IF_EXISTS, Logic.KWD_SUPERSEDE);
+      OutputFileStream filestream = null;
+
+      try {
+        if (file != null) {
+          { boolean outputheaderP = Logic.$POWERLOOM_KB_FILE_EXTENSIONS$.memberP(StringWrapper.wrapString(Stella.fileExtension(((StringWrapper)(file)).wrapperValue))) &&
+                ((!(ifexists == Logic.KWD_APPEND)) ||
+                 (!Stella.probeFileP(((StringWrapper)(file)).wrapperValue)));
+
+            filestream = Stella.openOutputFile(((StringWrapper)(file)).wrapperValue, Cons.cons(Logic.KWD_IF_EXISTS, Cons.cons(((Keyword)(ifexists)), Stella.NIL)));
+            if (outputheaderP) {
+              Logic.printModuleFileHeader(((Module)(Stella.$MODULE$.get())), filestream);
+            }
+            stream = filestream.nativeStream;
+          }
+        }
+        if (Logic.$DEBUG_PRINT_MODEp$) {
+          stream.print("[" + ((StringWrapper)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_DEBUG_ID, Stella.NULL_STRING_WRAPPER))).wrapperValue + "] ");
+        }
+        if (format == Logic.KWD_VERTICAL) {
+          QueryIterator.printQueryIteratorOrnately(self, stream);
+        }
+        else if (format == Logic.KWD_LIST) {
+          QueryIterator.printQueryIteratorReadably(self, stream);
+        }
+        else if (format == Logic.KWD_TSV) {
+          QueryIterator.printQueryIteratorTabSeparated(self, stream);
+        }
+        else if (Stella_Object.consP(format)) {
+          QueryIterator.printQueryIteratorViaTemplate(self, stream);
+        }
+        else if (Stella_Object.stringP(format)) {
+          QueryIterator.printQueryIteratorViaTemplate(self, stream);
+        }
+        else if ((format == null) ||
+            (format == Logic.KWD_HORIZONTAL)) {
+          if (((Boolean)(Stella.$PRINTREADABLYp$.get())).booleanValue()) {
+            QueryIterator.printQueryIteratorReadably(self, stream);
+          }
+          else {
+            QueryIterator.printQueryIteratorOrnately(self, stream);
+          }
+        }
+        else {
+          Stella.STANDARD_WARNING.nativeStream.println("Warning: Output format `" + format + "' is not yet supported");
+          QueryIterator.printQueryIteratorOrnately(self, stream);
+        }
+
+      } finally {
+        if (filestream != null) {
+          Stream.closeStream(filestream);
+        }
+      }
     }
-    else {
-      QueryIterator.printQueryIteratorOrnately(self, stream);
+  }
+
+  /** Set the debug ID of <code>self</code> to <code>id</code>.  If <code>id</code> is NULL, simply
+   * use the current ID counter and increment it appropriately.
+   * @param id
+   */
+  public void debugIdSetter(String id) {
+    { QueryIterator self = this;
+
+      if (Logic.$DEBUG_PRINT_MODEp$) {
+        { String counter = Native.integerToString(((long)(Logic.$QUERY_ITERATOR_DEBUG_ID_COUNTER$ = Logic.$QUERY_ITERATOR_DEBUG_ID_COUNTER$ + 1)));
+
+          KeyValueList.setDynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_DEBUG_ID, (Stella.blankStringP(id) ? StringWrapper.wrapString(counter) : StringWrapper.wrapString(id + ":" + counter)), Stella.NULL_STRING_WRAPPER);
+        }
+      }
     }
   }
 

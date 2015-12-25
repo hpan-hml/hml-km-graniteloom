@@ -20,7 +20,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2013      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -39,7 +39,7 @@
 |                                                                            |
 +---------------------------- END LICENSE BLOCK ----------------------------*/
 
-// Version: cpp-primal.hh,v 1.55 2010/09/08 21:32:38 hans Exp
+// Version: cpp-primal.hh,v 1.56 2013/10/22 00:32:08 hans Exp
 
 // Native C++ support for STELLA
 
@@ -199,46 +199,36 @@ void startupCppPrimal();
 
 
 // Special variables support (for unbinding via destructors):
+// This is the new version that only allocates special structs
+// for unbinding and keeps the types of specials virginal, just
+// as if they were regular globals.  This makes things easier
+// to use and also supports unexec better.
 
 template <class Value_Type> struct stella_special
 {
-  Value_Type value;
-  stella_special* top;
+  Value_Type old_value;  // stores value of `variable' before rebinding
+  Value_Type *variable;  // stores reference to the `variable' we are rebinding
 
-  stella_special(Value_Type initial_value) {
-    // Create and initialize a special variable with `initial_value'.
-    // Used to define a special with DEFINE_STELLA_SPECIAL.
-    value = initial_value;
-  }
-
-  stella_special(Value_Type new_value, stella_special* the_top) {
-    // Create a new special variable, save the current top value in it,
-    //    and then set the top value to be `new_value'.
-    // Used to bind a special with BIND_STELLA_SPECIAL.
-    value = the_top->value;
-    top = the_top;
-    the_top->value = new_value;
+  stella_special(Value_Type new_value, Value_Type *var) {
+    // Used by BIND_STELLA_SPECIAL to save the old value and a reference to the variable.
+    variable = var;
+    old_value = *var;
+    *var = new_value;
   }
 
   ~stella_special() {
-    // Reset the top value to the old value stored in this object.
-    // Called automatically upon exit from a binding block.
-    if (top != NULL) {
-      top->value = value;
-    }
+    // Run upon exit from a special binding block which resets the value to the stored old one.
+    *variable = old_value;
   }
-
-  Value_Type get() {return value;}
-  Value_Type set(Value_Type new_value) {return(value = new_value);}
 };
 
 // Create a declaration for SPECIAL with TYPE:
 #define DECLARE_STELLA_SPECIAL(SPECIAL,TYPE) \
-   stella_special<TYPE> SPECIAL
+   TYPE SPECIAL
 
 // Define the variable SPECIAL with TYPE and initialize it with VALUE:
 #define DEFINE_STELLA_SPECIAL(SPECIAL,TYPE,VALUE) \
-   stella_special<TYPE> SPECIAL = stella_special<TYPE>(VALUE)
+   TYPE SPECIAL = VALUE
 
 // Bind the SPECIAL with TYPE to the local value VALUE:
 #define BIND_STELLA_SPECIAL(SPECIAL,TYPE,VALUE) \

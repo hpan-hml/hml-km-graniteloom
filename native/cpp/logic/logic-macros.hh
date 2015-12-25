@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -44,64 +44,15 @@
 */
 
 
+
 namespace logic {
   using namespace stella;
-
-// Class definitions:
-class LogicException : public StellaException {
-public:
-  LogicException(const std::string& msg) : StellaException(msg) {
-}
-
-};
-
-class PropositionError : public LogicException {
-public:
-  PropositionError(const std::string& msg) : LogicException(msg) {
-}
-
-};
-
-class ParsingError : public LogicException {
-public:
-  ParsingError(const std::string& msg) : LogicException(msg) {
-}
-
-};
-
-class Clash : public LogicException {
-public:
-  Clash(const std::string& msg) : LogicException(msg) {
-}
-
-};
-
-class FailException : public LogicException {
-public:
-  FailException(const std::string& msg) : LogicException(msg) {
-}
-
-};
-
-class QueryThreadLimitViolation : public LogicException {
-public:
-  QueryThreadLimitViolation(const std::string& msg) : LogicException(msg) {
-}
-
-};
-
 
 // Global declarations:
 extern DECLARE_STELLA_SPECIAL(oSUPPRESSNONLOGICOBJECTWARNINGpo, boolean );
 extern boolean oCYC_KLUDGES_ENABLEDpo;
 
 // Function signatures:
-LogicException* newLogicException(char* message);
-PropositionError* newPropositionError(char* message);
-ParsingError* newParsingError(char* message);
-Clash* newClash(char* message);
-FailException* newFailException(char* message);
-QueryThreadLimitViolation* newQueryThreadLimitViolation(char* message);
 Object* signalParsingError(Cons* message);
 Object* signalPropositionError(Cons* message);
 Object* signalPropositionWarning(Cons* message);

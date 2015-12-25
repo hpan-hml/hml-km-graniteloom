@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -85,7 +85,8 @@
       (CL:FUNCTION STARTUP-RDBMS-SYSTEM) NULL)
      (CL:LET*
       ((FUNCTION
-        (LOOKUP-FUNCTION SYM-STARTUP-SYSTEM-RDBMS-STARTUP-RDBMS-SYSTEM)))
+        (LOOKUP-FUNCTION
+         SYM-STARTUP-SYSTEM-RDBMS-STARTUP-RDBMS-SYSTEM)))
       (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
        SYM-STARTUP-SYSTEM-STELLA-METHOD-STARTUP-CLASSNAME
        (WRAP-STRING "StartupRdbmsSystem") NULL-STRING-WRAPPER)))

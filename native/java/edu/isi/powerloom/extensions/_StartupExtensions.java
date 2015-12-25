@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -61,6 +61,7 @@ public class _StartupExtensions {
         Native.setSpecial(Stella.$MODULE$, Stella.getStellaModule("/PLX", Stella.$STARTUP_TIME_PHASE$ > 1));
         Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
         if (Stella.currentStartupTimePhaseP(2)) {
+          Extensions.KWD_DOCUMENTATION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DOCUMENTATION", null, 2)));
           Extensions.SYM_PLX_STARTUP_EXTENSIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-EXTENSIONS", null, 0)));
           Extensions.SYM_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", Stella.getStellaModule("/STELLA", true), 0)));
         }
@@ -68,7 +69,7 @@ public class _StartupExtensions {
           Stella.finalizeClasses();
         }
         if (Stella.currentStartupTimePhaseP(7)) {
-          Stella.defineFunctionObject("MAIN", "(DEFUN MAIN ((ARGV-002 (ARRAY () OF STRING))) :PUBLIC? TRUE :DOCUMENTATION \"Main PowerLoom entry point for your code in C++ and Java.\")", Native.find_java_method("edu.isi.powerloom.extensions.Extensions", "main", new java.lang.Class [] {Native.find_java_class("[Ljava.lang.String;")}), null);
+          Stella.defineFunctionObject("MAIN", "(DEFUN MAIN ((ARGV-002 (ARRAY () OF STRING))) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.extensions.Extensions", "main", new java.lang.Class [] {Native.find_java_class("[Ljava.lang.String;")}), null);
           Stella.defineFunctionObject("STARTUP-EXTENSIONS", "(DEFUN STARTUP-EXTENSIONS () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.extensions._StartupExtensions", "startupExtensions", new java.lang.Class [] {}), null);
           { MethodSlot function = Symbol.lookupFunction(Extensions.SYM_PLX_STARTUP_EXTENSIONS);
 

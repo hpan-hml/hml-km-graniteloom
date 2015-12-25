@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -499,6 +499,33 @@ public class MethodSlot extends Slot {
     return (Cons.cons((method.methodFunctionP ? null : GeneralizedSymbol.cppTranslateClassName(Symbol.internSymbolInModule(method.slotOwner.symbolName, ((Module)(method.slotOwner.homeContext)), false))), Cons.list$(Cons.cons(Cons.cons(StringWrapper.wrapString("virtual"), Cons.cons(StandardObject.cppTranslateAndPointerizeTypeSpec(MethodSlot.computeMostGeneralReturnType(method, method.computeReturnTypeSpec(method.slotOwner))), Stella.NIL)), Cons.cons(MethodSlot.cppTranslateFunctionName(method, false), Cons.cons(Cons.cons(MethodSlot.cppTranslateFunctionParameters(method), Stella.NIL), Stella.NIL))))));
   }
 
+  public static Cons cppYieldUnusedDummyArgs(MethodSlot method, Cons args) {
+    if (method == null) {
+      return (Stella.NIL);
+    }
+    { int numberofunusedreturnparameters = (method.methodParameterNames().length() + (method.methodReturnTypeSpecifiers().length() - 1)) - args.length();
+      Cons unusedreturntypes = Stella.NIL;
+      Symbol dummyname = null;
+      Cons dummyargs = Stella.NIL;
+
+      if (numberofunusedreturnparameters > 0) {
+        unusedreturntypes = Cons.getLastNElements(method.methodReturnTypeSpecifiers().rest(), numberofunusedreturnparameters);
+        { Stella_Object unusedparametertype = null;
+          Cons iter000 = unusedreturntypes;
+
+          for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+            unusedparametertype = iter000.value;
+            Native.setIntSpecial(Stella.$CURRENTDUMMYINDEX$, ((Integer)(Stella.$CURRENTDUMMYINDEX$.get())).intValue() + 1);
+            dummyname = Symbol.internSymbol(Symbol.cppTranslateReturnParameterName(Stella.SYM_STELLA_DUMMY, ((Integer)(Stella.$CURRENTDUMMYINDEX$.get())).intValue()).wrapperValue);
+            Native.setSpecial(Stella.$DUMMYDECLARATIONS$, Cons.cons(Cons.cons(dummyname, Cons.cons(unusedparametertype, Stella.NIL)), ((Cons)(Stella.$DUMMYDECLARATIONS$.get()))));
+            dummyargs = Cons.cons(dummyname, dummyargs);
+          }
+        }
+      }
+      return (dummyargs.reverse());
+    }
+  }
+
   public static boolean cppMethodObjectIsOverloadedFunctionP(MethodSlot method) {
     return ((!method.methodFunctionP) &&
         ((((StringWrapper)(KeyValueList.dynamicSlotValue(((Stella_Class)(method.slotOwner.surrogateValue)).dynamicSlots, Stella.SYM_STELLA_CLASS_CPP_NATIVE_TYPE, Stella.NULL_STRING_WRAPPER))).wrapperValue != null) &&
@@ -932,8 +959,8 @@ public class MethodSlot extends Slot {
           index = iter000;
           if (collect000 == null) {
             {
-              collect000 = Cons.cons(Symbol.yieldArgumentAccessTree(Stella.SYM_STELLA_ARGUMENTS, index, variableargumentsP &&
-                  (index == nofparameters)), Stella.NIL);
+              collect000 = Cons.cons(Symbol.yieldArgumentAccessTree(Stella.SYM_STELLA_ARGUMENTS, index, (index == nofparameters) &&
+                  variableargumentsP), Stella.NIL);
               if (calltree == Stella.NIL) {
                 calltree = collect000;
               }
@@ -944,8 +971,8 @@ public class MethodSlot extends Slot {
           }
           else {
             {
-              collect000.rest = Cons.cons(Symbol.yieldArgumentAccessTree(Stella.SYM_STELLA_ARGUMENTS, index, variableargumentsP &&
-                  (index == nofparameters)), Stella.NIL);
+              collect000.rest = Cons.cons(Symbol.yieldArgumentAccessTree(Stella.SYM_STELLA_ARGUMENTS, index, (index == nofparameters) &&
+                  variableargumentsP), Stella.NIL);
               collect000 = collect000.rest;
             }
           }
@@ -991,46 +1018,49 @@ public class MethodSlot extends Slot {
   }
 
   public static boolean methodNeedsEvaluatorWrapperP(MethodSlot method) {
+    return (MethodSlot.methodMustBeEvaluableP(method) &&
+        (!MethodSlot.methodCallableViaApplyP(method)));
+  }
+
+  public static boolean methodCallableViaApplyP(MethodSlot method) {
     { boolean testValue000 = false;
 
-      testValue000 = MethodSlot.methodMustBeEvaluableP(method);
-      if (testValue000) {
-        if (((BooleanWrapper)(KeyValueList.dynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, Stella.FALSE_WRAPPER))).wrapperValue) {
+      if (((BooleanWrapper)(KeyValueList.dynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, Stella.FALSE_WRAPPER))).wrapperValue) {
+        testValue000 = true;
+      }
+      else {
+        if (method.methodParameterNames().length() > 10) {
           testValue000 = true;
         }
         else {
-          if (method.methodParameterNames().length() > 5) {
+          if (method.methodReturnTypeSpecifiers().length() > 1) {
             testValue000 = true;
           }
           else {
-            if (method.methodReturnTypeSpecifiers().length() > 1) {
+            if (Surrogate.subtypeOfP(method.type(), Stella.SGT_STELLA_LITERAL)) {
               testValue000 = true;
             }
             else {
-              if (Surrogate.subtypeOfP(method.type(), Stella.SGT_STELLA_LITERAL)) {
-                testValue000 = true;
-              }
-              else {
-                { boolean foundP000 = false;
+              { boolean foundP000 = false;
 
-                  { StandardObject tspec = null;
-                    Cons iter000 = method.methodParameterTypeSpecifiers().theConsList;
+                { StandardObject tspec = null;
+                  Cons iter000 = method.methodParameterTypeSpecifiers().theConsList;
 
-                    loop000 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-                      tspec = ((StandardObject)(iter000.value));
-                      if (Surrogate.subtypeOfP(StandardObject.typeSpecToBaseType(tspec), Stella.SGT_STELLA_LITERAL)) {
-                        foundP000 = true;
-                        break loop000;
-                      }
+                  loop000 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+                    tspec = ((StandardObject)(iter000.value));
+                    if (Surrogate.subtypeOfP(StandardObject.typeSpecToBaseType(tspec), Stella.SGT_STELLA_LITERAL)) {
+                      foundP000 = true;
+                      break loop000;
                     }
                   }
-                  testValue000 = foundP000;
                 }
+                testValue000 = foundP000;
               }
             }
           }
         }
       }
+      testValue000 = !testValue000;
       { boolean value000 = testValue000;
 
         return (value000);
@@ -2021,14 +2051,43 @@ public class MethodSlot extends Slot {
   }
 
   public static Cons yieldDefineStellaMethodObject(MethodSlot method, MethodSlot codemethod, MethodSlot wrappermethod) {
-    { String name = Native.stringify(method.slotName);
+    { Stella_Object name = StringWrapper.wrapString(Native.stringify(method.slotName));
 
       if (method.methodFunctionP) {
-        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINE_FUNCTION_OBJECT, Cons.cons((Stella.stringEqlP(name, method.slotName.symbolName) ? StringWrapper.wrapString(name) : StringWrapper.wrapString(" " + name)), Cons.cons(Cons.cons(Stella.yieldStringConstantTree(method.methodStringifiedSource), Cons.cons(((codemethod != null) ? ((StandardObject)(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CODE, Cons.cons(Stella.KWD_FUNCTION, Cons.cons(codemethod.slotName, Cons.cons(Stella.NIL, Stella.NIL))))))) : ((StandardObject)(Stella.SYM_STELLA_NULL))), Cons.cons(((wrappermethod != null) ? ((StandardObject)(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CODE, Cons.cons(Stella.KWD_FUNCTION, Cons.cons(wrappermethod.slotName, Cons.cons(Cons.cons(wrappermethod, Stella.NIL), Stella.NIL))))))) : ((StandardObject)(Stella.SYM_STELLA_NULL))), Stella.NIL))), Stella.NIL)))));
+        if (MethodSlot.defineFunctionObjectEagerlyP(method)) {
+          name = Stella.SYM_STELLA_NULL;
+        }
+        else if (!Stella_Object.eqlToStringP(name, method.slotName.symbolName)) {
+          name = StringWrapper.wrapString(" " + ((StringWrapper)(name)).wrapperValue);
+        }
+        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINE_FUNCTION_OBJECT, Cons.cons(name, Cons.cons(Cons.cons(Stella.yieldStringConstantTree(method.methodStringifiedSource), Cons.cons(((codemethod != null) ? ((StandardObject)(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CODE, Cons.cons(Stella.KWD_FUNCTION, Cons.cons(codemethod.slotName, Cons.cons(Stella.NIL, Stella.NIL))))))) : ((StandardObject)(Stella.SYM_STELLA_NULL))), Cons.cons(((wrappermethod != null) ? ((StandardObject)(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CODE, Cons.cons(Stella.KWD_FUNCTION, Cons.cons(wrappermethod.slotName, Cons.cons(Cons.cons(wrappermethod, Stella.NIL), Stella.NIL))))))) : ((StandardObject)(Stella.SYM_STELLA_NULL))), Stella.NIL))), Stella.NIL)))));
       }
       else {
         return (Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINE_METHOD_OBJECT, Cons.cons(Stella.yieldStringConstantTree(method.methodStringifiedSource), Cons.cons(Cons.cons(((codemethod != null) ? ((StandardObject)(Cons.list$(Cons.cons(Stella.SYM_STELLA_THE_CODE, Cons.cons(Stella.KWD_METHOD, Cons.cons(codemethod.slotOwner, Cons.cons(Cons.cons(codemethod.slotName, Stella.NIL), Stella.NIL))))))) : ((StandardObject)(Stella.SYM_STELLA_NULL))), Cons.cons(Stella.SYM_STELLA_NULL, Stella.NIL)), Stella.NIL)))));
       }
+    }
+  }
+
+  public static boolean defineFunctionObjectEagerlyP(MethodSlot function) {
+    { Stella_Class methodclass = ((Stella_Class)(Stella.SGT_STELLA_METHOD_SLOT.surrogateValue));
+      StorageSlot slot = null;
+
+      { Stella_Object slotname = null;
+        Stella_Object value = null;
+        KvCons iter000 = function.dynamicSlots.theKvList;
+
+        for (;iter000 != null; iter000 = iter000.rest) {
+          slotname = iter000.key;
+          value = iter000.value;
+          value = value;
+          slot = ((StorageSlot)(Stella_Class.lookupSlot(methodclass, ((Symbol)(slotname)))));
+          if ((slot != null) &&
+              (((Symbol)(KeyValueList.dynamicSlotValue(slot.dynamicSlots, Stella.SYM_STELLA_SLOT_OPTION_HANDLER, null))) != null)) {
+            return (true);
+          }
+        }
+      }
+      return (false);
     }
   }
 

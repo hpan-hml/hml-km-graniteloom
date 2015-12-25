@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -62,7 +62,8 @@
 ;;; Forward declarations:
 
 (CL:DECLAIM
- (CL:SPECIAL *STARTUP-TIME-PHASE* NULL-CHARACTER NULL-INTEGER *MODULE* NIL))
+ (CL:SPECIAL *STARTUP-TIME-PHASE* NULL-CHARACTER NULL-INTEGER *MODULE*
+  NIL))
 
 ;;; (DEFGLOBAL *NAMESPACE-PREFIX-URI-TABLE* ...)
 
@@ -93,7 +94,8 @@
      (EXTRACT-OPTIONS |bodyWithHeader| NULL))
     (CL:LET*
      ((|options| SELF-000)
-      (|invisible?| (LOOKUP |options| KWD-XML-OBJECT-INVISIBLE-ON-OUTPUT?))
+      (|invisible?|
+       (LOOKUP |options| KWD-XML-OBJECT-INVISIBLE-ON-OUTPUT?))
       (|invisibleForm|
        (CL:IF
         (CL:AND (CL:NOT (CL:EQ |invisible?| NULL))
@@ -109,8 +111,8 @@
        SYM-XML-OBJECT-XML-OBJECTS-*NAMESPACE-PREFIX-URI-TABLE*
        (WRAP-STRING |namespaceName|) (CONS |namespaceURI| NIL))
       (LIST* SYM-XML-OBJECT-STELLA-INSERT-AT
-       SYM-XML-OBJECT-XML-OBJECTS-*NAMESPACE-URI-PREFIX-TABLE* |namespaceURI|
-       (CONS (WRAP-STRING |namespaceName|) NIL))
+       SYM-XML-OBJECT-XML-OBJECTS-*NAMESPACE-URI-PREFIX-TABLE*
+       |namespaceURI| (CONS (WRAP-STRING |namespaceName|) NIL))
       (CONCATENATE |invisibleForm| NIL))))))
 
 (CL:DEFUN |access-XMLObject-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
@@ -127,8 +129,8 @@
      (CL:SETQ VALUE (WRAP-STRING (|%XMLObject.cdataContent| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -140,7 +142,8 @@
 (CL:DEFMETHOD GET-CONTENT ((OBJ |XMLObject|))
   "Returns the textContent or cdataContent slot, whichever has
 a value.  If both are present, only the textContent slot is returned."
-  (CL:IF (CL:NOT (CL:EQ (|%XMLObject.textContent| OBJ) STELLA::NULL-STRING))
+  (CL:IF
+   (CL:NOT (CL:EQ (|%XMLObject.textContent| OBJ) STELLA::NULL-STRING))
    (|%XMLObject.textContent| OBJ) (|%XMLObject.cdataContent| OBJ)))
 
 ;;; (DEFMETHOD SET-CONTENT ...)
@@ -162,9 +165,10 @@ whether `CONTENT' needs to be encoded as CDATA or not."
       (CL:LET ((SELF VECTOR-000) (POSITION INDEX-000))
        (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
         (CL:TYPE CL:FIXNUM POSITION))
-       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))))
-     (CL:WHEN (HTML-CHARACTER-NEEDS-QUOTING? CH) (CL:SETQ FOUND?-000 CL:T)
-      (CL:RETURN))
+       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+        (CL:THE CL:FIXNUM POSITION))))
+     (CL:WHEN (HTML-CHARACTER-NEEDS-QUOTING? CH)
+      (CL:SETQ FOUND?-000 CL:T) (CL:RETURN))
      (CL:SETQ INDEX-000 (CL:1+ INDEX-000))))
    (CL:IF FOUND?-000
     (CL:IF (CL:NOT (CL:= (STRING-SEARCH CONTENT "]]>" 0) NULL-INTEGER))
@@ -178,7 +182,8 @@ whether `CONTENT' needs to be encoded as CDATA or not."
 (CL:DEFUN STARTUP-XML-OBJECT ()
   (CL:LET*
    ((*MODULE*
-     (GET-STELLA-MODULE "/STELLA/XML-OBJECTS" (> *STARTUP-TIME-PHASE* 1)))
+     (GET-STELLA-MODULE "/STELLA/XML-OBJECTS"
+      (> *STARTUP-TIME-PHASE* 1)))
     (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
@@ -187,9 +192,10 @@ whether `CONTENT' needs to be encoded as CDATA or not."
     (CL:SETQ SYM-XML-OBJECT-STELLA-PUSHQ
      (INTERN-RIGID-SYMBOL-WRT-MODULE "PUSHQ"
       (GET-STELLA-MODULE "/STELLA" CL:T) 0))
-    (CL:SETQ SYM-XML-OBJECT-XML-OBJECTS-*INVISIBLE-NAMESPACES-ON-OUTPUT*
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "*INVISIBLE-NAMESPACES-ON-OUTPUT*" NULL
-      0))
+    (CL:SETQ
+     SYM-XML-OBJECT-XML-OBJECTS-*INVISIBLE-NAMESPACES-ON-OUTPUT*
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "*INVISIBLE-NAMESPACES-ON-OUTPUT*"
+      NULL 0))
     (CL:SETQ SYM-XML-OBJECT-STELLA-STARTUP-TIME-PROGN
      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-TIME-PROGN"
       (GET-STELLA-MODULE "/STELLA" CL:T) 0))
@@ -197,9 +203,11 @@ whether `CONTENT' needs to be encoded as CDATA or not."
      (INTERN-RIGID-SYMBOL-WRT-MODULE "INSERT-AT"
       (GET-STELLA-MODULE "/STELLA" CL:T) 0))
     (CL:SETQ SYM-XML-OBJECT-XML-OBJECTS-*NAMESPACE-PREFIX-URI-TABLE*
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "*NAMESPACE-PREFIX-URI-TABLE*" NULL 0))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "*NAMESPACE-PREFIX-URI-TABLE*"
+      NULL 0))
     (CL:SETQ SYM-XML-OBJECT-XML-OBJECTS-*NAMESPACE-URI-PREFIX-TABLE*
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "*NAMESPACE-URI-PREFIX-TABLE*" NULL 0))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "*NAMESPACE-URI-PREFIX-TABLE*"
+      NULL 0))
     (CL:SETQ |SYM-XML-OBJECT-XML-OBJECTS-textContent|
      (INTERN-RIGID-SYMBOL-WRT-MODULE "textContent" NULL 0))
     (CL:SETQ |SYM-XML-OBJECT-XML-OBJECTS-cdataContent|
@@ -246,7 +254,8 @@ whether `CONTENT' needs to be encoded as CDATA or not.\")"
      (CL:FUNCTION STARTUP-XML-OBJECT) NULL)
     (CL:LET*
      ((FUNCTION
-       (LOOKUP-FUNCTION SYM-XML-OBJECT-XML-OBJECTS-STARTUP-XML-OBJECT)))
+       (LOOKUP-FUNCTION
+        SYM-XML-OBJECT-XML-OBJECTS-STARTUP-XML-OBJECT)))
      (SET-DYNAMIC-SLOT-VALUE (%METHOD-SLOT.DYNAMIC-SLOTS FUNCTION)
       SYM-XML-OBJECT-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupXmlObject") NULL-STRING-WRAPPER)))

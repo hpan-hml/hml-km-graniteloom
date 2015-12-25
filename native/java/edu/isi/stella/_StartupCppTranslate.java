@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -152,10 +152,7 @@ public class _StartupCppTranslate {
       Stella.SYM_STELLA_CPP_PRINT_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_PRINT_STREAM", null, 0)));
       Stella.SYM_STELLA_CPP_STANDARD_ERROR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_STANDARD_ERROR", null, 0)));
       Stella.SYM_STELLA_CPP_STANDARD_OUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_STANDARD_OUT", null, 0)));
-      Stella.SYM_STELLA_CPP_REFERENCED_METHOD_CALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_REFERENCED_METHOD_CALL", null, 0)));
-      Stella.SYM_STELLA_SET = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SET", null, 0)));
       Stella.SYM_STELLA_CPP_SYMBOL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_SYMBOL", null, 0)));
-      Stella.SYM_STELLA_GET = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("GET", null, 0)));
       Stella.KWD_LOWERCASE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LOWERCASE", null, 2)));
       Stella.KWD_CAPITALIZED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CAPITALIZED", null, 2)));
       Stella.SGT_STELLA_F_CPP_CHANGE_CASE_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-CPP-CHANGE-CASE-MEMO-TABLE-000", null, 1)));
@@ -165,6 +162,7 @@ public class _StartupCppTranslate {
       Stella.SYM_STELLA_THIS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THIS", null, 0)));
       Stella.SYM_STELLA_CPP_METHOD = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_METHOD", null, 0)));
       Stella.SYM_STELLA_CPP_METHOD_SETTER_CALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_METHOD_SETTER_CALL", null, 0)));
+      Stella.SYM_STELLA_CPP_REFERENCED_METHOD_CALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_REFERENCED_METHOD_CALL", null, 0)));
       Stella.SYM_STELLA_CPP_METHOD_CALL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_METHOD_CALL", null, 0)));
       Stella.SYM_STELLA_CPP_FUNCTION_SIGNATURE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_FUNCTION_SIGNATURE", null, 0)));
       Stella.SYM_STELLA_CPP_METHOD_SIGNATURE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CPP_METHOD_SIGNATURE", null, 0)));
@@ -259,6 +257,7 @@ public class _StartupCppTranslate {
     {
       Stella.defineFunctionObject("CPP-TRANSLATE-PRINT-STREAM", "(DEFUN (CPP-TRANSLATE-PRINT-STREAM CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslatePrintStream", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("CPP-TRANSLATE-SETQ-TREE", "(DEFUN (CPP-TRANSLATE-SETQ-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateSetqTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
+      Stella.defineFunctionObject("CPP-TRANSLATE-SYS-SET-DEFAULT", "(DEFUN (CPP-TRANSLATE-SYS-SET-DEFAULT OBJECT) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateSysSetDefault", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("CPP-TRANSLATE-NULL", "(DEFUN (CPP-TRANSLATE-NULL CONS) ())", Native.find_java_method("edu.isi.stella.Stella", "cppTranslateNull", new java.lang.Class [] {}), null);
       Stella.defineMethodObject("(DEFMETHOD (CPP-TRANSLATE-ATOMIC-TREE CONS) ((TREE OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "cppTranslateAtomicTree", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (CPP-TRANSLATE-ATOMIC-TREE CONS) ((TREE KEYWORD)))", Native.find_java_method("edu.isi.stella.Keyword", "cppTranslateAtomicTree", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
@@ -316,7 +315,6 @@ public class _StartupCppTranslate {
       Stella.defineFunctionObject("CPP-METHOD-OBJECT-IS-OVERLOADED-FUNCTION?", "(DEFUN (CPP-METHOD-OBJECT-IS-OVERLOADED-FUNCTION? BOOLEAN) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "cppMethodObjectIsOverloadedFunctionP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
       Stella.defineFunctionObject("WRAP-METHOD-BODY-WITH-CPP-AUXILIARY-DECLARATIONS", "(DEFUN (WRAP-METHOD-BODY-WITH-CPP-AUXILIARY-DECLARATIONS CONS) ((METHODBODY CONS) (DECLARATIONS CONS)))", Native.find_java_method("edu.isi.stella.Cons", "wrapMethodBodyWithCppAuxiliaryDeclarations", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("CPP-TRANSLATE-DEFINE-METHOD-UNIT", "(DEFUN (CPP-TRANSLATE-DEFINE-METHOD-UNIT CONS) ((UNIT TRANSLATION-UNIT)))", Native.find_java_method("edu.isi.stella.TranslationUnit", "cppTranslateDefineMethodUnit", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.TranslationUnit")}), null);
-      Stella.defineFunctionObject("CPP-TRANSLATE-RETURN-TREE", "(DEFUN (CPP-TRANSLATE-RETURN-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateReturnTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
     }
   }
 
@@ -340,6 +338,7 @@ public class _StartupCppTranslate {
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupCppTranslate.helpStartupCppTranslate4();
           _StartupCppTranslate.helpStartupCppTranslate5();
+          Stella.defineFunctionObject("CPP-TRANSLATE-RETURN-TREE", "(DEFUN (CPP-TRANSLATE-RETURN-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateReturnTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("CPP-TRANSLATE-ACTUAL-PARAMETERS", "(DEFUN (CPP-TRANSLATE-ACTUAL-PARAMETERS CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateActualParameters", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("CPP-TRANSLATE-VARIABLE-LENGTH-ACTUALS", "(DEFUN (CPP-TRANSLATE-VARIABLE-LENGTH-ACTUALS CONS) ((ACTUALS CONS) (METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateVariableLengthActuals", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
           Stella.defineFunctionObject("CPP-TRANSLATE-CALL-METHOD-SETTER", "(DEFUN (CPP-TRANSLATE-CALL-METHOD-SETTER CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateCallMethodSetter", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
@@ -354,6 +353,7 @@ public class _StartupCppTranslate {
           Stella.defineFunctionObject("CPP-TRANSLATE-CALL-FUNCTION-CODE", "(DEFUN (CPP-TRANSLATE-CALL-FUNCTION-CODE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateCallFunctionCode", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("CPP-TRANSLATE-CALL-METHOD-CODE", "(DEFUN (CPP-TRANSLATE-CALL-METHOD-CODE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateCallMethodCode", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("GET-LAST-N-ELEMENTS", "(DEFUN (GET-LAST-N-ELEMENTS CONS) ((LIST CONS) (N INTEGER)))", Native.find_java_method("edu.isi.stella.Cons", "getLastNElements", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), java.lang.Integer.TYPE}), null);
+          Stella.defineFunctionObject("CPP-YIELD-UNUSED-DUMMY-ARGS", "(DEFUN (CPP-YIELD-UNUSED-DUMMY-ARGS CONS) ((METHOD METHOD-SLOT) (ARGS CONS)))", Native.find_java_method("edu.isi.stella.MethodSlot", "cppYieldUnusedDummyArgs", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot"), Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("CPP-TRANSLATE-FUNCTION-CALL", "(DEFUN (CPP-TRANSLATE-FUNCTION-CALL CONS) ((TREE CONS) (METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateFunctionCall", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
           Stella.defineFunctionObject("CPP-TRANSLATE-OPERATOR-TREE", "(DEFUN (CPP-TRANSLATE-OPERATOR-TREE CONS) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateOperatorTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
           Stella.defineFunctionObject("CPP-TRANSLATE-OPERATOR-CALL", "(DEFUN (CPP-TRANSLATE-OPERATOR-CALL CONS) ((OPERATORNAMES CONS) (ARGUMENTS CONS) (ARITY INTEGER)))", Native.find_java_method("edu.isi.stella.Cons", "cppTranslateOperatorCall", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), java.lang.Integer.TYPE}), null);

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -57,12 +57,14 @@
 (CL:DEFUN STARTUP-XML-SCHEMA-INSTANCE ()
   (CL:LET*
    ((*MODULE*
-     (GET-STELLA-MODULE "/STELLA/XML-OBJECTS/XSI" (> *STARTUP-TIME-PHASE* 1)))
+     (GET-STELLA-MODULE "/STELLA/XML-OBJECTS/XSI"
+      (> *STARTUP-TIME-PHASE* 1)))
     (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
     (CL:SETQ SYM-XML-SCHEMA-INSTANCE-XSI-STARTUP-XML-SCHEMA-INSTANCE
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-XML-SCHEMA-INSTANCE" NULL 0))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-XML-SCHEMA-INSTANCE" NULL
+      0))
     (CL:SETQ SYM-XML-SCHEMA-INSTANCE-STELLA-METHOD-STARTUP-CLASSNAME
      (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME"
       (GET-STELLA-MODULE "/STELLA" CL:T) 0)))

@@ -7,15 +7,10 @@
 #include "stella/stella-system.hh"
 
 // System-wide forward declarations:
+
 namespace logic {
   using namespace stella;
 
-class LogicException;
-class PropositionError;
-class ParsingError;
-class Clash;
-class FailException;
-class QueryThreadLimitViolation;
 class SequenceIndex;
 class NonPagingIndex;
 class PagingIndex;
@@ -39,6 +34,17 @@ class QuantityLogicWrapper;
 class IntegerLogicWrapper;
 class FloatLogicWrapper;
 class StringLogicWrapper;
+class LogicException;
+class PropositionError;
+class ParsingError;
+class Clash;
+class TruthValueClash;
+class IntervalClash;
+class VariableValueClash;
+class UnificationClash;
+class FailException;
+class QueryThreadLimitViolation;
+class ExceptionRecord;
 class ObjectAlreadyExistsException;
 class CheckTypesRecord;
 class PropagationEnvironment;
@@ -80,6 +86,7 @@ class ClusteredConjunctionProofAdjunct;
 class PrimitiveStrategy;
 class ForwardGoalRecord;
 class ForwardJustification;
+class ClashJustification;
 class ExplainException;
 class ExplainNoQueryException;
 class ExplainNoSolutionException;
@@ -111,6 +118,32 @@ class ClassificationSession;
 
 } // end of namespace logic
 
+namespace pl_kernel_kb {
+  using namespace stella;
+  using namespace logic;
+
+class IntervalCache;
+class IntegerInterval;
+
+} // end of namespace pl_kernel_kb
+
+namespace pl_kernel_kb_pl_kernel_kb_loom_api {
+  using namespace stella;
+  using namespace logic;
+  using namespace pl_kernel_kb;
+
+class LoomRole;
+
+} // end of namespace pl_kernel_kb_pl_kernel_kb_loom_api
+
+namespace pli {
+  using namespace stella;
+  using namespace logic;
+
+class Environment;
+class PlIterator;
+
+} // end of namespace pli
 
 // System components:
 #include "logic/logic-macros.hh"

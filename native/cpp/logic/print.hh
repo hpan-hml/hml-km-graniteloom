@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -49,12 +49,12 @@ namespace logic {
   using namespace stella;
 
 // Global declarations:
+extern boolean oDEBUG_PRINT_MODEpo;
 extern DECLARE_STELLA_SPECIAL(oPRINTMODEo, Keyword* );
 extern DECLARE_STELLA_SPECIAL(oPRINTFUNCTIONSASRELATIONSpo, boolean );
 extern char* VARIABLE_BINDING_SEPARATOR;
 extern char* VALUE_OF_SEPARATOR;
 extern DECLARE_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueMap* );
-extern boolean oDEBUG_MODEpo;
 
 // Function signatures:
 OutputStream* wrapNativeOutputStream(std::ostream* nativestream);

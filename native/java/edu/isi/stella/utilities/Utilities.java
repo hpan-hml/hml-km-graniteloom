@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -1383,7 +1383,8 @@ public class Utilities {
                 }
                 break loop001;
               }
-              tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | ((int) (((char) (0x00ff & tok_buffer_[tok_cursor_]))))))));
+              tok_nextstate_ = (int) (((char) (0x00ff & tok_buffer_[tok_cursor_])));
+              tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | tok_nextstate_))));
               if ((tok_nextstate_ & 128) == 0) {
                 tok_state_ = tok_nextstate_;
                 tok_cursor_ = tok_cursor_ + 1;
@@ -1634,7 +1635,7 @@ public class Utilities {
    * @param measureName
    */
   public static void showMeasure(String measureName) {
-    { Measure m = ((Measure)(Utilities.$NAME_TO_MEASURE_TABLE$.lookup(measureName)));
+    { Measure m = Measure.lookupMeasure(measureName);
 
       if (m != null) {
         { KeyValueList theScale = m.scale;
@@ -1685,10 +1686,10 @@ public class Utilities {
 
       m = Measure.defineBaseMeasure("Mass", "kg");
       m.addUnit("g", 0.001, "kg");
-      m.addUnit("mg", 1.0e-6, "kg");
-      m.addUnit("ug", 1.0e-9, "kg");
-      m.addUnit("ng", 0.001, "ug");
-      m.addUnit("pg", 0.001, "ng");
+      m.addUnit("mg", 0.001, "g");
+      m.addUnit("ug", 1.0e-6, "g");
+      m.addUnit("ng", 1.0e-9, "g");
+      m.addUnit("pg", 1.0e-12, "g");
       m.addUnit("d", 1.7e-24, "g");
       m.addUnit("dalton", 1.0, "d");
       m.addUnit("kd", 1000.0, "d");
@@ -1748,6 +1749,9 @@ public class Utilities {
       m.addUnit("l", 1.0, "liter");
       m.addUnit("L", 1.0, "liter");
       m.addUnit("ml", 0.001, "liter");
+      m.addUnit("ul", 1.0e-6, "liter");
+      m.addUnit("nl", 1.0e-9, "liter");
+      m.addUnit("pl", 1.0e-12, "liter");
       m.addUnit("cc", 1.0, "ml");
       m.addUnit("cl", 0.01, "liter");
       m.addUnit("dl", 0.1, "liter");
@@ -1897,6 +1901,7 @@ public class Utilities {
       m.addUnit("Kibit", 1024.0, "bit");
       m.addUnit("kibit", 1.0, "Kibit");
       m.addUnit("Mibit", 1024.0, "kibit");
+      m.addUnit("Gibit", 1024.0, "Mibit");
       m.addUnit("KiB", 1024.0, "byte");
       m.addUnit("kiB", 1.0, "KiB");
       m.addUnit("MiB", 1024.0, "KiB");
@@ -1905,6 +1910,7 @@ public class Utilities {
       m.addUnit("PiB", 1024.0, "TiB");
       m.addUnit("kbit", 1000.0, "bit");
       m.addUnit("Mbit", 1000.0, "kbit");
+      m.addUnit("Gbit", 1000.0, "Mbit");
       m.addUnit("kB", 1000.0, "byte");
       m.addUnit("MB", 1000.0, "kB");
       m.addUnit("GB", 1000.0, "MB");

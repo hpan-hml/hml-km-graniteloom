@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -204,7 +204,7 @@ public class IntervalCache extends Thing {
             IntervalCache.signalIntervalClash(interval);
           }
           else {
-            Logic.equateValues(interval.intervalMember, interval.lowerBound);
+            Proposition.equateValues(null, interval.intervalMember, interval.lowerBound);
           }
         }
         else {
@@ -233,7 +233,7 @@ public class IntervalCache extends Thing {
         if ((lb != null) &&
             ((ub != null) &&
              Stella_Object.eqlP(lb, ub))) {
-          Logic.equateValues(interval.intervalMember, lb);
+          Proposition.equateValues(null, interval.intervalMember, lb);
         }
       }
     }
@@ -342,10 +342,29 @@ public class IntervalCache extends Thing {
 
   public static void signalIntervalClash(IntervalCache interval) {
     interval.intervalMember.markAsIncoherent();
-    { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+    { String message000 = null;
 
-      stream000.nativeStream.println("Clash in interval values `" + interval + "'");
-      throw ((Clash)(Clash.newClash(stream000.theStringReader()).fillInStackTrace()));
+      { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+
+        try {
+          Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+          message000 = "Clash in interval values " + "`" + Native.stringify(interval) + "'" + "\n";
+
+        } finally {
+          Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+        }
+      }
+      { String message = message000;
+        IntervalClash clash = IntervalClash.newIntervalClash(message);
+
+        clash.context = ((Context)(Stella.$CONTEXT$.get()));
+        clash.intervalMember = interval.intervalMember;
+        clash.lowerBound = interval.lowerBound;
+        clash.upperBound = interval.upperBound;
+        clash.strictLowerBoundP = interval.strictLowerBoundP;
+        clash.strictUpperBoundP = interval.strictUpperBoundP;
+        throw ((IntervalClash)(clash.fillInStackTrace()));
+      }
     }
   }
 
@@ -369,7 +388,7 @@ public class IntervalCache extends Thing {
         value = self.homeContext;
       }
     }
-    else if (slotname == PlKernelKb.SYM_PL_KERNEL_KB_INTERVAL_MEMBER) {
+    else if (slotname == PlKernelKb.SYM_LOGIC_INTERVAL_MEMBER) {
       if (setvalueP) {
         self.intervalMember = ((LogicObject)(value));
       }
@@ -393,7 +412,7 @@ public class IntervalCache extends Thing {
         value = self.upperBound;
       }
     }
-    else if (slotname == PlKernelKb.SYM_PL_KERNEL_KB_STRICT_LOWER_BOUNDp) {
+    else if (slotname == PlKernelKb.SYM_LOGIC_STRICT_LOWER_BOUNDp) {
       if (setvalueP) {
         self.strictLowerBoundP = BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(value)));
       }
@@ -401,7 +420,7 @@ public class IntervalCache extends Thing {
         value = (self.strictLowerBoundP ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER);
       }
     }
-    else if (slotname == PlKernelKb.SYM_PL_KERNEL_KB_STRICT_UPPER_BOUNDp) {
+    else if (slotname == PlKernelKb.SYM_LOGIC_STRICT_UPPER_BOUNDp) {
       if (setvalueP) {
         self.strictUpperBoundP = BooleanWrapper.coerceWrappedBooleanToBoolean(((BooleanWrapper)(value)));
       }

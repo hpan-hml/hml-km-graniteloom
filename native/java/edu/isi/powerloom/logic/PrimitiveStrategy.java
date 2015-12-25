@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -61,7 +61,6 @@ public class PrimitiveStrategy extends Justification {
       self.truthValue = null;
       self.reversePolarityP = false;
       self.substitution = null;
-      self.patternJustification = null;
       self.antecedents = Stella.NIL;
       self.proposition = null;
       self.strategy = null;

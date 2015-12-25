@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -56,6 +56,7 @@ namespace stella_plx {
 void startupExtensions();
 
 // Auxiliary global declarations:
+extern Keyword* KWD_EXTENSIONS_DOCUMENTATION;
 extern Symbol* SYM_EXTENSIONS_PLX_STARTUP_EXTENSIONS;
 extern Symbol* SYM_EXTENSIONS_STELLA_METHOD_STARTUP_CLASSNAME;
 

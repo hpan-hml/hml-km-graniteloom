@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -1210,7 +1210,8 @@ public class Http {
 
   /** Given the <code>values</code> returned by a form, parse and decode them and return them as
    * a key-value-list.  NOTE: values will not be trimmed and empty values will be represented by the empty
-   * string rather than NULL.
+   * string rather than NULL.  Also, if the same input name occurs more than once, only the value of the
+   * last input will be recorded in the resulting key-value-list.
    * @param values
    * @return KeyValueList
    */
@@ -1233,6 +1234,44 @@ public class Http {
         }
       }
       return (result);
+    }
+  }
+
+  /** Given the <code>values</code> returned by a form, parse and decode them and return them as
+   * a property-list.  NOTE: values will not be trimmed and empty values will be represented by the empty
+   * string rather than NULL.  Keys will be inserted into the result in the order they appear in the form.
+   * If they are non-unique, multiple entries per key will result which can be iterated over, however,
+   * standard <code>lookup</code> calls will return the value of the first key only.
+   * @param values
+   * @return PropertyList
+   */
+  public static PropertyList parseAndDecodeNonUniqueFormValues(String values) {
+    { Cons result = Stella.NIL;
+      String bareentry = null;
+      int split = 0;
+
+      values = Native.string_substitute(values, ' ', '+');
+      { StringWrapper entry = null;
+        Cons iter000 = Stella.splitString(values, '&');
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          entry = ((StringWrapper)(iter000.value));
+          bareentry = StringWrapper.unwrapString(entry);
+          split = Native.string_position(bareentry, '=', 0);
+          if (split != Stella.NULL_INTEGER) {
+            result = Cons.cons(StringWrapper.wrapString(Stella.unescapeUrlString(Native.string_subsequence(bareentry, 0, split))), result);
+            result = Cons.cons(StringWrapper.wrapString(Stella.unescapeUrlString(Native.string_subsequence(bareentry, split + 1, Stella.NULL_INTEGER))), result);
+          }
+        }
+      }
+      { PropertyList self000 = PropertyList.newPropertyList();
+
+        self000.thePlist = result.reverse();
+        { PropertyList value000 = self000;
+
+          return (value000);
+        }
+      }
     }
   }
 
@@ -1367,7 +1406,9 @@ public class Http {
   public static void publishDirectory(String path, String directory, Cons options) {
     directory = Stella.translateLogicalPathname(directory);
     directory = Stella.fileNameAsDirectory(directory);
-    Stella.ensureFileExists(directory, "publish-directory");
+    if (!(Stella.probeFileP(directory))) {
+      Stella.STANDARD_WARNING.nativeStream.println("Warning: HTTP/publish-directory: `" + directory + "' does not exist");
+    }
     if (!(Stella.endsWithP(path, "/", Stella.NULL_INTEGER))) {
       path = path + "/";
     }

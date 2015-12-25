@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -54,6 +54,10 @@ public class Measure extends StandardObject {
     public KeyValueList scale;
     public Ratio primeId;
     public String name;
+
+  public static Measure lookupMeasureForUnit(String unit) {
+    return (((Measure)(Utilities.$UNIT_TO_MEASURE_TABLE$.lookup(unit))));
+  }
 
   public static Measure lookupMeasure(String name) {
     return (((Measure)(Utilities.$NAME_TO_MEASURE_TABLE$.lookup(name))));

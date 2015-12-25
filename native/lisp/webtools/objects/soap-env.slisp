@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -57,10 +57,10 @@
 (CL:DEFVAR |SYM-SOAP-ENV-SOAP-ENV-faultstring| NULL)
 (CL:DEFVAR |SYM-SOAP-ENV-SOAP-ENV-faultactor| NULL)
 (CL:DEFVAR |SYM-SOAP-ENV-SOAP-ENV-detail| NULL)
-(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-faultcode| NULL)
-(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-faultstring| NULL)
-(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-faultactor| NULL)
-(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-detail| NULL)
+(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-FaultCode| NULL)
+(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-FaultString| NULL)
+(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-FaultActor| NULL)
+(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-Detail| NULL)
 (CL:DEFVAR SYM-SOAP-ENV-SOAP-ENV-STARTUP-SOAP-ENV NULL)
 (CL:DEFVAR SYM-SOAP-ENV-STELLA-METHOD-STARTUP-CLASSNAME NULL)
 
@@ -92,8 +92,8 @@
      (CL:SETQ VALUE (|%Envelope.body| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -113,8 +113,8 @@
      (CL:SETQ VALUE (|%Body.contents| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -146,53 +146,53 @@
      (CL:SETQ VALUE (|%Fault.detail| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
-(CL:DEFUN |new-faultcode| ()
-  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-faultcode|))
-   (CL:SETF (|%faultcode.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%faultcode.textContent| SELF) STELLA::NULL-STRING) SELF))
+(CL:DEFUN |new-FaultCode| ()
+  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-FaultCode|))
+   (CL:SETF (|%FaultCode.cdataContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%FaultCode.textContent| SELF) STELLA::NULL-STRING) SELF))
 
-(CL:DEFMETHOD PRIMARY-TYPE ((SELF |faultcode|))
-  |SGT-SOAP-ENV-SOAP-ENV-faultcode|)
+(CL:DEFMETHOD PRIMARY-TYPE ((SELF |FaultCode|))
+  |SGT-SOAP-ENV-SOAP-ENV-FaultCode|)
 
-(CL:DEFUN |new-faultstring| ()
-  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-faultstring|))
-   (CL:SETF (|%faultstring.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%faultstring.textContent| SELF) STELLA::NULL-STRING) SELF))
+(CL:DEFUN |new-FaultString| ()
+  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-FaultString|))
+   (CL:SETF (|%FaultString.cdataContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%FaultString.textContent| SELF) STELLA::NULL-STRING) SELF))
 
-(CL:DEFMETHOD PRIMARY-TYPE ((SELF |faultstring|))
-  |SGT-SOAP-ENV-SOAP-ENV-faultstring|)
+(CL:DEFMETHOD PRIMARY-TYPE ((SELF |FaultString|))
+  |SGT-SOAP-ENV-SOAP-ENV-FaultString|)
 
-(CL:DEFUN |new-faultactor| ()
-  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-faultactor|))
-   (CL:SETF (|%faultactor.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%faultactor.textContent| SELF) STELLA::NULL-STRING) SELF))
+(CL:DEFUN |new-FaultActor| ()
+  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-FaultActor|))
+   (CL:SETF (|%FaultActor.cdataContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%FaultActor.textContent| SELF) STELLA::NULL-STRING) SELF))
 
-(CL:DEFMETHOD PRIMARY-TYPE ((SELF |faultactor|))
-  |SGT-SOAP-ENV-SOAP-ENV-faultactor|)
+(CL:DEFMETHOD PRIMARY-TYPE ((SELF |FaultActor|))
+  |SGT-SOAP-ENV-SOAP-ENV-FaultActor|)
 
-(CL:DEFUN |new-detail| ()
-  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-detail|))
-   (CL:SETF (|%detail.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%detail.textContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%detail.contents| SELF) NULL) SELF))
+(CL:DEFUN |new-Detail| ()
+  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-Detail|))
+   (CL:SETF (|%Detail.cdataContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%Detail.textContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%Detail.contents| SELF) NULL) SELF))
 
-(CL:DEFMETHOD PRIMARY-TYPE ((SELF |detail|))
-  |SGT-SOAP-ENV-SOAP-ENV-detail|)
+(CL:DEFMETHOD PRIMARY-TYPE ((SELF |Detail|))
+  |SGT-SOAP-ENV-SOAP-ENV-Detail|)
 
-(CL:DEFUN |access-detail-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
+(CL:DEFUN |access-Detail-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-SOAP-ENV-SOAP-ENV-contents|)
-    (CL:IF SETVALUE? (CL:SETF (|%detail.contents| SELF) VALUE)
-     (CL:SETQ VALUE (|%detail.contents| SELF))))
+    (CL:IF SETVALUE? (CL:SETF (|%Detail.contents| SELF) VALUE)
+     (CL:SETQ VALUE (|%Detail.contents| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -246,14 +246,14 @@
      (INTERN-RIGID-SYMBOL-WRT-MODULE "faultactor" NULL 0))
     (CL:SETQ |SYM-SOAP-ENV-SOAP-ENV-detail|
      (INTERN-RIGID-SYMBOL-WRT-MODULE "detail" NULL 0))
-    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-faultcode|
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "faultcode" NULL 1))
-    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-faultstring|
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "faultstring" NULL 1))
-    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-faultactor|
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "faultactor" NULL 1))
-    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-detail|
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "detail" NULL 1))
+    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-FaultCode|
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "FaultCode" NULL 1))
+    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-FaultString|
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "FaultString" NULL 1))
+    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-FaultActor|
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "FaultActor" NULL 1))
+    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-Detail|
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "Detail" NULL 1))
     (CL:SETQ SYM-SOAP-ENV-SOAP-ENV-STARTUP-SOAP-ENV
      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-SOAP-ENV" NULL 0))
     (CL:SETQ SYM-SOAP-ENV-STELLA-METHOD-STARTUP-CLASSNAME
@@ -272,42 +272,44 @@
      ((CLASS
        (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "Body"
         "(DEFCLASS Body (XMLObject) :PUBLIC-SLOTS ((contents :TYPE XMLObject)))")))
-     (CL:SETF (%CLASS.CLASS-CONSTRUCTOR-CODE CLASS) (CL:FUNCTION |new-Body|))
+     (CL:SETF (%CLASS.CLASS-CONSTRUCTOR-CODE CLASS)
+      (CL:FUNCTION |new-Body|))
      (CL:SETF (%CLASS.CLASS-SLOT-ACCESSOR-CODE CLASS)
       (CL:FUNCTION |access-Body-Slot-Value|)))
     (CL:LET*
      ((CLASS
        (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "Fault"
-        "(DEFCLASS Fault (XMLObject) :PUBLIC-SLOTS ((faultcode :TYPE faultcode) (faultstring :TYPE faultstring) (faultactor :TYPE faultactor) (detail :TYPE detail)))")))
-     (CL:SETF (%CLASS.CLASS-CONSTRUCTOR-CODE CLASS) (CL:FUNCTION |new-Fault|))
+        "(DEFCLASS Fault (XMLObject) :PUBLIC-SLOTS ((faultcode :TYPE FaultCode) (faultstring :TYPE FaultString) (faultactor :TYPE FaultActor) (detail :TYPE Detail)))")))
+     (CL:SETF (%CLASS.CLASS-CONSTRUCTOR-CODE CLASS)
+      (CL:FUNCTION |new-Fault|))
      (CL:SETF (%CLASS.CLASS-SLOT-ACCESSOR-CODE CLASS)
       (CL:FUNCTION |access-Fault-Slot-Value|)))
     (CL:LET*
      ((CLASS
-       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "faultcode"
-        "(DEFCLASS faultcode (XMLObject))")))
+       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "FaultCode"
+        "(DEFCLASS FaultCode (XMLObject))")))
      (CL:SETF (%CLASS.CLASS-CONSTRUCTOR-CODE CLASS)
-      (CL:FUNCTION |new-faultcode|)))
+      (CL:FUNCTION |new-FaultCode|)))
     (CL:LET*
      ((CLASS
-       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "faultstring"
-        "(DEFCLASS faultstring (XMLObject))")))
+       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "FaultString"
+        "(DEFCLASS FaultString (XMLObject))")))
      (CL:SETF (%CLASS.CLASS-CONSTRUCTOR-CODE CLASS)
-      (CL:FUNCTION |new-faultstring|)))
+      (CL:FUNCTION |new-FaultString|)))
     (CL:LET*
      ((CLASS
-       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "faultactor"
-        "(DEFCLASS faultactor (XMLObject))")))
+       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "FaultActor"
+        "(DEFCLASS FaultActor (XMLObject))")))
      (CL:SETF (%CLASS.CLASS-CONSTRUCTOR-CODE CLASS)
-      (CL:FUNCTION |new-faultactor|)))
+      (CL:FUNCTION |new-FaultActor|)))
     (CL:LET*
      ((CLASS
-       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "detail"
-        "(DEFCLASS detail (XMLObject) :PUBLIC-SLOTS ((contents :TYPE XMLObject)))")))
+       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "Detail"
+        "(DEFCLASS Detail (XMLObject) :PUBLIC-SLOTS ((contents :TYPE XMLObject)))")))
      (CL:SETF (%CLASS.CLASS-CONSTRUCTOR-CODE CLASS)
-      (CL:FUNCTION |new-detail|))
+      (CL:FUNCTION |new-Detail|))
      (CL:SETF (%CLASS.CLASS-SLOT-ACCESSOR-CODE CLASS)
-      (CL:FUNCTION |access-detail-Slot-Value|))))
+      (CL:FUNCTION |access-Detail-Slot-Value|))))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7)
     (DEFINE-FUNCTION-OBJECT "GET-BODY"
@@ -326,7 +328,8 @@
      "(DEFUN STARTUP-SOAP-ENV () :PUBLIC? TRUE)"
      (CL:FUNCTION STARTUP-SOAP-ENV) NULL)
     (CL:LET*
-     ((FUNCTION (LOOKUP-FUNCTION SYM-SOAP-ENV-SOAP-ENV-STARTUP-SOAP-ENV)))
+     ((FUNCTION
+       (LOOKUP-FUNCTION SYM-SOAP-ENV-SOAP-ENV-STARTUP-SOAP-ENV)))
      (SET-DYNAMIC-SLOT-VALUE (%METHOD-SLOT.DYNAMIC-SLOTS FUNCTION)
       SYM-SOAP-ENV-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupSoapEnv") NULL-STRING-WRAPPER)))

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -335,7 +335,7 @@ Object* ifOutputLanguage(Keyword* language, Object* thenform, Object* elseform) 
   // Expand to 'thenForm' if the current translator output
   // language equals 'language'.  Otherwise, expand to 'elseForm'.  This can
   // be used to conditionally translate Stella code.
-  if (language == oTRANSLATOROUTPUTLANGUAGEo.get()) {
+  if (language == oTRANSLATOROUTPUTLANGUAGEo) {
     return (((thenform == SYM_MACROS_STELLA_NULL) ? NULL : thenform));
   }
   else {
@@ -347,7 +347,7 @@ Object* ifStellaFeature(Keyword* feature, Object* thenform, Object* elseform) {
   // Expand to 'thenForm' if 'feature' is a currently enabled
   // STELLA environment feature.  Otherwise, expand to 'elseForm'.  This can
   // be used to conditionally translate Stella code.
-  if (oCURRENT_STELLA_FEATURESo.get()->membP(feature)) {
+  if (oCURRENT_STELLA_FEATURESo->membP(feature)) {
     return (((thenform == SYM_MACROS_STELLA_NULL) ? NULL : thenform));
   }
   else {
@@ -378,14 +378,14 @@ Object* coerceARestToCons(Symbol* restvariable) {
   // `restVariable' already is a CONS due to argument listification, this is a no-op.
   { StandardObject* dummy1;
 
-    if (passVariableArgumentsAsListP(oMETHODBEINGWALKEDo.get())) {
-      return (sysTree(walkWithoutTypeTree(restvariable), yieldListifiedVariableArgumentsType(oMETHODBEINGWALKEDo.get()), dummy1));
+    if (passVariableArgumentsAsListP(oMETHODBEINGWALKEDo)) {
+      return (sysTree(walkWithoutTypeTree(restvariable), yieldListifiedVariableArgumentsType(oMETHODBEINGWALKEDo), dummy1));
     }
     else {
       { Symbol* argvar = localGensym("ARG");
         Symbol* listvar = localGensym("ARGLIST");
 
-        return (listO(5, SYM_MACROS_STELLA_VRLET, cons(cons(listvar, cons(yieldListifiedVariableArgumentsType(oMETHODBEINGWALKEDo.get()), cons(SYM_MACROS_STELLA_NIL, NIL))), NIL), listO(3, SYM_MACROS_STELLA_FOREACH, argvar, listO(3, SYM_MACROS_STELLA_IN, restvariable, listO(3, SYM_MACROS_STELLA_COLLECT, argvar, listO(3, SYM_MACROS_STELLA_INTO, listvar, NIL)))), listvar, NIL));
+        return (listO(5, SYM_MACROS_STELLA_VRLET, cons(cons(listvar, cons(yieldListifiedVariableArgumentsType(oMETHODBEINGWALKEDo), cons(SYM_MACROS_STELLA_NIL, NIL))), NIL), listO(3, SYM_MACROS_STELLA_FOREACH, argvar, listO(3, SYM_MACROS_STELLA_IN, restvariable, listO(3, SYM_MACROS_STELLA_COLLECT, argvar, listO(3, SYM_MACROS_STELLA_INTO, listvar, NIL)))), listvar, NIL));
       }
     }
   }
@@ -413,44 +413,45 @@ Object* defmain(Cons* varlist, Cons* body) {
   { boolean processcmdlineargsP = !(varlist == NIL);
     Symbol* v1Name = ((Symbol*)(varlist->value));
     Symbol* v2Name = ((Symbol*)(varlist->rest->value));
-    Symbol* mainname = internSymbolInModule("MAIN", oMODULEo.get(), true);
+    Symbol* mainname = internSymbolInModule("MAIN", oMODULEo, true);
     Cons* bodywithheader = cons(NULL, body);
 
     { PropertyList* self000 = newPropertyList();
 
       self000->thePlist = extractOptions(bodywithheader, NULL);
       { PropertyList* options = self000;
-        Cons* startupfunctioncall = ((((boolean)(oCURRENTSYSTEMDEFINITIONo.get())) &&
-            (!(options->lookup(KWD_MACROS_STARTUP_SYSTEMp) == SYM_MACROS_STELLA_FALSE))) ? cons(cons(systemStartupFunctionSymbol(oCURRENTSYSTEMDEFINITIONo.get()), NIL), NIL) : NIL);
+        Cons* startupfunctioncall = ((((boolean)(oCURRENTSYSTEMDEFINITIONo)) &&
+            (!(options->lookup(KWD_MACROS_STARTUP_SYSTEMp) == SYM_MACROS_STELLA_FALSE))) ? cons(cons(systemStartupFunctionSymbol(oCURRENTSYSTEMDEFINITIONo), NIL), NIL) : NIL);
 
+        startupfunctioncall = cons(listO(5, SYM_MACROS_STELLA_IF_STELLA_FEATURE, KWD_MACROS_SUPPORT_UNEXEC, listO(6, SYM_MACROS_STELLA_VERBATIM, KWD_MACROS_CPP, wrapString("freopen (\"/dev/tty\",\"w\",stdout); freopen (\"/dev/tty\",\"w\",stderr); freopen (\"/dev/tty\",\"r\",stdin)"), KWD_MACROS_OTHERWISE, SYM_MACROS_STELLA_NULL, NIL), SYM_MACROS_STELLA_NULL, NIL), startupfunctioncall->concatenate(NIL, 0));
         options->removeAt(KWD_MACROS_STARTUP_SYSTEMp);
         options->removeAt(KWD_MACROS_PUBLICp);
         body = options->thePlist->concatenate(bodywithheader->rest, 0);
         if (!processcmdlineargsP) {
-          if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_MACROS_COMMON_LISP) {
+          if (oTRANSLATOROUTPUTLANGUAGEo == KWD_MACROS_COMMON_LISP) {
             return (listO(3, SYM_MACROS_STELLA_DEFUN, mainname, listO(4, NIL, KWD_MACROS_PUBLICp, SYM_MACROS_STELLA_TRUE, startupfunctioncall->concatenate(body->concatenate(NIL, 0), 0))));
           }
-          else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_MACROS_CPP) ||
-              ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_MACROS_CPP_STANDALONE) ||
-               (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_MACROS_IDL))) {
+          else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_MACROS_CPP) ||
+              ((oTRANSLATOROUTPUTLANGUAGEo == KWD_MACROS_CPP_STANDALONE) ||
+               (oTRANSLATOROUTPUTLANGUAGEo == KWD_MACROS_IDL))) {
             return (listO(6, SYM_MACROS_STELLA_DEFUN, cons(mainname, cons(SYM_MACROS_STELLA_INTEGER, NIL)), NIL, KWD_MACROS_PUBLICp, SYM_MACROS_STELLA_TRUE, startupfunctioncall->concatenate(body->concatenate(cons(listO(3, SYM_MACROS_STELLA_RETURN, wrapInteger(1), NIL), NIL), 0), 0)));
           }
-          else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_MACROS_JAVA) {
+          else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_MACROS_JAVA) {
             return (listO(3, SYM_MACROS_STELLA_DEFUN, mainname, listO(4, cons(cons(localGensym("ARGV"), cons(listO(5, SYM_MACROS_STELLA_ARRAY, NIL, SYM_MACROS_STELLA_OF, SYM_MACROS_STELLA_STRING, NIL), NIL)), NIL), KWD_MACROS_PUBLICp, SYM_MACROS_STELLA_TRUE, startupfunctioncall->concatenate(body->concatenate(NIL, 0), 0))));
           }
           else {
           }
         }
         else {
-          if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_MACROS_COMMON_LISP) {
+          if (oTRANSLATOROUTPUTLANGUAGEo == KWD_MACROS_COMMON_LISP) {
             return (listO(3, SYM_MACROS_STELLA_DEFUN, mainname, listO(5, listO(3, SYM_MACROS_STELLA_aREST, listO(3, SYM_MACROS_STELLA_rrARGS, SYM_MACROS_STELLA_STRING, NIL), NIL), KWD_MACROS_PUBLICp, SYM_MACROS_STELLA_TRUE, listO(3, SYM_MACROS_STELLA_LET, listO(3, cons(v1Name, listO(3, SYM_MACROS_STELLA_INTEGER, listO(4, SYM_MACROS_STELLA_VERBATIM, KWD_MACROS_COMMON_LISP, listO(3, internCommonLispSymbol("LENGTH"), SYM_MACROS_STELLA_rrARGS, NIL), NIL), NIL)), cons(v2Name, listO(3, listO(5, SYM_MACROS_STELLA_ARRAY, NIL, SYM_MACROS_STELLA_OF, SYM_MACROS_STELLA_STRING, NIL), listO(4, SYM_MACROS_STELLA_VERBATIM, KWD_MACROS_COMMON_LISP, listO(5, internCommonLispSymbol("MAKE-ARRAY"), listO(3, internCommonLispSymbol("LENGTH"), SYM_MACROS_STELLA_rrARGS, NIL), KWD_MACROS_INITIAL_CONTENTS, SYM_MACROS_STELLA_rrARGS, NIL), NIL), NIL)), NIL), startupfunctioncall->concatenate(body->concatenate(NIL, 0), 0)), NIL)));
           }
-          else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_MACROS_JAVA) {
+          else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_MACROS_JAVA) {
             return (listO(3, SYM_MACROS_STELLA_DEFUN, mainname, listO(5, cons(cons(v2Name, cons(listO(5, SYM_MACROS_STELLA_ARRAY, NIL, SYM_MACROS_STELLA_OF, SYM_MACROS_STELLA_STRING, NIL), NIL)), NIL), KWD_MACROS_PUBLICp, SYM_MACROS_STELLA_TRUE, listO(3, SYM_MACROS_STELLA_LET, cons(cons(v1Name, listO(3, SYM_MACROS_STELLA_INTEGER, listO(4, SYM_MACROS_STELLA_VERBATIM, KWD_MACROS_JAVA, wrapString(stringConcatenate(javaTranslateName(v2Name)->wrapperValue, ".length", 0)), NIL), NIL)), NIL), startupfunctioncall->concatenate(body->concatenate(NIL, 0), 0)), NIL)));
           }
-          else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_MACROS_CPP) ||
-              ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_MACROS_CPP_STANDALONE) ||
-               (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_MACROS_IDL))) {
+          else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_MACROS_CPP) ||
+              ((oTRANSLATOROUTPUTLANGUAGEo == KWD_MACROS_CPP_STANDALONE) ||
+               (oTRANSLATOROUTPUTLANGUAGEo == KWD_MACROS_IDL))) {
             return (listO(6, SYM_MACROS_STELLA_DEFUN, cons(mainname, cons(SYM_MACROS_STELLA_INTEGER, NIL)), listO(3, cons(v1Name, cons(SYM_MACROS_STELLA_INTEGER, NIL)), cons(v2Name, cons(listO(5, SYM_MACROS_STELLA_ARRAY, NIL, SYM_MACROS_STELLA_OF, SYM_MACROS_STELLA_STRING, NIL), NIL)), NIL), KWD_MACROS_PUBLICp, SYM_MACROS_STELLA_TRUE, startupfunctioncall->concatenate(body->concatenate(cons(listO(3, SYM_MACROS_STELLA_RETURN, wrapInteger(1), NIL), NIL), 0), 0)));
           }
           else {
@@ -461,7 +462,7 @@ Object* defmain(Cons* varlist, Cons* body) {
           signalTranslationError();
           if (!(suppressWarningsP())) {
             printErrorContext(">> ERROR: ", STANDARD_ERROR);
-            *(STANDARD_ERROR->nativeStream) << std::endl << " " << "`defmain' is not supported for " << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << "." << std::endl;
+            *(STANDARD_ERROR->nativeStream) << std::endl << " " << "`defmain' is not supported for " << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << "." << std::endl;
           }
         }
         return (NULL);
@@ -515,10 +516,14 @@ void helpStartupMacros1() {
     SYM_MACROS_STELLA_WARN = ((Symbol*)(internRigidSymbolWrtModule("WARN", NULL, 0)));
     SYM_MACROS_STELLA_EOL = ((Symbol*)(internRigidSymbolWrtModule("EOL", NULL, 0)));
     KWD_MACROS_STARTUP_SYSTEMp = ((Keyword*)(internRigidSymbolWrtModule("STARTUP-SYSTEM?", NULL, 2)));
+    SYM_MACROS_STELLA_IF_STELLA_FEATURE = ((Symbol*)(internRigidSymbolWrtModule("IF-STELLA-FEATURE", NULL, 0)));
+    KWD_MACROS_SUPPORT_UNEXEC = ((Keyword*)(internRigidSymbolWrtModule("SUPPORT-UNEXEC", NULL, 2)));
+    SYM_MACROS_STELLA_VERBATIM = ((Symbol*)(internRigidSymbolWrtModule("VERBATIM", NULL, 0)));
+    KWD_MACROS_CPP = ((Keyword*)(internRigidSymbolWrtModule("CPP", NULL, 2)));
+    KWD_MACROS_OTHERWISE = ((Keyword*)(internRigidSymbolWrtModule("OTHERWISE", NULL, 2)));
     KWD_MACROS_PUBLICp = ((Keyword*)(internRigidSymbolWrtModule("PUBLIC?", NULL, 2)));
     KWD_MACROS_COMMON_LISP = ((Keyword*)(internRigidSymbolWrtModule("COMMON-LISP", NULL, 2)));
     SYM_MACROS_STELLA_DEFUN = ((Symbol*)(internRigidSymbolWrtModule("DEFUN", NULL, 0)));
-    KWD_MACROS_CPP = ((Keyword*)(internRigidSymbolWrtModule("CPP", NULL, 2)));
     KWD_MACROS_CPP_STANDALONE = ((Keyword*)(internRigidSymbolWrtModule("CPP-STANDALONE", NULL, 2)));
     KWD_MACROS_IDL = ((Keyword*)(internRigidSymbolWrtModule("IDL", NULL, 2)));
     SYM_MACROS_STELLA_INTEGER = ((Symbol*)(internRigidSymbolWrtModule("INTEGER", NULL, 0)));
@@ -528,19 +533,18 @@ void helpStartupMacros1() {
     SYM_MACROS_STELLA_STRING = ((Symbol*)(internRigidSymbolWrtModule("STRING", NULL, 0)));
     SYM_MACROS_STELLA_aREST = ((Symbol*)(internRigidSymbolWrtModule("&REST", NULL, 0)));
     SYM_MACROS_STELLA_rrARGS = ((Symbol*)(internRigidSymbolWrtModule("%%ARGS", NULL, 0)));
-    SYM_MACROS_STELLA_LET = ((Symbol*)(internRigidSymbolWrtModule("LET", NULL, 0)));
-    SYM_MACROS_STELLA_VERBATIM = ((Symbol*)(internRigidSymbolWrtModule("VERBATIM", NULL, 0)));
-    KWD_MACROS_INITIAL_CONTENTS = ((Keyword*)(internRigidSymbolWrtModule("INITIAL-CONTENTS", NULL, 2)));
-    SYM_MACROS_STELLA_STARTUP_MACROS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-MACROS", NULL, 0)));
   }
 }
 
 void startupMacros() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupMacros1();
+      SYM_MACROS_STELLA_LET = ((Symbol*)(internRigidSymbolWrtModule("LET", NULL, 0)));
+      KWD_MACROS_INITIAL_CONTENTS = ((Keyword*)(internRigidSymbolWrtModule("INITIAL-CONTENTS", NULL, 2)));
+      SYM_MACROS_STELLA_STARTUP_MACROS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-MACROS", NULL, 0)));
       SYM_MACROS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
     }
     if (currentStartupTimePhaseP(6)) {
@@ -676,13 +680,21 @@ Symbol* SYM_MACROS_STELLA_EOL = NULL;
 
 Keyword* KWD_MACROS_STARTUP_SYSTEMp = NULL;
 
+Symbol* SYM_MACROS_STELLA_IF_STELLA_FEATURE = NULL;
+
+Keyword* KWD_MACROS_SUPPORT_UNEXEC = NULL;
+
+Symbol* SYM_MACROS_STELLA_VERBATIM = NULL;
+
+Keyword* KWD_MACROS_CPP = NULL;
+
+Keyword* KWD_MACROS_OTHERWISE = NULL;
+
 Keyword* KWD_MACROS_PUBLICp = NULL;
 
 Keyword* KWD_MACROS_COMMON_LISP = NULL;
 
 Symbol* SYM_MACROS_STELLA_DEFUN = NULL;
-
-Keyword* KWD_MACROS_CPP = NULL;
 
 Keyword* KWD_MACROS_CPP_STANDALONE = NULL;
 
@@ -703,8 +715,6 @@ Symbol* SYM_MACROS_STELLA_aREST = NULL;
 Symbol* SYM_MACROS_STELLA_rrARGS = NULL;
 
 Symbol* SYM_MACROS_STELLA_LET = NULL;
-
-Symbol* SYM_MACROS_STELLA_VERBATIM = NULL;
 
 Keyword* KWD_MACROS_INITIAL_CONTENTS = NULL;
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -68,20 +68,20 @@ DEFINE_STELLA_SPECIAL(oROOTBINARYDIRECTORYo, char* , "PL:bin;");
 DEFINE_STELLA_SPECIAL(oSYSTEMDEFINITIONSDIRECTORYo, char* , NULL);
 
 char* rootSourceDirectory() {
-  return (translateLogicalPathname(oROOTSOURCEDIRECTORYo.get()));
+  return (translateLogicalPathname(oROOTSOURCEDIRECTORYo));
 }
 
 char* rootNativeDirectory() {
-  return (translateLogicalPathname(oROOTNATIVEDIRECTORYo.get()));
+  return (translateLogicalPathname(oROOTNATIVEDIRECTORYo));
 }
 
 char* rootBinaryDirectory() {
-  return (translateLogicalPathname(oROOTBINARYDIRECTORYo.get()));
+  return (translateLogicalPathname(oROOTBINARYDIRECTORYo));
 }
 
 char* systemDefinitionsDirectory() {
-  if (oSYSTEMDEFINITIONSDIRECTORYo.get() != NULL) {
-    return (translateLogicalPathname(oSYSTEMDEFINITIONSDIRECTORYo.get()));
+  if (oSYSTEMDEFINITIONSDIRECTORYo != NULL) {
+    return (translateLogicalPathname(oSYSTEMDEFINITIONSDIRECTORYo));
   }
   else {
     return (stringConcatenate(rootSourceDirectory(), "systems", 0));
@@ -103,7 +103,7 @@ boolean handleInModuleTree(Cons* tree, boolean seeninmoduleP, boolean erroroninm
       { Object* operator000 = operatoR;
         Symbol* operatoR = ((Symbol*)(operator000));
 
-        { char* testValue000 = (oMODULEo.get()->caseSensitiveP ? stringUpcase(operatoR->symbolName) : operatoR->symbolName);
+        { char* testValue000 = (oMODULEo->caseSensitiveP ? stringUpcase(operatoR->symbolName) : operatoR->symbolName);
 
           if (stringEqlP(testValue000, "IN-PACKAGE")) {
             _Return1 = seeninmoduleP;
@@ -173,11 +173,11 @@ boolean handleInModuleTree(Cons* tree, boolean seeninmoduleP, boolean erroroninm
 }
 
 void translateAndOutputUnitsToFile(char* file, char* targetlanguage) {
-  oTRANSLATIONPHASEo.set(KWD_TRANSLATE_FILE_TRANSLATE);
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_JAVA) {
+  oTRANSLATIONPHASEo = KWD_TRANSLATE_FILE_TRANSLATE;
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_JAVA) {
   }
   else {
-    if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+    if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
       std::cout << "Translating " << "`" << file << "'" << " to " << "`" << targetlanguage << "'" << "..." << std::endl;
     }
     translateAllUnits();
@@ -186,9 +186,9 @@ void translateAndOutputUnitsToFile(char* file, char* targetlanguage) {
 }
 
 void operateOnFile(char* file, Keyword* operation) {
-  { char* targetlanguage = oTRANSLATOROUTPUTLANGUAGEo.get()->symbolName;
-    Module* currentmodule = oMODULEo.get();
-    Context* currentcontext = oCONTEXTo.get();
+  { char* targetlanguage = oTRANSLATOROUTPUTLANGUAGEo->symbolName;
+    Module* currentmodule = oMODULEo;
+    Context* currentcontext = oCONTEXTo;
     boolean seeninmoduleP = false;
     boolean skipP = false;
 
@@ -204,22 +204,22 @@ void operateOnFile(char* file, Keyword* operation) {
       BIND_STELLA_SPECIAL(oCURRENTFILEo, char*, fileBaseName(file));
       BIND_STELLA_SPECIAL(oMODULEo, Module*, currentmodule);
       BIND_STELLA_SPECIAL(oCONTEXTo, Context*, currentcontext);
-      if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_COMMON_LISP) {
+      if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_COMMON_LISP) {
         targetlanguage = "Common Lisp";
       }
-      else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_CPP) ||
-          (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_CPP_STANDALONE)) {
+      else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_CPP) ||
+          (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_CPP_STANDALONE)) {
         targetlanguage = "C++";
       }
-      else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_IDL) {
+      else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_IDL) {
         targetlanguage = "IDL";
       }
-      else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_JAVA) {
+      else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_JAVA) {
         targetlanguage = "Java";
       }
       else {
       }
-      if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+      if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
         std::cout << "Processing " << "`" << file << "'" << ":" << std::endl;
         std::cout << "*** Pass 1, generating objects..." << std::endl;
       }
@@ -251,20 +251,20 @@ void operateOnFile(char* file, Keyword* operation) {
           }
         }
       }
-      oTRANSLATIONUNITSo.get()->reverse();
+      oTRANSLATIONUNITSo->reverse();
       if (!(operation == KWD_TRANSLATE_FILE_DEFINE)) {
-        if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+        if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
           std::cout << "*** Pass 2, finalizing objects..." << std::endl;
         }
-        oTRANSLATIONPHASEo.set(KWD_TRANSLATE_FILE_FINALIZE);
+        oTRANSLATIONPHASEo = KWD_TRANSLATE_FILE_FINALIZE;
         finalizeClassesAndSlots();
         if (!(operation == KWD_TRANSLATE_FILE_FINALIZE)) {
-          if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+          if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
             std::cout << "*** Pass 3, walking objects..." << std::endl;
           }
-          oTRANSLATIONPHASEo.set(KWD_TRANSLATE_FILE_WALK);
+          oTRANSLATIONPHASEo = KWD_TRANSLATE_FILE_WALK;
           if (!(useHardcodedSymbolsP() ||
-              (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_JAVA))) {
+              (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_JAVA))) {
             clearSymbolRegistry();
           }
           { 
@@ -287,14 +287,14 @@ void operateOnFile(char* file, Keyword* operation) {
 
 void cleanUpTranslationUnitsSpecial() {
   { TranslationUnit* unit = NULL;
-    Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+    Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
 
     for (unit, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       unit = ((TranslationUnit*)(iter000->value));
       unit->free();
     }
   }
-  oTRANSLATIONUNITSo.get()->clear();
+  oTRANSLATIONUNITSo->clear();
   sweepTransients();
 }
 
@@ -317,7 +317,7 @@ void translateFile(char* file, Keyword* outputlanguage, boolean aspartofsystemP)
       }
       else {
         { 
-          BIND_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword*, oTRANSLATOROUTPUTLANGUAGEo.get());
+          BIND_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword*, oTRANSLATOROUTPUTLANGUAGEo);
           BIND_STELLA_SPECIAL(oTRANSLATIONUNITSo, List*, newList());
           setTranslatorOutputLanguage(outputlanguage);
           operateOnFile(file, mode);
@@ -333,23 +333,23 @@ void translateFile(char* file, Keyword* outputlanguage, boolean aspartofsystemP)
 }
 
 void outputAllUnitsToFile(char* sourcefile) {
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_COMMON_LISP) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_COMMON_LISP) {
     clOutputAllUnitsToFile(sourcefile);
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_JAVA) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_JAVA) {
     { 
       BIND_STELLA_SPECIAL(oJAVA_INDENT_CHARSo, int, 0);
       javaOutputAllUnitsToFile();
     }
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_IDL) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_IDL) {
     { 
       BIND_STELLA_SPECIAL(oIDL_INDENT_CHARSo, int, 0);
       idlOutputAllUnitsToFile(sourcefile);
     }
   }
-  else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_CPP) ||
-      (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_CPP_STANDALONE)) {
+  else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_CPP) ||
+      (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_CPP_STANDALONE)) {
     { 
       BIND_STELLA_SPECIAL(oCPP_INDENT_CHARSo, int, 0);
       cppOutputAllUnitsToFile(sourcefile);
@@ -358,7 +358,7 @@ void outputAllUnitsToFile(char* sourcefile) {
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -369,48 +369,48 @@ void recordSignaturesOfAllUnits(char* sourcefile) {
 }
 
 boolean translateWithCopyrightHeaderP() {
-  return (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_TRANSLATE_FILE_TRANSLATE_WITH_COPYRIGHT_HEADER));
+  return (oCURRENT_STELLA_FEATURESo->membP(KWD_TRANSLATE_FILE_TRANSLATE_WITH_COPYRIGHT_HEADER));
 }
 
 void outputCopyrightHeader(OutputStream* stream) {
   if ((!translateWithCopyrightHeaderP()) ||
-      ((!((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) ||
-       (oCURRENTSYSTEMDEFINITIONo.get()->banner == NULL))) {
+      ((!((boolean)(oCURRENTSYSTEMDEFINITIONo))) ||
+       (oCURRENTSYSTEMDEFINITIONo->banner == NULL))) {
     return;
   }
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_COMMON_LISP) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_COMMON_LISP) {
     *(stream->nativeStream) << "#|" << std::endl;
   }
-  else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_JAVA) ||
-      ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_CPP) ||
-       (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_CPP_STANDALONE))) {
+  else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_JAVA) ||
+      ((oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_CPP) ||
+       (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_CPP_STANDALONE))) {
     *(stream->nativeStream) << "/*" << std::endl;
   }
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
   { KeyValueList* substitutionList = newKeyValueList();
-    InputStringStream* bstream = makeTokenizerStringStream(oCURRENTSYSTEMDEFINITIONo.get()->banner);
+    InputStringStream* bstream = makeTokenizerStringStream(oCURRENTSYSTEMDEFINITIONo->banner);
 
     fillInDateSubstitution(substitutionList);
     substituteTemplateVariablesToStream(bstream, stream, substitutionList);
   }
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_COMMON_LISP) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_COMMON_LISP) {
     *(stream->nativeStream) << "|#";
   }
-  else if ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_JAVA) ||
-      ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_CPP) ||
-       (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_CPP_STANDALONE))) {
+  else if ((oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_JAVA) ||
+      ((oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_CPP) ||
+       (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_CPP_STANDALONE))) {
     *(stream->nativeStream) << "*/";
   }
   else {
     { OutputStringStream* stream001 = newOutputStringStream();
 
-      *(stream001->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+      *(stream001->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
       throw *newStellaException(stream001->theStringReader());
     }
   }
@@ -418,13 +418,13 @@ void outputCopyrightHeader(OutputStream* stream) {
 }
 
 void outputFileHeader(OutputStream* stream, char* file) {
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_COMMON_LISP) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_COMMON_LISP) {
     clOutputFileHeader(stream, file, true);
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_JAVA) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_JAVA) {
     javaOutputFileHeader(stream, file);
   }
-  else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_CPP) {
+  else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_CPP) {
     cppOutputFileHeader(stream, file);
   }
   else {
@@ -441,7 +441,8 @@ Keyword* oOSo = NULL;
 Keyword* operatingSystem() {
   if (probeFileP("C:\\AUTOEXEC.BAT") ||
       (probeFileP("C:\\IO.SYS") ||
-       probeFileP("C:\\BOOT.INI"))) {
+       (probeFileP("C:\\BOOT.INI") ||
+        startsWithP("", "win", 0)))) {
     return (KWD_TRANSLATE_FILE_WINDOWS);
   }
   else if (probeFileP("/usr") ||
@@ -568,13 +569,35 @@ char* directoryParentDirectory(char* directory, int level) {
   return (directory);
 }
 
+char* fileNameWithoutDevice(char* file) {
+  // Return the file name portion of `file' by removing any
+  // physical device components.  This is just like `logical-pathname-without-host'
+  // but only looks for one-character device strings as used in Windows.
+  { char separator = ':';
+
+    if ((strlen(file) >= 2) &&
+        ((file[1] == separator) &&
+         (oCHARACTER_TYPE_TABLEo[(int)(unsigned char) (file[0])] == KWD_TRANSLATE_FILE_LETTER))) {
+      return (stringSubsequence(file, 2, NULL_INTEGER));
+    }
+    else {
+      return (file);
+    }
+  }
+}
+
 char* fileNameWithoutDirectory(char* file) {
   // Return the file name portion of `file' by removing any
   // directory and logical host components.
   { int start = 0;
     char separator = directorySeparatorForFile(file);
 
-    file = logicalPathnameWithoutHost(file);
+    if (separator == LOGICAL_HOST_SEPARATOR) {
+      file = logicalPathnameWithoutHost(file);
+    }
+    else {
+      file = fileNameWithoutDevice(file);
+    }
     while (stringPosition(file, separator, start) != NULL_INTEGER) {
       start = stringPosition(file, separator, start) + 1;
     }
@@ -695,8 +718,11 @@ boolean absolutePathnameP(char* pathname) {
 
     if (logicalPathnameP(pathname)) {
       separator = LOGICAL_DIRECTORY_SEPARATOR;
+      pathname = logicalPathnameWithoutHost(pathname);
     }
-    pathname = logicalPathnameWithoutHost(pathname);
+    else {
+      pathname = fileNameWithoutDevice(pathname);
+    }
     return ((strlen(pathname) > 0) &&
         (pathname[0] == separator));
   }
@@ -818,20 +844,20 @@ char* computeCommonLispFileExtension(Keyword* type) {
 
     if (type == KWD_TRANSLATE_FILE_LISP_BINARY) {
       suffix = NULL;
-      if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_TRANSLATE_FILE_USE_COMMON_LISP_STRUCTS)) {
+      if (oCURRENT_STELLA_FEATURESo->membP(KWD_TRANSLATE_FILE_USE_COMMON_LISP_STRUCTS)) {
         suffix = stringConcatenate("s", suffix, 0);
       }
-      else if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_TRANSLATE_FILE_USE_COMMON_LISP_VECTOR_STRUCTS)) {
+      else if (oCURRENT_STELLA_FEATURESo->membP(KWD_TRANSLATE_FILE_USE_COMMON_LISP_VECTOR_STRUCTS)) {
         suffix = stringConcatenate("vs", suffix, 0);
       }
       else {
       }
     }
     else if (type == KWD_TRANSLATE_FILE_LISP) {
-      if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_TRANSLATE_FILE_USE_COMMON_LISP_STRUCTS)) {
+      if (oCURRENT_STELLA_FEATURESo->membP(KWD_TRANSLATE_FILE_USE_COMMON_LISP_STRUCTS)) {
         suffix = ".slisp";
       }
-      else if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_TRANSLATE_FILE_USE_COMMON_LISP_VECTOR_STRUCTS)) {
+      else if (oCURRENT_STELLA_FEATURESo->membP(KWD_TRANSLATE_FILE_USE_COMMON_LISP_VECTOR_STRUCTS)) {
         suffix = ".vslisp";
       }
       else {
@@ -986,7 +1012,7 @@ char* selectSplitterPath(Keyword* type) {
     }
     else if ((type == KWD_TRANSLATE_FILE_NONE) ||
         (type == KWD_TRANSLATE_FILE_OTHER)) {
-      return (selectSplitterPath(oTRANSLATOROUTPUTLANGUAGEo.get()));
+      return (selectSplitterPath(oTRANSLATOROUTPUTLANGUAGEo));
     }
     else {
     }
@@ -1034,12 +1060,12 @@ char* makeFileName(char* filepath, Keyword* type, boolean relativeP) {
       if ((type == KWD_TRANSLATE_FILE_JAVA) ||
           (((type == KWD_TRANSLATE_FILE_OTHER) ||
           (type == KWD_TRANSLATE_FILE_NONE)) &&
-           (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_TRANSLATE_FILE_JAVA))) {
-        subdirectory = javaPackagePrefix(oMODULEo.get(), directorySeparatorString());
+           (oTRANSLATOROUTPUTLANGUAGEo == KWD_TRANSLATE_FILE_JAVA))) {
+        subdirectory = javaPackagePrefix(oMODULEo, directorySeparatorString());
       }
       else {
-        if (!stringEqlP(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo.get(), "")) {
-          subdirectory = stringConcatenate(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo.get(), directorySeparatorString(), 0);
+        if (!stringEqlP(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, "")) {
+          subdirectory = stringConcatenate(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, directorySeparatorString(), 0);
         }
       }
     }
@@ -1136,7 +1162,7 @@ char* implodePathname(Object* filepath) {
 DEFINE_STELLA_SPECIAL(oDONTTRUNCATEFILENAMESpo, boolean , false);
 
 char* maybeTruncateFilename(char* barefilename) {
-  if (oDONTTRUNCATEFILENAMESpo.get()) {
+  if (oDONTTRUNCATEFILENAMESpo) {
     return (barefilename);
   }
   { int maximumlength = 999;
@@ -1229,13 +1255,13 @@ boolean stellaNeedToCompileP(Object* file) {
 boolean systemNeedsTranslationP(char* systemname, Keyword* language) {
   { 
     BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONo, SystemDefinition*, getSystemDefinition(systemname));
-    BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo.get())) ? oCURRENTSYSTEMDEFINITIONo.get()->directory : NULL));
-    if (((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
+    BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo)) ? oCURRENTSYSTEMDEFINITIONo->directory : NULL));
+    if (((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
       {
         { boolean foundP000 = false;
 
           { StringWrapper* file = NULL;
-            Cons* iter000 = systemDefinitionSourceFiles(oCURRENTSYSTEMDEFINITIONo.get());
+            Cons* iter000 = systemDefinitionSourceFiles(oCURRENTSYSTEMDEFINITIONo);
 
             for (file, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
               file = ((StringWrapper*)(iter000->value));
@@ -1276,7 +1302,7 @@ Module* computeFileUnitsModule(List* fileunits) {
       }
     }
   }
-  return (oMODULEo.get());
+  return (oMODULEo);
 }
 
 List* concatenateSystemUnits(KeyValueList* systemunits) {
@@ -1371,11 +1397,11 @@ boolean translateSystem(char* systemname, Cons* languageAoptions) {
       }
     }
     { 
-      BIND_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword*, oTRANSLATOROUTPUTLANGUAGEo.get());
+      BIND_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword*, oTRANSLATOROUTPUTLANGUAGEo);
       BIND_STELLA_SPECIAL(oTRANSLATIONPHASEo, Keyword*, NULL);
-      BIND_STELLA_SPECIAL(oSAFETYo, int, oSAFETYo.get());
+      BIND_STELLA_SPECIAL(oSAFETYo, int, oSAFETYo);
       BIND_STELLA_SPECIAL(oRECYCLING_ENABLEDpo, boolean, !(language == KWD_TRANSLATE_FILE_JAVA));
-      BIND_STELLA_SPECIAL(oCURRENT_STELLA_FEATURESo, List*, oCURRENT_STELLA_FEATURESo.get()->copy());
+      BIND_STELLA_SPECIAL(oCURRENT_STELLA_FEATURESo, List*, oCURRENT_STELLA_FEATURESo->copy());
       BIND_STELLA_SPECIAL(oCURRENT_SYSTEM_ACTIONo, PropertyList*, plist->copy());
       if (!systemLoadedOrStartedUpP(systemname)) {
         twopassP = true;
@@ -1386,16 +1412,16 @@ boolean translateSystem(char* systemname, Cons* languageAoptions) {
       setTranslatorOutputLanguage(language);
       { 
         BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONo, SystemDefinition*, getSystemDefinition(systemname));
-        BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo.get())) ? oCURRENTSYSTEMDEFINITIONo.get()->directory : NULL));
-        if (((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
+        BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo)) ? oCURRENTSYSTEMDEFINITIONo->directory : NULL));
+        if (((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
           {
-            computeOptimizationLevels(oCURRENTSYSTEMDEFINITIONo.get(), productionmodeP);
-            { Cons* files = filesPlusSystemStartup(systemDefinitionSourceFiles(oCURRENTSYSTEMDEFINITIONo.get()));
+            computeOptimizationLevels(oCURRENTSYSTEMDEFINITIONo, productionmodeP);
+            { Cons* files = filesPlusSystemStartup(systemDefinitionSourceFiles(oCURRENTSYSTEMDEFINITIONo));
               boolean translatedsomethingP = false;
 
               if (forcetranslationP ||
                   systemNeedsTranslationP(systemname, language)) {
-                createSystemStartupFile(oCURRENTSYSTEMDEFINITIONo.get());
+                createSystemStartupFile(oCURRENTSYSTEMDEFINITIONo);
                 translatedsomethingP = helpTranslateSystem(files, twopassP, forcetranslationP);
               }
               transferNativeSystemFiles(language);
@@ -1420,7 +1446,7 @@ BooleanWrapper* translateSystemEvaluatorWrapper(Cons* arguments) {
 boolean helpTranslateSystem(Cons* files, boolean twopassP, boolean forcetranslationP) {
   { 
     BIND_STELLA_SPECIAL(oTRANSLATIONUNITSo, List*, newList());
-    { Keyword* outputlanguage = oTRANSLATOROUTPUTLANGUAGEo.get();
+    { Keyword* outputlanguage = oTRANSLATOROUTPUTLANGUAGEo;
       char* filename = NULL;
       boolean translatedfileP = false;
       KeyValueList* walkedunits = newKeyValueList();
@@ -1434,7 +1460,7 @@ boolean helpTranslateSystem(Cons* files, boolean twopassP, boolean forcetranslat
             file = ((StringWrapper*)(iter000->value));
             if (forcetranslationP ||
                 (stellaNeedToTranslateP(file, outputlanguage) ||
-                 (!oCURRENTSYSTEMDEFINITIONo.get()->loadedP))) {
+                 (!oCURRENTSYSTEMDEFINITIONo->loadedP))) {
               filename = makeFileName(file->wrapperValue, KWD_TRANSLATE_FILE_STELLA, true);
               if (!(probeFileP(filename))) {
                 std::cout << "Warning: File " << "`" << filename << "'" << " does not exist." << std::endl;
@@ -1447,7 +1473,7 @@ boolean helpTranslateSystem(Cons* files, boolean twopassP, boolean forcetranslat
           }
         }
         if (translatedfileP) {
-          if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+          if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
             std::cout << "*** Pass 2, finalizing objects..." << std::endl;
           }
           finalizeClassesAndSlots();
@@ -1466,13 +1492,13 @@ boolean helpTranslateSystem(Cons* files, boolean twopassP, boolean forcetranslat
               continue;
             }
             operateOnFile(filename, KWD_TRANSLATE_FILE_WALK);
-            walkedunits->insertAt(wrapString(filename), oTRANSLATIONUNITSo.get());
-            oTRANSLATIONUNITSo.set(newList());
+            walkedunits->insertAt(wrapString(filename), oTRANSLATIONUNITSo);
+            oTRANSLATIONUNITSo = newList();
           }
         }
       }
       walkedunits->reverse();
-      if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+      if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
         std::cout << "    ==============================" << std::endl;
       }
       if (outputlanguage == KWD_TRANSLATE_FILE_COMMON_LISP) {
@@ -1501,13 +1527,13 @@ void transferNativeSystemFiles(Keyword* outputLanguage) {
   { Cons* nativeFiles = NULL;
 
     if (outputLanguage == KWD_TRANSLATE_FILE_COMMON_LISP) {
-      nativeFiles = oCURRENTSYSTEMDEFINITIONo.get()->lispOnlyFiles;
+      nativeFiles = oCURRENTSYSTEMDEFINITIONo->lispOnlyFiles;
     }
     else if (outputLanguage == KWD_TRANSLATE_FILE_JAVA) {
-      nativeFiles = oCURRENTSYSTEMDEFINITIONo.get()->javaOnlyFiles;
+      nativeFiles = oCURRENTSYSTEMDEFINITIONo->javaOnlyFiles;
     }
     else if (outputLanguage == KWD_TRANSLATE_FILE_CPP) {
-      nativeFiles = oCURRENTSYSTEMDEFINITIONo.get()->cppOnlyFiles;
+      nativeFiles = oCURRENTSYSTEMDEFINITIONo->cppOnlyFiles;
     }
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
@@ -1517,14 +1543,14 @@ void transferNativeSystemFiles(Keyword* outputLanguage) {
       }
     }
     if (((boolean)(nativeFiles))) {
-      nativeFiles = nativeFiles->difference(systemDefinitionSourceFiles(oCURRENTSYSTEMDEFINITIONo.get()));
+      nativeFiles = nativeFiles->difference(systemDefinitionSourceFiles(oCURRENTSYSTEMDEFINITIONo));
       transferFiles(nativeFiles, outputLanguage);
     }
   }
 }
 
 void transferDataFiles(Keyword* outputLanguage) {
-  { Cons* dataFiles = oCURRENTSYSTEMDEFINITIONo.get()->dataFiles;
+  { Cons* dataFiles = oCURRENTSYSTEMDEFINITIONo->dataFiles;
 
     if (((boolean)(dataFiles))) {
       transferFiles(dataFiles, outputLanguage);
@@ -1537,14 +1563,14 @@ void transferFiles(Cons* files, Keyword* outputLanguage) {
     return;
   }
   { char* flotsamfilename = "";
-    char* systemSubDirectory = (stringEqlP(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo.get(), "") ? (char*)"" : stringConcatenate(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo.get(), directorySeparatorString(), 0));
+    char* systemSubDirectory = (stringEqlP(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, "") ? (char*)"" : stringConcatenate(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, directorySeparatorString(), 0));
 
     if (outputLanguage == KWD_TRANSLATE_FILE_JAVA) {
-      flotsamfilename = javaYieldFlotsamClassName(getCardinalModule(oCURRENTSYSTEMDEFINITIONo.get()));
+      flotsamfilename = javaYieldFlotsamClassName(getCardinalModule(oCURRENTSYSTEMDEFINITIONo));
     }
     { 
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, getCardinalModule(oCURRENTSYSTEMDEFINITIONo.get()));
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, getCardinalModule(oCURRENTSYSTEMDEFINITIONo));
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       { StringWrapper* f = NULL;
         Cons* iter000 = files;
 
@@ -1566,7 +1592,7 @@ void transferFiles(Cons* files, Keyword* outputLanguage) {
             fromfilename = stringConcatenate(rootSourceDirectory(), systemSubDirectory, 1, filename);
             tofilename = makeFileName(relativefilename, type, true);
             if (!(fileYoungerThanP(tofilename, fromfilename) == TRUE_WRAPPER)) {
-              if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+              if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
                 std::cout << "Copying " << "`" << fromfilename << "'" << std::endl << " to " << "`" << tofilename << "'" << " ..." << std::endl;
               }
               copyFile(fromfilename, tofilename);
@@ -1594,6 +1620,7 @@ void helpStartupTranslateFile1() {
     KWD_TRANSLATE_FILE_WINDOWS = ((Keyword*)(internRigidSymbolWrtModule("WINDOWS", NULL, 2)));
     KWD_TRANSLATE_FILE_UNIX = ((Keyword*)(internRigidSymbolWrtModule("UNIX", NULL, 2)));
     KWD_TRANSLATE_FILE_MAC = ((Keyword*)(internRigidSymbolWrtModule("MAC", NULL, 2)));
+    KWD_TRANSLATE_FILE_LETTER = ((Keyword*)(internRigidSymbolWrtModule("LETTER", NULL, 2)));
     KWD_TRANSLATE_FILE_ROOT_DIRECTORY = ((Keyword*)(internRigidSymbolWrtModule("ROOT-DIRECTORY", NULL, 2)));
     KWD_TRANSLATE_FILE_LISP_TRANSLATIONS = ((Keyword*)(internRigidSymbolWrtModule("LISP-TRANSLATIONS", NULL, 2)));
     KWD_TRANSLATE_FILE_STELLA = ((Keyword*)(internRigidSymbolWrtModule("STELLA", NULL, 2)));
@@ -1649,6 +1676,7 @@ void helpStartupTranslateFile2() {
     defineFunctionObject("DIRECTORY-FILE-NAME", "(DEFUN (DIRECTORY-FILE-NAME FILE-NAME) ((DIRECTORY FILE-NAME)) :DOCUMENTATION \"Return `directory' as a file name, i.e., without a terminating\ndirectory separator.\" :PUBLIC? TRUE)", ((cpp_function_code)(&directoryFileName)), NULL);
     defineFunctionObject("FILE-NAME-AS-DIRECTORY", "(DEFUN (FILE-NAME-AS-DIRECTORY FILE-NAME) ((FILE FILE-NAME)) :DOCUMENTATION \"Return `file' interpreted as a directory, i.e., with a\nterminating directory separator.  If `file' is the empty string simply\nreturn the empty string, i.e., interpret it as the current directory instead\nof the root directory.\" :PUBLIC? TRUE)", ((cpp_function_code)(&fileNameAsDirectory)), NULL);
     defineFunctionObject("DIRECTORY-PARENT-DIRECTORY", "(DEFUN (DIRECTORY-PARENT-DIRECTORY FILE-NAME) ((DIRECTORY FILE-NAME) (LEVEL INTEGER)) :DOCUMENTATION \"Return the `level'-th parent directory component of `directory'\nincluding the final directory separator, or the empty string if `directory' does\nnot have that many parents.\" :PUBLIC? TRUE)", ((cpp_function_code)(&directoryParentDirectory)), NULL);
+    defineFunctionObject("FILE-NAME-WITHOUT-DEVICE", "(DEFUN (FILE-NAME-WITHOUT-DEVICE FILE-NAME) ((FILE FILE-NAME)) :DOCUMENTATION \"Return the file name portion of `file' by removing any\nphysical device components.  This is just like `logical-pathname-without-host'\nbut only looks for one-character device strings as used in Windows.\" :PUBLIC? TRUE)", ((cpp_function_code)(&fileNameWithoutDevice)), NULL);
     defineFunctionObject("FILE-NAME-WITHOUT-DIRECTORY", "(DEFUN (FILE-NAME-WITHOUT-DIRECTORY FILE-NAME) ((FILE FILE-NAME)) :DOCUMENTATION \"Return the file name portion of `file' by removing any\ndirectory and logical host components.\" :PUBLIC? TRUE)", ((cpp_function_code)(&fileNameWithoutDirectory)), NULL);
     defineFunctionObject("FILE-NAME-WITHOUT-EXTENSION", "(DEFUN (FILE-NAME-WITHOUT-EXTENSION FILE-NAME) ((FILE FILE-NAME)) :DOCUMENTATION \"Remove `file's extension (or type) if there is any and\nreturn the result.\" :PUBLIC? TRUE)", ((cpp_function_code)(&fileNameWithoutExtension)), NULL);
     defineFunctionObject("FILE-EXTENSION", "(DEFUN (FILE-EXTENSION STRING) ((FILE FILE-NAME)) :DOCUMENTATION \"Return `file's extension (or type) if it has any including\nthe separator character.\" :PUBLIC? TRUE)", ((cpp_function_code)(&fileExtension)), NULL);
@@ -1686,7 +1714,6 @@ void helpStartupTranslateFile2() {
     defineFunctionObject("CONCATENATE-SYSTEM-UNITS", "(DEFUN (CONCATENATE-SYSTEM-UNITS (LIST OF TRANSLATION-UNIT)) ((SYSTEMUNITS SYSTEM-UNITS-ALIST)))", ((cpp_function_code)(&concatenateSystemUnits)), NULL);
     defineFunctionObject("TRANSLATE-SYSTEM", "(DEFUN (TRANSLATE-SYSTEM BOOLEAN) ((SYSTEMNAME STRING) |&REST| (|LANGUAGE&OPTIONS| OBJECT)) :DOCUMENTATION \"Translate all of the STELLA source files in system `systemName' into\n`language' (the optional first argument).  The following keyword/value\n`options' are recognized:\n\n`:language': can be used as an alternative to the optional language argument.\nIf not specified, the language of the running implementation is assumed.\n\n`:two-pass?' (default false): if true, all files will be scanned twice, once\nto load the signatures of objects defined in them, and once to actually\ntranslate the definitions.\n\n`:force-translation?' (default false): if true, files will be translated\nwhether or not their translations are up-to-date.\n\n`:development-settings?' (default false): if true translation will favor\nsafe, readable and debuggable code over efficiency (according to the value\nof `:development-settings' on the system definition).  If false, efficiency\nwill be favored instead (according to the value of `:" "production-settings'\non the system definition).\n\n`:production-settings?' (default true): inverse to `:development-settings?'.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&translateSystem)), ((cpp_function_code)(&translateSystemEvaluatorWrapper)));
     defineFunctionObject("HELP-TRANSLATE-SYSTEM", "(DEFUN (HELP-TRANSLATE-SYSTEM BOOLEAN) ((FILES (CONS OF STRING-WRAPPER)) (TWOPASS? BOOLEAN) (FORCETRANSLATION? BOOLEAN)))", ((cpp_function_code)(&helpTranslateSystem)), NULL);
-    defineFunctionObject("TRANSFER-NATIVE-SYSTEM-FILES", "(DEFUN TRANSFER-NATIVE-SYSTEM-FILES ((OUTPUT-LANGUAGE KEYWORD)))", ((cpp_function_code)(&transferNativeSystemFiles)), NULL);
   }
 }
 
@@ -1697,12 +1724,12 @@ void startupTranslateFile() {
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupTranslateFile1();
     }
     if (currentStartupTimePhaseP(4)) {
-      oSYSTEMDEFINITIONSDIRECTORYo.set(NULL);
+      oSYSTEMDEFINITIONSDIRECTORYo = NULL;
       oOSo = operatingSystem();
       oTYPE_TO_FILE_EXTENSION_TABLEo = listO(12, listO(3, KWD_TRANSLATE_FILE_STELLA, wrapString(".ste"), NIL), listO(3, KWD_TRANSLATE_FILE_KB, wrapString(".kb"), NIL), listO(3, KWD_TRANSLATE_FILE_CPP, wrapString(".cc"), NIL), listO(3, KWD_TRANSLATE_FILE_CPP_CODE, wrapString(".cc"), NIL), listO(3, KWD_TRANSLATE_FILE_CPP_HEADER, wrapString(".hh"), NIL), listO(3, KWD_TRANSLATE_FILE_C_CODE, wrapString(".c"), NIL), listO(3, KWD_TRANSLATE_FILE_C_HEADER, wrapString(".h"), NIL), listO(3, KWD_TRANSLATE_FILE_JAVA, wrapString(".java"), NIL), listO(3, KWD_TRANSLATE_FILE_IDL, wrapString(".idl"), NIL), listO(3, KWD_TRANSLATE_FILE_OTHER, wrapString(""), NIL), listO(3, KWD_TRANSLATE_FILE_NONE, wrapString(""), NIL), NIL);
     }
@@ -1714,6 +1741,7 @@ void startupTranslateFile() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupTranslateFile2();
+      defineFunctionObject("TRANSFER-NATIVE-SYSTEM-FILES", "(DEFUN TRANSFER-NATIVE-SYSTEM-FILES ((OUTPUT-LANGUAGE KEYWORD)))", ((cpp_function_code)(&transferNativeSystemFiles)), NULL);
       defineFunctionObject("TRANSFER-DATA-FILES", "(DEFUN TRANSFER-DATA-FILES ((OUTPUT-LANGUAGE KEYWORD)))", ((cpp_function_code)(&transferDataFiles)), NULL);
       defineFunctionObject("TRANSFER-FILES", "(DEFUN TRANSFER-FILES ((FILES (CONS OF STRING-WRAPPER)) (OUTPUT-LANGUAGE KEYWORD)))", ((cpp_function_code)(&transferFiles)), NULL);
       defineFunctionObject("STARTUP-TRANSLATE-FILE", "(DEFUN STARTUP-TRANSLATE-FILE () :PUBLIC? TRUE)", ((cpp_function_code)(&startupTranslateFile)), NULL);
@@ -1778,6 +1806,8 @@ Keyword* KWD_TRANSLATE_FILE_WINDOWS = NULL;
 Keyword* KWD_TRANSLATE_FILE_UNIX = NULL;
 
 Keyword* KWD_TRANSLATE_FILE_MAC = NULL;
+
+Keyword* KWD_TRANSLATE_FILE_LETTER = NULL;
 
 Keyword* KWD_TRANSLATE_FILE_ROOT_DIRECTORY = NULL;
 

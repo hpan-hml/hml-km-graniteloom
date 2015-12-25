@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -95,7 +95,7 @@ Object* accessDimNumberLogicWrapperSlotValue(DimNumberLogicWrapper* self, Symbol
 void DimNumberLogicWrapper::printObject(std::ostream* stream) {
   { DimNumberLogicWrapper* self = this;
 
-    if (oPRINTREADABLYpo.get()) {
+    if (oPRINTREADABLYpo) {
       *(stream) << ((DimNumber*)(self->wrapperValue));
     }
     else {
@@ -532,7 +532,7 @@ void unitsEvaluator(Proposition* self) {
             DimNumberLogicWrapper* dimNumber = ((DimNumberLogicWrapper*)(dimNumber001));
 
             if (!(eqlP(((DimNumber*)(value1->wrapperValue)), ((DimNumber*)(dimNumber->wrapperValue))))) {
-              signalUnificationClash(value1, dimNumber);
+              signalUnificationClash(self, value1, dimNumber);
             }
           }
         }
@@ -544,13 +544,13 @@ void unitsEvaluator(Proposition* self) {
 
               if (!(((boolean)(theDim)) &&
                   eqlP(((DimNumber*)(value1->wrapperValue)), ((DimNumber*)(theDim->wrapperValue))))) {
-                signalUnificationClash(value1, dimNumber);
+                signalUnificationClash(self, value1, dimNumber);
               }
             }
           }
         }
         else {
-          signalUnificationClash(value1, dimNumber);
+          signalUnificationClash(self, value1, dimNumber);
         }
       }
     }
@@ -1347,7 +1347,7 @@ boolean argumentMatchesListHelperP(Object* argument, List* theList) {
       { Object* argument000 = argument;
         PatternVariable* argument = ((PatternVariable*)(argument000));
 
-        { Object* value = (oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(argument->boundToOffset)];
+        { Object* value = (oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(argument->boundToOffset)];
 
           if (((boolean)(value))) {
             return (argumentMatchesListHelperP(value, theList));
@@ -1606,7 +1606,7 @@ HashTable* oINSTANCE_MEASURE_TABLEo = NULL;
 void initializeMeasureConcepts() {
   { 
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getStellaContext("PL-KERNEL-KB", true));
-    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
     { LogicObject* i = NULL;
       LogicObject* measure = pli::getConcept("/UNIT-KB/MEASURE", NULL, NULL);
       LogicObject* baseMeasure = pli::getConcept("/UNIT-KB/BASE-MEASURE", NULL, NULL);
@@ -1646,7 +1646,7 @@ void initializeMeasureConcepts() {
 void startupUnitSupport() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/UNIT-SUPPORT", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SGT_UNIT_SUPPORT_UNIT_SUPPORT_DIM_NUMBER_LOGIC_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("DIM-NUMBER-LOGIC-WRAPPER", NULL, 1)));
       SYM_UNIT_SUPPORT_STELLA_WRAPPER_VALUE = ((Symbol*)(internRigidSymbolWrtModule("WRAPPER-VALUE", getStellaModule("/STELLA", true), 0)));

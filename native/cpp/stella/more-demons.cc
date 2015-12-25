@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -98,7 +98,7 @@ void classExtensionDestructorDemon(ActiveObject* self, Class* clasS) {
 void startupMoreDemons() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SYM_MORE_DEMONS_STELLA_INVERSE = ((Symbol*)(internRigidSymbolWrtModule("INVERSE", NULL, 0)));
       KWD_MORE_DEMONS_CODE = ((Keyword*)(internRigidSymbolWrtModule("CODE", NULL, 2)));

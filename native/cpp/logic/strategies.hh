@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -221,6 +221,7 @@ extern Symbol* SYM_STRATEGIES_LOGIC_GOAL;
 extern Symbol* SYM_STRATEGIES_STELLA_PHASE;
 extern Keyword* KWD_STRATEGIES_ORIGINAL_GOAL;
 extern Surrogate* SGT_STRATEGIES_STELLA_LITERAL_WRAPPER;
+extern Surrogate* SGT_STRATEGIES_LOGIC_PROPOSITION;
 extern Symbol* SYM_STRATEGIES_LOGIC_COMPLEMENT_DESCRIPTION;
 extern Symbol* SYM_STRATEGIES_LOGIC_CONTAINED_BY;
 extern Surrogate* SGT_STRATEGIES_LOGIC_NAMED_DESCRIPTION;

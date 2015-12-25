@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: collections.ste,v 1.43 2010/09/08 20:47:48 hans Exp
+;;; Version: collections.ste,v 1.47 2014/04/15 22:08:10 hans Exp
 
 ;;; Procedures that implement sets, hash tables, arrays, etc.
 
@@ -487,25 +487,22 @@ Resize the array if necessary."
     (setf (nth self oldLength) value)
     (setf (sequence-length self) (1+ oldLength)) ))
 
-(defmethod (remove VECTOR-SEQUENCE)
-    ((self VECTOR-SEQUENCE) (value (LIKE (any-value self))))
+(defmethod (remove VECTOR-SEQUENCE) ((self VECTOR-SEQUENCE) (value (LIKE (any-value self))))
   :documentation "Remove `value' from the sequence `self', and left shift
 the values after it to close the gap."
   :public? TRUE
   (let ((array (the-array self))
-        (firstShiftOffset -1)           ; initialize to impossible value
-        (lastShiftOffset (- (sequence-length self) 1)))
-    (foreach i in (interval 0 lastShiftOffset)
-        do (when (eql? (nth array i) value)
-             (setq firstShiftOffset (1+ i))
-             (break)))
-    (when (eq? firstShiftOffset -1)     ; exit if `value' not found
-      (return self))
-    (when (<= firstShiftOffset lastShiftOffset)
-      (foreach j in (interval firstShiftOffset lastShiftOffset)
-               do (setf (nth array (1- j)) (nth array j))))
-    (setf (nth array lastShiftOffset) NULL)        ; clear last offset
-    (setf (sequence-length self) lastShiftOffset)
+        (length (sequence-length self))
+        (nHits 0))
+    (foreach i in (interval 0 (1- length))
+        do (cond ((eql? (nth array i) value)
+                  (++ nHits))
+                 ((> nHits 0)
+                  (setf (nth array (- i nHits)) (nth array i)))))
+    (setf (sequence-length self) (- length nHits))
+    ;; clear freed spaces to enable better garbage collection:
+    (foreach i in (interval (sequence-length self) (1- length))
+        do (setf (nth array i) NULL))
     (return self)))
 
 (defmethod (reverse (LIKE self)) ((self VECTOR-SEQUENCE))
@@ -622,6 +619,42 @@ element types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT)."
     ;; note: using `length' here will make this work for VECTOR-SEQUENCEs, etc. as well:
     (heap-sort-native-vector (the-array self) (length self) predicate)
     (return self)))
+
+(defmethod (sort-tuples (VECTOR OF (LIKE (any-value self))))
+    ((self VECTOR) (n INTEGER) (predicate FUNCTION-CODE))
+  :public? TRUE
+  :documentation
+  "Just like `sort' but assumes each element of `self' is a tuple (a cons)
+whose `n'-th element (0-based) will be used for comparison."
+  (let ((length (length self)))
+    (cond ((= length 0)
+           (return self))
+          ((null? predicate)
+           (setq predicate (choose-sort-predicate (nth (cast (first self) CONS) n)))))
+    (special ((*sort-tuple-compare-predicate* predicate)
+              (*sort-tuple-compare-index* n))
+      ;; note: using `length' here will make this work for VECTOR-SEQUENCEs, etc. as well:
+      (heap-sort-native-vector (the-array self) (length self) (the-code :function sort-tuple-compare?))
+      (return self))))
+
+(defmethod (sort-objects (VECTOR OF (LIKE (any-value self)))) ((self VECTOR)
+                                                               (slot STORAGE-SLOT)
+                                                               (predicate FUNCTION-CODE))
+  :documentation "Just like `sort' but assumes each element of `self' has a `slot'
+whose value will be used for comparison.  Elements must be descendants of
+STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+it will cause value wrapping everytime `slot' is read."
+  :public? TRUE
+  (let ((length (length self)))
+    (cond ((= length 0)
+           (return self))
+          ((null? predicate)
+           (setq predicate (choose-sort-predicate (read-slot-value (first self) slot)))))
+    (special ((*sort-tuple-compare-predicate* predicate)
+              (*sort-objects-compare-slot* slot))
+      ;; note: using `length' here will make this work for VECTOR-SEQUENCEs, etc. as well:
+      (heap-sort-native-vector (the-array self) (length self) (the-code :function sort-objects-compare?))
+      (return self))))
 
 (defun heap-sort-native-vector ((vector NATIVE-VECTOR)
                                 (size INTEGER)
@@ -772,6 +805,20 @@ really maintained or accessible until we sort the heap."
   (let ((size (array-size self)))
     (safety 1 (> size 0) "Trying to create an empty heap")))
 
+(defmethod (copy (HEAP OF (LIKE (any-value self)))) ((self HEAP))
+  :documentation "Return a copy of the heap `self'."
+  :public? TRUE
+  (let ((length (fill-pointer self))
+        (copy (new HEAP
+                   :array-size (array-size self)
+                   :predicate (predicate self)
+                   :fill-pointer length))
+        (sourceArray (the-array self))
+        (copyArray (the-array copy)))
+    (foreach i in (interval 0 (1- length))
+        do (setf (nth copyArray i) (nth sourceArray i)))
+    (return copy)))
+
 (defmethod clear ((self HEAP))
   :documentation "Clear `self' by setting its active length to zero."
   :public? TRUE
@@ -787,8 +834,15 @@ really maintained or accessible until we sort the heap."
   :public? TRUE
   (return (= (fill-pointer self) 0)))
 
+(defmethod (last (LIKE (any-value self))) ((self HEAP))
+  :documentation "Return the last item in the heap `self' which will be the
+largest or best item if `self' is a sorted min-heap with a '<' predicate."
+  :public? TRUE
+  (return (nth self (1- (length self)))) )
+
 (defmethod (heap-root (LIKE (any-value self))) ((self HEAP))
-  :documentation "Return the root of `self' (NULL if `self' is empty)."
+  :documentation "Return the root of `self' (NULL if `self' is empty).
+The root contains the minimum element of a min-heap with '<' predicate."
   :public? TRUE
   (return (choose (empty? self) NULL (nth self 0))))
 
@@ -897,9 +951,10 @@ a Min-heap if `self's `predicate' has `<' semantics; otherwise as a Max-heap."
 (defmethod insert-if-better ((self HEAP) (value (LIKE (any-value self))))
   :documentation "Insert `value' into `self' and restore the heap property.
 If `self' has available room, simply insert `value'.  If the heap is full, only
-insert `value' if it is better than the current root (i.e., the minimum of `self'
-if `self's `predicate' has `<' semantics).  In that case, replace the root of
-`self' and restore the heap property.  This is useful to build and maintain a
+insert `value' if it is better than the current root (i.e., if `value' is
+greater than the minimum of `self' for the case of a min-heap where `self's
+`predicate' has `<' semantics).  In that case, replace the root of `self'
+and restore the heap property.  This is useful to build and maintain a
 heap with some top-N elements (relative to `predicate') where the root (or
 minimum) of `self' is the currently weakest element at the end of the list."
   :public? TRUE

@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 2000-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 2000-2013      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: new-pprint.ste,v 1.12 2010/01/12 04:41:33 hans Exp
+;;; Version: new-pprint.ste,v 1.14 2013/02/27 03:50:42 hans Exp
 
 (in-package "STELLA")
 
@@ -316,7 +316,15 @@ on `DEFINITION' objects.")
 (defun pprint-function-term ((self PROPOSITION) (stream NATIVE-OUTPUT-STREAM))
   ;; Helping function for pprint-proposition.  Assumes that this is a function proposition
   ;;   that should be printed with = and a functional call.
-  (print-stream stream "(")
+  (let ((skolem (last-argument self)))
+    (html-write-href-in-detail stream
+                               NULL
+                               "show"
+                               (get-html-object-type skolem)
+                               (get-html-object-lookup-module skolem)
+                               (get-html-object-handle skolem)
+                               "("
+                               TRUE))
   (pprint-object (operator self) stream)
   (if (or (>= (length (arguments self)) 5)
           (and (= (length (arguments self)) 4)

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,7 +52,7 @@ namespace rdbms {
 void startupOntology() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/RDBMS", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SYM_ONTOLOGY_RDBMS_DATABASE = ((Symbol*)(internRigidSymbolWrtModule("DATABASE", NULL, 0)));
       KWD_ONTOLOGY_DOCUMENTATION = ((Keyword*)(internRigidSymbolWrtModule("DOCUMENTATION", NULL, 2)));
@@ -119,7 +119,7 @@ void startupOntology() {
       inModule(((StringWrapper*)(copyConsTree(wrapString("RDBMS")))));
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("PL-KERNEL-KB", true));
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         defconcept(consList(3, ((Symbol*)(copyConsTree(SYM_ONTOLOGY_RDBMS_DATABASE))), KWD_ONTOLOGY_DOCUMENTATION, ((StringWrapper*)(copyConsTree(wrapString("Information defining a database.  The connection relation is transient."))))));
         defconcept(consList(4, ((Symbol*)(copyConsTree(SYM_ONTOLOGY_RDBMS_SQL_DATABASE))), ((Cons*)(copyConsTree(getQuotedTree("((DATABASE) \"/RDBMS\")", "/RDBMS")))), KWD_ONTOLOGY_DOCUMENTATION, ((StringWrapper*)(copyConsTree(wrapString("Information defining a database that supports SQL queries via JDBC or ODBC."))))));
         deffunction(consList(10, ((Symbol*)(copyConsTree(SYM_ONTOLOGY_RDBMS_PROTOCOL))), ((Cons*)(copyConsTree(getQuotedTree("(((?DB DATABASE)) \"/RDBMS\")", "/RDBMS")))), KWD_ONTOLOGY__g, ((Cons*)(copyConsTree(getQuotedTree("((?CS STRING) \"/RDBMS\")", "/RDBMS")))), KWD_ONTOLOGY_DOCUMENTATION, ((StringWrapper*)(copyConsTree(wrapString("The protocol that should be used to connect to the database\nin case there are multiple options for the current implementation language.\nFor example, in Lisp and C++ we could use either \"ODBC\" or the \"MySQL\" API\n(which is not yet supported), while in Java we only support `JDBC'.")))), KWD_ONTOLOGY_GOES_TRUE_DEMON, ((Symbol*)(copyConsTree(SYM_ONTOLOGY_RDBMS_DB_UPDATE_DEMON))), KWD_ONTOLOGY_GOES_UNKNOWN_DEMON, ((Symbol*)(copyConsTree(SYM_ONTOLOGY_RDBMS_DB_UPDATE_DEMON)))));

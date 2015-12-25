@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -559,6 +559,35 @@ Object* accessObjectStoreSlotValue(ObjectStore* self, Symbol* slotname, Object* 
   return (value);
 }
 
+// The list of all currently active object stores.  To signal
+// that no object stores are active, this has to be NIL-LIST as opposed to the
+// empty list.
+List* oALL_OBJECT_STORESo = NULL;
+
+void registerObjectStore(ObjectStore* store) {
+  // Register `store' as an active object store.
+  if (nullListP(oALL_OBJECT_STORESo)) {
+    oALL_OBJECT_STORESo = newList();
+  }
+  oALL_OBJECT_STORESo->insertNew(store);
+}
+
+void unregisterObjectStore(ObjectStore* store) {
+  // Remove `store' from the list of active object stores.
+  if (!(nullListP(oALL_OBJECT_STORESo))) {
+    oALL_OBJECT_STORESo->remove(store);
+    if (oALL_OBJECT_STORESo->emptyP()) {
+      oALL_OBJECT_STORESo = NIL_LIST;
+    }
+  }
+}
+
+boolean haveActiveObjectStoresP() {
+  // Return TRUE if we have at least one object store opened/linked into
+  // PowerLoom, which changes some index access routines to be considerate of that.
+  return (!(oALL_OBJECT_STORESo == NIL_LIST));
+}
+
 // If TRUE, objects being created are regenerable,
 // and should not be indexed using the backlinks procedures.
 DEFINE_STELLA_SPECIAL(oLOADINGREGENERABLEOBJECTSpo, boolean , false);
@@ -660,6 +689,38 @@ SequenceIndex* ObjectStore::objectStoreDcreateSequenceIndex(Cons* pattern) {
   }
 }
 
+SequenceIndex* maybeWrapSequenceIndex(SequenceIndex* index, Cons* pattern, Keyword* kind, Object* arg1, Object* arg2) {
+  { ObjectStore* store = ((ObjectStore*)(dynamicSlotValue(oMODULEo->dynamicSlots, SYM_SEQUENCE_INDICES_LOGIC_OBJECT_STORE, NULL)));
+    SequenceIndex* baseindex = index;
+
+    if (((boolean)(store)) &&
+        ((!descriptionModeP()) &&
+         (!variableP(arg1)))) {
+      if (subtypeOfP(safePrimaryType(index), SGT_SEQUENCE_INDICES_LOGIC_PAGING_INDEX)) {
+        { SequenceIndex* index000 = index;
+          PagingIndex* index = ((PagingIndex*)(index000));
+
+          if (index->store == store) {
+            return (index);
+          }
+          if (!((boolean)(pattern))) {
+            pattern = index->selectionPattern;
+          }
+        }
+      }
+      else {
+      }
+      if (!((boolean)(pattern))) {
+        pattern = cons(kind, cons(((!((boolean)(NULL))) ? NIL : NULL), cons(arg1, ((!((boolean)(arg2))) ? NIL : cons(arg2, NIL)))));
+      }
+      index = store->objectStoreDcreateSequenceIndex(pattern);
+      index->theSequence = baseindex->theSequence;
+      index->theSequenceLength = baseindex->theSequenceLength;
+    }
+    return (index);
+  }
+}
+
 NamedDescription* ObjectStore::fetchRelation(Object* name) {
   // Fetch the relation identified by `name' (a string or symbol) from `store'
   // and return it as a named description.  This needs to be appropriately 
@@ -683,6 +744,20 @@ Object* ObjectStore::fetchInstance(Object* name) {
     { OutputStringStream* stream000 = newOutputStringStream();
 
       *(stream000->nativeStream) << "Don't know how to fetch instance " << "`" << name << "'" << " from " << "`" << store << "'";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
+}
+
+Proposition* ObjectStore::fetchDuplicateProposition(Proposition* prop) {
+  // Fetch a duplicate of `prop' if defined by `store'.  EXPERIMENTAL!
+  // The exact semantics of this still needs to be worked out.  This needs to be appropriately
+  // specialized on actual OBJECT-STORE implementations.
+  { ObjectStore* store = this;
+
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "Don't know how to fetch a duplicate of " << "`" << prop << "'" << " from " << "`" << store << "'";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -726,7 +801,7 @@ void helpStartupSequenceIndices1() {
 void startupSequenceIndices() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupSequenceIndices1();
     }
@@ -737,6 +812,7 @@ void startupSequenceIndices() {
         self001->selectionPattern = getQuotedTree("((:NIL-SEQUENCE) \"/LOGIC\")", "/LOGIC");
         NIL_PAGING_INDEX = self001;
       }
+      oALL_OBJECT_STORESo = NIL_LIST;
     }
     if (currentStartupTimePhaseP(5)) {
       defineStellaTypeFromStringifiedSource("(DEFTYPE SELECTION-PATTERN CONS)");
@@ -794,13 +870,18 @@ void startupSequenceIndices() {
       defineFunctionObject("PRINT-PAGING-INDEX", "(DEFUN PRINT-PAGING-INDEX ((SELF PAGING-INDEX) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printPagingIndex)), NULL);
       defineMethodObject("(DEFMETHOD (ALLOCATE-ITERATOR (ITERATOR OF (LIKE (ANY-VALUE SELF)))) ((SELF PAGING-INDEX)))", ((cpp_method_code)(&PagingIndex::allocateIterator)), ((cpp_method_code)(NULL)));
       defineExternalSlotFromStringifiedSource("(DEFSLOT MODULE OBJECT-STORE :TYPE OBJECT-STORE :ALLOCATION :DYNAMIC)");
+      defineFunctionObject("REGISTER-OBJECT-STORE", "(DEFUN REGISTER-OBJECT-STORE ((STORE OBJECT-STORE)) :DOCUMENTATION \"Register `store' as an active object store.\")", ((cpp_function_code)(&registerObjectStore)), NULL);
+      defineFunctionObject("UNREGISTER-OBJECT-STORE", "(DEFUN UNREGISTER-OBJECT-STORE ((STORE OBJECT-STORE)) :DOCUMENTATION \"Remove `store' from the list of active object stores.\")", ((cpp_function_code)(&unregisterObjectStore)), NULL);
+      defineFunctionObject("HAVE-ACTIVE-OBJECT-STORES?", "(DEFUN (HAVE-ACTIVE-OBJECT-STORES? BOOLEAN) () :DOCUMENTATION \"Return TRUE if we have at least one object store opened/linked into\nPowerLoom, which changes some index access routines to be considerate of that.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NOT (EQL? *ALL-OBJECT-STORES* NIL-LIST))))", ((cpp_function_code)(&haveActiveObjectStoresP)), NULL);
       defineFunctionObject("HOME-OBJECT-STORE", "(DEFUN (HOME-OBJECT-STORE OBJECT-STORE) ((SELF OBJECT)))", ((cpp_function_code)(&homeObjectStore)), NULL);
       defineFunctionObject("CREATE-SEQUENCE-INDEX", "(DEFUN (CREATE-SEQUENCE-INDEX SEQUENCE-INDEX) ((SELF OBJECT) (PATTERN SELECTION-PATTERN)))", ((cpp_function_code)(&createSequenceIndex)), NULL);
       defineFunctionObject("KEYWORD.CREATE-SEQUENCE-INDEX", "(DEFUN (KEYWORD.CREATE-SEQUENCE-INDEX SEQUENCE-INDEX) ((KIND KEYWORD) (PATTERN SELECTION-PATTERN)))", ((cpp_function_code)(&keywordDcreateSequenceIndex)), NULL);
       defineFunctionObject("MODULE.CREATE-SEQUENCE-INDEX", "(DEFUN (MODULE.CREATE-SEQUENCE-INDEX SEQUENCE-INDEX) ((MODULE MODULE) (PATTERN SELECTION-PATTERN)))", ((cpp_function_code)(&moduleDcreateSequenceIndex)), NULL);
       defineMethodObject("(DEFMETHOD (OBJECT-STORE.CREATE-SEQUENCE-INDEX SEQUENCE-INDEX) ((STORE OBJECT-STORE) (PATTERN SELECTION-PATTERN)))", ((cpp_method_code)(&ObjectStore::objectStoreDcreateSequenceIndex)), ((cpp_method_code)(NULL)));
+      defineFunctionObject("MAYBE-WRAP-SEQUENCE-INDEX", "(DEFUN (MAYBE-WRAP-SEQUENCE-INDEX SEQUENCE-INDEX) ((INDEX SEQUENCE-INDEX) (PATTERN SELECTION-PATTERN) (KIND KEYWORD) (ARG1 OBJECT) (ARG2 OBJECT)))", ((cpp_function_code)(&maybeWrapSequenceIndex)), NULL);
       defineMethodObject("(DEFMETHOD (FETCH-RELATION NAMED-DESCRIPTION) ((STORE OBJECT-STORE) (NAME OBJECT)) :DOCUMENTATION \"Fetch the relation identified by `name' (a string or symbol) from `store'\nand return it as a named description.  This needs to be appropriately \nspecialized on actual OBJECT-STORE implementations.\" :PUBLIC? TRUE)", ((cpp_method_code)(&ObjectStore::fetchRelation)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (FETCH-INSTANCE OBJECT) ((STORE OBJECT-STORE) (NAME OBJECT)) :DOCUMENTATION \"Fetch the instance identified by `name' (a string or symbol) from `store'\nand return it as an appropriate logic object.  This needs to be appropriately\nspecialized on actual OBJECT-STORE implementations.\" :PUBLIC? TRUE)", ((cpp_method_code)(&ObjectStore::fetchInstance)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (FETCH-DUPLICATE-PROPOSITION PROPOSITION) ((STORE OBJECT-STORE) (PROP PROPOSITION)) :DOCUMENTATION \"Fetch a duplicate of `prop' if defined by `store'.  EXPERIMENTAL!\nThe exact semantics of this still needs to be worked out.  This needs to be appropriately\nspecialized on actual OBJECT-STORE implementations.\" :PUBLIC? TRUE)", ((cpp_method_code)(&ObjectStore::fetchDuplicateProposition)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD UPDATE-PROPOSITION-IN-STORE ((STORE OBJECT-STORE) (PROPOSITION PROPOSITION) (UPDATE-MODE KEYWORD)) :DOCUMENTATION \"A module with `store' has had the truth value of `proposition'\nchange according to `update-mode'.  The default method does nothing.\" :PUBLIC? TRUE)", ((cpp_method_code)(&ObjectStore::updatePropositionInStore)), ((cpp_method_code)(NULL)));
       defineFunctionObject("STARTUP-SEQUENCE-INDICES", "(DEFUN STARTUP-SEQUENCE-INDICES () :PUBLIC? TRUE)", ((cpp_function_code)(&startupSequenceIndices)), NULL);
       { MethodSlot* function = lookupFunction(SYM_SEQUENCE_INDICES_LOGIC_STARTUP_SEQUENCE_INDICES);
@@ -816,6 +897,7 @@ void startupSequenceIndices() {
       inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NIL-NON-PAGING-INDEX NON-PAGING-INDEX (NEW NON-PAGING-INDEX) :DOCUMENTATION \"Returns a non-writable empty sequence.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT NIL-PAGING-INDEX PAGING-INDEX (NEW PAGING-INDEX :SELECTION-PATTERN (QUOTE (:NIL-SEQUENCE))) :DOCUMENTATION \"Returns a non-writable empty sequence.\")");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *ALL-OBJECT-STORES* (LIST OF OBJECT-STORE) NIL-LIST :DOCUMENTATION \"The list of all currently active object stores.  To signal\nthat no object stores are active, this has to be NIL-LIST as opposed to the\nempty list.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *LOADINGREGENERABLEOBJECTS?* BOOLEAN FALSE :DOCUMENTATION \"If TRUE, objects being created are regenerable,\nand should not be indexed using the backlinks procedures.\")");
     }
   }

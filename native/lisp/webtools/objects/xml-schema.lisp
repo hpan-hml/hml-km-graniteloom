@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -57,7 +57,8 @@
 (CL:DEFUN STARTUP-XML-SCHEMA ()
   (CL:LET*
    ((*MODULE*
-     (GET-STELLA-MODULE "/STELLA/XML-OBJECTS/XSD" (> *STARTUP-TIME-PHASE* 1)))
+     (GET-STELLA-MODULE "/STELLA/XML-OBJECTS/XSD"
+      (> *STARTUP-TIME-PHASE* 1)))
     (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
@@ -72,7 +73,8 @@
      "(DEFUN STARTUP-XML-SCHEMA () :PUBLIC? TRUE)"
      (CL:FUNCTION STARTUP-XML-SCHEMA) NULL)
     (CL:LET*
-     ((FUNCTION (LOOKUP-FUNCTION SYM-XML-SCHEMA-XSD-STARTUP-XML-SCHEMA)))
+     ((FUNCTION
+       (LOOKUP-FUNCTION SYM-XML-SCHEMA-XSD-STARTUP-XML-SCHEMA)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
       SYM-XML-SCHEMA-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupXmlSchema") NULL-STRING-WRAPPER)))
@@ -83,4 +85,5 @@
     (INSERT-AT *NAMESPACE-PREFIX-URI-TABLE* (WRAP-STRING "XSD")
      (WRAP-STRING "http://www.w3.org/2001/XMLSchema"))
     (INSERT-AT *NAMESPACE-URI-PREFIX-TABLE*
-     (WRAP-STRING "http://www.w3.org/2001/XMLSchema") (WRAP-STRING "XSD")))))
+     (WRAP-STRING "http://www.w3.org/2001/XMLSchema")
+     (WRAP-STRING "XSD")))))

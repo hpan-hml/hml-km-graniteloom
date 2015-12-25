@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -1701,8 +1701,27 @@ public class Cons extends StandardObject {
         tree.secondSetter(Stella_Object.javaTranslateATree(tree.rest.value));
       }
     }
-    Cons.javaTranslateListOfTrees(tree.rest.rest);
-    return (tree);
+    { Cons args = tree.rest.rest;
+      StandardObject arg1Type = Stella_Object.walkedExpressionType(args.value);
+      StandardObject arg2Type = Stella_Object.walkedExpressionType(args.rest.value);
+
+      Cons.javaTranslateListOfTrees(args);
+      if ((!(args.rest == Stella.NIL)) &&
+          ((!(arg1Type == Stella.SGT_STELLA_STRING)) &&
+           (!(arg2Type == Stella.SGT_STELLA_STRING)))) {
+        if (StandardObject.subTypeSpecOfP(arg1Type, Stella.SGT_STELLA_OBJECT)) {
+          args.firstSetter(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_METHOD_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(StringWrapper.wrapString("Object"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(StringWrapper.wrapString("toString"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(args.value, Cons.cons(Cons.cons(Cons.cons(Stella.SYM_STELLA_JAVA_ACTUALS, Stella.NIL), Stella.NIL), Stella.NIL)))))));
+        }
+        else if (StandardObject.subTypeSpecOfP(arg2Type, Stella.SGT_STELLA_OBJECT)) {
+          args.secondSetter(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_METHOD_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(StringWrapper.wrapString("Object"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_IDENT, Cons.cons(StringWrapper.wrapString("toString"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(args.rest.value, Cons.cons(Cons.cons(Cons.cons(Stella.SYM_STELLA_JAVA_ACTUALS, Stella.NIL), Stella.NIL), Stella.NIL)))))));
+        }
+        else {
+          args.rest = Cons.cons(args.value, args.rest);
+          args.firstSetter(Cons.list$(Cons.cons(Stella.SYM_STELLA_JAVA_LITERAL, Cons.cons(StringWrapper.wrapString(""), Cons.cons(Stella.NIL, Stella.NIL)))));
+        }
+      }
+      return (tree);
+    }
   }
 
   public static Stella_Object javaTranslateIgnoreTree(Cons tree) {
@@ -3748,7 +3767,12 @@ public class Cons extends StandardObject {
       }
       if (((GeneralizedSymbol)(kind)) == Stella.SYM_STELLA_CPP_SPECIAL) {
         if (Stella.specialImplementationStyle() == Stella.KWD_UNBIND_WITH_DESTRUCTORS) {
-          Stella_Object.cppOutputStatement(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(StringWrapper.wrapString("DEFINE_STELLA_SPECIAL"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ACTUALS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(name, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(type, Cons.cons(Cons.cons(initialvalue, Stella.NIL), Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))));
+          if (Stella.supportUnexecP()) {
+            Stella_Object.cppOutputStatement(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(StringWrapper.wrapString("DECLARE_STELLA_SPECIAL"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ACTUALS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(name, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(type, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))));
+          }
+          else {
+            Stella_Object.cppOutputStatement(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_FUNCTION_CALL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(StringWrapper.wrapString("DEFINE_STELLA_SPECIAL"), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ACTUALS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(name, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(type, Cons.cons(Cons.cons(initialvalue, Stella.NIL), Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))));
+          }
         }
         else {
           Stella_Object.cppOutputTypedEntity(type, name, initialvalue);
@@ -4003,10 +4027,6 @@ public class Cons extends StandardObject {
       MethodSlot function = ((method != null) ? method : Symbol.lookupFunction(functionname));
       Cons operator = Symbol.cppLookupOperatorTable(functionname.softPermanentify());
       Cons otree = null;
-      Cons dummyargs = Stella.NIL;
-      int numberofunusedreturnparameters = 0;
-      Cons unusedreturntypes = Stella.NIL;
-      Symbol dummyname = null;
 
       if ((functionname == Stella.SYM_STELLA_GET_SYM) ||
           ((functionname == Stella.SYM_STELLA_GET_KWD) ||
@@ -4022,22 +4042,7 @@ public class Cons extends StandardObject {
       }
       else {
       }
-      numberofunusedreturnparameters = (function.methodParameterNames().length() + (function.methodReturnTypeSpecifiers().length() - 1)) - functionargs.length();
-      if (numberofunusedreturnparameters > 0) {
-        unusedreturntypes = Cons.getLastNElements(function.methodReturnTypeSpecifiers().rest(), numberofunusedreturnparameters);
-        { Stella_Object unusedparametertype = null;
-          Cons iter000 = unusedreturntypes;
-
-          for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
-            unusedparametertype = iter000.value;
-            Native.setIntSpecial(Stella.$CURRENTDUMMYINDEX$, ((Integer)(Stella.$CURRENTDUMMYINDEX$.get())).intValue() + 1);
-            dummyname = Symbol.internSymbol(Symbol.cppTranslateReturnParameterName(Stella.SYM_STELLA_DUMMY, ((Integer)(Stella.$CURRENTDUMMYINDEX$.get())).intValue()).wrapperValue);
-            Native.setSpecial(Stella.$DUMMYDECLARATIONS$, Cons.cons(Cons.cons(dummyname, Cons.cons(unusedparametertype, Stella.NIL)), ((Cons)(Stella.$DUMMYDECLARATIONS$.get()))));
-            dummyargs = Cons.cons(dummyname, dummyargs);
-          }
-        }
-        functionargs.concatenate(dummyargs.reverse(), Stella.NIL);
-      }
+      functionargs = functionargs.concatenate(MethodSlot.cppYieldUnusedDummyArgs(function, functionargs), Stella.NIL);
       if (operator != null) {
         otree = Cons.cppTranslateOperatorCall(operator, functionargs, functionargs.length());
       }
@@ -4398,18 +4403,12 @@ public class Cons extends StandardObject {
     }
   }
 
-  public static Cons cppTranslateSetqTree(Cons tree) {
-    { GlobalVariable global = ((Symbol)(tree.rest.value)).lookupGlobalVariable();
+  public static Stella_Object cppTranslateSysSetDefault(Cons tree) {
+    return (Cons.cppTranslateSetqTree(tree));
+  }
 
-      if ((global != null) &&
-          (global.variableSpecialP &&
-           (Stella.specialImplementationStyle() == Stella.KWD_UNBIND_WITH_DESTRUCTORS))) {
-        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_REFERENCED_METHOD_CALL, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateName(Stella.SYM_STELLA_SET), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateGlobalName(Symbol.cppFixupNameSymbol(((Symbol)(tree.rest.value)), global.homeModule())), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ACTUALS, Cons.cons(Stella_Object.cppTranslateATree(tree.rest.rest.value), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))))));
-      }
-      else {
-        return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ASSIGN, Cons.cons(Stella_Object.cppTranslateATree(tree.rest.value), Cons.cons(Cons.cons(Stella_Object.cppTranslateATree(tree.rest.rest.value), Stella.NIL), Stella.NIL)))));
-      }
-    }
+  public static Cons cppTranslateSetqTree(Cons tree) {
+    return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_ASSIGN, Cons.cons(Stella_Object.cppTranslateATree(tree.rest.value), Cons.cons(Cons.cons(Stella_Object.cppTranslateATree(tree.rest.rest.value), Stella.NIL), Stella.NIL)))));
   }
 
   public static Cons cppTranslatePrintStream(Cons tree) {
@@ -6484,6 +6483,7 @@ public class Cons extends StandardObject {
           Cons startupfunctioncall = (((((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get())) != null) &&
               (!(options.lookup(Stella.KWD_STARTUP_SYSTEMp) == Stella.SYM_STELLA_FALSE))) ? Cons.cons(Cons.cons(SystemDefinition.systemStartupFunctionSymbol(((SystemDefinition)(Stella.$CURRENTSYSTEMDEFINITION$.get()))), Stella.NIL), Stella.NIL) : Stella.NIL);
 
+          startupfunctioncall = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF_STELLA_FEATURE, Cons.cons(Stella.KWD_SUPPORT_UNEXEC, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_VERBATIM, Cons.cons(Stella.KWD_CPP, Cons.cons(StringWrapper.wrapString("freopen (\"/dev/tty\",\"w\",stdout); freopen (\"/dev/tty\",\"w\",stderr); freopen (\"/dev/tty\",\"r\",stdin)"), Cons.cons(Stella.KWD_OTHERWISE, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))))), startupfunctioncall.concatenate(Stella.NIL, Stella.NIL));
           options.removeAt(Stella.KWD_STARTUP_SYSTEMp);
           options.removeAt(Stella.KWD_PUBLICp);
           body = options.thePlist.concatenate(bodywithheader.rest, Stella.NIL);
@@ -7010,7 +7010,7 @@ public class Cons extends StandardObject {
       else {
         savestreamstatetree = Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(savestreamstateP, Cons.cons(savestreamstatetree.concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella.NIL);
       }
-      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOOP, Cons.cons((Stella.withTokenizerStringInputP() ? Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NTH, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LEGAL_EOF_STATES, Cons.cons(Stella.SYM_STELLA_TOK_TABLE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.cons(Stella.SYM_STELLA_BREAK, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL)))))) : Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.SYM_STELLA_TOK_CHECKPOINT_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CURSOR, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_READ_INTO_TOKENIZER_BUFFER, Cons.cons(Stella.SYM_STELLA_TOK_INPUTSTREAM_, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_BUFFER_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BUFFER, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_SIZE_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BUFFER_SIZE, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MOD, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CURSOR, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_TOK_SIZE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_END, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CHECKPOINT_, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NTH, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LEGAL_EOF_STATES, Cons.cons(Stella.SYM_STELLA_TOK_TABLE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNLESS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Stella.SYM_STELLA_FALSE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Stella.SYM_STELLA_FALSE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.cons(Stella.SYM_STELLA_BREAK, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ge, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CHECKPOINT_, Cons.cons(Stella.SYM_STELLA_TOK_SIZE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CHECKPOINT_, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))))))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CHECKPOINT_, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CHARACTER_CODE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NTH, Cons.cons(Stella.SYM_STELLA_TOK_TRANSITIONS_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOGOR, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SHIFT_LEFT, Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(IntegerWrapper.wrapInteger(8), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CHARACTER_CODE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BYTE_ARRAY_NTH, Cons.cons(Stella.SYM_STELLA_TOK_BUFFER_, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOGAND, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(128), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ii, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOGAND, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(64), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOGAND, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(63), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ii, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.cons(Stella.SYM_STELLA_BREAK, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons((((!Stella.withTokenizerStringInputP()) ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_TOK_ECHOSTREAM_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PRINT_STREAM, Cons.cons(Stella.SYM_STELLA_TOK_ECHOSTREAM_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BYTE_ARRAY_NTH, Cons.cons(Stella.SYM_STELLA_TOK_BUFFER_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_1_, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))), Stella.NIL)))), Cons.cons(savestreamstatetree.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))));
+      return (Cons.list$(Cons.cons(Stella.SYM_STELLA_PROGN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOOP, Cons.cons((Stella.withTokenizerStringInputP() ? Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NTH, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LEGAL_EOF_STATES, Cons.cons(Stella.SYM_STELLA_TOK_TABLE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Stella.SYM_STELLA_TRUE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.cons(Stella.SYM_STELLA_BREAK, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL)))))) : Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.SYM_STELLA_TOK_CHECKPOINT_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CURSOR, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_READ_INTO_TOKENIZER_BUFFER, Cons.cons(Stella.SYM_STELLA_TOK_INPUTSTREAM_, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_BUFFER_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BUFFER, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_SIZE_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BUFFER_SIZE, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_MOD, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CURSOR, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_TOK_SIZE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_END, Cons.cons(Stella.SYM_STELLA_TOK_STREAMSTATE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CHECKPOINT_, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NTH, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LEGAL_EOF_STATES, Cons.cons(Stella.SYM_STELLA_TOK_TABLE_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_UNLESS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Stella.SYM_STELLA_FALSE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_ENDOFTOKENSp_, Cons.cons(Stella.SYM_STELLA_FALSE, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.cons(Stella.SYM_STELLA_BREAK, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL))))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ge, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CHECKPOINT_, Cons.cons(Stella.SYM_STELLA_TOK_SIZE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CHECKPOINT_, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Stella.NIL, Stella.NIL))))))))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CHECKPOINT_, Cons.cons(Stella.SYM_STELLA_TOK_END_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CHARACTER_CODE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BYTE_ARRAY_NTH, Cons.cons(Stella.SYM_STELLA_TOK_BUFFER_, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_IF_OUTPUT_LANGUAGE, Cons.cons(Stella.KWD_COMMON_LISP, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_g, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(255), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(255), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CHARACTER_CODE, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_NTH, Cons.cons(Stella.SYM_STELLA_TOK_TRANSITIONS_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOGOR, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SHIFT_LEFT, Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(IntegerWrapper.wrapInteger(8), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_COND, Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOGAND, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(128), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ii, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(IntegerWrapper.wrapInteger(-1), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_e, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOGAND, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(64), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(IntegerWrapper.wrapInteger(0), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_TOKENSTART_, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(Stella.SYM_STELLA_TOK_STATE_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_LOGAND, Cons.cons(Stella.SYM_STELLA_TOK_NEXTSTATE_, Cons.cons(IntegerWrapper.wrapInteger(63), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_ii, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_OTHERWISE, Cons.cons(Cons.cons(Stella.SYM_STELLA_BREAK, Stella.NIL), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL)))))), Cons.cons((((!Stella.withTokenizerStringInputP()) ? Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_WHEN, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_DEFINEDp, Cons.cons(Stella.SYM_STELLA_TOK_ECHOSTREAM_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_PRINT_STREAM, Cons.cons(Stella.SYM_STELLA_TOK_ECHOSTREAM_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_BYTE_ARRAY_NTH, Cons.cons(Stella.SYM_STELLA_TOK_BUFFER_, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_1_, Cons.cons(Stella.SYM_STELLA_TOK_CURSOR_, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Cons.cons(Stella.NIL, Stella.NIL))))), Stella.NIL) : Stella.NIL)).concatenate(Stella.NIL, Stella.NIL), Stella.NIL)))))), Stella.NIL)))), Cons.cons(savestreamstatetree.concatenate(Stella.NIL, Stella.NIL), Stella.NIL))))));
     }
   }
 
@@ -8451,28 +8451,24 @@ public class Cons extends StandardObject {
                 }
               }
               else {
-                { boolean testValue000 = false;
+                operator = Symbol.lookupCommand(operatorname000);
+                if (operator == null) {
+                  operator = Symbol.lookupCommandLikeFunction(operatorname000);
+                }
+                if (operator == null) {
+                  { OutputStringStream stream003 = OutputStringStream.newOutputStringStream();
 
-                  { 
-                    operator = Symbol.lookupCommand(operatorname000);
-                    testValue000 = operator != null;
-                  }
-                  testValue000 = !testValue000;
-                  if (testValue000) {
-                    { OutputStringStream stream003 = OutputStringStream.newOutputStringStream();
-
-                      stream003.nativeStream.print("While evaluating '" + ((Stella_Object)(Stella.$EVALUATIONTREE$.get())));
-                      if (((Stella_Object)(Stella.$EVALUATIONPARENTTREE$.get())) != null) {
-                        {
-                          stream003.nativeStream.println();
-                          stream003.nativeStream.print("' inside '" + ((Stella_Object)(Stella.$EVALUATIONPARENTTREE$.get())));
-                        }
-;
+                    stream003.nativeStream.print("While evaluating '" + ((Stella_Object)(Stella.$EVALUATIONTREE$.get())));
+                    if (((Stella_Object)(Stella.$EVALUATIONPARENTTREE$.get())) != null) {
+                      {
+                        stream003.nativeStream.println();
+                        stream003.nativeStream.print("' inside '" + ((Stella_Object)(Stella.$EVALUATIONPARENTTREE$.get())));
                       }
-                      stream003.nativeStream.println("':");
-                      stream003.nativeStream.print("Undefined operator: `" + operatorname000 + "'");
-                      throw ((EvaluationException)(EvaluationException.newEvaluationException(stream003.theStringReader()).fillInStackTrace()));
+;
                     }
+                    stream003.nativeStream.println("':");
+                    stream003.nativeStream.print("Undefined operator: `" + operatorname000 + "'");
+                    throw ((EvaluationException)(EvaluationException.newEvaluationException(stream003.theStringReader()).fillInStackTrace()));
                   }
                 }
               }
@@ -9124,32 +9120,40 @@ public class Cons extends StandardObject {
           { PropertyListIterator it = ((PropertyListIterator)(plist.allocateIterator()));
 
             while (it.nextP()) {
-              if (!Stella_Object.keywordP(it.key)) {
-                { Object old$PrintreadablyP$001 = Stella.$PRINTREADABLYp$.get();
+              { Surrogate testValue000 = Stella_Object.safePrimaryType(it.key);
 
-                  try {
-                    Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
-                    Stella.signalTranslationError();
-                    if (!(Stella.suppressWarningsP())) {
-                      Stella.printErrorContext(">> ERROR: ", Stella.STANDARD_ERROR);
-                      {
-                        Stella.STANDARD_ERROR.nativeStream.println();
-                        Stella.STANDARD_ERROR.nativeStream.println(" Illegal slot keyword `" + it.key + "' in NEW expression.");
-                      }
+                if (Surrogate.subtypeOfKeywordP(testValue000)) {
+                  slotname = Symbol.internSymbolInModule(((Keyword)(it.key)).symbolName, renamed_Class.homeModule(), false);
+                }
+                else if (Surrogate.subtypeOfSymbolP(testValue000)) {
+                  slotname = ((Symbol)(it.key));
+                }
+                else {
+                  { Object old$PrintreadablyP$001 = Stella.$PRINTREADABLYp$.get();
+
+                    try {
+                      Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+                      Stella.signalTranslationError();
+                      if (!(Stella.suppressWarningsP())) {
+                        Stella.printErrorContext(">> ERROR: ", Stella.STANDARD_ERROR);
+                        {
+                          Stella.STANDARD_ERROR.nativeStream.println();
+                          Stella.STANDARD_ERROR.nativeStream.println(" Illegal slot keyword `" + it.key + "' in NEW expression.");
+                        }
 ;
-                    }
+                      }
 
-                  } finally {
-                    Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$001);
+                    } finally {
+                      Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$001);
+                    }
+                  }
+                  { Cons _return_temp = Stella.NIL;
+
+                    MV_returnarray[0] = Stella.NIL;
+                    return (_return_temp);
                   }
                 }
-                { Cons _return_temp = Stella.NIL;
-
-                  MV_returnarray[0] = Stella.NIL;
-                  return (_return_temp);
-                }
               }
-              slotname = Symbol.internSymbolInModule(((Keyword)(it.key)).symbolName, renamed_Class.homeModule(), false);
               slot = Stella_Class.lookupSlot(renamed_Class, slotname);
               if (slot == null) {
                 { Object old$PrintreadablyP$002 = Stella.$PRINTREADABLYp$.get();
@@ -16050,6 +16054,41 @@ public class Cons extends StandardObject {
     }
   }
 
+  /** Allocate a cross product iterator for a list of <code>domains</code>.
+   * @param domains
+   * @return CrossProductIterator
+   */
+  public static CrossProductIterator allocateCrossProductIterator(Cons domains) {
+    { CrossProductIterator self000 = CrossProductIterator.newCrossProductIterator();
+
+      self000.domains = domains;
+      { CrossProductIterator iterator = self000;
+        Cons cursors = Stella.NIL;
+        Cons values = Stella.NIL;
+
+        { Cons domain = null;
+          Cons iter000 = domains;
+          int i = Stella.NULL_INTEGER;
+          int iter001 = 0;
+
+          for (;!(iter000 == Stella.NIL); iter000 = iter000.rest, iter001 = iter001 + 1) {
+            domain = ((Cons)(iter000.value));
+            i = iter001;
+            if ((domain == null) ||
+                (domain == Stella.NIL)) {
+              return (iterator);
+            }
+            cursors = Cons.cons(((i == 0) ? domain : domain.rest), cursors);
+            values = Cons.cons(domain.value, values);
+          }
+        }
+        iterator.cursors = cursors.reverse();
+        iterator.value = values.reverse();
+        return (iterator);
+      }
+    }
+  }
+
   public Iterator allocateDestructiveListIterator() {
     { Cons self = this;
 
@@ -16322,6 +16361,37 @@ public class Cons extends StandardObject {
       }
       else {
         return (false);
+      }
+    }
+  }
+
+  /** Just like <code>sort</code> but assumes each element of <code>self</code> has a <code>slot</code>
+   * whose value will be used for comparison.  Elements must be descendants of
+   * STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+   * it will cause value wrapping everytime <code>slot</code> is read.
+   * @param slot
+   * @param predicate
+   * @return Cons
+   */
+  public Cons sortObjects(StorageSlot slot, java.lang.reflect.Method predicate) {
+    { Cons self = this;
+
+      if ((predicate == null) &&
+          (!(self == Stella.NIL))) {
+        predicate = Stella_Object.chooseSortPredicate(StandardObject.readSlotValue(((StandardObject)(self.value)), slot));
+      }
+      { Object old$SortTupleComparePredicate$000 = Stella.$SORT_TUPLE_COMPARE_PREDICATE$.get();
+        Object old$SortObjectsCompareSlot$000 = Stella.$SORT_OBJECTS_COMPARE_SLOT$.get();
+
+        try {
+          Native.setSpecial(Stella.$SORT_TUPLE_COMPARE_PREDICATE$, predicate);
+          Native.setSpecial(Stella.$SORT_OBJECTS_COMPARE_SLOT$, slot);
+          return (Cons.helpSortConsList(self, self.length(), Native.find_java_method("edu.isi.stella.Stella_Object", "sortObjectsCompareP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")})));
+
+        } finally {
+          Stella.$SORT_OBJECTS_COMPARE_SLOT$.set(old$SortObjectsCompareSlot$000);
+          Stella.$SORT_TUPLE_COMPARE_PREDICATE$.set(old$SortTupleComparePredicate$000);
+        }
       }
     }
   }
@@ -16616,6 +16686,37 @@ public class Cons extends StandardObject {
           }
         }
         return (list);
+      }
+    }
+  }
+
+  /** Return true if the intersection of <code>self</code> and <code>otherlist</code> is empty.
+   * This is always true if at least one of the two sets is the empty set.
+   * Uses an <code>eqlP</code> test and a simple quadratic-time algorithm.  Note that
+   * this does not check whether <code>self</code> and <code>otherlist</code> actually are sets.
+   * @param otherlist
+   * @return boolean
+   */
+  public boolean disjointSetsP(Cons otherlist) {
+    { Cons self = this;
+
+      { boolean alwaysP000 = true;
+
+        { Stella_Object item = null;
+          Cons iter000 = self;
+
+          loop000 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+            item = iter000.value;
+            if (!(!otherlist.memberP(item))) {
+              alwaysP000 = false;
+              break loop000;
+            }
+          }
+        }
+        { boolean value000 = alwaysP000;
+
+          return (value000);
+        }
       }
     }
   }
@@ -17196,7 +17297,13 @@ public class Cons extends StandardObject {
       }
       while (!(cursor == Stella.NIL)) {
         item = cursor.value;
-        bucketindex = (((item.hashCode_()) & 0x7FFFFFFF) % tablesize);
+        if (equaltestP) {
+          bucketindex = item.equalHashCode();
+        }
+        else {
+          bucketindex = item.hashCode_();
+        }
+        bucketindex = ((bucketindex & 0x7FFFFFFF) % tablesize);
         bucket = table[bucketindex];
         { boolean foundP000 = false;
 
@@ -17225,6 +17332,8 @@ public class Cons extends StandardObject {
   }
 
   /** <code>removeDuplicates</code> (which see) using an <code>equalP</code> test.
+   * IMPORTANT: since this uses hashing to speed things up, an <code>equalHashCode</code>
+   * method needs to be defined for this to work.
    * @return Cons
    */
   public Cons removeDuplicatesEqual() {
@@ -17514,6 +17623,10 @@ public class Cons extends StandardObject {
 
       return (self == Stella.NIL);
     }
+  }
+
+  public static Cons listDirectoryFilesRecursivelyEvaluatorWrapper(Cons arguments) {
+    return (Stella.listDirectoryFilesRecursively(((StringWrapper)(arguments.value)).wrapperValue));
   }
 
   public static Cons listDirectoryFilesEvaluatorWrapper(Cons arguments) {

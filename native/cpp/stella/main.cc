@@ -5,7 +5,6 @@
 using namespace stella;
 
 int main(int count, char** arguments) {
-  // Main STELLA entry point.
   { boolean testingP = count == 1;
 
     startup(testingP);

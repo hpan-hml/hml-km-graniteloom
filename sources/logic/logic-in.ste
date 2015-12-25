@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,14 +40,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: logic-in.ste,v 1.144 2010/10/16 19:26:24 hans Exp
+;;; Version: logic-in.ste,v 1.146 2014/04/16 00:17:56 hans Exp
 
 ;;; Evaluating and loading logic commands
 
 (in-package "STELLA")
 
 (in-module "LOGIC")
-
 
   ;;
 ;;;;;; PowerLoom Features
@@ -1403,7 +1402,9 @@ an error message.")
   ;; Redefine `oldObject' named `name' to `newObject' by destroying all its
   ;;    definitional propositions, transferring all non-definitional
   ;;    propositions to `newObject' and finally destroying it.
-  (let ((originatedProps (originated-propositions oldObject))
+  (let ((originatedProps
+         ;; careful: with function term redefinitions we can get deleted props here:
+         (remove-deleted-members (originated-propositions oldObject)))
         (exceptProps (copy originatedProps)))
     (foreach prop in originatedProps
         do (foreach satellite in (satellite-propositions prop)
@@ -2631,7 +2632,9 @@ Expects the same arguments as `defproposition' but supplied as a list."
             ((cons? conception)
              ;; NOTE: top-level options such as :forward-only? will not
              ;;    trickle down to individual conjuncts - is this a problem?
-             (setq proposition (conjoin-propositions conception)))
+             (setq proposition (conjoin-propositions conception))
+             ;; fasten so we can properly define propositions that are conjunctions:
+             (setq proposition (fasten-down-one-proposition proposition FALSE)))
             (otherwise
              (setq proposition conception)))
       (setq options (rest (rest arguments)))

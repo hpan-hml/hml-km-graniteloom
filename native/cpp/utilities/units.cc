@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -514,6 +514,10 @@ Measure* lookupMeasure(char* name) {
   return (((Measure*)(oNAME_TO_MEASURE_TABLEo->lookup(name))));
 }
 
+Measure* lookupMeasureForUnit(char* unit) {
+  return (((Measure*)(oUNIT_TO_MEASURE_TABLEo->lookup(unit))));
+}
+
 List* Measure::getUnits() {
   { Measure* self = this;
 
@@ -602,7 +606,8 @@ double unitToScaleFactorAndId(char* definition, Ratio*& _Return1) {
               }
               break;
             }
-            tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | ((int)(unsigned char) (tok_buffer_[tok_cursor_]))))]);
+            tok_nextstate_ = (int)(unsigned char) (tok_buffer_[tok_cursor_]);
+            tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | tok_nextstate_))]);
             if ((tok_nextstate_ & 128) == 0) {
               tok_state_ = tok_nextstate_;
               tok_cursor_ = tok_cursor_ + 1;
@@ -1457,7 +1462,7 @@ void showMeasures() {
 
 void showMeasure(char* measureName) {
   // Print all units and scale factors for measure `measure-name'.
-  { Measure* m = ((Measure*)(oNAME_TO_MEASURE_TABLEo->lookup(measureName)));
+  { Measure* m = lookupMeasure(measureName);
 
     if (((boolean)(m))) {
       { KeyValueList* theScale = m->scale;
@@ -1555,7 +1560,8 @@ void helpStartupUnits3() {
     defineFunctionObject("DEFINE-DERIVED-MEASURE", "(DEFUN (DEFINE-DERIVED-MEASURE MEASURE) ((MEASURE-NAME STRING) (MEASURE-BASE-UNIT STRING) (DEFINITION STRING)) :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&defineDerivedMeasure)), NULL);
     defineFunctionObject("DEFINE-DIMENSIONLESS-MEASURE", "(DEFUN (DEFINE-DIMENSIONLESS-MEASURE MEASURE) () :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&defineDimensionlessMeasure)), NULL);
     defineMethodObject("(DEFMETHOD ADD-UNIT ((SELF MEASURE) (UNIT-NAME STRING) (SCALE-FACTOR FLOAT) (DEFINITION STRING)))", ((cpp_method_code)(&Measure::addUnit)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("LOOKUP-MEASURE", "(DEFUN (LOOKUP-MEASURE MEASURE) ((NAME STRING)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :CONSTRUCTOR? TRUE (RETURN (LOOKUP *NAME-TO-MEASURE-TABLE* NAME)))", ((cpp_function_code)(&lookupMeasure)), NULL);
+    defineFunctionObject("LOOKUP-MEASURE", "(DEFUN (LOOKUP-MEASURE MEASURE) ((NAME STRING)) :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&lookupMeasure)), NULL);
+    defineFunctionObject("LOOKUP-MEASURE-FOR-UNIT", "(DEFUN (LOOKUP-MEASURE-FOR-UNIT MEASURE) ((UNIT STRING)) :PUBLIC? TRUE :CONSTRUCTOR? TRUE)", ((cpp_function_code)(&lookupMeasureForUnit)), NULL);
     defineMethodObject("(DEFMETHOD (GET-UNITS (LIST OF STRING-WRAPPER)) ((SELF MEASURE)) :PUBLIC? TRUE)", ((cpp_method_code)(&Measure::getUnits)), ((cpp_method_code)(NULL)));
     defineFunctionObject("UNIT-TO-SCALE-FACTOR-AND-ID", "(DEFUN (UNIT-TO-SCALE-FACTOR-AND-ID FLOAT RATIO) ((DEFINITION STRING)))", ((cpp_function_code)(&unitToScaleFactorAndId)), NULL);
     defineFunctionObject("COMPUTE-MEASURES-FOR-INTEGER", "(DEFUN (COMPUTE-MEASURES-FOR-INTEGER (CONS OF MEASURE)) ((VALUE INTEGER)))", ((cpp_function_code)(&computeMeasuresForInteger)), NULL);
@@ -1590,14 +1596,13 @@ void helpStartupUnits3() {
     defineMethodObject("(DEFMETHOD (GREATER-EQUAL? BOOLEAN) ((X DIM-NUMBER) (Y OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Computes `x' >= `y'\")", ((cpp_method_code)(&DimNumber::greaterEqualP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (GREATER? BOOLEAN) ((X DIM-NUMBER) (Y OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Computes `x' > `y'\")", ((cpp_method_code)(&DimNumber::greaterP)), ((cpp_method_code)(NULL)));
     defineFunctionObject("DIM-TO-TIME-DURATION", "(DEFUN (DIM-TO-TIME-DURATION TIME-DURATION) ((TIME-VALUE DIM-NUMBER)) :PUBLIC? TRUE :DOCUMENTATION \"Converts the dimensioned number `time-value' to its\nequivalent value as a `time-duration' object.  If `time-value' is not\nof the appropriate units, an `incompatible-units-exception' is thrown.\")", ((cpp_function_code)(&dimToTimeDuration)), NULL);
-    defineFunctionObject("TIME-DURATION-TO-DIM", "(DEFUN (TIME-DURATION-TO-DIM DIM-NUMBER) ((DURATION TIME-DURATION)) :PUBLIC? TRUE :DOCUMENTATION \"Converts the time duration `duration' to its\nequivalent value as dimensioned number.  The default time unit\nwill be used.\")", ((cpp_function_code)(&timeDurationToDim)), NULL);
   }
 }
 
 void startupUnits() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/UTILITIES", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupUnits1();
     }
@@ -1630,6 +1635,7 @@ void startupUnits() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupUnits3();
+      defineFunctionObject("TIME-DURATION-TO-DIM", "(DEFUN (TIME-DURATION-TO-DIM DIM-NUMBER) ((DURATION TIME-DURATION)) :PUBLIC? TRUE :DOCUMENTATION \"Converts the time duration `duration' to its\nequivalent value as dimensioned number.  The default time unit\nwill be used.\")", ((cpp_function_code)(&timeDurationToDim)), NULL);
       defineFunctionObject("DMS-TO-DEGREES", "(DEFUN (DMS-TO-DEGREES DIM-NUMBER) ((L (CONS OF DIM-NUMBER))) :PUBLIC? TRUE :DOCUMENTATION \"Converts a (Degree Minute Second) to decimal degrees.\")", ((cpp_function_code)(&dmsToDegrees)), NULL);
       defineFunctionObject("DEGREES-TO-DMS", "(DEFUN (DEGREES-TO-DMS (CONS OF DIM-NUMBER)) ((D DIM-NUMBER)) :PUBLIC? TRUE :DOCUMENTATION \"Convert decimal degrees to a list of (Degree Minute Second)\nwhere Degree and Minute are integer-valued.\")", ((cpp_function_code)(&degreesToDms)), NULL);
       defineFunctionObject("HMS-TO-HOURS", "(DEFUN (HMS-TO-HOURS DIM-NUMBER) ((L (CONS OF DIM-NUMBER))) :PUBLIC? TRUE :DOCUMENTATION \"Converts a (Hour Minute Second) to decimal hours\")", ((cpp_function_code)(&hmsToHours)), NULL);

@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2012      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: api-support.ste,v 1.31 2010/09/02 22:59:56 tar Exp
+;;; Version: api-support.ste,v 1.36 2012/03/07 21:47:35 hans Exp
 
 ;;; Support functions for Stella API
 ;;; THIS FILE IS SEMI-OBSOLETE AND SHOULD BE FOLDED INTO OTHER PLACES.
@@ -97,7 +97,7 @@ If `local?', only return propositions conceived locally in `module'."
         :iterator-object
         (choose local?
                 (list)
-                (reverse (listify (rest (visible-modules module)))))
+                (listify (reverse (copy-cons-list (rest (visible-modules module))))))
         :iterator-nested-iterator 
         (allocate-iterator (locally-conceived-propositions module))
         :iterator-next-code
@@ -105,8 +105,9 @@ If `local?', only return propositions conceived locally in `module'."
 
 (defun (filter-inconsistent-proposition? BOOLEAN) ((self OBJECT) (iterator ALL-PURPOSE-ITERATOR))
   ;; Passes only inconsistent propositions.
-  (ignore iterator)
-  (return (inconsistent? self)))
+  (let ((module MODULE (iterator-object iterator)))
+    (within-context (first-defined (best-inference-cache module) module)
+       (return (inconsistent? self)))))
 
 (defun (all-inconsistent-propositions (ITERATOR OF PROPOSITION))
        ((module MODULE) (local? BOOLEAN))
@@ -117,6 +118,7 @@ inconsistent propositions conceived locally in `module'."
   :public? TRUE
   (let ((propositions-iterator (all-propositions module local?))
         (iterator (new ALL-PURPOSE-ITERATOR)))
+    (setf (iterator-object iterator) module)
     (setf (first-iteration? iterator) TRUE)
     (setf (iterator-nested-iterator iterator) propositions-iterator)
     (setf (iterator-next-code iterator)
@@ -124,6 +126,44 @@ inconsistent propositions conceived locally in `module'."
     (setf (iterator-filter-code iterator)
           (the-code :function filter-inconsistent-proposition?))
     (return iterator)))
+
+(defun (locally-modified-proposition? BOOLEAN) ((proposition PROPOSITION) (module MODULE))
+  :documentation "Return true if proposition's truth-value has been locally modified in
+`module' (initialized, asserted, retracted).  This will always succeed for locally conceived
+propositions regardless of whether their truth value is defined or not."
+  :public? TRUE
+  (let ((truthValue (slot-value proposition truth-value :context-sensitive? FALSE)))
+    (cond ((or (null? truthValue)
+               (isa? truthValue @TRUTH-VALUE))
+           (return (eql? (home-module proposition) module)))
+          (otherwise
+           (foreach (ctxt tv) in (cast truthValue KEY-VALUE-LIST)
+               do (ignore tv)
+                  (when (eql? ctxt module)
+                    (return TRUE)))))
+    (return FALSE)))
+
+(defun (filter-locally-modified-proposition? BOOLEAN) ((self OBJECT) (iterator ALL-PURPOSE-ITERATOR))
+  ;; Passes only propositions whose truth-value has been locally modified in `module'.
+  (return (locally-modified-proposition? self (iterator-object iterator))))
+
+(defun (all-locally-modified-propositions (ITERATOR OF PROPOSITION)) ((module MODULE))
+  :documentation
+  "Iterate over all conceived propositions visible from `module' that had their
+truth value locally modified (initialized, asserted, retracted).  Note, that this
+will always include all locally conceived propositions."
+  :public? TRUE
+  (let ((propositions-iterator (all-propositions module FALSE))
+        (iterator (new ALL-PURPOSE-ITERATOR)))
+    (setf (iterator-object iterator) module)
+    (setf (first-iteration? iterator) TRUE)
+    (setf (iterator-nested-iterator iterator) propositions-iterator)
+    (setf (iterator-next-code iterator)
+          (the-code :function filtered-nested-iterator-next?))
+    (setf (iterator-filter-code iterator)
+          (the-code :function filter-locally-modified-proposition?))
+    (return iterator)))
+
 
 (defun (visible-term? BOOLEAN)
     ((term LOGIC-OBJECT) (context CONTEXT) (local? BOOLEAN))
@@ -168,10 +208,8 @@ terms created locally in `module'."
                     (otherwise
                      (pushq termsWithDuplicates term)))))
     (return
-      (allocate-destructive-list-iterator
-       (new (LIST OF LOGIC-OBJECT)
-            :the-cons-list
-            (remove-duplicates termsWithDuplicates))))))
+      (allocate-iterator
+       (concatenate terms (remove-duplicates termsWithDuplicates))))))
 
 #|
 (defun (all-named-terms-next? BOOLEAN) ((self ALL-PURPOSE-ITERATOR))

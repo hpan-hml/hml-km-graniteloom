@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -79,7 +79,7 @@ void propagateConstraintsEvaluatorWrapper(Cons* arguments);
 void repropagateConstraints(Cons* name);
 void repropagateConstraintsEvaluatorWrapper(Cons* arguments);
 void callRunForwardRules(Module* module, boolean forceP);
-void runForwardRules(Object* moduleref, Cons* force);
+void runForwardRules(Cons* options);
 void runForwardRulesEvaluatorWrapper(Cons* arguments);
 void startupInferenceCaches();
 
@@ -101,7 +101,11 @@ extern Surrogate* SGT_INFERENCE_CACHES_PL_KERNEL_KB_HIDDEN_RELATION;
 extern Keyword* KWD_INFERENCE_CACHES_RETRACT;
 extern Symbol* SYM_INFERENCE_CACHES_LOGIC_TRUTH_MAINTAINEDp;
 extern Keyword* KWD_INFERENCE_CACHES_PERFORMANCE_CLUES;
+extern Keyword* KWD_INFERENCE_CACHES_MODULE;
+extern Keyword* KWD_INFERENCE_CACHES_FORCEp;
 extern Keyword* KWD_INFERENCE_CACHES_FORCE;
+extern Surrogate* SGT_INFERENCE_CACHES_STELLA_MODULE;
+extern Surrogate* SGT_INFERENCE_CACHES_STELLA_BOOLEAN;
 extern Symbol* SYM_INFERENCE_CACHES_LOGIC_STARTUP_INFERENCE_CACHES;
 extern Symbol* SYM_INFERENCE_CACHES_STELLA_METHOD_STARTUP_CLASSNAME;
 

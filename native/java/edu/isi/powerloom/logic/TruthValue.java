@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -76,26 +76,38 @@ public class TruthValue extends LogicObject {
   }
 
   public static void printTruthValue(TruthValue self, OutputStream stream) {
+    { String tvString = TruthValue.truthValueToString(self, false);
+
+      if (tvString == null) {
+        stream.nativeStream.print("|i|" + self.primaryType());
+      }
+      else {
+        stream.nativeStream.print(tvString);
+      }
+    }
+  }
+
+  public static String truthValueToString(TruthValue self, boolean abbreviateP) {
     if (self == Logic.TRUE_TRUTH_VALUE) {
-      stream.nativeStream.print("TRUE");
+      return ((abbreviateP ? "T" : "TRUE"));
     }
     else if (self == Logic.FALSE_TRUTH_VALUE) {
-      stream.nativeStream.print("FALSE");
+      return ((abbreviateP ? "F" : "FALSE"));
     }
     else if (self == Logic.DEFAULT_TRUE_TRUTH_VALUE) {
-      stream.nativeStream.print("DEFAULT-TRUE");
+      return ((abbreviateP ? "t" : "DEFAULT-TRUE"));
     }
     else if (self == Logic.DEFAULT_FALSE_TRUTH_VALUE) {
-      stream.nativeStream.print("DEFAULT-FALSE");
+      return ((abbreviateP ? "f" : "DEFAULT-FALSE"));
     }
     else if (self == Logic.UNKNOWN_TRUTH_VALUE) {
-      stream.nativeStream.print("UNKNOWN");
+      return ((abbreviateP ? "U" : "UNKNOWN"));
     }
     else if (self == Logic.INCONSISTENT_TRUTH_VALUE) {
-      stream.nativeStream.print("INCONSISTENT");
+      return ((abbreviateP ? "#" : "INCONSISTENT"));
     }
     else {
-      stream.nativeStream.print("|i|" + self.primaryType());
+      return (null);
     }
   }
 
@@ -210,6 +222,119 @@ public class TruthValue extends LogicObject {
       }
     }
     return (tv1);
+  }
+
+  /** Merge two truth values that are describing the &quot;same&quot; logical
+   * proposition.  This handles subordination of default to strict values, 
+   * known over unknown and potential inconsistent values.
+   * <p>
+   * In particular, this can be used to check for negated values by asking for
+   * the truth of a proposition and its negation, inverting the negation and then
+   * using merge to come up with an answer.
+   * @param tv1
+   * @param tv2
+   * @return TruthValue
+   */
+  public static TruthValue mergeTruthValues(TruthValue tv1, TruthValue tv2) {
+    if (tv1 == tv2) {
+      return (tv1);
+    }
+    else if ((tv1 == Logic.INCONSISTENT_TRUTH_VALUE) ||
+        (tv2 == Logic.INCONSISTENT_TRUTH_VALUE)) {
+      return (Logic.INCONSISTENT_TRUTH_VALUE);
+    }
+    else if (((tv1 == Logic.TRUE_TRUTH_VALUE) ||
+        (tv1 == Logic.FALSE_TRUTH_VALUE)) &&
+        ((tv2 == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
+         (tv2 == Logic.DEFAULT_FALSE_TRUTH_VALUE))) {
+      return (tv1);
+    }
+    else if (((tv1 == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
+        (tv1 == Logic.DEFAULT_FALSE_TRUTH_VALUE)) &&
+        ((tv2 == Logic.TRUE_TRUTH_VALUE) ||
+         (tv2 == Logic.FALSE_TRUTH_VALUE))) {
+      return (tv2);
+    }
+    else if (TruthValue.knownTruthValueP(tv1) &&
+        ((tv2 == Logic.UNKNOWN_TRUTH_VALUE) ||
+         (tv2 == null))) {
+      return (tv1);
+    }
+    else if (((tv1 == Logic.UNKNOWN_TRUTH_VALUE) ||
+        (tv1 == null)) &&
+        TruthValue.knownTruthValueP(tv2)) {
+      return (tv2);
+    }
+    else if (((tv1 == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
+        (tv1 == Logic.DEFAULT_FALSE_TRUTH_VALUE)) &&
+        ((tv2 == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
+         (tv2 == Logic.DEFAULT_FALSE_TRUTH_VALUE))) {
+      return (Logic.UNKNOWN_TRUTH_VALUE);
+    }
+    else if (((tv1 == Logic.TRUE_TRUTH_VALUE) ||
+        (tv1 == Logic.FALSE_TRUTH_VALUE)) &&
+        ((tv2 == Logic.TRUE_TRUTH_VALUE) ||
+         (tv2 == Logic.FALSE_TRUTH_VALUE))) {
+      return (Logic.INCONSISTENT_TRUTH_VALUE);
+    }
+    else {
+      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+        stream000.nativeStream.print("Internal Error: MERGE-TRUTH-VALUES: Shouldn't get here. tv1=`" + tv1 + "' tv2=`" + tv2 + "'");
+        throw ((LogicException)(LogicException.newLogicException(stream000.theStringReader()).fillInStackTrace()));
+      }
+    }
+  }
+
+  /** Compare the two truth values and return <code>true</code> if <code>tv1</code> is strictly
+   * stronger than <code>tv2</code>.  Stronger uses the following partial order:
+   *   INCONSISTENT &gt; STRICT &gt; DEFAULT &gt; UNKNOWN.
+   * Truth values at the same level are equal in strength.
+   * @param tv1
+   * @param tv2
+   * @return boolean
+   */
+  public static boolean strongerTruthValueP(TruthValue tv1, TruthValue tv2) {
+    if (tv1 == tv2) {
+      return (false);
+    }
+    else if (tv1 == Logic.INCONSISTENT_TRUTH_VALUE) {
+      return (!(tv2 == Logic.INCONSISTENT_TRUTH_VALUE));
+    }
+    else if (tv2 == Logic.INCONSISTENT_TRUTH_VALUE) {
+      return (false);
+    }
+    else if ((tv1 == Logic.TRUE_TRUTH_VALUE) ||
+        (tv1 == Logic.FALSE_TRUTH_VALUE)) {
+      return (!((tv2 == Logic.TRUE_TRUTH_VALUE) ||
+          (tv2 == Logic.FALSE_TRUTH_VALUE)));
+    }
+    else if ((tv2 == Logic.TRUE_TRUTH_VALUE) ||
+        (tv2 == Logic.FALSE_TRUTH_VALUE)) {
+      return (false);
+    }
+    else if ((tv1 == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
+        (tv1 == Logic.DEFAULT_FALSE_TRUTH_VALUE)) {
+      return (!((tv2 == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
+          (tv2 == Logic.DEFAULT_FALSE_TRUTH_VALUE)));
+    }
+    else if ((tv2 == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
+        (tv2 == Logic.DEFAULT_FALSE_TRUTH_VALUE)) {
+      return (false);
+    }
+    else if (((tv1 == Logic.UNKNOWN_TRUTH_VALUE) ||
+        (tv1 == null)) &&
+        ((tv2 == Logic.UNKNOWN_TRUTH_VALUE) ||
+         (tv2 == null))) {
+      return (false);
+    }
+    else {
+      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+        stream000.nativeStream.print("Internal Error: STRONGER-TRUTH-VALUE?: Shouldn't get here. tv1=`" + tv1 + "' tv2=`" + tv2 + "'");
+        throw ((LogicException)(LogicException.newLogicException(stream000.theStringReader()).fillInStackTrace()));
+      }
+    }
   }
 
   /** Return the logical negation of <code>self</code>.

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -123,9 +123,9 @@ public class _StartupJavaTranslate {
       Stella.SYM_STELLA_JAVA_PRINT_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_PRINT_STREAM", null, 0)));
       Stella.SYM_STELLA_JAVA_STANDARD_ERROR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_STANDARD_ERROR", null, 0)));
       Stella.SYM_STELLA_JAVA_STANDARD_OUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_STANDARD_OUT", null, 0)));
+      Stella.SYM_STELLA_JAVA_LITERAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_LITERAL", null, 0)));
       Stella.SYM_STELLA_JAVA_PRINT_NATIVE_STREAM = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_PRINT_NATIVE_STREAM", null, 0)));
       Stella.SYM_STELLA_JAVA_EOL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_EOL", null, 0)));
-      Stella.SYM_STELLA_JAVA_LITERAL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_LITERAL", null, 0)));
       Stella.SYM_STELLA_JAVA_SYMBOL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_SYMBOL", null, 0)));
       Stella.SYM_STELLA_JAVA_UNARY_OP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_UNARY_OP", null, 0)));
       Stella.SYM_STELLA_JAVA_BINARY_OP = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("JAVA_BINARY_OP", null, 0)));

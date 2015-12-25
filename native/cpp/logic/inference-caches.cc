@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -186,7 +186,7 @@ void destroyInferenceCache(Context* context, Keyword* kind) {
 void destroyAllInferenceCaches(Context* context, Keyword* kind) {
   destroyInferenceCache(context, kind);
   { Context* child = NULL;
-    AllPurposeIterator* iter000 = allSubcontexts(oCONTEXTo.get(), KWD_INFERENCE_CACHES_PREORDER);
+    AllPurposeIterator* iter000 = allSubcontexts(oCONTEXTo, KWD_INFERENCE_CACHES_PREORDER);
 
     for (child, iter000; iter000->nextP(); ) {
       child = ((Context*)(iter000->value));
@@ -266,11 +266,11 @@ boolean metaPropositionP(Proposition* proposition) {
 }
 
 void handleOutOfDateInferenceCache(Keyword* assertorretract, Proposition* proposition) {
-  if (worldStateP(oCONTEXTo.get())) {
-    if ((!((boolean)(lookupInferenceCache(oCONTEXTo.get(), KWD_INFERENCE_CACHES_META)))) ||
-        (((boolean)(oQUERYITERATORo.get())) ||
+  if (worldStateP(oCONTEXTo)) {
+    if ((!((boolean)(lookupInferenceCache(oCONTEXTo, KWD_INFERENCE_CACHES_META)))) ||
+        (((boolean)(oQUERYITERATORo)) ||
          (descriptionModeP() ||
-          oINVISIBLEASSERTIONpo.get()))) {
+          oINVISIBLEASSERTIONpo))) {
       return;
     }
     { NamedDescription* description = (((boolean)(proposition)) ? getDescription(((Surrogate*)(proposition->operatoR))) : ((NamedDescription*)(NULL)));
@@ -282,34 +282,34 @@ void handleOutOfDateInferenceCache(Keyword* assertorretract, Proposition* propos
     }
     if (metaPropositionP(proposition) &&
         ((assertorretract == KWD_INFERENCE_CACHES_RETRACT) &&
-         (!((BooleanWrapper*)(dynamicSlotValue(lookupInferenceCache(oCONTEXTo.get(), KWD_INFERENCE_CACHES_META)->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_TRUTH_MAINTAINEDp, FALSE_WRAPPER)))->wrapperValue))) {
+         (!((BooleanWrapper*)(dynamicSlotValue(lookupInferenceCache(oCONTEXTo, KWD_INFERENCE_CACHES_META)->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_TRUTH_MAINTAINEDp, FALSE_WRAPPER)))->wrapperValue))) {
       if (((boolean)(oTRACED_KEYWORDSo)) &&
           oTRACED_KEYWORDSo->membP(KWD_INFERENCE_CACHES_PERFORMANCE_CLUES)) {
         std::cout << "DELETING META CACHE" << std::endl;
       }
-      destroyInferenceCache(oCONTEXTo.get(), KWD_INFERENCE_CACHES_META);
+      destroyInferenceCache(oCONTEXTo, KWD_INFERENCE_CACHES_META);
     }
     else if (oJUST_IN_TIME_FORWARD_INFERENCEpo) {
-      if (((boolean)(((World*)(dynamicSlotValue(oCONTEXTo.get()->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_JUST_IN_TIME_INFERENCE_CACHE, NULL)))))) {
+      if (((boolean)(((World*)(dynamicSlotValue(oCONTEXTo->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_JUST_IN_TIME_INFERENCE_CACHE, NULL)))))) {
         if (((boolean)(oTRACED_KEYWORDSo)) &&
             oTRACED_KEYWORDSo->membP(KWD_INFERENCE_CACHES_PERFORMANCE_CLUES)) {
           std::cout << "DELETING JIT CACHE" << std::endl;
         }
-        destroyAllInferenceCaches(oCONTEXTo.get(), KWD_INFERENCE_CACHES_JUST_IN_TIME);
+        destroyAllInferenceCaches(oCONTEXTo, KWD_INFERENCE_CACHES_JUST_IN_TIME);
       }
     }
     else {
-      { World* cache = lookupInferenceCache(oCONTEXTo.get(), KWD_INFERENCE_CACHES_TMS);
+      { World* cache = lookupInferenceCache(oCONTEXTo, KWD_INFERENCE_CACHES_TMS);
 
         if (((boolean)(cache)) &&
             (!((BooleanWrapper*)(dynamicSlotValue(cache->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_TRUTH_MAINTAINEDp, FALSE_WRAPPER)))->wrapperValue)) {
-          destroyInferenceCache(oCONTEXTo.get(), KWD_INFERENCE_CACHES_TMS);
+          destroyInferenceCache(oCONTEXTo, KWD_INFERENCE_CACHES_TMS);
         }
       }
     }
     return;
   }
-  { World* world = ((World*)(oCONTEXTo.get()));
+  { World* world = ((World*)(oCONTEXTo));
 
     if (((BooleanWrapper*)(dynamicSlotValue(world->dynamicSlots, SYM_INFERENCE_CACHES_LOGIC_MONOTONICp, FALSE_WRAPPER)))->wrapperValue &&
         (assertorretract == KWD_INFERENCE_CACHES_RETRACT)) {
@@ -342,20 +342,20 @@ World* bestInferenceCache(Context* context) {
 }
 
 Context* getQueryContext() {
-  if (!worldStateP(oCONTEXTo.get())) {
-    return (oCONTEXTo.get());
+  if (!worldStateP(oCONTEXTo)) {
+    return (oCONTEXTo);
   }
-  { World* cache = bestInferenceCache(oCONTEXTo.get());
+  { World* cache = bestInferenceCache(oCONTEXTo);
 
-    return ((((boolean)(cache)) ? cache : oCONTEXTo.get()));
+    return ((((boolean)(cache)) ? cache : oCONTEXTo));
   }
 }
 
 Context* getPropertyTestContext() {
-  { World* constraintpropagationworld = lookupConstraintPropagationWorld(oCONTEXTo.get());
+  { World* constraintpropagationworld = lookupConstraintPropagationWorld(oCONTEXTo);
 
     if (!((boolean)(constraintpropagationworld))) {
-      return (oCONTEXTo.get());
+      return (oCONTEXTo);
     }
     else {
       return (constraintpropagationworld);
@@ -364,13 +364,13 @@ Context* getPropertyTestContext() {
 }
 
 Context* getInferableTestContext() {
-  if (!worldStateP(oCONTEXTo.get())) {
-    return (oCONTEXTo.get());
+  if (!worldStateP(oCONTEXTo)) {
+    return (oCONTEXTo);
   }
   else {
-    { World* temp000 = lookupInferenceCache(oCONTEXTo.get(), KWD_INFERENCE_CACHES_META);
+    { World* temp000 = lookupInferenceCache(oCONTEXTo, KWD_INFERENCE_CACHES_META);
 
-      { Context* value000 = (((boolean)(temp000)) ? temp000 : oCONTEXTo.get());
+      { Context* value000 = (((boolean)(temp000)) ? temp000 : oCONTEXTo);
 
         return (value000);
       }
@@ -379,13 +379,13 @@ Context* getInferableTestContext() {
 }
 
 Context* getTopLevelUpdateContext() {
-  return (getWorldState(oCONTEXTo.get()));
+  return (getWorldState(oCONTEXTo));
 }
 
 World* lookupConstraintPropagationWorld(Context* self) {
   if (worldStateP(self)) {
     if (oJUST_IN_TIME_FORWARD_INFERENCEpo) {
-      if (((boolean)(oQUERYITERATORo.get()))) {
+      if (((boolean)(oQUERYITERATORo))) {
         return (getInferenceCache(self, KWD_INFERENCE_CACHES_JUST_IN_TIME));
       }
       else {
@@ -462,7 +462,7 @@ void propagateConstraints(Cons* name) {
       callPropagateConstraints(module);
     }
     else {
-      callPropagateConstraints(oCONTEXTo.get());
+      callPropagateConstraints(oCONTEXTo);
     }
   }
 }
@@ -481,7 +481,7 @@ void repropagateConstraints(Cons* name) {
     Module* context = coerceToModule(optionalname->value, true);
 
     if (!((boolean)(context))) {
-      context = ((Module*)(oCONTEXTo.get()));
+      context = ((Module*)(oCONTEXTo));
     }
     destroyInferenceCaches(context);
     callPropagateConstraints(context);
@@ -520,28 +520,26 @@ void callRunForwardRules(Module* module, boolean forceP) {
   }
 }
 
-void runForwardRules(Object* moduleref, Cons* force) {
-  // Run forward inference rules in module 'moduleRef'. If 'moduleRef' is NULL, the
-  // current module will be used.  If forward inferencing is already up-to-date
-  // in the designated module, no additional inferencing will occur, unless the
-  // optional keyword `:force' is included, in which case all
-  // forward rules are run or rerun.
+void runForwardRules(Cons* options) {
+  // Run forward inference rules in the module defined by the :module option (which
+  // defaults to the current module).  If forward inferencing is already up-to-date
+  // in the designated module, no additional inferencing will occur, unless the :force?
+  // option is specified as TRUE, in which case all forward rules are run or rerun.
+  // For backwards compatibility, this command also supports the old <module> :force
+  // arguments specified with a non-standard keyword notation.
   // 
   // Calling `run-forward-rules' temporarily puts the module into a mode where
   // future assertional (monotonic) updates will trigger additional forward
   // inference.  Once a non-monotonic update is performed, i.e., a retraction
   // or clipping of relation value, all cached forward inferences will be discarded
-  // and forward inferencing will be disabled until this function is
-  // called again.
-  { Module* module = coerceToModule(moduleref, true);
-    Cons* optionalarguments = force;
-    boolean forceP = ((Keyword*)(optionalarguments->value)) == KWD_INFERENCE_CACHES_FORCE;
+  // and forward inferencing will be disabled until this function is called again.
+  { Cons* optionslist = options;
+    PropertyList* theoptions = parseOptions((keywordP(optionslist->value) ? optionslist : consList(4, KWD_INFERENCE_CACHES_MODULE, optionslist->value, KWD_INFERENCE_CACHES_FORCEp, ((optionslist->rest->value == KWD_INFERENCE_CACHES_FORCE) ? TRUE_WRAPPER : FALSE_WRAPPER))), listO(5, KWD_INFERENCE_CACHES_MODULE, SGT_INFERENCE_CACHES_STELLA_MODULE, KWD_INFERENCE_CACHES_FORCEp, SGT_INFERENCE_CACHES_STELLA_BOOLEAN, NIL), true, false);
+    Module* themodule = ((Module*)(theoptions->lookupWithDefault(KWD_INFERENCE_CACHES_MODULE, oMODULEo)));
+    boolean forceP = coerceWrappedBooleanToBoolean(((BooleanWrapper*)(theoptions->lookupWithDefault(KWD_INFERENCE_CACHES_FORCEp, FALSE_WRAPPER))));
 
-    if (!((boolean)(module))) {
-      module = oMODULEo.get();
-    }
     try {
-      callRunForwardRules(module, forceP);
+      callRunForwardRules(themodule, forceP);
     }
     catch (Clash& _e) {
       Clash* e = &_e;
@@ -553,13 +551,13 @@ void runForwardRules(Object* moduleref, Cons* force) {
 }
 
 void runForwardRulesEvaluatorWrapper(Cons* arguments) {
-  runForwardRules(arguments->value, arguments->rest);
+  runForwardRules(arguments);
 }
 
 void startupInferenceCaches() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SGT_INFERENCE_CACHES_STELLA_WORLD = ((Surrogate*)(internRigidSymbolWrtModule("WORLD", getStellaModule("/STELLA", true), 1)));
       SYM_INFERENCE_CACHES_LOGIC_INFERENCE_CACHE_OF = ((Symbol*)(internRigidSymbolWrtModule("INFERENCE-CACHE-OF", NULL, 0)));
@@ -578,7 +576,11 @@ void startupInferenceCaches() {
       KWD_INFERENCE_CACHES_RETRACT = ((Keyword*)(internRigidSymbolWrtModule("RETRACT", NULL, 2)));
       SYM_INFERENCE_CACHES_LOGIC_TRUTH_MAINTAINEDp = ((Symbol*)(internRigidSymbolWrtModule("TRUTH-MAINTAINED?", NULL, 0)));
       KWD_INFERENCE_CACHES_PERFORMANCE_CLUES = ((Keyword*)(internRigidSymbolWrtModule("PERFORMANCE-CLUES", NULL, 2)));
+      KWD_INFERENCE_CACHES_MODULE = ((Keyword*)(internRigidSymbolWrtModule("MODULE", NULL, 2)));
+      KWD_INFERENCE_CACHES_FORCEp = ((Keyword*)(internRigidSymbolWrtModule("FORCE?", NULL, 2)));
       KWD_INFERENCE_CACHES_FORCE = ((Keyword*)(internRigidSymbolWrtModule("FORCE", NULL, 2)));
+      SGT_INFERENCE_CACHES_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 1)));
+      SGT_INFERENCE_CACHES_STELLA_BOOLEAN = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN", getStellaModule("/STELLA", true), 1)));
       SYM_INFERENCE_CACHES_LOGIC_STARTUP_INFERENCE_CACHES = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-INFERENCE-CACHES", NULL, 0)));
       SYM_INFERENCE_CACHES_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
     }
@@ -615,7 +617,7 @@ void startupInferenceCaches() {
       defineFunctionObject("PROPAGATE-CONSTRAINTS", "(DEFUN PROPAGATE-CONSTRAINTS (|&REST| (NAME NAME)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Trigger constraint propagation over all propositions of module `name'.\nIf no `name' is supplied, the current module will be used.  This also\nenables incremental constraint propagation for future monotonic updates to\nthe module.  Once a non-monotonic update is performed, i.e., a retraction\nor clipping of a function value, all cached inferences will be discarded\nand constraint propagation will be turned off until this function is\ncalled again.\")", ((cpp_function_code)(&propagateConstraints)), ((cpp_function_code)(&propagateConstraintsEvaluatorWrapper)));
       defineFunctionObject("REPROPAGATE-CONSTRAINTS", "(DEFUN REPROPAGATE-CONSTRAINTS (|&REST| (NAME NAME)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Force non-incremental constraint propagation over all propositions of\nmodule `name'.  If no `name' is supplied, the current module will be used.\nThis also enables incremental constraint propagation for future monotonic\nupdates to the module similar to `propagate-constraints'.\")", ((cpp_function_code)(&repropagateConstraints)), ((cpp_function_code)(&repropagateConstraintsEvaluatorWrapper)));
       defineFunctionObject("CALL-RUN-FORWARD-RULES", "(DEFUN CALL-RUN-FORWARD-RULES ((MODULE MODULE) (FORCE? BOOLEAN)) :DOCUMENTATION \"Run forward inference rules in module 'module'. If 'module'\nis NULL, the current module will be used.  If forward inferencing is already\nup-to-date in the designated module, no additional inferencing will occur,\nunless 'force?' is set to TRUE, in which case all forward rules are run or rerun.\" :PUBLIC? TRUE)", ((cpp_function_code)(&callRunForwardRules)), NULL);
-      defineFunctionObject("RUN-FORWARD-RULES", "(DEFUN RUN-FORWARD-RULES ((MODULEREF NAME) |&REST| (FORCE KEYWORD)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Run forward inference rules in module 'moduleRef'. If 'moduleRef' is NULL, the\ncurrent module will be used.  If forward inferencing is already up-to-date\nin the designated module, no additional inferencing will occur, unless the\noptional keyword `:force' is included, in which case all\nforward rules are run or rerun.\n\nCalling `run-forward-rules' temporarily puts the module into a mode where\nfuture assertional (monotonic) updates will trigger additional forward\ninference.  Once a non-monotonic update is performed, i.e., a retraction\nor clipping of relation value, all cached forward inferences will be discarded\nand forward inferencing will be disabled until this function is\ncalled again.\")", ((cpp_function_code)(&runForwardRules)), ((cpp_function_code)(&runForwardRulesEvaluatorWrapper)));
+      defineFunctionObject("RUN-FORWARD-RULES", "(DEFUN RUN-FORWARD-RULES (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Run forward inference rules in the module defined by the :module option (which\ndefaults to the current module).  If forward inferencing is already up-to-date\nin the designated module, no additional inferencing will occur, unless the :force?\noption is specified as TRUE, in which case all forward rules are run or rerun.\nFor backwards compatibility, this command also supports the old <module> :force\narguments specified with a non-standard keyword notation.\n\nCalling `run-forward-rules' temporarily puts the module into a mode where\nfuture assertional (monotonic) updates will trigger additional forward\ninference.  Once a non-monotonic update is performed, i.e., a retraction\nor clipping of relation value, all cached forward inferences will be discarded\nand forward inferencing will be disabled until this function is called again.\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&runForwardRules)), ((cpp_function_code)(&runForwardRulesEvaluatorWrapper)));
       defineFunctionObject("STARTUP-INFERENCE-CACHES", "(DEFUN STARTUP-INFERENCE-CACHES () :PUBLIC? TRUE)", ((cpp_function_code)(&startupInferenceCaches)), NULL);
       { MethodSlot* function = lookupFunction(SYM_INFERENCE_CACHES_LOGIC_STARTUP_INFERENCE_CACHES);
 
@@ -667,7 +669,15 @@ Symbol* SYM_INFERENCE_CACHES_LOGIC_TRUTH_MAINTAINEDp = NULL;
 
 Keyword* KWD_INFERENCE_CACHES_PERFORMANCE_CLUES = NULL;
 
+Keyword* KWD_INFERENCE_CACHES_MODULE = NULL;
+
+Keyword* KWD_INFERENCE_CACHES_FORCEp = NULL;
+
 Keyword* KWD_INFERENCE_CACHES_FORCE = NULL;
+
+Surrogate* SGT_INFERENCE_CACHES_STELLA_MODULE = NULL;
+
+Surrogate* SGT_INFERENCE_CACHES_STELLA_BOOLEAN = NULL;
 
 Symbol* SYM_INFERENCE_CACHES_LOGIC_STARTUP_INFERENCE_CACHES = NULL;
 

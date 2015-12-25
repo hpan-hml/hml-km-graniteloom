@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -92,7 +92,7 @@ public class NamedDescription extends Description {
     { NamedDescription top = this;
 
       Stella.indentOutline(currentDepth, stream);
-      stream.nativeStream.println(Logic.objectName(top));
+      stream.nativeStream.println(Logic.objectName(top).toString());
       if (!((depth != Stella.NULL_INTEGER) &&
           ((depth >= 0) &&
            (currentDepth >= depth)))) {
@@ -1083,35 +1083,74 @@ public class NamedDescription extends Description {
   }
 
   public static java.lang.reflect.Method lookupEvaluator(NamedDescription description) {
-    { Stella_Object evaluatorprocedure = Logic.accessBinaryValue(description, Logic.SGT_PL_KERNEL_KB_RELATION_EVALUATOR);
-      java.lang.reflect.Method functioncode = null;
+    { MethodSlot function = NamedDescription.lookupEvaluatorFunction(description);
 
-      if (evaluatorprocedure != null) {
-        functioncode = Logic.functionCodeFromProcedure(evaluatorprocedure);
+      if (function != null) {
+        return (function.functionCode);
       }
-      return (functioncode);
+      else {
+        return (null);
+      }
+    }
+  }
+
+  public static MethodSlot lookupEvaluatorFunction(NamedDescription description) {
+    { Stella_Object computationprocedure = Logic.accessBinaryValue(description, Logic.SGT_PL_KERNEL_KB_RELATION_EVALUATOR);
+
+      if (computationprocedure != null) {
+        return (ComputedProcedure.stellaFunctionFromProcedure(((ComputedProcedure)(computationprocedure))));
+      }
+      else {
+        return (null);
+      }
     }
   }
 
   public static java.lang.reflect.Method lookupComputation(NamedDescription description) {
+    { MethodSlot function = NamedDescription.lookupComputationFunction(description);
+
+      if (function != null) {
+        return (function.functionCode);
+      }
+      else {
+        return (null);
+      }
+    }
+  }
+
+  public static MethodSlot lookupComputationFunction(NamedDescription description) {
     { Stella_Object computationprocedure = Logic.accessBinaryValue(description, Logic.SGT_PL_KERNEL_KB_RELATION_COMPUTATION);
-      java.lang.reflect.Method functioncode = null;
 
       if (computationprocedure != null) {
-        functioncode = Logic.functionCodeFromProcedure(computationprocedure);
+        return (ComputedProcedure.stellaFunctionFromProcedure(((ComputedProcedure)(computationprocedure))));
       }
-      return (functioncode);
+      else {
+        return (null);
+      }
     }
   }
 
   public static java.lang.reflect.Method lookupConstraint(NamedDescription description) {
+    { MethodSlot function = NamedDescription.lookupConstraintFunction(description);
+
+      if (function != null) {
+        return (function.functionCode);
+      }
+      else {
+        return (null);
+      }
+    }
+  }
+
+  public static MethodSlot lookupConstraintFunction(NamedDescription description) {
     { Stella_Object computationprocedure = Logic.accessBinaryValue(description, Logic.SGT_PL_KERNEL_KB_RELATION_CONSTRAINT);
-      java.lang.reflect.Method functioncode = null;
 
       if (computationprocedure != null) {
-        functioncode = Logic.functionCodeFromProcedure(computationprocedure);
+        return (ComputedProcedure.stellaFunctionFromProcedure(((ComputedProcedure)(computationprocedure))));
       }
-      return (functioncode);
+      else {
+        return (null);
+      }
     }
   }
 
@@ -1125,7 +1164,7 @@ public class NamedDescription extends Description {
           return (null);
         }
         else {
-          functioncode = Logic.functionCodeFromProcedure(specialistprocedure);
+          functioncode = ComputedProcedure.functionCodeFromProcedure(((ComputedProcedure)(specialistprocedure)));
         }
       }
       if (functioncode == null) {
@@ -1464,19 +1503,24 @@ public class NamedDescription extends Description {
 
   public static SequenceIndex getDescriptionExtension(NamedDescription description, boolean updateP) {
     { SequenceIndex extension = description.extension;
+      SequenceIndex result = null;
 
       if ((extension != null) &&
           (!(extension == Logic.NIL_PAGING_INDEX))) {
-        return (extension);
+        result = extension;
       }
       else if (updateP) {
         extension = Logic.createSequenceIndex(Logic.KWD_PAGING, Cons.cons(Logic.KWD_RELATION, Cons.cons(((Stella.NIL == null) ? Stella.NIL : Stella.NIL), Cons.cons(description.surrogateValueInverse, Stella.NIL))));
         description.extension = extension;
-        return (extension);
+        result = extension;
       }
       else {
-        return (Logic.NIL_PAGING_INDEX);
+        result = Logic.NIL_PAGING_INDEX;
       }
+      if (!(Logic.$ALL_OBJECT_STORES$ == Stella.NIL_LIST)) {
+        result = SequenceIndex.maybeWrapSequenceIndex(result, null, Logic.KWD_RELATION, description.surrogateValueInverse, null);
+      }
+      return (result);
     }
   }
 

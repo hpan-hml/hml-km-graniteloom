@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -60,7 +60,7 @@ boolean typeHasBacklinksP(Surrogate* type) {
 BacklinksIndex* createBacklinksIndex(Object* self) {
   { BacklinksIndex* index = newBacklinksIndex();
 
-    index->dependentPropositionsList = (isaP(self, SGT_BACKLINKS_LOGIC_PATTERN_VARIABLE) ? createSequenceIndex(KWD_BACKLINKS_NON_PAGING, NIL) : createSequenceIndex(oMODULEo.get(), cons(KWD_BACKLINKS_DEPENDENTS, cons(((!((boolean)(NIL))) ? NIL : NIL), cons(self, NIL)))));
+    index->dependentPropositionsList = (isaP(self, SGT_BACKLINKS_LOGIC_PATTERN_VARIABLE) ? createSequenceIndex(KWD_BACKLINKS_NON_PAGING, NIL) : createSequenceIndex(oMODULEo, cons(KWD_BACKLINKS_DEPENDENTS, cons(((!((boolean)(NIL))) ? NIL : NIL), cons(self, NIL)))));
     return (index);
   }
 }
@@ -101,15 +101,41 @@ BacklinksIndex* getBacklinksIndex(Object* self) {
         }
       }
     }
-    else if (subtypeOfWrapperP(testValue000)) {
+    else if (subtypeOfP(testValue000, SGT_BACKLINKS_LOGIC_PROPOSITION)) {
       { Object* self002 = self;
-        Wrapper* self = ((Wrapper*)(self002));
+        Proposition* self = ((Proposition*)(self002));
+
+        { BacklinksIndex* index = ((BacklinksIndex*)(dynamicSlotValue(self->dynamicSlots, SYM_BACKLINKS_LOGIC_DEPENDENT_PROPOSITIONS_INDEX, NULL)));
+
+          if (((boolean)(index))) {
+            return (index);
+          }
+          if (!(self->dependentPropositions->emptyP() ||
+              ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_BACKLINKS_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue)) {
+            index = createBacklinksIndex(self);
+            setDynamicSlotValue(self->dynamicSlots, SYM_BACKLINKS_LOGIC_DEPENDENT_PROPOSITIONS_INDEX, index, NULL);
+            { Proposition* prop = NULL;
+              Iterator* iter000 = self->dependentPropositions->allocateIterator();
+
+              for (prop, iter000; iter000->nextP(); ) {
+                prop = ((Proposition*)(iter000->value));
+                helpAddDependentProposition(index, prop, self);
+              }
+            }
+          }
+          return (index);
+        }
+      }
+    }
+    else if (subtypeOfWrapperP(testValue000)) {
+      { Object* self003 = self;
+        Wrapper* self = ((Wrapper*)(self003));
 
         { Surrogate* testValue001 = safePrimaryType(self);
 
           if (subtypeOfP(testValue001, SGT_BACKLINKS_LOGIC_INTEGER_LOGIC_WRAPPER)) {
-            { Wrapper* self003 = self;
-              IntegerLogicWrapper* self = ((IntegerLogicWrapper*)(self003));
+            { Wrapper* self004 = self;
+              IntegerLogicWrapper* self = ((IntegerLogicWrapper*)(self004));
 
               { BacklinksIndex* index = self->dependentPropositionsIndex;
 
@@ -123,8 +149,8 @@ BacklinksIndex* getBacklinksIndex(Object* self) {
             }
           }
           else if (subtypeOfP(testValue001, SGT_BACKLINKS_LOGIC_FLOAT_LOGIC_WRAPPER)) {
-            { Wrapper* self004 = self;
-              FloatLogicWrapper* self = ((FloatLogicWrapper*)(self004));
+            { Wrapper* self005 = self;
+              FloatLogicWrapper* self = ((FloatLogicWrapper*)(self005));
 
               { BacklinksIndex* index = self->dependentPropositionsIndex;
 
@@ -138,8 +164,8 @@ BacklinksIndex* getBacklinksIndex(Object* self) {
             }
           }
           else if (subtypeOfP(testValue001, SGT_BACKLINKS_LOGIC_STRING_LOGIC_WRAPPER)) {
-            { Wrapper* self005 = self;
-              StringLogicWrapper* self = ((StringLogicWrapper*)(self005));
+            { Wrapper* self006 = self;
+              StringLogicWrapper* self = ((StringLogicWrapper*)(self006));
 
               { BacklinksIndex* index = self->dependentPropositionsIndex;
 
@@ -185,7 +211,7 @@ void addDependentPropositionToSpecializedIndex(BacklinksIndex* index, Propositio
     }
     if (proposition->kind == KWD_BACKLINKS_ISA) {
       if (!((boolean)(index->dependentIsaPropositionsList))) {
-        index->dependentIsaPropositionsList = createSequenceIndex(oMODULEo.get(), cons(KWD_BACKLINKS_ISA, cons(((!((boolean)(NIL))) ? NIL : NIL), cons(argument, NIL))));
+        index->dependentIsaPropositionsList = createSequenceIndex(oMODULEo, cons(KWD_BACKLINKS_ISA, cons(((!((boolean)(NIL))) ? NIL : NIL), cons(argument, NIL))));
       }
       index->dependentIsaPropositionsList->insert(proposition);
     }
@@ -195,7 +221,7 @@ void addDependentPropositionToSpecializedIndex(BacklinksIndex* index, Propositio
 
         bucket = ((SequenceIndex*)(table->lookup(surrogate)));
         if (!((boolean)(bucket))) {
-          bucket = createSequenceIndex(oMODULEo.get(), cons(KWD_BACKLINKS_RELATION, cons(((!((boolean)(NIL))) ? NIL : NIL), cons(surrogate, cons(argument, NIL)))));
+          bucket = createSequenceIndex(oMODULEo, cons(KWD_BACKLINKS_RELATION, cons(((!((boolean)(NIL))) ? NIL : NIL), cons(surrogate, cons(argument, NIL)))));
           table->insertAt(surrogate, bucket);
         }
         bucket->insert(proposition);
@@ -208,6 +234,9 @@ void helpAddDependentProposition(BacklinksIndex* index, Proposition* proposition
   { SequenceIndex* alldependentpropositions = index->dependentPropositionsList;
     HashTable* table = index->predicatePropositionsTable;
 
+    if (alldependentpropositions->first() == proposition) {
+      return;
+    }
     if (!((boolean)(table))) {
       if (sequenceIndexDestimatedLength(alldependentpropositions) < oSPECIALIZED_BACKLINKS_CROSSOVER_POINTo) {
         alldependentpropositions->insert(proposition);
@@ -233,12 +262,19 @@ void addDependentPropositionLink(Object* self, Proposition* proposition) {
           }
           else {
             { NonPagingIndex* index = self->dependentPropositions;
+              BacklinksIndex* backlinks = ((BacklinksIndex*)(dynamicSlotValue(self->dynamicSlots, SYM_BACKLINKS_LOGIC_DEPENDENT_PROPOSITIONS_INDEX, NULL)));
 
+              if (index->first() == proposition) {
+                return;
+              }
               if (index == NIL_NON_PAGING_INDEX) {
                 index = ((NonPagingIndex*)(createSequenceIndex(KWD_BACKLINKS_NON_PAGING, NIL)));
                 self->dependentPropositions = index;
               }
-              self->dependentPropositions->insert(proposition);
+              index->insert(proposition);
+              if (((boolean)(backlinks))) {
+                helpAddDependentProposition(backlinks, proposition, self);
+              }
             }
           }
         }
@@ -307,6 +343,12 @@ void removeDependentPropositionLink(Object* self, Proposition* proposition) {
         Proposition* self = ((Proposition*)(self000));
 
         self->dependentPropositions->remove(proposition);
+        { BacklinksIndex* backlinks = ((BacklinksIndex*)(dynamicSlotValue(self->dynamicSlots, SYM_BACKLINKS_LOGIC_DEPENDENT_PROPOSITIONS_INDEX, NULL)));
+
+          if (((boolean)(backlinks))) {
+            helpRemoveDependentProposition(backlinks, proposition);
+          }
+        }
       }
     }
     else if (subtypeOfP(testValue000, SGT_BACKLINKS_LOGIC_LOGIC_OBJECT)) {
@@ -366,6 +408,37 @@ void helpRemoveDependentProposition(BacklinksIndex* index, Proposition* proposit
 
 void removeAllDependentPropositionLinks(LogicObject* self) {
   self->dependentPropositionsIndex = NULL;
+}
+
+BacklinksIndex* BacklinksIndex::removeDeletedMembers() {
+  { BacklinksIndex* self = this;
+
+    if (((boolean)(self->dependentPropositionsList))) {
+      self->dependentPropositionsList->removeDeletedMembers();
+    }
+    if (((boolean)(self->dependentIsaPropositionsList))) {
+      self->dependentIsaPropositionsList->removeDeletedMembers();
+    }
+    { HashTable* table = self->predicatePropositionsTable;
+      StellaHashTable* hashtable = ((StellaHashTable*)((((boolean)(table)) ? table->theStellaHashTable : ((StellaHashTable*)(NULL)))));
+
+      if (((boolean)(hashtable))) {
+        { Object* key = NULL;
+          SequenceIndex* index = NULL;
+          StellaHashTableIterator* iter000 = ((StellaHashTableIterator*)(hashtable->allocateIterator()));
+
+          for  (key, index, iter000; 
+                iter000->nextP(); ) {
+            key = iter000->key;
+            index = ((SequenceIndex*)(iter000->value));
+            key = key;
+            index->removeDeletedMembers();
+          }
+        }
+      }
+      return (self);
+    }
+  }
 }
 
 IntegerHashTable* oINTEGER_LOGIC_WRAPPER_TABLEo = NULL;
@@ -551,7 +624,7 @@ void rewrapPropositionArguments(Proposition* self) {
   }
 }
 
-SequenceIndex* unfilteredDependentPropositions(Object* self, Surrogate* relation) {
+SequenceIndex* helpUnfilteredDependentPropositions(Object* self, Surrogate* relation) {
   if (subtypeOfP(safePrimaryType(self), SGT_BACKLINKS_LOGIC_PROPOSITION)) {
     { Object* self000 = self;
       Proposition* self = ((Proposition*)(self000));
@@ -643,6 +716,67 @@ SequenceIndex* unfilteredDependentPropositions(Object* self, Surrogate* relation
         return (list);
       }
     }
+  }
+}
+
+SequenceIndex* unfilteredDependentPropositions(Object* self, Surrogate* relation) {
+  { SequenceIndex* result = helpUnfilteredDependentPropositions(self, relation);
+
+    if (!(oALL_OBJECT_STORESo == NIL_LIST)) {
+      { SequenceIndex* baseresult = result;
+
+        if (!((boolean)(relation))) {
+          result = maybeWrapSequenceIndex(baseresult, NULL, KWD_BACKLINKS_DEPENDENTS, self, NULL);
+        }
+        else {
+          result = maybeWrapSequenceIndex(baseresult, NULL, KWD_BACKLINKS_RELATION, relation, self);
+          if (!(result == baseresult)) {
+            { BacklinksIndex* index = getBacklinksIndex(self);
+
+              if (((boolean)(index)) &&
+                  ((baseresult == index->dependentPropositionsList) ||
+                   (baseresult == index->dependentIsaPropositionsList))) {
+                { Cons* value000 = NIL;
+
+                  { Object* prop = NULL;
+                    Cons* iter000 = baseresult->theSequence;
+                    Cons* collect000 = NULL;
+
+                    for  (prop, iter000, collect000; 
+                          !(iter000 == NIL); 
+                          iter000 = iter000->rest) {
+                      prop = iter000->value;
+                      if (((Proposition*)(prop))->operatoR == relation) {
+                        if (!((boolean)(collect000))) {
+                          {
+                            collect000 = cons(prop, NIL);
+                            if (value000 == NIL) {
+                              value000 = collect000;
+                            }
+                            else {
+                              addConsToEndOfConsList(value000, collect000);
+                            }
+                          }
+                        }
+                        else {
+                          {
+                            collect000->rest = cons(prop, NIL);
+                            collect000 = collect000->rest;
+                          }
+                        }
+                      }
+                    }
+                  }
+                  result->theSequence = value000;
+                }
+                result->theSequenceLength = NULL_INTEGER;
+              }
+            }
+          }
+        }
+      }
+    }
+    return (result);
   }
 }
 
@@ -1182,15 +1316,16 @@ LogicObject* findSelectionKeyWithEquivalents(Cons* pattern) {
 SequenceIndex* selectPropositions(Cons* pattern) {
   { Keyword* kind = ((Keyword*)(pattern->value));
     Cons* arguments = pattern->rest->rest;
+    SequenceIndex* result = NULL;
 
     if (kind == KWD_BACKLINKS_DEPENDENTS) {
-      return (unfilteredDependentPropositions(arguments->value, NULL));
+      result = unfilteredDependentPropositions(arguments->value, NULL);
     }
     else if (kind == KWD_BACKLINKS_ISA) {
-      return (selectIsaPropositions(pattern));
+      result = selectIsaPropositions(pattern);
     }
     else if (kind == KWD_BACKLINKS_RELATION) {
-      return (selectRelationPropositions(pattern));
+      result = selectRelationPropositions(pattern);
     }
     else if (kind == KWD_BACKLINKS_RULES) {
       return (selectRulePropositions(pattern));
@@ -1202,6 +1337,10 @@ SequenceIndex* selectPropositions(Cons* pattern) {
         throw *newStellaException(stream000->theStringReader());
       }
     }
+    if (!(oALL_OBJECT_STORESo == NIL_LIST)) {
+      result = maybeWrapSequenceIndex(result, pattern, NULL, NULL, NULL);
+    }
+    return (result);
   }
 }
 
@@ -1446,7 +1585,7 @@ SequenceIndex* selectRelationPropositions(Cons* pattern) {
             initializeMemoizationTable(SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_000, "(:MAX-VALUES 50 :TIMESTAMPS (:KB-UPDATE))");
             memoTable000 = ((MemoizationTable*)(SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_000->surrogateValue));
           }
-          memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, NULL, 2);
+          memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relation, oCONTEXTo, MEMOIZED_NULL_VALUE, NULL, 2);
           memoizedValue000 = memoizedEntry000->value;
         }
         if (((boolean)(memoizedValue000))) {
@@ -1479,7 +1618,7 @@ SequenceIndex* selectRelationPropositions(Cons* pattern) {
             initializeMemoizationTable(SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_001, "(:MAX-VALUES 1000 :TIMESTAMPS (:KB-UPDATE))");
             memoTable001 = ((MemoizationTable*)(SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_001->surrogateValue));
           }
-          memoizedEntry001 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable001)), relation, key1, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, 4);
+          memoizedEntry001 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable001)), relation, key1, oCONTEXTo, MEMOIZED_NULL_VALUE, 4);
           memoizedValue001 = memoizedEntry001->value;
         }
         if (((boolean)(memoizedValue001))) {
@@ -1512,7 +1651,7 @@ SequenceIndex* selectRelationPropositions(Cons* pattern) {
             initializeMemoizationTable(SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_002, "(:MAX-VALUES 1000 :TIMESTAMPS (:KB-UPDATE))");
             memoTable002 = ((MemoizationTable*)(SGT_BACKLINKS_LOGIC_F_SELECT_RELATION_PROPOSITIONS_MEMO_TABLE_002->surrogateValue));
           }
-          memoizedEntry002 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable002)), relation, key1, key2, oCONTEXTo.get(), 8);
+          memoizedEntry002 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable002)), relation, key1, key2, oCONTEXTo, 8);
           memoizedValue002 = memoizedEntry002->value;
         }
         if (((boolean)(memoizedValue002))) {
@@ -1856,7 +1995,7 @@ void transferPropositionsAndBacklinks(Object* from, Object* to) {
 }
 
 void transferPropositionsExceptFor(Object* from, Object* to, List* exceptpropositions) {
-  if (oLOADINGREGENERABLEOBJECTSpo.get()) {
+  if (oLOADINGREGENERABLEOBJECTSpo) {
     return;
   }
   { Cons* value000 = NIL;
@@ -1902,10 +2041,10 @@ void transferPropositionsExceptFor(Object* from, Object* to, List* exceptproposi
             p = ((Proposition*)(iter001->value));
             if (!exceptpropositions->memberP(p)) {
               if (((BooleanWrapper*)(dynamicSlotValue(p->dynamicSlots, SYM_BACKLINKS_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue) {
-                oEVALUATIONMODEo.set(KWD_BACKLINKS_DESCRIPTION);
+                oEVALUATIONMODEo = KWD_BACKLINKS_DESCRIPTION;
               }
               else {
-                oEVALUATIONMODEo.set(KWD_BACKLINKS_EXTENSIONAL_ASSERTION);
+                oEVALUATIONMODEo = KWD_BACKLINKS_EXTENSIONAL_ASSERTION;
               }
               tovalue = evaluateTerm(to);
               { Object* arg = NULL;
@@ -1964,19 +2103,24 @@ void transferDescriptionExtension(NamedDescription* from, NamedDescription* to) 
 
 SequenceIndex* getDescriptionExtension(NamedDescription* description, boolean updateP) {
   { SequenceIndex* extension = description->extension;
+    SequenceIndex* result = NULL;
 
     if (((boolean)(extension)) &&
         (!(extension == NIL_PAGING_INDEX))) {
-      return (extension);
+      result = extension;
     }
     else if (updateP) {
       extension = createSequenceIndex(KWD_BACKLINKS_PAGING, cons(KWD_BACKLINKS_RELATION, cons(((!((boolean)(NIL))) ? NIL : NIL), cons(description->surrogateValueInverse, NIL))));
       description->extension = extension;
-      return (extension);
+      result = extension;
     }
     else {
-      return (NIL_PAGING_INDEX);
+      result = NIL_PAGING_INDEX;
     }
+    if (!(oALL_OBJECT_STORESo == NIL_LIST)) {
+      result = maybeWrapSequenceIndex(result, NULL, KWD_BACKLINKS_RELATION, description->surrogateValueInverse, NULL);
+    }
+    return (result);
   }
 }
 
@@ -2038,7 +2182,7 @@ void updateDescriptionExtension(Proposition* self) {
 
                   if ((classDescriptionP(description) &&
                       literalTypeP(description->surrogateValueInverse)) ||
-                      (oSUPPRESSINSERTIONINTOCLASSEXTENSIONpo.get() ||
+                      (oSUPPRESSINSERTIONINTOCLASSEXTENSIONpo ||
                        ((BooleanWrapper*)(dynamicSlotValue(arg->dynamicSlots, SYM_BACKLINKS_LOGIC_HYPOTHESIZED_INSTANCEp, FALSE_WRAPPER)))->wrapperValue)) {
                     return;
                   }
@@ -2058,11 +2202,9 @@ void updateDescriptionExtension(Proposition* self) {
             }
           }
         }
-        { SequenceIndex* extension = getDescriptionExtension(description, true);
-
-          if (!oLOADINGREGENERABLEOBJECTSpo.get()) {
-            extension->insert(self);
-          }
+        getDescriptionExtension(description, true);
+        if (!oLOADINGREGENERABLEOBJECTSpo) {
+          description->extension->insert(self);
         }
       }
     }
@@ -2117,13 +2259,13 @@ void helpStartupBacklinks1() {
     SGT_BACKLINKS_LOGIC_LOGIC_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("LOGIC-OBJECT", NULL, 1)));
     SGT_BACKLINKS_STELLA_THING = ((Surrogate*)(internRigidSymbolWrtModule("THING", getStellaModule("/STELLA", true), 1)));
     SYM_BACKLINKS_LOGIC_DEPENDENT_PROPOSITIONS_INDEX = ((Symbol*)(internRigidSymbolWrtModule("DEPENDENT-PROPOSITIONS-INDEX", NULL, 0)));
+    SGT_BACKLINKS_LOGIC_PROPOSITION = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 1)));
+    SYM_BACKLINKS_LOGIC_DESCRIPTIVEp = ((Symbol*)(internRigidSymbolWrtModule("DESCRIPTIVE?", NULL, 0)));
     SGT_BACKLINKS_LOGIC_INTEGER_LOGIC_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("INTEGER-LOGIC-WRAPPER", NULL, 1)));
     SGT_BACKLINKS_LOGIC_FLOAT_LOGIC_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT-LOGIC-WRAPPER", NULL, 1)));
     SGT_BACKLINKS_LOGIC_STRING_LOGIC_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("STRING-LOGIC-WRAPPER", NULL, 1)));
     KWD_BACKLINKS_ISA = ((Keyword*)(internRigidSymbolWrtModule("ISA", NULL, 2)));
     KWD_BACKLINKS_RELATION = ((Keyword*)(internRigidSymbolWrtModule("RELATION", NULL, 2)));
-    SYM_BACKLINKS_LOGIC_DESCRIPTIVEp = ((Symbol*)(internRigidSymbolWrtModule("DESCRIPTIVE?", NULL, 0)));
-    SGT_BACKLINKS_LOGIC_PROPOSITION = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 1)));
     KWD_BACKLINKS_CONSTANT = ((Keyword*)(internRigidSymbolWrtModule("CONSTANT", NULL, 2)));
     SGT_BACKLINKS_LOGIC_SKOLEM = ((Surrogate*)(internRigidSymbolWrtModule("SKOLEM", NULL, 1)));
     SGT_BACKLINKS_LOGIC_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 1)));
@@ -2172,10 +2314,12 @@ void helpStartupBacklinks2() {
     defineFunctionObject("REMOVE-DEPENDENT-PROPOSITION-LINK", "(DEFUN REMOVE-DEPENDENT-PROPOSITION-LINK ((SELF OBJECT) (PROPOSITION PROPOSITION)))", ((cpp_function_code)(&removeDependentPropositionLink)), NULL);
     defineFunctionObject("HELP-REMOVE-DEPENDENT-PROPOSITION", "(DEFUN HELP-REMOVE-DEPENDENT-PROPOSITION ((INDEX BACKLINKS-INDEX) (PROPOSITION PROPOSITION)))", ((cpp_function_code)(&helpRemoveDependentProposition)), NULL);
     defineFunctionObject("REMOVE-ALL-DEPENDENT-PROPOSITION-LINKS", "(DEFUN REMOVE-ALL-DEPENDENT-PROPOSITION-LINKS ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&removeAllDependentPropositionLinks)), NULL);
+    defineMethodObject("(DEFMETHOD (REMOVE-DELETED-MEMBERS (LIKE SELF)) ((SELF BACKLINKS-INDEX)))", ((cpp_method_code)(&BacklinksIndex::removeDeletedMembers)), ((cpp_method_code)(NULL)));
     defineFunctionObject("REWRAP-ARGUMENT", "(DEFUN (REWRAP-ARGUMENT OBJECT) ((ARGUMENT OBJECT)))", ((cpp_function_code)(&rewrapArgument)), NULL);
     defineFunctionObject("INDEX-ITH-DOMAIN?", "(DEFUN (INDEX-ITH-DOMAIN? BOOLEAN) ((DESCRIPTION NAMED-DESCRIPTION) (I INTEGER)))", ((cpp_function_code)(&indexIthDomainP)), NULL);
     defineFunctionObject("REWRAP-ITH-ARGUMENT?", "(DEFUN (REWRAP-ITH-ARGUMENT? BOOLEAN) ((ARGUMENT OBJECT) (PROPOSITION PROPOSITION) (I INTEGER)))", ((cpp_function_code)(&rewrapIthArgumentP)), NULL);
     defineFunctionObject("REWRAP-PROPOSITION-ARGUMENTS", "(DEFUN REWRAP-PROPOSITION-ARGUMENTS ((SELF PROPOSITION)))", ((cpp_function_code)(&rewrapPropositionArguments)), NULL);
+    defineFunctionObject("HELP-UNFILTERED-DEPENDENT-PROPOSITIONS", "(DEFUN (HELP-UNFILTERED-DEPENDENT-PROPOSITIONS PROPOSITIONS-INDEX) ((SELF OBJECT) (RELATION SURROGATE)))", ((cpp_function_code)(&helpUnfilteredDependentPropositions)), NULL);
     defineFunctionObject("UNFILTERED-DEPENDENT-PROPOSITIONS", "(DEFUN (UNFILTERED-DEPENDENT-PROPOSITIONS PROPOSITIONS-INDEX) ((SELF OBJECT) (RELATION SURROGATE)))", ((cpp_function_code)(&unfilteredDependentPropositions)), NULL);
     defineFunctionObject("ALL-SPECIALIZING-DEPENDENT-PROPOSITIONS-NEXT?", "(DEFUN (ALL-SPECIALIZING-DEPENDENT-PROPOSITIONS-NEXT? BOOLEAN) ((SELF ALL-PURPOSE-ITERATOR)) :PUBLIC? TRUE)", ((cpp_function_code)(&allSpecializingDependentPropositionsNextP)), NULL);
     defineFunctionObject("ALL-SPECIALIZING-DEPENDENT-PROPOSITIONS", "(DEFUN (ALL-SPECIALIZING-DEPENDENT-PROPOSITIONS (ITERATOR OF PROPOSITION)) ((SELF OBJECT) (RELATIONREF SURROGATE)) :PUBLIC? TRUE)", ((cpp_function_code)(&allSpecializingDependentPropositions)), NULL);
@@ -2219,15 +2363,13 @@ void helpStartupBacklinks2() {
     defineFunctionObject("GET-DESCRIPTION-EXTENSION", "(DEFUN (GET-DESCRIPTION-EXTENSION PROPOSITIONS-INDEX) ((DESCRIPTION NAMED-DESCRIPTION) (UPDATE? BOOLEAN)))", ((cpp_function_code)(&getDescriptionExtension)), NULL);
     defineFunctionObject("CLEANUP-DESCRIPTION-EXTENSION", "(DEFUN CLEANUP-DESCRIPTION-EXTENSION ((DESCRIPTION NAMED-DESCRIPTION)))", ((cpp_function_code)(&cleanupDescriptionExtension)), NULL);
     defineFunctionObject("CLEANUP-ALL-DESCRIPTION-EXTENSIONS", "(DEFUN CLEANUP-ALL-DESCRIPTION-EXTENSIONS ())", ((cpp_function_code)(&cleanupAllDescriptionExtensions)), NULL);
-    defineFunctionObject("UPDATE-DESCRIPTION-EXTENSION", "(DEFUN UPDATE-DESCRIPTION-EXTENSION ((SELF PROPOSITION)))", ((cpp_function_code)(&updateDescriptionExtension)), NULL);
-    defineFunctionObject("ALL-EXTENSION-MEMBERS", "(DEFUN (ALL-EXTENSION-MEMBERS ITERATOR) ((DESCRIPTION NAMED-DESCRIPTION)))", ((cpp_function_code)(&allExtensionMembers)), NULL);
   }
 }
 
 void startupBacklinks() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupBacklinks1();
     }
@@ -2241,6 +2383,8 @@ void startupBacklinks() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupBacklinks2();
+      defineFunctionObject("UPDATE-DESCRIPTION-EXTENSION", "(DEFUN UPDATE-DESCRIPTION-EXTENSION ((SELF PROPOSITION)))", ((cpp_function_code)(&updateDescriptionExtension)), NULL);
+      defineFunctionObject("ALL-EXTENSION-MEMBERS", "(DEFUN (ALL-EXTENSION-MEMBERS ITERATOR) ((DESCRIPTION NAMED-DESCRIPTION)))", ((cpp_function_code)(&allExtensionMembers)), NULL);
       defineFunctionObject("COLLECTION-IMPLIES-COLLECTION?", "(DEFUN (COLLECTION-IMPLIES-COLLECTION? BOOLEAN) ((SUBCOLLECTION LOGIC-OBJECT) (SUPERCOLLECTION LOGIC-OBJECT)))", ((cpp_function_code)(&collectionImpliesCollectionP)), NULL);
       defineFunctionObject("RELATION-IMPLIES-RELATION?", "(DEFUN (RELATION-IMPLIES-RELATION? BOOLEAN) ((SUBREL NAMED-DESCRIPTION) (SUPERREL NAMED-DESCRIPTION)) :GLOBALLY-INLINE? TRUE (RETURN (COLLECTION-IMPLIES-COLLECTION? SUBREL SUPERREL)))", ((cpp_function_code)(&relationImpliesRelationP)), NULL);
       defineFunctionObject("DESCRIPTION-IMPLIES-DESCRIPTION?", "(DEFUN (DESCRIPTION-IMPLIES-DESCRIPTION? BOOLEAN) ((SUBDESC DESCRIPTION) (SUPERDESC DESCRIPTION)) :GLOBALLY-INLINE? TRUE (RETURN (COLLECTION-IMPLIES-COLLECTION? SUBDESC SUPERDESC)))", ((cpp_function_code)(&descriptionImpliesDescriptionP)), NULL);
@@ -2280,6 +2424,10 @@ Surrogate* SGT_BACKLINKS_STELLA_THING = NULL;
 
 Symbol* SYM_BACKLINKS_LOGIC_DEPENDENT_PROPOSITIONS_INDEX = NULL;
 
+Surrogate* SGT_BACKLINKS_LOGIC_PROPOSITION = NULL;
+
+Symbol* SYM_BACKLINKS_LOGIC_DESCRIPTIVEp = NULL;
+
 Surrogate* SGT_BACKLINKS_LOGIC_INTEGER_LOGIC_WRAPPER = NULL;
 
 Surrogate* SGT_BACKLINKS_LOGIC_FLOAT_LOGIC_WRAPPER = NULL;
@@ -2289,10 +2437,6 @@ Surrogate* SGT_BACKLINKS_LOGIC_STRING_LOGIC_WRAPPER = NULL;
 Keyword* KWD_BACKLINKS_ISA = NULL;
 
 Keyword* KWD_BACKLINKS_RELATION = NULL;
-
-Symbol* SYM_BACKLINKS_LOGIC_DESCRIPTIVEp = NULL;
-
-Surrogate* SGT_BACKLINKS_LOGIC_PROPOSITION = NULL;
 
 Keyword* KWD_BACKLINKS_CONSTANT = NULL;
 

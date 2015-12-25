@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,13 +40,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: specialize.ste,v 1.65 2009/06/02 19:22:32 tar Exp
+;;; Version: specialize.ste,v 1.66 2014/04/16 22:53:46 hans Exp
 
 ;;; Specialization (subsumption) Routines
 
 (in-package "STELLA")
 
 (in-module "LOGIC")
+
+
+;;; TO DO:
+;;; - eliminate the `*reversePolarity?*' handling in all the sub/super collection
+;;;   functions and move it into the various iterators instead.  These in turn
+;;;   should have slots with the sought-after truth values and not reference
+;;;   `*reversePolarity?*' directly.  This special is extremely hard to track
+;;;   and can screw things up in many different ways.  Unfortunately, it is
+;;;   very entrenched right now which makes eliminating/reducing it difficult.
 
 
   ;;
@@ -245,6 +254,9 @@ one of the relations in `specializing-relations'."
       (when (empty? specializingRelations)
         (setf (slot-value self value) NULL)
         (return FALSE))
+      ;; Copy selection pattern since we destructively modify it and it might
+      ;; be referenced elsewhere (e.g., in memoized results):
+      (setf (selection-pattern self) (copy-cons-list (selection-pattern self)))
       ;; modify selection pattern with the next subrelation:
       (setf (first (pattern-arguments (selection-pattern self)))
         (surrogate-value-inverse
@@ -342,6 +354,8 @@ one of the relations in `specializing-relations'."
       (and (forall superArg in (arguments referenceProposition)
                as subArg in (arguments subProposition)
                always (and
+                       ;; TO DO: MAYBE MOVE THIS FIX INTO `select-propositions' INSTEAD, SINCE
+                       ;;    IDEALLY, IT WOULD TAKE ADVANTAGE OF ANY FURTHER KEYS WITHIN THE PROP:
                        ;; don't allow "partial" propositions here to make sure
                        ;; we only pick them up if we really want to (see also
                        ;; `partial-arguments-unify-with-arguments?'):
@@ -404,6 +418,11 @@ one of the relations in `specializing-relations'."
     (when noMatchingPropositions?
       (return EMPTY-PROPOSITIONS-ITERATOR))
     (when (null? backlinkedArgument)
+      (when *reversePolarity?*
+        ;;;; KLUDGE/FIX: SINCE WE'LL RUN UP THE HIERARCHY INSTEAD AND RETRIEVE
+        ;;;; ALL `Individual'S.  A MUCH BETTER FIX WOULD BE TO PASS THE EXPECTED
+        ;;;; TRUTH VALUE INTO THE SEQUENCE INDICES WHICH WOULD RETURN A SMALL SET.
+        (return EMPTY-PROPOSITIONS-ITERATOR))
       ;; iterate over all propositions with the same or specializing predicate:
       (when-cyc-kludges-enabled
        ;; we didn't find a backlinked argument even though some argument was

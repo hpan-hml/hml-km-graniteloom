@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -332,7 +332,7 @@ Cons* listContext(Module* context, Keyword* values) {
 
     { 
       BIND_STELLA_SPECIAL(oCONTEXTo, Context*, context);
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
       if (values == KWD_LOOM_SUPPORT_ALL) {
         return (allNamedTerms(context, false)->consify());
       }
@@ -773,13 +773,13 @@ Cons* getRoleDefaultValues(Object* instanceref, Object* relationref) {
   { Cons* defaultvalues = NULL;
 
     { 
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getInferenceCache(oMODULEo.get(), KWD_LOOM_SUPPORT_DEFAULT));
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getInferenceCache(oMODULEo, KWD_LOOM_SUPPORT_DEFAULT));
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
       defaultvalues = getRoleValues(instanceref, relationref);
     }
     { 
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getInferenceCache(oMODULEo.get(), KWD_LOOM_SUPPORT_STRICT));
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getInferenceCache(oMODULEo, KWD_LOOM_SUPPORT_STRICT));
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
       { Object* v = NULL;
         Cons* iter000 = getRoleValues(instanceref, relationref);
 
@@ -1402,7 +1402,7 @@ void helpStartupLoomSupport2() {
 void startupLoomSupport() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/PL-KERNEL-KB/LOOM-API", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupLoomSupport1();
       SYM_LOOM_SUPPORT_LOOM_API_F_COVERINGp_QUERY_000 = ((Symbol*)(internRigidSymbolWrtModule("F-COVERING?-QUERY-000", NULL, 0)));

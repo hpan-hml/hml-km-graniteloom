@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2000-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2000-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -101,7 +101,8 @@
 (CL:DEFUN SORTED-CONTEXTS ()
   (CL:LET* ((CONTEXTNAMES NIL))
    (CL:LET* ((M NULL) (ITER-000 (ALL-MODULES)))
-    (CL:LOOP WHILE (NEXT? ITER-000) DO (CL:SETQ M (%ITERATOR.VALUE ITER-000))
+    (CL:LOOP WHILE (NEXT? ITER-000) DO
+     (CL:SETQ M (%ITERATOR.VALUE ITER-000))
      (CL:WHEN
       (CL:AND
        (CL:NOT
@@ -112,7 +113,8 @@
         (%BOOLEAN-WRAPPER.WRAPPER-VALUE
          (DYNAMIC-SLOT-VALUE (%MODULE.DYNAMIC-SLOTS M)
           SYM-TOP-WINDOW-STELLA-NAMESPACE? FALSE-WRAPPER))))
-      (CL:SETQ CONTEXTNAMES (CONS (WRAP-STRING (NAME M)) CONTEXTNAMES)))))
+      (CL:SETQ CONTEXTNAMES
+       (CONS (WRAP-STRING (NAME M)) CONTEXTNAMES)))))
    (SORT CONTEXTNAMES (CL:FUNCTION WRAPPED-STRING-LESS-THAN?))))
 
 ;;; (DEFUN SERVE-CONTROL-PANEL-INTERNAL ...)
@@ -123,9 +125,11 @@
     (CL:PROGN (%%PRINT-STREAM STREAM "<TITLE>")
      (%%PRINT-STREAM STREAM "PowerLoom Browser Control Panel")
      (%%PRINT-STREAM STREAM "</TITLE>" EOL))
-    (WRITE-CONTROL-PANEL-SCRIPT STREAM) (%%PRINT-STREAM STREAM "</HEAD>" EOL))
+    (WRITE-CONTROL-PANEL-SCRIPT STREAM)
+    (%%PRINT-STREAM STREAM "</HEAD>" EOL))
    (CL:LET*
-    ((TAG-009 (CONCATENATE "BODY BGCOLOR='#" *CONTROL-BACKGROUND-COLOR* "'")))
+    ((TAG-009
+      (CONCATENATE "BODY BGCOLOR='#" *CONTROL-BACKGROUND-COLOR* "'")))
     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING TAG-009))
     (%%PRINT-STREAM STREAM "<" TAG-009 ">") (WRITE-TOP-SECTION STREAM)
     (WRITE-THEORY-SECTION STREAM) (WRITE-BOTTOM-SECTION STREAM)
@@ -145,8 +149,9 @@
   (CL:LET* ((C NULL) (ITER-000 (SORTED-CONTEXTS)))
    (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
     (CL:SETQ C (%%VALUE ITER-000))
-    (%%PRINT-STREAM STREAM "<option VALUE='" (%STRING-WRAPPER.WRAPPER-VALUE C)
-     "'>" (%STRING-WRAPPER.WRAPPER-VALUE C) "</option>" EOL)
+    (%%PRINT-STREAM STREAM "<option VALUE='"
+     (%STRING-WRAPPER.WRAPPER-VALUE C) "'>"
+     (%STRING-WRAPPER.WRAPPER-VALUE C) "</option>" EOL)
     (CL:SETQ ITER-000 (%%REST ITER-000))))
   (%%PRINT-STREAM STREAM "</SELECT>" EOL)
   NULL)
@@ -156,8 +161,8 @@
 (CL:DEFUN WRITE-TOP-SECTION (STREAM)
   (%%PRINT-STREAM STREAM
    "<FORM NAME=\"navform\" TARGET=\"content\" METHOD=\"POST\" onSubmit=\"return formTest(this)\">"
-   EOL "<TABLE BORDER>" EOL "<TR>" EOL "<TD ALIGN=center COLSPAN=1 ROWSPAN=1>"
-   EOL
+   EOL "<TABLE BORDER>" EOL "<TR>" EOL
+   "<TD ALIGN=center COLSPAN=1 ROWSPAN=1>" EOL
    "<A HREF=\"help/intro.html\" TARGET=\"content\" onMouseOver=\"window.status='Shows directions for using this browser'; return true\">"
    EOL
    "<IMG SRC=\"/ploom/icons/button-34-help.gif\" BORDER=0 WIDTH=12 HEIGHT=14></a></TD>"
@@ -194,21 +199,24 @@
    (CL:PROGN (%%PRINT-STREAM STREAM "<TD ALIGN=LEFT ROWSPAN=2")
     (CL:COND
      ((EDITTING-ALLOWED?) (%%PRINT-STREAM STREAM " BGCOLOR='#FFCCCC'"))
-     ((CURRENT-EDIT-LOCK?) (%%PRINT-STREAM STREAM " BGCOLOR='#FFFFCC'")))
+     ((CURRENT-EDIT-LOCK?)
+      (%%PRINT-STREAM STREAM " BGCOLOR='#FFFFCC'")))
     (%%PRINT-STREAM STREAM ">" EOL
      "<INPUT TYPE=\"radio\" NAME=\"LOCK\" VALUE=\"0\" onClick=\"location.pathname='/loom/edit-unlock.html'\"")
-    (CL:WHEN (CL:NOT (EDITTING-ALLOWED?)) (%%PRINT-STREAM STREAM " CHECKED"))
+    (CL:WHEN (CL:NOT (EDITTING-ALLOWED?))
+     (%%PRINT-STREAM STREAM " CHECKED"))
     (%%PRINT-STREAM STREAM ">Browse&nbsp;only<BR>" EOL
      "<INPUT TYPE=\"radio\" NAME=\"LOCK\" VALUE=\"1\" onClick=\"location.pathname='/loom/edit-lock.html'\"")
     (CL:WHEN (EDITTING-ALLOWED?) (%%PRINT-STREAM STREAM " CHECKED"))
     (%%PRINT-STREAM STREAM
      ">Make&nbsp;Changes<BR>&nbsp;&nbsp;(Others&nbsp;blocked)
 </TD></TR>"))
-   (%%PRINT-STREAM STREAM "<TD ALIGN=CENTER ROWSPAN=2 VALIGN=CENTER>" EOL
+   (%%PRINT-STREAM STREAM "<TD ALIGN=CENTER ROWSPAN=2 VALIGN=CENTER>"
+    EOL
     "<A HREF=\"http://www.isi.edu/isd/LOOM/PowerLoom/\" TARGET=\"manual\" onMouseOver=\"window.status='Goes to the PowerLoom Home Page'; return true\"><img src=\"/ploom/icons/powerloom-logo-small.gif\" BORDER=0 WIDTH=40 HEIGHT=38></A>"
     EOL "</TD>" EOL "</TR>" EOL))
-  (%%PRINT-STREAM STREAM "<TR><TD ALIGN=CENTER ROWSPAN=1>" EOL "<A HREF='"
-   *POWERLOOM-REFERENCE-MANUAL-URL*
+  (%%PRINT-STREAM STREAM "<TR><TD ALIGN=CENTER ROWSPAN=1>" EOL
+   "<A HREF='" *POWERLOOM-REFERENCE-MANUAL-URL*
    "' TARGET=\"manual\" onMouseOver=\"window.status='PowerLoom Reference Manual' ; return true\">"
    EOL
    "<IMG SRC=\"/ploom/icons/book-small.gif\" BORDER=0 WIDTH=21 HEIGHT=11></a></TD>"
@@ -226,7 +234,8 @@
    "<input TYPE=submit  NAME=\"dofind\" VALUE=\"Find\" onClick=\"loadURL('content', 'show', this.form)\">"
    EOL)
   (CL:WHEN (EDITTING-ALLOWED?)
-   (%%PRINT-STREAM STREAM "<input TYPE=button  NAME= \"edit\" VALUE=\"Edit\" 
+   (%%PRINT-STREAM STREAM
+    "<input TYPE=button  NAME= \"edit\" VALUE=\"Edit\" 
        onClick=\"loadURL('content', 'edit', this.form)\">
 <input TYPE=button  NAME=\"new\" VALUE=\"New...\" 
        onClick=\"loadURL('content', 'new',this.form)\">
@@ -236,8 +245,8 @@
    EOL "Match&nbsp;<SELECT NAME=\"matchtype\">" EOL
    "<option VALUE=\"exact\">Exactly</option>" EOL
    "<option VALUE=\"caseInsensitive\">Case Insensitive</option>" EOL
-   "<option VALUE=\"substring\" SELECTED>Substring</option>" EOL "</SELECT>"
-   EOL)
+   "<option VALUE=\"substring\" SELECTED>Substring</option>" EOL
+   "</SELECT>" EOL)
   (%%PRINT-STREAM STREAM "
 </TD></TR></TABLE>
 </FORM>")
@@ -247,28 +256,32 @@
    EOL)
   (%%PRINT-STREAM STREAM "if (cookieValue.indexOf(';') != -1) {" EOL)
   (%%PRINT-STREAM STREAM
-   "cookieValue = cookieValue.substring(0,cookieValue.indexOf(';'));" EOL)
+   "cookieValue = cookieValue.substring(0,cookieValue.indexOf(';'));"
+   EOL)
   (%%PRINT-STREAM STREAM "}" EOL)
   (%%PRINT-STREAM STREAM
    "for (var i = 0; i < document.navform.theory.length; i++) {" EOL)
   (%%PRINT-STREAM STREAM
    "   if (document.navform.theory[i].value==cookieValue) {" EOL)
-  (%%PRINT-STREAM STREAM "     document.navform.theory.selectedIndex = i; }"
-   EOL)
+  (%%PRINT-STREAM STREAM
+   "     document.navform.theory.selectedIndex = i; }" EOL)
   (%%PRINT-STREAM STREAM "}</SCRIPT>" EOL EOL)
   NULL)
 
 ;;; (DEFUN SERVE-CONTROL-PANEL-NEEDS-JAVASCRIPT ...)
 
 (CL:DEFUN SERVE-CONTROL-PANEL-NEEDS-JAVASCRIPT (STREAM)
-  (CL:PROGN (%%PRINT-STREAM STREAM "<HTML>") (%%PRINT-STREAM STREAM EOL)
-   (CL:PROGN (%%PRINT-STREAM STREAM "<HEAD>") (%%PRINT-STREAM STREAM EOL)
+  (CL:PROGN (%%PRINT-STREAM STREAM "<HTML>")
+   (%%PRINT-STREAM STREAM EOL)
+   (CL:PROGN (%%PRINT-STREAM STREAM "<HEAD>")
+    (%%PRINT-STREAM STREAM EOL)
     (CL:PROGN (%%PRINT-STREAM STREAM "<TITLE>")
      (%%PRINT-STREAM STREAM "Loom Browser No Javascript")
      (%%PRINT-STREAM STREAM "</TITLE>" EOL))
     (%%PRINT-STREAM STREAM "</HEAD>" EOL))
    (CL:LET*
-    ((TAG-010 (CONCATENATE "BODY BGCOLOR='#" *ERROR-BACKGROUND-COLOR* "'")))
+    ((TAG-010
+      (CONCATENATE "BODY BGCOLOR='#" *ERROR-BACKGROUND-COLOR* "'")))
     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING TAG-010))
     (%%PRINT-STREAM STREAM "<" TAG-010 ">")
     (CL:PROGN (%%PRINT-STREAM STREAM "<B>")
@@ -299,7 +312,8 @@
 
 (CL:DEFUN STARTUP-TOP-WINDOW ()
   (CL:LET*
-   ((*MODULE* (GET-STELLA-MODULE "/ONTOSAURUS" (> *STARTUP-TIME-PHASE* 1)))
+   ((*MODULE*
+     (GET-STELLA-MODULE "/ONTOSAURUS" (> *STARTUP-TIME-PHASE* 1)))
     (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
@@ -317,7 +331,8 @@
      (INTERN-RIGID-SYMBOL-WRT-MODULE "RELATION" NULL 2))
     (CL:SETQ KWD-TOP-WINDOW-INSTANCE
      (INTERN-RIGID-SYMBOL-WRT-MODULE "INSTANCE" NULL 2))
-    (CL:SETQ KWD-TOP-WINDOW-GET (INTERN-RIGID-SYMBOL-WRT-MODULE "GET" NULL 2))
+    (CL:SETQ KWD-TOP-WINDOW-GET
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "GET" NULL 2))
     (CL:SETQ KWD-TOP-WINDOW-CONTENT-TYPE
      (INTERN-RIGID-SYMBOL-WRT-MODULE "CONTENT-TYPE" NULL 2))
     (CL:SETQ KWD-TOP-WINDOW-HTML
@@ -332,14 +347,14 @@
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7)
     (DEFINE-FUNCTION-OBJECT "SAVING-ALLOWED?"
-     "(DEFUN (SAVING-ALLOWED? BOOLEAN) ())" (CL:FUNCTION SAVING-ALLOWED?)
-     NULL)
+     "(DEFUN (SAVING-ALLOWED? BOOLEAN) ())"
+     (CL:FUNCTION SAVING-ALLOWED?) NULL)
     (DEFINE-FUNCTION-OBJECT "LOADING-ALLOWED?"
-     "(DEFUN (LOADING-ALLOWED? BOOLEAN) ())" (CL:FUNCTION LOADING-ALLOWED?)
-     NULL)
+     "(DEFUN (LOADING-ALLOWED? BOOLEAN) ())"
+     (CL:FUNCTION LOADING-ALLOWED?) NULL)
     (DEFINE-FUNCTION-OBJECT "EDITTING-ALLOWED?"
-     "(DEFUN (EDITTING-ALLOWED? BOOLEAN) ())" (CL:FUNCTION EDITTING-ALLOWED?)
-     NULL)
+     "(DEFUN (EDITTING-ALLOWED? BOOLEAN) ())"
+     (CL:FUNCTION EDITTING-ALLOWED?) NULL)
     (DEFINE-FUNCTION-OBJECT "EDITTING-POSSIBLE?"
      "(DEFUN (EDITTING-POSSIBLE? BOOLEAN) ())"
      (CL:FUNCTION EDITTING-POSSIBLE?) NULL)

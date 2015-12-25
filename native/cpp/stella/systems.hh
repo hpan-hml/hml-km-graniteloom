@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -74,6 +74,7 @@ extern Cons* oSTELLA_FILE_EXTENSIONSo;
 extern List* oSYSTEMDEFINITIONSo;
 extern DECLARE_STELLA_SPECIAL(oCURRENT_SYSTEM_ACTIONo, PropertyList* );
 extern KeyValueList* oSYSTEM_CONFIGURATION_TABLEo;
+extern KeyValueMap* oREGISTERED_PROPERTY_DEMONSo;
 extern KeyValueMap* oREGISTERED_COMMAND_LINE_OPTIONSo;
 extern Cons* oUNPROCESSED_COMMAND_LINE_ARGUMENTSo;
 extern char* oCOMMAND_LINE_HELP_HEADERo;
@@ -140,6 +141,7 @@ boolean systemStartupFileP(char* file);
 boolean systemStartedUpP(char* systemname, char* systemmodulename);
 Cons* yieldStartupRequiredSystems(SystemDefinition* system);
 Cons* collectStartupFormsFromSystemFile(SystemDefinition* system);
+Cons* collectDefinedModulesFromSystemFile(SystemDefinition* system);
 void createSystemStartupFile(SystemDefinition* system);
 List* helpAllRequiredSystems(char* systemName, List* found);
 Cons* allRequiredSystems(char* systemName);
@@ -150,7 +152,7 @@ KeyValueList* loadConfigurationFile(char* file);
 KeyValueList* loadConfigurationFileEvaluatorWrapper(Cons* arguments);
 void saveConfigurationValue(OutputStream* stream, Object* value);
 void saveConfigurationFile(KeyValueList* table, char* file, char* title);
-Object* lookupConfigurationProperty(char* property, Wrapper* defaultvalue, KeyValueList* configuration);
+Object* lookupConfigurationProperty(char* property, Object* defaultvalue, KeyValueList* configuration);
 Cons* lookupConfigurationPropertyValues(char* property, Object* defaultvalue, KeyValueList* configuration);
 Object* setConfigurationProperty(char* property, Object* value, KeyValueList* configuration);
 Object* addConfigurationProperty(char* property, Object* value, KeyValueList* configuration);
@@ -163,6 +165,12 @@ Object* getPropertyEvaluatorWrapper(Cons* arguments);
 void setProperty(Object* property, Object* value);
 void addPropertyValue(Object* property, Object* value);
 void printProperties();
+void registerPropertyDemon(char* property, Symbol* demonname);
+void unregisterPropertyDemon(char* property);
+MethodSlot* lookupVariableDemonSetter(GlobalVariable* demon);
+void runConfigurationPropertyDemon(Keyword* action, char* property, Object* value, KeyValueList* table);
+void demonPropertyHandler(MappableObject* demon, StorageSlot* slot, Object* property);
+void testPropertyDemon(Keyword* action, char* property, Object* value, KeyValueList* table);
 CmdLineOption* newCmdLineOption();
 Object* accessCmdLineOptionSlotValue(CmdLineOption* self, Symbol* slotname, Object* value, boolean setvalueP);
 void registerCmdLineOption(int options, ...);
@@ -181,6 +189,7 @@ void helpOptionHandler(CmdLineOption* option, Object* value);
 void helpStartupSystems1();
 void helpStartupSystems2();
 void helpStartupSystems3();
+void helpStartupSystems4();
 void startupSystems();
 
 // Auxiliary global declarations:
@@ -252,6 +261,7 @@ extern Symbol* SYM_SYSTEMS_STELLA_SYSTEM_STARTED_UPp;
 extern Symbol* SYM_SYSTEMS_STELLA_STARTUP_TIME_PROGN;
 extern Keyword* KWD_SYSTEMS_EARLY_INITS;
 extern Keyword* KWD_SYSTEMS_MODULES;
+extern Symbol* SYM_SYSTEMS_STELLA_DEFINE_MODULE_FROM_STRINGIFIED_SOURCE;
 extern Keyword* KWD_SYSTEMS_PUBLICp;
 extern Symbol* SYM_SYSTEMS_STELLA_STARTUP;
 extern Symbol* SYM_SYSTEMS_STELLA_FOREACH;
@@ -267,7 +277,12 @@ extern Keyword* KWD_SYSTEMS_SET;
 extern Keyword* KWD_SYSTEMS_WHITE_SPACE;
 extern Keyword* KWD_SYSTEMS_ADD;
 extern Symbol* SYM_SYSTEMS_STELLA_CONFIGURATION_TABLE;
+extern Keyword* KWD_SYSTEMS_CLEAR;
+extern Keyword* KWD_SYSTEMS_REMOVE;
 extern Keyword* KWD_SYSTEMS_ROOT_DIRECTORY;
+extern Surrogate* SGT_SYSTEMS_STELLA_GLOBAL_VARIABLE;
+extern Surrogate* SGT_SYSTEMS_STELLA_LONG_INTEGER;
+extern Symbol* SYM_SYSTEMS_STELLA_TEST_PROPERTY_DEMON;
 extern Keyword* KWD_SYSTEMS_ERROR;
 extern Surrogate* SGT_SYSTEMS_STELLA_CMD_LINE_OPTION;
 extern Symbol* SYM_SYSTEMS_STELLA_DOCUMENTATION;

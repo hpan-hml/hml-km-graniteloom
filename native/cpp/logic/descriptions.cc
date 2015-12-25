@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -321,11 +321,12 @@ NamedDescription* createPrimitiveDescription(List* iovariablenames, List* iovari
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     { NamedDescription* description = ((NamedDescription*)(createDescription(NULL_INTEGER, true)));
 
       description->ioVariableNames = iovariablenames;
       description->ioVariableTypes = iovariabletypes;
+      description->surrogateValueInverse = SGT_DESCRIPTIONS_LOGIC_UNFINALIZED;
       { 
         BIND_STELLA_SPECIAL(oFILLINGCONSTRAINTPROPAGATIONQUEUESpo, boolean, false);
         BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_DESCRIPTIONS_EXTENSIONAL_ASSERTION);
@@ -341,6 +342,7 @@ NamedDescription* createPrimitiveDescription(List* iovariablenames, List* iovari
         if (variablearityP) {
           linkOriginatedProposition(description, assertProperty(description, SGT_DESCRIPTIONS_PL_KERNEL_KB_VARIABLE_ARITY));
         }
+        description->surrogateValueInverse = NULL;
         return (description);
       }
     }
@@ -592,7 +594,7 @@ NamedDescription* stringDgetDescription(char* self) {
     if (((boolean)(surrogate))) {
       return (getDescription(surrogate));
     }
-    else if (((boolean)(store = ((ObjectStore*)(dynamicSlotValue(oMODULEo.get()->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_OBJECT_STORE, NULL)))))) {
+    else if (((boolean)(store = ((ObjectStore*)(dynamicSlotValue(oMODULEo->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_OBJECT_STORE, NULL)))))) {
       return (store->fetchRelation(wrapString(self)));
     }
     else {
@@ -606,7 +608,7 @@ NamedDescription* classDgetDescription(Class* self) {
     return (((NamedDescription*)(dynamicSlotValue(self->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_DESCRIPTION, NULL))));
   }
   else if (!logicClassP(self)) {
-    if (!(oSUPPRESSNONLOGICOBJECTWARNINGpo.get())) {
+    if (!(oSUPPRESSNONLOGICOBJECTWARNINGpo)) {
       std::cout << "Reference to non-logic class: " << "`" << self->name() << "'" << std::endl << "Class must inherit 'THING' to be used by PowerLoom's logic." << std::endl << std::endl;
     }
     return (NULL);
@@ -759,13 +761,13 @@ void pushLogicVariableBinding(Skolem* variable) {
       throw *newPropositionError(stream000->theStringReader());
     }
   }
-  oLOGICVARIABLETABLEo.set(cons(variable, oLOGICVARIABLETABLEo.get()));
+  oLOGICVARIABLETABLEo = cons(variable, oLOGICVARIABLETABLEo);
 }
 
 void popLogicVariableBinding() {
-  { Cons* headcons = oLOGICVARIABLETABLEo.get();
+  { Cons* headcons = oLOGICVARIABLETABLEo;
 
-    oLOGICVARIABLETABLEo.set(headcons->rest);
+    oLOGICVARIABLETABLEo = headcons->rest;
     headcons->free();
   }
 }
@@ -786,9 +788,9 @@ void popLogicVariableBindings(Cons* variables) {
 }
 
 Object* lookupLogicVariableBinding(Symbol* variablename) {
-  if (((boolean)(oLOGICVARIABLETABLEo.get()))) {
+  if (((boolean)(oLOGICVARIABLETABLEo))) {
     { Skolem* vbl = NULL;
-      Cons* iter000 = oLOGICVARIABLETABLEo.get();
+      Cons* iter000 = oLOGICVARIABLETABLEo;
 
       for (vbl, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         vbl = ((Skolem*)(iter000->value));
@@ -867,7 +869,7 @@ void parseOneVariableDeclaration(Object* vdec, List* localdeclarations) {
         if (proposition->kind == KWD_DESCRIPTIONS_ISA) {
           setDynamicSlotValue(proposition->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_VARIABLE_TYPEp, TRUE_WRAPPER, NULL);
           updateSkolemType(((Skolem*)((proposition->arguments->theArray)[0])), ((Surrogate*)(proposition->operatoR)));
-          oVARIABLETYPEPROPOSITIONSo.set(cons(proposition, oVARIABLETYPEPROPOSITIONSo.get()));
+          oVARIABLETYPEPROPOSITIONSo = cons(proposition, oVARIABLETYPEPROPOSITIONSo);
         }
       }
     }
@@ -909,12 +911,12 @@ Cons* helpBuildQuantifiedProposition(Cons* tree, boolean converttypestoconstrain
       }
       popLogicVariableBindings(variables);
       if (converttypestoconstraintsP) {
-        if (!(oVARIABLETYPEPROPOSITIONSo.get() == NIL)) {
+        if (!(oVARIABLETYPEPROPOSITIONSo == NIL)) {
           if (((boolean)(antecedentproposition))) {
-            oVARIABLETYPEPROPOSITIONSo.set(cons(antecedentproposition, oVARIABLETYPEPROPOSITIONSo.get()));
+            oVARIABLETYPEPROPOSITIONSo = cons(antecedentproposition, oVARIABLETYPEPROPOSITIONSo);
           }
-          oVARIABLETYPEPROPOSITIONSo.set(oVARIABLETYPEPROPOSITIONSo.get()->reverse()->removeDuplicates());
-          antecedentproposition = conjoinPropositions(oVARIABLETYPEPROPOSITIONSo.get());
+          oVARIABLETYPEPROPOSITIONSo = oVARIABLETYPEPROPOSITIONSo->reverse()->removeDuplicates();
+          antecedentproposition = conjoinPropositions(oVARIABLETYPEPROPOSITIONSo);
         }
       }
       _Return1 = antecedentproposition;
@@ -1060,7 +1062,7 @@ boolean equivalentCommutativePropositionsP(Proposition* self, Proposition* other
   }
 }
 
-boolean equivalentPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping) {
+boolean helpEquivalentPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping, boolean ignorelastargP) {
   if (self == other) {
     return (true);
   }
@@ -1112,64 +1114,74 @@ boolean equivalentPropositionsP(Proposition* self, Proposition* other, KeyValueM
         else {
         }
       }
-      { boolean testValue002 = false;
+      { Vector* selfargs = self->arguments;
+        Vector* otherargs = other->arguments;
 
-        testValue002 = self->operatoR == other->operatoR;
-        if (testValue002) {
-          { boolean alwaysP000 = true;
+        { boolean testValue002 = false;
 
-            { Object* arg1 = NULL;
-              Vector* vector002 = self->arguments;
-              int index002 = 0;
-              int length002 = vector002->length();
-              Object* arg2 = NULL;
-              Vector* vector003 = other->arguments;
-              int index003 = 0;
-              int length003 = vector003->length();
+          testValue002 = self->operatoR == other->operatoR;
+          if (testValue002) {
+            { boolean alwaysP000 = true;
 
-              for  (arg1, vector002, index002, length002, arg2, vector003, index003, length003; 
-                    (index002 < length002) &&
-                        (index003 < length003); 
-                    index002 = index002 + 1,
-                    index003 = index003 + 1) {
-                arg1 = (vector002->theArray)[index002];
-                arg2 = (vector003->theArray)[index003];
-                if (!equivalentFormulaeP(arg1, arg2, mapping)) {
-                  alwaysP000 = false;
-                  break;
+              { Object* arg1 = NULL;
+                Vector* vector002 = selfargs;
+                int index002 = 0;
+                int length002 = vector002->length();
+                Object* arg2 = NULL;
+                Vector* vector003 = otherargs;
+                int index003 = 0;
+                int length003 = vector003->length();
+                int i = NULL_INTEGER;
+                int iter000 = 2;
+                int upperBound000 = (ignorelastargP ? selfargs->length() : NULL_INTEGER);
+                boolean unboundedP000 = upperBound000 == NULL_INTEGER;
+
+                for  (arg1, vector002, index002, length002, arg2, vector003, index003, length003, i, iter000, upperBound000, unboundedP000; 
+                      (index002 < length002) &&
+                          ((index003 < length003) &&
+                           (unboundedP000 ||
+                            (iter000 <= upperBound000))); 
+                      index002 = index002 + 1,
+                      index003 = index003 + 1,
+                      iter000 = iter000 + 1) {
+                  arg1 = (vector002->theArray)[index002];
+                  arg2 = (vector003->theArray)[index003];
+                  i = iter000;
+                  if (!equivalentFormulaeP(arg1, arg2, mapping)) {
+                    alwaysP000 = false;
+                    break;
+                  }
                 }
               }
+              testValue002 = alwaysP000;
             }
-            testValue002 = alwaysP000;
+            if (testValue002) {
+              testValue002 = selfargs->length() == otherargs->length();
+            }
           }
-          if (testValue002) {
-            testValue002 = self->arguments->length() == other->arguments->length();
+          if (!testValue002) {
+            testValue002 = ((boolean)(mapping)) &&
+                ((self->operatoR == SGT_DESCRIPTIONS_PL_KERNEL_KB_HOLDS) &&
+                 equivalentHoldsPropositionP(self, other, mapping));
           }
-        }
-        if (!testValue002) {
-          testValue002 = ((boolean)(mapping)) &&
-              ((self->operatoR == SGT_DESCRIPTIONS_PL_KERNEL_KB_HOLDS) &&
-               equivalentHoldsPropositionP(self, other, mapping));
-        }
-        { boolean value000 = testValue002;
+          { boolean value000 = testValue002;
 
-          return (value000);
+            return (value000);
+          }
         }
       }
     }
   }
 }
 
+boolean equivalentPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping) {
+  return (helpEquivalentPropositionsP(self, other, mapping, false));
+}
+
 boolean equivalentFunctionPropositionsP(Proposition* self, Proposition* other, KeyValueMap* mapping) {
-  if ((self->kind == KWD_DESCRIPTIONS_FUNCTION) &&
-      (other->kind == KWD_DESCRIPTIONS_FUNCTION)) {
-    if (!((boolean)(mapping))) {
-      mapping = newKeyValueMap();
-    }
-    mapping->insertAt((self->arguments->theArray)[(self->arguments->length() - 1)], (other->arguments->theArray)[(other->arguments->length() - 1)]);
-    return (equivalentPropositionsP(self, other, mapping));
-  }
-  return (false);
+  return ((self->kind == KWD_DESCRIPTIONS_FUNCTION) &&
+      ((other->kind == KWD_DESCRIPTIONS_FUNCTION) &&
+       helpEquivalentPropositionsP(self, other, mapping, true)));
 }
 
 boolean equivalentDescriptionsP(Description* self, Description* other, KeyValueMap* mapping) {
@@ -1351,10 +1363,10 @@ boolean equivalentFormulaeP(Object* self, Object* other, KeyValueMap* mapping) {
     return (true);
   }
   if (((boolean)(mapping))) {
-    if (oUNIFY_PROPOSITIONSpo.get() &&
+    if (oUNIFY_PROPOSITIONSpo &&
         (variableP(self) ||
          variableP(other))) {
-      if (!((boolean)(oQUERYITERATORo.get()))) {
+      if (!((boolean)(oQUERYITERATORo))) {
         mapping->insertAt(self, other);
         return (true);
       }
@@ -1455,6 +1467,19 @@ boolean unifyPropositionsP(Proposition* self, Proposition* other, KeyValueMap* m
   }
 }
 
+boolean descriptionP(Object* self) {
+  // Return TRUE if 'self' is a description.
+  return (((boolean)(self)) &&
+      isaP(self, SGT_DESCRIPTIONS_LOGIC_DESCRIPTION));
+}
+
+boolean unnamedDescriptionP(Object* self) {
+  // Return TRUE if 'self' is an unnamed description.
+  return (((boolean)(self)) &&
+      (isaP(self, SGT_DESCRIPTIONS_LOGIC_DESCRIPTION) &&
+       (!((boolean)(((Description*)(self))->surrogateValueInverse)))));
+}
+
 boolean namedDescriptionP(Description* self) {
   // Return TRUE if 'self' is the description of a named class or relation.
   return (((boolean)(self->surrogateValueInverse)));
@@ -1521,7 +1546,7 @@ LogicObject* Description::findDuplicateNamedDescription() {
 }
 
 Description* findDuplicateComplexDescription(Description* self) {
-  { IntegerWrapper* index = wrapInteger(propositionHashIndex(self->proposition, NULL));
+  { IntegerWrapper* index = wrapInteger(propositionHashIndex(self->proposition, NULL, false));
     List* bucket = ((List*)(oSTRUCTURED_OBJECTS_INDEXo->lookup(index)));
     Module* homemodule = self->homeContext->baseModule;
     KeyValueMap* mapping = newKeyValueMap();
@@ -1532,7 +1557,7 @@ Description* findDuplicateComplexDescription(Description* self) {
     }
     bucket->removeDeletedMembers();
     if (((boolean)(((Vector*)(dynamicSlotValue(self->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_EXTERNAL_VARIABLES, NULL))))) &&
-        ((boolean)(oQUERYITERATORo.get()))) {
+        ((boolean)(oQUERYITERATORo))) {
       mapping = newKeyValueMap();
       { PatternVariable* v = NULL;
         Vector* vector000 = ((Vector*)(dynamicSlotValue(self->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_EXTERNAL_VARIABLES, NULL)));
@@ -1888,15 +1913,15 @@ void equateTopLevelEquivalences(Proposition* proposition, Vector* iovariables, K
             if (iovariables->memberP(arg1)) {
               if (iovariables->memberP(arg2)) {
                 if (!(kind == KWD_DESCRIPTIONS_HEAD)) {
-                  equateValues(arg1, arg2);
+                  equateValues(proposition, arg1, arg2);
                 }
               }
               else {
-                equateValues(arg2, arg1);
+                equateValues(proposition, arg2, arg1);
               }
             }
             else {
-              equateValues(arg1, arg2);
+              equateValues(proposition, arg1, arg2);
             }
           }
         }
@@ -2021,9 +2046,9 @@ void collectExternalVariables(Proposition* proposition) {
           { Object* arg000 = arg;
             PatternVariable* arg = ((PatternVariable*)(arg000));
 
-            if (oLOGICVARIABLETABLEo.get()->memberP(arg) &&
-                (!oEXTERNALVARIABLESo.get()->memberP(arg))) {
-              oEXTERNALVARIABLESo.set(cons(arg, oEXTERNALVARIABLESo.get()));
+            if (oLOGICVARIABLETABLEo->memberP(arg) &&
+                (!oEXTERNALVARIABLESo->memberP(arg))) {
+              oEXTERNALVARIABLESo = cons(arg, oEXTERNALVARIABLESo);
             }
           }
         }
@@ -2077,7 +2102,7 @@ Description* evaluateDescriptionTerm(Cons* term, boolean checkforduplicateP) {
     { 
       BIND_STELLA_SPECIAL(oDESCRIPTIONUNDERCONSTRUCTIONo, Object*, description);
       BIND_STELLA_SPECIAL(oEVALUATIONMODEo, Keyword*, KWD_DESCRIPTIONS_DESCRIPTION);
-      BIND_STELLA_SPECIAL(oVARIABLEIDCOUNTERo, int, oVARIABLEIDCOUNTERo.get());
+      BIND_STELLA_SPECIAL(oVARIABLEIDCOUNTERo, int, oVARIABLEIDCOUNTERo);
       { Cons* iovars = NULL;
         Proposition* proposition = NULL;
         Proposition* unused = NULL;
@@ -2085,12 +2110,12 @@ Description* evaluateDescriptionTerm(Cons* term, boolean checkforduplicateP) {
         iovars = buildQuantifiedProposition(term, true, proposition, unused);
         unused = unused;
         description->ioVariables = copyConsListToVariablesVector(iovars);
-        if (!(oLOGICVARIABLETABLEo.get() == NIL)) {
+        if (!(oLOGICVARIABLETABLEo == NIL)) {
           { 
             BIND_STELLA_SPECIAL(oEXTERNALVARIABLESo, Cons*, NIL);
             collectExternalVariables(proposition);
-            if (!(oEXTERNALVARIABLESo.get() == NIL)) {
-              setDynamicSlotValue(description->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_EXTERNAL_VARIABLES, copyConsListToVariablesVector(oEXTERNALVARIABLESo.get()), NULL);
+            if (!(oEXTERNALVARIABLESo == NIL)) {
+              setDynamicSlotValue(description->dynamicSlots, SYM_DESCRIPTIONS_LOGIC_EXTERNAL_VARIABLES, copyConsListToVariablesVector(oEXTERNALVARIABLESo), NULL);
             }
           }
         }
@@ -2152,12 +2177,12 @@ Description* getComplementOfGoalDescription(NamedDescription* self) {
     if (((boolean)(complement))) {
       return (complement);
     }
-    if (self == oRECURSIVEGETCOMPLEMENTARGUMENTo.get()) {
+    if (self == oRECURSIVEGETCOMPLEMENTARGUMENTo) {
       return (NULL);
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, self->homeModule());
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       { Cons* declarations = NIL;
         Cons* variables = NIL;
         Cons* clauses = NIL;
@@ -2475,7 +2500,7 @@ void addVariableType(PatternVariable* variable, Surrogate* newtype, KeyValueList
         types->insert(newtype);
       }
     }
-    oADDEDNEWTYPEpo.set(true);
+    oADDEDNEWTYPEpo = true;
   }
 }
 
@@ -2820,9 +2845,9 @@ KeyValueList* inferVariableTypesInProposition(Proposition* proposition, Cons* vi
     { 
       BIND_STELLA_SPECIAL(oADDEDNEWTYPEpo, boolean, false);
       for (;;) {
-        oADDEDNEWTYPEpo.set(false);
+        oADDEDNEWTYPEpo = false;
         inferTypesFromPropositions(proposition, variabletypestable, visiblevariables);
-        if (!oADDEDNEWTYPEpo.get()) {
+        if (!oADDEDNEWTYPEpo) {
           return (variabletypestable);
         }
       }
@@ -3078,28 +3103,24 @@ boolean definedRelationP(NamedDescription* self) {
        ((boolean)(self->nativeRelation()))));
 }
 
-Cons* listUndefinedRelations(Object* module, boolean localP) {
-  // Return a list of as yet undefined concepts and relations in `module'.
-  // These relations were defined by the system, since they were referenced
-  // but have not yet been defined by the user.  If `module' is NULL look in
-  // the current module.  If `local?' only look in `module' but not in any
-  // modules it inherits.
-  { Module* themodule = coerceToModule(module, true);
+Cons* listUndefinedRelations(Cons* options) {
+  // Return a list of as yet undefined concepts and relations in the module defined
+  // by the :module option (which defaults to the current module).  These relations were
+  // defined by the system, since they were referenced but have not yet been defined by
+  // the user.  If `:local?' is specified as TRUE only look in the specified module but
+  // not any modules it inherits.  For backwards compatibility, this command also supports
+  // the old <module> <local?> arguments specified without keywords.
+  { Cons* optionslist = options;
+    PropertyList* theoptions = parseOptions((keywordP(optionslist->value) ? optionslist : consList(4, KWD_DESCRIPTIONS_MODULE, optionslist->value, KWD_DESCRIPTIONS_LOCALp, optionslist->rest->value)), listO(5, KWD_DESCRIPTIONS_MODULE, SGT_DESCRIPTIONS_STELLA_MODULE, KWD_DESCRIPTIONS_LOCALp, SGT_DESCRIPTIONS_STELLA_BOOLEAN, NIL), true, false);
+    Module* themodule = ((Module*)(theoptions->lookupWithDefault(KWD_DESCRIPTIONS_MODULE, oMODULEo)));
+    boolean localP = coerceWrappedBooleanToBoolean(((BooleanWrapper*)(theoptions->lookupWithDefault(KWD_DESCRIPTIONS_LOCALp, FALSE_WRAPPER))));
 
-    if (((boolean)(themodule))) {
-      if (!((boolean)(module))) {
-        themodule = NULL;
-      }
-    }
-    if (!((boolean)(themodule))) {
-      themodule = oMODULEo.get();
-    }
     return (callListUndefinedRelations(themodule, localP));
   }
 }
 
 Cons* listUndefinedRelationsEvaluatorWrapper(Cons* arguments) {
-  return (listUndefinedRelations(arguments->value, ((BooleanWrapper*)(arguments->rest->value))->wrapperValue));
+  return (listUndefinedRelations(arguments));
 }
 
 Cons* callListUndefinedRelations(Module* module, boolean localP) {
@@ -3131,7 +3152,7 @@ Cons* callListUndefinedRelations(Module* module, boolean localP) {
 
                 { 
                   BIND_STELLA_SPECIAL(oMODULEo, Module*, ((!((boolean)(module))) ? term->homeModule() : module));
-                  BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+                  BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
                   if (applyCachedAsk(cons(SYM_DESCRIPTIONS_LOGIC_pX, NIL), listO(3, SYM_DESCRIPTIONS_PL_KERNEL_KB_RELATION, SYM_DESCRIPTIONS_LOGIC_pX, NIL), consList(1, term), consList(0), SYM_DESCRIPTIONS_LOGIC_F_CALL_LIST_UNDEFINED_RELATIONS_QUERY_000, dummy1)) {
                     undefined = cons(term, undefined);
                   }
@@ -3352,6 +3373,7 @@ void helpStartupDescriptions2() {
     SYM_DESCRIPTIONS_LOGIC_KAPPA = ((Symbol*)(internRigidSymbolWrtModule("KAPPA", NULL, 0)));
     KWD_DESCRIPTIONS_KIF = ((Keyword*)(internRigidSymbolWrtModule("KIF", NULL, 2)));
     KWD_DESCRIPTIONS_DESCRIPTION = ((Keyword*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 2)));
+    SGT_DESCRIPTIONS_LOGIC_UNFINALIZED = ((Surrogate*)(internRigidSymbolWrtModule("UNFINALIZED", NULL, 1)));
     SGT_DESCRIPTIONS_PL_KERNEL_KB_CONCEPT = ((Surrogate*)(internRigidSymbolWrtModule("CONCEPT", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_DESCRIPTIONS_PL_KERNEL_KB_FUNCTION = ((Surrogate*)(internRigidSymbolWrtModule("FUNCTION", getStellaModule("/PL-KERNEL-KB", true), 1)));
     SGT_DESCRIPTIONS_PL_KERNEL_KB_VARIABLE_ARITY = ((Surrogate*)(internRigidSymbolWrtModule("VARIABLE-ARITY", getStellaModule("/PL-KERNEL-KB", true), 1)));
@@ -3360,12 +3382,12 @@ void helpStartupDescriptions2() {
     KWD_DESCRIPTIONS_ERROR = ((Keyword*)(internRigidSymbolWrtModule("ERROR", NULL, 2)));
     SGT_DESCRIPTIONS_STELLA_RELATION = ((Surrogate*)(internRigidSymbolWrtModule("RELATION", getStellaModule("/STELLA", true), 1)));
     SYM_DESCRIPTIONS_LOGIC_OBJECT_STORE = ((Symbol*)(internRigidSymbolWrtModule("OBJECT-STORE", NULL, 0)));
-    SGT_DESCRIPTIONS_STELLA_THING = ((Surrogate*)(internRigidSymbolWrtModule("THING", getStellaModule("/STELLA", true), 1)));
   }
 }
 
 void helpStartupDescriptions3() {
   {
+    SGT_DESCRIPTIONS_STELLA_THING = ((Surrogate*)(internRigidSymbolWrtModule("THING", getStellaModule("/STELLA", true), 1)));
     SGT_DESCRIPTIONS_STELLA_LITERAL = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL", getStellaModule("/STELLA", true), 1)));
     SGT_DESCRIPTIONS_LOGIC_PROPOSITION = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 1)));
     KWD_DESCRIPTIONS_WARNING = ((Keyword*)(internRigidSymbolWrtModule("WARNING", NULL, 2)));
@@ -3403,6 +3425,10 @@ void helpStartupDescriptions3() {
     SGT_DESCRIPTIONS_LOGIC_LOGIC_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("LOGIC-OBJECT", NULL, 1)));
     SGT_DESCRIPTIONS_STELLA_SYMBOL = ((Surrogate*)(internRigidSymbolWrtModule("SYMBOL", getStellaModule("/STELLA", true), 1)));
     SYM_DESCRIPTIONS_LOGIC_UNDECLAREDp = ((Symbol*)(internRigidSymbolWrtModule("UNDECLARED?", NULL, 0)));
+    KWD_DESCRIPTIONS_MODULE = ((Keyword*)(internRigidSymbolWrtModule("MODULE", NULL, 2)));
+    KWD_DESCRIPTIONS_LOCALp = ((Keyword*)(internRigidSymbolWrtModule("LOCAL?", NULL, 2)));
+    SGT_DESCRIPTIONS_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", getStellaModule("/STELLA", true), 1)));
+    SGT_DESCRIPTIONS_STELLA_BOOLEAN = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN", getStellaModule("/STELLA", true), 1)));
     SYM_DESCRIPTIONS_LOGIC_pX = ((Symbol*)(internRigidSymbolWrtModule("?X", NULL, 0)));
     SYM_DESCRIPTIONS_PL_KERNEL_KB_RELATION = ((Symbol*)(internRigidSymbolWrtModule("RELATION", getStellaModule("/PL-KERNEL-KB", true), 0)));
     SYM_DESCRIPTIONS_LOGIC_F_CALL_LIST_UNDEFINED_RELATIONS_QUERY_000 = ((Symbol*)(internRigidSymbolWrtModule("F-CALL-LIST-UNDEFINED-RELATIONS-QUERY-000", NULL, 0)));
@@ -3450,6 +3476,7 @@ void helpStartupDescriptions4() {
     defineFunctionObject("COPY-CONS-LIST-TO-VARIABLES-VECTOR", "(DEFUN (COPY-CONS-LIST-TO-VARIABLES-VECTOR VARIABLES-VECTOR) ((CONSLIST CONS)))", ((cpp_function_code)(&copyConsListToVariablesVector)), NULL);
     defineFunctionObject("EQUIVALENT-HOLDS-PROPOSITION?", "(DEFUN (EQUIVALENT-HOLDS-PROPOSITION? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&equivalentHoldsPropositionP)), NULL);
     defineFunctionObject("EQUIVALENT-COMMUTATIVE-PROPOSITIONS?", "(DEFUN (EQUIVALENT-COMMUTATIVE-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&equivalentCommutativePropositionsP)), NULL);
+    defineFunctionObject("HELP-EQUIVALENT-PROPOSITIONS?", "(DEFUN (HELP-EQUIVALENT-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING) (IGNORELASTARG? BOOLEAN)))", ((cpp_function_code)(&helpEquivalentPropositionsP)), NULL);
     defineFunctionObject("EQUIVALENT-PROPOSITIONS?", "(DEFUN (EQUIVALENT-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&equivalentPropositionsP)), NULL);
     defineFunctionObject("EQUIVALENT-FUNCTION-PROPOSITIONS?", "(DEFUN (EQUIVALENT-FUNCTION-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&equivalentFunctionPropositionsP)), NULL);
     defineFunctionObject("EQUIVALENT-DESCRIPTIONS?", "(DEFUN (EQUIVALENT-DESCRIPTIONS? BOOLEAN) ((SELF DESCRIPTION) (OTHER DESCRIPTION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&equivalentDescriptionsP)), NULL);
@@ -3457,6 +3484,8 @@ void helpStartupDescriptions4() {
     defineFunctionObject("EQUIVALENT-FORMULAE?", "(DEFUN (EQUIVALENT-FORMULAE? BOOLEAN) ((SELF OBJECT) (OTHER OBJECT) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&equivalentFormulaeP)), NULL);
     defineFunctionObject("SAME-AND-UNIQUE-ARGUMENTS?", "(DEFUN (SAME-AND-UNIQUE-ARGUMENTS? BOOLEAN) ((VARIABLES VARIABLES-VECTOR) (ARGUMENTS VECTOR)))", ((cpp_function_code)(&sameAndUniqueArgumentsP)), NULL);
     defineFunctionObject("UNIFY-PROPOSITIONS?", "(DEFUN (UNIFY-PROPOSITIONS? BOOLEAN) ((SELF PROPOSITION) (OTHER PROPOSITION) (MAPPING ENTITY-MAPPING)))", ((cpp_function_code)(&unifyPropositionsP)), NULL);
+    defineFunctionObject("DESCRIPTION?", "(DEFUN (DESCRIPTION? BOOLEAN) ((SELF OBJECT)) :DOCUMENTATION \"Return TRUE if 'self' is a description.\" :PUBLIC? TRUE)", ((cpp_function_code)(&descriptionP)), NULL);
+    defineFunctionObject("UNNAMED-DESCRIPTION?", "(DEFUN (UNNAMED-DESCRIPTION? BOOLEAN) ((SELF OBJECT)) :DOCUMENTATION \"Return TRUE if 'self' is an unnamed description.\" :PUBLIC? TRUE)", ((cpp_function_code)(&unnamedDescriptionP)), NULL);
     defineFunctionObject("NAMED-DESCRIPTION?", "(DEFUN (NAMED-DESCRIPTION? BOOLEAN) ((SELF DESCRIPTION)) :DOCUMENTATION \"Return TRUE if 'self' is the description of a named class or relation.\" :PUBLIC? TRUE)", ((cpp_function_code)(&namedDescriptionP)), NULL);
     defineMethodObject("(DEFMETHOD (FIND-DUPLICATE-NAMED-DESCRIPTION LOGIC-OBJECT) ((SELF DESCRIPTION)))", ((cpp_method_code)(&Description::findDuplicateNamedDescription)), ((cpp_method_code)(NULL)));
     defineFunctionObject("FIND-DUPLICATE-COMPLEX-DESCRIPTION", "(DEFUN (FIND-DUPLICATE-COMPLEX-DESCRIPTION DESCRIPTION) ((SELF DESCRIPTION)))", ((cpp_function_code)(&findDuplicateComplexDescription)), NULL);
@@ -3471,16 +3500,13 @@ void helpStartupDescriptions4() {
     defineFunctionObject("TIGHTEN-ARGUMENT-BINDINGS", "(DEFUN TIGHTEN-ARGUMENT-BINDINGS ((PROPOSITION PROPOSITION) (IOVARIABLES VARIABLES-VECTOR)))", ((cpp_function_code)(&tightenArgumentBindings)), NULL);
     defineFunctionObject("EQUATE-TOP-LEVEL-EQUIVALENCES", "(DEFUN EQUATE-TOP-LEVEL-EQUIVALENCES ((PROPOSITION PROPOSITION) (IOVARIABLES VARIABLES-VECTOR) (KIND KEYWORD)))", ((cpp_function_code)(&equateTopLevelEquivalences)), NULL);
     defineFunctionObject("COLLECT-ALL-VARIABLES", "(DEFUN COLLECT-ALL-VARIABLES ((SELF PROPOSITION) (COLLECTION (LIST OF PATTERN-VARIABLE)) (BEENTHERE LIST)))", ((cpp_function_code)(&collectAllVariables)), NULL);
-    defineFunctionObject("COMPUTE-INTERNAL-VARIABLES", "(DEFUN COMPUTE-INTERNAL-VARIABLES ((SELF DESCRIPTION)))", ((cpp_function_code)(&computeInternalVariables)), NULL);
-    defineFunctionObject("COLLECT-EXTERNAL-VARIABLES", "(DEFUN COLLECT-EXTERNAL-VARIABLES ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&collectExternalVariables)), NULL);
-    defineFunctionObject("FINISH-BUILDING-DESCRIPTION", "(DEFUN (FINISH-BUILDING-DESCRIPTION DESCRIPTION) ((DESCRIPTION DESCRIPTION) (CHECKFORDUPLICATE? BOOLEAN) (KIND KEYWORD)))", ((cpp_function_code)(&finishBuildingDescription)), NULL);
   }
 }
 
 void startupDescriptions() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupDescriptions1();
       helpStartupDescriptions2();
@@ -3489,6 +3515,7 @@ void startupDescriptions() {
     if (currentStartupTimePhaseP(4)) {
       FAKE_IO_VARIABLES = stella::newVector(0);
       SYSTEM_DEFINED_ARGUMENT_NAMES = listO(101, SYM_DESCRIPTIONS_LOGIC_pX1, SYM_DESCRIPTIONS_LOGIC_pX2, SYM_DESCRIPTIONS_LOGIC_pX3, SYM_DESCRIPTIONS_LOGIC_pX4, SYM_DESCRIPTIONS_LOGIC_pX5, SYM_DESCRIPTIONS_LOGIC_pX6, SYM_DESCRIPTIONS_LOGIC_pX7, SYM_DESCRIPTIONS_LOGIC_pX8, SYM_DESCRIPTIONS_LOGIC_pX9, SYM_DESCRIPTIONS_LOGIC_pX10, SYM_DESCRIPTIONS_LOGIC_pX11, SYM_DESCRIPTIONS_LOGIC_pX12, SYM_DESCRIPTIONS_LOGIC_pX13, SYM_DESCRIPTIONS_LOGIC_pX14, SYM_DESCRIPTIONS_LOGIC_pX15, SYM_DESCRIPTIONS_LOGIC_pX16, SYM_DESCRIPTIONS_LOGIC_pX17, SYM_DESCRIPTIONS_LOGIC_pX18, SYM_DESCRIPTIONS_LOGIC_pX19, SYM_DESCRIPTIONS_LOGIC_pX20, SYM_DESCRIPTIONS_LOGIC_pX21, SYM_DESCRIPTIONS_LOGIC_pX22, SYM_DESCRIPTIONS_LOGIC_pX23, SYM_DESCRIPTIONS_LOGIC_pX24, SYM_DESCRIPTIONS_LOGIC_pX25, SYM_DESCRIPTIONS_LOGIC_pX26, SYM_DESCRIPTIONS_LOGIC_pX27, SYM_DESCRIPTIONS_LOGIC_pX28, SYM_DESCRIPTIONS_LOGIC_pX29, SYM_DESCRIPTIONS_LOGIC_pX30, SYM_DESCRIPTIONS_LOGIC_pX31, SYM_DESCRIPTIONS_LOGIC_pX32, SYM_DESCRIPTIONS_LOGIC_pX33, SYM_DESCRIPTIONS_LOGIC_pX34, SYM_DESCRIPTIONS_LOGIC_pX35, SYM_DESCRIPTIONS_LOGIC_pX36, SYM_DESCRIPTIONS_LOGIC_pX37, SYM_DESCRIPTIONS_LOGIC_pX38, SYM_DESCRIPTIONS_LOGIC_pX39, SYM_DESCRIPTIONS_LOGIC_pX40, SYM_DESCRIPTIONS_LOGIC_pX41, SYM_DESCRIPTIONS_LOGIC_pX42, SYM_DESCRIPTIONS_LOGIC_pX43, SYM_DESCRIPTIONS_LOGIC_pX44, SYM_DESCRIPTIONS_LOGIC_pX45, SYM_DESCRIPTIONS_LOGIC_pX46, SYM_DESCRIPTIONS_LOGIC_pX47, SYM_DESCRIPTIONS_LOGIC_pX48, SYM_DESCRIPTIONS_LOGIC_pX49, SYM_DESCRIPTIONS_LOGIC_pX50, SYM_DESCRIPTIONS_LOGIC_pX51, SYM_DESCRIPTIONS_LOGIC_pX52, SYM_DESCRIPTIONS_LOGIC_pX53, SYM_DESCRIPTIONS_LOGIC_pX54, SYM_DESCRIPTIONS_LOGIC_pX55, SYM_DESCRIPTIONS_LOGIC_pX56, SYM_DESCRIPTIONS_LOGIC_pX57, SYM_DESCRIPTIONS_LOGIC_pX58, SYM_DESCRIPTIONS_LOGIC_pX59, SYM_DESCRIPTIONS_LOGIC_pX60, SYM_DESCRIPTIONS_LOGIC_pX61, SYM_DESCRIPTIONS_LOGIC_pX62, SYM_DESCRIPTIONS_LOGIC_pX63, SYM_DESCRIPTIONS_LOGIC_pX64, SYM_DESCRIPTIONS_LOGIC_pX65, SYM_DESCRIPTIONS_LOGIC_pX66, SYM_DESCRIPTIONS_LOGIC_pX67, SYM_DESCRIPTIONS_LOGIC_pX68, SYM_DESCRIPTIONS_LOGIC_pX69, SYM_DESCRIPTIONS_LOGIC_pX70, SYM_DESCRIPTIONS_LOGIC_pX71, SYM_DESCRIPTIONS_LOGIC_pX72, SYM_DESCRIPTIONS_LOGIC_pX73, SYM_DESCRIPTIONS_LOGIC_pX74, SYM_DESCRIPTIONS_LOGIC_pX75, SYM_DESCRIPTIONS_LOGIC_pX76, SYM_DESCRIPTIONS_LOGIC_pX77, SYM_DESCRIPTIONS_LOGIC_pX78, SYM_DESCRIPTIONS_LOGIC_pX79, SYM_DESCRIPTIONS_LOGIC_pX80, SYM_DESCRIPTIONS_LOGIC_pX81, SYM_DESCRIPTIONS_LOGIC_pX82, SYM_DESCRIPTIONS_LOGIC_pX83, SYM_DESCRIPTIONS_LOGIC_pX84, SYM_DESCRIPTIONS_LOGIC_pX85, SYM_DESCRIPTIONS_LOGIC_pX86, SYM_DESCRIPTIONS_LOGIC_pX87, SYM_DESCRIPTIONS_LOGIC_pX88, SYM_DESCRIPTIONS_LOGIC_pX89, SYM_DESCRIPTIONS_LOGIC_pX90, SYM_DESCRIPTIONS_LOGIC_pX91, SYM_DESCRIPTIONS_LOGIC_pX92, SYM_DESCRIPTIONS_LOGIC_pX93, SYM_DESCRIPTIONS_LOGIC_pX94, SYM_DESCRIPTIONS_LOGIC_pX95, SYM_DESCRIPTIONS_LOGIC_pX96, SYM_DESCRIPTIONS_LOGIC_pX97, SYM_DESCRIPTIONS_LOGIC_pX98, SYM_DESCRIPTIONS_LOGIC_pX99, SYM_DESCRIPTIONS_LOGIC_pX100, NIL);
+      oVARIABLETYPEPROPOSITIONSo = NIL;
     }
     if (currentStartupTimePhaseP(5)) {
       defineStellaTypeFromStringifiedSource("(DEFTYPE VARIABLE-TYPE-TABLE (KEY-VALUE-LIST OF PATTERN-VARIABLE (LIST OF TYPE)))");
@@ -3498,6 +3525,9 @@ void startupDescriptions() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupDescriptions4();
+      defineFunctionObject("COMPUTE-INTERNAL-VARIABLES", "(DEFUN COMPUTE-INTERNAL-VARIABLES ((SELF DESCRIPTION)))", ((cpp_function_code)(&computeInternalVariables)), NULL);
+      defineFunctionObject("COLLECT-EXTERNAL-VARIABLES", "(DEFUN COLLECT-EXTERNAL-VARIABLES ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&collectExternalVariables)), NULL);
+      defineFunctionObject("FINISH-BUILDING-DESCRIPTION", "(DEFUN (FINISH-BUILDING-DESCRIPTION DESCRIPTION) ((DESCRIPTION DESCRIPTION) (CHECKFORDUPLICATE? BOOLEAN) (KIND KEYWORD)))", ((cpp_function_code)(&finishBuildingDescription)), NULL);
       defineFunctionObject("EVALUATE-DESCRIPTION-TERM", "(DEFUN (EVALUATE-DESCRIPTION-TERM DESCRIPTION) ((TERM CONS) (CHECKFORDUPLICATE? BOOLEAN)))", ((cpp_function_code)(&evaluateDescriptionTerm)), NULL);
       defineFunctionObject("REMOVE-VARIABLE-TYPE-PROPOSITIONS", "(DEFUN (REMOVE-VARIABLE-TYPE-PROPOSITIONS (CONS OF PROPOSITION)) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&removeVariableTypePropositions)), NULL);
       defineFunctionObject("GET-COMPLEMENT-OF-GOAL-DESCRIPTION", "(DEFUN (GET-COMPLEMENT-OF-GOAL-DESCRIPTION DESCRIPTION) ((SELF NAMED-DESCRIPTION)))", ((cpp_function_code)(&getComplementOfGoalDescription)), NULL);
@@ -3517,7 +3547,7 @@ void startupDescriptions() {
       defineFunctionObject("RESOLVE-UNRESOLVED-SLOT-REFERENCES", "(DEFUN RESOLVE-UNRESOLVED-SLOT-REFERENCES ((FORMULA OBJECT)))", ((cpp_function_code)(&resolveUnresolvedSlotReferences)), NULL);
       defineFunctionObject("CREATE-DUMMY-RELATION", "(DEFUN CREATE-DUMMY-RELATION ((WAYWARDPROPOSITION PROPOSITION)))", ((cpp_function_code)(&createDummyRelation)), NULL);
       defineFunctionObject("DEFINED-RELATION?", "(DEFUN (DEFINED-RELATION? BOOLEAN) ((SELF NAMED-DESCRIPTION)))", ((cpp_function_code)(&definedRelationP)), NULL);
-      defineFunctionObject("LIST-UNDEFINED-RELATIONS", "(DEFUN (LIST-UNDEFINED-RELATIONS (CONS OF NAMED-DESCRIPTION)) ((MODULE NAME) (LOCAL? BOOLEAN)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Return a list of as yet undefined concepts and relations in `module'.\nThese relations were defined by the system, since they were referenced\nbut have not yet been defined by the user.  If `module' is NULL look in\nthe current module.  If `local?' only look in `module' but not in any\nmodules it inherits.\")", ((cpp_function_code)(&listUndefinedRelations)), ((cpp_function_code)(&listUndefinedRelationsEvaluatorWrapper)));
+      defineFunctionObject("LIST-UNDEFINED-RELATIONS", "(DEFUN (LIST-UNDEFINED-RELATIONS (CONS OF NAMED-DESCRIPTION)) (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Return a list of as yet undefined concepts and relations in the module defined\nby the :module option (which defaults to the current module).  These relations were\ndefined by the system, since they were referenced but have not yet been defined by\nthe user.  If `:local?' is specified as TRUE only look in the specified module but\nnot any modules it inherits.  For backwards compatibility, this command also supports\nthe old <module> <local?> arguments specified without keywords.\" :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&listUndefinedRelations)), ((cpp_function_code)(&listUndefinedRelationsEvaluatorWrapper)));
       defineFunctionObject("CALL-LIST-UNDEFINED-RELATIONS", "(DEFUN (CALL-LIST-UNDEFINED-RELATIONS CONS) ((MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Callable version of `list-undefined-relations' (which see).\" :PUBLIC? TRUE)", ((cpp_function_code)(&callListUndefinedRelations)), NULL);
       defineFunctionObject("COMPLAIN-ABOUT-UNDECLARED-REFERENCE", "(DEFUN COMPLAIN-ABOUT-UNDECLARED-REFERENCE ((WAYWARDPROPOSITION PROPOSITION)))", ((cpp_function_code)(&complainAboutUndeclaredReference)), NULL);
       defineFunctionObject("ALL-NAMED-DESCRIPTIONS-NEXT?", "(DEFUN (ALL-NAMED-DESCRIPTIONS-NEXT? BOOLEAN) ((SELF ALL-PURPOSE-ITERATOR)))", ((cpp_function_code)(&allNamedDescriptionsNextP)), NULL);
@@ -3537,7 +3567,7 @@ void startupDescriptions() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT FAKE-IO-VARIABLES VARIABLES-VECTOR (NEW VARIABLES-VECTOR :ARRAY-SIZE 0) :DOCUMENTATION \"Installed in a description with undetermined arity.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT SYSTEM-DEFINED-ARGUMENT-NAMES (CONS OF SYMBOL) (BQUOTE (?X1 ?X2 ?X3 ?X4 ?X5 ?X6 ?X7 ?X8 ?X9 ?X10 ?X11 ?X12 ?X13 ?X14 ?X15 ?X16 ?X17 ?X18 ?X19 ?X20 ?X21 ?X22 ?X23 ?X24 ?X25 ?X26 ?X27 ?X28 ?X29 ?X30 ?X31 ?X32 ?X33 ?X34 ?X35 ?X36 ?X37 ?X38 ?X39 ?X40 ?X41 ?X42 ?X43 ?X44 ?X45 ?X46 ?X47 ?X48 ?X49 ?X50 ?X51 ?X52 ?X53 ?X54 ?X55 ?X56 ?X57 ?X58 ?X59 ?X60 ?X61 ?X62 ?X63 ?X64 ?X65 ?X66 ?X67 ?X68 ?X69 ?X70 ?X71 ?X72 ?X73 ?X74 ?X75 ?X76 ?X77 ?X78 ?X79 ?X80 ?X81 ?X82 ?X83 ?X84 ?X85 ?X86 ?X87 ?X88 ?X89 ?X90 ?X91 ?X92 ?X93 ?X94 ?X95 ?X96 ?X97 ?X98 ?X99 ?X100)) :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *LOGICVARIABLETABLE* (CONS OF SKOLEM) NULL :DOCUMENTATION \"Table mapping logic variable names to variables or skolems.\nUsed during construction of a proposition or description.\")");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *VARIABLETYPEPROPOSITIONS* (CONS OF PROPOSITION) :DOCUMENTATION \"List of propositions extracted from parsing\na list of quantified, typed variables.\")");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *VARIABLETYPEPROPOSITIONS* (CONS OF PROPOSITION) NIL :DOCUMENTATION \"List of propositions extracted from parsing\na list of quantified, typed variables.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *UNIFY-PROPOSITIONS?* BOOLEAN FALSE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *EXTERNALVARIABLES* CONS :DOCUMENTATION \"Used by 'evaluate-DESCRIPTION-term' for collecting\na list of variables declared external to the description in which they\nare referenced.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *RECURSIVEGETCOMPLEMENTARGUMENT* NAMED-DESCRIPTION NULL :DOCUMENTATION \"Used to prevent infinite looping.\")");
@@ -3768,6 +3798,8 @@ Keyword* KWD_DESCRIPTIONS_KIF = NULL;
 
 Keyword* KWD_DESCRIPTIONS_DESCRIPTION = NULL;
 
+Surrogate* SGT_DESCRIPTIONS_LOGIC_UNFINALIZED = NULL;
+
 Surrogate* SGT_DESCRIPTIONS_PL_KERNEL_KB_CONCEPT = NULL;
 
 Surrogate* SGT_DESCRIPTIONS_PL_KERNEL_KB_FUNCTION = NULL;
@@ -3859,6 +3891,14 @@ Surrogate* SGT_DESCRIPTIONS_LOGIC_LOGIC_OBJECT = NULL;
 Surrogate* SGT_DESCRIPTIONS_STELLA_SYMBOL = NULL;
 
 Symbol* SYM_DESCRIPTIONS_LOGIC_UNDECLAREDp = NULL;
+
+Keyword* KWD_DESCRIPTIONS_MODULE = NULL;
+
+Keyword* KWD_DESCRIPTIONS_LOCALp = NULL;
+
+Surrogate* SGT_DESCRIPTIONS_STELLA_MODULE = NULL;
+
+Surrogate* SGT_DESCRIPTIONS_STELLA_BOOLEAN = NULL;
 
 Symbol* SYM_DESCRIPTIONS_LOGIC_pX = NULL;
 

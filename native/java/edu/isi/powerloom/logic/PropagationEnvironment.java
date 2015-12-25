@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -182,6 +182,16 @@ public class PropagationEnvironment extends StandardObject {
 
       self.deferredDefaultPropositions.insert(proposition);
     }
+  }
+
+  public static void printPropagationEnvironmentStats(PropagationEnvironment self) {
+    if (self == null) {
+      self = Logic.getPropagationEnvironment(((Context)(Stella.$CONTEXT$.get())));
+    }
+    System.out.println("Propagation environment stats:");
+    System.out.println("  " + self.evaluationQueue.length() + " propositions in evaluation-queue");
+    System.out.println("  " + self.forwardChainingSet.length() + " propositions in forward-chaining-queue");
+    System.out.println("  " + self.elaboratedObjects.length() + " objects elaborated");
   }
 
   public static Stella_Object accessPropagationEnvironmentSlotValue(PropagationEnvironment self, Symbol slotname, Stella_Object value, boolean setvalueP) {

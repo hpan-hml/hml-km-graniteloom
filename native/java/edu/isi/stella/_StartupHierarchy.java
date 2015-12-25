@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -485,7 +485,7 @@ public class _StartupHierarchy {
         renamed_Class.classSlotAccessorCode = Native.find_java_method("edu.isi.stella.TypesToClassesIterator", "accessTypesToClassesIteratorSlotValue", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.TypesToClassesIterator"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE});
       }
       Stella.defineClassFromStringifiedSource("ABSTRACT-DICTIONARY-ITERATOR", "(DEFCLASS ABSTRACT-DICTIONARY-ITERATOR (ABSTRACT-ITERATOR) :ABSTRACT? TRUE :DOCUMENTATION \"Instances of ABSTRACT-DICTIONARY-ITERATOR support iteration\nover dictionaries.\" :PARAMETERS ((ANY-KEY :TYPE UNKNOWN) (ANY-VALUE :TYPE UNKNOWN)) :PUBLIC-SLOTS ((KEY :TYPE (LIKE (ANY-KEY SELF)))) :PUBLIC-METHODS ((VALUE-SETTER ((SELF ABSTRACT-DICTIONARY-ITERATOR) (VALUE (LIKE (ANY-VALUE SELF)))) :TYPE (LIKE (ANY-VALUE SELF)) :DOCUMENTATION \"Abstract method needed to allow application of this\nmethod on abstract iterator classes that do not implement it.  By having\nthis here all `next?' methods of dictionary iterators MUST use the `slot-value'\nparadigm to set the iterator value.\") (KEY-SETTER ((SELF ABSTRACT-DICTIONARY-ITERATOR) (KEY (LIKE (ANY-KEY SELF)))) :TYPE (LIKE (ANY-KEY SELF)))))");
-      Stella.defineClassFromStringifiedSource("DICTIONARY-ITERATOR", "(DEFCLASS DICTIONARY-ITERATOR (ABSTRACT-DICTIONARY-ITERATOR) :ABSTRACT? TRUE :DOCUMENTATION \"Instances of DICTIONARY-ITERATOR support iteration\nover dictionaries with keys and values of type OBJECT.\" :PARAMETERS ((ANY-KEY :TYPE OBJECT) (ANY-VALUE :TYPE OBJECT)) :SYNONYMS (OBJECT-DICTIONARY-ITERATOR))");
+      Stella.defineClassFromStringifiedSource("DICTIONARY-ITERATOR", "(DEFCLASS DICTIONARY-ITERATOR (ABSTRACT-DICTIONARY-ITERATOR) :ABSTRACT? TRUE :DOCUMENTATION \"Instances of DICTIONARY-ITERATOR support iteration\nover dictionaries with keys and values of type OBJECT.\" :PARAMETERS ((ANY-KEY :TYPE OBJECT) (ANY-VALUE :TYPE OBJECT)) :SYNONYMS (OBJECT-DICTIONARY-ITERATOR) :PUBLIC-METHODS ((VALUE-SETTER ((SELF DICTIONARY-ITERATOR) (VALUE (LIKE (ANY-VALUE SELF)))) :TYPE (LIKE (ANY-VALUE SELF)) (ERROR \"DICTIONARY-ITERATOR.value-setter not implemented on \" SELF)) (KEY-SETTER ((SELF DICTIONARY-ITERATOR) (KEY (LIKE (ANY-KEY SELF)))) :TYPE (LIKE (ANY-KEY SELF)) (ERROR \"DICTIONARY-ITERATOR.key-setter not implemented on \" SELF))))");
       { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("PROPERTY-LIST-ITERATOR", "(DEFCLASS PROPERTY-LIST-ITERATOR (DICTIONARY-ITERATOR) :DOCUMENTATION \"Iterator class for the collection PROPERTY-LIST.\" :PUBLIC-SLOTS ((PLIST-ITERATOR-CURSOR :TYPE CONS) (PLIST-ITERATOR-COLLECTION :TYPE PROPERTY-LIST)))");
 
         renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.stella.PropertyListIterator", "newPropertyListIterator", new java.lang.Class [] {});

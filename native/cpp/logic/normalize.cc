@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -270,7 +270,7 @@ Proposition* disjoinPropositions(Cons* disjuncts) {
 PatternVariable* renameLogicVariableApart(PatternVariable* variable, boolean destructiveP) {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, variable->homeModule());
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     { Symbol* newname = localGensym(variable->skolemName->symbolName);
 
       if (!(destructiveP)) {
@@ -1574,7 +1574,7 @@ void helpStartupNormalize1() {
 void startupNormalize() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupNormalize1();
     }

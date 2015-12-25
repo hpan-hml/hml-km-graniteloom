@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -90,12 +90,21 @@ NumberWrapper* divideComputation(NumberWrapper* x, NumberWrapper* y);
 NumberWrapper* sqrtComputation(NumberWrapper* x);
 NumberWrapper* negateComputation(NumberWrapper* x);
 NumberWrapper* absComputation(NumberWrapper* x);
+IntegerWrapper* floorComputation(NumberWrapper* x);
+IntegerWrapper* ceilingComputation(NumberWrapper* x);
 Object* plusConstraint(IntegerWrapper* missingArgument, NumberWrapper* x1, NumberWrapper* x2, NumberWrapper* x3);
 Object* minusConstraint(IntegerWrapper* missingArgument, NumberWrapper* x1, NumberWrapper* x2, NumberWrapper* x3);
 Object* timesConstraint(IntegerWrapper* missingArgument, NumberWrapper* x1, NumberWrapper* x2, NumberWrapper* x3);
 Object* divideConstraint(IntegerWrapper* missingArgument, NumberWrapper* x1, NumberWrapper* x2, NumberWrapper* x3);
 Object* negateConstraint(IntegerWrapper* missingArgument, NumberWrapper* x1, NumberWrapper* x2);
 Object* sqrtConstraint(IntegerWrapper* missingArgument, NumberWrapper* x1, NumberWrapper* x2);
+FloatWrapper* logComputation(NumberWrapper* x);
+FloatWrapper* log10Computation(NumberWrapper* x);
+FloatWrapper* expComputation(NumberWrapper* x);
+FloatWrapper* exptComputation(NumberWrapper* x, NumberWrapper* n);
+Object* logConstraint(IntegerWrapper* missingArgument, NumberWrapper* x, NumberWrapper* log);
+Object* log10Constraint(IntegerWrapper* missingArgument, NumberWrapper* x, NumberWrapper* log);
+Object* expConstraint(IntegerWrapper* missingArgument, NumberWrapper* x, NumberWrapper* y);
 IntegerInterval* newIntegerInterval();
 Object* accessIntegerIntervalSlotValue(IntegerInterval* self, Symbol* slotname, Object* value, boolean setvalueP);
 IntervalCache* newIntervalCache();
@@ -118,11 +127,21 @@ Keyword* inequalitySpecialist(ControlFrame* frame, Keyword* lastmove);
 void inequalityEvaluator(Proposition* self);
 StringWrapper* stringConcatenateComputation(Object* x, Cons* yargs);
 Keyword* subsequenceSpecialist(ControlFrame* frame, Keyword* lastmove);
+char* normalizeStringComputationArgs(Object* x, Object* start, Object* end, boolean coerceP, int& _Return1, int& _Return2);
 IntegerWrapper* stringMatchComputationHelper(Object* pattern, Object* x, Object* start, Object* end, boolean ignoreCaseP);
 IntegerWrapper* stringMatchComputation(Object* pattern, Object* x, Object* start, Object* end);
 IntegerWrapper* stringMatchIgnoreCaseComputation(Object* pattern, Object* x, Object* start, Object* end);
+StringWrapper* stringUpcaseComputation(Object* x, Object* start, Object* end);
+StringWrapper* stringDowncaseComputation(Object* x, Object* start, Object* end);
+StringWrapper* stringCapitalizeComputation(Object* x, Object* start, Object* end);
+StringWrapper* stringReplaceComputation(Object* x, Object* from, Object* to, Object* start, Object* end);
+IntegerWrapper* stringCompareComputationHelper(Object* o1, Object* o2, Object* start1, Object* end1, Object* start2, Object* end2, boolean ignorecaseP);
+IntegerWrapper* stringCompareComputation(Object* o1, Object* o2, Object* start1, Object* end1, Object* start2, Object* end2);
+IntegerWrapper* stringCompareIgnoreCaseComputation(Object* o1, Object* o2, Object* start1, Object* end1, Object* start2, Object* end2);
+NumberWrapper* stringToNumberComputation(Object* x, Object* start, Object* end);
 IntegerWrapper* lengthComputation(Object* x);
 void helpStartupArithmetic1();
+void helpStartupArithmetic2();
 void startupArithmetic();
 
 // Auxiliary global declarations:
@@ -131,11 +150,11 @@ extern Symbol* SYM_ARITHMETIC_PL_KERNEL_KB_INTERVAL_LOWER_BOUND;
 extern Symbol* SYM_ARITHMETIC_PL_KERNEL_KB_INTERVAL_UPPER_BOUND;
 extern Surrogate* SGT_ARITHMETIC_PL_KERNEL_KB_INTERVAL_CACHE;
 extern Symbol* SYM_ARITHMETIC_STELLA_HOME_CONTEXT;
-extern Symbol* SYM_ARITHMETIC_PL_KERNEL_KB_INTERVAL_MEMBER;
+extern Symbol* SYM_ARITHMETIC_LOGIC_INTERVAL_MEMBER;
 extern Symbol* SYM_ARITHMETIC_STELLA_LOWER_BOUND;
 extern Symbol* SYM_ARITHMETIC_STELLA_UPPER_BOUND;
-extern Symbol* SYM_ARITHMETIC_PL_KERNEL_KB_STRICT_LOWER_BOUNDp;
-extern Symbol* SYM_ARITHMETIC_PL_KERNEL_KB_STRICT_UPPER_BOUNDp;
+extern Symbol* SYM_ARITHMETIC_LOGIC_STRICT_LOWER_BOUNDp;
+extern Symbol* SYM_ARITHMETIC_LOGIC_STRICT_UPPER_BOUNDp;
 extern Surrogate* SGT_ARITHMETIC_PL_KERNEL_KB_INTERVAL_CACHE_OF;
 extern Surrogate* SGT_ARITHMETIC_PL_KERNEL_KB_INEQUALITY;
 extern Surrogate* SGT_ARITHMETIC_LOGIC_LOGIC_OBJECT;

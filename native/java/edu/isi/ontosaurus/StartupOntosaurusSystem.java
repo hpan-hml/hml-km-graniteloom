@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2000-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2000-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -47,8 +47,8 @@ package edu.isi.ontosaurus;
 
 import edu.isi.stella.javalib.Native;
 import edu.isi.stella.javalib.StellaSpecialVariable;
-import edu.isi.stella.*;
 import edu.isi.powerloom.logic.*;
+import edu.isi.stella.*;
 
 public class StartupOntosaurusSystem {
   public static void startupOntosaurusSystem() {
@@ -62,7 +62,7 @@ public class StartupOntosaurusSystem {
         }
       }
       if (Stella.currentStartupTimePhaseP(1)) {
-        Module.defineModuleFromStringifiedSource("/ONTOSAURUS", "(:LISP-PACKAGE \"STELLA\" :JAVA-PACKAGE \"edu.isi.ontosaurus\" :JAVA-CATCHALL-CLASS \"OntosaurusUtil\" :USES (\"STELLA\" \"LOGIC\") :CODE-ONLY? TRUE)");
+        Module.defineModuleFromStringifiedSource("/ONTOSAURUS", "(:LISP-PACKAGE \"STELLA\" :JAVA-PACKAGE \"edu.isi.ontosaurus\" :JAVA-CATCHALL-CLASS \"OntosaurusUtil\" :USES (\"LOGIC\" \"STELLA\") :CODE-ONLY? TRUE)");
       }
       { Object old$Module$000 = Stella.$MODULE$.get();
         Object old$Context$000 = Stella.$CONTEXT$.get();

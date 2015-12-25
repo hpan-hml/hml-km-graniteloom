@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -139,8 +139,11 @@ public class _StartupRdbms {
       RDBMS.SGT_RDBMS_DATABASE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("DATABASE", null, 1)));
       RDBMS.SGT_RDBMS_F_ALLOCATE_DBTABLE_SPECIALIST_ITERATOR_MEMO_TABLE_000 = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("F-ALLOCATE-DBTABLE-SPECIALIST-ITERATOR-MEMO-TABLE-000", null, 1)));
       RDBMS.KWD_FAILURE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FAILURE", null, 2)));
+      RDBMS.KWD_DB_LOOKUP = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DB-LOOKUP", null, 2)));
       RDBMS.KWD_CONTINUING_SUCCESS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONTINUING-SUCCESS", null, 2)));
       RDBMS.KWD_FINAL_SUCCESS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FINAL-SUCCESS", null, 2)));
+      RDBMS.KWD_TECHNICAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TECHNICAL", null, 2)));
+      RDBMS.KWD_LAY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LAY", null, 2)));
       RDBMS.SYM_RDBMS_pREL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?REL", null, 0)));
       RDBMS.SYM_RDBMS_pEV = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?EV", null, 0)));
       RDBMS.SYM_RDBMS_pDB = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?DB", null, 0)));
@@ -175,9 +178,6 @@ public class _StartupRdbms {
       RDBMS.KWD_RETRACT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RETRACT", null, 2)));
       RDBMS.KWD_ASSERT_TRUE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ASSERT-TRUE", null, 2)));
       RDBMS.KWD_PRESUME_TRUE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PRESUME-TRUE", null, 2)));
-      RDBMS.KWD_RETRACT_TRUE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RETRACT-TRUE", null, 2)));
-      RDBMS.KWD_RETRACT_FALSE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RETRACT-FALSE", null, 2)));
-      RDBMS.KWD_ASSERT_FALSE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ASSERT-FALSE", null, 2)));
     }
   }
 
@@ -256,6 +256,9 @@ public class _StartupRdbms {
         if (Stella.currentStartupTimePhaseP(2)) {
           _StartupRdbms.helpStartupRdbms1();
           _StartupRdbms.helpStartupRdbms2();
+          RDBMS.KWD_RETRACT_TRUE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RETRACT-TRUE", null, 2)));
+          RDBMS.KWD_RETRACT_FALSE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RETRACT-FALSE", null, 2)));
+          RDBMS.KWD_ASSERT_FALSE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ASSERT-FALSE", null, 2)));
           RDBMS.KWD_PRESUME_FALSE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PRESUME-FALSE", null, 2)));
           RDBMS.KWD_CONCEIVE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CONCEIVE", null, 2)));
           RDBMS.SYM_RDBMS_STARTUP_RDBMS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-RDBMS", null, 0)));
@@ -305,6 +308,8 @@ public class _StartupRdbms {
           Symbol.safeImportSymbol(RDBMS.SYM_RDBMS_DEFTABLE, Stella.getStellaModule("PL-KERNEL", true));
           Symbol.safeImportSymbol(RDBMS.SYM_RDBMS_DEFDB, Stella.getStellaModule("PL-KERNEL", true));
           Symbol.safeImportSymbol(RDBMS.SYM_RDBMS_DEFQUERY, Stella.getStellaModule("PL-KERNEL", true));
+          Logic.defineExplanationPhrase(RDBMS.KWD_DB_LOOKUP, RDBMS.KWD_TECHNICAL, "by database lookup", Stella.NIL);
+          Logic.defineExplanationPhrase(RDBMS.KWD_DB_LOOKUP, RDBMS.KWD_LAY, "because it is stored in database", Stella.NIL);
         }
 
       } finally {

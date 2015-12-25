@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -68,13 +68,16 @@ TermGenerationException* newTermGenerationException(Object* offendingTerm, char*
 Object* generateExpression(LogicObject* self, boolean canonicalizevariablenamesP);
 Symbol* generateNameOfVariable(PatternVariable* self);
 Object* generateOneVariable(PatternVariable* self, boolean typedP);
+Object* generateOneQuantifiedVariable(PatternVariable* self, boolean typedP);
 Cons* generateVariables(Vector* vector, boolean typedP);
+Cons* generateQuantifiedVariables(Vector* vector, boolean typedP);
 Cons* generateStellaCollection(Collection* self);
 Object* generateDescription(Description* self);
 Cons* generateArguments(Vector* arguments);
 Symbol* generateOperator(Proposition* self);
 Object* generateProposition(Proposition* self);
 Cons* generateFunctionAsTerm(Proposition* self);
+Cons* generateFunctionProposition(Proposition* self);
 Object* generateSkolem(Skolem* self);
 Object* generateTerm(Object* self);
 Cons* generateImpliesProposition(Proposition* self);
@@ -92,14 +95,15 @@ extern Symbol* SYM_GENERATE_LOGIC_COMPLEMENT_DESCRIPTION;
 extern Symbol* SYM_GENERATE_STELLA_NOT;
 extern Symbol* SYM_GENERATE_LOGIC_KAPPA;
 extern Symbol* SYM_GENERATE_STELLA_NULL;
+extern Surrogate* SGT_GENERATE_PL_KERNEL_KB_EQUIVALENT;
+extern Symbol* SYM_GENERATE_STELLA_e;
 extern Keyword* KWD_GENERATE_PREDICATE;
-extern Keyword* KWD_GENERATE_FUNCTION;
 extern Keyword* KWD_GENERATE_ISA;
+extern Keyword* KWD_GENERATE_EQUIVALENT;
 extern Keyword* KWD_GENERATE_AND;
 extern Keyword* KWD_GENERATE_OR;
 extern Keyword* KWD_GENERATE_NOT;
-extern Keyword* KWD_GENERATE_EQUIVALENT;
-extern Symbol* SYM_GENERATE_STELLA_e;
+extern Keyword* KWD_GENERATE_FUNCTION;
 extern Keyword* KWD_GENERATE_EXISTS;
 extern Symbol* SYM_GENERATE_STELLA_EXISTS;
 extern Symbol* SYM_GENERATE_LOGIC_IO_VARIABLES;

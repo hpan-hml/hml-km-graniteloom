@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -61,7 +61,7 @@ void startupSdbcSystem() {
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/SDBC", oSTARTUP_TIME_PHASEo > 1));
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       if (currentStartupTimePhaseP(2)) {
         SYM_STARTUP_SYSTEM_SDBC_STARTUP_SDBC_SYSTEM = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-SDBC-SYSTEM", NULL, 0)));
         SYM_STARTUP_SYSTEM_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));

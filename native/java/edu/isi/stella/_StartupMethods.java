@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -129,6 +129,7 @@ public class _StartupMethods {
       Stella.defineFunctionObject("DEFINE-STELLA-METHOD-SLOT", "(DEFUN (DEFINE-STELLA-METHOD-SLOT METHOD-SLOT) ((INPUTNAME SYMBOL) (RETURNTYPES CONS) (FUNCTION? BOOLEAN) (INPUTPARAMETERS CONS) (OPTIONS KEYWORD-KEY-VALUE-LIST)) :DOCUMENTATION \"Define a new Stella method object (a slot), and attach it\nto the class identified by the first parameter in 'inputParameters'.\")", Native.find_java_method("edu.isi.stella.Symbol", "defineStellaMethodSlot", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Cons"), java.lang.Boolean.TYPE, Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.KeywordKeyValueList")}), null);
       Stella.defineFunctionObject("ATTACH-METHOD-SLOT-TO-OWNER", "(DEFUN (ATTACH-METHOD-SLOT-TO-OWNER METHOD-SLOT) ((NEWMETHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "attachMethodSlotToOwner", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
       Stella.defineFunctionObject("YIELD-STRING-CONSTANT-TREE", "(DEFUN (YIELD-STRING-CONSTANT-TREE OBJECT) ((STRING STRING)))", Native.find_java_method("edu.isi.stella.Stella", "yieldStringConstantTree", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), null);
+      Stella.defineFunctionObject("DEFINE-FUNCTION-OBJECT-EAGERLY?", "(DEFUN (DEFINE-FUNCTION-OBJECT-EAGERLY? BOOLEAN) ((FUNCTION METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "defineFunctionObjectEagerlyP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
       Stella.defineFunctionObject("YIELD-DEFINE-STELLA-METHOD-OBJECT", "(DEFUN (YIELD-DEFINE-STELLA-METHOD-OBJECT CONS) ((METHOD METHOD-SLOT) (CODEMETHOD METHOD-SLOT) (WRAPPERMETHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "yieldDefineStellaMethodObject", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot"), Native.find_java_class("edu.isi.stella.MethodSlot"), Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
       Stella.defineFunctionObject("YIELD-CLASS-PARAMETER-TYPES", "(DEFUN (YIELD-CLASS-PARAMETER-TYPES (CONS OF TYPE)) ((CLASS CLASS)))", Native.find_java_method("edu.isi.stella.Stella_Class", "yieldClassParameterTypes", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Class")}), null);
       Stella.defineFunctionObject("OPTIMISTIC-SUBTYPE-OF?", "(DEFUN (OPTIMISTIC-SUBTYPE-OF? BOOLEAN) ((SUBTYPE TYPE) (SUPERTYPE TYPE)))", Native.find_java_method("edu.isi.stella.Surrogate", "optimisticSubtypeOfP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("edu.isi.stella.Surrogate")}), null);
@@ -159,7 +160,6 @@ public class _StartupMethods {
       Stella.defineFunctionObject("EXTRACT-PARAMETER-TYPE", "(DEFUN (EXTRACT-PARAMETER-TYPE TYPE-SPEC BOOLEAN) ((SELF TYPE-SPEC) (PARAMETER SYMBOL)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.StandardObject", "extractParameterType", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("COMPUTE-ANCHORED-TYPE-SPEC", "(DEFUN (COMPUTE-ANCHORED-TYPE-SPEC TYPE-SPEC) ((OWNERTYPE TYPE-SPEC) (RELTYPE ANCHORED-TYPE-SPECIFIER)))", Native.find_java_method("edu.isi.stella.StandardObject", "computeAnchoredTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject"), Native.find_java_class("edu.isi.stella.AnchoredTypeSpecifier")}), null);
       Stella.defineFunctionObject("COMPUTE-RELATIVE-TYPE-SPEC", "(DEFUN (COMPUTE-RELATIVE-TYPE-SPEC TYPE-SPEC) ((RELATIVETYPE TYPE-SPEC) (OWNERTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.StandardObject", "computeRelativeTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject"), Native.find_java_class("edu.isi.stella.StandardObject")}), null);
-      Stella.defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF SLOT) (FIRSTARGTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.Slot", "computeReturnTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject")}), ((java.lang.reflect.Method)(null)));
     }
   }
 
@@ -182,6 +182,7 @@ public class _StartupMethods {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupMethods.helpStartupMethods2();
+          Stella.defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF SLOT) (FIRSTARGTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.Slot", "computeReturnTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject")}), ((java.lang.reflect.Method)(null)));
           Stella.defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF METHOD-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.MethodSlot", "computeReturnTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject")}), ((java.lang.reflect.Method)(null)));
           Stella.defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF STORAGE-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.StorageSlot", "computeReturnTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject")}), ((java.lang.reflect.Method)(null)));
           Stella.defineFunctionObject("YIELD-TYPE-SPEC-TREE", "(DEFUN (YIELD-TYPE-SPEC-TREE OBJECT) ((SELF TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.StandardObject", "yieldTypeSpecTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject")}), null);

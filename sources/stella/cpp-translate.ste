@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2013      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: cpp-translate.ste,v 1.110 2010/09/08 20:54:36 hans Exp
+;;; Version: cpp-translate.ste,v 1.112 2013/10/22 00:37:51 hans Exp
 
 ;;; Routines for translating Stella parse trees into C++ trees.
 
@@ -238,6 +238,8 @@ file module (occurs in some PowerLoom files - I thought we had outlawed that).")
        (TYPED-SYS            
 	(return (cpp-translate-typed-sys tree))) 
        (SETQ (return (cpp-translate-setq-tree tree)))
+       (SYS-SET-DEFAULT
+        (return (cpp-translate-sys-set-default tree)))
        (SYS-SLOT-VALUE
 	(return (cpp-translate-sys-slot-value tree)))
        (SYS-REFERENCED-SLOT-VALUE
@@ -1253,24 +1255,15 @@ file module (occurs in some PowerLoom files - I thought we had outlawed that).")
 
 (defun (cpp-translate-setq-tree CONS) ((tree CONS))
   ;; Translate a setq statement into a C++ assignment statement.
-  (let ((global (lookup-global-variable (cast (second tree) SYMBOL))))
-    (if (and (defined? global)
-             (variable-special? global)
-             (eql? (special-implementation-style) :unbind-with-destructors))
-        (return
-          (bquote
-           (CPP_REFERENCED_METHOD_CALL
-            NULL
-            (CPP_IDENT & (cpp-translate-name (quote set)))
-            (CPP_IDENT & (cpp-translate-global-name
-                          (cpp-fixup-name-symbol
-                           (second tree) (home-module global))))
-            (CPP_ACTUALS
+  (return
+    (bquote (CPP_ASSIGN
+             & (cpp-translate-a-tree (second tree))
              & (cpp-translate-a-tree (third tree))))))
-      (return
-        (bquote (CPP_ASSIGN
-                 & (cpp-translate-a-tree (second tree))
-                 & (cpp-translate-a-tree (third tree))))))))
+
+(defun (cpp-translate-sys-set-default OBJECT) ((tree CONS))
+  ;; Translate an value initialization statement for special variables.
+  ;; Given the recent change in special implementation, this is identical to `setq'.
+  (return (cpp-translate-setq-tree tree)))
 
 (defun (cpp-translate-null CONS) ()
   ;; Return a representation of NULL
@@ -1296,18 +1289,7 @@ file module (occurs in some PowerLoom files - I thought we had outlawed that).")
     (cond 
      ;; Global variable?
      ((defined? globalVar)
-      (let ((otree (bquote (CPP_IDENT & (cpp-translate-global-name tree)))))
-        (when (and (variable-special? globalVar)
-                   (eql? (special-implementation-style)
-                         :unbind-with-destructors))
-          (setq otree
-            (bquote
-             (CPP_REFERENCED_METHOD_CALL
-              NULL
-              (CPP_IDENT & (cpp-translate-name (quote get)))
-              & otree
-              (CPP_ACTUALS)))))
-        (return otree)))
+      (return (bquote (CPP_IDENT & (cpp-translate-global-name tree)))))
      (otherwise 
       (return (bquote (CPP_IDENT & (cpp-translate-name tree))))))))
 
@@ -2408,6 +2390,9 @@ file module (occurs in some PowerLoom files - I thought we had outlawed that).")
                  (slot-reader-from-name? methodName owner))
         (setf (wrapper-value translatedName)
           (concatenate (wrapper-value translatedName) "_reader")))
+      ;; if some of the return values are not used, add dummy args:
+      (setq otherArgs
+        (concatenate otherArgs (cpp-yield-unused-dummy-args method arguments)))
       (return
         (bquote
          (& (choose referenced? 
@@ -2572,6 +2557,34 @@ file module (occurs in some PowerLoom files - I thought we had outlawed that).")
   (when (< n 0) (setq n 0))
   (return (nth-rest list n)))
 
+(defun (cpp-yield-unused-dummy-args CONS) ((method METHOD-SLOT) (args CONS))
+  ;; If some of the return values of this `method' are not used (e.g., we're not being
+  ;; called inside a mv-setq), then construct a list of dummy parameters to substitute.
+  (when (null? method)
+    (return NIL))
+  (let ((numberOfUnusedReturnParameters
+         (- (+ (length (method-parameter-names method))
+               (1- (length (method-return-type-specifiers method))))
+            (length args)))
+        (unusedReturnTypes CONS NIL)
+        (dummyName SYMBOL NULL)
+        (dummyArgs CONS NIL))
+    (when (> numberOfUnusedReturnParameters 0)
+      ;; Create list of dummy variables, one for each return value that is not used:
+      (setq unusedReturnTypes
+	(get-last-n-elements (rest (method-return-type-specifiers method))
+			     numberOfUnusedReturnParameters))
+      (foreach unusedParameterType in unusedReturnTypes
+          do (setq *currentDummyIndex* (+ *currentDummyIndex* 1))
+             (setq dummyName (intern-symbol 
+                              (wrapper-value
+                               (cpp-translate-return-parameter-name 
+                                (quote dummy) *currentDummyIndex*))))
+             (pushq *dummyDeclarations*
+                    (bquote (& dummyName & unusedParameterType)))
+             (pushq dummyArgs dummyName)))
+    (return (reverse dummyArgs))))
+
 (defun (cpp-translate-function-call CONS) ((tree CONS) (method METHOD-SLOT))
   ;; Translate a function call to appropriate C++ syntax
   (let ((functionName SYMBOL (first tree))
@@ -2584,11 +2597,7 @@ file module (occurs in some PowerLoom files - I thought we had outlawed that).")
 			  method
 			  (lookup-function-or-stella-function functionName)))
 	(operator (cpp-lookup-operator-table (soft-permanentify functionName)))
-	(oTree CONS NULL)
-	(dummyArgs CONS NIL)
-	(numberOfUnusedReturnParameters INTEGER 0)
-	(unusedReturnTypes CONS NIL)
-	(dummyName SYMBOL NULL))
+	(oTree CONS NULL))
 
     ;; Special-case certain functions:
     (case functionName
@@ -2603,32 +2612,9 @@ file module (occurs in some PowerLoom files - I thought we had outlawed that).")
          (otherwise NULL)))
       (otherwise NULL))
 
-    ;; If some of the return values of this function are not used
-    ;;   (e.g., we're not being called inside a mv-setq), then add
-    ;;   dummy parameters
-    (setq numberOfUnusedReturnParameters
-      (- (+ (length (method-parameter-names function))
-	    (1- (length (method-return-type-specifiers function))))
-	 (length functionArgs)))
-    (when (> numberOfUnusedReturnParameters 0)
-      ;; Create list of dummy variables, one for each return value that is
-      ;;   not used
-      (setq unusedReturnTypes
-	(get-last-n-elements (rest (method-return-type-specifiers function))
-			     numberOfUnusedReturnParameters))
-
-      (foreach unusedParameterType in unusedReturnTypes
-	       do 
-	       (setq *currentDummyIndex* (+ *currentDummyIndex* 1))
-	       (setq dummyName (intern-symbol 
-				(wrapper-value
-				 (cpp-translate-return-parameter-name 
-				  (quote dummy) *currentDummyIndex*))))
-	       ;; NOTE: I tried using `collect', but that doesn't seem to work!
-	       (pushq *dummyDeclarations*
-		      (bquote (& dummyName & unusedParameterType)))
-	       (pushq dummyArgs dummyName))
-      (concatenate functionArgs (reverse dummyArgs)) )
+    ;; if some of the return values are not used, add dummy args:
+    (setq functionArgs
+      (concatenate functionArgs (cpp-yield-unused-dummy-args function functionArgs)))
 
     ;; Operators (e.g., + and -) are translated so the operators are infix.
     ;; Functions are translated with syntax "functionName(args)".

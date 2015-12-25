@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -180,7 +180,7 @@ public class InputStream extends Stream {
         tokenlist = TokenizerToken.newTokenizerToken();
         tokencursor = tokenlist;
       }
-      { TokenizerTable tok_table_ = Stella.$XML_TOKENIZER_TABLE$;
+      { TokenizerTable tok_table_ = Stella.getXmlTokenizerTable();
         String tok_transitions_ = tok_table_.transitions;
         edu.isi.stella.Stella_Object[] tok_statenames_ = tok_table_.stateNames.theArray;
         int tok_tokenstart_ = -1;
@@ -241,7 +241,8 @@ public class InputStream extends Stream {
                   tok_cursor_ = 0;
                 }
               }
-              tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | ((int) (((char) (0x00ff & tok_buffer_[tok_cursor_]))))))));
+              tok_nextstate_ = (int) (((char) (0x00ff & tok_buffer_[tok_cursor_])));
+              tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | tok_nextstate_))));
               if ((tok_nextstate_ & 128) == 0) {
                 tok_state_ = tok_nextstate_;
                 tok_cursor_ = tok_cursor_ + 1;
@@ -347,19 +348,21 @@ public class InputStream extends Stream {
           }
           else if (tokentype == Stella.KWD_CONTENT) {
             tokencontent = Stella.getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false);
-            { int cursor = tokencontent.length();
+            if (!(((Boolean)(Stella.$XML_PRESERVE_ALL_WHITESPACEp$.get())).booleanValue())) {
+              { int cursor = tokencontent.length();
 
-              { int i = Stella.NULL_INTEGER;
-                int iter000 = 0;
+                { int i = Stella.NULL_INTEGER;
+                  int iter000 = 0;
 
-                loop002 : for (;true; iter000 = iter000 + 1) {
-                  i = iter000;
-                  if (!(Stella.$CHARACTER_TYPE_TABLE$[(int) (tokencontent.charAt((cursor = cursor - 1)))] == Stella.KWD_WHITE_SPACE)) {
-                    if (i > 0) {
-                      i = 0 - i;
-                      tokencontent = Stella.getTokenTextInternal(tok_buffer_, tok_tokenstart_, ((i < 0) ? (tok_cursor_ + i) : (tok_tokenstart_ + i)), tok_size_, false);
+                  loop002 : for (;true; iter000 = iter000 + 1) {
+                    i = iter000;
+                    if (!(Stella.$CHARACTER_TYPE_TABLE$[(int) (tokencontent.charAt((cursor = cursor - 1)))] == Stella.KWD_WHITE_SPACE)) {
+                      if (i > 0) {
+                        i = 0 - i;
+                        tokencontent = Stella.getTokenTextInternal(tok_buffer_, tok_tokenstart_, ((i < 0) ? (tok_cursor_ + i) : (tok_tokenstart_ + i)), tok_size_, false);
+                      }
+                      break loop002;
                     }
-                    break loop002;
                   }
                 }
               }
@@ -451,18 +454,8 @@ public class InputStream extends Stream {
     { InputStream from = this;
 
       { OutputStringStream to = OutputStringStream.newOutputStringStream();
-        byte[] buffer = new byte[Stella.$TOKENIZER_INITIAL_BUFFER_SIZE$];
-        int bytesRead = 0;
 
-        loop000 : for (;;) {
-          bytesRead = Stella.byteArrayReadSequence(buffer, from, 0, Stella.$TOKENIZER_INITIAL_BUFFER_SIZE$);
-          if (bytesRead > 0) {
-            Stella.byteArrayWriteSequence(buffer, to.nativeStream, 0, bytesRead);
-          }
-          else {
-            break loop000;
-          }
-        }
+        InputStream.copyStreamToStream(from, to);
         return (to.theStringReader());
       }
     }
@@ -574,7 +567,8 @@ public class InputStream extends Stream {
                   tok_cursor_ = 0;
                 }
               }
-              tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | ((int) (((char) (0x00ff & tok_buffer_[tok_cursor_]))))))));
+              tok_nextstate_ = (int) (((char) (0x00ff & tok_buffer_[tok_cursor_])));
+              tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | tok_nextstate_))));
               if ((tok_nextstate_ & 128) == 0) {
                 tok_state_ = tok_nextstate_;
                 tok_cursor_ = tok_cursor_ + 1;
@@ -753,7 +747,8 @@ public class InputStream extends Stream {
                 tok_cursor_ = 0;
               }
             }
-            tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | ((int) (((char) (0x00ff & tok_buffer_[tok_cursor_]))))))));
+            tok_nextstate_ = (int) (((char) (0x00ff & tok_buffer_[tok_cursor_])));
+            tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | tok_nextstate_))));
             if ((tok_nextstate_ & 128) == 0) {
               tok_state_ = tok_nextstate_;
               tok_cursor_ = tok_cursor_ + 1;
@@ -1010,7 +1005,8 @@ public class InputStream extends Stream {
                       tok_cursor_ = 0;
                     }
                   }
-                  tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | ((int) (((char) (0x00ff & tok_buffer_[tok_cursor_]))))))));
+                  tok_nextstate_ = (int) (((char) (0x00ff & tok_buffer_[tok_cursor_])));
+                  tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | tok_nextstate_))));
                   if ((tok_nextstate_ & 128) == 0) {
                     tok_state_ = tok_nextstate_;
                     tok_cursor_ = tok_cursor_ + 1;
@@ -1352,7 +1348,7 @@ public class InputStream extends Stream {
               break loop000;
             }
             if (!(ch2 == Stella.EOL_STRING.charAt(1))) {
-              buffer.nativeStream.print(ch + ch2);
+              buffer.nativeStream.print("" + ch + ch2);
               continue loop000;
             }
           }

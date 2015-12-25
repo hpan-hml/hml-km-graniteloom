@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -85,7 +85,8 @@
 
 (CL:DEFUN SLOT-VALUE-IS-NULL? (|parentObject| |slot|)
   (CL:LET* ((|value| (GET-OBJECT-SLOT-VALUE |parentObject| |slot|)))
-   (CL:WHEN (CL:EQ |value| NULL) (CL:RETURN-FROM SLOT-VALUE-IS-NULL? CL:T))
+   (CL:WHEN (CL:EQ |value| NULL)
+    (CL:RETURN-FROM SLOT-VALUE-IS-NULL? CL:T))
    (CL:LET* ((TEST-VALUE-000 (SAFE-PRIMARY-TYPE |value|)))
     (CL:COND
      ((SUBTYPE-OF-INTEGER? TEST-VALUE-000)
@@ -128,17 +129,20 @@
    ((|objectTag| (MAKE-ELEMENT-TAG |object|))
     (|slots| (GET-MAPPED-SLOTS |object|))
     (|objectNamespace| (GET-NAMESPACE-PREFIX |object|))
-    (|newNamespaceStack| |namespaceStack|) (|attributeNamespaceName| NULL)
+    (|newNamespaceStack| |namespaceStack|)
+    (|attributeNamespaceName| NULL)
     (|attributeValueNamespaceName| NULL) (|namespaceURI| NULL)
     (|namespaceAttributes| NIL) (|attributes| NIL) (|elements| NIL)
     (|collections| NIL))
    (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING |objectNamespace|))
    (CL:WHEN
-    (CL:NOT (MEMBER? |newNamespaceStack| (WRAP-STRING |objectNamespace|)))
+    (CL:NOT
+     (MEMBER? |newNamespaceStack| (WRAP-STRING |objectNamespace|)))
     (CL:SETQ |newNamespaceStack|
      (CONS (WRAP-STRING |objectNamespace|) |newNamespaceStack|))
     (CL:SETQ |namespaceURI|
-     (LOOKUP *NAMESPACE-PREFIX-URI-TABLE* (WRAP-STRING |objectNamespace|)))
+     (LOOKUP *NAMESPACE-PREFIX-URI-TABLE*
+      (WRAP-STRING |objectNamespace|)))
     (CL:WHEN (CL:NOT (CL:EQ |namespaceURI| NULL))
      (CL:SETQ |namespaceAttributes|
       (CONS (MAKE-NAMESPACE-ATTRIBUTE |objectNamespace|)
@@ -154,8 +158,10 @@
       (CL:SETQ |attributes|
        (APPEND (MAKE-REVERSED-ATTRIBUTE |object| |slot|) |attributes|))
       (CL:SETQ |attributeNamespaceName|
-       (WRAP-STRING (%MODULE-NAME (%HOME-CONTEXT (%SLOT-NAME |slot|)))))
-      (CL:WHEN (CL:NOT (MEMBER? |newNamespaceStack| |attributeNamespaceName|))
+       (WRAP-STRING
+        (%MODULE-NAME (%HOME-CONTEXT (%SLOT-NAME |slot|)))))
+      (CL:WHEN
+       (CL:NOT (MEMBER? |newNamespaceStack| |attributeNamespaceName|))
        (CL:SETQ |newNamespaceStack|
         (CONS |attributeNamespaceName| |newNamespaceStack|))
        (CL:SETQ |namespaceURI|
@@ -163,7 +169,8 @@
        (CL:WHEN (CL:NOT (CL:EQ |namespaceURI| NULL))
         (CL:SETQ |namespaceAttributes|
          (CONS
-          (MAKE-NAMESPACE-ATTRIBUTE (%WRAPPER-VALUE |attributeNamespaceName|))
+          (MAKE-NAMESPACE-ATTRIBUTE
+           (%WRAPPER-VALUE |attributeNamespaceName|))
           |namespaceAttributes|))
         (CL:SETQ |namespaceAttributes|
          (CONS |namespaceURI| |namespaceAttributes|))))
@@ -176,7 +183,8 @@
        (CL:SETQ |newNamespaceStack|
         (CONS |attributeValueNamespaceName| |newNamespaceStack|))
        (CL:SETQ |namespaceURI|
-        (LOOKUP *NAMESPACE-PREFIX-URI-TABLE* |attributeValueNamespaceName|))
+        (LOOKUP *NAMESPACE-PREFIX-URI-TABLE*
+         |attributeValueNamespaceName|))
        (CL:WHEN (CL:NOT (CL:EQ |namespaceURI| NULL))
         (CL:SETQ |namespaceAttributes|
          (CONS
@@ -227,7 +235,8 @@
   (CL:CHECK-TYPE |namespacePrefix| CL:SIMPLE-STRING)
   (CL:LET*
    ((|uri|
-     (LOOKUP *NAMESPACE-PREFIX-URI-TABLE* (WRAP-STRING |namespacePrefix|))))
+     (LOOKUP *NAMESPACE-PREFIX-URI-TABLE*
+      (WRAP-STRING |namespacePrefix|))))
    (CL:IF (CL:NOT (CL:EQ |uri| NULL)) |uri| NULL)))
 
 ;;; (DEFUN (MAKE-CONTENT-EXPRESSION CONS) ...)
@@ -265,7 +274,8 @@
      (CL:SETF (%SURFACE-FORM SELF-001)
       (CONCATENATE |namespacePrefix| ":" |tagType|))
      (CL:SETF (%NAMESPACE-NAME SELF-001) |namespacePrefix|)
-     (CL:SETF (%NAMESPACE-URI SELF-001) (%WRAPPER-VALUE |namespaceURI|))
+     (CL:SETF (%NAMESPACE-URI SELF-001)
+      (%WRAPPER-VALUE |namespaceURI|))
      (CL:LET* ((VALUE-001 SELF-001)) VALUE-001)))))
 
 ;;; (DEFUN (MAKE-NAMESPACE-ATTRIBUTE XML-ATTRIBUTE) ...)
@@ -275,7 +285,8 @@
   #+MCL
   (CL:CHECK-TYPE |namespaceName| CL:SIMPLE-STRING)
   (CL:LET* ((SELF-000 (NEW-XML-GLOBAL-ATTRIBUTE)))
-   (CL:SETF (%SURFACE-FORM SELF-000) (CONCATENATE "xmlns:" |namespaceName|))
+   (CL:SETF (%SURFACE-FORM SELF-000)
+    (CONCATENATE "xmlns:" |namespaceName|))
    (CL:SETF (%NAME SELF-000) |namespaceName|)
    (CL:SETF (%NAMESPACE-NAME SELF-000) "xmlns")
    (CL:LET* ((VALUE-000 SELF-000)) VALUE-000)))
@@ -289,7 +300,8 @@
    (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING |attributeValue|))
    (CL:WHEN (CL:NOT (CL:EQ |attributeValue| STELLA::NULL-STRING))
     (CL:LET*
-     ((|valueNamespaceName| (GET-VALUE-NAMESPACE-PREFIX |attributeValue|)))
+     ((|valueNamespaceName|
+       (GET-VALUE-NAMESPACE-PREFIX |attributeValue|)))
      (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING |valueNamespaceName|))
      (CL:WHEN
       (CL:AND (CL:NOT (CL:EQ |valueNamespaceName| STELLA::NULL-STRING))
@@ -340,9 +352,11 @@
      (CL:LET* ((SELF-001 (NEW-XML-GLOBAL-ATTRIBUTE)))
       (CL:SETF (%NAME SELF-001) (%SYMBOL-NAME |attributeName|))
       (CL:SETF (%SURFACE-FORM SELF-001)
-       (CONCATENATE |namespacePrefix| ":" (%SYMBOL-NAME |attributeName|)))
+       (CONCATENATE |namespacePrefix| ":"
+        (%SYMBOL-NAME |attributeName|)))
       (CL:SETF (%NAMESPACE-NAME SELF-001) |namespacePrefix|)
-      (CL:SETF (%NAMESPACE-URI SELF-001) (%WRAPPER-VALUE |namespaceURI|))
+      (CL:SETF (%NAMESPACE-URI SELF-001)
+       (%WRAPPER-VALUE |namespaceURI|))
       (CL:SETQ CHOOSE-VALUE-000 SELF-001)))
     (CL:LET* ((|attribute| CHOOSE-VALUE-000))
      (CONS |attributeValue| (CONS |attribute| NIL))))))
@@ -350,13 +364,15 @@
 ;;; (DEFUN (MAKE-ELEMENT CONS) ...)
 
 (CL:DEFUN MAKE-ELEMENT (|parentObject| |slot| |namespaceStack|)
-  (TO-XML (GET-OBJECT-SLOT-VALUE |parentObject| |slot|) |namespaceStack|))
+  (TO-XML (GET-OBJECT-SLOT-VALUE |parentObject| |slot|)
+   |namespaceStack|))
 
 ;;; (DEFUN (MAKE-COLLECTION CONS) ...)
 
 (CL:DEFUN MAKE-COLLECTION (|parentObject| |slot| |namespaceStack|)
   (CL:LET*
-   ((|elements| (GET-OBJECT-SLOT-VALUE |parentObject| |slot|)) (|result| NIL))
+   ((|elements| (GET-OBJECT-SLOT-VALUE |parentObject| |slot|))
+    (|result| NIL))
    (CL:LET*
     ((|element| NULL) (ITER-000 (%THE-CONS-LIST |elements|))
      (COLLECT-000 NULL))
@@ -364,7 +380,8 @@
      (CL:SETQ |element| (%%VALUE ITER-000))
      (CL:IF (CL:EQ COLLECT-000 NULL)
       (CL:PROGN
-       (CL:SETQ COLLECT-000 (CONS (TO-XML |element| |namespaceStack|) NIL))
+       (CL:SETQ COLLECT-000
+        (CONS (TO-XML |element| |namespaceStack|) NIL))
        (CL:IF (CL:EQ |result| NIL) (CL:SETQ |result| COLLECT-000)
         (ADD-CONS-TO-END-OF-CONS-LIST |result| COLLECT-000)))
       (CL:PROGN
@@ -394,8 +411,10 @@
 (CL:DEFUN FROM-XML (|expr|)
   (CL:LET*
    ((|elementName| (GET-ELEMENT-NAME-FROM-EXPR |expr|))
-    (|elementNamespaceName| (GET-ELEMENT-NAMESPACE-PREFIX-FROM-EXPR |expr|))
-    (|elementNamespaceURI| (GET-ELEMENT-NAMESPACE-URI-FROM-EXPR |expr|))
+    (|elementNamespaceName|
+     (GET-ELEMENT-NAMESPACE-PREFIX-FROM-EXPR |expr|))
+    (|elementNamespaceURI|
+     (GET-ELEMENT-NAMESPACE-URI-FROM-EXPR |expr|))
     (|attributeExpressions| (%%VALUE (%%REST |expr|)))
     (|elementExpressions| (%%REST (%%REST |expr|)))
     (|theObject|
@@ -423,7 +442,8 @@
         (XML-CDATA? (%%VALUE |expr|)))
        (CL:SETF (|%cdataContent| |object|)
         (UNWRAP-STRING (%%VALUE (%%VALUE (%%REST |expr|)))))
-       (CL:LET* ((|matchingSlot| (LOOKUP-ELEMENT-SLOT |object| |expr|)))
+       (CL:LET*
+        ((|matchingSlot| (LOOKUP-ELEMENT-SLOT |object| |expr|)))
         (CL:WHEN (CL:NOT (CL:EQ |matchingSlot| NULL))
          (CL:LET* ((|value| (FROM-XML |expr|)))
           (SET-OBJECT-SLOT-VALUE |object| |matchingSlot| |value|)))))))
@@ -436,11 +456,13 @@
    (CL:SETF (%THE-PLIST SELF-000) |attributeExprs|)
    (CL:LET* ((|plist| SELF-000))
     (CL:LET*
-     ((|attribute| NULL) (|value| NULL) (ITER-000 (%THE-PLIST |plist|)))
+     ((|attribute| NULL) (|value| NULL)
+      (ITER-000 (%THE-PLIST |plist|)))
      (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
       (CL:SETQ |attribute| (%%VALUE ITER-000))
       (CL:SETQ |value| (%%VALUE (%%REST ITER-000)))
-      (CL:LET* ((|matchingSlot| (LOOKUP-ATTRIBUTE-SLOT |object| |attribute|)))
+      (CL:LET*
+       ((|matchingSlot| (LOOKUP-ATTRIBUTE-SLOT |object| |attribute|)))
        (CL:WHEN (CL:NOT (CL:EQ |matchingSlot| NULL))
         (SET-OBJECT-SLOT-VALUE |object| |matchingSlot| |value|)))
       (CL:SETQ ITER-000 (%%REST (%%REST ITER-000))))))))
@@ -451,12 +473,15 @@
   (CL:LET* ((|expr| NULL) (ITER-000 |elementExprs|))
    (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
     (CL:SETQ |expr| (%%VALUE ITER-000))
-    (CL:COND ((SUBTYPE-OF-STRING? (SAFE-PRIMARY-TYPE |expr|)) (CL:PROGN))
+    (CL:COND
+     ((SUBTYPE-OF-STRING? (SAFE-PRIMARY-TYPE |expr|)) (CL:PROGN))
      (CL:T
-      (CL:LET* ((|matchingSlot| (LOOKUP-COLLECTION-SLOT |object| |expr|)))
+      (CL:LET*
+       ((|matchingSlot| (LOOKUP-COLLECTION-SLOT |object| |expr|)))
        (CL:WHEN (CL:NOT (CL:EQ |matchingSlot| NULL))
         (CL:LET* ((|value| (FROM-XML |expr|)))
-         (SET-COLLECTION-SLOT-VALUE |object| |matchingSlot| |value|))))))
+         (SET-COLLECTION-SLOT-VALUE |object| |matchingSlot|
+          |value|))))))
     (CL:SETQ ITER-000 (%%REST ITER-000)))))
 
 ;;; (DEFUN (GET-MAPPED-SLOTS (LIST OF SLOT)) ...)
@@ -476,7 +501,8 @@
      (CL:MULTIPLE-VALUE-SETQ (|slotType| |slotParametricType|)
       (SLOT-BASE-AND-PARAMETER-TYPE |slot|))
      (CL:WHEN
-      (CL:AND |useType?| (STRING-EQL? |name| (%SYMBOL-NAME |slotType|)))
+      (CL:AND |useType?|
+       (STRING-EQL? |name| (%SYMBOL-NAME |slotType|)))
       (CL:RETURN-FROM SLOT-REPRESENTS-TAG? CL:T))
      (CL:WHEN
       (CL:AND |useParametricType?|
@@ -489,14 +515,16 @@
 (CL:DEFUN LOOKUP-ELEMENT-SLOT (|object| |elementExpr|)
   (CL:LET* ((|tag| (%%VALUE |elementExpr|)) (|general-slots| NIL))
    (CL:LET*
-    ((|slot| NULL) (ITER-000 (%THE-CONS-LIST (GET-MAPPED-SLOTS |object|))))
+    ((|slot| NULL)
+     (ITER-000 (%THE-CONS-LIST (GET-MAPPED-SLOTS |object|))))
     (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
      (CL:SETQ |slot| (%%VALUE ITER-000))
      (CL:WHEN (ELEMENT-SLOT? |slot|)
       (CL:COND
        ((SLOT-REPRESENTS-TAG? |slot| |tag| CL:T CL:NIL)
         (CL:RETURN-FROM LOOKUP-ELEMENT-SLOT |slot|))
-       ((CL:EQ (TYPE-SPECIFIER |slot|) |SGT-MARSHALLER-XML-OBJECTS-XMLObject|)
+       ((CL:EQ (TYPE-SPECIFIER |slot|)
+         |SGT-MARSHALLER-XML-OBJECTS-XMLObject|)
         (CL:SETQ |general-slots| (CONS |slot| |general-slots|)))
        (CL:T)))
      (CL:SETQ ITER-000 (%%REST ITER-000))))
@@ -508,7 +536,8 @@
 
 (CL:DEFUN LOOKUP-ATTRIBUTE-SLOT (|object| |attribute|)
   (CL:LET*
-   ((|slot| NULL) (ITER-000 (%THE-CONS-LIST (GET-MAPPED-SLOTS |object|))))
+   ((|slot| NULL)
+    (ITER-000 (%THE-CONS-LIST (GET-MAPPED-SLOTS |object|))))
    (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
     (CL:SETQ |slot| (%%VALUE ITER-000))
     (CL:WHEN
@@ -523,7 +552,8 @@
 (CL:DEFUN LOOKUP-COLLECTION-SLOT (|object| |elementExpr|)
   (CL:LET* ((|tag| (%%VALUE |elementExpr|)))
    (CL:LET*
-    ((|slot| NULL) (ITER-000 (%THE-CONS-LIST (GET-MAPPED-SLOTS |object|))))
+    ((|slot| NULL)
+     (ITER-000 (%THE-CONS-LIST (GET-MAPPED-SLOTS |object|))))
     (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
      (CL:SETQ |slot| (%%VALUE ITER-000))
      (CL:WHEN
@@ -549,7 +579,8 @@
 (CL:DEFUN NEW-ID-PARENT-STRUCT ()
   (CL:LET* ((SELF NULL))
    (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE ID-PARENT-STRUCT)))
-   (CL:SETF (|%parents| SELF) NULL) (CL:SETF (|%id| SELF) NULL-INTEGER) SELF))
+   (CL:SETF (|%parents| SELF) NULL) (CL:SETF (|%id| SELF) NULL-INTEGER)
+   SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF ID-PARENT-STRUCT))
   SGT-MARSHALLER-XML-OBJECTS-ID-PARENT-STRUCT)
@@ -629,7 +660,8 @@
 (CL:DEFUN GET-CHILDREN (|node|)
   (CL:LET* ((|result| NIL))
    (CL:LET*
-    ((|slot| NULL) (ITER-000 (%THE-CONS-LIST (GET-MAPPED-SLOTS |node|))))
+    ((|slot| NULL)
+     (ITER-000 (%THE-CONS-LIST (GET-MAPPED-SLOTS |node|))))
     (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
      (CL:SETQ |slot| (%%VALUE ITER-000))
      (CL:WHEN
@@ -686,14 +718,16 @@
 ;;; (DEFUN (FIRST-PARENT-FOR-MULTIREF-NODE? BOOLEAN) ...)
 
 (CL:DEFUN FIRST-PARENT-FOR-MULTIREF-NODE? (|node| |parent|)
-  (CL:LET* ((|idParentsStruct| (LOOKUP *NODE-ID-PARENTS-TABLE* |node|)))
+  (CL:LET*
+   ((|idParentsStruct| (LOOKUP *NODE-ID-PARENTS-TABLE* |node|)))
    (CL:AND (CL:NOT (CL:EQ |idParentsStruct| NULL))
     (CL:EQ (FIRST (|%parents| |idParentsStruct|)) |parent|))))
 
 ;;; (DEFUN (NTH-PARENT-FOR-MULTIREF-NODE? BOOLEAN) ...)
 
 (CL:DEFUN NTH-PARENT-FOR-MULTIREF-NODE? (|node| |parent|)
-  (CL:LET* ((|idParentsStruct| (LOOKUP *NODE-ID-PARENTS-TABLE* |node|)))
+  (CL:LET*
+   ((|idParentsStruct| (LOOKUP *NODE-ID-PARENTS-TABLE* |node|)))
    (CL:AND (CL:NOT (CL:EQ |idParentsStruct| NULL))
     (CL:NOT (CL:EQ (FIRST (|%parents| |idParentsStruct|)) |parent|)))))
 
@@ -701,7 +735,8 @@
 
 (CL:DECLAIM (CL:FTYPE (CL:FUNCTION (CL:T) CL:FIXNUM) GET-NODE-ID))
 (CL:DEFUN GET-NODE-ID (|node|)
-  (CL:LET* ((|idParentsStruct| (LOOKUP *NODE-ID-PARENTS-TABLE* |node|)))
+  (CL:LET*
+   ((|idParentsStruct| (LOOKUP *NODE-ID-PARENTS-TABLE* |node|)))
    (|%id| |idParentsStruct|)))
 
 ;;; (DEFUN HELP-SIMULATE-MULTIREF-OUTPUT ...)
@@ -718,7 +753,8 @@
     ((I NULL-INTEGER) (ITER-000 1) (UPPER-BOUND-000 |indent|)
      (UNBOUNDED?-000 (CL:= UPPER-BOUND-000 NULL-INTEGER)))
     (CL:DECLARE (CL:TYPE CL:FIXNUM I ITER-000 UPPER-BOUND-000))
-    (CL:LOOP WHILE (CL:OR UNBOUNDED?-000 (CL:<= ITER-000 UPPER-BOUND-000)) DO
+    (CL:LOOP WHILE
+     (CL:OR UNBOUNDED?-000 (CL:<= ITER-000 UPPER-BOUND-000)) DO
      (CL:SETQ I ITER-000) (CL:SETQ I I)
      (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT) " ")
      (CL:SETQ ITER-000 (CL:1+ ITER-000))))
@@ -755,7 +791,8 @@
 
 (CL:DEFUN PARSE-XML-FROM-STREAM (|in| |skipFrontmatter?|)
   (CL:LET* ((|item| NULL) (ITER-000 (XML-EXPRESSIONS |in| NULL)))
-   (CL:LOOP WHILE (NEXT? ITER-000) DO (CL:SETQ |item| (%VALUE ITER-000))
+   (CL:LOOP WHILE (NEXT? ITER-000) DO
+    (CL:SETQ |item| (%VALUE ITER-000))
     (CL:WHEN
      (CL:OR (CL:NOT |skipFrontmatter?|)
       (CL:AND (ISA? |item| SGT-MARSHALLER-STELLA-CONS)
@@ -771,7 +808,8 @@
   (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING |string|))
   #+MCL
   (CL:CHECK-TYPE |string| CL:SIMPLE-STRING)
-  (PARSE-XML-FROM-STREAM (NEW-INPUT-STRING-STREAM |string|) |skipFrontmatter?|))
+  (PARSE-XML-FROM-STREAM (NEW-INPUT-STRING-STREAM |string|)
+   |skipFrontmatter?|))
 
 ;;; (DEFUN (FIND-SLOT SLOT) ...)
 
@@ -793,7 +831,8 @@
        (SLOT-BASE-AND-PARAMETER-TYPE |slot|))
       (CL:WHEN
        (CL:OR
-        (CL:AND |useType?| (STRING-EQL? |name| (%SYMBOL-NAME |slotType|)))
+        (CL:AND |useType?|
+         (STRING-EQL? |name| (%SYMBOL-NAME |slotType|)))
         (CL:AND |useParametricType?|
          (STRING-EQL? |name| (%SYMBOL-NAME |slotParametricType|)))
         (STRING-EQL? |name| (%SYMBOL-NAME (%SLOT-NAME |slot|))))
@@ -824,14 +863,16 @@
 ;;; (DEFUN (GET-ELEMENT-NAME-FROM-OBJECT STRING) ...)
 
 (CL:DECLAIM
- (CL:FTYPE (CL:FUNCTION (CL:T) CL:SIMPLE-STRING) GET-ELEMENT-NAME-FROM-OBJECT))
+ (CL:FTYPE (CL:FUNCTION (CL:T) CL:SIMPLE-STRING)
+  GET-ELEMENT-NAME-FROM-OBJECT))
 (CL:DEFUN GET-ELEMENT-NAME-FROM-OBJECT (|object|)
   (CL:LET* ((|className| (%SYMBOL-NAME (PRIMARY-TYPE |object|))))
    (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING |className|)) |className|))
 
 ;;; (DEFUN (STRINGIFY-XML STRING) ...)
 
-(CL:DECLAIM (CL:FTYPE (CL:FUNCTION (CL:T) CL:SIMPLE-STRING) STRINGIFY-XML))
+(CL:DECLAIM
+ (CL:FTYPE (CL:FUNCTION (CL:T) CL:SIMPLE-STRING) STRINGIFY-XML))
 (CL:DEFUN STRINGIFY-XML (|expression|)
   (CL:LET* ((|ss| (NEW-OUTPUT-STRING-STREAM)))
    (PRINT-XML-EXPRESSION |ss| |expression| 0) (THE-STRING-READER |ss|)))
@@ -853,7 +894,8 @@ specific namespace-mapping defined.")
    (CL:WHEN
     (CL:AND (CL:NOT (CL:EQ |namespacePrefix| STELLA::NULL-STRING))
      (CL:NOT (STRING-EQL? |namespacePrefix| "")))
-    (CL:SETQ |creationModule| (GET-STELLA-CONTEXT |namespacePrefix| CL:NIL)))
+    (CL:SETQ |creationModule|
+     (GET-STELLA-CONTEXT |namespacePrefix| CL:NIL)))
    (CL:WHEN (CL:EQ |creationModule| NULL)
     (CL:IF (CL:NOT (CL:EQ *DEFAULT-XML-OBJECT-MODULE* NULL))
      (CL:SETQ |creationModule| *DEFAULT-XML-OBJECT-MODULE*)
@@ -864,7 +906,8 @@ specific namespace-mapping defined.")
 
 (CL:DEFUN MAKE-XML-OBJECT (|className| |namespacePrefix| |namespaceURI|)
   (CL:DECLARE
-   (CL:TYPE CL:SIMPLE-STRING |className| |namespacePrefix| |namespaceURI|))
+   (CL:TYPE CL:SIMPLE-STRING |className| |namespacePrefix|
+    |namespaceURI|))
   #+MCL
   (CL:CHECK-TYPE |className| CL:SIMPLE-STRING)
   #+MCL
@@ -878,8 +921,8 @@ specific namespace-mapping defined.")
       (LOOKUP-OBJECT-CREATION-MODULE |namespacePrefix|) CL:T)))
    (CL:WHEN (CL:EQ |theType| NULL)
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%NATIVE-STREAM STREAM-000) "Couldn't find a class for `"
-      |className| "' in target module `"
+     (%%PRINT-STREAM (%NATIVE-STREAM STREAM-000)
+      "Couldn't find a class for `" |className| "' in target module `"
       (LOOKUP-OBJECT-CREATION-MODULE |namespacePrefix|) "'")
      (CL:ERROR
       (NEW-NO-SUCH-OBJECT-EXCEPTION (THE-STRING-READER STREAM-000)))))
@@ -892,10 +935,12 @@ specific namespace-mapping defined.")
 
 (CL:DEFUN ATTRIBUTE-SLOT? (|slot|)
   (CL:LET*
-   ((|stringType| SGT-MARSHALLER-STELLA-STRING) (|slotType| (TYPE |slot|)))
+   ((|stringType| SGT-MARSHALLER-STELLA-STRING)
+    (|slotType| (TYPE |slot|)))
    (CL:AND
     (CL:NOT
-     (CL:EQ (%SLOT-NAME |slot|) |SYM-MARSHALLER-XML-OBJECTS-textContent|))
+     (CL:EQ (%SLOT-NAME |slot|)
+      |SYM-MARSHALLER-XML-OBJECTS-textContent|))
     (SUBTYPE-OF? |slotType| |stringType|))))
 
 ;;; (DEFUN (ELEMENT-SLOT? BOOLEAN) ...)
@@ -947,13 +992,15 @@ specific namespace-mapping defined.")
        (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
         (%%PRINT-STREAM (%NATIVE-STREAM STREAM-000)
          "Don't know how to base64-decode this object: `" |value| "'")
-        (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
+        (CL:ERROR
+         (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
      ((CL:EQ |encoding| KWD-MARSHALLER-PLAIN))
      (CL:T
       (CL:LET* ((STREAM-001 (NEW-OUTPUT-STRING-STREAM)))
        (%%PRINT-STREAM (%NATIVE-STREAM STREAM-001)
         "Unknown encoding scheme: `" |encoding| "'")
-       (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-001)))))))
+       (CL:ERROR
+        (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-001)))))))
    |value|))
 
 ;;; (DEFUN (ENCODE-SLOT-VALUE OBJECT) ...)
@@ -972,13 +1019,15 @@ specific namespace-mapping defined.")
        (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
         (%%PRINT-STREAM (%NATIVE-STREAM STREAM-000)
          "Don't know how to base64-encode this object: `" |value| "'")
-        (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
+        (CL:ERROR
+         (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
      ((CL:EQ |encoding| KWD-MARSHALLER-PLAIN))
      (CL:T
       (CL:LET* ((STREAM-001 (NEW-OUTPUT-STRING-STREAM)))
        (%%PRINT-STREAM (%NATIVE-STREAM STREAM-001)
         "unknown encoding scheme: `" |encoding| "'")
-       (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-001)))))))
+       (CL:ERROR
+        (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-001)))))))
    |value|))
 
 ;;; (DEFGLOBAL *BASE64-ENCODING-TABLE* ...)
@@ -998,21 +1047,27 @@ specific namespace-mapping defined.")
    (CL:DECLARE (CL:TYPE CL:SIMPLE-VECTOR |buffer|))
    (CL:LET* ((|i| NULL-INTEGER) (ITER-000 0) (UPPER-BOUND-000 255))
     (CL:DECLARE (CL:TYPE CL:FIXNUM |i| ITER-000 UPPER-BOUND-000))
-    (CL:LOOP WHILE (CL:<= ITER-000 UPPER-BOUND-000) DO (CL:SETQ |i| ITER-000)
-     (CL:SETF (CL:AREF |buffer| |i|) -1) (CL:SETQ ITER-000 (CL:1+ ITER-000))))
+    (CL:LOOP WHILE (CL:<= ITER-000 UPPER-BOUND-000) DO
+     (CL:SETQ |i| ITER-000) (CL:SETF (CL:AREF |buffer| |i|) -1)
+     (CL:SETQ ITER-000 (CL:1+ ITER-000))))
    (CL:LET*
-    ((|ch| NULL-CHARACTER) (VECTOR-000 *BASE64-ENCODING-TABLE*) (INDEX-000 0)
+    ((|ch| NULL-CHARACTER) (VECTOR-000 *BASE64-ENCODING-TABLE*)
+     (INDEX-000 0)
      (LENGTH-000 (CL:THE CL:FIXNUM (CL:LENGTH VECTOR-000)))
      (|code| NULL-INTEGER) (ITER-001 0) (UPPER-BOUND-001 63))
     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING VECTOR-000)
-     (CL:TYPE CL:FIXNUM INDEX-000 LENGTH-000 |code| ITER-001 UPPER-BOUND-001))
+     (CL:TYPE CL:FIXNUM INDEX-000 LENGTH-000 |code| ITER-001
+      UPPER-BOUND-001))
     (CL:LOOP WHILE
-     (CL:AND (CL:< INDEX-000 LENGTH-000) (CL:<= ITER-001 UPPER-BOUND-001)) DO
+     (CL:AND (CL:< INDEX-000 LENGTH-000)
+      (CL:<= ITER-001 UPPER-BOUND-001))
+     DO
      (CL:SETQ |ch|
       (CL:LET ((SELF VECTOR-000) (POSITION INDEX-000))
        (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
         (CL:TYPE CL:FIXNUM POSITION))
-       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))))
+       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+        (CL:THE CL:FIXNUM POSITION))))
      (CL:SETQ |code| ITER-001)
      (CL:SETF (CL:AREF |buffer| (CL:THE CL:FIXNUM (CL:CHAR-CODE |ch|)))
       |code|)
@@ -1036,11 +1091,13 @@ specific namespace-mapping defined.")
     (|nofLines| (CEILING (CL:/ |codeLength| 76.0d0)))
     (|outputLength| (CL:+ |codeLength| (CL:* |nofLines| 2)))
     (|output| (MAKE-RAW-MUTABLE-STRING |outputLength|))
-    (|encodingTable| *BASE64-ENCODING-TABLE*) (|triple| 0) (|inputCursor| 0)
-    (|outputCursor| 0) (|eolPosition| 76) (|nofPads| 0))
+    (|encodingTable| *BASE64-ENCODING-TABLE*) (|triple| 0)
+    (|inputCursor| 0) (|outputCursor| 0) (|eolPosition| 76)
+    (|nofPads| 0))
    (CL:DECLARE
-    (CL:TYPE CL:FIXNUM |inputLength| |codeLength| |nofLines| |outputLength|
-     |triple| |inputCursor| |outputCursor| |eolPosition| |nofPads|)
+    (CL:TYPE CL:FIXNUM |inputLength| |codeLength| |nofLines|
+     |outputLength| |triple| |inputCursor| |outputCursor| |eolPosition|
+     |nofPads|)
     (CL:TYPE CL:SIMPLE-STRING |output| |encodingTable|))
    (CL:LOOP (CL:WHEN (CL:= |inputCursor| |inputLength|) (CL:RETURN))
     (CL:SETQ |triple|
@@ -1090,15 +1147,18 @@ specific namespace-mapping defined.")
          (POSITION
           (CL:LET ((ARG |triple|) (COUNT 18))
            (CL:DECLARE (CL:TYPE CL:FIXNUM ARG COUNT))
-           (CL:THE CL:FIXNUM (CL:ASH ARG (CL:THE CL:FIXNUM (CL:- COUNT)))))))
+           (CL:THE CL:FIXNUM
+            (CL:ASH ARG (CL:THE CL:FIXNUM (CL:- COUNT)))))))
         (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
          (CL:TYPE CL:FIXNUM POSITION))
         (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
          (CL:THE CL:FIXNUM POSITION))))
       (POSITION |outputCursor|))
-     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF) (CL:TYPE CL:FIXNUM POSITION))
+     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+      (CL:TYPE CL:FIXNUM POSITION))
      (SETF
-      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+       (CL:THE CL:FIXNUM POSITION))
       (CL:THE CL:CHARACTER CH)))
     (CL:SETQ |outputCursor| (CL:1+ |outputCursor|))
     (CL:LET
@@ -1120,9 +1180,11 @@ specific namespace-mapping defined.")
         (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
          (CL:THE CL:FIXNUM POSITION))))
       (POSITION |outputCursor|))
-     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF) (CL:TYPE CL:FIXNUM POSITION))
+     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+      (CL:TYPE CL:FIXNUM POSITION))
      (SETF
-      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+       (CL:THE CL:FIXNUM POSITION))
       (CL:THE CL:CHARACTER CH)))
     (CL:SETQ |outputCursor| (CL:1+ |outputCursor|))
     (CL:LET
@@ -1144,9 +1206,11 @@ specific namespace-mapping defined.")
         (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
          (CL:THE CL:FIXNUM POSITION))))
       (POSITION |outputCursor|))
-     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF) (CL:TYPE CL:FIXNUM POSITION))
+     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+      (CL:TYPE CL:FIXNUM POSITION))
      (SETF
-      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+       (CL:THE CL:FIXNUM POSITION))
       (CL:THE CL:CHARACTER CH)))
     (CL:SETQ |outputCursor| (CL:1+ |outputCursor|))
     (CL:LET
@@ -1160,9 +1224,11 @@ specific namespace-mapping defined.")
         (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
          (CL:THE CL:FIXNUM POSITION))))
       (POSITION |outputCursor|))
-     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF) (CL:TYPE CL:FIXNUM POSITION))
+     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+      (CL:TYPE CL:FIXNUM POSITION))
      (SETF
-      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+       (CL:THE CL:FIXNUM POSITION))
       (CL:THE CL:CHARACTER CH)))
     (CL:SETQ |outputCursor| (CL:1+ |outputCursor|))
     (CL:WHEN (CL:= |outputCursor| |eolPosition|)
@@ -1171,14 +1237,17 @@ specific namespace-mapping defined.")
       (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
        (CL:TYPE CL:FIXNUM POSITION))
       (SETF
-       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+        (CL:THE CL:FIXNUM POSITION))
        (CL:THE CL:CHARACTER CH)))
      (CL:SETQ |outputCursor| (CL:1+ |outputCursor|))
-     (CL:LET ((SELF |output|) (CH #\Linefeed) (POSITION |outputCursor|))
+     (CL:LET
+      ((SELF |output|) (CH #\Linefeed) (POSITION |outputCursor|))
       (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
        (CL:TYPE CL:FIXNUM POSITION))
       (SETF
-       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+        (CL:THE CL:FIXNUM POSITION))
        (CL:THE CL:CHARACTER CH)))
      (CL:SETQ |outputCursor| (CL:1+ |outputCursor|))))
    (CL:ECASE (CL:THE CL:FIXNUM (CL:REM |inputLength| 3))
@@ -1188,26 +1257,35 @@ specific namespace-mapping defined.")
     ((|i| NULL-INTEGER) (ITER-000 1) (UPPER-BOUND-000 |nofPads|)
      (UNBOUNDED?-000 (CL:= UPPER-BOUND-000 NULL-INTEGER)))
     (CL:DECLARE (CL:TYPE CL:FIXNUM |i| ITER-000 UPPER-BOUND-000))
-    (CL:LOOP WHILE (CL:OR UNBOUNDED?-000 (CL:<= ITER-000 UPPER-BOUND-000)) DO
+    (CL:LOOP WHILE
+     (CL:OR UNBOUNDED?-000 (CL:<= ITER-000 UPPER-BOUND-000)) DO
      (CL:SETQ |i| ITER-000)
-     (CL:LET ((SELF |output|) (CH #\=) (POSITION (CL:- |outputLength| |i| 2)))
+     (CL:LET
+      ((SELF |output|) (CH #\=) (POSITION (CL:- |outputLength| |i| 2)))
       (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
        (CL:TYPE CL:FIXNUM POSITION))
       (SETF
-       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+        (CL:THE CL:FIXNUM POSITION))
        (CL:THE CL:CHARACTER CH)))
      (CL:SETQ ITER-000 (CL:1+ ITER-000))))
    (CL:WHEN (CL:>= |outputLength| 2)
-    (CL:LET ((SELF |output|) (CH #\Return) (POSITION (CL:- |outputLength| 2)))
-     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF) (CL:TYPE CL:FIXNUM POSITION))
+    (CL:LET
+     ((SELF |output|) (CH #\Return) (POSITION (CL:- |outputLength| 2)))
+     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+      (CL:TYPE CL:FIXNUM POSITION))
      (SETF
-      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+       (CL:THE CL:FIXNUM POSITION))
       (CL:THE CL:CHARACTER CH)))
     (CL:LET
-     ((SELF |output|) (CH #\Linefeed) (POSITION (CL:1- |outputLength|)))
-     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF) (CL:TYPE CL:FIXNUM POSITION))
+     ((SELF |output|) (CH #\Linefeed)
+      (POSITION (CL:1- |outputLength|)))
+     (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+      (CL:TYPE CL:FIXNUM POSITION))
      (SETF
-      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+      (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+       (CL:THE CL:FIXNUM POSITION))
       (CL:THE CL:CHARACTER CH))))
    (CL:LET ((S |output|)) (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING S))
     (CL:THE CL:SIMPLE-STRING S))))
@@ -1226,15 +1304,16 @@ specific namespace-mapping defined.")
    ((|inputLength| (CL:THE CL:FIXNUM (CL:LENGTH |input|)))
     (|outputLength|
      (CL:*
-      (CL:LET ((X |inputLength|) (Y 4)) (CL:DECLARE (CL:TYPE CL:FIXNUM X Y))
+      (CL:LET ((X |inputLength|) (Y 4))
+       (CL:DECLARE (CL:TYPE CL:FIXNUM X Y))
        (CL:THE CL:FIXNUM (CL:VALUES (CL:TRUNCATE X Y))))
       3))
     (|output| (MAKE-RAW-MUTABLE-STRING |outputLength|))
     (|decodingTable| *BASE64-DECODING-TABLE*) (|code| 0) (|triple| 0)
     (|nofPads| 0) (|inputCursor| 0) (|outputCursor| 0))
    (CL:DECLARE
-    (CL:TYPE CL:FIXNUM |inputLength| |outputLength| |code| |triple| |nofPads|
-     |inputCursor| |outputCursor|)
+    (CL:TYPE CL:FIXNUM |inputLength| |outputLength| |code| |triple|
+     |nofPads| |inputCursor| |outputCursor|)
     (CL:TYPE CL:SIMPLE-STRING |output|)
     (CL:TYPE CL:SIMPLE-VECTOR |decodingTable|))
    (CL:LOOP
@@ -1298,7 +1377,8 @@ specific namespace-mapping defined.")
        (CL:T
         (CL:SETQ |triple|
          (CL:THE CL:FIXNUM
-          (CL:LOGIOR (CL:THE CL:FIXNUM (CL:ASH |triple| 6)) |code|)))))))
+          (CL:LOGIOR (CL:THE CL:FIXNUM (CL:ASH |triple| 6))
+           |code|)))))))
     (CL:COND
      ((CL:= |nofPads| 0)
       (CL:LET
@@ -1314,7 +1394,8 @@ specific namespace-mapping defined.")
        (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
         (CL:TYPE CL:FIXNUM POSITION))
        (SETF
-        (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+        (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+         (CL:THE CL:FIXNUM POSITION))
         (CL:THE CL:CHARACTER CH)))
       (CL:SETQ |outputCursor| (CL:1+ |outputCursor|))
       (CL:LET
@@ -1333,7 +1414,8 @@ specific namespace-mapping defined.")
        (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
         (CL:TYPE CL:FIXNUM POSITION))
        (SETF
-        (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+        (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+         (CL:THE CL:FIXNUM POSITION))
         (CL:THE CL:CHARACTER CH)))
       (CL:SETQ |outputCursor| (CL:1+ |outputCursor|))
       (CL:LET
@@ -1343,7 +1425,8 @@ specific namespace-mapping defined.")
        (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
         (CL:TYPE CL:FIXNUM POSITION))
        (SETF
-        (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+        (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+         (CL:THE CL:FIXNUM POSITION))
         (CL:THE CL:CHARACTER CH)))
       (CL:SETQ |outputCursor| (CL:1+ |outputCursor|)))
      (CL:T
@@ -1360,7 +1443,8 @@ specific namespace-mapping defined.")
        (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
         (CL:TYPE CL:FIXNUM POSITION))
        (SETF
-        (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+        (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+         (CL:THE CL:FIXNUM POSITION))
         (CL:THE CL:CHARACTER CH)))
       (CL:SETQ |outputCursor| (CL:1+ |outputCursor|))
       (CL:WHEN (CL:= |nofPads| 1)
@@ -1380,7 +1464,8 @@ specific namespace-mapping defined.")
         (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
          (CL:TYPE CL:FIXNUM POSITION))
         (SETF
-         (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF) (CL:THE CL:FIXNUM POSITION))
+         (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+          (CL:THE CL:FIXNUM POSITION))
          (CL:THE CL:CHARACTER CH)))
        (CL:SETQ |outputCursor| (CL:1+ |outputCursor|))))))
    (CL:IF (CL:< |outputCursor| |outputLength|)
@@ -1415,9 +1500,11 @@ specific namespace-mapping defined.")
 (CL:DEFUN ACCESS-A-SLOT-VALUE (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-MARSHALLER-XML-OBJECTS-b|)
-    (CL:IF SETVALUE? (CL:SETF (|%b| SELF) VALUE) (CL:SETQ VALUE (|%b| SELF))))
+    (CL:IF SETVALUE? (CL:SETF (|%b| SELF) VALUE)
+     (CL:SETQ VALUE (|%b| SELF))))
    ((CL:EQ SLOTNAME |SYM-MARSHALLER-XML-OBJECTS-c|)
-    (CL:IF SETVALUE? (CL:SETF (|%c| SELF) VALUE) (CL:SETQ VALUE (|%c| SELF))))
+    (CL:IF SETVALUE? (CL:SETF (|%c| SELF) VALUE)
+     (CL:SETQ VALUE (|%c| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
      (%%PRINT-STREAM (%NATIVE-STREAM STREAM-000) "`" SLOTNAME
@@ -1442,7 +1529,8 @@ specific namespace-mapping defined.")
 (CL:DEFUN ACCESS-B-SLOT-VALUE (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-MARSHALLER-XML-OBJECTS-d|)
-    (CL:IF SETVALUE? (CL:SETF (|%d| SELF) VALUE) (CL:SETQ VALUE (|%d| SELF))))
+    (CL:IF SETVALUE? (CL:SETF (|%d| SELF) VALUE)
+     (CL:SETQ VALUE (|%d| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
      (%%PRINT-STREAM (%NATIVE-STREAM STREAM-000) "`" SLOTNAME
@@ -1468,9 +1556,11 @@ specific namespace-mapping defined.")
 (CL:DEFUN ACCESS-C-SLOT-VALUE (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-MARSHALLER-XML-OBJECTS-d|)
-    (CL:IF SETVALUE? (CL:SETF (|%d| SELF) VALUE) (CL:SETQ VALUE (|%d| SELF))))
+    (CL:IF SETVALUE? (CL:SETF (|%d| SELF) VALUE)
+     (CL:SETQ VALUE (|%d| SELF))))
    ((CL:EQ SLOTNAME |SYM-MARSHALLER-XML-OBJECTS-e|)
-    (CL:IF SETVALUE? (CL:SETF (|%e| SELF) VALUE) (CL:SETQ VALUE (|%e| SELF))))
+    (CL:IF SETVALUE? (CL:SETF (|%e| SELF) VALUE)
+     (CL:SETQ VALUE (|%e| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
      (%%PRINT-STREAM (%NATIVE-STREAM STREAM-000) "`" SLOTNAME
@@ -1495,7 +1585,8 @@ specific namespace-mapping defined.")
 (CL:DEFUN ACCESS-D-SLOT-VALUE (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-MARSHALLER-XML-OBJECTS-f|)
-    (CL:IF SETVALUE? (CL:SETF (|%f| SELF) VALUE) (CL:SETQ VALUE (|%f| SELF))))
+    (CL:IF SETVALUE? (CL:SETF (|%f| SELF) VALUE)
+     (CL:SETQ VALUE (|%f| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
      (%%PRINT-STREAM (%NATIVE-STREAM STREAM-000) "`" SLOTNAME
@@ -1520,7 +1611,8 @@ specific namespace-mapping defined.")
 (CL:DEFUN ACCESS-E-SLOT-VALUE (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-MARSHALLER-XML-OBJECTS-f|)
-    (CL:IF SETVALUE? (CL:SETF (|%f| SELF) VALUE) (CL:SETQ VALUE (|%f| SELF))))
+    (CL:IF SETVALUE? (CL:SETF (|%f| SELF) VALUE)
+     (CL:SETQ VALUE (|%f| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
      (%%PRINT-STREAM (%NATIVE-STREAM STREAM-000) "`" SLOTNAME
@@ -1557,14 +1649,15 @@ specific namespace-mapping defined.")
            (CL:LET* ((SELF-005 (NEW-A))) (CL:SETF (|%b| SELF-005) |b|)
             (CL:SETF (|%c| SELF-005) |c|)
             (CL:LET* ((|a| SELF-005)) (RESET-MULTIREF-TABLES)
-             (POPULATE-NODE-PARENTS-TABLE |a|) (CREATE-NODE-ID-PARENT-TABLE)
+             (POPULATE-NODE-PARENTS-TABLE |a|)
+             (CREATE-NODE-ID-PARENT-TABLE)
              (SIMULATE-MULTIREF-OUTPUT |a|)))))))))))))
 
 (CL:DEFUN HELP-STARTUP-MARSHALLER1 ()
   (CL:PROGN
    (CL:SETQ SGT-MARSHALLER-STELLA-CONS
-    (INTERN-RIGID-SYMBOL-WRT-MODULE "CONS" (GET-STELLA-MODULE "/STELLA" CL:T)
-     1))
+    (INTERN-RIGID-SYMBOL-WRT-MODULE "CONS"
+     (GET-STELLA-MODULE "/STELLA" CL:T) 1))
    (CL:SETQ |SGT-MARSHALLER-XML-OBJECTS-XMLObject|
     (INTERN-RIGID-SYMBOL-WRT-MODULE "XMLObject" NULL 1))
    (CL:SETQ |SYM-MARSHALLER-XML-OBJECTS-textContent|
@@ -1582,8 +1675,8 @@ specific namespace-mapping defined.")
     (INTERN-RIGID-SYMBOL-WRT-MODULE "STRING"
      (GET-STELLA-MODULE "/STELLA" CL:T) 1))
    (CL:SETQ SGT-MARSHALLER-STELLA-LIST
-    (INTERN-RIGID-SYMBOL-WRT-MODULE "LIST" (GET-STELLA-MODULE "/STELLA" CL:T)
-     1))
+    (INTERN-RIGID-SYMBOL-WRT-MODULE "LIST"
+     (GET-STELLA-MODULE "/STELLA" CL:T) 1))
    (CL:SETQ SYM-MARSHALLER-XML-OBJECTS-ENCODING-SCHEME
     (INTERN-RIGID-SYMBOL-WRT-MODULE "ENCODING-SCHEME" NULL 0))
    (CL:SETQ KWD-MARSHALLER-BASE64
@@ -1665,7 +1758,8 @@ specific namespace-mapping defined.")
      (CL:FUNCTION ACCESS-E-SLOT-VALUE)))
    (CL:LET*
     ((CLASS
-      (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "F" "(DEFCLASS F (XMLObject))")))
+      (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "F"
+       "(DEFCLASS F (XMLObject))")))
     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS) (CL:FUNCTION NEW-F)))))
 
 (CL:DEFUN HELP-STARTUP-MARSHALLER3 ()
@@ -1722,7 +1816,8 @@ specific namespace-mapping defined.")
     "(DEFUN (FROM-XML-STREAM XMLObject) ((in INPUT-STREAM)) :PUBLIC? TRUE :DOCUMENTATION \"Convert XML into an object.\")"
     (CL:FUNCTION FROM-XML-STREAM) NULL)
    (DEFINE-FUNCTION-OBJECT "FROM-XML"
-    "(DEFUN (FROM-XML XMLObject) ((expr CONS)))" (CL:FUNCTION FROM-XML) NULL)
+    "(DEFUN (FROM-XML XMLObject) ((expr CONS)))" (CL:FUNCTION FROM-XML)
+    NULL)
    (DEFINE-FUNCTION-OBJECT "SET-ELEMENTS"
     "(DEFUN SET-ELEMENTS ((object XMLObject) (elementExprs CONS)))"
     (CL:FUNCTION SET-ELEMENTS) NULL)
@@ -1751,10 +1846,10 @@ specific namespace-mapping defined.")
     "(DEFUN (LOOKUP-CONTENT-SLOT STORAGE-SLOT) ((object XMLObject)))"
     (CL:FUNCTION LOOKUP-CONTENT-SLOT) NULL)
    (DEFINE-FUNCTION-OBJECT "RESET-MULTIREF-TABLES"
-    "(DEFUN RESET-MULTIREF-TABLES ())" (CL:FUNCTION RESET-MULTIREF-TABLES)
-    NULL)
-   (DEFINE-FUNCTION-OBJECT "GET-NEXT-ID" "(DEFUN (GET-NEXT-ID INTEGER) ())"
-    (CL:FUNCTION GET-NEXT-ID) NULL)
+    "(DEFUN RESET-MULTIREF-TABLES ())"
+    (CL:FUNCTION RESET-MULTIREF-TABLES) NULL)
+   (DEFINE-FUNCTION-OBJECT "GET-NEXT-ID"
+    "(DEFUN (GET-NEXT-ID INTEGER) ())" (CL:FUNCTION GET-NEXT-ID) NULL)
    (DEFINE-FUNCTION-OBJECT "INSERT-NODE-PARENTS-TABLE"
     "(DEFUN (INSERT-NODE-PARENTS-TABLE BOOLEAN) ((node XMLObject) (parent XMLObject)))"
     (CL:FUNCTION INSERT-NODE-PARENTS-TABLE) NULL)
@@ -1852,14 +1947,16 @@ specific namespace-mapping defined.")
 (CL:DEFUN STARTUP-MARSHALLER ()
   (CL:LET*
    ((*MODULE*
-     (GET-STELLA-MODULE "/STELLA/XML-OBJECTS" (> *STARTUP-TIME-PHASE* 1)))
+     (GET-STELLA-MODULE "/STELLA/XML-OBJECTS"
+      (> *STARTUP-TIME-PHASE* 1)))
     (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2) (HELP-STARTUP-MARSHALLER1))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 4)
     (CL:SETQ *NODE-PARENTS-TABLE* (NEW-PROPERTY-LIST))
     (CL:SETQ *NODE-ID-PARENTS-TABLE* (NEW-HASH-TABLE))
-    (CL:SETQ *BASE64-DECODING-TABLE* (INITIALIZE-BASE64-DECODING-TABLE)))
+    (CL:SETQ *BASE64-DECODING-TABLE*
+     (INITIALIZE-BASE64-DECODING-TABLE)))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 5) (HELP-STARTUP-MARSHALLER2))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7) (HELP-STARTUP-MARSHALLER3)
@@ -1870,16 +1967,17 @@ specific namespace-mapping defined.")
      "(DEFUN (BASE64-DECODE-STRING STRING) ((input STRING)) :DOCUMENTATION \"Base-64 decode `input' and return the result.\" :PUBLIC? TRUE)"
      (CL:FUNCTION BASE64-DECODE-STRING) NULL)
     (DEFINE-FUNCTION-OBJECT "READ-XML"
-     "(DEFUN (READ-XML OBJECT) ((xmlString STRING)))" (CL:FUNCTION READ-XML)
-     NULL)
-    (DEFINE-FUNCTION-OBJECT "MULTIREF-TEST1" "(DEFUN MULTIREF-TEST1 ())"
-     (CL:FUNCTION MULTIREF-TEST1) NULL)
+     "(DEFUN (READ-XML OBJECT) ((xmlString STRING)))"
+     (CL:FUNCTION READ-XML) NULL)
+    (DEFINE-FUNCTION-OBJECT "MULTIREF-TEST1"
+     "(DEFUN MULTIREF-TEST1 ())" (CL:FUNCTION MULTIREF-TEST1) NULL)
     (DEFINE-FUNCTION-OBJECT "STARTUP-MARSHALLER"
      "(DEFUN STARTUP-MARSHALLER () :PUBLIC? TRUE)"
      (CL:FUNCTION STARTUP-MARSHALLER) NULL)
     (CL:LET*
      ((FUNCTION
-       (LOOKUP-FUNCTION SYM-MARSHALLER-XML-OBJECTS-STARTUP-MARSHALLER)))
+       (LOOKUP-FUNCTION
+        SYM-MARSHALLER-XML-OBJECTS-STARTUP-MARSHALLER)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
       SYM-MARSHALLER-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupMarshaller") NULL-STRING-WRAPPER)))

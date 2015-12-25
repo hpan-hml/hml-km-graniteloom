@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -110,6 +110,7 @@ LogicObject* getConcept(char* name, Module* module, Environment* environment);
 LogicObject* sGetConcept(char* name, char* moduleName, Environment* environment);
 LogicObject* getRelation(char* name, Module* module, Environment* environment);
 LogicObject* sGetRelation(char* name, char* moduleName, Environment* environment);
+PlIterator* getUndefinedRelations(Module* module, Environment* environment);
 char* getNameInModule(Object* obj, Module* module, Environment* environment);
 char* getName(Object* obj);
 char* getShortName(Object* obj);
@@ -124,6 +125,7 @@ Proposition* getProposition(Object* relationAndArguments, Module* module, Enviro
 Proposition* sGetProposition(char* relationAndArguments, char* moduleName, Environment* environment);
 PlIterator* getPropositions(Object* relationAndArguments, Module* module, Environment* environment);
 PlIterator* sGetPropositions(char* relationAndArguments, char* moduleName, Environment* environment);
+PlIterator* getInconsistentPropositions(Module* module, Environment* environment);
 Proposition* getBinaryProposition(LogicObject* relation, Object* arg1, Object* arg2, Module* module, Environment* environment);
 PlIterator* getBinaryPropositions(LogicObject* relation, Object* arg1, Object* arg2, Module* module, Environment* environment);
 PlIterator* getInferredBinaryPropositionValues(LogicObject* relation, Object* arg, Module* module, Environment* environment);
@@ -295,6 +297,7 @@ extern Surrogate* SGT_PLI_STELLA_INTEGER_WRAPPER;
 extern Surrogate* SGT_PLI_STELLA_FLOAT_WRAPPER;
 extern Surrogate* SGT_PLI_STELLA_NUMBER_WRAPPER;
 extern Surrogate* SGT_PLI_STELLA_STRING_WRAPPER;
+extern Keyword* KWD_PLI_DOCUMENTATION;
 extern Symbol* SYM_PLI_PLI_STARTUP_PLI;
 extern Symbol* SYM_PLI_STELLA_METHOD_STARTUP_CLASSNAME;
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -155,6 +155,7 @@ Measure* defineBaseMeasure(char* measureName, char* measureBaseUnit);
 Measure* defineDerivedMeasure(char* measureName, char* measureBaseUnit, char* definition);
 Measure* defineDimensionlessMeasure();
 Measure* lookupMeasure(char* name);
+Measure* lookupMeasureForUnit(char* unit);
 double unitToScaleFactorAndId(char* definition, Ratio*& _Return1);
 Cons* computeMeasuresForInteger(int value);
 Cons* computeMeasuresForPrimeId(Ratio* pid, Cons*& _Return1);

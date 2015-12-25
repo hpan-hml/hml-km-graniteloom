@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -228,6 +228,19 @@ public class PatternVariable extends Skolem {
         (((Stella_Object)(Stella_Object.accessInContext(variable.variableValue, variable.homeContext, false))) != null));
   }
 
+  public static Stella_Object generateOneQuantifiedVariable(PatternVariable self, boolean typedP) {
+    { Symbol name = PatternVariable.generateNameOfVariable(self);
+
+      if (typedP &&
+          (!(Logic.logicalType(self) == Logic.SGT_STELLA_THING))) {
+        return (Cons.cons(name, Cons.cons(Surrogate.symbolize(Logic.logicalType(self)), Stella.NIL)));
+      }
+      else {
+        return (name);
+      }
+    }
+  }
+
   public static Stella_Object generateOneVariable(PatternVariable self, boolean typedP) {
     { Stella_Object value = null;
 
@@ -238,7 +251,8 @@ public class PatternVariable extends Skolem {
         value = Logic.safeArgumentBoundTo(self);
       }
       if ((value != null) &&
-          (!(value == self))) {
+          ((!(value == self)) &&
+           (!Skolem.quantifiedObjectVariableP(self)))) {
         return (Logic.generateTerm(value));
       }
       else {
@@ -319,7 +333,12 @@ public class PatternVariable extends Skolem {
   public static void printKifVariable(PatternVariable self) {
     { OutputStream stream = ((OutputStream)(Logic.$PRINTLOGICALFORMSTREAM$.get()));
 
-      PatternVariable.printVariable(self, stream);
+      if (Skolem.quantifiedObjectVariableP(self)) {
+        PatternVariable.printQuantifiedVariable(self, stream);
+      }
+      else {
+        PatternVariable.printVariable(self, stream);
+      }
     }
   }
 

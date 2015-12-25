@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -124,7 +124,7 @@ Cons* idlYieldOperationSignatureTree(MethodSlot* method) {
   { MethodSlot* mostgeneralmethod = method;
     StandardObject* returntype = NULL;
 
-    oMETHODBEINGWALKEDo.set(method);
+    oMETHODBEINGWALKEDo = method;
     while (((boolean)(mostgeneralmethod->slotDirectEquivalent)) &&
         (isaP(mostgeneralmethod->slotDirectEquivalent, SGT_IDL_CLASS_OUT_STELLA_METHOD_SLOT) &&
          (!methodContainsUnknownTypeP(((MethodSlot*)(mostgeneralmethod->slotDirectEquivalent)))))) {
@@ -136,7 +136,7 @@ Cons* idlYieldOperationSignatureTree(MethodSlot* method) {
 }
 
 Cons* idlYieldConstructorSignatureTree(MethodSlot* method) {
-  oMETHODBEINGWALKEDo.set(method);
+  oMETHODBEINGWALKEDo = method;
   return (cons(idlTranslateClassName(internSymbolInModule(method->slotOwner->symbolName, ((Module*)(method->slotOwner->homeContext)), false)), listO(3, NIL, idlTranslateConstructorName(method), cons(idlTranslateMethodParameters(method), NIL))));
 }
 
@@ -458,7 +458,7 @@ Cons* idlTranslateDefineNativeClassUnit(TranslationUnit* unit) {
 void startupIdlClassOut() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SYM_IDL_CLASS_OUT_STELLA_IDL_INTERFACE = ((Symbol*)(internRigidSymbolWrtModule("IDL_INTERFACE", NULL, 0)));
       KWD_IDL_CLASS_OUT_EMBEDDED = ((Keyword*)(internRigidSymbolWrtModule("EMBEDDED", NULL, 2)));

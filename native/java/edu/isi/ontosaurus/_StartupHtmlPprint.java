@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2000-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2000-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -47,8 +47,8 @@ package edu.isi.ontosaurus;
 
 import edu.isi.stella.javalib.Native;
 import edu.isi.stella.javalib.StellaSpecialVariable;
-import edu.isi.stella.*;
 import edu.isi.powerloom.logic.*;
+import edu.isi.stella.*;
 
 public class _StartupHtmlPprint {
   public static void startupHtmlPprint() {

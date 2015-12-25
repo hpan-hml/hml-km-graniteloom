@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2008      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2013      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: java-translate.ste,v 1.72 2008/09/04 02:13:11 hans Exp
+;;; Version: java-translate.ste,v 1.73 2013/10/21 23:50:55 hans Exp
 
 ;;; Routines for translating Stella parse trees into Java trees.
 
@@ -2249,11 +2249,28 @@
      (if (java-stream-is-standard-output? (second tree))
          ;; Special-case standard output:
          (setf (second tree) (quote JAVA_STANDARD_OUT))
-       (setf (second tree) (java-translate-a-tree (second tree))))
-     ))
-  (java-translate-list-of-trees (rest (rest tree)))
-  (return tree) )
-
+       (setf (second tree) (java-translate-a-tree (second tree))))))
+  (let ((args (rest (rest tree)))
+        (arg1Type (walked-expression-type (first args)))
+        ;; will be @UNKNOWN if we don't have a second arg:
+        (arg2Type (walked-expression-type (second args))))
+    (java-translate-list-of-trees args)
+    ;; The + operator needs its first or second arg to be of type string; if neither of them
+    ;; are we have to force it to be via `toString' or by inserting a dummy ""-string literal:
+    (when (and (non-empty? (rest args))
+               (not (eql? arg1Type @STRING))
+               (not (eql? arg2Type @STRING)))
+      (cond ((sub-type-spec-of? arg1Type @OBJECT)
+             (setf (first args)
+               (bquote (JAVA_METHOD_CALL (JAVA_IDENT "Object") (JAVA_IDENT "toString") & (first args) (JAVA_ACTUALS)))))
+            ((sub-type-spec-of? arg2Type @OBJECT)
+             (setf (second args)
+               (bquote (JAVA_METHOD_CALL (JAVA_IDENT "Object") (JAVA_IDENT "toString") & (second args) (JAVA_ACTUALS)))))
+            (otherwise
+             (setf (rest args) (cons (first args) (rest args)))
+             (setf (first args) (bquote (JAVA_LITERAL ""))))))
+    (return tree) ))
+  
 (defun (java-translate-print-native-stream CONS) ((tree CONS))
   ;; Translate "print-native-stream" statement.  Currently
   ;;  almost identical to 'print-stream' except that we

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -594,7 +594,7 @@ Cons* loomDescriptionToKif(Object* tree, Cons* implicitvariables) {
           else if (testValue000 == SYM_LOOM_TO_KIF_LOGIC_DOMAIN) {
             return (loomDescriptionToKif(tree->rest->value, consList(1, ((Symbol*)(implicitvariables->value)))));
           }
-          else if (testValue000 == SYM_LOOM_TO_KIF_LOGIC_DOMAINS) {
+          else if (testValue000 == SYM_LOOM_TO_KIF_STELLA_DOMAINS) {
             { Cons* clauses = NIL;
 
               { Object* domain = NULL;
@@ -1549,7 +1549,7 @@ Cons* translateLoomDefinition(Cons* tree) {
             }
           }
           else if (testValue000 == KWD_LOOM_TO_KIF_DOMAINS) {
-            constraints = cons(cons(SYM_LOOM_TO_KIF_LOGIC_DOMAINS, ((Cons*)(value))->concatenate(NIL, 0)), constraints);
+            constraints = cons(cons(SYM_LOOM_TO_KIF_STELLA_DOMAINS, ((Cons*)(value))->concatenate(NIL, 0)), constraints);
             if (arity < 0) {
               arity = ((Cons*)(value))->length() + 1;
             }
@@ -1734,7 +1734,7 @@ void helpStartupLoomToKif1() {
     SYM_LOOM_TO_KIF_LOGIC_THE_ORDERED_SET = ((Symbol*)(internRigidSymbolWrtModule("THE-ORDERED-SET", NULL, 0)));
     SYM_LOOM_TO_KIF_LOGIC_SATISFIES = ((Symbol*)(internRigidSymbolWrtModule("SATISFIES", NULL, 0)));
     SYM_LOOM_TO_KIF_LOGIC_DOMAIN = ((Symbol*)(internRigidSymbolWrtModule("DOMAIN", NULL, 0)));
-    SYM_LOOM_TO_KIF_LOGIC_DOMAINS = ((Symbol*)(internRigidSymbolWrtModule("DOMAINS", NULL, 0)));
+    SYM_LOOM_TO_KIF_STELLA_DOMAINS = ((Symbol*)(internRigidSymbolWrtModule("DOMAINS", getStellaModule("/STELLA", true), 0)));
     SYM_LOOM_TO_KIF_LOGIC_RANGE = ((Symbol*)(internRigidSymbolWrtModule("RANGE", NULL, 0)));
     SYM_LOOM_TO_KIF_LOGIC_COMPOSE = ((Symbol*)(internRigidSymbolWrtModule("COMPOSE", NULL, 0)));
     SYM_LOOM_TO_KIF_PL_KERNEL_KB_MEMBER_OF = ((Symbol*)(internRigidSymbolWrtModule("MEMBER-OF", getStellaModule("/PL-KERNEL-KB", true), 0)));
@@ -1817,7 +1817,7 @@ void helpStartupLoomToKif2() {
 void startupLoomToKif() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupLoomToKif1();
       helpStartupLoomToKif2();
@@ -1992,7 +1992,7 @@ Symbol* SYM_LOOM_TO_KIF_LOGIC_SATISFIES = NULL;
 
 Symbol* SYM_LOOM_TO_KIF_LOGIC_DOMAIN = NULL;
 
-Symbol* SYM_LOOM_TO_KIF_LOGIC_DOMAINS = NULL;
+Symbol* SYM_LOOM_TO_KIF_STELLA_DOMAINS = NULL;
 
 Symbol* SYM_LOOM_TO_KIF_LOGIC_RANGE = NULL;
 

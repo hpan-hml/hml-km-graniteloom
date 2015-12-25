@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -252,7 +252,7 @@ TruthValue* propositionTruthValue(Proposition* proposition) {
       return (truthvalue);
     }
     else {
-      if ((!oREVERSEPOLARITYpo.get()) &&
+      if ((!oREVERSEPOLARITYpo) &&
           functionWithDefinedValueP(proposition)) {
         return (TRUE_TRUTH_VALUE);
       }
@@ -265,7 +265,7 @@ TruthValue* propositionTruthValue(Proposition* proposition) {
 
 boolean truePropositionP(Proposition* proposition) {
   return ((!proposition->deletedP()) &&
-      ((oREVERSEPOLARITYpo.get() ? falseP(proposition) : (trueP(proposition) ||
+      ((oREVERSEPOLARITYpo ? falseP(proposition) : (trueP(proposition) ||
       functionWithDefinedValueP(proposition)))));
 }
 
@@ -295,7 +295,7 @@ boolean truePropositionsIteratorDnextP(TruePropositionsIterator* self) {
         }
       }
       if ((!proposition->deletedP()) &&
-          ((oREVERSEPOLARITYpo.get() ? falseP(proposition) : (trueP(proposition) ||
+          ((oREVERSEPOLARITYpo ? falseP(proposition) : (trueP(proposition) ||
           functionWithDefinedValueP(proposition))))) {
         self->value = proposition;
         self->truthValue = propositionTruthValue(proposition);
@@ -351,6 +351,7 @@ boolean specializingPropositionsIteratorDnextP(SpecializingPropositionsIterator*
         self->value = NULL;
         return (false);
       }
+      self->selectionPattern = copyConsList(self->selectionPattern);
       self->selectionPattern->rest->rest->firstSetter(((NamedDescription*)(((Cons*)(specializingrelations->value))->value))->surrogateValueInverse);
       self->propositionCursor = selectPropositions(self->selectionPattern)->allocateIterator();
       self->equivalentsStack = NULL;
@@ -429,7 +430,7 @@ Iterator* allTrueDependentIsaPropositions(Object* self) {
 }
 
 boolean argumentsUnifyWithArgumentsP(Proposition* subproposition, Proposition* referenceproposition) {
-  { PatternRecord* patternrecord = oQUERYITERATORo.get()->currentPatternRecord;
+  { PatternRecord* patternrecord = oQUERYITERATORo->currentPatternRecord;
     int ubstackoffset = patternrecord->topUnbindingStackOffset;
     boolean successP = false;
 
@@ -514,7 +515,7 @@ boolean argumentsEqualArgumentsP(Proposition* subproposition, Proposition* refer
 }
 
 boolean argumentsMatchArgumentsP(Proposition* subproposition, Proposition* referenceproposition) {
-  if (((boolean)(oQUERYITERATORo.get()))) {
+  if (((boolean)(oQUERYITERATORo))) {
     return (argumentsUnifyWithArgumentsP(subproposition, referenceproposition));
   }
   else {
@@ -567,6 +568,9 @@ Iterator* allMatchingPropositions(Proposition* self) {
       return (EMPTY_PROPOSITIONS_ITERATOR);
     }
     if (!((boolean)(backlinkedargument))) {
+      if (oREVERSEPOLARITYpo) {
+        return (EMPTY_PROPOSITIONS_ITERATOR);
+      }
       if (oCYC_KLUDGES_ENABLEDpo) {
         { boolean testValue000 = false;
 
@@ -777,7 +781,7 @@ boolean helpMemoizeTestPropertyP(Object* self, Surrogate* relation) {
             p = ((Proposition*)(iter000->value));
             if ((((Surrogate*)(p->operatoR)) == relation) &&
                 ((!p->deletedP()) &&
-                 ((oREVERSEPOLARITYpo.get() ? falseP(p) : (trueP(p) ||
+                 ((oREVERSEPOLARITYpo ? falseP(p) : (trueP(p) ||
                 functionWithDefinedValueP(p)))))) {
               foundP000 = true;
               break;
@@ -807,7 +811,7 @@ boolean testPropertyP(Object* self, Surrogate* relation) {
         initializeMemoizationTable(SGT_SPECIALIZE_LOGIC_F_TEST_PROPERTYp_MEMO_TABLE_000, "(:MAX-VALUES 500 :TIMESTAMPS (:KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_SPECIALIZE_LOGIC_F_TEST_PROPERTYp_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, relation, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, 6);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, relation, oCONTEXTo, MEMOIZED_NULL_VALUE, 6);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -872,7 +876,7 @@ boolean testIsaP(Object* member, Surrogate* type) {
           initializeMemoizationTable(SGT_SPECIALIZE_LOGIC_F_TEST_ISAp_MEMO_TABLE_000, "(:MAX-VALUES 1000 :TIMESTAMPS (:META-KB-UPDATE))");
           memoTable000 = ((MemoizationTable*)(SGT_SPECIALIZE_LOGIC_F_TEST_ISAp_MEMO_TABLE_000->surrogateValue));
         }
-        memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), member, type, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, 6);
+        memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), member, type, oCONTEXTo, MEMOIZED_NULL_VALUE, 6);
         memoizedValue000 = memoizedEntry000->value;
       }
       if (((boolean)(memoizedValue000))) {
@@ -903,7 +907,7 @@ boolean testIsaP(Object* member, Surrogate* type) {
           initializeMemoizationTable(SGT_SPECIALIZE_LOGIC_F_TEST_ISAp_MEMO_TABLE_001, "(:MAX-VALUES 1000 :TIMESTAMPS (:KB-UPDATE))");
           memoTable001 = ((MemoizationTable*)(SGT_SPECIALIZE_LOGIC_F_TEST_ISAp_MEMO_TABLE_001->surrogateValue));
         }
-        memoizedEntry001 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable001)), member, type, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, 6);
+        memoizedEntry001 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable001)), member, type, oCONTEXTo, MEMOIZED_NULL_VALUE, 6);
         memoizedValue001 = memoizedEntry001->value;
       }
       if (((boolean)(memoizedValue001))) {
@@ -956,7 +960,7 @@ Object* accessBinaryValue(Object* self, Surrogate* relation) {
         initializeMemoizationTable(SGT_SPECIALIZE_LOGIC_F_ACCESS_BINARY_VALUE_MEMO_TABLE_000, "(:MAX-VALUES 1000 :TIMESTAMPS (:KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_SPECIALIZE_LOGIC_F_ACCESS_BINARY_VALUE_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, relation, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, 6);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, relation, oCONTEXTo, MEMOIZED_NULL_VALUE, 6);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -987,7 +991,7 @@ boolean testCollectionofMemberOfP(Object* member, Surrogate* type) {
       for (p, iter000; iter000->nextP(); ) {
         p = ((Proposition*)(iter000->value));
         if ((!p->deletedP()) &&
-            ((oREVERSEPOLARITYpo.get() ? falseP(p) : (trueP(p) ||
+            ((oREVERSEPOLARITYpo ? falseP(p) : (trueP(p) ||
             functionWithDefinedValueP(p))))) {
           { Object* collection = p->arguments->last();
 
@@ -1285,7 +1289,7 @@ Iterator* allDirectSupercollections(LogicObject* self, boolean performfilteringP
   if (isaP(self, SGT_SPECIALIZE_LOGIC_DESCRIPTION)) {
     deriveDeferredSatelliteRules(((Description*)(self)));
   }
-  { Iterator* directlylinkedobjects = allDirectlyLinkedObjects(self, SGT_SPECIALIZE_PL_KERNEL_KB_SUBSET_OF, oREVERSEPOLARITYpo.get());
+  { Iterator* directlylinkedobjects = allDirectlyLinkedObjects(self, SGT_SPECIALIZE_PL_KERNEL_KB_SUBSET_OF, oREVERSEPOLARITYpo);
 
     if (!performfilteringP) {
       return (directlylinkedobjects);
@@ -1329,7 +1333,7 @@ Iterator* allDirectSubcollections(LogicObject* self, boolean performfilteringP) 
   if (isaP(self, SGT_SPECIALIZE_LOGIC_DESCRIPTION)) {
     deriveDeferredSatelliteRules(((Description*)(self)));
   }
-  { Iterator* directlylinkedobjects = allDirectlyLinkedObjects(self, SGT_SPECIALIZE_PL_KERNEL_KB_SUBSET_OF, !oREVERSEPOLARITYpo.get());
+  { Iterator* directlylinkedobjects = allDirectlyLinkedObjects(self, SGT_SPECIALIZE_PL_KERNEL_KB_SUBSET_OF, !oREVERSEPOLARITYpo);
 
     if (!performfilteringP) {
       return (directlylinkedobjects);
@@ -1380,7 +1384,7 @@ Iterator* allSupercollections(LogicObject* self) {
         initializeMemoizationTable(SGT_SPECIALIZE_LOGIC_F_ALL_SUPERCOLLECTIONS_MEMO_TABLE_000, "(:MAX-VALUES 1000 :TIMESTAMPS (:META-KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_SPECIALIZE_LOGIC_F_ALL_SUPERCOLLECTIONS_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo.get(), (oREVERSEPOLARITYpo.get() ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, oCONTEXTo, (oREVERSEPOLARITYpo ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, -1);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -1441,7 +1445,7 @@ Cons* allSupportedNamedSubcollections(LogicObject* self) {
         initializeMemoizationTable(SGT_SPECIALIZE_LOGIC_F_ALL_SUPPORTED_NAMED_SUBCOLLECTIONS_MEMO_TABLE_000, "(:MAX-VALUES 1000 :TIMESTAMPS (:META-KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_SPECIALIZE_LOGIC_F_ALL_SUPPORTED_NAMED_SUBCOLLECTIONS_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, ((!oDONTUSEDEFAULTKNOWLEDGEpo.get()) ? TRUE_WRAPPER : FALSE_WRAPPER), oCONTEXTo.get(), (oREVERSEPOLARITYpo.get() ? TRUE_WRAPPER : FALSE_WRAPPER), -1);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), self, ((!oDONTUSEDEFAULTKNOWLEDGEpo) ? TRUE_WRAPPER : FALSE_WRAPPER), oCONTEXTo, (oREVERSEPOLARITYpo ? TRUE_WRAPPER : FALSE_WRAPPER), -1);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -1495,7 +1499,7 @@ TruePropositionsIterator* allDirectlyLinkedSubcollections(Object* self) {
     if (isaP(object, SGT_SPECIALIZE_LOGIC_DESCRIPTION)) {
       deriveDeferredSatelliteRules(((Description*)(object)));
     }
-    iterator = allDirectlyLinkedObjects(object, SGT_SPECIALIZE_PL_KERNEL_KB_SUBSET_OF, !oREVERSEPOLARITYpo.get());
+    iterator = allDirectlyLinkedObjects(object, SGT_SPECIALIZE_PL_KERNEL_KB_SUBSET_OF, !oREVERSEPOLARITYpo);
     if (subtypeOfP(safePrimaryType(iterator), SGT_SPECIALIZE_LOGIC_DIRECTLY_LINKED_OBJECTS_ITERATOR)) {
       { Iterator* iterator000 = iterator;
         DirectlyLinkedObjectsIterator* iterator = ((DirectlyLinkedObjectsIterator*)(iterator000));
@@ -1555,8 +1559,8 @@ boolean valueClashesWithSkolemP(Skolem* skolem, Object* value) {
     if (!((boolean)(type))) {
       return (false);
     }
-    else if (!((((boolean)(oQUERYITERATORo.get())) &&
-        ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) ||
+    else if (!((((boolean)(oQUERYITERATORo)) &&
+        ((boolean)(oQUERYITERATORo->partialMatchStrategy))) ||
         checkStrictTypeP(value, type, true))) {
       return (true);
     }
@@ -2064,7 +2068,7 @@ void helpStartupSpecialize3() {
 void startupSpecialize() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupSpecialize1();
     }

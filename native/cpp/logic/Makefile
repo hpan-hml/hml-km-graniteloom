@@ -3,7 +3,7 @@
 # Makefile for system logic
 # Uses various constructs only supported by GNU make!
 
-# Template version: Makefile-default.in,v 1.12 2010/10/11 22:05:29 hans Exp
+# Template version: Makefile-default.in,v 1.13 2011/12/12 23:48:21 hans Exp
 
 # TO DO:
 # - `make' shouldn't remake the system if the library exists (and is younger
@@ -129,7 +129,7 @@ update-required-systems:
 # 
 
 .cc.o: $(HEADERS)
-	$(CXX) $(CFLAGS) $(GC-CFLAGS) $(OTHER-CFLAGS) -c $(INCLUDE) $<
+	$(CXX) $(CFLAGS) $(GC-CFLAGS) $(OTHER-CFLAGS) -c $(INCLUDE) -o $@ $<
 
 #
 # Manual

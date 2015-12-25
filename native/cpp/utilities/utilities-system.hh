@@ -7,6 +7,7 @@
 #include "stella/stella-system.hh"
 
 // System-wide forward declarations:
+
 namespace stella_utilities {
   using namespace stella;
 
@@ -16,7 +17,6 @@ class IncompatibleUnitsException;
 class DimNumber;
 
 } // end of namespace stella_utilities
-
 
 // System components:
 #include "utilities/manuals.hh"

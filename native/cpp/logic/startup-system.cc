@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -58,7 +58,7 @@ void startupLogicSystem() {
     }
     if (currentStartupTimePhaseP(1)) {
       defineModuleFromStringifiedSource("/LOGIC", "(:LISP-PACKAGE \"STELLA\" :CPP-PACKAGE \"logic\" :JAVA-PACKAGE \"edu.isi.powerloom.logic\" :CLEARABLE? FALSE :CODE-ONLY? TRUE)");
-      defineModuleFromStringifiedSource("/PL-KERNEL-KB", "(:DOCUMENTATION \"Defines foundation classes and relations for PowerLoom.\" :CPP-PACKAGE \"pl_kernel_kb\" :JAVA-PACKAGE \"edu.isi.powerloom.pl_kernel_kb\" :USES (\"LOGIC\" \"STELLA\") :SHADOW (COLLECTION SET RELATION FUNCTION CLASS LIST VALUE ARITY INVERSE NAME QUANTITY) :NICKNAME \"PL-KERNEL\" :PROTECT-SURROGATES? TRUE)");
+      defineModuleFromStringifiedSource("/PL-KERNEL-KB", "(:DOCUMENTATION \"Defines foundation classes and relations for PowerLoom.\" :CPP-PACKAGE \"pl_kernel_kb\" :JAVA-PACKAGE \"edu.isi.powerloom.pl_kernel_kb\" :USES (\"LOGIC\" \"STELLA\") :SHADOW (COLLECTION SET RELATION FUNCTION CLASS LIST VALUE ARITY INVERSE NAME QUANTITY FLOOR CEILING LOG LOG10 EXP EXPT) :NICKNAME \"PL-KERNEL\" :PROTECT-SURROGATES? TRUE)");
       defineModuleFromStringifiedSource("/PL-KERNEL-KB/PL-USER", "(:DOCUMENTATION \"The default module for PowerLoom users.  It does not\ncontain any local declarations or axioms, but it includes other modules\nneeded to call PowerLoom functions.\" :INCLUDES (\"PL-KERNEL\") :USES (\"LOGIC\" \"STELLA\"))");
       defineModuleFromStringifiedSource("/PL-ANONYMOUS", "(:DOCUMENTATION \"Holds names of system-generated anonymous objects such as prototypes.\nUsers should never allocate any names in this module.\" :CASE-SENSITIVE? TRUE :USES ())");
       defineModuleFromStringifiedSource("/PL-KERNEL-KB/LOOM-API", "(:DOCUMENTATION \"Defines a Loom API for PowerLoom.\" :LISP-PACKAGE \"LOOM-API\" :INCLUDES \"PL-KERNEL\" :USES (\"LOGIC\" \"STELLA\") :SHADOW (NAMED?) :PROTECT-SURROGATES? TRUE)");
@@ -68,7 +68,7 @@ void startupLogicSystem() {
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       if (currentStartupTimePhaseP(2)) {
         SYM_STARTUP_SYSTEM_LOGIC_STARTUP_LOGIC_SYSTEM = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-LOGIC-SYSTEM", NULL, 0)));
         SYM_STARTUP_SYSTEM_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
@@ -90,13 +90,13 @@ void startupLogicSystem() {
       if (currentStartupTimePhaseP(9)) {
         inModule(((StringWrapper*)(copyConsTree(wrapString("/LOGIC")))));
         { int phase = NULL_INTEGER;
-          int iter062 = 0;
-          int upperBound063 = 9;
+          int iter064 = 0;
+          int upperBound065 = 9;
 
-          for  (phase, iter062, upperBound063; 
-                iter062 <= upperBound063; 
-                iter062 = iter062 + 1) {
-            phase = iter062;
+          for  (phase, iter064, upperBound065; 
+                iter064 <= upperBound065; 
+                iter064 = iter064 + 1) {
+            phase = iter064;
             oSTARTUP_TIME_PHASEo = phase;
             startupLogicMacros();
             startupSequenceIndices();

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -130,7 +130,8 @@ public class StreamTokenizer extends Iterator {
                 tok_cursor_ = 0;
               }
             }
-            tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | ((int) (((char) (0x00ff & tok_buffer_[tok_cursor_]))))))));
+            tok_nextstate_ = (int) (((char) (0x00ff & tok_buffer_[tok_cursor_])));
+            tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | tok_nextstate_))));
             if ((tok_nextstate_ & 128) == 0) {
               tok_state_ = tok_nextstate_;
               tok_cursor_ = tok_cursor_ + 1;

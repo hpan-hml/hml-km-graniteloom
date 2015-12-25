@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -106,6 +106,7 @@ extern Surrogate* SGT_TIMEPOINT_SUPPORT_LOGIC_PATTERN_VARIABLE;
 extern Surrogate* SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM;
 extern Surrogate* SGT_TIMEPOINT_SUPPORT_UNIT_SUPPORT_DIM_NUMBER_LOGIC_WRAPPER;
 extern Surrogate* SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE;
+extern Symbol* SYM_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_TIMEPOINT_OFo_COMPUTATION;
 extern Keyword* KWD_TIMEPOINT_SUPPORT_FAILURE;
 extern Keyword* KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE;
 extern Keyword* KWD_TIMEPOINT_SUPPORT_MONDAY;

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -76,6 +76,7 @@ void incorporateFirstInputParameter(MethodSlot* method);
 MethodSlot* defineStellaMethodSlot(Symbol* inputname, Cons* returntypes, boolean functionP, Cons* inputparameters, KeywordKeyValueList* options);
 MethodSlot* attachMethodSlotToOwner(MethodSlot* newmethod);
 Object* yieldStringConstantTree(char* string);
+boolean defineFunctionObjectEagerlyP(MethodSlot* function);
 Cons* yieldDefineStellaMethodObject(MethodSlot* method, MethodSlot* codemethod, MethodSlot* wrappermethod);
 Cons* yieldClassParameterTypes(Class* clasS);
 boolean optimisticSubtypeOfP(Surrogate* subtype, Surrogate* supertype);
@@ -178,6 +179,8 @@ extern Symbol* SYM_METHODS_STELLA_METHOD_LISP_MACROp;
 extern Keyword* KWD_METHODS_EVALUATE_ARGUMENTSp;
 extern Symbol* SYM_METHODS_STELLA_METHOD_EVALUATE_ARGUMENTSp;
 extern Symbol* SYM_METHODS_STELLA_CONCATENATE;
+extern Surrogate* SGT_METHODS_STELLA_METHOD_SLOT;
+extern Symbol* SYM_METHODS_STELLA_SLOT_OPTION_HANDLER;
 extern Symbol* SYM_METHODS_STELLA_DEFINE_FUNCTION_OBJECT;
 extern Symbol* SYM_METHODS_STELLA_THE_CODE;
 extern Keyword* KWD_METHODS_FUNCTION;
@@ -203,7 +206,6 @@ extern Symbol* SYM_METHODS_STELLA_FIRST;
 extern Symbol* SYM_METHODS_STELLA_VARIABLE_ARITY_TABLEp;
 extern Surrogate* SGT_METHODS_STELLA_VECTOR;
 extern Symbol* SYM_METHODS_STELLA_EVALUATOR_WRAPPER_CODE;
-extern Surrogate* SGT_METHODS_STELLA_METHOD_SLOT;
 extern Symbol* SYM_METHODS_STELLA_METHOD_MACROp;
 extern Symbol* SYM_METHODS_STELLA_VARIABLE_TYPE_SPECIFIER;
 extern Symbol* SYM_METHODS_STELLA_DEFSPECIAL;

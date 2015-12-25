@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -47,54 +47,6 @@
 
 namespace logic {
   using namespace stella;
-
-LogicException* newLogicException(char* message) {
-  { LogicException* self = NULL;
-
-    self = new LogicException(message);
-    return (self);
-  }
-}
-
-PropositionError* newPropositionError(char* message) {
-  { PropositionError* self = NULL;
-
-    self = new PropositionError(message);
-    return (self);
-  }
-}
-
-ParsingError* newParsingError(char* message) {
-  { ParsingError* self = NULL;
-
-    self = new ParsingError(message);
-    return (self);
-  }
-}
-
-Clash* newClash(char* message) {
-  { Clash* self = NULL;
-
-    self = new Clash(message);
-    return (self);
-  }
-}
-
-FailException* newFailException(char* message) {
-  { FailException* self = NULL;
-
-    self = new FailException(message);
-    return (self);
-  }
-}
-
-QueryThreadLimitViolation* newQueryThreadLimitViolation(char* message) {
-  { QueryThreadLimitViolation* self = NULL;
-
-    self = new QueryThreadLimitViolation(message);
-    return (self);
-  }
-}
 
 DEFINE_STELLA_SPECIAL(oSUPPRESSNONLOGICOBJECTWARNINGpo, boolean , true);
 
@@ -429,7 +381,7 @@ void helpStartupLogicMacros2() {
 void startupLogicMacros() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupLogicMacros1();
       helpStartupLogicMacros2();
@@ -439,32 +391,6 @@ void startupLogicMacros() {
       SYM_LOGIC_MACROS_LOGIC_oCYC_KLUDGES_ENABLEDpo = ((Symbol*)(internRigidSymbolWrtModule("*CYC-KLUDGES-ENABLED?*", NULL, 0)));
       SYM_LOGIC_MACROS_LOGIC_STARTUP_LOGIC_MACROS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-LOGIC-MACROS", NULL, 0)));
       SYM_LOGIC_MACROS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
-    }
-    if (currentStartupTimePhaseP(5)) {
-      { Class* clasS = defineClassFromStringifiedSource("LOGIC-EXCEPTION", "(DEFCLASS LOGIC-EXCEPTION (STELLA-EXCEPTION))");
-
-        clasS->classConstructorCode = ((cpp_function_code)(&newLogicException));
-      }
-      { Class* clasS = defineClassFromStringifiedSource("PROPOSITION-ERROR", "(DEFCLASS PROPOSITION-ERROR (LOGIC-EXCEPTION))");
-
-        clasS->classConstructorCode = ((cpp_function_code)(&newPropositionError));
-      }
-      { Class* clasS = defineClassFromStringifiedSource("PARSING-ERROR", "(DEFCLASS PARSING-ERROR (LOGIC-EXCEPTION))");
-
-        clasS->classConstructorCode = ((cpp_function_code)(&newParsingError));
-      }
-      { Class* clasS = defineClassFromStringifiedSource("CLASH", "(DEFCLASS CLASH (LOGIC-EXCEPTION))");
-
-        clasS->classConstructorCode = ((cpp_function_code)(&newClash));
-      }
-      { Class* clasS = defineClassFromStringifiedSource("FAIL-EXCEPTION", "(DEFCLASS FAIL-EXCEPTION (LOGIC-EXCEPTION))");
-
-        clasS->classConstructorCode = ((cpp_function_code)(&newFailException));
-      }
-      { Class* clasS = defineClassFromStringifiedSource("QUERY-THREAD-LIMIT-VIOLATION", "(DEFCLASS QUERY-THREAD-LIMIT-VIOLATION (LOGIC-EXCEPTION))");
-
-        clasS->classConstructorCode = ((cpp_function_code)(&newQueryThreadLimitViolation));
-      }
     }
     if (currentStartupTimePhaseP(6)) {
       finalizeClasses();

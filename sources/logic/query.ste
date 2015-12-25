@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: query.ste,v 1.190 2010/09/10 02:30:11 hans Exp
+;;; Version: query.ste,v 1.194 2014/04/16 21:58:08 hans Exp
 
 ;;; Incremental backward chaining.
 
@@ -1051,6 +1051,10 @@ all boolean vectors.")
                (allow-unbound-variables?
                 (partial-match-strategy *queryIterator*)))
       (return TRUE))
+ ;;;;; FIX THIS, THIS ALSO OCCURS IF WE HAVE VARIABLES IN THE CONSEQUENT OF A RULE
+ ;;;;; FOR WHICH WE DON'T HAVE ANY GENERATORS IN THE ANTECEDENT.  E.G.,
+ ;;;;; (=> (PERSON ?X) (MARRIED ?X ?Y)) WHICH COULD ALSO BE SOLVED BY INTRODUCING
+ ;;;;; A UNIVERSAL GENERATOR ON THE ANTECEDENT SIDE SUCH AS (THING ?X).
     ;; Last time we saw this bug with strict inference, it was caused by
     ;;    COLLECT-INTO-SET applied to a KAPPA with unbound external variables.
     (signal-proposition-warning
@@ -1241,6 +1245,47 @@ variable bindings appear relative to the frame '*printInFrame*'.")
     (setq frame (down frame)))
   (unwind-to-choice-point frame))
 
+(defglobal *traced-goals* (HASH-SET OF NAMED-DESCRIPTION NAMED-DESCRIPTION)
+           (new HASH-SET))
+
+(defun trace-goal ((name NAME))
+  :public? TRUE :command? TRUE :evaluate-arguments? FALSE
+  (let ((description (get-description name)))
+    (when (null? description)
+      (warn "No such relation: " name)
+      (return))
+    (insert *traced-goals* description)
+    (add-trace :GOAL-TREE)))
+
+(defun untrace-goal ((name NAME))
+  :public? TRUE :command? TRUE :evaluate-arguments? FALSE
+  (let ((description (get-description name)))
+    (when (null? description)
+      (warn "No such relation: " name)
+      (return))
+    (remove *traced-goals* description)
+    (unless (exists goal in *traced-goals*
+              where (not (deleted? goal)))
+      (drop-trace :GOAL-TREE))))
+
+(defun clear-traced-goals ()
+  :public? TRUE :command? TRUE
+  (drop-trace :GOAL-TREE)
+  (clear *traced-goals*))
+
+(defun (restricted-goal-tracing? BOOLEAN) ()
+  (return (and (trace-keyword? :GOAL-TREE)
+               (exists goal in *traced-goals*
+                   where (not (deleted? goal))))))
+
+(defun (trace-this-goal? BOOLEAN) ((frame CONTROL-FRAME) (lastMove KEYWORD))
+  (ignore lastMove)
+  (case (state frame)
+    (:ATOMIC-GOAL
+     (return (member? *traced-goals* (get-description (operator (proposition frame))))))
+    (otherwise
+     (return FALSE))))
+
 (defun trace-goal-tree ((frame CONTROL-FRAME) (depth INTEGER) (lastMove KEYWORD))
   ;; Print out a trace of backtracking goals and successes/failures.
   
@@ -1250,6 +1295,9 @@ variable bindings appear relative to the frame '*printInFrame*'.")
   ;;    when they aren't):
   (when (eql? lastMove :DOWN)
     (unwind-to-choice-points-below-frame frame))
+  (when (and (restricted-goal-tracing?)
+             (not (trace-this-goal? frame lastMove)))
+    (return))
   (when (and (eql? (state frame) :ITERATIVE-FORALL)
              (eql? lastMove :DOWN))
     ;; premature exit because the overlay adds nothing to the previous :FORALL goal
@@ -1322,19 +1370,7 @@ variable bindings appear relative to the frame '*printInFrame*'.")
           (print-variable-bindings frame))
         (let ((truthValue (truth-value frame)))
           (when (defined? truthValue)
-            (print "truth=")
-            (cond ((true-truth-value? truthValue)
-                   (if (default-truth-value? truthValue)
-                       (print "t")
-                     (print "T")))
-                  ((false-truth-value? truthValue)
-                   (if (default-truth-value? truthValue)
-                       (print "f")
-                     (print "F")))
-                  ((unknown-truth-value? truthValue)
-                   (print "U"))
-                  (otherwise
-                   (print "?"))))))))
+            (print "truth=" (truth-value-to-string truthValue TRUE)))))))
     (:UP-FAIL
      (print "| FAIL")
      (case (state frame)
@@ -1351,19 +1387,7 @@ variable bindings appear relative to the frame '*printInFrame*'.")
                  (defined? (partial-match-frame frame)))
          (print ":"))
        (when (defined? truthValue)
-         (print " truth=")
-         (cond ((true-truth-value? truthValue)
-                (if (default-truth-value? truthValue)
-                    (print "t")
-                  (print "T")))
-               ((false-truth-value? truthValue)
-                (if (default-truth-value? truthValue)
-                    (print "f")
-                  (print "F")))
-               ((unknown-truth-value? truthValue)
-                (print "U"))
-               (otherwise
-                (print "?"))))))
+         (print " truth=" (truth-value-to-string truthValue TRUE)))))
     (otherwise (print "????: ")))
   (when (trace-keyword? :STATE-MACHINE)
     (print " state= " (state frame) "  lastMove= " lastMove
@@ -1381,6 +1405,34 @@ variable bindings appear relative to the frame '*printInFrame*'.")
         (partial-match-frame frame) lastMove STANDARD-OUTPUT)
        (print EOL))
       (otherwise NULL)))))
+
+(defun trace-goal-stack ((frame CONTROL-FRAME))
+  ;; Debugging experiment: trace the goal stack all the way to the current `frame':
+  ;; TO DO: - generalize this so that this can take a bottom or top or start frame
+  ;;        - also, we could have a trace mode where we print the current stack in
+  ;;        time intervals, e.g., every second or every 10000 ticks
+  ;;        - we could have a trace mode where we do full tracing starting at a
+  ;;        certain tick and optionally ending at a certain tick;this would make
+  ;;        debugging easier; for this to be useful, we would need to show the
+  ;;        current tick at every frame or every pattern frame or something of
+  ;;        that sort.
+  ;;        - maybe we could have inference in a pause mode, where at each pause
+  ;;          point we have to option to change some trace parameters, this would
+  ;;          help in situations where we can't just interrupt as in Lisp
+  ;;        - IMPORTANT: make sure the unwinding done in `trace-goal-tree' doesn't
+  ;;        screw up the state and further inferences
+  (when (null? frame)
+    (setq frame (current-control-frame *queryIterator*)))
+  (let ((frames (CONS OF CONTROL-FRAME) (cons frame NIL)))
+    (loop
+      (setq frame (up frame))
+      (if (null? frame)
+          (break)
+        (pushq frames frame)))
+    (foreach frm in frames
+      as i in (interval 1 NULL)
+      do (special ((*printInFrame* frm))
+           (trace-goal-tree frm i :down)))))
 
 
   ;;
@@ -3230,6 +3282,12 @@ description extension iterator is switched from a list to a hash table")
   ;; If a duplicate goal was found, truncate the stack down to that goal
   ;;    and return the revised depth.
   (trace-if (:GOAL-TREE :GOAL-CACHES) "*** Inference depth cutoff: depth=" depth EOL)
+  ;; do this to debug performance problems with recursive rules:
+  (when (and (trace-keyword? :GOAL-CUTOFFS)
+             (not (trace-keyword? :GOAL-TREE)))
+    (trace-goal-stack frame)
+    (unless (yes-or-no? "**** Continue tracing? ")
+      (drop-trace :GOAL-CUTOFFS)))
   (setf (triggered-depth-cutoff? *queryIterator*) TRUE)
   (when (cache-query-results?)
     (dont-cache-goal-failure-between-frames
@@ -3579,7 +3637,8 @@ result will be in ascending order."
          " TICKS: " (allotted-clock-ticks self)))
       (print-native-stream
        stream
-       " " (proposition self) "]"))))
+       (choose (reverse-polarity? self) " ~" " ")
+       (proposition self) "]"))))
 
 (defun print-goal-stack ((frame CONTROL-FRAME) (verbose? BOOLEAN))
   :documentation "Print stack of goals.  Assumes that query has been interrupted
@@ -3597,12 +3656,71 @@ with a full stack of control frames."
 (defun pgs () (print-goal-stack (base-control-frame *queryIterator*) FALSE))
 (defun vpgs () (print-goal-stack (base-control-frame *queryIterator*) TRUE))
 
-(defun print-query-iterator
-    ((self QUERY-ITERATOR) (stream NATIVE-OUTPUT-STREAM))
+;;; The debug ID machinery allows us to give names to query iterators to make
+;;; it easier to identify them during debugging sessions.  We changed the API
+;;; for that to make it a less global change than Tom's initial version that
+;;; gave all query iterators a mandatory debug ID via a `make-query' argument.
+;;; Instead, when in debugging mode, a default numeric ID is generated that can
+;;; be used to distinguish iterators; moreover, one can set it to something more
+;;; descriptive in contexts where that might be useful (only one so far).
+
+(defslot QUERY-ITERATOR debug-id :type STRING)
+(defglobal *query-iterator-debug-id-counter* INTEGER 0)
+
+(defmethod debug-id-setter ((self QUERY-ITERATOR) (id STRING))
+  :documentation "Set the debug ID of `self' to `id'.  If `id' is NULL, simply
+use the current ID counter and increment it appropriately."
+  (when *DEBUG-PRINT-MODE?*
+    (let ((counter (integer-to-string (++ *query-iterator-debug-id-counter*))))
+      (setf (slot-value self debug-id)
+        (choose (blank-string? id)
+                counter
+                (concatenate id ":" counter))))))
+
+(defun print-query-iterator ((self QUERY-ITERATOR) (stream NATIVE-OUTPUT-STREAM))
   ;; Print all solutions collected in 'self' so far to 'stream'.
-  (if *printReadably?*
-      (print-query-iterator-readably self stream)
-    (print-query-iterator-ornately self stream)))
+  ;; Printing will be controlled by any :FORMAT specifications and will go to a file
+  ;;    if an :OUTPUT-FILE was specified in the retrieve.
+  (let ((format (lookup-query-option self :FORMAT))
+        (file (lookup-query-option self :OUTPUT-FILE))
+        (ifExists (lookup-query-option-with-default self :IF-EXISTS :SUPERSEDE))
+        (fileStream FILE-OUTPUT-STREAM NULL))
+    (unwind-protect
+        (progn
+          (when (defined? file)
+            ;; we'll redirect the printing to a file stream:
+            (let ((outputHeader?
+                   ;; if it looks like we are creating a PowerLoom file, output a header if necessary:
+                   (and (member? *powerloom-kb-file-extensions* (file-extension file))
+                        (or (not (eql? ifExists :APPEND))
+                            (not (probe-file? file)))))) ;; test this before we are creating the file
+              (setq fileStream (open-output-file file :if-exists ifExists))
+              (when outputHeader?
+                (print-module-file-header *module* fileStream))
+              (setq stream fileStream)))
+          (when *DEBUG-PRINT-MODE?*
+            (print-stream stream "[" (debug-id self) "] "))
+          (cond ((eql? format :VERTICAL)
+                 (print-query-iterator-ornately self stream))
+                ((eql? format :LIST)
+                 (print-query-iterator-readably self stream))
+                ;; we don't yet support :CSV, since that definitely involves quoting:
+                ((eql? format :TSV)
+                 (print-query-iterator-tab-separated self stream))
+                ((cons? format)
+                 (print-query-iterator-via-template self stream))
+                ((string? format)
+                 (print-query-iterator-via-template self stream))
+                ((or (null? format)
+                     (eql? format :HORIZONTAL))
+                 (if *printReadably?*
+                     (print-query-iterator-readably self stream)
+                   (print-query-iterator-ornately self stream)))
+                (otherwise
+                 (warn "Output format " format " is not yet supported")
+                 (print-query-iterator-ornately self stream))))
+      (when (defined? fileStream)
+        (close-stream fileStream)))))
 
 (defun print-query-iterator-ornately
     ((self QUERY-ITERATOR) (stream NATIVE-OUTPUT-STREAM))
@@ -3634,8 +3752,10 @@ with a full stack of control frames."
       (foreach solution in solutions
           as i in (interval 1 *printlength*)
           do (print-query-iterator-solution-ornately self solution i stream)
-             (when (< i nOfSolutions)
-               (print-stream stream EOL))
+             ;; not sure why this avoided to print a final newline, it seems it shouldn't:
+             ;(when (< i nOfSolutions)
+             ;  (print-stream stream EOL))
+             (print-stream stream EOL)
              (when (and (= i *printlength*)
                         (< i nOfSolutions))
                (print-stream stream "  ......" EOL))))))
@@ -3648,21 +3768,35 @@ with a full stack of control frames."
   ;; Print `solution' of `self' onto `stream' as solution number `solutionNumber'.
   ;; If `solutionNumber' is NULL try to infer it from the iterator `self'.
   ;; This was extracted so we can also use it for `trace-solution'.
-  (when (null? solutionNumber)
-    (setq solutionNumber 0)
-    (foreach solution in (solutions self)
-        where (not (equal? (bindings solution) solution))
-        do (++ solutionNumber)))
-  (special ((*printReadably?* TRUE))
-    (print-stream stream "  #" solutionNumber ": ")
-    (foreach value in (bindings solution)
-        as variable in (external-variables self)
-        as vi in (interval 0 NULL)
-        do (print-stream
-            stream (choose (= vi 0) "" ", ") (skolem-name variable) "=" value))
-    (when (and (defined? (partial-match-strategy self))
-               (defined? (match-score solution)))
-      (print-stream stream " " (match-score solution)))))
+  (let ((nSolutions (length (solutions self)))
+        (vertical? (test-query-option-value? self :FORMAT :VERTICAL))
+        (maxDigits (1+ (floor (log10 nSolutions))))
+        (solNumberDigits 0))
+    (when (null? solutionNumber)
+      (setq solutionNumber 0)
+      (foreach solution in (solutions self)
+          where (not (equal? (bindings solution) solution))
+          do (++ solutionNumber)))
+    (setq solNumberDigits (1+ (floor (log10 solutionNumber))))
+    (special ((*printReadably?* TRUE))
+      (unless vertical?
+        (foreach i in (interval solNumberDigits (1- maxDigits))
+            do (ignore i)
+               (print-stream stream " ")))
+      (print-stream stream "#" solutionNumber ": ")
+      (foreach value in (bindings solution)
+          as variable in (external-variables self)
+          as vi in (interval 0 NULL)
+          do (cond (vertical?
+                    (print-stream stream EOL "  "))
+                   ((> vi 0)
+                    (print-stream stream ", ")))
+             (print-stream stream (skolem-name variable) "=" value))
+      (when (and (defined? (partial-match-strategy self))
+                 (defined? (match-score solution)))
+        (when vertical?
+          (print-stream stream EOL " "))
+        (print-stream stream " " (match-score solution))))))
 
 (defun trace-solution ((self QUERY-ITERATOR)
                        (solution QUERY-SOLUTION)
@@ -3671,38 +3805,122 @@ with a full stack of control frames."
   (when (trace-keyword? :TRACE-SOLUTIONS)
     (print-stream STANDARD-OUTPUT "SOLUTION ")
     (print-query-iterator-solution-ornately
-     *queryIterator* solution solutionNumber STANDARD-OUTPUT)
+     self solution solutionNumber STANDARD-OUTPUT)
     (print-stream STANDARD-OUTPUT EOL)))
 
-(defun print-query-iterator-readably
-    ((self QUERY-ITERATOR) (stream NATIVE-OUTPUT-STREAM))
+(defun print-query-iterator-readably ((self QUERY-ITERATOR) (stream NATIVE-OUTPUT-STREAM))
+  ;; Print `self's solutions as a list of readable values.
   (let ((solutions (solutions self))
 	(first? TRUE)
 	(atomicSingletons? (and (atomic-singletons? self)
 				(null? (partial-match-strategy self)))))
-    (print-stream stream "(")
-    (foreach solution in solutions
-        as i in (interval 1 *printlength*)
-        do (unless first?
-	     (if atomicSingletons?
-		 (print-stream stream " ")
+    (special ((*printReadably?* TRUE))
+      (print-stream stream "(")
+      (foreach solution in solutions
+          as i in (interval 1 *printlength*)
+          do (unless first?
+               (if atomicSingletons?
+                   (print-stream stream " ")
 	         (print-stream stream EOL " ")))
-	   (setq first? FALSE)
-	   (unless atomicSingletons? (print-stream stream "("))
-	   (foreach value in (bindings solution)
-               as vi in (interval 0 NULL)
-               do (print-stream
-                   stream 
-                   (choose (= vi 0) "" " ")
-		   value)
-		  ;; Print match score if partial-match is on - Moriarty
-		  (when (defined? (partial-match-strategy self))
-		    (print-stream stream " " (match-score solution))))
-	   (unless atomicSingletons? (print-stream stream ")"))
+             (setq first? FALSE)
+             (unless atomicSingletons? (print-stream stream "("))
+             (foreach value in (bindings solution)
+                 as vi in (interval 0 NULL)
+                 do (print-stream
+                     stream 
+                     (choose (= vi 0) "" " ")
+                     value)
+                    ;; Print match score if partial-match is on - Moriarty
+                    (when (defined? (partial-match-strategy self))
+                      (print-stream stream " " (match-score solution))))
+             (unless atomicSingletons? (print-stream stream ")"))
+             (when (and (= i *printlength*)
+                        (< i (length solutions)))
+               (print-stream stream " ...")))
+      (print-stream stream ")" EOL))))
+
+(defun print-query-iterator-tab-separated ((self QUERY-ITERATOR) (stream NATIVE-OUTPUT-STREAM))
+  ;; Print `self's solutions onto `stream' in a tab-separated format.
+  ;; TO DO: support quoting in the unlikely case that tabs are parts of values.
+  (let ((solutions (solutions self))
+        (separator #\tab))
+    (special ((*printReadably?* TRUE))
+      (foreach solution in solutions
+          as i in (interval 1 *printlength*)
+          do (foreach value in (bindings solution)
+                 as vi in (interval 0 NULL)
+                 do (when (> vi 0)
+                      (print-stream stream separator))
+                    (print-stream stream value)
+                    ;; Print match score if partial-match is on - Moriarty
+                    (when (defined? (partial-match-strategy self))
+                      (print-stream stream separator (match-score solution))))
+             (print-stream stream EOL)
+             (when (and (= i *printlength*)
+                        (< i (length solutions)))
+               (print-stream stream "..." EOL))))))
+
+(defun (parse-query-iterator-string-template CONS) ((self QUERY-ITERATOR) (template STRING))
+  ;; Take a string result `template' and parse it into a list of string and variable index
+  ;; elements that can be used for printing a substitution of a query solution.
+  (let ((normalizedTemplate (string-upcase template))
+        (variables (external-variables self))
+        (variableNames (collect (string-upcase (skolem-name var)) foreach var in variables))
+        (start 0)
+        (varStart 0)
+        (result NIL))
+    (loop
+      (setq varStart (position normalizedTemplate #\? start))
+      (cond ((null? varStart)
+             (pushq result (subsequence template start NULL))
+             (break))
+            (otherwise
+             (foreach name in variableNames
+                 as i in (interval 0 NULL)
+                 where (starts-with? normalizedTemplate name varStart)
+                 do (pushq result (subsequence template start varStart))
+                    (pushq result i)
+                    (setq start (+ varStart (length (unwrap-string name))))
+                    (break))
+             (when (<= start varStart)
+               ;; no match found:
+               (pushq result (subsequence template start (1+ varStart)))
+               (setq start (1+ varStart))))))
+    (return (reverse result))))
+
+(defun print-query-iterator-via-template ((self QUERY-ITERATOR) (stream NATIVE-OUTPUT-STREAM))
+  ;; Print `self' via a cons or string template found in `self's :format option.
+  (let ((template (lookup-query-option self :FORMAT))
+        (parsedTemplate CONS NULL)
+        (variables (external-variables self))
+        (solutions (solutions self)))
+    (special ((*printReadably?* TRUE))
+      (foreach solution in solutions
+          as i in (interval 1 *printlength*)
+          do (typecase template
+               (CONS
+                (setq parsedTemplate (copy-cons-tree template))
+                (foreach value in (bindings solution)
+                    as var in variables
+                    do (substitute-cons-tree parsedTemplate value (skolem-name var)))
+                ;; Substitute match score for ?match-score if partial-match is on:
+                (when (defined? (partial-match-strategy self))
+                  (substitute-cons-tree parsedTemplate (match-score solution) (quote pl-kernel/?match-score)))
+                (print-stream stream parsedTemplate EOL))
+               (STRING-WRAPPER
+                ;; TO DO: figure out if/how we should handle partial match scores here:
+                (when (null? parsedTemplate)
+                  (setq parsedTemplate (parse-query-iterator-string-template self template)))
+                (foreach elt in parsedTemplate
+                    do (typecase elt
+                         (STRING-WRAPPER
+                          (print-stream stream (wrapper-value elt)))
+                         (INTEGER-WRAPPER
+                          (print-stream stream (nth (bindings solution) elt)))))
+                (print-stream stream EOL)))
            (when (and (= i *printlength*)
                       (< i (length solutions)))
-               (print-stream stream " ...")))
-    (print-stream stream ")" EOL)))
+               (print-stream stream ";;; ..."))))))
 
 
   ;;
@@ -3788,6 +4006,8 @@ with a full stack of control frames."
      (setf (base-control-frame queryIterator) baseControlFrame)
      (setf (current-control-frame queryIterator) baseControlFrame)
      (setq *control-frame-id-counter* 0)
+     ;; if in debugging mode, initialize ID to default value:
+     (setf (debug-id queryIterator) NULL)
      ;; initialize 'baseControlFrame' slots:
      (setf (proposition baseControlFrame) (proposition description))
      (setf (up baseControlFrame) NULL)
@@ -3890,6 +4110,10 @@ with a full stack of control frames."
                              :array-size (length (external-variables self)))
               :truth-value UNKNOWN-TRUTH-VALUE))
         (duplicate QUERY-SOLUTION NULL))
+    ;; We set this here because it may be needed by TRY-TO-DEFEAT-LAST-ANSWER?,
+    ;;   and then we set it again before returning TRUE because the calls to
+    ;;   TRY-TO-DEFEAT-LAST-ANSWER? can alter some of the slots of this iterator
+    ;;   for true/false queries.   (TRY-TO-DEFEAT-LAST-ANSWER? efficiency hack).
     (setf (slot-value self value) solution)
     (when (first-iteration? self)
       (setf (first-iteration? self) FALSE)
@@ -3938,10 +4162,34 @@ with a full stack of control frames."
                     ;;    last result; check for overrides and clashes:
                     (try-to-defeat-last-answer? self))
            (continue))
-         ;; no defeat, restore the original truth value:
-         (setf (truth-value baseFrame) (truth-value solution))
+         (when (test-query-option? *queryIterator* :FOUR-VALUED?)
+           (mv-bind (answer negative-justification)
+                    (try-to-defeat-last-answer? self) ;; Strict defeat
+              (when answer
+                (if (query-is-true-false? self)
+                  (progn
+                    (setf (truth-value solution) INCONSISTENT-TRUTH-VALUE)
+                    (when (record-justifications?)
+                      (setf (justification solution)
+                            (create-clash-justification (proposition baseFrame)
+                                                        (cons-list (justification solution)
+                                                                   negative-justification)
+                                                        :BACKWARD)))
+                    (setf (truth-value baseFrame) INCONSISTENT-TRUTH-VALUE)
+                    (setf (justification baseFrame) (justification solution))
+                    (insert-at (solutions self) (bindings solution) solution)
+                    (setf (exhausted? self) FALSE)
+                    (setf (slot-value self value) solution)
+  ;(cl:break "FOUR-VALUED Conflict")
+                    (return TRUE))
+                  ;; For retrieval, skip inconsistent results
+                  (continue)))
+              ))
          (setf (justification baseFrame) (justification solution))
          (insert-at (solutions self) (bindings solution) solution)
+         (setf (slot-value self value) solution)
+         (setf (exhausted? self) FALSE)
+  ; (cl:break "Regular Return")
          (return TRUE)))
       (cond
        ((timeout? self)
@@ -3970,10 +4218,26 @@ with a full stack of control frames."
         (setf (exhausted? self) TRUE)
         (return FALSE)))) ))
 
-(defun (try-to-defeat-last-answer? BOOLEAN) ((self QUERY-ITERATOR))
+(defun (try-to-defeat-last-answer? BOOLEAN JUSTIFICATION) ((self QUERY-ITERATOR))
   ;; Try to derive the negation of the most recent answer generated by `self'.
   ;; Return TRUE if a negative answer of equal or higher strength could
   ;;    be derived; return FALSE otherwise.
+  ;; If TRUE, then if justifications are being recorded a justification
+  ;;    for the refutation will also be returned.  Otherwise the second
+  ;;    return value will be NULL.
+  ;; BUG:  If this is used in partial match mode for a true/false query,
+  ;;       then something gets messed up in the query iterator that we are
+  ;;       trying to defeat.  There are a couple of options for dealing 
+  ;;       with that:
+  ;;       1. Do not use :four-valued? or default reasoning with partial match
+  ;;       2. Always create a new negatedQuery instead of using the optimization
+  ;;          of reseting self
+  ;;       3. Create a new negatedQuery for partial match mode.
+  ;;       4. Track down exactly what is getting messed up and fix it in the
+  ;;          queryiterator.next? method so it doesn't break.
+  ;;      Current resolution: Use #1.       - tar 11/29/2010
+  ;; BUG: There seems to be some interaction with :inference-level :refutation
+  ;;      as well, also solved with item #2 or #3.  This bug is still present. - tar 11/30/2010
   (let ((negatedQuery
          (choose (query-is-true-false? self)
                  ;; For T/F queries we don't need a separate query:
@@ -3982,20 +4246,20 @@ with a full stack of control frames."
         (queryContext (query-context self))
         (strictPositiveAnswer? FALSE)
         (strictNegativeAnswer? FALSE)
-        (defeated? FALSE))
+        (defeated? FALSE)
+        (negativeJustification JUSTIFICATION NULL))
     (cond 
      ((null? negatedQuery)
       ;; for non T/F queries, allocate second query iterator with variable
       ;;    bound to result of original query:
       (setq negatedQuery
-            (create-query-iterator
-             (query-description self)
-             (bindings (value self))))
+        (create-query-iterator (query-description self) (bindings (value self))))
+      (setf (debug-id negatedQuery) "negatedQuery")
       (setf (query-context negatedQuery) queryContext))
      (otherwise
       (when (eql? self (negated-query negatedQuery))
         ;; We have a try-to-defeat loop:
-        (return FALSE))
+        (return FALSE NULL))
       ;; Reset the initial variable bindings to the new solution:
       (setf (initial-bindings negatedQuery) (bindings (value self)))))
     (setf (negated-query self) negatedQuery)
@@ -4014,7 +4278,8 @@ with a full stack of control frames."
       (reset negatedQuery)
       (special ((*dontUseDefaultKnowledge?* TRUE))
         (trace-if :GOAL-TREE "Looking for conflicting strict conclusion:" EOL)
-        (setq strictNegativeAnswer? (next? negatedQuery)))
+        (setq strictNegativeAnswer? (next? negatedQuery))
+        (setq negativeJustification (justification (base-control-frame negatedQuery))))
       ;; Check whether the positive answer was strict:
       (setf (reverse-polarity? (base-control-frame negatedQuery)) FALSE)
       (reset negatedQuery)
@@ -4022,21 +4287,29 @@ with a full stack of control frames."
         (trace-if :GOAL-TREE "Looking for strict conclusion:" EOL)
         (setq strictPositiveAnswer? (next? negatedQuery)))
       (if strictPositiveAnswer?
-        (cond
-         (strictNegativeAnswer?
+        (if strictNegativeAnswer?
           ;; We have a hard contradiction, now what:
           (special ((*queryIterator* negatedQuery))
-           (inform
-            EOL "CONTRADICTION: Discovered strict arguments for" EOL
-            "    " (proposition (base-control-frame negatedQuery))
-            EOL "and its negation." EOL))
-          (setq defeated? TRUE))
-         (otherwise
-          (setq defeated? FALSE)))
+ ;;             (inform EOL "CONTRADICTION: Discovered strict arguments for" EOL
+ ;;                     "    " (proposition (base-control-frame negatedQuery))
+ ;;                     EOL "and its negation." EOL)
+         #|
+             (let ((prop (proposition (base-control-frame negatedQuery)))
+                   (message (message-to-string "Derived both TRUE and FALSE for the proposition "
+                                               prop "." EOL
+                                               "   Clash occurred in the context " *context* 
+                                               " in module " *module* "."))
+                   (exception (new TRUTH-VALUE-CLASH :message message)))
+               (setf (proposition exception) prop)
+               (setf (context exception) *context*)
+               (signal-exception exception))
+                   |#
+             (setq defeated? TRUE))
+          (setq defeated? FALSE))
         (setq defeated? TRUE)))
     ;; Undo the loop-preventing back-link:
     (setf (negated-query negatedQuery) NULL)
-    (return defeated?)))
+    (return defeated? negativeJustification)))
 
 (defmethod reset ((self QUERY-ITERATOR))
   ;; Reset query frames within 'self' so that the query can
@@ -4271,6 +4544,9 @@ with a full stack of control frames."
              (:THREE-VALUED?
               (setq value (coerce-to-boolean value))
               (insert-at theOptions key value))
+             (:FOUR-VALUED?
+              (setq value (coerce-to-boolean value))
+              (insert-at theOptions key value))
              (:ITERATIVE-DEEPENING?
               (setq value (coerce-to-boolean value))
               (insert-at theOptions key value)
@@ -4318,6 +4594,44 @@ with a full stack of control frames."
                    (signal-parsing-error "Illegal :SORT-BY value: " value))))
                 (otherwise
                  (signal-parsing-error "Illegal :SORT-BY value: " value))))
+             (:FORMAT
+              (remove-at theOptions key)
+              (typecase value
+                (GENERALIZED-SYMBOL
+                 (cond
+                  ((string-eql? (symbol-name value) "HORIZONTAL")
+                   (insert-at theOptions key :HORIZONTAL)) ;; the default
+                  ((string-eql? (symbol-name value) "VERTICAL")
+                   (insert-at theOptions key :VERTICAL))
+                  ((string-eql? (symbol-name value) "TSV")
+                   (insert-at theOptions key :TSV))
+                  ((or (string-eql? (symbol-name value) "LIST")
+                       (string-eql? (symbol-name value) "CONS"))
+                   (insert-at theOptions key :LIST))))     ;; same as readable
+                ((CONS STRING-WRAPPER)
+                 (insert-at theOptions key value))         ;; interpret as templates
+                (otherwise NULL))
+              (unless (defined? (lookup theOptions key))
+                (signal-parsing-error "Illegal :FORMAT value: " value)))
+             ;; this doesn't really give us what we want, since "unreadable" values still have
+             ;; garbage such as |i| or |L| that we don't want; maybe we should add a :value-format
+             ;; instead option to allow printing of bare string values, for example - later:
+             (:READABLE-VALUES?
+              (insert-at theOptions key (coerce-to-boolean value)))
+             (:OUTPUT-FILE
+              (insert-at theOptions key (coerce-to-string value)))
+             (:IF-EXISTS
+              (remove-at theOptions key)
+              (typecase value
+                (GENERALIZED-SYMBOL
+                 (cond
+                  ((string-eql? (symbol-name value) "APPEND")
+                   (insert-at theOptions key :APPEND))
+                  ((string-eql? (symbol-name value) "SUPERSEDE")
+                   (insert-at theOptions key :SUPERSEDE))))
+                (otherwise NULL))
+              (unless (defined? (lookup theOptions key))
+                (signal-parsing-error "Illegal :IF-EXISTS value: " value)))
              (:MATCH-MODE
               (typecase value
                 ((GENERALIZED-SYMBOL STRING-WRAPPER)
@@ -4362,9 +4676,20 @@ with a full stack of control frames."
       (QUERY-ITERATOR (setq options (options queryOrOptions))))
     (return (lookup options key))))
 
+(defun (lookup-query-option-with-default OBJECT) ((queryOrOptions OBJECT) (key KEYWORD) (default OBJECT))
+  ;; Lookup option `key' in `queryOrOptions' and return the result or `default' if it is NULL.
+  (let ((value (lookup-query-option queryOrOptions key)))
+    (if (defined? value)
+        (return value)
+      (return default))))
+
 (defun (test-query-option? BOOLEAN) ((queryOrOptions OBJECT) (key KEYWORD))
   ;; Return true if option `key' in `queryOrOptions' is set to true.
   (return (eql? (lookup-query-option queryOrOptions key) TRUE-WRAPPER)))
+
+(defun (test-query-option-value? BOOLEAN) ((queryOrOptions OBJECT) (key KEYWORD) (value OBJECT))
+  ;; Return true if option `key' in `queryOrOptions' is set to `value'.
+  (return (eql? (lookup-query-option queryOrOptions key) value)))
 
 (defun (lookup-deferred-query-option OBJECT) ((queryOrOptions OBJECT)
                                               (key KEYWORD)
@@ -4465,24 +4790,29 @@ queries and logical expressions."
             (*reversePolarity?* FALSE)
             (*inferenceLevel* (current-inference-level))
             (*generate-all-proofs?* FALSE))
-    (let ((truthValue TRUTH-VALUE NULL)
+    (let ((truth-value TRUTH-VALUE NULL)
           (threeValuedAsk?
-           (test-query-option? *queryIterator* :THREE-VALUED?)))
+           (test-query-option? *queryIterator* :THREE-VALUED?))
+          (fourValuedAsk?
+           (test-query-option? *queryIterator* :FOUR-VALUED?)))
       (when (null? *most-recent-query*)
         ;; only the top-level query commands handle nullification and use:
         (setq *most-recent-query* *queryIterator*))
       (next? *queryIterator*)
-      (setq truthValue
+      (setq truth-value
         (first-defined (truth-value (base-control-frame *queryIterator*))
                        UNKNOWN-TRUTH-VALUE))
-      (when (and threeValuedAsk? (unknown-truth-value? truthValue))
+      ;; Four-valued ask is handled for conflicts inside the query-iterator.next?
+      ;; method.  We only need to check here if the main query returns unknown.
+      (when (and (unknown-truth-value? truth-value) 
+                 (or threeValuedAsk? fourValuedAsk?))
         (setf (reverse-polarity? (base-control-frame *queryIterator*)) TRUE)
         (reset *queryIterator*)
         (next? *queryIterator*)
-        (setq truthValue
+        (setq truth-value
           (first-defined (truth-value (base-control-frame *queryIterator*))
                          UNKNOWN-TRUTH-VALUE)))
-      (return truthValue))))
+      (return truth-value))))
 
 (defun (ask TRUTH-VALUE) (&rest (proposition&options PARSE-TREE))
   :public? TRUE :command? TRUE :evaluate-arguments? FALSE
@@ -4607,6 +4937,11 @@ queries and logical expressions."
            (sort (solutions theQuery)
                  (the-code :function query-solution-greater-than?)))
           (otherwise NULL)))
+      ;; TO DO: ADD SIMILAR LOGIC TO ASK AND RETRIEVE PARTIAL
+      (when (timeout? *queryIterator*)
+        (pl-log :high "The query timed out"))
+      (when (depth-cutoffs? *queryIterator*)
+        (pl-log :high "The query had depth cutoffs"))
       (return *queryIterator*))))
 
 (defglobal *most-recent-query* QUERY-ITERATOR NULL)
@@ -4619,7 +4954,8 @@ The accepted syntax is:
 	 
   (retrieve [<integer> | all]
             [[{<vardecl> | (<vardecl>+)}]
-            <proposition>])
+             <proposition>
+             [<option-keyword> <option-value>]])
 	
 The variables and proposition are similar to an `exists' sentence or
 `kappa' term without the explicit quantifier.  If variables are declared,
@@ -4641,6 +4977,28 @@ the returned iterator will print out with the set of solutions collected
 so far.  Calling `retrieve' without any arguments (or only with the first
 argument) will generate one (or more) solutions to the most recently
 asked query.
+
+`retrieve' supports the following options:
+  :TIMEOUT Time limit on query effort in seconds.
+  :MAXIMUM-DEPTH Inference depth cutoff in goal depth.
+  :INFERENCE-LEVEL Level of inference to use.  The values in order of effort
+     and power are ASSERTION, SHALLOW, SUBSUMPTION, BACKTRACKING, NORMAL
+     and REFUTATION. Default is NORMAL.
+  :FOUR-VALUED? Will attempt to disprove values and find conflicts.
+  :ITERATIVE-DEEPENING? Controls whether the search strategy will use
+     depth-first or breadth-first search.
+  :DONT-OPTIMIZE? Option to disable re-arrangement of clauses by the query
+     optimizer.  If TRUE, then use the order of clauses as given in the query.
+  :SORT-BY one of SCORE, VALUES, VALUES-DESCENDING, VALUES-ASCENDING.  
+     SCORE is only meaningful for partial match mode.  The value sorting
+     is done by values in order in the tuple.  Default is ascending.
+  :MATCH-MODE Allows choice of matching mode.  One of STRICT, INCREMENTAL, 
+     NEURAL-NETWORK, or other plug-in partial-match mode.
+     The default is STRICT.
+  :MINIMUM-SCORE The minimum score to return.  Only useful in partial match
+    mode.
+  :MAXIMUM-UNKNOWNS The maximum number of unknown values to allow.  Only useful
+    for whynot matching.
 
 KIF examples:
 	 
@@ -4864,7 +5222,10 @@ be reparsed and reoptimized each time they are invoked."
       (setq forceSingletonTuples? TRUE))
     (special ((*queryIterator* queryIterator)
               ;; initialize this for the sake of recursive queries:
-              (*reversePolarity?* FALSE))
+              (*reversePolarity?* FALSE)
+              (*inferenceLevel* (current-inference-level))
+              (*generate-all-proofs?*
+               (test-query-option? queryIterator :ALL-PROOFS?)))
       ;; generate all solutions:
       (while (next? queryIterator)))
     (let ((tuple OBJECT NULL)
@@ -4905,9 +5266,14 @@ be reparsed and reoptimized each time they are invoked."
          (make-cached-query
           inputVariables queryBody inputBindings options cacheID)))
     (cond ((defined? queryIterator)
-           (let ((truthValue (call-ask queryIterator)))
-             (free-cached-query queryIterator cacheID)
-             (return (true-truth-value? truthValue) truthValue)))
+           (special ((*queryIterator* queryIterator)
+                     ;; initialize these for the sake of recursive queries:
+                     (*reversePolarity?* FALSE)
+                     (*inferenceLevel* (current-inference-level))
+                     (*generate-all-proofs?* FALSE))
+             (let ((truthValue (call-ask queryIterator)))
+               (free-cached-query queryIterator cacheID)
+               (return (true-truth-value? truthValue) truthValue))))
           (otherwise
            (return FALSE NULL)))))
 
@@ -5274,9 +5640,26 @@ Constraint propagation happens only if it is enabled prior to calling
       ;; not checking for duplicates can save a significant amount of time
       ;;    for large solution sets; here's a cheap way to figure out some
       ;;    cases where it's safe to do so; maybe there should be a user option:
-      (setq dontCheckDuplicates?
-        (and (named-description? description)
-             (empty? (get-description-extension description FALSE))))
+      ;(setq dontCheckDuplicates?
+      ;  (and (named-description? description)
+      ;       (empty? (get-description-extension description FALSE))))
+      ;; with the new structured object index scheme, we always have to check for
+      ;; duplicates to make sure they get inserted into the index - figure out
+      ;; whether there is a compromise that handles both aspects:
+      (setq dontCheckDuplicates? FALSE)
+
+      ;; TO DO: BUG: if the query created local terms (e.g., set objects) in the inference cache,
+      ;; we have to protect them from being deleted when the cache gets wiped out due to assertions.
+      ;; Figure out a better way to handle this, for now we patched the collect-members specialist.
+      ;(when (eql? updateMode :ASSERT-TRUE)
+      ;  ;; we'll need something like this or promote affected instances from the cache or build
+      ;  ;; asserted propositions from parse trees instead in the current module:
+      ;  (let ((instances (locally-conceived-instances (get-query-context))))
+      ;    (typecase instances
+      ;      (NON-PAGING-INDEX
+      ;       (clear instances))
+      ;      (otherwise NULL))))
+ 
       (foreach solution in solutions
           as i in (interval 0 NULL)
           do (clear mapping)
@@ -5429,7 +5812,7 @@ the asserted propositions.  Here are some examples:
              (get-query-iterator-from-command query)
              (coerce-to-description
                (first-defined pattern (lookup theOptions :relation)) NULL)
-              (lookup theOptions :module)
+             (lookup theOptions :module)
              :ASSERT-TRUE
              recordJustifications?))))
     (LOGIC-EXCEPTION (e)

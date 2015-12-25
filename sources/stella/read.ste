@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2008      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: read.ste,v 1.73 2009/06/12 01:23:24 hans Exp
+;;; Version: read.ste,v 1.76 2014/04/15 22:16:09 hans Exp
 
 ;;; Stream tokenizers and the Stella reader.  
 
@@ -572,6 +572,7 @@
       :common-lisp (CL:schar (CL:the CL:simple-string buffer)
                              (CL:the CL:fixnum position))
       :cpp "buffer[position]"
+      ;; TO DO: reexamine this patch for performance reasons
       :java "((char) (0x00ff & buffer[position]))")))
 
 (defmethod (byte-array-nth-setter TOKENIZER-BYTE)
@@ -1199,7 +1200,11 @@ indicated by the return value being equal to start."
        (setf (cursor tok_streamState_) tok_cursor_)
        (setf (table tok_streamState_) tok_table_)
        (setf (state tok_streamState_) tok_state_)))))
-             
+
+;;; this is a low-level debugging aid, we turn this off and comment
+;;; the tracing code during normal operations (see below):
+(defglobal *trace-get-next-token?* BOOLEAN FALSE)
+
 (defmacro get-next-token (&body (options CONS))
   ;; User-level macro to run the tokenizer until the next token is parsed:
   ;;    (get-next-token [saveState?])
@@ -1291,15 +1296,32 @@ indicated by the return value being equal to start."
                    (setq tok_checkPoint_ tok_end_)
                    (setq tok_cursor_ 0)))
                  )))
-       
-           ;; THIS STATE TRANSITION COSTS ABOUT 70% OF THE TIME; IMPROVING IT
-           ;;    WOULD PAY THE MOST.
+
+           ;; COMPUTING THIS STATE TRANSITION COSTS ABOUT 70% OF THE TIME; IMPROVING IT WOULD PAY THE MOST.
+
+           ;; in C++ and Java we already guarantee 8-bit chars in `byte-array-nth', but Lisp (at least Allegro) interprets
+           ;; and returns illegal UTF characters with codes > 255; for now we map all of those onto 255 to avoid unintended
+           ;; state transitions, but conceivably, this needs to be handled differently:
+           (setq tok_nextState_ (character-code (byte-array-nth tok_buffer_ tok_cursor_)))
+           (if-output-language
+            :common-lisp
+            (when (> tok_nextState_ 255)
+              (setq tok_nextState_ 255)) ;; map everything outside the 255 range onto 255 to avoid unintended state transitions
+            NULL)
            (setq tok_nextState_
              (character-code
               (nth tok_transitions_
                    (logor (shift-left tok_state_ 8) ;; assumes 8-bit chars
-                          (character-code
-                           (byte-array-nth tok_buffer_ tok_cursor_))))))
+                          tok_nextState_))))
+           #|
+           ;; to trace state transitions, uncomment this and recompile relevant
+           ;; calls to `get-next-token' (e.g., in STREAM-TOKENIZER.next?):
+           (when *trace-get-next-token?*
+             (print (nth tok_stateNames_ tok_state_)
+                    " '" (byte-array-nth tok_buffer_ tok_cursor_) "' "
+                    (nth tok_stateNames_ (logand tok_nextState_ 63))
+                    EOL))
+           |#
 
            (cond
             ((= (logand tok_nextState_ 128) 0)
@@ -3185,18 +3207,18 @@ the input is read.  See also special variable `*USER-QUERY-ACTION*'."
 	 (print "Type `y' for yes or `n' for no." EOL))))))
 
 (defmethod (stream-to-string STRING) ((from INPUT-STREAM))
-  :public? TRUE
   :documentation "Read all of the input from `stream' and return it as a string."
-  (let ((to (new OUTPUT-STRING-STREAM))
-        (buffer (make-tokenizer-byte-array *tokenizer-initial-buffer-size*))
-        (bytes-read 0))
-    (loop 
-      (setq bytes-read (byte-array-read-sequence buffer from
-                                                 0 *tokenizer-initial-buffer-size*))
-      (if (> bytes-read 0)
-        (byte-array-write-sequence buffer to 0 bytes-read)
-        (break)))
+  :public? TRUE
+  (let ((to (new OUTPUT-STRING-STREAM)))
+    (copy-stream-to-stream from to)
     (return (the-string to))))
+
+(defun (file-to-string STRING) ((file STRING))
+  :documentation "Read the content of `file' and return it as a string."
+  :public? TRUE
+  (with-input-file (in file)
+    (return (stream-to-string in))))
+
 
   ;;
 ;;;;;; Testing/Benchmarking

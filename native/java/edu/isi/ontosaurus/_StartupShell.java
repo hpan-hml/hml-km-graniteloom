@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2000-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2000-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -47,8 +47,8 @@ package edu.isi.ontosaurus;
 
 import edu.isi.stella.javalib.Native;
 import edu.isi.stella.javalib.StellaSpecialVariable;
-import edu.isi.stella.*;
 import edu.isi.powerloom.logic.*;
+import edu.isi.stella.*;
 
 public class _StartupShell {
   public static void startupShell() {
@@ -74,6 +74,8 @@ public class _StartupShell {
           OntosaurusUtil.KWD_BLOCK = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("BLOCK", null, 2)));
           OntosaurusUtil.KWD_DIRECTORY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DIRECTORY", null, 2)));
           OntosaurusUtil.SGT_STELLA_STRING = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("STRING", Stella.getStellaModule("/STELLA", true), 1)));
+          OntosaurusUtil.KWD_IGNORE_ERRORSp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IGNORE-ERRORS?", null, 2)));
+          OntosaurusUtil.SGT_STELLA_BOOLEAN = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("BOOLEAN", Stella.getStellaModule("/STELLA", true), 1)));
           OntosaurusUtil.SYM_ONTOSAURUS_STARTUP_SHELL = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-SHELL", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(4)) {
@@ -109,7 +111,7 @@ public class _StartupShell {
           Stella.defineMethodObject("(DEFMETHOD WAIT-FOR-COMPLETION ((SELF SHELL-PROCESS)) :DOCUMENTATION \"Suspend the current thread until `self' has completed execution.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.ontosaurus.ShellProcess", "waitForCompletion", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
           Stella.defineMethodObject("(DEFMETHOD DESTROY-PROCESS ((SELF SHELL-PROCESS)) :DOCUMENTATION \"Stop `self' and then destroy the associated process object.\nIn Lisp, this doesn't yet actually kill the shell process, it just waits for its\ncompletion.  Conceivably, we could execute a `kill' command to achieve that.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.ontosaurus.ShellProcess", "destroyProcess", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
           Stella.defineFunctionObject("EXECUTE-SHELL-COMMAND", "(DEFUN (EXECUTE-SHELL-COMMAND INTEGER) ((COMMAND OBJECT) (DIRECTORY STRING) (INPUT INPUT-STREAM) (OUTPUT OUTPUT-STREAM) (ERROR OUTPUT-STREAM)) :DOCUMENTATION \"Run `command' in a shell and return its exit status.  If `directory' is\nnon-NULL, run it in that directory; if `input' is defined, feed `command's standard input\nfrom that stream; if `output' and/or `error' are defined, copy `commands' standard output/\nerror to those streams.  It is the responsibility of the caller to close the supplied\nstreams (if any) and do any shell error handling based on exit status or error output.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "executeShellCommand", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("java.lang.String"), Native.find_java_class("edu.isi.stella.InputStream"), Native.find_java_class("edu.isi.stella.OutputStream"), Native.find_java_class("edu.isi.stella.OutputStream")}), null);
-          Stella.defineFunctionObject("SHELL-COMMAND", "(DEFUN (SHELL-COMMAND STRING-WRAPPER) ((COMMAND OBJECT) |&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"User-level command interface to `execute-shell-command' (which see).\nRuns `command' and returns its output (if any) as a string.  If the shell created\na non-zero exit status or generated any error output, an exception will be raised.\nIf `command' was a string, split it at spaces to determine its arguments (this is\nnot sophisticated and does not handle quoting correctly).  For more complex commands,\nsupply them as a list of strings representing the program and its arguments.  If any\nshell-level operations such as redirection are needed, use the `sh -c cmd' idiom.\nIf :input is supplied as a non-null string, feed it to `command's standard input.\nIf :directory is given, execute `command' in that directory.\" :COMMAND? TRUE :PUBLIC? TRUE)", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "shellCommand", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "shellCommandEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
+          Stella.defineFunctionObject("SHELL-COMMAND", "(DEFUN (SHELL-COMMAND STRING-WRAPPER) ((COMMAND OBJECT) |&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"User-level command interface to `execute-shell-command' (which see).\nRuns `command' and returns its output (if any) as a string.  If the shell created\na non-zero exit status or generated any error output, an exception will be raised\n- unless :ignore-errors? is true (which is the default).\nIf `command' was a string, split it at spaces to determine its arguments (this is\nnot sophisticated and does not handle quoting correctly).  For more complex commands,\nsupply them as a list of strings representing the program and its arguments.  If any\nshell-level operations such as redirection are needed, use the `sh -c cmd' idiom.\nIf :input is supplied as a non-null string, feed it to `command's standard input.\nIf :directory is given, execute `command' in that directory.\" :COMMAND? TRUE :PUBLIC? TRUE)", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "shellCommand", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "shellCommandEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
           Stella.defineFunctionObject("STARTUP-SHELL", "(DEFUN STARTUP-SHELL () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.ontosaurus._StartupShell", "startupShell", new java.lang.Class [] {}), null);
           { MethodSlot function = Symbol.lookupFunction(OntosaurusUtil.SYM_ONTOSAURUS_STARTUP_SHELL);
 

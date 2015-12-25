@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: descriptions.ste,v 1.100 2010/09/09 23:02:56 hans Exp
+;;; Version: descriptions.ste,v 1.104 2014/04/15 22:56:22 hans Exp
 
 ;;; Named and unnamed descriptions and related support.
 
@@ -273,6 +273,11 @@ primitive description.")
       ;; fill in description fields:
       (setf (io-variable-names description) ioVariableNames)
       (setf (io-variable-types description) ioVariableTypes)
+      ;; signal that this description is named (to `named-description?')
+      ;; so `equivalent-descriptions?' won't break due to the NULL proposition
+      ;; (tricky: since this is a named description, initializing its
+      ;; proposition later will not change its `proposition-hash-index'):
+      (setf (surrogate-value-inverse description) @UNFINALIZED)
       (special ((*fillingConstraintPropagationQueues?* FALSE)
                 ;; make sure we use assertion mode for proper backlinking:
                 (*evaluationMode* :EXTENSIONAL-ASSERTION))
@@ -293,6 +298,7 @@ primitive description.")
          (link-originated-proposition
           description
           (assert-property description PL-KERNEL/@VARIABLE-ARITY)))
+       (setf (surrogate-value-inverse description) NULL)
        (return description)))) )
     
 (defun link-stella-relation-and-description ((self RELATION) (description NAMED-DESCRIPTION))
@@ -590,7 +596,7 @@ quantified variables." EOL "   Quantified variables must have names."))
 ;;     'ISA' or 'IN', from which a primary type is inferred.  Any additional 
 ;;;    ISA and/or IN relationships are attached to the newly-created skolem.
 
-(defspecial *variableTypePropositions* (CONS OF PROPOSITION)
+(defspecial *variableTypePropositions* (CONS OF PROPOSITION) NIL
   :documentation "List of propositions extracted from parsing
 a list of quantified, typed variables.")
 
@@ -762,9 +768,11 @@ a list of quantified, typed variables.")
                 (exists arg2 in (arguments other)
                         where (equivalent-formulae? arg1 arg2 mapping))))) )
 
-(defun (equivalent-propositions? BOOLEAN) 
-       ((self PROPOSITION) (other PROPOSITION) (mapping ENTITY-MAPPING))
-  ;; Helping function for 'equivalent-formulae?'.
+(defun (help-equivalent-propositions? BOOLEAN) ((self PROPOSITION)
+                                                (other PROPOSITION)
+                                                (mapping ENTITY-MAPPING)
+                                                (ignoreLastArg? BOOLEAN))
+  ;; Helping function for 'equivalent-propositions?'.
   ;; Return TRUE if 'self' is a duplicate of the proposition 'other'.
   (when (eql? self other)
     (return TRUE))
@@ -792,28 +800,33 @@ a list of quantified, typed variables.")
               do (insert-at mapping v1 v2))))
        (otherwise NULL))
      ;; TO DO: UPGRADE TO TEST FOR COMMUTATIVE PREDICATE:
-     (return (or (and (eql? (operator self) (operator other))
-                      (forall arg1 in (arguments self)
-                              as arg2 in (arguments other)
-                              always (equivalent-formulae? arg1 arg2 mapping))
-                      (eql? (length (arguments self))
-                            (length (arguments other))))
-                 (and (defined? mapping) ;; HOLDS-KLUDGE
-                      (eql? (operator self) PL-KERNEL/@HOLDS)
-                      (equivalent-holds-proposition? self other mapping)))))) )
+     (let ((selfArgs (arguments self))
+           (otherArgs (arguments other)))
+       (return (or (and (eql? (operator self) (operator other))
+                        (forall arg1 in selfArgs
+                            as arg2 in otherArgs
+                            as i in (interval 2 (choose ignoreLastArg? (length selfArgs) NULL))
+                            always (equivalent-formulae? arg1 arg2 mapping))
+                        (eql? (length selfArgs) (length otherArgs)))
+                   (and (defined? mapping) ;; HOLDS-KLUDGE
+                        (eql? (operator self) PL-KERNEL/@HOLDS)
+                        (equivalent-holds-proposition? self other mapping))))))))
 
-(defun (equivalent-function-propositions? BOOLEAN)
-    ((self PROPOSITION) (other PROPOSITION) (mapping ENTITY-MAPPING))
+(defun (equivalent-propositions? BOOLEAN) ((self PROPOSITION)
+                                           (other PROPOSITION)
+                                           (mapping ENTITY-MAPPING))
+  ;; Helping function for 'equivalent-formulae?'.
+  ;; Return TRUE if 'self' is a duplicate of the proposition 'other'.
+  (return (help-equivalent-propositions? self other mapping FALSE)))
+
+(defun (equivalent-function-propositions? BOOLEAN) ((self PROPOSITION)
+                                                    (other PROPOSITION)
+                                                    (mapping ENTITY-MAPPING))
   ;; Return TRUE if `self' and `other' are equivalent function propositions,
   ;;    i.e., they are identical up to their skolem output argument.
-  (when (and (eql? (kind self) :FUNCTION)
-             (eql? (kind other) :FUNCTION))
-    (when (null? mapping)
-      (setq mapping (new ENTITY-MAPPING)))
-    ;; slightly inefficient, otherwise we'd have to duplicate the logic above:
-    (insert-at mapping (last-argument self) (last-argument other))
-    (return (equivalent-propositions? self other mapping)))
-  (return FALSE))
+  (return (and (eql? (kind self) :FUNCTION)
+               (eql? (kind other) :FUNCTION)
+               (help-equivalent-propositions? self other mapping TRUE))))
 
 (defun (equivalent-descriptions? BOOLEAN)
        ((self DESCRIPTION) (other DESCRIPTION) (mapping ENTITY-MAPPING))
@@ -944,6 +957,19 @@ a list of quantified, typed variables.")
 ;;;;;; Strategies for finding duplicate descriptions
   ;;
 
+(defun (description? BOOLEAN) ((self OBJECT))
+  :documentation "Return TRUE if 'self' is a description."
+  :public? TRUE
+  (return (and (defined? self)
+               (isa? self @DESCRIPTION))))
+
+(defun (unnamed-description? BOOLEAN) ((self OBJECT))
+  :documentation "Return TRUE if 'self' is an unnamed description."
+  :public? TRUE
+  (return (and (defined? self)
+               (isa? self @DESCRIPTION)
+               (null? (surrogate-value-inverse (cast self DESCRIPTION))))))
+
 (defun (named-description? BOOLEAN) ((self DESCRIPTION))
   :documentation
   "Return TRUE if 'self' is the description of a named class or relation."
@@ -1011,7 +1037,7 @@ a list of quantified, typed variables.")
 (defun (find-duplicate-complex-description DESCRIPTION) ((self DESCRIPTION))
   ;; Return a duplicate (or equivalent) of 'self' if there is one.
   ;; If not, add 'self' to `*structured-objects-index*'.
-  (let ((index (wrap-integer (proposition-hash-index (proposition self) NULL)))
+  (let ((index (wrap-integer (proposition-hash-index (proposition self) NULL FALSE)))
         (bucket (lookup *structured-objects-index* index))
         (homeModule (base-module (home-context self)))
         (mapping (new ENTITY-MAPPING)))
@@ -1360,14 +1386,14 @@ WARNING: Potentially problematic implication rule, consequent variable(s)
                (if (member? ioVariables arg2)
                    ;; both args are io-vars, equate unless in the head of a rule:
                    (unless (eql? kind :HEAD)
-                     (equate-values arg1 arg2))
+                     (equate-values proposition arg1 arg2))
                  ;; equivalence between an io-var and an internal var or other object;
                  ;; choose argument order so an internal variable will point to the
                  ;; io-variable, otherwise, bad things might happen during collapsing:
-                 (equate-values arg2 arg1))
+                 (equate-values proposition arg2 arg1))
              ;; otherwise, arg1 is an internal variable, etc., equate with proper
              ;; argument order in case arg2 is an io-variable (see above comment):
-             (equate-values arg1 arg2)))))
+             (equate-values proposition arg1 arg2)))))
       (:AND
        (foreach arg in arguments
            do (equate-top-level-equivalences arg ioVariables kind)))
@@ -2022,21 +2048,27 @@ are referenced.")
                    ;; don't pick up things like INTEGER:
                    (defined? (native-relation self))))))
 
-(defun (list-undefined-relations (CONS OF NAMED-DESCRIPTION))
-    ((module NAME) (local? BOOLEAN))
-  :public? TRUE :command? TRUE :evaluate-arguments? FALSE
+(defun (list-undefined-relations (CONS OF NAMED-DESCRIPTION)) (&rest (options OBJECT))
   :documentation
-  "Return a list of as yet undefined concepts and relations in `module'.
-These relations were defined by the system, since they were referenced
-but have not yet been defined by the user.  If `module' is NULL look in
-the current module.  If `local?' only look in `module' but not in any
-modules it inherits."
-  (let ((theModule (coerce-to-module module TRUE)))
-    (when (defined? theModule)
-      (when (null? module)
-        (setq theModule NULL)))
-    (when (null? theModule)
-      (setq theModule *module*))
+  "Return a list of as yet undefined concepts and relations in the module defined
+by the :module option (which defaults to the current module).  These relations were
+defined by the system, since they were referenced but have not yet been defined by
+the user.  If `:local?' is specified as TRUE only look in the specified module but
+not any modules it inherits.  For backwards compatibility, this command also supports
+the old <module> <local?> arguments specified without keywords."
+  :public? TRUE :command? TRUE :evaluate-arguments? FALSE
+  (let ((optionsList (coerce-&rest-to-cons options))
+        (theOptions
+         (parse-options
+          (choose (keyword? (first optionsList))
+                  optionsList
+                  ;; we have an old-style invocation, construct an argument list:
+                  (cons-list :module (first optionsList) :local? (second optionsList)))
+          (bquote (:module @MODULE
+                   :local? @BOOLEAN))
+          TRUE FALSE))
+        (theModule MODULE (lookup-with-default theOptions :module *module*))
+        (local? BOOLEAN (lookup-with-default theOptions :local? FALSE)))
     (return (call-list-undefined-relations theModule local?))))
 
 (defun (call-list-undefined-relations CONS) ((module MODULE) (local? BOOLEAN))

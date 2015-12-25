@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -912,13 +912,16 @@ public class LogicObject extends ContextSensitiveObject {
   public static Stella_Object generateExpression(LogicObject self, boolean canonicalizevariablenamesP) {
     { Object old$Canonicalvariablenamemapping$000 = Logic.$CANONICALVARIABLENAMEMAPPING$.get();
       Object old$Canonicalvariablecounter$000 = Logic.$CANONICALVARIABLECOUNTER$.get();
+      Object old$Printquantifiedobjectsstack$000 = Logic.$PRINTQUANTIFIEDOBJECTSSTACK$.get();
 
       try {
         Native.setSpecial(Logic.$CANONICALVARIABLENAMEMAPPING$, (canonicalizevariablenamesP ? KeyValueList.newKeyValueList() : null));
         Native.setIntSpecial(Logic.$CANONICALVARIABLECOUNTER$, -1);
+        Native.setSpecial(Logic.$PRINTQUANTIFIEDOBJECTSSTACK$, Stella.NIL);
         return (Logic.generateTerm(self));
 
       } finally {
+        Logic.$PRINTQUANTIFIEDOBJECTSSTACK$.set(old$Printquantifiedobjectsstack$000);
         Logic.$CANONICALVARIABLECOUNTER$.set(old$Canonicalvariablecounter$000);
         Logic.$CANONICALVARIABLENAMEMAPPING$.set(old$Canonicalvariablenamemapping$000);
       }
@@ -1209,7 +1212,7 @@ public class LogicObject extends ContextSensitiveObject {
   }
 
   public static boolean objectNameLessThanP(LogicObject o1, LogicObject o2) {
-    return (Logic.safeStringLessP(Logic.objectName(o1).symbolName, Logic.objectName(o2).symbolName));
+    return (Logic.safeStringTermLessP(Logic.objectName(o1).symbolName, Logic.objectName(o2).symbolName));
   }
 
   /** Destroy all propositions that reference 'self',
@@ -1408,9 +1411,7 @@ public class LogicObject extends ContextSensitiveObject {
       if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PATTERN_VARIABLE)) {
         { PatternVariable self000 = ((PatternVariable)(self));
 
-          if (Logic.lookupLogicVariableBinding(self000.skolemName) != null) {
-            return (self000);
-          }
+          return (self000);
         }
       }
       else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_SKOLEM)) {

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -57,7 +57,6 @@ Justification* newJustification() {
     self->truthValue = NULL;
     self->reversePolarityP = false;
     self->substitution = NULL;
-    self->patternJustification = NULL;
     self->antecedents = NIL;
     self->proposition = NULL;
     self->inferenceRule = NULL;
@@ -109,14 +108,6 @@ Object* accessJustificationSlotValue(Justification* self, Symbol* slotname, Obje
     }
     else {
       value = self->antecedents;
-    }
-  }
-  else if (slotname == SYM_JUSTIFICATIONS_LOGIC_PATTERN_JUSTIFICATION) {
-    if (setvalueP) {
-      self->patternJustification = ((Justification*)(value));
-    }
-    else {
-      value = self->patternJustification;
     }
   }
   else if (slotname == SYM_JUSTIFICATIONS_LOGIC_SUBSTITUTION) {
@@ -178,7 +169,6 @@ PrimitiveStrategy* newPrimitiveStrategy() {
     self->truthValue = NULL;
     self->reversePolarityP = false;
     self->substitution = NULL;
-    self->patternJustification = NULL;
     self->antecedents = NIL;
     self->proposition = NULL;
     self->strategy = NULL;
@@ -234,25 +224,11 @@ Object* justificationArgumentBoundTo(Object* argument, Justification* justificat
       PatternVariable* argument = ((PatternVariable*)(argument000));
 
       if (!((boolean)(justification))) {
-        justification = oCURRENTJUSTIFICATIONo.get();
+        justification = oCURRENTJUSTIFICATIONo;
       }
-      if (((boolean)(justification))) {
-        { Justification* pattern = ((justification->inferenceRule == KWD_JUSTIFICATIONS_PATTERN) ? justification : justification->patternJustification);
-          KeyValueMap* substitution = (((boolean)(pattern)) ? pattern->substitution : ((KeyValueMap*)(NULL)));
-          Object* value = NULL;
-
-          if (((boolean)(substitution))) {
-            value = substitution->lookup(argument);
-          }
-          if ((!((boolean)(value))) &&
-              ((boolean)(pattern))) {
-            pattern = pattern->patternJustification;
-            if (((boolean)(pattern))) {
-              value = justificationArgumentBoundTo(argument, pattern);
-            }
-          }
-          return (value);
-        }
+      if (((boolean)(justification)) &&
+          ((boolean)(justification->substitution))) {
+        return (justification->substitution->lookup(argument));
       }
     }
   }
@@ -260,49 +236,6 @@ Object* justificationArgumentBoundTo(Object* argument, Justification* justificat
     return (argument);
   }
   return (NULL);
-}
-
-KeyValueMap* yieldJustificationSubstitution(Justification* justification, KeyValueMap* substitution, Proposition* argument) {
-  { Proposition* top = justification->proposition;
-    Proposition* proposition = ((!((boolean)(argument))) ? top : argument);
-
-    { Object* arg = NULL;
-      Vector* vector000 = proposition->arguments;
-      int index000 = 0;
-      int length000 = vector000->length();
-
-      for  (arg, vector000, index000, length000; 
-            index000 < length000; 
-            index000 = index000 + 1) {
-        arg = (vector000->theArray)[index000];
-        { Surrogate* testValue000 = safePrimaryType(arg);
-
-          if (subtypeOfP(testValue000, SGT_JUSTIFICATIONS_LOGIC_PATTERN_VARIABLE)) {
-            { Object* arg000 = arg;
-              PatternVariable* arg = ((PatternVariable*)(arg000));
-
-              if (freeVariableP(arg, top)) {
-                if (!((boolean)(substitution))) {
-                  substitution = newKeyValueMap();
-                }
-                substitution->insertAt(arg, justificationArgumentBoundTo(arg, justification));
-              }
-            }
-          }
-          else if (subtypeOfP(testValue000, SGT_JUSTIFICATIONS_LOGIC_PROPOSITION)) {
-            { Object* arg001 = arg;
-              Proposition* arg = ((Proposition*)(arg001));
-
-              substitution = yieldJustificationSubstitution(justification, substitution, arg);
-            }
-          }
-          else {
-          }
-        }
-      }
-    }
-    return (substitution);
-  }
 }
 
 boolean justificationEqlP(Justification* just1, Justification* just2) {
@@ -455,16 +388,67 @@ Justification* Justification::copy() {
         }
       }
       copy->antecedents = antecedents;
-      if (self->inferenceRule == KWD_JUSTIFICATIONS_PATTERN) {
-        { Justification* antecedent = NULL;
-          Cons* iter001 = copy->antecedents;
+      return (copy);
+    }
+  }
+}
 
-          for (antecedent, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
-            antecedent = ((Justification*)(iter001->value));
-            backlinkToPatternJustification(antecedent, copy);
+Justification* Justification::shallowCopy() {
+  // Similar to `copy' but does not copy antecedent justifications.
+  { Justification* self = this;
+
+    { Justification* copy = NULL;
+      Cons* antecedents = NIL;
+
+      if (subtypeOfP(safePrimaryType(self), SGT_JUSTIFICATIONS_LOGIC_PRIMITIVE_STRATEGY)) {
+        { Justification* self000 = self;
+          PrimitiveStrategy* self = ((PrimitiveStrategy*)(self000));
+
+          { PrimitiveStrategy* self001 = newPrimitiveStrategy();
+
+            self001->strategy = self->strategy;
+            copy = self001;
           }
         }
       }
+      else {
+        copy = newJustification();
+      }
+      copy->inferenceRule = self->inferenceRule;
+      copy->proposition = self->proposition;
+      copy->substitution = self->substitution;
+      copy->reversePolarityP = self->reversePolarityP;
+      copy->truthValue = self->truthValue;
+      copy->positiveScore = self->positiveScore;
+      copy->negativeScore = self->negativeScore;
+      { Justification* antecedent = NULL;
+        Cons* iter000 = self->antecedents;
+        Cons* collect000 = NULL;
+
+        for  (antecedent, iter000, collect000; 
+              !(iter000 == NIL); 
+              iter000 = iter000->rest) {
+          antecedent = ((Justification*)(iter000->value));
+          if (!((boolean)(collect000))) {
+            {
+              collect000 = cons(antecedent, NIL);
+              if (antecedents == NIL) {
+                antecedents = collect000;
+              }
+              else {
+                addConsToEndOfConsList(antecedents, collect000);
+              }
+            }
+          }
+          else {
+            {
+              collect000->rest = cons(antecedent, NIL);
+              collect000 = collect000->rest;
+            }
+          }
+        }
+      }
+      copy->antecedents = antecedents;
       return (copy);
     }
   }
@@ -477,7 +461,7 @@ DEFINE_STELLA_SPECIAL(oRECORD_JUSTIFICATIONSpo, boolean , false);
 boolean recordJustificationsP() {
   // Return TRUE if every query records justifications to enable
   // the explanation of concluded results.
-  return (oRECORD_JUSTIFICATIONSpo.get());
+  return (oRECORD_JUSTIFICATIONSpo);
 }
 
 void recordGoalJustification(ControlFrame* goal, Justification* justification) {
@@ -486,8 +470,8 @@ void recordGoalJustification(ControlFrame* goal, Justification* justification) {
   }
   justification->reversePolarityP = goal->reversePolarityP;
   justification->truthValue = goal->truthValue;
-  if (((boolean)(oQUERYITERATORo.get())) &&
-      ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+  if (((boolean)(oQUERYITERATORo)) &&
+      ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
     goal->setJustificationPartialTruth(justification);
   }
   setDynamicSlotValue(goal->dynamicSlots, SYM_JUSTIFICATIONS_LOGIC_JUSTIFICATION, justification, NULL);
@@ -573,7 +557,7 @@ void recordPatternJustification(ControlFrame* frame, Keyword* lastmove) {
                     index000 < length000; 
                     index000 = index000 + 1) {
                 vbl = ((PatternVariable*)((vector000->theArray)[index000]));
-                substitution->insertAt(vbl, (oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(vbl->boundToOffset)]);
+                substitution->insertAt(vbl, (oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(vbl->boundToOffset)]);
               }
             }
             { PatternVariable* vbl = NULL;
@@ -585,7 +569,7 @@ void recordPatternJustification(ControlFrame* frame, Keyword* lastmove) {
                     index001 < length001; 
                     index001 = index001 + 1) {
                 vbl = ((PatternVariable*)((vector001->theArray)[index001]));
-                substitution->insertAt(vbl, (oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(vbl->boundToOffset)]);
+                substitution->insertAt(vbl, (oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(vbl->boundToOffset)]);
               }
             }
           }
@@ -642,8 +626,8 @@ void recordPatternJustification(ControlFrame* frame, Keyword* lastmove) {
 }
 
 void backlinkToPatternJustification(Justification* justification, Justification* pattern) {
-  if (!((boolean)(justification->patternJustification))) {
-    justification->patternJustification = pattern;
+  if (!((boolean)(justification->substitution))) {
+    justification->substitution = pattern->substitution;
     { Justification* antecedent = NULL;
       Cons* iter000 = justification->antecedents;
 
@@ -708,7 +692,7 @@ void recordAndIntroductionJustification(ControlFrame* frame, Keyword* lastmove) 
           conjunct = ((ControlFrame*)((vector000->theArray)[index000]));
                     if (!((boolean)(collect000))) {
             {
-              collect000 = cons(((conjunct->state == KWD_JUSTIFICATIONS_POPPED) ? ((Justification*)(dynamicSlotValue(conjunct->dynamicSlots, SYM_JUSTIFICATIONS_LOGIC_JUSTIFICATION, NULL)))->copy() : ((Justification*)(dynamicSlotValue(conjunct->dynamicSlots, SYM_JUSTIFICATIONS_LOGIC_JUSTIFICATION, NULL)))), NIL);
+              collect000 = cons(((Justification*)(dynamicSlotValue(conjunct->dynamicSlots, SYM_JUSTIFICATIONS_LOGIC_JUSTIFICATION, NULL))), NIL);
               if (antecedents == NIL) {
                 antecedents = collect000;
               }
@@ -719,7 +703,7 @@ void recordAndIntroductionJustification(ControlFrame* frame, Keyword* lastmove) 
           }
           else {
             {
-              collect000->rest = cons(((conjunct->state == KWD_JUSTIFICATIONS_POPPED) ? ((Justification*)(dynamicSlotValue(conjunct->dynamicSlots, SYM_JUSTIFICATIONS_LOGIC_JUSTIFICATION, NULL)))->copy() : ((Justification*)(dynamicSlotValue(conjunct->dynamicSlots, SYM_JUSTIFICATIONS_LOGIC_JUSTIFICATION, NULL)))), NIL);
+              collect000->rest = cons(((Justification*)(dynamicSlotValue(conjunct->dynamicSlots, SYM_JUSTIFICATIONS_LOGIC_JUSTIFICATION, NULL))), NIL);
               collect000 = collect000->rest;
             }
           }
@@ -776,6 +760,25 @@ void recordFailJustification(ControlFrame* frame, Keyword* lastmove) {
 
       self000->inferenceRule = KWD_JUSTIFICATIONS_FAIL_INTRODUCTION;
       recordGoalJustification(frame, self000);
+    }
+  }
+  else {
+  }
+}
+
+void recordNegatedFailJustification(ControlFrame* frame, Keyword* lastmove) {
+  if (lastmove == KWD_JUSTIFICATIONS_UP_TRUE) {
+    { Justification* antecedent = NULL;
+
+      if (((boolean)(frame->result))) {
+        antecedent = ((Justification*)(dynamicSlotValue(frame->result->dynamicSlots, SYM_JUSTIFICATIONS_LOGIC_JUSTIFICATION, NULL)));
+      }
+      { Justification* self000 = newJustification();
+
+        self000->inferenceRule = KWD_JUSTIFICATIONS_NEGATED_FAIL;
+        self000->antecedents = cons(antecedent, NIL);
+        recordGoalJustification(frame, self000);
+      }
     }
   }
   else {
@@ -1252,10 +1255,10 @@ boolean predicationP(Proposition* proposition) {
 
 boolean assertedAsTrueP(Proposition* proposition) {
   { 
-    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     return ((!proposition->deletedP()) &&
-        ((oREVERSEPOLARITYpo.get() ? falseP(proposition) : (trueP(proposition) ||
+        ((oREVERSEPOLARITYpo ? falseP(proposition) : (trueP(proposition) ||
         functionWithDefinedValueP(proposition)))));
   }
 }
@@ -1315,7 +1318,6 @@ ForwardJustification* newForwardJustification() {
     self->truthValue = NULL;
     self->reversePolarityP = false;
     self->substitution = NULL;
-    self->patternJustification = NULL;
     self->antecedents = NIL;
     self->proposition = NULL;
     self->inferenceRule = NULL;
@@ -1501,7 +1503,7 @@ Justification* getForwardAntecedentJustification(Proposition* antecedent) {
 }
 
 void recordForwardJustification(Cons* antecedents, Proposition* forwardrule, Vector* arguments, Proposition* consequentproposition, Justification* bcJustification) {
-  if (!oRECORD_JUSTIFICATIONSpo.get()) {
+  if (!oRECORD_JUSTIFICATIONSpo) {
     return;
   }
   { List* justifications = consequentproposition->forwardJustifications_reader();
@@ -1568,6 +1570,71 @@ Justification* createSubsetJustification(Proposition* mainProposition, Propositi
   }
 }
 
+ClashJustification* newClashJustification() {
+  { ClashJustification* self = NULL;
+
+    self = new ClashJustification();
+    self->negativeScore = NULL_FLOAT;
+    self->positiveScore = NULL_FLOAT;
+    self->truthValue = NULL;
+    self->reversePolarityP = false;
+    self->substitution = NULL;
+    self->antecedents = NIL;
+    self->proposition = NULL;
+    self->inferenceRule = NULL;
+    self->direction = KWD_JUSTIFICATIONS_FORWARD;
+    return (self);
+  }
+}
+
+Surrogate* ClashJustification::primaryType() {
+  { ClashJustification* self = this;
+
+    return (SGT_JUSTIFICATIONS_LOGIC_CLASH_JUSTIFICATION);
+  }
+}
+
+Keyword* ClashJustification::inferenceDirection() {
+  { ClashJustification* self = this;
+
+    return (self->direction);
+  }
+}
+
+Object* accessClashJustificationSlotValue(ClashJustification* self, Symbol* slotname, Object* value, boolean setvalueP) {
+  if (slotname == SYM_JUSTIFICATIONS_LOGIC_DIRECTION) {
+    if (setvalueP) {
+      self->direction = ((Keyword*)(value));
+    }
+    else {
+      value = self->direction;
+    }
+  }
+  else {
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "`" << slotname << "'" << " is not a valid case option";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
+  return (value);
+}
+
+ClashJustification* createClashJustification(Proposition* prop, Cons* antecedents, Keyword* direction) {
+  { ClashJustification* self000 = newClashJustification();
+
+    self000->inferenceRule = KWD_JUSTIFICATIONS_CLASH;
+    self000->direction = direction;
+    self000->proposition = prop;
+    self000->truthValue = INCONSISTENT_TRUTH_VALUE;
+    self000->antecedents = antecedents;
+    { ClashJustification* value000 = self000;
+
+      return (value000);
+    }
+  }
+}
+
 void helpStartupJustifications1() {
   {
     SGT_JUSTIFICATIONS_LOGIC_JUSTIFICATION = ((Surrogate*)(internRigidSymbolWrtModule("JUSTIFICATION", NULL, 1)));
@@ -1575,7 +1642,6 @@ void helpStartupJustifications1() {
     SYM_JUSTIFICATIONS_LOGIC_INFERENCE_RULE = ((Symbol*)(internRigidSymbolWrtModule("INFERENCE-RULE", NULL, 0)));
     SYM_JUSTIFICATIONS_LOGIC_PROPOSITION = ((Symbol*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 0)));
     SYM_JUSTIFICATIONS_LOGIC_ANTECEDENTS = ((Symbol*)(internRigidSymbolWrtModule("ANTECEDENTS", NULL, 0)));
-    SYM_JUSTIFICATIONS_LOGIC_PATTERN_JUSTIFICATION = ((Symbol*)(internRigidSymbolWrtModule("PATTERN-JUSTIFICATION", NULL, 0)));
     SYM_JUSTIFICATIONS_LOGIC_SUBSTITUTION = ((Symbol*)(internRigidSymbolWrtModule("SUBSTITUTION", NULL, 0)));
     SYM_JUSTIFICATIONS_LOGIC_REVERSE_POLARITYp = ((Symbol*)(internRigidSymbolWrtModule("REVERSE-POLARITY?", NULL, 0)));
     SYM_JUSTIFICATIONS_LOGIC_TRUTH_VALUE = ((Symbol*)(internRigidSymbolWrtModule("TRUTH-VALUE", NULL, 0)));
@@ -1585,7 +1651,6 @@ void helpStartupJustifications1() {
     SGT_JUSTIFICATIONS_LOGIC_PRIMITIVE_STRATEGY = ((Surrogate*)(internRigidSymbolWrtModule("PRIMITIVE-STRATEGY", NULL, 1)));
     SYM_JUSTIFICATIONS_LOGIC_STRATEGY = ((Symbol*)(internRigidSymbolWrtModule("STRATEGY", NULL, 0)));
     SGT_JUSTIFICATIONS_LOGIC_PATTERN_VARIABLE = ((Surrogate*)(internRigidSymbolWrtModule("PATTERN-VARIABLE", NULL, 1)));
-    KWD_JUSTIFICATIONS_PATTERN = ((Keyword*)(internRigidSymbolWrtModule("PATTERN", NULL, 2)));
     SGT_JUSTIFICATIONS_LOGIC_PROPOSITION = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 1)));
     SYM_JUSTIFICATIONS_LOGIC_JUSTIFICATION = ((Symbol*)(internRigidSymbolWrtModule("JUSTIFICATION", NULL, 0)));
     KWD_JUSTIFICATIONS_UP_TRUE = ((Keyword*)(internRigidSymbolWrtModule("UP-TRUE", NULL, 2)));
@@ -1602,6 +1667,7 @@ void helpStartupJustifications1() {
     KWD_JUSTIFICATIONS_EQUIVALENCE = ((Keyword*)(internRigidSymbolWrtModule("EQUIVALENCE", NULL, 2)));
     KWD_JUSTIFICATIONS_SUBSUMPTION_TEST = ((Keyword*)(internRigidSymbolWrtModule("SUBSUMPTION-TEST", NULL, 2)));
     KWD_JUSTIFICATIONS_SUBSUMPTION_REASONING = ((Keyword*)(internRigidSymbolWrtModule("SUBSUMPTION-REASONING", NULL, 2)));
+    KWD_JUSTIFICATIONS_PATTERN = ((Keyword*)(internRigidSymbolWrtModule("PATTERN", NULL, 2)));
     SGT_JUSTIFICATIONS_STELLA_KEY_VALUE_LIST = ((Surrogate*)(internRigidSymbolWrtModule("KEY-VALUE-LIST", getStellaModule("/STELLA", true), 1)));
     KWD_JUSTIFICATIONS_AND_INTRODUCTION = ((Keyword*)(internRigidSymbolWrtModule("AND-INTRODUCTION", NULL, 2)));
     KWD_JUSTIFICATIONS_MODUS_TOLLENS = ((Keyword*)(internRigidSymbolWrtModule("MODUS-TOLLENS", NULL, 2)));
@@ -1610,12 +1676,12 @@ void helpStartupJustifications1() {
     KWD_JUSTIFICATIONS_NOT = ((Keyword*)(internRigidSymbolWrtModule("NOT", NULL, 2)));
     KWD_JUSTIFICATIONS_AMPLIFICATION = ((Keyword*)(internRigidSymbolWrtModule("AMPLIFICATION", NULL, 2)));
     SYM_JUSTIFICATIONS_STELLA_ARGUMENTS = ((Symbol*)(internRigidSymbolWrtModule("ARGUMENTS", getStellaModule("/STELLA", true), 0)));
-    KWD_JUSTIFICATIONS_POPPED = ((Keyword*)(internRigidSymbolWrtModule("POPPED", NULL, 2)));
     KWD_JUSTIFICATIONS_PARTIAL = ((Keyword*)(internRigidSymbolWrtModule("PARTIAL", NULL, 2)));
     KWD_JUSTIFICATIONS_REVERSE = ((Keyword*)(internRigidSymbolWrtModule("REVERSE", NULL, 2)));
     KWD_JUSTIFICATIONS_OR_INTRODUCTION = ((Keyword*)(internRigidSymbolWrtModule("OR-INTRODUCTION", NULL, 2)));
     KWD_JUSTIFICATIONS_DISPROOF = ((Keyword*)(internRigidSymbolWrtModule("DISPROOF", NULL, 2)));
     KWD_JUSTIFICATIONS_FAIL_INTRODUCTION = ((Keyword*)(internRigidSymbolWrtModule("FAIL-INTRODUCTION", NULL, 2)));
+    KWD_JUSTIFICATIONS_NEGATED_FAIL = ((Keyword*)(internRigidSymbolWrtModule("NEGATED-FAIL", NULL, 2)));
     KWD_JUSTIFICATIONS_CLOSED_NOT_INTRODUCTION = ((Keyword*)(internRigidSymbolWrtModule("CLOSED-NOT-INTRODUCTION", NULL, 2)));
     KWD_JUSTIFICATIONS_FAIL = ((Keyword*)(internRigidSymbolWrtModule("FAIL", NULL, 2)));
     KWD_JUSTIFICATIONS_EXISTENTIAL_INTRODUCTION = ((Keyword*)(internRigidSymbolWrtModule("EXISTENTIAL-INTRODUCTION", NULL, 2)));
@@ -1630,12 +1696,12 @@ void helpStartupJustifications1() {
     SYM_JUSTIFICATIONS_STELLA_NOT = ((Symbol*)(internRigidSymbolWrtModule("NOT", getStellaModule("/STELLA", true), 0)));
     KWD_JUSTIFICATIONS_HOW_MANY = ((Keyword*)(internRigidSymbolWrtModule("HOW-MANY", NULL, 2)));
     KWD_JUSTIFICATIONS_NONE = ((Keyword*)(internRigidSymbolWrtModule("NONE", NULL, 2)));
+    SGT_JUSTIFICATIONS_LOGIC_FORWARD_GOAL_RECORD = ((Surrogate*)(internRigidSymbolWrtModule("FORWARD-GOAL-RECORD", NULL, 1)));
   }
 }
 
 void helpStartupJustifications2() {
   {
-    SGT_JUSTIFICATIONS_LOGIC_FORWARD_GOAL_RECORD = ((Surrogate*)(internRigidSymbolWrtModule("FORWARD-GOAL-RECORD", NULL, 1)));
     SYM_JUSTIFICATIONS_LOGIC_FORWARD_GOAL = ((Symbol*)(internRigidSymbolWrtModule("FORWARD-GOAL", NULL, 0)));
     SYM_JUSTIFICATIONS_LOGIC_FORWARD_RULE = ((Symbol*)(internRigidSymbolWrtModule("FORWARD-RULE", NULL, 0)));
     SYM_JUSTIFICATIONS_LOGIC_FORWARD_CHAINING_GOALS = ((Symbol*)(internRigidSymbolWrtModule("FORWARD-CHAINING-GOALS", NULL, 0)));
@@ -1650,21 +1716,76 @@ void helpStartupJustifications2() {
     KWD_JUSTIFICATIONS_IMPLIES = ((Keyword*)(internRigidSymbolWrtModule("IMPLIES", NULL, 2)));
     KWD_JUSTIFICATIONS_DESCRIPTION = ((Keyword*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 2)));
     SYM_JUSTIFICATIONS_PL_KERNEL_KB_SUBSET_OF = ((Symbol*)(internRigidSymbolWrtModule("SUBSET-OF", getStellaModule("/PL-KERNEL-KB", true), 0)));
+    SGT_JUSTIFICATIONS_LOGIC_CLASH_JUSTIFICATION = ((Surrogate*)(internRigidSymbolWrtModule("CLASH-JUSTIFICATION", NULL, 1)));
+    SYM_JUSTIFICATIONS_LOGIC_DIRECTION = ((Symbol*)(internRigidSymbolWrtModule("DIRECTION", NULL, 0)));
+    KWD_JUSTIFICATIONS_CLASH = ((Keyword*)(internRigidSymbolWrtModule("CLASH", NULL, 2)));
     SYM_JUSTIFICATIONS_LOGIC_STARTUP_JUSTIFICATIONS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-JUSTIFICATIONS", NULL, 0)));
     SYM_JUSTIFICATIONS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
+  }
+}
+
+void helpStartupJustifications3() {
+  {
+    defineFunctionObject("JUSTIFICATION-ARGUMENT-BOUND-TO", "(DEFUN (JUSTIFICATION-ARGUMENT-BOUND-TO OBJECT) ((ARGUMENT OBJECT) (JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&justificationArgumentBoundTo)), NULL);
+    defineFunctionObject("JUSTIFICATION-EQL?", "(DEFUN (JUSTIFICATION-EQL? BOOLEAN) ((JUST1 JUSTIFICATION) (JUST2 JUSTIFICATION)))", ((cpp_function_code)(&justificationEqlP)), NULL);
+    defineFunctionObject("JUSTIFICATION-PROPOSITIONS-EQL?", "(DEFUN (JUSTIFICATION-PROPOSITIONS-EQL? BOOLEAN) ((PROPOSITION1 PROPOSITION) (JUST1 JUSTIFICATION) (PROPOSITION2 PROPOSITION) (JUST2 JUSTIFICATION)))", ((cpp_function_code)(&justificationPropositionsEqlP)), NULL);
+    defineMethodObject("(DEFMETHOD (COPY (LIKE SELF)) ((SELF JUSTIFICATION)) :DOCUMENTATION \"Return a copy of the proof starting at `self'.  Allocates\nall new justification objects, but structure-shares other information such\nas propositions and substitutions.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Justification::copy)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (SHALLOW-COPY (LIKE SELF)) ((SELF JUSTIFICATION)) :DOCUMENTATION \"Similar to `copy' but does not copy antecedent justifications.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Justification::shallowCopy)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("RECORD-JUSTIFICATIONS?", "(DEFUN (RECORD-JUSTIFICATIONS? BOOLEAN) () :DOCUMENTATION \"Return TRUE if every query records justifications to enable\nthe explanation of concluded results.\" :GLOBALLY-INLINE? TRUE (RETURN *RECORD-JUSTIFICATIONS?*))", ((cpp_function_code)(&recordJustificationsP)), NULL);
+    defineFunctionObject("RECORD-GOAL-JUSTIFICATION", "(DEFUN RECORD-GOAL-JUSTIFICATION ((GOAL CONTROL-FRAME) (JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&recordGoalJustification)), NULL);
+    defineFunctionObject("RECORD-PRIMITIVE-JUSTIFICATION", "(DEFUN RECORD-PRIMITIVE-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordPrimitiveJustification)), NULL);
+    defineFunctionObject("RECORD-PATTERN-JUSTIFICATION", "(DEFUN RECORD-PATTERN-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordPatternJustification)), NULL);
+    defineFunctionObject("BACKLINK-TO-PATTERN-JUSTIFICATION", "(DEFUN BACKLINK-TO-PATTERN-JUSTIFICATION ((JUSTIFICATION JUSTIFICATION) (PATTERN JUSTIFICATION)))", ((cpp_function_code)(&backlinkToPatternJustification)), NULL);
+    defineFunctionObject("RECORD-MODUS-PONENS-JUSTIFICATION", "(DEFUN RECORD-MODUS-PONENS-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordModusPonensJustification)), NULL);
+    defineFunctionObject("RECORD-AND-INTRODUCTION-JUSTIFICATION", "(DEFUN RECORD-AND-INTRODUCTION-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordAndIntroductionJustification)), NULL);
+    defineFunctionObject("RECORD-OR-INTRODUCTION-JUSTIFICATION", "(DEFUN RECORD-OR-INTRODUCTION-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordOrIntroductionJustification)), NULL);
+    defineFunctionObject("RECORD-DISPROOF-JUSTIFICATION", "(DEFUN RECORD-DISPROOF-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordDisproofJustification)), NULL);
+    defineFunctionObject("RECORD-FAIL-JUSTIFICATION", "(DEFUN RECORD-FAIL-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordFailJustification)), NULL);
+    defineFunctionObject("RECORD-NEGATED-FAIL-JUSTIFICATION", "(DEFUN RECORD-NEGATED-FAIL-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordNegatedFailJustification)), NULL);
+    defineFunctionObject("RECORD-CLOSED-NOT-JUSTIFICATION", "(DEFUN RECORD-CLOSED-NOT-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordClosedNotJustification)), NULL);
+    defineFunctionObject("RECORD-EXISTENTIAL-INTRODUCTION-JUSTIFICATION", "(DEFUN RECORD-EXISTENTIAL-INTRODUCTION-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordExistentialIntroductionJustification)), NULL);
+    defineFunctionObject("FAILED-GOAL-JUSTIFICATION?", "(DEFUN (FAILED-GOAL-JUSTIFICATION? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&failedGoalJustificationP)), NULL);
+    defineFunctionObject("CUTOFF-GOAL-JUSTIFICATION?", "(DEFUN (CUTOFF-GOAL-JUSTIFICATION? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&cutoffGoalJustificationP)), NULL);
+    defineMethodObject("(DEFMETHOD (CONSIFY CONS) ((SELF JUSTIFICATION)) :DOCUMENTATION \"Return a CONS tree representation of the proof `self'.\nEach proof step is represented as a CONS tree of the form\n  (<proposition> (<key> <value>...) <antecedent>...)\nwhere each <antecedent> is a CONS tree representing a subproof.  The\nconsification follows the original proof structure literally, i.e., no\nuninteresting nodes such as patterns or AND-introductions are suppressed.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Justification::consify)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("CONSIFY-JUSTIFICATION", "(DEFUN (CONSIFY-JUSTIFICATION CONS) ((SELF JUSTIFICATION) (STYLE KEYWORD)) :DOCUMENTATION \"Return a CONS tree representation of the proof `self'.\nEach proof step is represented as a CONS tree of the form\n  (<proposition> (<key> <value>...) <antecedent>...)\nwhere each <antecedent> is a CONS tree representing a subproof.\n`style' indicates what nodes in the proof tree should be suppressed.\n:RAW preserves the original structure literally, :VERBOSE keeps AND-\nintroductions but suppresses all auxiliary (non-logical) nodes such as\npattern nodes, and :BRIEF additionally suppresses AND-introduction nodes.\" :PUBLIC? TRUE)", ((cpp_function_code)(&consifyJustification)), NULL);
+    defineFunctionObject("GET-QUERY-JUSTIFICATIONS", "(DEFUN (GET-QUERY-JUSTIFICATIONS (LIST OF JUSTIFICATION)) ((QUERY QUERY-ITERATOR) (SOLUTIONINDEX INTEGER) (MAXJUSTIFICATIONS INTEGER) (CREATE? BOOLEAN)))", ((cpp_function_code)(&getQueryJustifications)), NULL);
+    defineFunctionObject("DERIVE-QUERY-JUSTIFICATIONS", "(DEFUN (DERIVE-QUERY-JUSTIFICATIONS (LIST OF JUSTIFICATION)) ((QUERY QUERY-ITERATOR) (OPTIONS OBJECT) (SOLUTIONINDEX INTEGER) (MAXJUSTIFICATIONS INTEGER)))", ((cpp_function_code)(&deriveQueryJustifications)), NULL);
+    defineExternalSlotFromStringifiedSource("(DEFSLOT PROPOSITION FORWARD-CHAINING-GOALS :TYPE (LIST OF FORWARD-GOAL-RECORD) :ALLOCATION :DYNAMIC)");
+    defineMethodObject("(DEFMETHOD (DELETED? BOOLEAN) ((SELF FORWARD-GOAL-RECORD)))", ((cpp_method_code)(&ForwardGoalRecord::deletedP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (DELETED?-SETTER BOOLEAN) ((SELF FORWARD-GOAL-RECORD) (VALUE BOOLEAN)))", ((cpp_method_code)(&ForwardGoalRecord::deletedPSetter)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("RECORD-FORWARD-GOAL", "(DEFUN RECORD-FORWARD-GOAL ((FORWARDRULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR) (CONSEQUENTPROPOSITION PROPOSITION)))", ((cpp_function_code)(&recordForwardGoal)), NULL);
+    defineFunctionObject("PREDICATION?", "(DEFUN (PREDICATION? BOOLEAN) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&predicationP)), NULL);
+    defineFunctionObject("ASSERTED-AS-TRUE?", "(DEFUN (ASSERTED-AS-TRUE? BOOLEAN) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&assertedAsTrueP)), NULL);
+    defineFunctionObject("ELABORATION-RULE?", "(DEFUN (ELABORATION-RULE? BOOLEAN) ((CONSEQUENTPROPOSITION PROPOSITION) (FORWARDRULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR)))", ((cpp_function_code)(&elaborationRuleP)), NULL);
+    defineFunctionObject("GET-FORWARD-GOALS", "(DEFUN (GET-FORWARD-GOALS (LIST OF FORWARD-GOAL-RECORD)) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&getForwardGoals)), NULL);
+    defineExternalSlotFromStringifiedSource("(DEFSLOT PROPOSITION FORWARD-JUSTIFICATIONS :TYPE (LIST OF JUSTIFICATION) :ALLOCATION :DYNAMIC)");
+    defineFunctionObject("HAS-FORWARD-JUSTIFICATIONS?", "(DEFUN (HAS-FORWARD-JUSTIFICATIONS? BOOLEAN) ((PROPOSITION PROPOSITION)) :DOCUMENTATION \"Return TRUE if `proposition' has any forward justifications.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NON-EMPTY? (FORWARD-JUSTIFICATIONS PROPOSITION))))", ((cpp_function_code)(&hasForwardJustificationsP)), NULL);
+    defineFunctionObject("GET-FORWARD-JUSTIFICATIONS", "(DEFUN (GET-FORWARD-JUSTIFICATIONS (LIST OF JUSTIFICATION)) ((PROPOSITION PROPOSITION)) :DOCUMENTATION \"Return `proposition's forward justifications.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (FORWARD-JUSTIFICATIONS PROPOSITION)))", ((cpp_function_code)(&getForwardJustifications)), NULL);
+    defineFunctionObject("ADD-FORWARD-JUSTIFICATIONS", "(DEFUN ADD-FORWARD-JUSTIFICATIONS ((PROPOSITION PROPOSITION) (JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&addForwardJustifications)), NULL);
+    defineFunctionObject("GET-RULE-IO-VARIABLES", "(DEFUN (GET-RULE-IO-VARIABLES VARIABLES-VECTOR) ((RULE PROPOSITION)))", ((cpp_function_code)(&getRuleIoVariables)), NULL);
+    defineFunctionObject("CREATE-FORWARD-JUSTIFICATION", "(DEFUN (CREATE-FORWARD-JUSTIFICATION FORWARD-JUSTIFICATION) ((ANTECEDENTS (CONS OF PROPOSITION)) (FORWARDRULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR) (CONSEQUENTPROPOSITION PROPOSITION) (BC-JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&createForwardJustification)), NULL);
+    defineFunctionObject("GET-FORWARD-ANTECEDENT-JUSTIFICATION", "(DEFUN (GET-FORWARD-ANTECEDENT-JUSTIFICATION JUSTIFICATION) ((ANTECEDENT PROPOSITION)))", ((cpp_function_code)(&getForwardAntecedentJustification)), NULL);
+    defineFunctionObject("RECORD-FORWARD-JUSTIFICATION", "(DEFUN RECORD-FORWARD-JUSTIFICATION ((ANTECEDENTS (CONS OF PROPOSITION)) (FORWARDRULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR) (CONSEQUENTPROPOSITION PROPOSITION) (BC-JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&recordForwardJustification)), NULL);
+    defineFunctionObject("CREATE-SUBSET-JUSTIFICATION", "(DEFUN (CREATE-SUBSET-JUSTIFICATION JUSTIFICATION) ((MAIN-PROPOSITION PROPOSITION) (MATCHING-PROPOSITION PROPOSITION)))", ((cpp_function_code)(&createSubsetJustification)), NULL);
+    defineFunctionObject("CREATE-CLASH-JUSTIFICATION", "(DEFUN (CREATE-CLASH-JUSTIFICATION CLASH-JUSTIFICATION) ((PROP PROPOSITION) (ANTECEDENTS (CONS OF JUSTIFICATION)) (DIRECTION KEYWORD)))", ((cpp_function_code)(&createClashJustification)), NULL);
+    defineFunctionObject("STARTUP-JUSTIFICATIONS", "(DEFUN STARTUP-JUSTIFICATIONS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupJustifications)), NULL);
+    { MethodSlot* function = lookupFunction(SYM_JUSTIFICATIONS_LOGIC_STARTUP_JUSTIFICATIONS);
+
+      setDynamicSlotValue(function->dynamicSlots, SYM_JUSTIFICATIONS_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupJustifications"), NULL_STRING_WRAPPER);
+    }
   }
 }
 
 void startupJustifications() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupJustifications1();
       helpStartupJustifications2();
     }
     if (currentStartupTimePhaseP(5)) {
-      { Class* clasS = defineClassFromStringifiedSource("JUSTIFICATION", "(DEFCLASS JUSTIFICATION (STANDARD-OBJECT) :SLOTS ((INFERENCE-RULE :TYPE KEYWORD :DOCUMENTATION \"Keyword describing the inference rule used to conclude the\nproposition of this justification.\") (PROPOSITION :TYPE PROPOSITION :DOCUMENTATION \"The proposition supported by this justification.\") (ANTECEDENTS :TYPE (CONS OF JUSTIFICATION) :INITIALLY NIL :DOCUMENTATION \"Antecedents justifications of this justification.\") (PATTERN-JUSTIFICATION :TYPE JUSTIFICATION :DOCUMENTATION \"Backpointer to the closest parent :PATTERN justification containing\nthe variable substitutions from the associated pattern control frame.  If this\nis a :PATTERN justification, the slot points to the parent pattern.\") (SUBSTITUTION :TYPE (ENTITY-MAPPING OF PATTERN-VARIABLE OBJECT) :DOCUMENTATION \"List of variable bindings recorded for :PATTERN justifications.\") (REVERSE-POLARITY? :TYPE BOOLEAN :DOCUMENTATION \"True if proposition was derived in reverse polarity.\") (TRUTH-VALUE :TYPE TRUTH-VALUE :DOCUMENTATION \"Truth value of the" " derived proposition.\") (POSITIVE-SCORE :TYPE PARTIAL-MATCH-SCORE :DOCUMENTATION \"Positive partial match score of the derived proposition.\") (NEGATIVE-SCORE :TYPE PARTIAL-MATCH-SCORE :DOCUMENTATION \"Negative partial match score of the derived proposition.\")) :METHODS ((INFERENCE-STRATEGY ((SELF JUSTIFICATION)) :TYPE KEYWORD (RETURN NULL)) (INFERENCE-DIRECTION ((SELF JUSTIFICATION)) :TYPE KEYWORD (RETURN :BACKWARD))))");
+      { Class* clasS = defineClassFromStringifiedSource("JUSTIFICATION", "(DEFCLASS JUSTIFICATION (STANDARD-OBJECT) :SLOTS ((INFERENCE-RULE :TYPE KEYWORD :DOCUMENTATION \"Keyword describing the inference rule used to conclude the\nproposition of this justification.\") (PROPOSITION :TYPE PROPOSITION :DOCUMENTATION \"The proposition supported by this justification.\") (ANTECEDENTS :TYPE (CONS OF JUSTIFICATION) :INITIALLY NIL :DOCUMENTATION \"Antecedents justifications of this justification.\") (SUBSTITUTION :TYPE (ENTITY-MAPPING OF PATTERN-VARIABLE OBJECT) :DOCUMENTATION \"List of variable bindings recorded for this justification.\") (REVERSE-POLARITY? :TYPE BOOLEAN :DOCUMENTATION \"True if proposition was derived in reverse polarity.\") (TRUTH-VALUE :TYPE TRUTH-VALUE :DOCUMENTATION \"Truth value of the derived proposition.\") (POSITIVE-SCORE :TYPE PARTIAL-MATCH-SCORE :DOCUMENTATION \"Positive partial match score of the derived proposition.\") (NEGATIVE-SCORE :TYPE PARTIAL-MATCH-SCORE :DOCUMENTATION \"Negative partial match score of the derived proposition.\")) :METHODS ((INFERENCE-" "STRATEGY ((SELF JUSTIFICATION)) :TYPE KEYWORD (RETURN NULL)) (INFERENCE-DIRECTION ((SELF JUSTIFICATION)) :TYPE KEYWORD (RETURN :BACKWARD))))");
 
         clasS->classConstructorCode = ((cpp_function_code)(&newJustification));
         clasS->classSlotAccessorCode = ((cpp_function_code)(&accessJustificationSlotValue));
@@ -1683,56 +1804,17 @@ void startupJustifications() {
 
         clasS->classConstructorCode = ((cpp_function_code)(&newForwardJustification));
       }
+      { Class* clasS = defineClassFromStringifiedSource("CLASH-JUSTIFICATION", "(DEFCLASS CLASH-JUSTIFICATION (JUSTIFICATION) :SLOTS ((DIRECTION :TYPE KEYWORD :INITIALLY :FORWARD :DOCUMENTATION \"The inference direction for this inference.\")) :METHODS ((INFERENCE-DIRECTION ((SELF CLASH-JUSTIFICATION)) :TYPE KEYWORD (RETURN (DIRECTION SELF)))))");
+
+        clasS->classConstructorCode = ((cpp_function_code)(&newClashJustification));
+        clasS->classSlotAccessorCode = ((cpp_function_code)(&accessClashJustificationSlotValue));
+      }
     }
     if (currentStartupTimePhaseP(6)) {
       finalizeClasses();
     }
     if (currentStartupTimePhaseP(7)) {
-      defineFunctionObject("JUSTIFICATION-ARGUMENT-BOUND-TO", "(DEFUN (JUSTIFICATION-ARGUMENT-BOUND-TO OBJECT) ((ARGUMENT OBJECT) (JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&justificationArgumentBoundTo)), NULL);
-      defineFunctionObject("YIELD-JUSTIFICATION-SUBSTITUTION", "(DEFUN (YIELD-JUSTIFICATION-SUBSTITUTION ENTITY-MAPPING) ((JUSTIFICATION JUSTIFICATION) (SUBSTITUTION ENTITY-MAPPING) (ARGUMENT PROPOSITION)))", ((cpp_function_code)(&yieldJustificationSubstitution)), NULL);
-      defineFunctionObject("JUSTIFICATION-EQL?", "(DEFUN (JUSTIFICATION-EQL? BOOLEAN) ((JUST1 JUSTIFICATION) (JUST2 JUSTIFICATION)))", ((cpp_function_code)(&justificationEqlP)), NULL);
-      defineFunctionObject("JUSTIFICATION-PROPOSITIONS-EQL?", "(DEFUN (JUSTIFICATION-PROPOSITIONS-EQL? BOOLEAN) ((PROPOSITION1 PROPOSITION) (JUST1 JUSTIFICATION) (PROPOSITION2 PROPOSITION) (JUST2 JUSTIFICATION)))", ((cpp_function_code)(&justificationPropositionsEqlP)), NULL);
-      defineMethodObject("(DEFMETHOD (COPY (LIKE SELF)) ((SELF JUSTIFICATION)) :DOCUMENTATION \"Return a copy of the proof starting at `self'.  Allocates\nall new justification objects, but structure-shares other information such\nas propositions and substitutions.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Justification::copy)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("RECORD-JUSTIFICATIONS?", "(DEFUN (RECORD-JUSTIFICATIONS? BOOLEAN) () :DOCUMENTATION \"Return TRUE if every query records justifications to enable\nthe explanation of concluded results.\" :GLOBALLY-INLINE? TRUE (RETURN *RECORD-JUSTIFICATIONS?*))", ((cpp_function_code)(&recordJustificationsP)), NULL);
-      defineFunctionObject("RECORD-GOAL-JUSTIFICATION", "(DEFUN RECORD-GOAL-JUSTIFICATION ((GOAL CONTROL-FRAME) (JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&recordGoalJustification)), NULL);
-      defineFunctionObject("RECORD-PRIMITIVE-JUSTIFICATION", "(DEFUN RECORD-PRIMITIVE-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordPrimitiveJustification)), NULL);
-      defineFunctionObject("RECORD-PATTERN-JUSTIFICATION", "(DEFUN RECORD-PATTERN-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordPatternJustification)), NULL);
-      defineFunctionObject("BACKLINK-TO-PATTERN-JUSTIFICATION", "(DEFUN BACKLINK-TO-PATTERN-JUSTIFICATION ((JUSTIFICATION JUSTIFICATION) (PATTERN JUSTIFICATION)))", ((cpp_function_code)(&backlinkToPatternJustification)), NULL);
-      defineFunctionObject("RECORD-MODUS-PONENS-JUSTIFICATION", "(DEFUN RECORD-MODUS-PONENS-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordModusPonensJustification)), NULL);
-      defineFunctionObject("RECORD-AND-INTRODUCTION-JUSTIFICATION", "(DEFUN RECORD-AND-INTRODUCTION-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordAndIntroductionJustification)), NULL);
-      defineFunctionObject("RECORD-OR-INTRODUCTION-JUSTIFICATION", "(DEFUN RECORD-OR-INTRODUCTION-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordOrIntroductionJustification)), NULL);
-      defineFunctionObject("RECORD-DISPROOF-JUSTIFICATION", "(DEFUN RECORD-DISPROOF-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordDisproofJustification)), NULL);
-      defineFunctionObject("RECORD-FAIL-JUSTIFICATION", "(DEFUN RECORD-FAIL-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordFailJustification)), NULL);
-      defineFunctionObject("RECORD-CLOSED-NOT-JUSTIFICATION", "(DEFUN RECORD-CLOSED-NOT-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordClosedNotJustification)), NULL);
-      defineFunctionObject("RECORD-EXISTENTIAL-INTRODUCTION-JUSTIFICATION", "(DEFUN RECORD-EXISTENTIAL-INTRODUCTION-JUSTIFICATION ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&recordExistentialIntroductionJustification)), NULL);
-      defineFunctionObject("FAILED-GOAL-JUSTIFICATION?", "(DEFUN (FAILED-GOAL-JUSTIFICATION? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&failedGoalJustificationP)), NULL);
-      defineFunctionObject("CUTOFF-GOAL-JUSTIFICATION?", "(DEFUN (CUTOFF-GOAL-JUSTIFICATION? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&cutoffGoalJustificationP)), NULL);
-      defineMethodObject("(DEFMETHOD (CONSIFY CONS) ((SELF JUSTIFICATION)) :DOCUMENTATION \"Return a CONS tree representation of the proof `self'.\nEach proof step is represented as a CONS tree of the form\n  (<proposition> (<key> <value>...) <antecedent>...)\nwhere each <antecedent> is a CONS tree representing a subproof.  The\nconsification follows the original proof structure literally, i.e., no\nuninteresting nodes such as patterns or AND-introductions are suppressed.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Justification::consify)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("CONSIFY-JUSTIFICATION", "(DEFUN (CONSIFY-JUSTIFICATION CONS) ((SELF JUSTIFICATION) (STYLE KEYWORD)) :DOCUMENTATION \"Return a CONS tree representation of the proof `self'.\nEach proof step is represented as a CONS tree of the form\n  (<proposition> (<key> <value>...) <antecedent>...)\nwhere each <antecedent> is a CONS tree representing a subproof.\n`style' indicates what nodes in the proof tree should be suppressed.\n:RAW preserves the original structure literally, :VERBOSE keeps AND-\nintroductions but suppresses all auxiliary (non-logical) nodes such as\npattern nodes, and :BRIEF additionally suppresses AND-introduction nodes.\" :PUBLIC? TRUE)", ((cpp_function_code)(&consifyJustification)), NULL);
-      defineFunctionObject("GET-QUERY-JUSTIFICATIONS", "(DEFUN (GET-QUERY-JUSTIFICATIONS (LIST OF JUSTIFICATION)) ((QUERY QUERY-ITERATOR) (SOLUTIONINDEX INTEGER) (MAXJUSTIFICATIONS INTEGER) (CREATE? BOOLEAN)))", ((cpp_function_code)(&getQueryJustifications)), NULL);
-      defineFunctionObject("DERIVE-QUERY-JUSTIFICATIONS", "(DEFUN (DERIVE-QUERY-JUSTIFICATIONS (LIST OF JUSTIFICATION)) ((QUERY QUERY-ITERATOR) (OPTIONS OBJECT) (SOLUTIONINDEX INTEGER) (MAXJUSTIFICATIONS INTEGER)))", ((cpp_function_code)(&deriveQueryJustifications)), NULL);
-      defineExternalSlotFromStringifiedSource("(DEFSLOT PROPOSITION FORWARD-CHAINING-GOALS :TYPE (LIST OF FORWARD-GOAL-RECORD) :ALLOCATION :DYNAMIC)");
-      defineMethodObject("(DEFMETHOD (DELETED? BOOLEAN) ((SELF FORWARD-GOAL-RECORD)))", ((cpp_method_code)(&ForwardGoalRecord::deletedP)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (DELETED?-SETTER BOOLEAN) ((SELF FORWARD-GOAL-RECORD) (VALUE BOOLEAN)))", ((cpp_method_code)(&ForwardGoalRecord::deletedPSetter)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("RECORD-FORWARD-GOAL", "(DEFUN RECORD-FORWARD-GOAL ((FORWARDRULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR) (CONSEQUENTPROPOSITION PROPOSITION)))", ((cpp_function_code)(&recordForwardGoal)), NULL);
-      defineFunctionObject("PREDICATION?", "(DEFUN (PREDICATION? BOOLEAN) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&predicationP)), NULL);
-      defineFunctionObject("ASSERTED-AS-TRUE?", "(DEFUN (ASSERTED-AS-TRUE? BOOLEAN) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&assertedAsTrueP)), NULL);
-      defineFunctionObject("ELABORATION-RULE?", "(DEFUN (ELABORATION-RULE? BOOLEAN) ((CONSEQUENTPROPOSITION PROPOSITION) (FORWARDRULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR)))", ((cpp_function_code)(&elaborationRuleP)), NULL);
-      defineFunctionObject("GET-FORWARD-GOALS", "(DEFUN (GET-FORWARD-GOALS (LIST OF FORWARD-GOAL-RECORD)) ((PROPOSITION PROPOSITION)))", ((cpp_function_code)(&getForwardGoals)), NULL);
-      defineExternalSlotFromStringifiedSource("(DEFSLOT PROPOSITION FORWARD-JUSTIFICATIONS :TYPE (LIST OF JUSTIFICATION) :ALLOCATION :DYNAMIC)");
-      defineFunctionObject("HAS-FORWARD-JUSTIFICATIONS?", "(DEFUN (HAS-FORWARD-JUSTIFICATIONS? BOOLEAN) ((PROPOSITION PROPOSITION)) :DOCUMENTATION \"Return TRUE if `proposition' has any forward justifications.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NON-EMPTY? (FORWARD-JUSTIFICATIONS PROPOSITION))))", ((cpp_function_code)(&hasForwardJustificationsP)), NULL);
-      defineFunctionObject("GET-FORWARD-JUSTIFICATIONS", "(DEFUN (GET-FORWARD-JUSTIFICATIONS (LIST OF JUSTIFICATION)) ((PROPOSITION PROPOSITION)) :DOCUMENTATION \"Return `proposition's forward justifications.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (FORWARD-JUSTIFICATIONS PROPOSITION)))", ((cpp_function_code)(&getForwardJustifications)), NULL);
-      defineFunctionObject("ADD-FORWARD-JUSTIFICATIONS", "(DEFUN ADD-FORWARD-JUSTIFICATIONS ((PROPOSITION PROPOSITION) (JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&addForwardJustifications)), NULL);
-      defineFunctionObject("GET-RULE-IO-VARIABLES", "(DEFUN (GET-RULE-IO-VARIABLES VARIABLES-VECTOR) ((RULE PROPOSITION)))", ((cpp_function_code)(&getRuleIoVariables)), NULL);
-      defineFunctionObject("CREATE-FORWARD-JUSTIFICATION", "(DEFUN (CREATE-FORWARD-JUSTIFICATION FORWARD-JUSTIFICATION) ((ANTECEDENTS (CONS OF PROPOSITION)) (FORWARDRULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR) (CONSEQUENTPROPOSITION PROPOSITION) (BC-JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&createForwardJustification)), NULL);
-      defineFunctionObject("GET-FORWARD-ANTECEDENT-JUSTIFICATION", "(DEFUN (GET-FORWARD-ANTECEDENT-JUSTIFICATION JUSTIFICATION) ((ANTECEDENT PROPOSITION)))", ((cpp_function_code)(&getForwardAntecedentJustification)), NULL);
-      defineFunctionObject("RECORD-FORWARD-JUSTIFICATION", "(DEFUN RECORD-FORWARD-JUSTIFICATION ((ANTECEDENTS (CONS OF PROPOSITION)) (FORWARDRULE PROPOSITION) (ARGUMENTS ARGUMENTS-VECTOR) (CONSEQUENTPROPOSITION PROPOSITION) (BC-JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&recordForwardJustification)), NULL);
-      defineFunctionObject("CREATE-SUBSET-JUSTIFICATION", "(DEFUN (CREATE-SUBSET-JUSTIFICATION JUSTIFICATION) ((MAIN-PROPOSITION PROPOSITION) (MATCHING-PROPOSITION PROPOSITION)))", ((cpp_function_code)(&createSubsetJustification)), NULL);
-      defineFunctionObject("STARTUP-JUSTIFICATIONS", "(DEFUN STARTUP-JUSTIFICATIONS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupJustifications)), NULL);
-      { MethodSlot* function = lookupFunction(SYM_JUSTIFICATIONS_LOGIC_STARTUP_JUSTIFICATIONS);
-
-        setDynamicSlotValue(function->dynamicSlots, SYM_JUSTIFICATIONS_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupJustifications"), NULL_STRING_WRAPPER);
-      }
+      helpStartupJustifications3();
     }
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
@@ -1784,10 +1866,12 @@ void startupJustifications() {
       defineExplanationPhrase(KWD_JUSTIFICATIONS_DISPROOF, KWD_JUSTIFICATIONS_LAY, "by proving the negation", 0);
       defineExplanationPhrase(KWD_JUSTIFICATIONS_DISPROOF, KWD_JUSTIFICATIONS_TECHNICAL, "by Double-Negation-Introduction", 1, KWD_JUSTIFICATIONS_REVERSE);
       defineExplanationPhrase(KWD_JUSTIFICATIONS_DISPROOF, KWD_JUSTIFICATIONS_LAY, "by negating a negation", 1, KWD_JUSTIFICATIONS_REVERSE);
-      defineExplanationPhrase(KWD_JUSTIFICATIONS_CLOSED_NOT_INTRODUCTION, KWD_JUSTIFICATIONS_TECHNICAL, "because the argument proposition was not derivable and it uses closed-world semantics", 0);
-      defineExplanationPhrase(KWD_JUSTIFICATIONS_CLOSED_NOT_INTRODUCTION, KWD_JUSTIFICATIONS_LAY, "because the argument proposition could not be proven and it is a closed-world proposition", 0);
       defineExplanationPhrase(KWD_JUSTIFICATIONS_FAIL_INTRODUCTION, KWD_JUSTIFICATIONS_TECHNICAL, "because the argument proposition was not derivable", 0);
       defineExplanationPhrase(KWD_JUSTIFICATIONS_FAIL_INTRODUCTION, KWD_JUSTIFICATIONS_LAY, "because the argument proposition could not be proven", 0);
+      defineExplanationPhrase(KWD_JUSTIFICATIONS_NEGATED_FAIL, KWD_JUSTIFICATIONS_TECHNICAL, "because the argument proposition was derived and the fail is has negative polarity", 0);
+      defineExplanationPhrase(KWD_JUSTIFICATIONS_NEGATED_FAIL, KWD_JUSTIFICATIONS_LAY, "because the argument proposition could be proven and we are trying to disprove the fail", 0);
+      defineExplanationPhrase(KWD_JUSTIFICATIONS_CLOSED_NOT_INTRODUCTION, KWD_JUSTIFICATIONS_TECHNICAL, "because the argument proposition was not derivable and it uses closed-world semantics", 0);
+      defineExplanationPhrase(KWD_JUSTIFICATIONS_CLOSED_NOT_INTRODUCTION, KWD_JUSTIFICATIONS_LAY, "because the argument proposition could not be proven and it is a closed-world proposition", 0);
       defineExplanationPhrase(KWD_JUSTIFICATIONS_EXISTENTIAL_INTRODUCTION, KWD_JUSTIFICATIONS_TECHNICAL, "by Existential Introduction", 0);
       defineExplanationPhrase(KWD_JUSTIFICATIONS_EXISTENTIAL_INTRODUCTION, KWD_JUSTIFICATIONS_LAY, "because it was true for at least one case", 0);
       defineExplanationPhrase(KWD_JUSTIFICATIONS_FORWARD_INFERENCE, KWD_JUSTIFICATIONS_TECHNICAL, "by Forward Inference", 0);
@@ -1806,8 +1890,6 @@ Symbol* SYM_JUSTIFICATIONS_LOGIC_PROPOSITION = NULL;
 
 Symbol* SYM_JUSTIFICATIONS_LOGIC_ANTECEDENTS = NULL;
 
-Symbol* SYM_JUSTIFICATIONS_LOGIC_PATTERN_JUSTIFICATION = NULL;
-
 Symbol* SYM_JUSTIFICATIONS_LOGIC_SUBSTITUTION = NULL;
 
 Symbol* SYM_JUSTIFICATIONS_LOGIC_REVERSE_POLARITYp = NULL;
@@ -1825,8 +1907,6 @@ Surrogate* SGT_JUSTIFICATIONS_LOGIC_PRIMITIVE_STRATEGY = NULL;
 Symbol* SYM_JUSTIFICATIONS_LOGIC_STRATEGY = NULL;
 
 Surrogate* SGT_JUSTIFICATIONS_LOGIC_PATTERN_VARIABLE = NULL;
-
-Keyword* KWD_JUSTIFICATIONS_PATTERN = NULL;
 
 Surrogate* SGT_JUSTIFICATIONS_LOGIC_PROPOSITION = NULL;
 
@@ -1860,6 +1940,8 @@ Keyword* KWD_JUSTIFICATIONS_SUBSUMPTION_TEST = NULL;
 
 Keyword* KWD_JUSTIFICATIONS_SUBSUMPTION_REASONING = NULL;
 
+Keyword* KWD_JUSTIFICATIONS_PATTERN = NULL;
+
 Surrogate* SGT_JUSTIFICATIONS_STELLA_KEY_VALUE_LIST = NULL;
 
 Keyword* KWD_JUSTIFICATIONS_AND_INTRODUCTION = NULL;
@@ -1876,8 +1958,6 @@ Keyword* KWD_JUSTIFICATIONS_AMPLIFICATION = NULL;
 
 Symbol* SYM_JUSTIFICATIONS_STELLA_ARGUMENTS = NULL;
 
-Keyword* KWD_JUSTIFICATIONS_POPPED = NULL;
-
 Keyword* KWD_JUSTIFICATIONS_PARTIAL = NULL;
 
 Keyword* KWD_JUSTIFICATIONS_REVERSE = NULL;
@@ -1887,6 +1967,8 @@ Keyword* KWD_JUSTIFICATIONS_OR_INTRODUCTION = NULL;
 Keyword* KWD_JUSTIFICATIONS_DISPROOF = NULL;
 
 Keyword* KWD_JUSTIFICATIONS_FAIL_INTRODUCTION = NULL;
+
+Keyword* KWD_JUSTIFICATIONS_NEGATED_FAIL = NULL;
 
 Keyword* KWD_JUSTIFICATIONS_CLOSED_NOT_INTRODUCTION = NULL;
 
@@ -1945,6 +2027,12 @@ Keyword* KWD_JUSTIFICATIONS_IMPLIES = NULL;
 Keyword* KWD_JUSTIFICATIONS_DESCRIPTION = NULL;
 
 Symbol* SYM_JUSTIFICATIONS_PL_KERNEL_KB_SUBSET_OF = NULL;
+
+Surrogate* SGT_JUSTIFICATIONS_LOGIC_CLASH_JUSTIFICATION = NULL;
+
+Symbol* SYM_JUSTIFICATIONS_LOGIC_DIRECTION = NULL;
+
+Keyword* KWD_JUSTIFICATIONS_CLASH = NULL;
 
 Symbol* SYM_JUSTIFICATIONS_LOGIC_STARTUP_JUSTIFICATIONS = NULL;
 

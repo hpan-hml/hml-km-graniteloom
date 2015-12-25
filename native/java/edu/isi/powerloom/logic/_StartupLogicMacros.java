@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -199,32 +199,6 @@ public class _StartupLogicMacros {
         }
         if (Stella.currentStartupTimePhaseP(4)) {
           Logic.$SUPPRESSNONLOGICOBJECTWARNINGp$.setDefaultValue(new Boolean(true));
-        }
-        if (Stella.currentStartupTimePhaseP(5)) {
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("LOGIC-EXCEPTION", "(DEFCLASS LOGIC-EXCEPTION (STELLA-EXCEPTION))");
-
-            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.powerloom.logic.LogicException", "newLogicException", new java.lang.Class [] {Native.find_java_class("java.lang.String")});
-          }
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("PROPOSITION-ERROR", "(DEFCLASS PROPOSITION-ERROR (LOGIC-EXCEPTION))");
-
-            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.powerloom.logic.PropositionError", "newPropositionError", new java.lang.Class [] {Native.find_java_class("java.lang.String")});
-          }
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("PARSING-ERROR", "(DEFCLASS PARSING-ERROR (LOGIC-EXCEPTION))");
-
-            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.powerloom.logic.ParsingError", "newParsingError", new java.lang.Class [] {Native.find_java_class("java.lang.String")});
-          }
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("CLASH", "(DEFCLASS CLASH (LOGIC-EXCEPTION))");
-
-            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.powerloom.logic.Clash", "newClash", new java.lang.Class [] {Native.find_java_class("java.lang.String")});
-          }
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("FAIL-EXCEPTION", "(DEFCLASS FAIL-EXCEPTION (LOGIC-EXCEPTION))");
-
-            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.powerloom.logic.FailException", "newFailException", new java.lang.Class [] {Native.find_java_class("java.lang.String")});
-          }
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("QUERY-THREAD-LIMIT-VIOLATION", "(DEFCLASS QUERY-THREAD-LIMIT-VIOLATION (LOGIC-EXCEPTION))");
-
-            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.powerloom.logic.QueryThreadLimitViolation", "newQueryThreadLimitViolation", new java.lang.Class [] {Native.find_java_class("java.lang.String")});
-          }
         }
         if (Stella.currentStartupTimePhaseP(6)) {
           Stella.finalizeClasses();

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -53,15 +53,14 @@ import edu.isi.powerloom.*;
 import edu.isi.stella.utilities.*;
 
 public class Extensions {
+  public static Keyword KWD_DOCUMENTATION = null;
+
   public static Symbol SYM_PLX_STARTUP_EXTENSIONS = null;
 
   public static Symbol SYM_STELLA_METHOD_STARTUP_CLASSNAME = null;
 
   public static Symbol SYM_PLX_STARTUP_POWERLOOM_EXTENSIONS_SYSTEM = null;
 
-  /** Main PowerLoom entry point for your code in C++ and Java.
-   * @param argv002
-   */
   public static void main(String[] argv002) {
     System.out.println("Initializing STELLA...");
     StartupStellaSystem.startupStellaSystem();

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -56,6 +56,7 @@ public:
   HashTable* predicatePropositionsTable;
 public:
   virtual Surrogate* primaryType();
+  virtual BacklinksIndex* removeDeletedMembers();
 };
 
 class LogicObject : public ContextSensitiveObject {
@@ -213,6 +214,7 @@ public:
   virtual boolean deletedP();
   virtual List* forwardJustifications_reader();
   virtual List* forwardChainingGoals_reader();
+  virtual Cons* clashExceptions_reader();
   virtual BooleanWrapper* badP_reader();
   virtual Cons* support_reader();
   virtual double weightDelta_reader();
@@ -251,6 +253,109 @@ public:
   BacklinksIndex* dependentPropositionsIndex;
 public:
   virtual void printObject(std::ostream* stream);
+  virtual Surrogate* primaryType();
+};
+
+class LogicException : public StellaException {
+public:
+  LogicException(const std::string& msg) : StellaException(msg) {
+}
+
+};
+
+class PropositionError : public LogicException {
+public:
+  PropositionError(const std::string& msg) : LogicException(msg) {
+}
+
+};
+
+class ParsingError : public LogicException {
+public:
+  ParsingError(const std::string& msg) : LogicException(msg) {
+}
+
+};
+
+class Clash : public LogicException {
+public:
+  // The main proposition involved in the clash
+  Proposition* proposition;
+  // The context in which the clash occurred
+  Context* context;
+public:
+  Clash(const std::string& msg) : LogicException(msg) {
+}
+
+};
+
+class TruthValueClash : public Clash {
+public:
+  TruthValueClash(const std::string& msg) : Clash(msg) {
+}
+
+};
+
+class IntervalClash : public Clash {
+public:
+  // The owner of the interval cache that is unsatisfiable.
+  LogicObject* intervalMember;
+  Object* lowerBound;
+  Object* upperBound;
+  boolean strictLowerBoundP;
+  boolean strictUpperBoundP;
+public:
+  IntervalClash(const std::string& msg) : Clash(msg) {
+}
+
+};
+
+class VariableValueClash : public Clash {
+public:
+  // Skolem which is getting multiple values.
+  Skolem* skolem;
+  // First value in value clash
+  Object* value1;
+  // Second value in value clash
+  Object* value2;
+public:
+  VariableValueClash(const std::string& msg) : Clash(msg) {
+}
+
+};
+
+class UnificationClash : public Clash {
+public:
+  // First value in unification clash
+  Object* value1;
+  // Second value in unification clash
+  Object* value2;
+public:
+  UnificationClash(const std::string& msg) : Clash(msg) {
+}
+
+};
+
+class FailException : public LogicException {
+public:
+  FailException(const std::string& msg) : LogicException(msg) {
+}
+
+};
+
+class QueryThreadLimitViolation : public LogicException {
+public:
+  QueryThreadLimitViolation(const std::string& msg) : LogicException(msg) {
+}
+
+};
+
+class ExceptionRecord : public StandardObject {
+public:
+  StellaException* exception;
+  Context* context;
+  Module* module;
+public:
   virtual Surrogate* primaryType();
 };
 
@@ -312,6 +417,7 @@ extern boolean oAUTO_COERCE_PROPOSITIONAL_ARGUMENTSpo;
 extern Keyword* oTYPE_CHECK_POLICYo;
 extern DECLARE_STELLA_SPECIAL(oTYPECHECKMODEo, Keyword* );
 extern VectorSequence* oCHECK_TYPES_AGENDAo;
+extern DECLARE_STELLA_SPECIAL(oDEFERRED_TERMS_TO_UNLINKo, HashSet* );
 
 // Function signatures:
 BacklinksIndex* newBacklinksIndex();
@@ -349,6 +455,18 @@ List* originatedPropositionsSetter(Object* self, List* value);
 Proposition* createProposition(Symbol* kind, int argumentcount);
 void enforceCodeOnly();
 Surrogate* getPropositionBaseOperator(Proposition* prop);
+LogicException* newLogicException(char* message);
+PropositionError* newPropositionError(char* message);
+ParsingError* newParsingError(char* message);
+Clash* newClash(char* message);
+TruthValueClash* newTruthValueClash(char* message);
+IntervalClash* newIntervalClash(char* message);
+VariableValueClash* newVariableValueClash(char* message);
+UnificationClash* newUnificationClash(char* message);
+FailException* newFailException(char* message);
+QueryThreadLimitViolation* newQueryThreadLimitViolation(char* message);
+ExceptionRecord* newExceptionRecord();
+Object* accessExceptionRecordSlotValue(ExceptionRecord* self, Symbol* slotname, Object* value, boolean setvalueP);
 boolean logicModuleP(Module* self);
 SequenceIndex* locallyConceivedPropositions(Module* self);
 void locallyConceivedPropositionsSetter(Module* self, SequenceIndex* value);
@@ -363,6 +481,7 @@ boolean logicalSubtypeOfP(Surrogate* type1, Surrogate* type2);
 boolean logicalSubtypeOfLiteralP(Surrogate* type);
 boolean literalTypeP(Surrogate* type);
 boolean booleanTypeP(Surrogate* self);
+boolean propositionTypeP(Surrogate* self);
 boolean classDescriptionP(NamedDescription* self);
 boolean functionDescriptionP(NamedDescription* self);
 boolean variableArityP(Description* self);
@@ -393,10 +512,12 @@ void updatePropositionTruthValue(Proposition* self, Keyword* updatemode);
 void assignPropositionWeight(Proposition* self, double weight);
 Context* tickleContext();
 Context* tickleInstances();
+Cons* listInconsistentPropositions(Cons* options);
+Cons* listInconsistentPropositionsEvaluatorWrapper(Cons* arguments);
 void reactToSkolemValueUpdate(Skolem* skolem, Object* oldvalue, Object* newvalue, boolean toplevelupdateP);
 boolean nativeSlotPropositionP(Proposition* self);
 Cons* updateNativeSlotProposition(Proposition* proposition, Keyword* updatemode);
-void assignNativeSlotValue(Thing* self, StorageSlot* slot, Object* value);
+void assignNativeSlotValue(Proposition* prop, Thing* self, StorageSlot* slot, Object* value);
 void clearNativeSlotValue(Thing* object, StorageSlot* slot);
 void dropNativeSlotValue(Thing* self, StorageSlot* slot, Object* value);
 Surrogate* lookupSlotrefOnInstance(Object* term, Symbol* slotname);
@@ -427,6 +548,8 @@ TruthValue* defaultifyTruthValue(boolean trueP, boolean bydefaultP);
 TruthValue* conjoinTruthValues(TruthValue* tv1, TruthValue* tv2);
 TruthValue* disjoinTruthValues(TruthValue* tv1, TruthValue* tv2);
 TruthValue* invertTruthValue(TruthValue* self);
+boolean strongerTruthValueP(TruthValue* tv1, TruthValue* tv2);
+TruthValue* mergeTruthValues(TruthValue* tv1, TruthValue* tv2);
 TruthValue* weakenTruthValue(TruthValue* tv1, TruthValue* tv2);
 TruthValue* strengthenTruthValue(TruthValue* tv1, TruthValue* tv2);
 boolean trueTruthValueP(TruthValue* self);
@@ -436,21 +559,24 @@ boolean defaultTruthValueP(TruthValue* self);
 boolean unknownTruthValueP(TruthValue* self);
 boolean knownTruthValueP(TruthValue* self);
 boolean inconsistentTruthValueP(TruthValue* self);
+char* truthValueToString(TruthValue* self, boolean abbreviateP);
 void printTruthValue(TruthValue* self, OutputStream* stream);
-void signalUnificationClash(Object* term1, Object* term2);
-void signalVariableValueClash(Skolem* skolem, Object* value1, Object* value2);
+void signalUnificationClash(Proposition* prop, Object* term1, Object* term2);
+void signalVariableValueClash(Proposition* prop, Skolem* skolem, Object* value1, Object* value2);
 void signalTruthValueClash(Proposition* proposition);
+Cons* getVisibleClashExceptions(Proposition* incoherentprop);
+void handleClashException(Clash* clashexception);
 Surrogate* logicalType(Object* self);
 Surrogate* safeLogicalType(Object* self);
 Surrogate* classLogicalType(Class* self);
-void unifyTypes(Skolem* term1, Object* term2);
+void unifyTypes(Proposition* prop, Skolem* term1, Object* term2);
 void unifySkolemAndValue(Skolem* skolem, Object* value);
 void bindSkolemToValue(Skolem* fromskolem, Object* tovalue, boolean toplevelupdateP);
 void unbindSkolemValue(Skolem* skolem, boolean toplevelupdateP);
-void constrainAsSubset(Collection* set1, Collection* set2);
-void equateCollections(Collection* col1, Collection* col2);
+void constrainAsSubset(Proposition* prop, Collection* set1, Collection* set2);
+void equateCollections(Proposition* prop, Collection* col1, Collection* col2);
 boolean logicCollectionP(Object* term);
-void equateValues(Object* term1, Object* term2);
+void equateValues(Proposition* prop, Object* term1, Object* term2);
 boolean unequateConflictingDefaultValuesP(Proposition* newequatingprop);
 boolean unequateValuesP(Object* term1, Object* term2);
 void bindToEquivalentValue(LogicObject* from, Description* to);
@@ -460,6 +586,7 @@ int equivalentCollectionPriority(LogicObject* self);
 void equivalenceCollections(LogicObject* collection1, LogicObject* collection2);
 void reviseEquivalences(Proposition* proposition, boolean goestrueP);
 Proposition* findEquatingProposition(Object* directobject, LogicObject* indirectobject);
+boolean constantPropositionP(Proposition* self);
 Object* evaluateTerm(Object* self);
 Object* evaluateLiteralWrapperTerm(LiteralWrapper* self);
 Object* evaluateSurrogateTerm(Surrogate* self);
@@ -497,9 +624,11 @@ ObjectAlreadyExistsException* newObjectAlreadyExistsException(char* message);
 Object* helpCreateLogicInstance(Surrogate* name, Surrogate* type);
 Object* createLogicInstance(Surrogate* name, Surrogate* type);
 void cleanupStructuredObjectsIndex(Module* clearmodule);
-int propositionHashIndex(Proposition* self, KeyValueMap* mapping);
+int propositionHashIndex(Proposition* self, KeyValueMap* mapping, boolean derefsurrogatesP);
+Proposition* lookupMatchingPropositionInBucket(List* bucket, Proposition* self, KeyValueMap* mapping);
 Proposition* findDuplicateComplexProposition(Proposition* self);
 Proposition* findDuplicateProposition(Proposition* self);
+Proposition* findMatchingNonDescriptiveProposition(Proposition* self, KeyValueMap* mapping);
 Proposition* fastenDownOneProposition(Proposition* self, boolean dontcheckforduplicatesP);
 Proposition* helpFastenDownPropositions(Proposition* self, boolean dontcheckforduplicatesP);
 Proposition* recursivelyFastenDownPropositions(Proposition* self, boolean dontcheckforduplicatesP);
@@ -528,6 +657,7 @@ boolean functionInducedExistsP(Proposition* proposition);
 Proposition* predicateOfFunctionInducedExists(Proposition* existsproposition);
 Proposition* embedNegationWithinFunctionInducedExists(Proposition* existsproposition);
 Proposition* buildAndOrNotProposition(Cons* tree);
+Proposition* conceiveInvertedProposition(Proposition* prop);
 boolean functionalTermP(Object* term);
 boolean clipValueP(Object* term1, Object* term2);
 Proposition* createEquivalenceProposition(Object* term1, Object* term2);
@@ -542,6 +672,7 @@ Surrogate* mostGeneralEquivalentSlotref(Surrogate* surrogate);
 boolean polymorphicRelationP(Relation* self);
 boolean nonPolymorphicPredicateP(LogicObject* self);
 LogicObject* evaluatePredicate(GeneralizedSymbol* name, Object* firstargument);
+boolean OAutoCoercePropositionalArgumentsPOSetter(boolean value);
 boolean propositionalArgumentP(Object* argument);
 Object* evaluateTypedArgument(Object* argument, Surrogate* type);
 Object* evaluatePropositionTerm(Object* tree);
@@ -583,6 +714,7 @@ Proposition* createFunctionProposition(GeneralizedSymbol* predicate, Cons* input
 Object* evaluateFunctionTerm(Cons* tree);
 boolean extensionalIndividualP(Object* individual);
 boolean functionWithDefinedValueP(Proposition* proposition);
+Cons* normalizeSetofArguments(Cons* args);
 Skolem* createEnumeratedSet(List* set);
 Skolem* createLogicalList(List* list);
 boolean logicalCollectionP(Object* self);
@@ -630,7 +762,8 @@ void destroyLogicContextHook(Context* self);
 void clearCaches();
 void resetPowerloom();
 boolean consLessThanP(Cons* o1, Cons* o2);
-boolean safeStringLessP(char* s1, char* s2);
+boolean stringTermLessP(char* s1, char* s2);
+boolean safeStringTermLessP(char* s1, char* s2);
 boolean safeQuantityLessP(Quantity* q1, Object* o2);
 boolean safeQuantityGreaterEqualP(Quantity* q1, Object* o2);
 boolean objectNameLessThanP(LogicObject* o1, LogicObject* o2);
@@ -762,6 +895,9 @@ extern Symbol* SYM_PROPOSITIONS_STELLA_ISA;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_DESCRIPTIVEp;
 extern Symbol* SYM_PROPOSITIONS_STELLA_CODE_ONLYp;
 extern Keyword* KWD_PROPOSITIONS_ERROR;
+extern Surrogate* SGT_PROPOSITIONS_LOGIC_EXCEPTION_RECORD;
+extern Symbol* SYM_PROPOSITIONS_STELLA_CONTEXT;
+extern Symbol* SYM_PROPOSITIONS_STELLA_MODULE;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_LOCALLY_CONCEIVED_PROPOSITIONS_INTERNAL;
 extern Keyword* KWD_PROPOSITIONS_PAGING;
 extern Keyword* KWD_PROPOSITIONS_CONTEXT_PROPOSITIONS;
@@ -805,6 +941,9 @@ extern Keyword* KWD_PROPOSITIONS_RETRACT;
 extern Keyword* KWD_PROPOSITIONS_CONCEIVE;
 extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_HIDDEN_RELATION;
 extern Surrogate* SGT_PROPOSITIONS_LOGIC_HIDDEN_INSTANCE;
+extern Keyword* KWD_PROPOSITIONS_MODULE;
+extern Surrogate* SGT_PROPOSITIONS_STELLA_MODULE;
+extern Keyword* KWD_PROPOSITIONS_LOCALp;
 extern Keyword* KWD_PROPOSITIONS_KB_UPDATE;
 extern Keyword* KWD_PROPOSITIONS_META_KB_UPDATE;
 extern Surrogate* SGT_PROPOSITIONS_STELLA_STORAGE_SLOT;
@@ -817,8 +956,12 @@ extern Keyword* KWD_PROPOSITIONS_STRICT;
 extern Keyword* KWD_PROPOSITIONS_FALSE;
 extern Keyword* KWD_PROPOSITIONS_DEFAULT;
 extern Keyword* KWD_PROPOSITIONS_INCONSISTENT;
+extern Keyword* KWD_PROPOSITIONS_LOOKUP_ASSERTIONS;
+extern Keyword* KWD_PROPOSITIONS_FORWARD;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_META_INFERENCE_CACHE;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_TRUTH_MAINTAINED_INFERENCE_CACHE;
+extern Symbol* SYM_PROPOSITIONS_LOGIC_CLASH_EXCEPTIONS;
+extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_INCOHERENT;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_IOTAp;
 extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_CONCEPT;
 extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_RELATION;
@@ -891,7 +1034,6 @@ extern Symbol* SYM_PROPOSITIONS_LOGIC_ASSERTED_BY_TYPE_CHECKERp;
 extern Surrogate* SGT_PROPOSITIONS_LOGIC_CHECK_TYPES_RECORD;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_PARENT_PROPOSITION;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_PARENT_DESCRIPTION;
-extern Symbol* SYM_PROPOSITIONS_STELLA_MODULE;
 extern Keyword* KWD_PROPOSITIONS_MEDIUM;
 extern Keyword* KWD_PROPOSITIONS_REALISTIC;
 extern Surrogate* SGT_PROPOSITIONS_PL_KERNEL_KB_SETOF;
@@ -905,8 +1047,8 @@ extern Symbol* SYM_PROPOSITIONS_LOGIC_BAGOF;
 extern Symbol* SYM_PROPOSITIONS_STELLA_ASSERT;
 extern Keyword* KWD_PROPOSITIONS_CPP;
 extern Keyword* KWD_PROPOSITIONS_DELETED;
-extern Surrogate* SGT_PROPOSITIONS_STELLA_MODULE;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_INTRODUCE_MODULE;
+extern Surrogate* SGT_PROPOSITIONS_STELLA_KEY_VALUE_LIST;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_CLEAR_LOGIC_MODULE_HOOK;
 extern Symbol* SYM_PROPOSITIONS_LOGIC_MONOTONICp;
 extern Surrogate* SGT_PROPOSITIONS_STELLA_WORLD;

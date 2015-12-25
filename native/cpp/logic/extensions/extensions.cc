@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -52,7 +52,6 @@ namespace stella_plx {
   using namespace stella;
 
 int main() {
-  // Main PowerLoom entry point for your code in C++ and Java.
   std::cout << "Initializing STELLA..." << std::endl;
   startupStellaSystem();
   std::cout << "Initializing PowerLoom..." << std::endl;
@@ -67,8 +66,9 @@ int main() {
 void startupExtensions() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/PLX", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
+      KWD_EXTENSIONS_DOCUMENTATION = ((Keyword*)(internRigidSymbolWrtModule("DOCUMENTATION", NULL, 2)));
       SYM_EXTENSIONS_PLX_STARTUP_EXTENSIONS = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-EXTENSIONS", NULL, 0)));
       SYM_EXTENSIONS_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
     }
@@ -76,7 +76,7 @@ void startupExtensions() {
       finalizeClasses();
     }
     if (currentStartupTimePhaseP(7)) {
-      defineFunctionObject("MAIN", "(DEFUN (MAIN INTEGER) () :PUBLIC? TRUE :DOCUMENTATION \"Main PowerLoom entry point for your code in C++ and Java.\")", ((cpp_function_code)(&main)), NULL);
+      defineFunctionObject("MAIN", "(DEFUN (MAIN INTEGER) () :PUBLIC? TRUE)", ((cpp_function_code)(&main)), NULL);
       defineFunctionObject("STARTUP-EXTENSIONS", "(DEFUN STARTUP-EXTENSIONS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupExtensions)), NULL);
       { MethodSlot* function = lookupFunction(SYM_EXTENSIONS_PLX_STARTUP_EXTENSIONS);
 
@@ -92,6 +92,8 @@ void startupExtensions() {
     }
   }
 }
+
+Keyword* KWD_EXTENSIONS_DOCUMENTATION = NULL;
 
 Symbol* SYM_EXTENSIONS_PLX_STARTUP_EXTENSIONS = NULL;
 

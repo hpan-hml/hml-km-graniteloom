@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2000-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2000-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -75,16 +75,16 @@
    "      {newstr +=  myescape(str.substring(i+1,str.length))};" EOL
    "    return newstr;" EOL "  };" EOL "}" EOL EOL
    "function lispify (str, caseflag) {" EOL
-   "  if (caseflag) {var sym = myescape(escape(str.toUpperCase()));} " EOL
-   "  else {var sym = myescape(escape(str));};" EOL "  return sym;" EOL "};"
-   EOL EOL "function loadTopContextURL() {" EOL
+   "  if (caseflag) {var sym = myescape(escape(str.toUpperCase()));} "
+   EOL "  else {var sym = myescape(escape(str));};" EOL "  return sym;"
+   EOL "};" EOL EOL "function loadTopContextURL() {" EOL
    "  var form = window.document.navform;" EOL
    "  var sel = form.elements[0].options[form.elements[0].selectedIndex].text;"
    EOL
    "  var URLpath = window.document.location.href.substring(0, window.document.location.href.lastIndexOf('/') + 1"
    EOL "					       );" EOL
-   "  return URLpath + \"do-action?show+context+\" + sel + \"+NIL\";" EOL "}"
-   EOL EOL "function loadURL(windowName, url, form) {" EOL
+   "  return URLpath + \"do-action?show+context+\" + sel + \"+NIL\";"
+   EOL "}" EOL EOL "function loadURL(windowName, url, form) {" EOL
    "  var sel = form.elements[0].options[form.elements[0].selectedIndex].text;"
    EOL
    "  var typ = form.objecttype.options[form.objecttype.selectedIndex].value;"
@@ -110,8 +110,8 @@
    "        url = \"do-action?\" + url +\"+\" + typ + \"+\";" EOL
    "     parent.frames[windowName].document.location.href = URLpath + url + sel + \"+\" + lispify(form.find.value, false)"
    EOL "  } else {" EOL
-   "   alert(\"No input provided. You need to enter name to look up.\");" EOL
-   "  };" EOL "};" EOL EOL
+   "   alert(\"No input provided. You need to enter name to look up.\");"
+   EOL "  };" EOL "};" EOL EOL
    "function loadContextURL(windowName, action, form) {" EOL
    "  var sel = form.elements[0].options[form.elements[0].selectedIndex].text;"
    EOL
@@ -125,33 +125,38 @@
    "  var URLpath = self.document.location.href.substring(0, self.document.location.href.lastIndexOf('/') + 1);"
    EOL
    "  parent.frames[windowName].document.location.href = URLpath + \"do-action?new+context+BUILT-IN-THEORY+\" + lispPackage;"
-   EOL "};" EOL EOL "function loadVanillaURL(windowName, action, form) {" EOL
+   EOL "};" EOL EOL
+   "function loadVanillaURL(windowName, action, form) {" EOL
    "  var URLpath = self.document.location.href.substring(0, self.document.location.href.lastIndexOf('/') + 1);"
-   EOL "  window.open(URLpath + action, windowName).focus();" EOL "};" EOL EOL
-   "function loadFrameVanillaURL(windowName, action, form) {" EOL
+   EOL "  window.open(URLpath + action, windowName).focus();" EOL "};"
+   EOL EOL "function loadFrameVanillaURL(windowName, action, form) {"
+   EOL
    "  var URLpath = self.document.location.href.substring(0, self.document.location.href.lastIndexOf('/') + 1);"
    EOL "  // window.open(URLpath + action, windowName).focus();" EOL
    "  parent.frames[windowName].document.location.href = URLpath + action;"
    EOL "};" EOL EOL "function formTest(form) {" EOL
-   "  loadURL('content', 'show', form);" EOL "  return false;" EOL "};" EOL
-   EOL "function setConInfo(con, theory) {" EOL
-   "  var Form = self.document.navform;" EOL "  var Selection = Form.context;"
-   EOL "  var tempResult = \"\";" EOL
+   "  loadURL('content', 'show', form);" EOL "  return false;" EOL "};"
+   EOL EOL "function setConInfo(con, theory) {" EOL
+   "  var Form = self.document.navform;" EOL
+   "  var Selection = Form.context;" EOL "  var tempResult = \"\";" EOL
    "  for (var i = 0; i < Selection.options.length; i++) {" EOL
    "    if (Selection.options[i].text == theory) {" EOL
    "      Selection.options[i].selected = true;" EOL "    } else {" EOL
-   "      Selection.options[i].selected = false;" EOL "    };" EOL "  };" EOL
-   "  Form.find.value = con;" EOL "};" EOL EOL
+   "      Selection.options[i].selected = false;" EOL "    };" EOL
+   "  };" EOL "  Form.find.value = con;" EOL "};" EOL EOL
    "// End hiding from old browsers -->" EOL "</SCRIPT>" EOL))
 
 (CL:DEFUN STARTUP-CONTROL-PANEL-SCRIPT ()
   (CL:LET*
-   ((*MODULE* (GET-STELLA-MODULE "/ONTOSAURUS" (> *STARTUP-TIME-PHASE* 1)))
+   ((*MODULE*
+     (GET-STELLA-MODULE "/ONTOSAURUS" (> *STARTUP-TIME-PHASE* 1)))
     (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
-    (CL:SETQ SYM-CONTROL-PANEL-SCRIPT-ONTOSAURUS-STARTUP-CONTROL-PANEL-SCRIPT
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-CONTROL-PANEL-SCRIPT" NULL 0))
+    (CL:SETQ
+     SYM-CONTROL-PANEL-SCRIPT-ONTOSAURUS-STARTUP-CONTROL-PANEL-SCRIPT
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-CONTROL-PANEL-SCRIPT"
+      NULL 0))
     (CL:SETQ SYM-CONTROL-PANEL-SCRIPT-STELLA-METHOD-STARTUP-CLASSNAME
      (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME"
       (GET-STELLA-MODULE "/STELLA" CL:T) 0)))

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -60,12 +60,7 @@ public class Justification extends StandardObject {
     /** Antecedents justifications of this justification.
      */
     public Cons antecedents;
-    /** Backpointer to the closest parent :PATTERN justification containing
-     * the variable substitutions from the associated pattern control frame.  If this
-     * is a :PATTERN justification, the slot points to the parent pattern.
-     */
-    public Justification patternJustification;
-    /** List of variable bindings recorded for :PATTERN justifications.
+    /** List of variable bindings recorded for this justification.
      */
     public KeyValueMap substitution;
     /** True if proposition was derived in reverse polarity.
@@ -90,7 +85,6 @@ public class Justification extends StandardObject {
       self.truthValue = null;
       self.reversePolarityP = false;
       self.substitution = null;
-      self.patternJustification = null;
       self.antecedents = Stella.NIL;
       self.proposition = null;
       self.inferenceRule = null;
@@ -772,6 +766,9 @@ public class Justification extends StandardObject {
       if (Justification.failedGoalJustificationP(self)) {
         introduction = Logic.lookupExplanationPhrase(Logic.KWD_FAILED, modifiers, null);
       }
+      else if (Stella_Object.isaP(self, Logic.SGT_LOGIC_CLASH_JUSTIFICATION)) {
+        introduction = Logic.lookupExplanationPhrase(Logic.KWD_INCONSISTENT, modifiers, null);
+      }
       else {
         introduction = Logic.lookupExplanationPhrase(Logic.KWD_FOLLOWS, modifiers, null);
       }
@@ -1344,8 +1341,8 @@ public class Justification extends StandardObject {
   }
 
   public static void backlinkToPatternJustification(Justification justification, Justification pattern) {
-    if (justification.patternJustification == null) {
-      justification.patternJustification = pattern;
+    if (justification.substitution == null) {
+      justification.substitution = pattern.substitution;
       { Justification antecedent = null;
         Cons iter000 = justification.antecedents;
 
@@ -1353,6 +1350,66 @@ public class Justification extends StandardObject {
           antecedent = ((Justification)(iter000.value));
           Justification.backlinkToPatternJustification(antecedent, pattern);
         }
+      }
+    }
+  }
+
+  /** Similar to <code>copy</code> but does not copy antecedent justifications.
+   * @return Justification
+   */
+  public Justification shallowCopy() {
+    { Justification self = this;
+
+      { Justification copy = null;
+        Cons antecedents = Stella.NIL;
+
+        if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(self), Logic.SGT_LOGIC_PRIMITIVE_STRATEGY)) {
+          { PrimitiveStrategy self000 = ((PrimitiveStrategy)(self));
+
+            { PrimitiveStrategy self001 = PrimitiveStrategy.newPrimitiveStrategy();
+
+              self001.strategy = self000.strategy;
+              copy = self001;
+            }
+          }
+        }
+        else {
+          copy = Justification.newJustification();
+        }
+        copy.inferenceRule = self.inferenceRule;
+        copy.proposition = self.proposition;
+        copy.substitution = self.substitution;
+        copy.reversePolarityP = self.reversePolarityP;
+        copy.truthValue = self.truthValue;
+        copy.positiveScore = self.positiveScore;
+        copy.negativeScore = self.negativeScore;
+        { Justification antecedent = null;
+          Cons iter000 = self.antecedents;
+          Cons collect000 = null;
+
+          for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+            antecedent = ((Justification)(iter000.value));
+            if (collect000 == null) {
+              {
+                collect000 = Cons.cons(antecedent, Stella.NIL);
+                if (antecedents == Stella.NIL) {
+                  antecedents = collect000;
+                }
+                else {
+                  Cons.addConsToEndOfConsList(antecedents, collect000);
+                }
+              }
+            }
+            else {
+              {
+                collect000.rest = Cons.cons(antecedent, Stella.NIL);
+                collect000 = collect000.rest;
+              }
+            }
+          }
+        }
+        copy.antecedents = antecedents;
+        return (copy);
       }
     }
   }
@@ -1414,16 +1471,6 @@ public class Justification extends StandardObject {
           }
         }
         copy.antecedents = antecedents;
-        if (self.inferenceRule == Logic.KWD_PATTERN) {
-          { Justification antecedent = null;
-            Cons iter001 = copy.antecedents;
-
-            for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
-              antecedent = ((Justification)(iter001.value));
-              Justification.backlinkToPatternJustification(antecedent, copy);
-            }
-          }
-        }
         return (copy);
       }
     }
@@ -1437,45 +1484,6 @@ public class Justification extends StandardObject {
         (!(just2.inferenceRule == Logic.KWD_PRIMITIVE_STRATEGY))) ||
         (((PrimitiveStrategy)(just1)).strategy == ((PrimitiveStrategy)(just2)).strategy)) &&
            Proposition.justificationPropositionsEqlP(just1.proposition, just1, just2.proposition, just2)))));
-  }
-
-  public static KeyValueMap yieldJustificationSubstitution(Justification justification, KeyValueMap substitution, Proposition argument) {
-    { Proposition top = justification.proposition;
-      Proposition proposition = ((argument == null) ? top : argument);
-
-      { Stella_Object arg = null;
-        Vector vector000 = proposition.arguments;
-        int index000 = 0;
-        int length000 = vector000.length();
-
-        for (;index000 < length000; index000 = index000 + 1) {
-          arg = (vector000.theArray)[index000];
-          { Surrogate testValue000 = Stella_Object.safePrimaryType(arg);
-
-            if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PATTERN_VARIABLE)) {
-              { PatternVariable arg000 = ((PatternVariable)(arg));
-
-                if (PatternVariable.freeVariableP(arg000, top)) {
-                  if (substitution == null) {
-                    substitution = KeyValueMap.newKeyValueMap();
-                  }
-                  substitution.insertAt(arg000, Logic.justificationArgumentBoundTo(arg000, justification));
-                }
-              }
-            }
-            else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
-              { Proposition arg000 = ((Proposition)(arg));
-
-                substitution = Justification.yieldJustificationSubstitution(justification, substitution, arg000);
-              }
-            }
-            else {
-            }
-          }
-        }
-      }
-      return (substitution);
-    }
   }
 
   public static Stella_Object accessJustificationSlotValue(Justification self, Symbol slotname, Stella_Object value, boolean setvalueP) {
@@ -1501,14 +1509,6 @@ public class Justification extends StandardObject {
       }
       else {
         value = self.antecedents;
-      }
-    }
-    else if (slotname == Logic.SYM_LOGIC_PATTERN_JUSTIFICATION) {
-      if (setvalueP) {
-        self.patternJustification = ((Justification)(value));
-      }
-      else {
-        value = self.patternJustification;
       }
     }
     else if (slotname == Logic.SYM_LOGIC_SUBSTITUTION) {

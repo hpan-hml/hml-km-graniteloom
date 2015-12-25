@@ -3,7 +3,7 @@
 @c DO NOT MODIFY THIS FILE, IT WAS GENERATED AUTOMATICALLY FROM A TEMPLATE!
 
 
-@c Version: manual.texi.in,v 1.48 2010/10/15 02:03:26 hans Exp
+@c Version: manual.texi.in,v 1.50 2011/05/26 21:50:42 tar Exp
 
 @setfilename manual.info
 
@@ -78,7 +78,7 @@ paragraph not being relevant to the printed manual).
 @center Powerful knowledge representation and reasoning with
 @center delivery in Common-Lisp, Java, and C++
 @sp 3
-@center Version: 1.48
+@center Version: 1.50
 @center @today{}
 @sp 1
 @center This manual describes
@@ -2060,11 +2060,13 @@ the pre-existing value of the current context.  @code{cc} is a no-op if the
 context reference cannot be successfully evaluated.
 @end deffn
 
-@deffn N-Command classify-relations (@w{(module @sc{name})} @w{(local? @sc{boolean})}) : 
-Classify named relations visible in @var{module}.
-If @var{local?}, only classify descriptions defined within @var{module}, i.e.,
-don't classify descriptions inherited from ancestor modules.
-If @var{module} is NULL, classify relations in all modules.
+@deffn N-Command classify-relations (@w{&rest (options @sc{object})}) : 
+Classify relations visible in the module defined by the :module option (which
+defaults to the current module).  If :module was explicitly specified as NULL,
+classify relations in all modules.  If @code{:local?} is specified as TRUE only classify
+relations that belong to the specified module but not any modules it inherits.  For
+backwards compatibility, this command also supports the old <module> <local?>
+arguments specified without keywords.
 
 Conceptually, the classifier operates by comparing each concept or relation
 with all other concepts/relations, searching for a proof that a
@@ -2078,21 +2080,22 @@ relationships.
 
 @end deffn
 
-@deffn N-Command classify-instances (@w{(module @sc{name})} @w{(local? @sc{boolean})}) : 
-Classify instances visible in @var{module}.
-If @var{local?}, only classify instances that belong to @var{module},
-i.e., don't classify instances inherited from ancestor modules.
-If @var{module} is NULL, classify instances in all modules.
+@deffn N-Command classify-instances (@w{&rest (options @sc{object})}) : 
+Classify instances visible in the module defined by the :module option (which
+defaults to the current module).  If :module was explicitly specified as NULL,
+classify instances in all modules.  If @code{:local?} is specified as TRUE only classify
+instances that belong to the specified module but not any modules it inherits.  For
+backwards compatibility, this command also supports the old <module> <local?>
+arguments specified without keywords.
 
-Conceptually, the classifier operates by comparing each instance
-with all concepts in the hierarchy, searching for a
-proof for each pairing indicating that the instance belongs to the concept.
-Whenever a new @code{is-a} relation is discovered, the classifier
-adds an @code{is-a} link between the instance and the concept, thereby
-recording an additional fact about the instance.  The implemented
-classification algorithm is relatively efficient -- it works hard
-at limiting the number of concepts or relations that need to
-be checked for possible is-a relationships.
+Conceptually, the classifier operates by comparing each instance with all
+concepts in the hierarchy, searching for a proof for each pairing indicating
+that the instance belongs to the concept.  Whenever a new @code{is-a} relation is
+discovered, the classifier adds an @code{is-a} link between the instance and the
+concept, thereby recording an additional fact about the instance.  The
+implemented classification algorithm is relatively efficient -- it works hard at
+limiting the number of concepts or relations that need to be checked for
+possible is-a relationships.
 
 @end deffn
 
@@ -2426,9 +2429,45 @@ Change the current module to the module named @var{name}.
 @end deffn
 
 @c # $(util/texinfo-insert-doc /LOGIC/LIST-FEATURES)
+@deffn N-Command list-inconsistent-propositions (@w{&rest (options @sc{object})}) : @sc{(cons of proposition)} 
+Return a list of all currently known inconsistent proposition in the module defined
+by the :module option (which defaults to the current module).  If @code{:local?} is specified
+as TRUE only look in the specified module but not any modules it inherits.  Note, that
+this simply reports propositions that have been assigned an inconsistent truth value so
+far (e.g., in clash exceptions), it will not try to detect any new or all inconsistencies
+in a module.
+@end deffn
+
 @deffn Command list-modules (@w{(kb-only? @sc{boolean})}) : @sc{(cons of module)} 
 Returns a cons of all modules defined in PowerLoom.  If @var{kb-only?}
 is @code{true}, then any modules which are code only or just namespaces are not returned.
+@end deffn
+
+@deffn N-Command list-unclassified-instances (@w{&rest (options @sc{object})}) : @sc{(cons of logic-object)} 
+Collect all instances in the module defined by the :module option (which defaults
+to the current module) that were not (or will not be) classified due to their lack of
+non-inferable/primitive type assertions.  If :module was explicitly specified as NULL,
+look in all currently defined modules.  If @code{:local?} is specified as TRUE only look
+in the specified module but not any modules it inherits.  For backwards compatibility,
+this command also supports the old <module> <local?> arguments specified without keywords.
+@end deffn
+
+@deffn N-Command list-unclassified-relations (@w{&rest (options @sc{object})}) : @sc{(cons of named-description)} 
+Collect all named description in the module defined by the :module option (which defaults
+to the current module) that were not (or will not be) classified due to their lack of
+non-inferable/primitive ancestor relations.  If :module was explicitly specified as NULL,
+look in all currently defined modules.  If @code{:local?} is specified as TRUE only look
+in the specified module but not any modules it inherits.  For backwards compatibility,
+this command also supports the old <module> <local?> arguments specified without keywords.
+@end deffn
+
+@deffn N-Command list-undefined-relations (@w{&rest (options @sc{object})}) : @sc{(cons of named-description)} 
+Return a list of as yet undefined concepts and relations in the module defined
+by the :module option (which defaults to the current module).  These relations were
+defined by the system, since they were referenced but have not yet been defined by
+the user.  If @code{:local?} is specified as TRUE only look in the specified module but
+not any modules it inherits.  For backwards compatibility, this command also supports
+the old <module> <local?> arguments specified without keywords.
 @end deffn
 
 @deffn Command load (@w{(file @sc{string})} @w{&rest (options @sc{object})}) : 
@@ -2558,7 +2597,8 @@ The accepted syntax is:
 @example 
   (retrieve [<integer> | all]
             [[@{<vardecl> | (<vardecl>+)@}]
-            <proposition>])
+             <proposition>
+             [<option-keyword> <option-value>]])
 @end example
 
 The variables and proposition are similar to an @code{exists} sentence or
@@ -2581,6 +2621,28 @@ the returned iterator will print out with the set of solutions collected
 so far.  Calling @code{retrieve} without any arguments (or only with the first
 argument) will generate one (or more) solutions to the most recently
 asked query.
+
+@code{retrieve} supports the following options:
+  :TIMEOUT Time limit on query effort in seconds.
+  :MAXIMUM-DEPTH Inference depth cutoff in goal depth.
+  :INFERENCE-LEVEL Level of inference to use.  The values in order of effort
+     and power are ASSERTION, SHALLOW, SUBSUMPTION, BACKTRACKING, NORMAL
+     and REFUTATION. Default is NORMAL.
+  :FOUR-VALUED? Will attempt to disprove values and find conflicts.
+  :ITERATIVE-DEEPENING? Controls whether the search strategy will use
+     depth-first or breadth-first search.
+  :DONT-OPTIMIZE? Option to disable re-arrangement of clauses by the query
+     optimizer.  If TRUE, then use the order of clauses as given in the query.
+  :SORT-BY one of SCORE, VALUES, VALUES-DESCENDING, VALUES-ASCENDING.  
+     SCORE is only meaningful for partial match mode.  The value sorting
+     is done by values in order in the tuple.  Default is ascending.
+  :MATCH-MODE Allows choice of matching mode.  One of STRICT, INCREMENTAL, 
+     NEURAL-NETWORK, or other plug-in partial-match mode.
+     The default is STRICT.
+  :MINIMUM-SCORE The minimum score to return.  Only useful in partial match
+    mode.
+  :MAXIMUM-UNKNOWNS The maximum number of unknown values to allow.  Only useful
+    for whynot matching.
 
 KIF examples:
 
@@ -2662,8 +2724,15 @@ inference engine.
 
 @c # $(util/texinfo-insert-doc /LOGIC/RUN-POWERLOOM-TESTS)
 @c # $(util/texinfo-insert-doc /LOGIC/SATISFIES?)
-@deffn Command save-module (@w{(name @sc{name})} @w{(file @sc{string})}) : 
-Save all definitions and assertions of module @var{name} to @var{file}.
+@deffn Command save-module (@w{&rest (options @sc{object})}) : 
+Save all definitions and assertions of the specified :module (which
+defaults to the current module) to a file or persistent store.  If :file is specified,
+the KB is saved to that file.  If no :file is specified but the specified :module is
+associated with a persistent store, the KB will saved to that store, otherwise, an
+error will be signalled.  The specifics on how a save operation will proceed for a
+persistent store depends on the particular type of store (see respective documentation).
+For backwards compatibility, this command also supports the old <module> <file> arguments
+specified without keywords.
 @end deffn
 
 @deffn N-Command set-feature (@w{&rest (features @sc{name})}) : @sc{(list of keyword)} 
@@ -4928,11 +4997,10 @@ a rule that accesses a @code{patient-record} relation in a module called
 
 @deffn Function LENGTH (@w{(?x @sc{thing})}) :-> @w{(?z @sc{integer})}
 Function that returns the length of a string or a logical list.
-NOT YET IMPLEMENTED FOR LISTS.
 @end deffn
 
-@deffn Relation LENGTH-OF-LIST (@w{(?l @sc{collection})} @w{(?length @sc{integer})})
-Computes the length of the list or set ?l.
+@deffn Function LENGTH (@w{(?x @sc{thing})}) :-> @w{(?z @sc{integer})}
+Function that returns the length of a string or a logical list.
 @end deffn
 
 @deffn Relation LEXEME (@w{(?r @sc{thing})} @w{(?s @sc{string})})
@@ -5346,21 +5414,16 @@ and bind ?z to the result.  Coerces any type argument to a string if necessary.
 
 @deffn Function STRING-MATCH (@w{(?pattern @sc{string})} @w{(?object @sc{thing})} @w{(?start @sc{integer})} @w{(?end @sc{integer})}) :-> @w{(?match-position @sc{integer})}
 Match ?pattern against ?object between ?start and ?end (zero-based),
-and return the position of the first match or fail if no match exists.
-Supplying -1 for ?end indicates the end of ?object.  ?object can be a
-named logic object or a string.  ?pattern will eventually allow
-support regular expressions, currently it only handles string
-literals.  Apart from doing to-string coercion on ?object this is
-somewhat redundant, since @code{substring} can generate ?start/?end pairs
-if its string and substring arguments are bound.
+and return the position of the first match or fail if no match exists.  Supplying -1 for
+?end indicates the end of ?object, -2 is one character from the end, etc.  ?object can be
+a named logic object or a string.  ?pattern will eventually support regular expressions,
+currently it only handles string literals.  Apart from doing to-string coercion on ?object
+this is somewhat redundant, since @code{substring} can generate ?start/?end pairs if its string
+and substring arguments are bound.
 @end deffn
 
 @deffn Function STRING-MATCH-IGNORE-CASE (@w{(?pattern @sc{string})} @w{(?object @sc{thing})} @w{(?start @sc{integer})} @w{(?end @sc{integer})}) :-> @w{(?match-position @sc{integer})}
-Match ?pattern against ?object between ?start and ?end (zero-based),
-and return the position of the first match or fail if no match exists.
-Supplying -1 for ?end indicates the end of ?object.  ?object can be a
-named logic object or a string.  This match compares the strings
-ignoring differences in letter case.
+Case-insensitive version of @code{string-match} (which see).
 @end deffn
 
 @c # $(util/texinfo-insert-doc /PL-KERNEL/stuff)
@@ -5380,16 +5443,22 @@ In otherwords, @code{subset-of} behaves semantically like an operator instead
 of a relation.
 @end deffn
 
-@deffn Function SUBSTRING (@w{(?s @sc{string})} @w{(?start @sc{integer})} @w{(?end @sc{integer})}) :-> @w{(?sub @sc{string})}
-Generate the substring of ?s starting at position ?start (zero-based),
-ending just before position ?end and bind ?sub to the result.
-This is the PowerLoom equivalent to the STELLA method @code{subsequence}.  In
-addition, this function can be used to locate substrings in strings by
-supplying values for ?s and ?sub and allowing ?start and ?end to be
-bound by the function specialist.  In other words,
+@deffn Function SUBSTRING (@w{(?s @sc{thing})} @w{(?start @sc{integer})} @w{(?end @sc{integer})}) :-> @w{(?sub @sc{thing})}
+Generate the substring ?sub of ?s starting at position ?start (zero-based)
+and ending just before position ?end.  This is the PowerLoom equivalent to the STELLA method
+@code{subsequence}.  Supplying -1 for ?end indicates the end of ?s, -2 is one character from the
+end, etc.  If ?s and/or ?sub are not strings, they will be coerced first if possible.  This
+function supports any binding pattern where at most one input is unbound (except for ?s), or
+where both ?start and ?end are unbound in which case it can locate all occurrences of the
+?sub string in ?s.  For example:
+
+@example 
       (retrieve all (?start ?end) (substring "foo" ?start ?end "o"))
- ==>  ?start = 1, ?end = 2,
-      ?start = 2, ?end = 3.
+   ==>  ?start = 1, ?end = 2,
+        ?start = 2, ?end = 3
+@end example
+
+Additional examples can be found in the test suite.
 @end deffn
 
 @deffn Relation SUBSUMPTION-QUERY (@w{(?prop @sc{proposition})})
@@ -5600,17 +5669,18 @@ some of the versions to keep your development tree smaller
 To run the Lisp version of PowerLoom, you will need an ANSI Common-Lisp
 (or at least one that supports CLOS and logical pathnames).  We have
 successfully tested PowerLoom with Allegro-CL 4.2, 4.3, 5.0, 6.0 and
-7.0, Macintosh MCL 3.0, 4.0 and 5.1, OpenMCL 1.0, SBCL 0.9.4, CMUCL 19c,
-LispWorks 4.4.6, CLisp 2.37, Lucid CL 4.1 (plus the necessary ANSI
-extensions and Mark Kantrowitz's logical pathnames implementation), and
-various others.  Our main development platform is Allegro CL running
-under Sun Solaris and Linux.  The closer your environment is to ours,
-the higher are the chances that everything will work right out of the
-box.  Lisp development under Windows should also be no problem.
+7.0, Macintosh MCL 3.0, 4.0 and 5.1, OpenMCL 1.0, Clozure CL 1.5, SBCL
+0.9.4, 1.0.47, CMUCL 19c, 19e, LispWorks 4.4.6, CLisp 2.37, Lucid CL 4.1
+(plus the necessary ANSI extensions and Mark Kantrowitz's logical
+pathnames implementation), and various others.  Our main development
+platform is Allegro CL running under Sun Solaris and Linux or SBCL with
+Mac OS X.  The closer your environment is to ours, the higher are the
+chances that everything will work right out of the box.  Lisp
+development under Windows should also be no problem.
 
 To run the C++ version of PowerLoom, you will need a C++ compiler (such
 as g++) that supports templates and exception handling.  We have
-successfully compiled and run PowerLoom with g++ 3.2 and later under
+successfully compiled and run PowerLoom with g++ 4.0 and later under
 Linux Redhat 8.0 & 9.0, SunOS and MacOS X, and with CygWin 5.0 and MinGW
 5.0 under Windows 2000 and XP.  Both CygWin and MinGW provide a GNU Unix
 environment, but MinGW can generate Windows executables that are fully
@@ -5619,10 +5689,10 @@ C++, however, we never got the Boehm garbage collector to work.  The GC
 claims to be very portable, so this should be solvable for somebody with
 good knowledge of MS Visual C++.
 
-For the Java version, you will need Java JDK 1.2 or later. To get
-reasonable performance, you should use J2SDK 1.4 or 1.5.  We've run the
-Java version of PowerLoom on a variety of platforms without any
-problems.
+For the Java version, you will need Java JDK 1.6 or later. This is
+required to support the embedded server architecture for PowerLoom 4.x.
+We've run the Java version of PowerLoom on a variety of platforms
+without any problems.
 
 Any one of the Lisp, C++, or Java implementations of PowerLoom can be
 used to develop your own PowerLoom-based applications.  Which one you
@@ -6031,6 +6101,12 @@ Only instances that haven't been deleted will be considered.  If @var{local?},
 only return instances created locally in @var{module}.
 @end deffn
 
+@deffn Function all-locally-modified-propositions (@w{(module @sc{module})}) : @sc{(iterator of proposition)} 
+Iterate over all conceived propositions visible from @var{module} that had their
+truth value locally modified (initialized, asserted, retracted).  Note, that this
+will always include all locally conceived propositions.
+@end deffn
+
 @deffn Function all-named-descriptions (@w{(module @sc{module})} @w{(local? @sc{boolean})}) : @sc{(iterator of named-description)} 
 Iterate over all named descriptions visible from @var{module}.
 If @var{local?}, return only named descriptions interned in @var{module}.
@@ -6252,6 +6328,11 @@ Coerce each element of @var{self} to be a logic object or literal.
 Return TRUE if @var{objectRef} denotes a relation or a class.
 @end deffn
 
+@deffn Function conceive-inverted-proposition (@w{(prop @sc{proposition})}) : @sc{proposition} 
+Return the simplest inversion of @var{prop}, trying to reuse existing
+negations or negated arguments of @var{prop} if possible.
+@end deffn
+
 @deffn Command conceive-term (@w{(tree @sc{object})}) : @sc{object} 
 @var{tree} is a term expression (a string or an s-expression),
 or is a class reference (a symbol or surrogate).  Return a (possibly 
@@ -6296,6 +6377,10 @@ where each <antecedent> is a CONS tree representing a subproof.
 :RAW preserves the original structure literally, :VERBOSE keeps AND-
 introductions but suppresses all auxiliary (non-logical) nodes such as
 pattern nodes, and :BRIEF additionally suppresses AND-introduction nodes.
+@end deffn
+
+@deffn Function constant-proposition? (@w{(self @sc{proposition})}) : @sc{boolean} 
+Return true if @var{self} is a constant such as TRUE or FALSE.
 @end deffn
 
 @deffn Function constant? (@w{(objectRef @sc{object})}) : @sc{boolean} 
@@ -6344,6 +6429,11 @@ Return a vector containing @var{values}, in order.
 Return the current inference level that is active in the
 current query, the current module, or, otherwise, globally.
 @end deffn
+
+@defmethod @sc{query-iterator} debug-id-setter (self @w{(id @sc{string})}) : 
+Set the debug ID of @var{self} to @var{id}.  If @var{id} is NULL, simply
+use the current ID counter and increment it appropriately.
+@end defmethod
 
 @deffn Function default-false? (@w{(self @sc{proposition})}) : @sc{boolean} 
 Return true if @var{self} is default false.
@@ -6416,6 +6506,10 @@ Return the name of the description @var{self}.
 @defmethod @sc{description} description-name (self) : @sc{symbol} 
 Return the name of the description @var{self}, if it has one.
 @end defmethod
+
+@deffn Function description? (@w{(self @sc{object})}) : @sc{boolean} 
+Return TRUE if @var{self} is a description.
+@end deffn
 
 @deffn Function destroy-instance (@w{(self @sc{object})}) : 
 Destroy all propositions that reference @var{self},
@@ -6497,6 +6591,11 @@ for *context*, :EVALUATED if has been evaluated, or NULL if it has never been ev
 Record the evaluation @var{state} of @var{proposition}.
 @end deffn
 
+@deffn Function explain-proposition (@w{(prop @sc{proposition})} @w{(style @sc{keyword})} @w{(maxdepth @sc{integer})} @w{(stream @sc{output-stream})}) : 
+Print an explanation for @var{prop} if there is one.  This will only happen
+for forward-chained propositions.
+@end deffn
+
 @deffn Function explain-why (@w{(label @sc{string})} @w{(style @sc{keyword})} @w{(maxdepth @sc{integer})} @w{(stream @sc{output-stream})}) : 
 Programmer's interface to WHY function.
 @end deffn
@@ -6513,6 +6612,12 @@ Return TRUE if @var{self} represents some form of falsehood.
 Return true if @var{self} is false (or default-false if we are
 considering default assertions).
 @end deffn
+
+@defmethod @sc{object-store} fetch-duplicate-proposition (store @w{(prop @sc{proposition})}) : @sc{proposition} 
+Fetch a duplicate of @var{prop} if defined by @var{store}.  EXPERIMENTAL!
+The exact semantics of this still needs to be worked out.  This needs to be appropriately
+specialized on actual OBJECT-STORE implementations.
+@end defmethod
 
 @defmethod @sc{object-store} fetch-instance (store @w{(name @sc{object})}) : @sc{object} 
 Fetch the instance identified by @var{name} (a string or symbol) from @var{store}
@@ -6638,6 +6743,11 @@ Return a most specific type for fillers of the slot @var{relation}
 (a surrogate) applied to @var{self}. If there is more than one, pick one.
 @end deffn
 
+@deffn Function get-visible-clash-exceptions (@w{(incoherentProp @sc{proposition})}) : @sc{(cons of exception-record)} 
+Return the set of clash exceptions for @var{incoherentProp} that are visible from the
+current context.  These are recorded most-recent first in order of occurrance.
+@end deffn
+
 @deffn Function get-why-justification (@w{(label @sc{string})}) : @sc{justification} 
 Returns the current WHY justification.  May also throw one of the
 following subtypes of EXPLAIN-EXCEPTION:
@@ -6657,6 +6767,11 @@ lookup its justification relative to @var{mapping} and return the result.
 
 @deffn Function has-forward-justifications? (@w{(proposition @sc{proposition})}) : @sc{boolean} 
 Return TRUE if @var{proposition} has any forward justifications.
+@end deffn
+
+@deffn Function have-active-object-stores? () : @sc{boolean} 
+Return TRUE if we have at least one object store opened/linked into
+PowerLoom, which changes some index access routines to be considerate of that.
 @end deffn
 
 @defmethod @sc{named-description} help-print-outline (top @w{(stream @sc{output-stream})} @w{(current-depth @sc{integer})} @w{(depth @sc{integer})} @w{(named? @sc{boolean})}) : 
@@ -6706,26 +6821,6 @@ Return a list containing two lists, a list of currently enabled PowerLoom
 features, and a list of all available PowerLoom features.
 @end deffn
 
-@deffn N-Command list-unclassified-instances (@w{(module @sc{name})} @w{(local? @sc{boolean})}) : @sc{(cons of logic-object)} 
-Collect all instances in @var{module} (or in any module if @var{module}
-is NULL) that were not (or will not be) classified due to their lack of
-non-inferable/primitive type assertions.
-@end deffn
-
-@deffn N-Command list-unclassified-relations (@w{(module @sc{name})} @w{(local? @sc{boolean})}) : @sc{(cons of named-description)} 
-Collect all named description in @var{module} (or in any module if @var{module}
-is NULL) that were not (or will not be) classified due to their lack of
-non-inferable/primitive ancestor relations.
-@end deffn
-
-@deffn N-Command list-undefined-relations (@w{(module @sc{name})} @w{(local? @sc{boolean})}) : @sc{(cons of named-description)} 
-Return a list of as yet undefined concepts and relations in @var{module}.
-These relations were defined by the system, since they were referenced
-but have not yet been defined by the user.  If @var{module} is NULL look in
-the current module.  If @var{local?} only look in @var{module} but not in any
-modules it inherits.
-@end deffn
-
 @defmethod @sc{query-iterator} listify (self) : @sc{list} 
 Just like @code{QUERY-ITERATOR.consify} but return a LIST instead.
 @end defmethod
@@ -6752,6 +6847,12 @@ is not @code{null}, then any commands will be read into that module unless
 an @code{in-module} declaration is encountered which will over-ride the default
 value.  If noe @var{default-module} is specified, and the input stream does
 not have an @code{in-module} form, an error is signaled.
+@end deffn
+
+@deffn Function locally-modified-proposition? (@w{(proposition @sc{proposition})} @w{(module @sc{module})}) : @sc{boolean} 
+Return true if proposition's truth-value has been locally modified in
+@var{module} (initialized, asserted, retracted).  This will always succeed for locally conceived
+propositions regardless of whether their truth value is defined or not.
 @end deffn
 
 @deffn Function logic-class? (@w{(self @sc{class})}) : @sc{boolean} 
@@ -6788,6 +6889,16 @@ using the signature of a computation function supported by the computation speci
 Returns the native funtion code for @var{native-name} if it exists
 and the underlying programming languages supports such lookups.  Uses the signature
 of a specialist function.
+@end deffn
+
+@deffn Function merge-truth-values (@w{(tv1 @sc{truth-value})} @w{(tv2 @sc{truth-value})}) : @sc{truth-value} 
+Merge two truth values that are describing the "same" logical
+proposition.  This handles subordination of default to strict values, 
+known over unknown and potential inconsistent values.
+
+In particular, this can be used to check for negated values by asking for
+the truth of a proposition and its negation, inverting the negation and then
+using merge to come up with an answer.
 @end deffn
 
 @deffn Function named-description? (@w{(self @sc{description})}) : @sc{boolean} 
@@ -6873,8 +6984,8 @@ with size less than @var{sizeCutoff} (default is 10).
 @end deffn
 
 @deffn N-Command print-facts (@w{(instanceref @sc{object})}) : 
-Like ALL-FACTS-OF, but prints each fact on a separate 
-line on the standard output stream.
+Like @code{all-facts-of}, but sorts and prints each fact
+on a separate line on the standard output stream.
 @end deffn
 
 @deffn Function print-goal-stack (@w{(frame @sc{control-frame})} @w{(verbose? @sc{boolean})}) : 
@@ -6942,6 +7053,10 @@ Each function should have the signature @code{((self OBJECT) (stream OUTPUT-STRE
 Any return values will be ignored.
 @end deffn
 
+@deffn Function register-object-store (@w{(store @sc{object-store})}) : 
+Register @var{store} as an active object store.
+@end deffn
+
 @deffn Function register-specialist-function (@w{(name @sc{string})} @w{(code @sc{function-code})}) : 
 Creates a registration entry for @var{name} as a specialist which
 executes @var{code}.  Essentially just builds the Stella meta-information
@@ -6975,6 +7090,10 @@ and will be completely removed upon the next iteration through @var{self}.
 Destructively remove all deleted members of @var{self}.
 @end defmethod
 
+@deffn Function reset-clash-exceptions () : 
+Resets the collection of clash exceptions
+@end deffn
+
 @deffn Function reset-query-caches () : 
 Zero out all caches managed by the query optimizer,
 so that it will reoptimize subgoal queries upon next invocation.
@@ -6999,19 +7118,19 @@ yet implemented - you can use @code{ask-partial} to maximize scores for individu
 solutions by hand).
 @end deffn
 
-@deffn N-Command run-forward-rules (@w{(moduleRef @sc{name})} @w{&rest (force @sc{keyword})}) : 
-Run forward inference rules in module @var{moduleRef}. If @var{moduleRef} is NULL, the
-current module will be used.  If forward inferencing is already up-to-date
-in the designated module, no additional inferencing will occur, unless the
-optional keyword @code{:force} is included, in which case all
-forward rules are run or rerun.
+@deffn N-Command run-forward-rules (@w{&rest (options @sc{object})}) : 
+Run forward inference rules in the module defined by the :module option (which
+defaults to the current module).  If forward inferencing is already up-to-date
+in the designated module, no additional inferencing will occur, unless the :force?
+option is specified as TRUE, in which case all forward rules are run or rerun.
+For backwards compatibility, this command also supports the old <module> :force
+arguments specified with a non-standard keyword notation.
 
 Calling @code{run-forward-rules} temporarily puts the module into a mode where
 future assertional (monotonic) updates will trigger additional forward
 inference.  Once a non-monotonic update is performed, i.e., a retraction
 or clipping of relation value, all cached forward inferences will be discarded
-and forward inferencing will be disabled until this function is
-called again.
+and forward inferencing will be disabled until this function is called again.
 @end deffn
 
 @deffn Command run-powerloom-tests () : 
@@ -7082,6 +7201,10 @@ file established by the last call to @code{save-all-neural-networks}.  A number 
 or a NULL number turns off periodic saving.
 @end deffn
 
+@defmethod @sc{justification} shallow-copy (self) : @sc{(like self)} 
+Similar to @code{copy} but does not copy antecedent justifications.
+@end defmethod
+
 @defmethod @sc{query-solution-table} sort (self @w{(predicate @sc{function-code})}) : @sc{(like self)} 
 Perform a stable, destructive sort of @var{self} according to
 @var{predicate}, and return the result.  If @var{predicate} has a @code{<} semantics, the
@@ -7137,6 +7260,13 @@ its value!) and return the result.  Otherwise, return @var{tv1} unmodified.
 
 @deffn Function strict-truth-value? (@w{(self @sc{truth-value})}) : @sc{boolean} 
 Return TRUE if @var{self} is a strict truth value.
+@end deffn
+
+@deffn Function stronger-truth-value? (@w{(tv1 @sc{truth-value})} @w{(tv2 @sc{truth-value})}) : @sc{boolean} 
+Compare the two truth values and return @code{true} if @var{tv1} is strictly
+stronger than @var{tv2}.  Stronger uses the following partial order:
+  INCONSISTENT > STRICT > DEFAULT > UNKNOWN.
+Truth values at the same level are equal in strength.
 @end deffn
 
 @deffn Function termify (@w{(self @sc{object})}) : @sc{object} 
@@ -7221,6 +7351,14 @@ Return TRUE if @var{self} represents UNKNOWN.
 Return true if the truth of @var{self} is unknown.
 @end deffn
 
+@deffn Function unnamed-description? (@w{(self @sc{object})}) : @sc{boolean} 
+Return TRUE if @var{self} is an unnamed description.
+@end deffn
+
+@deffn Function unregister-object-store (@w{(store @sc{object-store})}) : 
+Remove @var{store} from the list of active object stores.
+@end deffn
+
 @deffn Function unset-powerloom-feature (@w{(feature @sc{keyword})}) : 
 Disable the PowerLoom environment feature @var{feature}.
 @end deffn
@@ -7289,6 +7427,10 @@ even if @var{module} is case insensitive. This should generally not be
 necessary to do.
 @end deffn
 
+@deffn Function get-inconsistent-propositions (@w{(module @sc{module})} @w{(environment @sc{environment})}) : @sc{(pl-iterator of proposition)} 
+Return inconsistent propositions visible in @var{module}.
+@end deffn
+
 @deffn Function get-keyword (@w{(name @sc{string})}) : @sc{keyword} 
 Returns the Stella KEYWORD @var{name} if it exists.  Case sensitive.
 @end deffn
@@ -7305,6 +7447,10 @@ Return the short name of @var{obj}, if it has one.  Otherwise return @code{null}
 @deffn Function get-symbol (@w{(name @sc{string})} @w{(module @sc{module})} @w{(environment @sc{environment})}) : @sc{symbol} 
 Returns the Stella SYMBOL @var{name} visible in @var{module} if it
 exists.  @var{name} is ALWAYS treated case sensitively.
+@end deffn
+
+@deffn Function get-undefined-relations (@w{(module @sc{module})} @w{(environment @sc{environment})}) : @sc{(pl-iterator of logic-object)} 
+Return relations that have been referenced but not defined in @var{module}.
 @end deffn
 
 @deffn Function is-known (@w{(tv @sc{truth-value})}) : @sc{boolean} 
@@ -7346,10 +7492,6 @@ loaded in the @var{module} specified.  If no @var{module} is specified and the f
 does not supply an @code{in-module} declaration, an error will be signaled.
 The remaining commands are evaluated one-by-one, applying the function
 @code{evaluate} to each of them.
-@end deffn
-
-@deffn Function main () : 
-Main PowerLoom entry point for your code in C++ and Java.
 @end deffn
 
 @deffn Function register-computation-function (@w{(name @sc{string})} @w{(function-reference @sc{function-code})} @w{(arity @sc{integer})} @w{(module @sc{module})} @w{(environment @sc{environment})}) : 
@@ -7725,7 +7867,7 @@ The language consists of several groups of operators, defined as follows:
 @end ignore
 
 @code{
-<sentop> ::= = | /= | not | and | or | forall | exists @*
+<sentop> ::= = | /= | not | fail | and | or | forall | exists @*
 @ @ @ @ @ @ @ @ @ @ @ @ @ @ @ | <= | => | <=> |<<= | =>> | <~ | ~> | <<~ | ~>> }
 
 @code{
@@ -7809,6 +7951,7 @@ PowerLoom (use @code{(= <funterm> <term>)} instead).
 
 @code{
 <logsent> ::= (not <sentence>) | @*
+@ @ @ @ @ @ @ @ @ @ @ @ @ @ @ @ (fail <sentence>) | @*
 @ @ @ @ @ @ @ @ @ @ @ @ @ @ @ @ (and <sentence>*) | @*
 @ @ @ @ @ @ @ @ @ @ @ @ @ @ @ @ (or <sentence>*) | @*
 @ @ @ @ @ @ @ @ @ @ @ @ @ @ @ @ (=> <sentence>* <sentence>) | (=>> <sentence>* <sentence>) | @*

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -283,7 +283,7 @@ void modularInduceInferenceRules(Symbol* relationName, Symbol* className, List* 
   { Surrogate* clasS = getDescription(className)->surrogateValueInverse;
     Surrogate* relation = getDescription(relationName)->surrogateValueInverse;
     List* ilist = newList();
-    Module* home = oMODULEo.get();
+    Module* home = oMODULEo;
     boolean failUnbound = oFAIL_UNBOUND_CLAUSESpo;
     int num = ilist->length();
     Vector* instanceVec = stella::newVector(modules->length());
@@ -677,7 +677,7 @@ Cons* leastGeneralGeneralization(Cons* clause1, Cons* clause2) {
         }
       }
     }
-    oBOTTOM_UP_VARIABLE_COUNTERo.set(0);
+    oBOTTOM_UP_VARIABLE_COUNTERo = 0;
     { Cons* clause = NULL;
       Cons* iter004 = ((Cons*)(copyConsTree(clause1)));
 
@@ -743,11 +743,11 @@ Cons* leastGeneralGeneralization(Cons* clause1, Cons* clause2) {
                       {
                         var = ((Symbol*)(lookupVariableInBindings(arg1, arg2, bindings)));
                         if (!((boolean)(var))) {
-                          var = internSymbol(stringConcatenate("?X", stringify(wrapInteger(oBOTTOM_UP_VARIABLE_COUNTERo.get())), 0));
+                          var = internSymbol(stringConcatenate("?X", stringify(wrapInteger(oBOTTOM_UP_VARIABLE_COUNTERo)), 0));
                           if (!eitherNumbersP(arg1, arg2)) {
                             bindings->push(consList(3, arg1, arg2, var));
                           }
-                          oBOTTOM_UP_VARIABLE_COUNTERo.set(oBOTTOM_UP_VARIABLE_COUNTERo.get() + 1);
+                          oBOTTOM_UP_VARIABLE_COUNTERo = oBOTTOM_UP_VARIABLE_COUNTERo + 1;
                         }
                         newClause = cons(var, newClause);
                       }
@@ -810,11 +810,11 @@ Cons* generalizeInequality(Cons* probe, Cons* match, List* bindings) {
             {
               var = ((Symbol*)(lookupVariableInBindings(arg1, arg2, bindings)));
               if (!((boolean)(var))) {
-                var = internSymbol(stringConcatenate("?X", stringify(wrapInteger(oBOTTOM_UP_VARIABLE_COUNTERo.get())), 0));
+                var = internSymbol(stringConcatenate("?X", stringify(wrapInteger(oBOTTOM_UP_VARIABLE_COUNTERo)), 0));
                 if (!eitherNumbersP(arg1, arg2)) {
                   bindings->push(consList(3, arg1, arg2, var));
                 }
-                oBOTTOM_UP_VARIABLE_COUNTERo.set(oBOTTOM_UP_VARIABLE_COUNTERo.get() + 1);
+                oBOTTOM_UP_VARIABLE_COUNTERo = oBOTTOM_UP_VARIABLE_COUNTERo + 1;
               }
               newClause = cons(var, newClause);
             }
@@ -2460,8 +2460,8 @@ Vector* evaluateRuleInductionEvaluatorWrapper(Cons* arguments) {
 }
 
 double trainAndTestRuleInduction(List* trainSet, List* testSet) {
-  { Module* homeModule = ((Module*)(oCONTEXTo.get()));
-    Module* testModule = findOrCreateModule(stringConcatenate(((Module*)(oCONTEXTo.get()))->moduleFullName, "INDUCED-RULES", 0));
+  { Module* homeModule = ((Module*)(oCONTEXTo));
+    Module* testModule = findOrCreateModule(stringConcatenate(((Module*)(oCONTEXTo))->moduleFullName, "INDUCED-RULES", 0));
     double result = 0.0;
 
     testModule->changeModule();
@@ -2535,7 +2535,7 @@ void modularInduceDecisionRules(Symbol* relationName, Symbol* className, List* m
     Surrogate* relation = getDescription(relationName)->surrogateValueInverse;
     List* ilist = newList();
     DecisionTree* tree = NULL;
-    Module* home = oMODULEo.get();
+    Module* home = oMODULEo;
     int num = ilist->length();
     Vector* instanceVec = stella::newVector(modules->length());
     Vector* instances = NULL;
@@ -3348,7 +3348,7 @@ void helpStartupRuleInduction2() {
 void startupRuleInduction() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupRuleInduction1();
     }

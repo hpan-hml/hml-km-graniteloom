@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -168,7 +168,7 @@ Cons* javaGetConstructorAndMethodDefinitions(Class* clasS, Cons*& _Return1) {
     MethodSlot* method = NULL;
 
     { TranslationUnit* tu = NULL;
-      Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+      Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
 
       for (tu, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         tu = ((TranslationUnit*)(iter000->value));
@@ -221,7 +221,7 @@ Cons* javaTranslateDefineNativeClass(Class* clasS) {
 
     { 
       BIND_STELLA_SPECIAL(oCONTEXTo, Context*, clasS->homeModule());
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
       if (clasS->mixinP) {
         return (NIL);
       }
@@ -244,7 +244,7 @@ Cons* javaTranslateDefineNativeClass(Class* clasS) {
 void startupJavaClassOut() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SGT_JAVA_CLASS_OUT_STELLA_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("OBJECT", NULL, 1)));
       SYM_JAVA_CLASS_OUT_STELLA_DOCUMENTATION = ((Symbol*)(internRigidSymbolWrtModule("DOCUMENTATION", NULL, 0)));

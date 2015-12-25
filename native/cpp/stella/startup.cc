@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -53,7 +53,7 @@ int oSTELLA_MINOR_VERSION_NUMBERo = 5;
 
 char* oSTELLA_RELEASE_STATEo = "";
 
-int oSTELLA_PATCH_LEVELo = 20;
+int oSTELLA_PATCH_LEVELo = 29;
 
 char* oSTELLA_VERSION_STRINGo = NULL;
 
@@ -298,7 +298,6 @@ Cons* consifyCommandLineArguments(int count, char** arguments) {
 }
 
 int main(int count, char** arguments) {
-  // Main STELLA entry point.
   { boolean testingP = count == 1;
 
     startup(testingP);
@@ -315,7 +314,7 @@ int main(int count, char** arguments) {
 void startupStartup() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       KWD_STARTUP_EARLY_INITS = ((Keyword*)(internRigidSymbolWrtModule("EARLY-INITS", NULL, 2)));
       KWD_STARTUP_MODULES = ((Keyword*)(internRigidSymbolWrtModule("MODULES", NULL, 2)));
@@ -328,6 +327,7 @@ void startupStartup() {
       KWD_STARTUP_FINALIZE_METHODS = ((Keyword*)(internRigidSymbolWrtModule("FINALIZE-METHODS", NULL, 2)));
       KWD_STARTUP_FINAL = ((Keyword*)(internRigidSymbolWrtModule("FINAL", NULL, 2)));
       KWD_STARTUP_WARN = ((Keyword*)(internRigidSymbolWrtModule("WARN", NULL, 2)));
+      KWD_STARTUP_DOCUMENTATION = ((Keyword*)(internRigidSymbolWrtModule("DOCUMENTATION", NULL, 2)));
       SYM_STARTUP_STELLA_STARTUP_STARTUP = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-STARTUP", NULL, 0)));
       SYM_STARTUP_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
     }
@@ -350,7 +350,7 @@ void startupStartup() {
       defineFunctionObject("STARTUP", "(DEFUN STARTUP ((VERBOSE? BOOLEAN)) :PUBLIC? TRUE)", ((cpp_function_code)(&startup)), NULL);
       defineFunctionObject("INTERPRET-COMMAND-LINE-ARGUMENTS", "(DEFUN INTERPRET-COMMAND-LINE-ARGUMENTS ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :DOCUMENTATION \"Old name for `process-command-line-arguments' (which see).\" :PUBLIC? TRUE)", ((cpp_function_code)(&interpretCommandLineArguments)), NULL);
       defineFunctionObject("CONSIFY-COMMAND-LINE-ARGUMENTS", "(DEFUN (CONSIFY-COMMAND-LINE-ARGUMENTS (CONS OF STRING-WRAPPER)) ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :DOCUMENTATION \"Convert `count' command line `arguments' into a CONS list.\" :PUBLIC? TRUE)", ((cpp_function_code)(&consifyCommandLineArguments)), NULL);
-      defineFunctionObject("MAIN", "(DEFUN (MAIN INTEGER) ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :PUBLIC? TRUE :DOCUMENTATION \"Main STELLA entry point.\")", NULL, NULL);
+      defineFunctionObject("MAIN", "(DEFUN (MAIN INTEGER) ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :PUBLIC? TRUE)", NULL, NULL);
       defineFunctionObject("STARTUP-STARTUP", "(DEFUN STARTUP-STARTUP () :PUBLIC? TRUE)", ((cpp_function_code)(&startupStartup)), NULL);
       { MethodSlot* function = lookupFunction(SYM_STARTUP_STELLA_STARTUP_STARTUP);
 
@@ -366,7 +366,7 @@ void startupStartup() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-MAJOR-VERSION-NUMBER* INTEGER 3 :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-MINOR-VERSION-NUMBER* INTEGER 5 :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-RELEASE-STATE* STRING \"\" :PUBLIC? TRUE)");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-PATCH-LEVEL* INTEGER 20 :PUBLIC? TRUE)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-PATCH-LEVEL* INTEGER 29 :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STELLA-VERSION-STRING* STRING (STELLA-VERSION-STRING) :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STARTUP-TIME-PHASES* (LIST OF KEYWORD) (CAST (LIST :EARLY-INITS :MODULES :SYMBOLS :QUOTED-CONSTANTS :GLOBALS :CLASSES :FINALIZE-CLASSES :METHODS :FINALIZE-METHODS :FINAL) (LIST OF KEYWORD)) :DOCUMENTATION \"List of phases that can be legally used as an optional\nphase argument to a `startup-time-progn' form.  The corresponding code\nwill be executed during the execution of a startup-time-code function only\nif the position of the keyword in the list corresponds to the current value of\n`*STARTUP-TIME-PHASE*', or if phasing of startup-time code is disabled.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *STARTUP-TIME-PHASE* INTEGER 999 :PUBLIC? TRUE :DOCUMENTATION \"The current phase during 'phased startup'.\nThe value has to correspond to the position of one of the keywords\nin `*STARTUP-TIME-PHASES*'.  999 means no phasing at all.\")");
@@ -395,6 +395,8 @@ Keyword* KWD_STARTUP_FINALIZE_METHODS = NULL;
 Keyword* KWD_STARTUP_FINAL = NULL;
 
 Keyword* KWD_STARTUP_WARN = NULL;
+
+Keyword* KWD_STARTUP_DOCUMENTATION = NULL;
 
 Symbol* SYM_STARTUP_STELLA_STARTUP_STARTUP = NULL;
 

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -105,8 +105,6 @@ public class Units {
   public static Symbol SYM_UNIT_SUPPORT_STARTUP_UNIT_SUPPORT = null;
 
   public static Symbol SYM_UNIT_KB_MEASURE = null;
-
-  public static Keyword KWD_DOCUMENTATION = null;
 
   public static Symbol SYM_UNIT_KB_BASE_MEASURE = null;
 
@@ -499,7 +497,7 @@ public class Units {
             { DimNumberLogicWrapper dimNumber000 = ((DimNumberLogicWrapper)(dimNumber));
 
               if (!(Stella_Object.eqlP(((DimNumber)(value1.wrapperValue)), ((DimNumber)(dimNumber000.wrapperValue))))) {
-                Logic.signalUnificationClash(value1, dimNumber000);
+                Proposition.signalUnificationClash(self, value1, dimNumber000);
               }
             }
           }
@@ -510,13 +508,13 @@ public class Units {
 
                 if (!((theDim != null) &&
                     Stella_Object.eqlP(((DimNumber)(value1.wrapperValue)), ((DimNumber)(theDim.wrapperValue))))) {
-                  Logic.signalUnificationClash(value1, dimNumber000);
+                  Proposition.signalUnificationClash(self, value1, dimNumber000);
                 }
               }
             }
           }
           else {
-            Logic.signalUnificationClash(value1, dimNumber);
+            Proposition.signalUnificationClash(self, value1, dimNumber);
           }
         }
       }

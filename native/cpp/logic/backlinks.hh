@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -70,6 +70,7 @@ Object* rewrapArgument(Object* argument);
 boolean indexIthDomainP(NamedDescription* description, int i);
 boolean rewrapIthArgumentP(Object* argument, Proposition* proposition, int i);
 void rewrapPropositionArguments(Proposition* self);
+SequenceIndex* helpUnfilteredDependentPropositions(Object* self, Surrogate* relation);
 SequenceIndex* unfilteredDependentPropositions(Object* self, Surrogate* relation);
 boolean allSpecializingDependentPropositionsNextP(AllPurposeIterator* self);
 Iterator* allSpecializingDependentPropositions(Object* self, Surrogate* relationref);
@@ -130,13 +131,13 @@ extern Keyword* KWD_BACKLINKS_DEPENDENTS;
 extern Surrogate* SGT_BACKLINKS_LOGIC_LOGIC_OBJECT;
 extern Surrogate* SGT_BACKLINKS_STELLA_THING;
 extern Symbol* SYM_BACKLINKS_LOGIC_DEPENDENT_PROPOSITIONS_INDEX;
+extern Surrogate* SGT_BACKLINKS_LOGIC_PROPOSITION;
+extern Symbol* SYM_BACKLINKS_LOGIC_DESCRIPTIVEp;
 extern Surrogate* SGT_BACKLINKS_LOGIC_INTEGER_LOGIC_WRAPPER;
 extern Surrogate* SGT_BACKLINKS_LOGIC_FLOAT_LOGIC_WRAPPER;
 extern Surrogate* SGT_BACKLINKS_LOGIC_STRING_LOGIC_WRAPPER;
 extern Keyword* KWD_BACKLINKS_ISA;
 extern Keyword* KWD_BACKLINKS_RELATION;
-extern Symbol* SYM_BACKLINKS_LOGIC_DESCRIPTIVEp;
-extern Surrogate* SGT_BACKLINKS_LOGIC_PROPOSITION;
 extern Keyword* KWD_BACKLINKS_CONSTANT;
 extern Surrogate* SGT_BACKLINKS_LOGIC_SKOLEM;
 extern Surrogate* SGT_BACKLINKS_LOGIC_DESCRIPTION;

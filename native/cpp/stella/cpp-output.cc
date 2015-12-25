@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -352,11 +352,11 @@ void cppOutputStatement(Object* statement) {
 }
 
 void cppOutputVerbatim(StringWrapper* verbatimstatement) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << verbatimstatement->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << verbatimstatement->wrapperValue;
 }
 
 void cppOutputComment(StringWrapper* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "// ";
+  *(oCURRENT_STREAMo->nativeStream) << "// ";
   { boolean returnp = false;
 
     { char chaR = NULL_CHARACTER;
@@ -371,31 +371,31 @@ void cppOutputComment(StringWrapper* tree) {
         switch (chaR) {
           case '\n': 
             if (!(returnp)) {
-              *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+              *(oCURRENT_STREAMo->nativeStream) << std::endl;
               cppIndent();
-              *(oCURRENT_STREAMo.get()->nativeStream) << "// ";
+              *(oCURRENT_STREAMo->nativeStream) << "// ";
             }
             returnp = false;
           break;
           case '\r': 
-            *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+            *(oCURRENT_STREAMo->nativeStream) << std::endl;
             cppIndent();
-            *(oCURRENT_STREAMo.get()->nativeStream) << "// ";
+            *(oCURRENT_STREAMo->nativeStream) << "// ";
             returnp = true;
           break;
           default:
-            *(oCURRENT_STREAMo.get()->nativeStream) << chaR;
+            *(oCURRENT_STREAMo->nativeStream) << chaR;
             returnp = false;
           break;
         }
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << std::endl;
   }
 }
 
 void cppOutputDereference(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "*";
+  *(oCURRENT_STREAMo->nativeStream) << "*";
   cppOutputStatement(tree);
 }
 
@@ -406,66 +406,66 @@ void cppOutputArrayReference(Cons* tree) {
 
     for (indexexpression, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       indexexpression = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << "[";
+      *(oCURRENT_STREAMo->nativeStream) << "[";
       cppOutputStatement(indexexpression);
-      *(oCURRENT_STREAMo.get()->nativeStream) << "]";
+      *(oCURRENT_STREAMo->nativeStream) << "]";
     }
   }
 }
 
 void cppOutputCast(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "((" << ((StringWrapper*)(tree->rest->value))->wrapperValue << ")(";
+  *(oCURRENT_STREAMo->nativeStream) << "((" << ((StringWrapper*)(tree->rest->value))->wrapperValue << ")(";
   cppOutputStatement(tree->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "))";
+  *(oCURRENT_STREAMo->nativeStream) << "))";
 }
 
 void cppOutputSignal(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "throw ";
+  *(oCURRENT_STREAMo->nativeStream) << "throw ";
   cppOutputStatement(tree->value);
 }
 
 void cppOutputHandlerCase(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "try {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "try {" << std::endl;
   cppBumpIndent();
   cppOutputStatements(cppStatementToList(tree->value));
   cppUnbumpIndent();
   cppIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
   cppOutputStatements(tree->rest);
 }
 
 void cppOutputCatch(Cons* tree) {
   { Cons* variabledecl = ((Cons*)(tree->value));
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "catch (";
+    *(oCURRENT_STREAMo->nativeStream) << "catch (";
     cppOutputStatement(variabledecl->value);
     if (((boolean)(variabledecl->rest->value))) {
       cppOutputStatement(variabledecl->rest->value);
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << ") {" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << ") {" << std::endl;
     cppBumpIndent();
     cppOutputStatements(cppFlattenStatements(tree->rest));
     cppUnbumpIndent();
     cppIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
   }
 }
 
 void cppOutputUnwindProtect(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "try {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "try {" << std::endl;
   cppBumpIndent();
   cppOutputStatements(cppStatementToList(tree->value));
   cppUnbumpIndent();
   cppIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
-  *(oCURRENT_STREAMo.get()->nativeStream) << "catch (...) {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "catch (...) {" << std::endl;
   cppBumpIndent();
   cppOutputStatements(((Cons*)(copyConsTree(tree->rest))));
   cppIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "throw;" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "throw;" << std::endl;
   cppUnbumpIndent();
   cppIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
   cppOutputStatements(tree->rest);
 }
 
@@ -474,7 +474,7 @@ void cppOutputGlobalDeclaration(Cons* global) {
     Object* type = global->rest->rest->value;
     Object* name = global->fourth();
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "extern ";
+    *(oCURRENT_STREAMo->nativeStream) << "extern ";
     if (((GeneralizedSymbol*)(kind)) == SYM_CPP_OUTPUT_STELLA_CPP_SPECIAL) {
       if (specialImplementationStyle() == KWD_CPP_OUTPUT_UNBIND_WITH_DESTRUCTORS) {
         cppOutputStatement(listO(4, SYM_CPP_OUTPUT_STELLA_CPP_FUNCTION_CALL, listO(3, SYM_CPP_OUTPUT_STELLA_CPP_IDENT, wrapString("DECLARE_STELLA_SPECIAL"), NIL), listO(4, SYM_CPP_OUTPUT_STELLA_CPP_ACTUALS, listO(3, SYM_CPP_OUTPUT_STELLA_CPP_IDENT, name, NIL), type, NIL), NIL));
@@ -486,7 +486,7 @@ void cppOutputGlobalDeclaration(Cons* global) {
     else {
       cppOutputTypedEntity(type, name, NULL);
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
   }
 }
 
@@ -502,7 +502,12 @@ void cppOutputVariableDefinition(Cons* variable) {
     }
     if (((GeneralizedSymbol*)(kind)) == SYM_CPP_OUTPUT_STELLA_CPP_SPECIAL) {
       if (specialImplementationStyle() == KWD_CPP_OUTPUT_UNBIND_WITH_DESTRUCTORS) {
-        cppOutputStatement(listO(4, SYM_CPP_OUTPUT_STELLA_CPP_FUNCTION_CALL, listO(3, SYM_CPP_OUTPUT_STELLA_CPP_IDENT, wrapString("DEFINE_STELLA_SPECIAL"), NIL), listO(4, SYM_CPP_OUTPUT_STELLA_CPP_ACTUALS, listO(3, SYM_CPP_OUTPUT_STELLA_CPP_IDENT, name, NIL), type, cons(initialvalue, NIL)), NIL));
+        if (supportUnexecP()) {
+          cppOutputStatement(listO(4, SYM_CPP_OUTPUT_STELLA_CPP_FUNCTION_CALL, listO(3, SYM_CPP_OUTPUT_STELLA_CPP_IDENT, wrapString("DECLARE_STELLA_SPECIAL"), NIL), listO(4, SYM_CPP_OUTPUT_STELLA_CPP_ACTUALS, listO(3, SYM_CPP_OUTPUT_STELLA_CPP_IDENT, name, NIL), type, NIL), NIL));
+        }
+        else {
+          cppOutputStatement(listO(4, SYM_CPP_OUTPUT_STELLA_CPP_FUNCTION_CALL, listO(3, SYM_CPP_OUTPUT_STELLA_CPP_IDENT, wrapString("DEFINE_STELLA_SPECIAL"), NIL), listO(4, SYM_CPP_OUTPUT_STELLA_CPP_ACTUALS, listO(3, SYM_CPP_OUTPUT_STELLA_CPP_IDENT, name, NIL), type, cons(initialvalue, NIL)), NIL));
+        }
       }
       else {
         cppOutputTypedEntity(type, name, initialvalue);
@@ -511,7 +516,7 @@ void cppOutputVariableDefinition(Cons* variable) {
     else {
       cppOutputTypedEntity(type, name, initialvalue);
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl << std::endl;
   }
 }
 
@@ -526,7 +531,7 @@ void cppOutputFuncallFunctionSignature(Cons* signature) {
       { 
         BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, newOutputStringStream());
         {
-          *(oCURRENT_STREAMo.get()->nativeStream) << " (*) (";
+          *(oCURRENT_STREAMo->nativeStream) << " (*) (";
           { StringWrapper* partype = NULL;
             Cons* iter000 = parametertypes;
             int i = NULL_INTEGER;
@@ -542,21 +547,21 @@ void cppOutputFuncallFunctionSignature(Cons* signature) {
                   iter001 = iter001 + 1) {
               partype = ((StringWrapper*)(iter000->value));
               i = iter001;
-              *(oCURRENT_STREAMo.get()->nativeStream) << partype->wrapperValue;
+              *(oCURRENT_STREAMo->nativeStream) << partype->wrapperValue;
               if (i < nofparameters) {
-                *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+                *(oCURRENT_STREAMo->nativeStream) << ", ";
               }
             }
           }
-          *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+          *(oCURRENT_STREAMo->nativeStream) << ")";
         }
-        result000 = ((OutputStringStream*)(oCURRENT_STREAMo.get()))->theStringReader();
+        result000 = ((OutputStringStream*)(oCURRENT_STREAMo))->theStringReader();
       }
       { char* baresignature = result000;
 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+        *(oCURRENT_STREAMo->nativeStream) << "(";
         cppOutputTypedEntity(returntype, wrapString(baresignature), NULL);
-        *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+        *(oCURRENT_STREAMo->nativeStream) << ")";
       }
     }
   }
@@ -574,9 +579,9 @@ void cppOutputMethodCodeCallSignature(Cons* signature) {
       { 
         BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, newOutputStringStream());
         {
-          *(oCURRENT_STREAMo.get()->nativeStream) << " (";
-          *(oCURRENT_STREAMo.get()->nativeStream) << objecttype;
-          *(oCURRENT_STREAMo.get()->nativeStream) << "::*) (";
+          *(oCURRENT_STREAMo->nativeStream) << " (";
+          *(oCURRENT_STREAMo->nativeStream) << objecttype;
+          *(oCURRENT_STREAMo->nativeStream) << "::*) (";
           { StringWrapper* partype = NULL;
             Cons* iter000 = parametertypes;
             int i = NULL_INTEGER;
@@ -592,51 +597,51 @@ void cppOutputMethodCodeCallSignature(Cons* signature) {
                   iter001 = iter001 + 1) {
               partype = ((StringWrapper*)(iter000->value));
               i = iter001;
-              *(oCURRENT_STREAMo.get()->nativeStream) << partype->wrapperValue;
+              *(oCURRENT_STREAMo->nativeStream) << partype->wrapperValue;
               if (i < nofparameters) {
-                *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+                *(oCURRENT_STREAMo->nativeStream) << ", ";
               }
             }
           }
-          *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+          *(oCURRENT_STREAMo->nativeStream) << ")";
         }
-        result000 = ((OutputStringStream*)(oCURRENT_STREAMo.get()))->theStringReader();
+        result000 = ((OutputStringStream*)(oCURRENT_STREAMo))->theStringReader();
       }
       { char* baresignature = result000;
 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+        *(oCURRENT_STREAMo->nativeStream) << "(";
         cppOutputTypedEntity(returntype, wrapString(baresignature), NULL);
-        *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+        *(oCURRENT_STREAMo->nativeStream) << ")";
       }
     }
   }
 }
 
 void cppOutputFuncall(Cons* funcall) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+  *(oCURRENT_STREAMo->nativeStream) << "(";
   cppOutputStatement(funcall->value);
   cppOutputStatement(funcall->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+  *(oCURRENT_STREAMo->nativeStream) << ")";
   cppOutputStatement(funcall->rest->rest->value);
 }
 
 void cppOutputMethodCodeCall(Cons* methodcall) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+  *(oCURRENT_STREAMo->nativeStream) << "(";
   cppMaybeOutputStatementWithParentheses(methodcall->rest->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "->*(";
+  *(oCURRENT_STREAMo->nativeStream) << "->*(";
   cppOutputStatement(methodcall->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+  *(oCURRENT_STREAMo->nativeStream) << " ";
   cppOutputStatement(methodcall->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ")) ";
+  *(oCURRENT_STREAMo->nativeStream) << ")) ";
   cppOutputStatement(methodcall->fourth());
 }
 
 void cppOutputBreak() {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "break;" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "break;" << std::endl;
 }
 
 void cppOutputContinue() {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "continue;" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "continue;" << std::endl;
 }
 
 boolean cppLastStatementIsReturnP(Cons* statements) {
@@ -652,9 +657,9 @@ void cppOutputCase(Cons* casE) {
     Object* defaultcase = casE->rest->value;
     Object* conditions = casE->rest->rest->value;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "switch (";
+    *(oCURRENT_STREAMo->nativeStream) << "switch (";
     cppOutputStatement(keyform);
-    *(oCURRENT_STREAMo.get()->nativeStream) << ") {" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << ") {" << std::endl;
     cppBumpIndent();
     { Cons* c = NULL;
       Cons* iter000 = ((Cons*)(conditions));
@@ -669,9 +674,9 @@ void cppOutputCase(Cons* casE) {
             for (cond, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
               cond = iter001->value;
               cppIndent();
-              *(oCURRENT_STREAMo.get()->nativeStream) << "case ";
+              *(oCURRENT_STREAMo->nativeStream) << "case ";
               cppOutputStatement(cond);
-              *(oCURRENT_STREAMo.get()->nativeStream) << ": " << std::endl;
+              *(oCURRENT_STREAMo->nativeStream) << ": " << std::endl;
             }
           }
           cppBumpIndent();
@@ -679,7 +684,7 @@ void cppOutputCase(Cons* casE) {
           cppUnbumpIndent();
           if (!(cppLastStatementIsReturnP(((Cons*)(condition->rest->value))))) {
             cppIndent();
-            *(oCURRENT_STREAMo.get()->nativeStream) << "break;" << std::endl;
+            *(oCURRENT_STREAMo->nativeStream) << "break;" << std::endl;
           }
         }
       }
@@ -688,17 +693,17 @@ void cppOutputCase(Cons* casE) {
       std::cerr << "Safety violation: " << "INTERNAL ERROR: `cpp-output-case' expects an `otherwise' clause.";
     }
     cppIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "default:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "default:" << std::endl;
     cppBumpIndent();
     cppOutputStatement(defaultcase);
     cppUnbumpIndent();
     if (!(cppLastStatementIsReturnP(((Cons*)(defaultcase))))) {
       cppIndent();
-      *(oCURRENT_STREAMo.get()->nativeStream) << "break;" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << "break;" << std::endl;
     }
     cppUnbumpIndent();
     cppIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
   }
 }
 
@@ -710,13 +715,13 @@ void cppOutputCond(Cons* cond) {
 
     if (((boolean)(defaultcondition)) &&
         (conditions == NIL)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "if (TRUE) ";
+      *(oCURRENT_STREAMo->nativeStream) << "if (TRUE) ";
       cppOutputStatement(defaultcondition);
       return;
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << "if (";
+    *(oCURRENT_STREAMo->nativeStream) << "if (";
     cppOutputStatement(firstcondition->value);
-    *(oCURRENT_STREAMo.get()->nativeStream) << ") ";
+    *(oCURRENT_STREAMo->nativeStream) << ") ";
     cppOutputStatement(firstcondition->rest->value);
     { Object* c = NULL;
       Cons* iter000 = restconditions;
@@ -726,16 +731,16 @@ void cppOutputCond(Cons* cond) {
         { Cons* condition = ((Cons*)(c));
 
           cppIndent();
-          *(oCURRENT_STREAMo.get()->nativeStream) << "else if (";
+          *(oCURRENT_STREAMo->nativeStream) << "else if (";
           cppOutputStatement(condition->value);
-          *(oCURRENT_STREAMo.get()->nativeStream) << ") ";
+          *(oCURRENT_STREAMo->nativeStream) << ") ";
           cppOutputStatement(condition->rest->value);
         }
       }
     }
     if (((boolean)(defaultcondition))) {
       cppIndent();
-      *(oCURRENT_STREAMo.get()->nativeStream) << "else ";
+      *(oCURRENT_STREAMo->nativeStream) << "else ";
       cppOutputStatement(defaultcondition);
     }
   }
@@ -768,35 +773,35 @@ boolean cppBlockP(Object* tree) {
 }
 
 void cppOutputIf(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "if (";
+  *(oCURRENT_STREAMo->nativeStream) << "if (";
   cppOutputStatement(tree->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ") ";
+  *(oCURRENT_STREAMo->nativeStream) << ") ";
   if (cppBlockP(tree->rest->value)) {
     cppOutputStatement(tree->rest->value);
   }
   else {
     {
-      *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << std::endl;
       cppBumpIndent();
       cppIndent();
       cppOutputStatement(tree->rest->value);
-      *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
       cppUnbumpIndent();
     }
   }
   if (!(!((boolean)(tree->rest->rest->value)))) {
     cppIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "else ";
+    *(oCURRENT_STREAMo->nativeStream) << "else ";
     if (cppBlockP(tree->rest->rest->value)) {
       cppOutputStatement(tree->rest->rest->value);
     }
     else {
       {
-        *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << std::endl;
         cppBumpIndent();
         cppIndent();
         cppOutputStatement(tree->rest->rest->value);
-        *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
         cppUnbumpIndent();
       }
     }
@@ -804,42 +809,42 @@ void cppOutputIf(Cons* tree) {
 }
 
 void cppOutputWhen(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "if (";
+  *(oCURRENT_STREAMo->nativeStream) << "if (";
   cppOutputStatement(tree->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ") {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << ") {" << std::endl;
   cppBumpIndent();
   cppOutputStatement(tree->rest->value);
   cppUnbumpIndent();
   cppIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
 }
 
 void cppOutputUnless(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "if (!(";
+  *(oCURRENT_STREAMo->nativeStream) << "if (!(";
   cppOutputStatement(tree->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ")) {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << ")) {" << std::endl;
   cppBumpIndent();
   cppOutputStatement(tree->rest->value);
   cppUnbumpIndent();
   cppIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
 }
 
 void cppOutputAssignment(Cons* assignment) {
   cppOutputStatement(assignment->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << " = ";
+  *(oCURRENT_STREAMo->nativeStream) << " = ";
   cppOutputStatement(assignment->rest->value);
 }
 
 void cppOutputLoop(Cons* loop) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "for (;;) ";
+  *(oCURRENT_STREAMo->nativeStream) << "for (;;) ";
   cppOutputStatement(loop->value);
 }
 
 void cppOutputWhile(Cons* loop) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "while (";
+  *(oCURRENT_STREAMo->nativeStream) << "while (";
   cppOutputStatement(loop->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ") ";
+  *(oCURRENT_STREAMo->nativeStream) << ") ";
   cppOutputStatement(loop->rest->value);
 }
 
@@ -852,14 +857,14 @@ void cppOutputForeach(Cons* loop) {
     int nofnextassignments = nextassignments->length();
     Cons* body = ((Cons*)(loop->fifth()));
     boolean eolseparateexpressionsP = (nofvariables > 2) ||
-        (oCPP_INDENT_CHARSo.get() > 35);
+        (oCPP_INDENT_CHARSo > 35);
 
     cppIndent();
     if (eolseparateexpressionsP) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "for  (";
+      *(oCURRENT_STREAMo->nativeStream) << "for  (";
     }
     else {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "for (";
+      *(oCURRENT_STREAMo->nativeStream) << "for (";
     }
     cppBumpIndent();
     cppBumpIndent();
@@ -877,21 +882,21 @@ void cppOutputForeach(Cons* loop) {
         i = iter001;
         cppOutputStatement(var);
         if (!(i == nofvariables)) {
-          *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+          *(oCURRENT_STREAMo->nativeStream) << ", ";
         }
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << "; ";
+    *(oCURRENT_STREAMo->nativeStream) << "; ";
     if ((!(variables == NIL)) &&
         eolseparateexpressionsP) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << std::endl;
       cppIndent();
     }
     cppOutputStatement(continuationtest);
-    *(oCURRENT_STREAMo.get()->nativeStream) << "; ";
+    *(oCURRENT_STREAMo->nativeStream) << "; ";
     if (!(nextassignments == NIL)) {
       if (eolseparateexpressionsP) {
-        *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << std::endl;
       }
       { Object* next = NULL;
         Cons* iter002 = nextassignments;
@@ -910,51 +915,51 @@ void cppOutputForeach(Cons* loop) {
           cppOutputStatement(next);
           if (!(i == nofnextassignments)) {
             if (eolseparateexpressionsP) {
-              *(oCURRENT_STREAMo.get()->nativeStream) << "," << std::endl;
+              *(oCURRENT_STREAMo->nativeStream) << "," << std::endl;
             }
             else {
-              *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+              *(oCURRENT_STREAMo->nativeStream) << ", ";
             }
           }
         }
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << ") {" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << ") {" << std::endl;
     cppUnbumpIndent();
     cppUnbumpIndent();
     cppOutputStatements(cppFlattenStatements(valueassignments->concatenate(body, 0)));
     cppUnbumpIndent();
     cppIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
   }
 }
 
 void cppOutputFunctionPointer(StringWrapper* functionname) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "&" << functionname->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << "&" << functionname->wrapperValue;
 }
 
 void cppOutputMethodPointer(StringWrapper* methodname) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "&" << methodname->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << "&" << methodname->wrapperValue;
 }
 
 void cppOutputSlotValue(Cons* statement) {
   cppMaybeOutputStatementWithParentheses(statement->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "->" << ((StringWrapper*)(statement->rest->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << "->" << ((StringWrapper*)(statement->rest->value))->wrapperValue;
 }
 
 void cppOutputReferencedSlotValue(Cons* statement) {
   cppMaybeOutputStatementWithParentheses(statement->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "." << ((StringWrapper*)(statement->rest->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << "." << ((StringWrapper*)(statement->rest->value))->wrapperValue;
 }
 
 void cppOutputSlotValueSetter(Cons* statement) {
   cppMaybeOutputStatementWithParentheses(statement->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "->" << ((StringWrapper*)(statement->rest->value))->wrapperValue << " = ";
+  *(oCURRENT_STREAMo->nativeStream) << "->" << ((StringWrapper*)(statement->rest->value))->wrapperValue << " = ";
   cppOutputStatement(statement->rest->rest->value);
 }
 
 void cppOutputMake(Cons* statement) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "new ";
+  *(oCURRENT_STREAMo->nativeStream) << "new ";
   cppOutputStatement(statement->value);
   if (((boolean)(statement->rest->value))) {
     cppOutputStatement(statement->rest->value);
@@ -962,11 +967,11 @@ void cppOutputMake(Cons* statement) {
 }
 
 void cppBumpIndent() {
-  oCPP_INDENT_CHARSo.set(oCPP_INDENT_CHARSo.get() + 2);
+  oCPP_INDENT_CHARSo = oCPP_INDENT_CHARSo + 2;
 }
 
 void cppUnbumpIndent() {
-  oCPP_INDENT_CHARSo.set(oCPP_INDENT_CHARSo.get() - 2);
+  oCPP_INDENT_CHARSo = oCPP_INDENT_CHARSo - 2;
 }
 
 void Object::cppOutputLiteral() {
@@ -982,35 +987,35 @@ void CharacterWrapper::cppOutputLiteral() {
 
       switch (ch) {
         case '\'': 
-          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\''";
+          *(oCURRENT_STREAMo->nativeStream) << "'\\''";
         break;
         case '\\': 
-          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\\\'";
+          *(oCURRENT_STREAMo->nativeStream) << "'\\\\'";
         break;
         case '\n': 
-          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\n'";
+          *(oCURRENT_STREAMo->nativeStream) << "'\\n'";
         break;
         case '\b': 
-          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\b'";
+          *(oCURRENT_STREAMo->nativeStream) << "'\\b'";
         break;
         case '\t': 
-          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\t'";
+          *(oCURRENT_STREAMo->nativeStream) << "'\\t'";
         break;
         case '\r': 
-          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\r'";
+          *(oCURRENT_STREAMo->nativeStream) << "'\\r'";
         break;
         case '\f': 
-          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\f'";
+          *(oCURRENT_STREAMo->nativeStream) << "'\\f'";
         break;
         case '\0': 
-          *(oCURRENT_STREAMo.get()->nativeStream) << "'\\0'";
+          *(oCURRENT_STREAMo->nativeStream) << "'\\0'";
         break;
         default:
           if (ch == NULL_CHARACTER) {
-            *(oCURRENT_STREAMo.get()->nativeStream) << "'\\0'";
+            *(oCURRENT_STREAMo->nativeStream) << "'\\0'";
           }
           else {
-            *(oCURRENT_STREAMo.get()->nativeStream) << "'" << ch << "'";
+            *(oCURRENT_STREAMo->nativeStream) << "'" << ch << "'";
           }
         break;
       }
@@ -1021,21 +1026,21 @@ void CharacterWrapper::cppOutputLiteral() {
 void IntegerWrapper::cppOutputLiteral() {
   { IntegerWrapper* inT = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << inT->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << inT->wrapperValue;
   }
 }
 
 void LongIntegerWrapper::cppOutputLiteral() {
   { LongIntegerWrapper* inT = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << inT->wrapperValue << "l";
+    *(oCURRENT_STREAMo->nativeStream) << inT->wrapperValue << "l";
   }
 }
 
 void FloatWrapper::cppOutputLiteral() {
   { FloatWrapper* floaT = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << floaT->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << floaT->wrapperValue;
   }
 }
 
@@ -1043,10 +1048,10 @@ void BooleanWrapper::cppOutputLiteral() {
   { BooleanWrapper* boolean = this;
 
     if (boolean->wrapperValue) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "TRUE";
+      *(oCURRENT_STREAMo->nativeStream) << "TRUE";
     }
     else {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "FALSE";
+      *(oCURRENT_STREAMo->nativeStream) << "FALSE";
     }
   }
 }
@@ -1055,11 +1060,11 @@ void Cons::cppOutputLiteral() {
   { Cons* cons = this;
 
     if (cons == NIL) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "NIL";
+      *(oCURRENT_STREAMo->nativeStream) << "NIL";
     }
     else {
       {
-        *(oCURRENT_STREAMo.get()->nativeStream) << "(" << cons->value << " . ";
+        *(oCURRENT_STREAMo->nativeStream) << "(" << cons->value << " . ";
         cons->rest->cppOutputLiteral();
       }
     }
@@ -1077,7 +1082,7 @@ int oCPP_MAX_STRING_LITERAL_LENGTHo = 1024;
 void stringCppOutputLiteral(char* string) {
   { int free = oCPP_MAX_STRING_LITERAL_LENGTHo;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "\"";
+    *(oCURRENT_STREAMo->nativeStream) << "\"";
     { char ch = NULL_CHARACTER;
       char* vector000 = string;
       int index000 = 0;
@@ -1088,33 +1093,33 @@ void stringCppOutputLiteral(char* string) {
             index000 = index000 + 1) {
         ch = vector000[index000];
         if (free <= 1) {
-          *(oCURRENT_STREAMo.get()->nativeStream) << "\" \"";
+          *(oCURRENT_STREAMo->nativeStream) << "\" \"";
           free = oCPP_MAX_STRING_LITERAL_LENGTHo;
         }
         switch (ch) {
           case '\\': 
           case '"': 
-            *(oCURRENT_STREAMo.get()->nativeStream) << "\\";
+            *(oCURRENT_STREAMo->nativeStream) << "\\";
             free = free - 1;
           break;
           case '\n': 
-            *(oCURRENT_STREAMo.get()->nativeStream) << "\\";
+            *(oCURRENT_STREAMo->nativeStream) << "\\";
             free = free - 1;
             ch = 'n';
           break;
           case '\r': 
-            *(oCURRENT_STREAMo.get()->nativeStream) << "\\";
+            *(oCURRENT_STREAMo->nativeStream) << "\\";
             free = free - 1;
             ch = 'r';
           break;
           default:
           break;
         }
-        *(oCURRENT_STREAMo.get()->nativeStream) << ch;
+        *(oCURRENT_STREAMo->nativeStream) << ch;
         free = free - 1;
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << "\"";
+    *(oCURRENT_STREAMo->nativeStream) << "\"";
   }
 }
 
@@ -1135,55 +1140,55 @@ void MutableStringWrapper::cppOutputLiteral() {
 void QuotedExpression::cppOutputLiteral() {
   { QuotedExpression* tree = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "\"" << tree << "\"";
+    *(oCURRENT_STREAMo->nativeStream) << "\"" << tree << "\"";
   }
 }
 
 void Symbol::cppOutputLiteral() {
   { Symbol* symbol = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << cppTranslateSymbolName(symbol)->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << cppTranslateSymbolName(symbol)->wrapperValue;
   }
 }
 
 void Surrogate::cppOutputLiteral() {
   { Surrogate* surrogate = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << cppTranslateSurrogateName(surrogate)->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << cppTranslateSurrogateName(surrogate)->wrapperValue;
   }
 }
 
 void Keyword::cppOutputLiteral() {
   { Keyword* keyword = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << cppTranslateKeywordName(keyword)->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << cppTranslateKeywordName(keyword)->wrapperValue;
   }
 }
 
 void cppOutputIdentifier(StringWrapper* identifier) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << identifier->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << identifier->wrapperValue;
 }
 
 void cppOutputAtomicExpression(Object* atom) {
   { GeneralizedSymbol* testValue000 = ((GeneralizedSymbol*)(atom));
 
     if (testValue000 == SYM_CPP_OUTPUT_STELLA_NEWLINE) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << std::endl;
     }
     else if (testValue000 == SYM_CPP_OUTPUT_STELLA_CPP_NULL_VALUE) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "NULL_VALUE";
+      *(oCURRENT_STREAMo->nativeStream) << "NULL_VALUE";
     }
     else if (testValue000 == SYM_CPP_OUTPUT_STELLA_ASSIGN) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "=";
+      *(oCURRENT_STREAMo->nativeStream) << "=";
     }
     else if (testValue000 == SYM_CPP_OUTPUT_STELLA_SCOLON) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << ";";
+      *(oCURRENT_STREAMo->nativeStream) << ";";
     }
     else if (testValue000 == SYM_CPP_OUTPUT_STELLA_LPAREN) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+      *(oCURRENT_STREAMo->nativeStream) << "(";
     }
     else if (testValue000 == SYM_CPP_OUTPUT_STELLA_RPAREN) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+      *(oCURRENT_STREAMo->nativeStream) << ")";
     }
     else {
       atom->cppOutputLiteral();
@@ -1194,7 +1199,7 @@ void cppOutputAtomicExpression(Object* atom) {
 void cppIndent() {
   { int i = NULL_INTEGER;
     int iter000 = 1;
-    int upperBound000 = oCPP_INDENT_CHARSo.get();
+    int upperBound000 = oCPP_INDENT_CHARSo;
     boolean unboundedP000 = upperBound000 == NULL_INTEGER;
 
     for  (i, iter000, upperBound000, unboundedP000; 
@@ -1203,7 +1208,7 @@ void cppIndent() {
           iter000 = iter000 + 1) {
       i = iter000;
       i = i;
-      *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+      *(oCURRENT_STREAMo->nativeStream) << " ";
     }
   }
 }
@@ -1279,7 +1284,7 @@ void cppOutputStatements(Cons* statementlist) {
         }
         cppOutputStatement(statement);
         if (cppOutputSemicolonP(((Cons*)(statement)))) {
-          *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+          *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
         }
       }
     }
@@ -1290,11 +1295,11 @@ void cppMaybeOutputStatementWithParentheses(Object* statement) {
   { boolean operatorP = cppOperatorP(statement);
 
     if (operatorP) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+      *(oCURRENT_STREAMo->nativeStream) << "(";
     }
     cppOutputStatement(statement);
     if (operatorP) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+      *(oCURRENT_STREAMo->nativeStream) << ")";
     }
   }
 }
@@ -1305,7 +1310,7 @@ void cppOutputStreamPrintItems(Cons* items) {
 
     for (e, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       e = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << " << ";
+      *(oCURRENT_STREAMo->nativeStream) << " << ";
       cppMaybeOutputStatementWithParentheses(e);
     }
   }
@@ -1315,15 +1320,15 @@ void cppOutputPrintStream(Cons* exps) {
   { Object* stream = exps->value;
 
     if (stream == SYM_CPP_OUTPUT_STELLA_CPP_STANDARD_OUT) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "std::cout";
+      *(oCURRENT_STREAMo->nativeStream) << "std::cout";
     }
     else if (stream == SYM_CPP_OUTPUT_STELLA_CPP_STANDARD_ERROR) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "std::cerr";
+      *(oCURRENT_STREAMo->nativeStream) << "std::cerr";
     }
     else {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "get_ostream(";
+      *(oCURRENT_STREAMo->nativeStream) << "get_ostream(";
       cppOutputStatement(stream);
-      *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+      *(oCURRENT_STREAMo->nativeStream) << ")";
     }
     cppOutputStreamPrintItems(exps->rest);
   }
@@ -1333,18 +1338,18 @@ void cppOutputPrintNativeStream(Cons* exps) {
   { Object* stream = exps->value;
 
     if (stream == SYM_CPP_OUTPUT_STELLA_CPP_STANDARD_OUT) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "std::cout";
+      *(oCURRENT_STREAMo->nativeStream) << "std::cout";
     }
     else if (stream == SYM_CPP_OUTPUT_STELLA_CPP_STANDARD_ERROR) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "std::cerr";
+      *(oCURRENT_STREAMo->nativeStream) << "std::cerr";
     }
     else {
-      if (!(oOUTPUTTINGDEFPRINTpo.get())) {
-        *(oCURRENT_STREAMo.get()->nativeStream) << "*(";
+      if (!(oOUTPUTTINGDEFPRINTpo)) {
+        *(oCURRENT_STREAMo->nativeStream) << "*(";
       }
       cppOutputStatement(stream);
-      if (!(oOUTPUTTINGDEFPRINTpo.get())) {
-        *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+      if (!(oOUTPUTTINGDEFPRINTpo)) {
+        *(oCURRENT_STREAMo->nativeStream) << ")";
       }
     }
     cppOutputStreamPrintItems(exps->rest);
@@ -1388,11 +1393,11 @@ void cppOutputUnaryOperator(Cons* expression) {
       postfixP = true;
     }
     if (!(postfixP)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << op->wrapperValue;
+      *(oCURRENT_STREAMo->nativeStream) << op->wrapperValue;
     }
     cppMaybeOutputStatementWithParentheses(arg);
     if (postfixP) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << op->wrapperValue;
+      *(oCURRENT_STREAMo->nativeStream) << op->wrapperValue;
     }
   }
 }
@@ -1409,7 +1414,7 @@ void cppHelpOutputBinaryOperator(Cons* expression, int nestlevel) {
     Object* arg2 = expression->rest->rest->value;
 
     if (cppNestedOperatorNeedsParenthesesP(op, arg1)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+      *(oCURRENT_STREAMo->nativeStream) << "(";
     }
     if (cppBinaryOperatorP(op)) {
       cppHelpOutputBinaryOperator(((Cons*)(arg1))->rest, nestlevel + 1);
@@ -1418,15 +1423,15 @@ void cppHelpOutputBinaryOperator(Cons* expression, int nestlevel) {
       cppOutputStatement(arg1);
     }
     if (cppNestedOperatorNeedsParenthesesP(op, arg1)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+      *(oCURRENT_STREAMo->nativeStream) << ")";
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << " ";
-    *(oCURRENT_STREAMo.get()->nativeStream) << op->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << " ";
+    *(oCURRENT_STREAMo->nativeStream) << op->wrapperValue;
     if (cppIndentableBinaryOperatorP(op)) {
       {
-        *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << std::endl;
         cppIndent();
-        *(oCURRENT_STREAMo.get()->nativeStream) << "    ";
+        *(oCURRENT_STREAMo->nativeStream) << "    ";
         { int i = NULL_INTEGER;
           int iter000 = 1;
           int upperBound000 = nestlevel;
@@ -1438,16 +1443,16 @@ void cppHelpOutputBinaryOperator(Cons* expression, int nestlevel) {
                 iter000 = iter000 + 1) {
             i = iter000;
             i = i;
-            *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+            *(oCURRENT_STREAMo->nativeStream) << " ";
           }
         }
       }
     }
     else {
-      *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+      *(oCURRENT_STREAMo->nativeStream) << " ";
     }
     if (cppNestedOperatorNeedsParenthesesP(op, arg2)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+      *(oCURRENT_STREAMo->nativeStream) << "(";
     }
     if (cppBinaryOperatorP(arg2)) {
       cppHelpOutputBinaryOperator(((Cons*)(arg2))->rest, nestlevel + 1);
@@ -1456,7 +1461,7 @@ void cppHelpOutputBinaryOperator(Cons* expression, int nestlevel) {
       cppOutputStatement(arg2);
     }
     if (cppNestedOperatorNeedsParenthesesP(op, arg2)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+      *(oCURRENT_STREAMo->nativeStream) << ")";
     }
   }
 }
@@ -1473,41 +1478,41 @@ void cppOutputTernaryOperator(Cons* expression) {
     Object* arg3 = expression->fifth();
     char* translatedarg = NULL;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+    *(oCURRENT_STREAMo->nativeStream) << "(";
     cppMaybeOutputStatementWithParentheses(arg1);
-    *(oCURRENT_STREAMo.get()->nativeStream) << " ";
-    *(oCURRENT_STREAMo.get()->nativeStream) << op1->wrapperValue;
-    *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+    *(oCURRENT_STREAMo->nativeStream) << " ";
+    *(oCURRENT_STREAMo->nativeStream) << op1->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << " ";
     { char* result000 = NULL;
 
       { 
         BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, newOutputStringStream());
         cppMaybeOutputStatementWithParentheses(arg2);
-        result000 = ((OutputStringStream*)(oCURRENT_STREAMo.get()))->theStringReader();
+        result000 = ((OutputStringStream*)(oCURRENT_STREAMo))->theStringReader();
       }
       translatedarg = result000;
     }
     if (translatedarg[0] == '"') {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "(char*)";
+      *(oCURRENT_STREAMo->nativeStream) << "(char*)";
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << translatedarg;
-    *(oCURRENT_STREAMo.get()->nativeStream) << " ";
-    *(oCURRENT_STREAMo.get()->nativeStream) << op2->wrapperValue;
-    *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+    *(oCURRENT_STREAMo->nativeStream) << translatedarg;
+    *(oCURRENT_STREAMo->nativeStream) << " ";
+    *(oCURRENT_STREAMo->nativeStream) << op2->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << " ";
     { char* result001 = NULL;
 
       { 
         BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, newOutputStringStream());
         cppMaybeOutputStatementWithParentheses(arg3);
-        result001 = ((OutputStringStream*)(oCURRENT_STREAMo.get()))->theStringReader();
+        result001 = ((OutputStringStream*)(oCURRENT_STREAMo))->theStringReader();
       }
       translatedarg = result001;
     }
     if (translatedarg[0] == '"') {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "(char*)";
+      *(oCURRENT_STREAMo->nativeStream) << "(char*)";
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << translatedarg;
-    *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+    *(oCURRENT_STREAMo->nativeStream) << translatedarg;
+    *(oCURRENT_STREAMo->nativeStream) << ")";
   }
 }
 
@@ -1518,19 +1523,19 @@ void cppOutputStatementLine(Cons* statement) {
 
     for (e, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       e = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+      *(oCURRENT_STREAMo->nativeStream) << " ";
       cppOutputStatement(e);
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
 }
 
 void cppOutputReturn(Cons* returnstatement) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "return";
+  *(oCURRENT_STREAMo->nativeStream) << "return";
   if (((boolean)(returnstatement))) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << " (";
+    *(oCURRENT_STREAMo->nativeStream) << " (";
     cppOutputStatement(returnstatement);
-    *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+    *(oCURRENT_STREAMo->nativeStream) << ")";
   }
 }
 
@@ -1540,7 +1545,7 @@ void cppOutputTypeExpression(Cons* typeexpression) {
 
     for (typeexpr, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       typeexpr = ((StringWrapper*)(iter000->value));
-      *(oCURRENT_STREAMo.get()->nativeStream) << typeexpr->wrapperValue << " ";
+      *(oCURRENT_STREAMo->nativeStream) << typeexpr->wrapperValue << " ";
     }
   }
 }
@@ -1566,7 +1571,7 @@ void cppOutputTypedEntity(Object* type, Object* entity, Object* initialvalue) {
                 { 
                   BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, newOutputStringStream());
                   cppOutputStatement(type);
-                  result000 = ((OutputStringStream*)(oCURRENT_STREAMo.get()))->theStringReader();
+                  result000 = ((OutputStringStream*)(oCURRENT_STREAMo))->theStringReader();
                 }
                 translatedtype = result000;
               }
@@ -1598,7 +1603,7 @@ void cppOutputTypedEntity(Object* type, Object* entity, Object* initialvalue) {
                 { 
                   BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, newOutputStringStream());
                   cppOutputStatement(entity);
-                  result001 = ((OutputStringStream*)(oCURRENT_STREAMo.get()))->theStringReader();
+                  result001 = ((OutputStringStream*)(oCURRENT_STREAMo))->theStringReader();
                 }
                 translatedentity = result001;
               }
@@ -1619,7 +1624,7 @@ void cppOutputTypedEntity(Object* type, Object* entity, Object* initialvalue) {
             }
           }
         }
-        *(oCURRENT_STREAMo.get()->nativeStream) << cppGenerateArrayTypedEntity(translatedentity, translatedtype);
+        *(oCURRENT_STREAMo->nativeStream) << cppGenerateArrayTypedEntity(translatedentity, translatedtype);
       }
     }
     else {
@@ -1639,7 +1644,7 @@ void cppOutputTypedEntity(Object* type, Object* entity, Object* initialvalue) {
           { Object* type003 = type;
             StringWrapper* type = ((StringWrapper*)(type003));
 
-            *(oCURRENT_STREAMo.get()->nativeStream) << type->wrapperValue << " ";
+            *(oCURRENT_STREAMo->nativeStream) << type->wrapperValue << " ";
           }
         }
         else {
@@ -1663,7 +1668,7 @@ void cppOutputTypedEntity(Object* type, Object* entity, Object* initialvalue) {
           { Object* entity003 = entity;
             StringWrapper* entity = ((StringWrapper*)(entity003));
 
-            *(oCURRENT_STREAMo.get()->nativeStream) << entity->wrapperValue;
+            *(oCURRENT_STREAMo->nativeStream) << entity->wrapperValue;
           }
         }
         else {
@@ -1676,7 +1681,7 @@ void cppOutputTypedEntity(Object* type, Object* entity, Object* initialvalue) {
       }
     }
     if (((boolean)(initialvalue))) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << " = ";
+      *(oCURRENT_STREAMo->nativeStream) << " = ";
       cppOutputStatement(initialvalue);
     }
   }
@@ -1685,13 +1690,13 @@ void cppOutputTypedEntity(Object* type, Object* entity, Object* initialvalue) {
 void cppOutputDeclarations(Keyword* accesscontrolmode, Cons* declarations) {
   cppIndent();
   if (accesscontrolmode == KWD_CPP_OUTPUT_PUBLIC) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "public:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "public:" << std::endl;
   }
   else if (accesscontrolmode == KWD_CPP_OUTPUT_PRIVATE) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "private:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "private:" << std::endl;
   }
   else if (accesscontrolmode == KWD_CPP_OUTPUT_PROTECTED) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "protected:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "protected:" << std::endl;
   }
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
@@ -1714,7 +1719,7 @@ void cppOutputDeclarations(Keyword* accesscontrolmode, Cons* declarations) {
       }
       cppIndent();
       cppOutputTypedEntity(declaration->value, declaration->rest->value, NULL);
-      *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
     }
   }
   if (((boolean)(accesscontrolmode))) {
@@ -1735,13 +1740,13 @@ void cppOutputSignature(Cons* signature, boolean outputmethodclassP) {
         {
           if (outputmethodclassP &&
               ((boolean)(methodclass))) {
-            *(oCURRENT_STREAMo.get()->nativeStream) << methodclass->wrapperValue;
-            *(oCURRENT_STREAMo.get()->nativeStream) << "::";
+            *(oCURRENT_STREAMo->nativeStream) << methodclass->wrapperValue;
+            *(oCURRENT_STREAMo->nativeStream) << "::";
           }
-          *(oCURRENT_STREAMo.get()->nativeStream) << name->wrapperValue;
+          *(oCURRENT_STREAMo->nativeStream) << name->wrapperValue;
           cppOutputFormalParameters(((Cons*)(parameters)));
         }
-        result000 = ((OutputStringStream*)(oCURRENT_STREAMo.get()))->theStringReader();
+        result000 = ((OutputStringStream*)(oCURRENT_STREAMo))->theStringReader();
       }
       { char* baresignature = result000;
 
@@ -1754,13 +1759,13 @@ void cppOutputSignature(Cons* signature, boolean outputmethodclassP) {
 void cppOutputSignatures(Keyword* accesscontrolmode, Cons* signatures) {
   cppIndent();
   if (accesscontrolmode == KWD_CPP_OUTPUT_PUBLIC) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "public:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "public:" << std::endl;
   }
   else if (accesscontrolmode == KWD_CPP_OUTPUT_PRIVATE) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "private:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "private:" << std::endl;
   }
   else if (accesscontrolmode == KWD_CPP_OUTPUT_PROTECTED) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "protected:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "protected:" << std::endl;
   }
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
@@ -1779,7 +1784,7 @@ void cppOutputSignatures(Keyword* accesscontrolmode, Cons* signatures) {
       signature = iter000->value;
       cppIndent();
       cppOutputSignature(((Cons*)(signature)), false);
-      *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
     }
   }
   if (((boolean)(accesscontrolmode))) {
@@ -1790,13 +1795,13 @@ void cppOutputSignatures(Keyword* accesscontrolmode, Cons* signatures) {
 void cppOutputDefinitions(Keyword* accesscontrolmode, Cons* definitions) {
   cppIndent();
   if (accesscontrolmode == KWD_CPP_OUTPUT_PUBLIC) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "public:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "public:" << std::endl;
   }
   else if (accesscontrolmode == KWD_CPP_OUTPUT_PRIVATE) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "private:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "private:" << std::endl;
   }
   else if (accesscontrolmode == KWD_CPP_OUTPUT_PROTECTED) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "protected:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "protected:" << std::endl;
   }
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
@@ -1823,18 +1828,18 @@ void cppOutputDefinitions(Keyword* accesscontrolmode, Cons* definitions) {
 }
 
 void cppOutputProgn(Cons* progn) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "{" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "{" << std::endl;
   cppBumpIndent();
   cppOutputStatement(progn);
   cppUnbumpIndent();
   cppIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
 }
 
 void cppOutputBlock(Cons* block) {
   { boolean firststatementP = true;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "{ ";
+    *(oCURRENT_STREAMo->nativeStream) << "{ ";
     cppBumpIndent();
     { Cons* declaration = NULL;
       Cons* iter000 = ((Cons*)(block->value));
@@ -1846,14 +1851,14 @@ void cppOutputBlock(Cons* block) {
         }
         firststatementP = false;
         cppOutputTypedEntity(declaration->value, declaration->rest->value, declaration->rest->rest->value);
-        *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << std::endl;
     cppOutputStatement(block->rest->value);
     cppUnbumpIndent();
     cppIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
   }
 }
 
@@ -1878,70 +1883,70 @@ void cppOutputStaticMemberVars(StringWrapper* clasS, Cons* declarations) {
       declaration = ((Cons*)(iter000->value));
       cppIndent();
       cppOutputTypedEntity(declaration->value, wrapString(stringConcatenate(clasS->wrapperValue, "::", 1, ((StringWrapper*)(declaration->rest->value))->wrapperValue)), declaration->rest->rest->value);
-      *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
     }
   }
   if (!(declarations == NIL)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << std::endl;
   }
 }
 
 void cppOutputDerivedClasses(Cons* classlist) {
   if (((boolean)(classlist->value))) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(classlist->value))->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(classlist->value))->wrapperValue;
   }
   { Object* clasS = NULL;
     Cons* iter000 = classlist->rest;
 
     for (clasS, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       clasS = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << ", public ";
-      if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_CPP_OUTPUT_CPP_STANDALONE) {
-        *(oCURRENT_STREAMo.get()->nativeStream) << "virtual ";
+      *(oCURRENT_STREAMo->nativeStream) << ", public ";
+      if (oTRANSLATOROUTPUTLANGUAGEo == KWD_CPP_OUTPUT_CPP_STANDALONE) {
+        *(oCURRENT_STREAMo->nativeStream) << "virtual ";
       }
       else {
       }
-      *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(clasS))->wrapperValue;
+      *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(clasS))->wrapperValue;
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+  *(oCURRENT_STREAMo->nativeStream) << " ";
 }
 
 void cppOutputTemplateParameters(Cons* parameters) {
   if (!(parameters == NIL)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "template <";
-    *(oCURRENT_STREAMo.get()->nativeStream) << "class " << ((StringWrapper*)(parameters->value))->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << "template <";
+    *(oCURRENT_STREAMo->nativeStream) << "class " << ((StringWrapper*)(parameters->value))->wrapperValue;
     { Object* parameter = NULL;
       Cons* iter000 = parameters->rest;
 
       for (parameter, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         parameter = iter000->value;
-        *(oCURRENT_STREAMo.get()->nativeStream) << "class " << ((StringWrapper*)(parameter)) << ", ";
+        *(oCURRENT_STREAMo->nativeStream) << "class " << ((StringWrapper*)(parameter)) << ", ";
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << ">" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << ">" << std::endl;
   }
 }
 
 boolean cppOutputTemplateClassesP() {
-  return (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_CPP_OUTPUT_CPP_STANDALONE);
+  return (oTRANSLATOROUTPUTLANGUAGEo == KWD_CPP_OUTPUT_CPP_STANDALONE);
 }
 
 void cppOutputClass(Cons* classdef) {
   if (cppOutputTemplateClassesP()) {
     cppOutputTemplateParameters(((Cons*)(classdef->rest->value)));
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << "class " << ((StringWrapper*)(classdef->value))->wrapperValue << " ";
+  *(oCURRENT_STREAMo->nativeStream) << "class " << ((StringWrapper*)(classdef->value))->wrapperValue << " ";
   if (!(((Cons*)(classdef->rest->rest->value)) == NIL)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << ": public ";
-    if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_CPP_OUTPUT_CPP_STANDALONE) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "virtual ";
+    *(oCURRENT_STREAMo->nativeStream) << ": public ";
+    if (oTRANSLATOROUTPUTLANGUAGEo == KWD_CPP_OUTPUT_CPP_STANDALONE) {
+      *(oCURRENT_STREAMo->nativeStream) << "virtual ";
     }
     else {
     }
     cppOutputDerivedClasses(((Cons*)(classdef->rest->rest->value)));
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << "{" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "{" << std::endl;
   { Object* statement = NULL;
     Cons* iter000 = classdef->nthRest(4);
 
@@ -1950,7 +1955,7 @@ void cppOutputClass(Cons* classdef) {
       cppOutputStatement(statement);
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << "};" << std::endl << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "};" << std::endl << std::endl;
   cppOutputStaticMemberVars(((StringWrapper*)(classdef->value)), ((Cons*)(classdef->fourth())));
 }
 
@@ -1958,7 +1963,7 @@ void cppOutputFormalParameters(Cons* parameters) {
   { int nParameters = parameters->length();
     boolean variableArgumentsP = false;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+    *(oCURRENT_STREAMo->nativeStream) << "(";
     { Cons* parameter = NULL;
       Cons* iter000 = parameters;
       int n = NULL_INTEGER;
@@ -1979,19 +1984,19 @@ void cppOutputFormalParameters(Cons* parameters) {
             variableArgumentsP = parameter->value == SYM_CPP_OUTPUT_STELLA_CPP_VAR_ARGS;
             cppOutputTypedEntity((variableArgumentsP ? wrapString("int") : parameter->value), parameter->rest->value, NULL);
             if (variableArgumentsP) {
-              *(oCURRENT_STREAMo.get()->nativeStream) << ", ...";
+              *(oCURRENT_STREAMo->nativeStream) << ", ...";
             }
           }
         }
         else {
           {
             cppOutputTypedEntity(parameter->value, parameter->rest->value, NULL);
-            *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+            *(oCURRENT_STREAMo->nativeStream) << ", ";
           }
         }
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+    *(oCURRENT_STREAMo->nativeStream) << ")";
   }
 }
 
@@ -2010,10 +2015,10 @@ boolean cppArgumentIsStreamP(Object* arg) {
 }
 
 void cppOutputOneActualParameter(Object* parameter) {
-  if (oOUTPUTTINGDEFPRINTpo.get() &&
+  if (oOUTPUTTINGDEFPRINTpo &&
       cppArgumentIsStreamP(parameter)) {
     {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "&";
+      *(oCURRENT_STREAMo->nativeStream) << "&";
       cppOutputStatement(parameter);
     }
   }
@@ -2023,7 +2028,7 @@ void cppOutputOneActualParameter(Object* parameter) {
 }
 
 void cppOutputActualParameters(Cons* parameters) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+  *(oCURRENT_STREAMo->nativeStream) << "(";
   if (((boolean)(parameters->value))) {
     cppOutputOneActualParameter(parameters->value);
   }
@@ -2032,32 +2037,32 @@ void cppOutputActualParameters(Cons* parameters) {
 
     for (parameter, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       parameter = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+      *(oCURRENT_STREAMo->nativeStream) << ", ";
       cppOutputOneActualParameter(parameter);
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+  *(oCURRENT_STREAMo->nativeStream) << ")";
 }
 
 void cppOutputMethodSetterCall(Cons* methodsettercall) {
   cppMaybeOutputStatementWithParentheses(methodsettercall->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "->";
+  *(oCURRENT_STREAMo->nativeStream) << "->";
   cppOutputStatement(methodsettercall->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "_setter(";
+  *(oCURRENT_STREAMo->nativeStream) << "_setter(";
   cppOutputStatement(methodsettercall->rest->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+  *(oCURRENT_STREAMo->nativeStream) << ")";
 }
 
 void cppOutputMethodCall(Cons* methodcall) {
   cppMaybeOutputStatementWithParentheses(methodcall->rest->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "->";
+  *(oCURRENT_STREAMo->nativeStream) << "->";
   cppOutputStatement(methodcall->rest->value);
   cppOutputStatement(methodcall->fourth());
 }
 
 void cppOutputReferencedMethodCall(Cons* methodcall) {
   cppMaybeOutputStatementWithParentheses(methodcall->rest->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ".";
+  *(oCURRENT_STREAMo->nativeStream) << ".";
   cppOutputStatement(methodcall->rest->value);
   cppOutputStatement(methodcall->fourth());
 }
@@ -2068,22 +2073,22 @@ void cppOutputFunctionCall(Cons* functioncall) {
 }
 
 void cppOutputDefprintSignature(Cons* defprint) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "std::ostream& operator << (std::ostream& stream, ";
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(defprint->value))->wrapperValue;
-  *(oCURRENT_STREAMo.get()->nativeStream) << " self)";
+  *(oCURRENT_STREAMo->nativeStream) << "std::ostream& operator << (std::ostream& stream, ";
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(defprint->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << " self)";
 }
 
 void cppOutputDefprint(Cons* defprint) {
   cppOutputDefprintSignature(defprint);
-  *(oCURRENT_STREAMo.get()->nativeStream) << " {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << " {" << std::endl;
   cppBumpIndent();
   { 
     BIND_STELLA_SPECIAL(oOUTPUTTINGDEFPRINTpo, boolean, true);
     cppOutputStatement(defprint->rest->value);
   }
   cppUnbumpIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
-  *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << std::endl;
 }
 
 void cppOutputFunctionSignature(Cons* function) {
@@ -2092,10 +2097,10 @@ void cppOutputFunctionSignature(Cons* function) {
     { 
       BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, newOutputStringStream());
       {
-        *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(function->rest->value))->wrapperValue;
+        *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(function->rest->value))->wrapperValue;
         cppOutputFormalParameters(((Cons*)(function->rest->rest->value)));
       }
-      result000 = ((OutputStringStream*)(oCURRENT_STREAMo.get()))->theStringReader();
+      result000 = ((OutputStringStream*)(oCURRENT_STREAMo))->theStringReader();
     }
     { char* baresignature = result000;
 
@@ -2110,7 +2115,7 @@ void cppOutputFunction(Cons* function) {
 
     cppOutputFunctionSignature(function);
     if (((boolean)(basemembers))) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << " : ";
+      *(oCURRENT_STREAMo->nativeStream) << " : ";
       { Object* member = NULL;
         Cons* iter000 = basemembers;
 
@@ -2120,12 +2125,12 @@ void cppOutputFunction(Cons* function) {
         }
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << " {" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << " {" << std::endl;
     cppBumpIndent();
     cppOutputStatement(body);
     cppUnbumpIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
-    *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << std::endl;
   }
 }
 
@@ -2295,7 +2300,7 @@ void helpStartupCppOutput3() {
 void startupCppOutput() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupCppOutput1();
       helpStartupCppOutput2();

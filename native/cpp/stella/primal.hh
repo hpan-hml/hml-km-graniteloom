@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -68,6 +68,7 @@ extern double MOST_POSITIVE_FLOAT;
 extern double MOST_NEGATIVE_FLOAT;
 extern double LEAST_POSITIVE_FLOAT;
 extern double LEAST_NEGATIVE_FLOAT;
+extern double RECIPROCAL_NL2;
 extern double RECIPROCAL_NL10;
 extern DECLARE_STELLA_SPECIAL(oTRANSIENTOBJECTSpo, boolean );
 extern int* oHASH_BYTE_RANDOM_TABLEo;
@@ -117,6 +118,7 @@ double asin(double n);
 double atan(double n);
 double atan2(double x, double y);
 double log(double n);
+double log2(double n);
 double log10(double n);
 double exp(double n);
 double expt(double x, double y);
@@ -148,6 +150,9 @@ boolean stringLessP(char* x, char* y);
 boolean stringLessEqualP(char* x, char* y);
 boolean stringGreaterEqualP(char* x, char* y);
 boolean stringGreaterP(char* x, char* y);
+int stringCompareCaseNormalized(char* x, char* y);
+int compareStrings(char* x, char* y, Keyword* collation);
+int safeCompareStrings(char* x, char* y, Keyword* collation);
 char* makeMutableString(int size, char initchar);
 char* makeRawMutableString(int size);
 char* stringConcatenate(char* string1, char* string2, int otherstrings, ...);
@@ -158,7 +163,10 @@ char* replaceSubstrings(char* string, char* neW, char* old);
 char* instantiateStringTemplate(char* templatE, int varsAvalues, ...);
 int insertString(char* source, int start, int end, char* target, int targetIndex, Keyword* caseConversion);
 char* stringTrim(char* string);
+char* intToString(int i);
 char* characterToString(char c);
+char* stellaIntegerToStringInBase(long long int integer, int base);
+int stringToInt(char* string);
 char* formatWithPadding(char* input, int length, char padchar, Keyword* align, boolean truncateP);
 char* zeroPadInteger(int value, int size);
 char* zeroPadString(char* input, int size);
@@ -211,19 +219,24 @@ void resizeVector(Vector* self, int size);
 Object* nativeVectorNth(Object** self, int position);
 Object* nativeVectorNthSetter(Object** self, Object* value, int position);
 void unmake(Object* self);
+boolean nativeProbeDirectoryP(char* filename);
 boolean probeFileP(char* filename);
+boolean probeDirectoryP(char* filename);
 CalendarDate* fileWriteDate(char* filename);
 long long int fileLength(char* filename);
 void deleteFile(char* filename);
 void renameFile(char* fromfile, char* tofile);
 void copyStreamToStream(InputStream* in, OutputStream* out);
 void copyFile(char* fromfile, char* tofile);
+char* getTempDirectory();
 char* makeTemporaryFileName(char* prefix, char* suffix);
 Cons* clListDirectoryFiles(char* directory);
 Cons* cppListDirectoryFiles(char* directory);
 Cons* javaListDirectoryFiles(char* directory);
 Cons* listDirectoryFiles(char* directory);
 Cons* listDirectoryFilesEvaluatorWrapper(Cons* arguments);
+Cons* listDirectoryFilesRecursively(char* directory);
+Cons* listDirectoryFilesRecursivelyEvaluatorWrapper(Cons* arguments);
 int integerLognot(int arg);
 long long int longIntegerLognot(long long int arg);
 int integerLogand(int arg1, int arg2);
@@ -278,6 +291,9 @@ extern Symbol* SYM_PRIMAL_STELLA_LOG;
 extern Symbol* SYM_PRIMAL_STELLA_MIN;
 extern Symbol* SYM_PRIMAL_STELLA_MAX;
 extern Keyword* KWD_PRIMAL_WHITE_SPACE;
+extern Keyword* KWD_PRIMAL_ASCII_CASE_SENSITIVE;
+extern Keyword* KWD_PRIMAL_ASCII_CASE_INSENSITIVE;
+extern Keyword* KWD_PRIMAL_ASCII_CASE_NORMALIZED;
 extern Keyword* KWD_PRIMAL_UPCASE;
 extern Keyword* KWD_PRIMAL_DOWNCASE;
 extern Keyword* KWD_PRIMAL_CAPITALIZE;
@@ -287,6 +303,9 @@ extern Keyword* KWD_PRIMAL_RIGHT;
 extern Keyword* KWD_PRIMAL_CENTER;
 extern Symbol* SYM_PRIMAL_STELLA_HASH_CODE;
 extern Keyword* KWD_PRIMAL_JAVA;
+extern Keyword* KWD_PRIMAL_UNIX;
+extern Keyword* KWD_PRIMAL_MAC;
+extern Keyword* KWD_PRIMAL_WINDOWS;
 extern Keyword* KWD_PRIMAL_TYPE_4;
 extern Keyword* KWD_PRIMAL_RANDOM;
 extern Symbol* SYM_PRIMAL_STELLA_SLEEP;

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -137,6 +137,23 @@ public abstract class ObjectStore extends StandardObject {
     }
   }
 
+  /** Fetch a duplicate of <code>prop</code> if defined by <code>store</code>.  EXPERIMENTAL!
+   * The exact semantics of this still needs to be worked out.  This needs to be appropriately
+   * specialized on actual OBJECT-STORE implementations.
+   * @param prop
+   * @return Proposition
+   */
+  public Proposition fetchDuplicateProposition(Proposition prop) {
+    { ObjectStore store = this;
+
+      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+        stream000.nativeStream.print("Don't know how to fetch a duplicate of `" + prop + "' from `" + store + "'");
+        throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+      }
+    }
+  }
+
   /** Fetch the instance identified by <code>name</code> (a string or symbol) from <code>store</code>
    * and return it as an appropriate logic object.  This needs to be appropriately
    * specialized on actual OBJECT-STORE implementations.
@@ -184,6 +201,28 @@ public abstract class ObjectStore extends StandardObject {
         }
       }
     }
+  }
+
+  /** Remove <code>store</code> from the list of active object stores.
+   * @param store
+   */
+  public static void unregisterObjectStore(ObjectStore store) {
+    if (!(List.nullListP(Logic.$ALL_OBJECT_STORES$))) {
+      Logic.$ALL_OBJECT_STORES$.remove(store);
+      if (Logic.$ALL_OBJECT_STORES$.emptyP()) {
+        Logic.$ALL_OBJECT_STORES$ = Stella.NIL_LIST;
+      }
+    }
+  }
+
+  /** Register <code>store</code> as an active object store.
+   * @param store
+   */
+  public static void registerObjectStore(ObjectStore store) {
+    if (List.nullListP(Logic.$ALL_OBJECT_STORES$)) {
+      Logic.$ALL_OBJECT_STORES$ = List.newList();
+    }
+    Logic.$ALL_OBJECT_STORES$.insertNew(store);
   }
 
   public static Stella_Object accessObjectStoreSlotValue(ObjectStore self, Symbol slotname, Stella_Object value, boolean setvalueP) {

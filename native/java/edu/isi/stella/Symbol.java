@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -531,6 +531,7 @@ public class Symbol extends GeneralizedSymbol {
             Symbol.slotReaderFromNameP(methodname, owner)) {
           translatedname.wrapperValue = translatedname.wrapperValue + "_reader";
         }
+        otherargs = otherargs.concatenate(MethodSlot.cppYieldUnusedDummyArgs(method, arguments), Stella.NIL);
         return (Cons.cons((referencedP ? Stella.SYM_STELLA_CPP_REFERENCED_METHOD_CALL : Stella.SYM_STELLA_CPP_METHOD_CALL), Cons.list$(Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(GeneralizedSymbol.cppTranslateClassName(Symbol.internSymbolInModule(owner.symbolName, ((Module)(owner.homeContext)), false)), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(translatedname, Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(Stella_Object.cppTranslateATree(firstarg), Cons.cons(Cons.cons((((method != null) &&
             (((BooleanWrapper)(KeyValueList.dynamicSlotValue(method.dynamicSlots, Stella.SYM_STELLA_METHOD_VARIABLE_ARGUMENTSp, Stella.FALSE_WRAPPER))).wrapperValue &&
              (!MethodSlot.passVariableArgumentsAsListP(method)))) ? Cons.cppTranslateVariableLengthActuals(otherargs, method) : Cons.cppTranslateActualParameters(otherargs)), Stella.NIL), Stella.NIL)))))));
@@ -651,14 +652,7 @@ public class Symbol extends GeneralizedSymbol {
       { GlobalVariable globalvar = tree.softPermanentify().lookupGlobalVariable();
 
         if (globalvar != null) {
-          { Cons otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateGlobalName(tree), Cons.cons(Stella.NIL, Stella.NIL))));
-
-            if (globalvar.variableSpecialP &&
-                (Stella.specialImplementationStyle() == Stella.KWD_UNBIND_WITH_DESTRUCTORS)) {
-              otree = Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_REFERENCED_METHOD_CALL, Cons.cons(Stella.SYM_STELLA_NULL, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateName(Stella.SYM_STELLA_GET), Cons.cons(Stella.NIL, Stella.NIL)))), Cons.cons(otree, Cons.cons(Cons.cons(Cons.cons(Stella.SYM_STELLA_CPP_ACTUALS, Stella.NIL), Stella.NIL), Stella.NIL))))));
-            }
-            return (otree);
-          }
+          return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateGlobalName(tree), Cons.cons(Stella.NIL, Stella.NIL)))));
         }
         else {
           return (Cons.list$(Cons.cons(Stella.SYM_STELLA_CPP_IDENT, Cons.cons(Symbol.cppTranslateName(tree), Cons.cons(Stella.NIL, Stella.NIL)))));
@@ -1199,6 +1193,24 @@ public class Symbol extends GeneralizedSymbol {
       String suffix = (Stella.allUpperCaseStringP(baseName) ? "-EVALUATOR-WRAPPER" : "-Evaluator-Wrapper");
 
       return (Symbol.internDerivedSymbol(methodname, baseName + suffix));
+    }
+  }
+
+  /** Look up a function with <code>name</code> that can be evaluated via <code>apply</code>
+   * just like a command, regardless of whether it was marked as such.
+   * @param name
+   * @return MethodSlot
+   */
+  public static MethodSlot lookupCommandLikeFunction(Symbol name) {
+    { MethodSlot function = Symbol.lookupFunction(name);
+
+      if ((function != null) &&
+          MethodSlot.methodCallableViaApplyP(function)) {
+        return (function);
+      }
+      else {
+        return (null);
+      }
     }
   }
 

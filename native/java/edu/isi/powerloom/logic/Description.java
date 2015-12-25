@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -90,7 +90,7 @@ public class Description extends LogicObject {
 
       if (!(namedP)) {
         Stella.indentOutline(currentDepth, stream);
-        stream.nativeStream.println(top);
+        stream.nativeStream.println(top.toString());
       }
       if (!((depth != Stella.NULL_INTEGER) &&
           ((depth >= 0) &&
@@ -1010,7 +1010,9 @@ public class Description extends LogicObject {
 
         try {
           Native.setSpecial(Logic.$SKOLEMNAMEMAPPINGTABLE$, (mapheadvariablesP ? ((KeyValueMap)(Logic.createSkolemMappingTable(head.ioVariables, tail.ioVariables))) : null));
+          Logic.pushQuantifiedObject(head);
           headprop = Description.generateDescriptionProposition(head, reversepolarityP);
+          Logic.popQuantifiedObject();
 
         } finally {
           Logic.$SKOLEMNAMEMAPPINGTABLE$.set(old$Skolemnamemappingtable$000);
@@ -1020,7 +1022,9 @@ public class Description extends LogicObject {
 
         try {
           Native.setSpecial(Logic.$SKOLEMNAMEMAPPINGTABLE$, ((!mapheadvariablesP) ? ((KeyValueMap)(Logic.createSkolemMappingTable(tail.ioVariables, head.ioVariables))) : null));
+          Logic.pushQuantifiedObject(tail);
           tailprop = Description.generateDescriptionProposition(tail, reversepolarityP);
+          Logic.popQuantifiedObject();
 
         } finally {
           Logic.$SKOLEMNAMEMAPPINGTABLE$.set(old$Skolemnamemappingtable$001);
@@ -1065,7 +1069,12 @@ public class Description extends LogicObject {
       return (Cons.list$(Cons.cons(Logic.SYM_STELLA_NOT, Cons.cons(Logic.internalStellaOperatorToKif(((Description)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_COMPLEMENT_DESCRIPTION, null))).descriptionName()), Cons.cons(Stella.NIL, Stella.NIL)))));
     }
     else {
-      return (Cons.list$(Cons.cons(Logic.SYM_LOGIC_KAPPA, Cons.cons(Logic.generateVariables(self.ioVariables, true), Cons.cons(Cons.cons(Description.generateDescriptionProposition(self, false), Stella.NIL), Stella.NIL)))));
+      Logic.pushQuantifiedObject(self);
+      { Cons result = Cons.list$(Cons.cons(Logic.SYM_LOGIC_KAPPA, Cons.cons(Logic.generateQuantifiedVariables(self.ioVariables, true), Cons.cons(Cons.cons(Description.generateDescriptionProposition(self, false), Stella.NIL), Stella.NIL))));
+
+        Logic.popQuantifiedObject();
+        return (result);
+      }
     }
   }
 
@@ -1079,7 +1088,7 @@ public class Description extends LogicObject {
     }
     if (((Boolean)(Logic.$LOADINGREGENERABLEOBJECTSp$.get())).booleanValue() ||
         (BooleanWrapper.coerceWrappedBooleanToBoolean(self.badP()) ||
-         Logic.$DEBUG_MODEp$)) {
+         Logic.$DEBUG_PRINT_MODEp$)) {
       stream.nativeStream.print("|d|");
     }
     else if (toplevelP &&
@@ -1150,6 +1159,7 @@ public class Description extends LogicObject {
           Logic.printIndent(stream, Stella.NULL_INTEGER);
           stream.nativeStream.print("(" + Logic.stringifiedSurrogate(operatorprefix) + " ");
           Logic.increaseIndent(operatorprefixindent);
+          Logic.pushQuantifiedObject(head);
           { Object old$Skolemnamemappingtable$000 = Logic.$SKOLEMNAMEMAPPINGTABLE$.get();
 
             try {
@@ -1160,8 +1170,10 @@ public class Description extends LogicObject {
               Logic.$SKOLEMNAMEMAPPINGTABLE$.set(old$Skolemnamemappingtable$000);
             }
           }
+          Logic.popQuantifiedObject();
           stream.nativeStream.println();
           Logic.printIndent(stream, Stella.NULL_INTEGER);
+          Logic.pushQuantifiedObject(tail);
           { Object old$Skolemnamemappingtable$001 = Logic.$SKOLEMNAMEMAPPINGTABLE$.get();
 
             try {
@@ -1172,6 +1184,7 @@ public class Description extends LogicObject {
               Logic.$SKOLEMNAMEMAPPINGTABLE$.set(old$Skolemnamemappingtable$001);
             }
           }
+          Logic.popQuantifiedObject();
           stream.nativeStream.print("))");
           Logic.decreaseIndent(operatorprefixindent);
           Logic.decreaseIndent(Stella.NULL_INTEGER);
@@ -1215,6 +1228,7 @@ public class Description extends LogicObject {
 
       try {
         Native.setSpecial(Logic.$QUERYITERATOR$, null);
+        Logic.pushQuantifiedObject(self);
         { OutputStream stream = ((OutputStream)(Logic.$PRINTLOGICALFORMSTREAM$.get()));
           Description complement = ((Description)(KeyValueList.dynamicSlotValue(self.dynamicSlots, Logic.SYM_LOGIC_COMPLEMENT_DESCRIPTION, null)));
 
@@ -1234,6 +1248,7 @@ public class Description extends LogicObject {
             Description.printKifDescriptionProposition(self, false);
             stream.nativeStream.print(")");
           }
+          Logic.popQuantifiedObject();
         }
 
       } finally {
@@ -1978,7 +1993,7 @@ public class Description extends LogicObject {
   }
 
   public static Description findDuplicateComplexDescription(Description self) {
-    { IntegerWrapper index = IntegerWrapper.wrapInteger(Proposition.propositionHashIndex(self.proposition, null));
+    { IntegerWrapper index = IntegerWrapper.wrapInteger(Proposition.propositionHashIndex(self.proposition, null, false));
       List bucket = ((List)(Logic.$STRUCTURED_OBJECTS_INDEX$.lookup(index)));
       Module homemodule = self.homeContext.baseModule;
       KeyValueMap mapping = KeyValueMap.newKeyValueMap();

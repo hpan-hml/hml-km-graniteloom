@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -53,7 +53,7 @@ namespace units {
 void startupUnitKb() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/UNIT-SUPPORT", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SYM_UNIT_KB_UNIT_KB_MEASURE = ((Symbol*)(internRigidSymbolWrtModule("MEASURE", getStellaModule("/UNIT-KB", true), 0)));
       KWD_UNIT_KB_DOCUMENTATION = ((Keyword*)(internRigidSymbolWrtModule("DOCUMENTATION", NULL, 2)));
@@ -102,7 +102,7 @@ void startupUnitKb() {
       inModule(((StringWrapper*)(copyConsTree(wrapString("UNIT-SUPPORT")))));
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("PL-KERNEL-KB", true));
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         defconcept(consList(4, ((Symbol*)(copyConsTree(SYM_UNIT_KB_UNIT_KB_MEASURE))), ((Cons*)(copyConsTree(NIL))), KWD_UNIT_KB_DOCUMENTATION, ((StringWrapper*)(copyConsTree(wrapString("A (pre-defined) measure of some physical quantity."))))));
         defconcept(consList(6, ((Symbol*)(copyConsTree(SYM_UNIT_KB_UNIT_KB_BASE_MEASURE))), ((Cons*)(copyConsTree(getQuotedTree("((?M /UNIT-KB/MEASURE) \"/UNIT-SUPPORT\")", "/UNIT-SUPPORT")))), KWD_UNIT_KB_DOCUMENTATION, ((StringWrapper*)(copyConsTree(wrapString("A base measure.  One that defines fundamental units which\nare not composed of any other units.")))), KWD_UNIT_KB_AXIOMS, ((Cons*)(copyConsTree(getQuotedTree("((CLOSED /UNIT-KB/BASE-MEASURE) \"/UNIT-SUPPORT\")", "/UNIT-SUPPORT"))))));
         defrelation(consList(6, ((Symbol*)(copyConsTree(SYM_UNIT_KB_UNIT_KB_MEASURE_UNIT))), ((Cons*)(copyConsTree(getQuotedTree("(((?M /UNIT-KB/MEASURE) (?U STRING)) \"/UNIT-SUPPORT\")", "/UNIT-SUPPORT")))), KWD_UNIT_KB_DOCUMENTATION, ((StringWrapper*)(copyConsTree(wrapString("A mapping between a Measure and the unit names that belong\nto that measure.")))), KWD_UNIT_KB_AXIOMS, ((Cons*)(copyConsTree(getQuotedTree("((CLOSED /UNIT-KB/MEASURE-UNIT) \"/UNIT-SUPPORT\")", "/UNIT-SUPPORT"))))));

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -54,7 +54,7 @@ char* oCPP_TRANSLATED_FILE_SUFFIXo = "";
 void cpptrans(Object* statement) {
   // Translate `statement' to C++ and print the result.
   { 
-    BIND_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword*, oTRANSLATOROUTPUTLANGUAGEo.get());
+    BIND_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword*, oTRANSLATOROUTPUTLANGUAGEo);
     BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, STANDARD_OUTPUT);
     setTranslatorOutputLanguage(KWD_CPP_TRANSLATE_FILE_CPP);
     incrementallyTranslate(statement);
@@ -81,21 +81,21 @@ void cppOutputIncludeDirective(char* filename, boolean stripdirectoryP) {
   if (stripdirectoryP) {
     filename = fileNameWithoutDirectory(filename);
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << "#include \"" << filename << "\"" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "#include \"" << filename << "\"" << std::endl;
 }
 
 void cppStandaloneOutputImportDeclarations(char* headerfilename) {
   cppOutputIncludeDirective(makeFileName("cpp-standalone", KWD_CPP_TRANSLATE_FILE_CPP_HEADER, true), true);
   cppOutputIncludeDirective(headerfilename, true);
-  *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << std::endl;
 }
 
 char* cppRelativizeHeaderFile(char* headerfile, char* systemname) {
   systemname = systemname;
   { 
     BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONo, SystemDefinition*, getSystemDefinition("stella"));
-    BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo.get())) ? oCURRENTSYSTEMDEFINITIONo.get()->directory : NULL));
-    if (((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
+    BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo)) ? oCURRENTSYSTEMDEFINITIONo->directory : NULL));
+    if (((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
       {
         { char* directoryfile = makeFileName("dummy", KWD_CPP_TRANSLATE_FILE_CPP_HEADER, true);
 
@@ -112,18 +112,18 @@ char* cppRelativizeHeaderFile(char* headerfile, char* systemname) {
 
 void cppOutputImportDeclarations(char* systemname) {
   if (systemname == NULL) {
-    if (!((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
+    if (!((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
       return;
     }
-    systemname = oCURRENTSYSTEMDEFINITIONo.get()->name;
+    systemname = oCURRENTSYSTEMDEFINITIONo->name;
   }
   { 
     BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONo, SystemDefinition*, getSystemDefinition(systemname));
-    BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo.get())) ? oCURRENTSYSTEMDEFINITIONo.get()->directory : NULL));
-    if (((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
+    BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo)) ? oCURRENTSYSTEMDEFINITIONo->directory : NULL));
+    if (((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
       {
         cppOutputIncludeDirective(cppRelativizeHeaderFile(makeFileName(cppYieldSystemHeaderFileName(systemname), KWD_CPP_TRANSLATE_FILE_CPP_HEADER, true), systemname), false);
-        *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << std::endl;
       }
     }
     else {
@@ -134,34 +134,34 @@ void cppOutputImportDeclarations(char* systemname) {
 
 void cppOutputClassHeadDeclarations(Cons* classes) {
   if (!(classes == NIL)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "// Class headers:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "// Class headers:" << std::endl;
   }
   { Object* clasS = NULL;
     Cons* iter000 = classes;
 
     for (clasS, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       clasS = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << "class " << ((StringWrapper*)(((Cons*)(clasS))->rest->value))->wrapperValue << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << "class " << ((StringWrapper*)(((Cons*)(clasS))->rest->value))->wrapperValue << ";" << std::endl;
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << std::endl;
 }
 
 void cppOutputNamespaceHeader(Module* module) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "namespace " << cppYieldNamespacePrefixFromModule(module) << " {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "namespace " << cppYieldNamespacePrefixFromModule(module) << " {" << std::endl;
   { Module* usee = NULL;
     Cons* iter000 = copyConsList(visibleModules(module)->consify()->rest)->reverse();
 
     for (usee, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       usee = ((Module*)(iter000->value));
-      *(oCURRENT_STREAMo.get()->nativeStream) << "  using namespace " << cppYieldNamespacePrefixFromModule(usee) << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << "  using namespace " << cppYieldNamespacePrefixFromModule(usee) << ";" << std::endl;
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << std::endl;
 }
 
 void cppOutputNamespaceFooter(Module* module) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "} // end of namespace " << cppYieldNamespacePrefixFromModule(module) << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "} // end of namespace " << cppYieldNamespacePrefixFromModule(module) << std::endl;
 }
 
 boolean cppUnitDefinesMainP(TranslationUnit* unit) {
@@ -180,19 +180,19 @@ void cppOutputMain(TranslationUnit* unit) {
       out = openOutputFile(cppYieldMainFileName(), 0);
       { 
         BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, out);
-        if (((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
-          *(oCURRENT_STREAMo.get()->nativeStream) << "// main entry point for " << oCURRENTSYSTEMDEFINITIONo.get()->name << " system" << std::endl << std::endl;
+        if (((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
+          *(oCURRENT_STREAMo->nativeStream) << "// main entry point for " << oCURRENTSYSTEMDEFINITIONo->name << " system" << std::endl << std::endl;
         }
         cppOutputImportDeclarations(NULL);
         { Module* usee = NULL;
-          Cons* iter000 = ((Cons*)(copyConsTree(visibleModules(oMODULEo.get())->consify())))->reverse();
+          Cons* iter000 = ((Cons*)(copyConsTree(visibleModules(oMODULEo)->consify())))->reverse();
 
           for (usee, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
             usee = ((Module*)(iter000->value));
-            *(oCURRENT_STREAMo.get()->nativeStream) << "using namespace " << cppYieldNamespacePrefixFromModule(usee) << ";" << std::endl;
+            *(oCURRENT_STREAMo->nativeStream) << "using namespace " << cppYieldNamespacePrefixFromModule(usee) << ";" << std::endl;
           }
         }
-        *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << std::endl;
         cppOutputStatement(unit->translation);
       }
     }
@@ -282,9 +282,9 @@ void cppOutputNamespaceChange(Module* fromnamespace, Module* tonamespace) {
       (((boolean)(fromnamespace)) &&
        stringEqlP(cppYieldNamespacePrefixFromModule(fromnamespace), cppYieldNamespacePrefixFromModule(tonamespace))))) {
     if (!(!((boolean)(fromnamespace)))) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << std::endl;
       cppOutputNamespaceFooter(fromnamespace);
-      *(oCURRENT_STREAMo.get()->nativeStream) << std::endl << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << std::endl << std::endl;
     }
     cppOutputNamespaceHeader(tonamespace);
   }
@@ -293,7 +293,7 @@ void cppOutputNamespaceChange(Module* fromnamespace, Module* tonamespace) {
 void cppOutputAllUnitsToFile(char* filename) {
   { char* codeoutputfile = makeFileName(filename, KWD_CPP_TRANSLATE_FILE_CPP_CODE, false);
     char* headeroutputfile = makeFileName(filename, KWD_CPP_TRANSLATE_FILE_CPP_HEADER, false);
-    List* headerunits = cppSortUnitsForHeaderFile(oTRANSLATIONUNITSo.get());
+    List* headerunits = cppSortUnitsForHeaderFile(oTRANSLATIONUNITSo);
     Cons* auxiliaryglobals = ((Cons*)(headerunits->fifth()));
     TranslationUnit* main = ((TranslationUnit*)(((Cons*)(headerunits->nth(5)))->value));
     Module* currentnamespacemodule = NULL;
@@ -337,20 +337,20 @@ void cppOutputAllUnitsToFile(char* filename) {
 
                         if (testValue000 == SYM_CPP_TRANSLATE_FILE_STELLA_VERBATIM) {
                           if (i == 1) {
-                            *(oCURRENT_STREAMo.get()->nativeStream) << "// Header files and macros:" << std::endl;
+                            *(oCURRENT_STREAMo->nativeStream) << "// Header files and macros:" << std::endl;
                           }
                           cppOutputStatement(unit->translation);
-                          *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+                          *(oCURRENT_STREAMo->nativeStream) << std::endl;
                         }
                         else if (testValue000 == SYM_CPP_TRANSLATE_FILE_STELLA_CLASS) {
                           if (i == 1) {
-                            *(oCURRENT_STREAMo.get()->nativeStream) << "// Class definitions:" << std::endl;
+                            *(oCURRENT_STREAMo->nativeStream) << "// Class definitions:" << std::endl;
                           }
                           cppOutputClass(((Cons*)(unit->translation))->rest);
                         }
                         else if (testValue000 == SYM_CPP_TRANSLATE_FILE_STELLA_GLOBAL_VARIABLE) {
                           if (i == 1) {
-                            *(oCURRENT_STREAMo.get()->nativeStream) << "// Global declarations:" << std::endl;
+                            *(oCURRENT_STREAMo->nativeStream) << "// Global declarations:" << std::endl;
                           }
                           cppOutputGlobalDeclaration(((Cons*)(unit->translation)));
                         }
@@ -358,7 +358,7 @@ void cppOutputAllUnitsToFile(char* filename) {
                             ((testValue000 == SYM_CPP_TRANSLATE_FILE_STELLA_PRINT_METHOD) ||
                              (testValue000 == SYM_CPP_TRANSLATE_FILE_STELLA_MACRO))) {
                           if (i == 1) {
-                            *(oCURRENT_STREAMo.get()->nativeStream) << "// Function signatures:" << std::endl;
+                            *(oCURRENT_STREAMo->nativeStream) << "// Function signatures:" << std::endl;
                           }
                           { Cons* translation = ((Cons*)(unit->translation));
 
@@ -366,11 +366,11 @@ void cppOutputAllUnitsToFile(char* filename) {
 
                               if (testValue001 == SYM_CPP_TRANSLATE_FILE_STELLA_CPP_FUNCTION) {
                                 cppOutputFunctionSignature(translation->rest);
-                                *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+                                *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
                               }
                               else if (testValue001 == SYM_CPP_TRANSLATE_FILE_STELLA_CPP_DEFPRINT) {
                                 cppOutputDefprintSignature(translation->rest);
-                                *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+                                *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
                               }
                               else {
                               }
@@ -379,7 +379,7 @@ void cppOutputAllUnitsToFile(char* filename) {
                         }
                         else if (testValue000 == SYM_CPP_TRANSLATE_FILE_STELLA_AUXILIARY_VARIABLE) {
                           if (i == 1) {
-                            *(oCURRENT_STREAMo.get()->nativeStream) << "// Auxiliary global declarations:" << std::endl;
+                            *(oCURRENT_STREAMo->nativeStream) << "// Auxiliary global declarations:" << std::endl;
                           }
                           cppOutputGlobalDeclaration(((Cons*)(unit->translation)));
                         }
@@ -393,29 +393,29 @@ void cppOutputAllUnitsToFile(char* filename) {
                       }
                     }
                   }
-                  *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+                  *(oCURRENT_STREAMo->nativeStream) << std::endl;
                 }
               }
               cppOutputNamespaceFooter(currentnamespacemodule);
               std::cout << "Writing " << "`" << codeoutputfile << "'" << "..." << std::endl;
-              oCURRENT_STREAMo.set(codeoutputstream);
+              oCURRENT_STREAMo = codeoutputstream;
               cppOutputFileHeader(codeoutputstream, codeoutputfile);
-              if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_CPP_TRANSLATE_FILE_CPP) {
+              if (oTRANSLATOROUTPUTLANGUAGEo == KWD_CPP_TRANSLATE_FILE_CPP) {
                 cppOutputImportDeclarations(NULL);
               }
-              else if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_CPP_TRANSLATE_FILE_CPP_STANDALONE) {
+              else if (oTRANSLATOROUTPUTLANGUAGEo == KWD_CPP_TRANSLATE_FILE_CPP_STANDALONE) {
                 cppStandaloneOutputImportDeclarations(headeroutputfile);
               }
               else {
                 { OutputStringStream* stream001 = newOutputStringStream();
 
-                  *(stream001->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo.get() << "'" << " is not a valid case option";
+                  *(stream001->nativeStream) << "`" << oTRANSLATOROUTPUTLANGUAGEo << "'" << " is not a valid case option";
                   throw *newStellaException(stream001->theStringReader());
                 }
               }
               currentnamespacemodule = NULL;
               { TranslationUnit* unit = NULL;
-                Cons* iter003 = oTRANSLATIONUNITSo.get()->theConsList;
+                Cons* iter003 = oTRANSLATIONUNITSo->theConsList;
 
                 for (unit, iter003; !(iter003 == NIL); iter003 = iter003->rest) {
                   unit = ((TranslationUnit*)(iter003->value));
@@ -464,7 +464,7 @@ void cppOutputAllUnitsToFile(char* filename) {
               }
               cppOutputNamespaceFooter(currentnamespacemodule);
               if (((boolean)(main))) {
-                *(oCURRENT_STREAMo.get()->nativeStream) << std::endl << std::endl;
+                *(oCURRENT_STREAMo->nativeStream) << std::endl << std::endl;
                 cppOutputMain(main);
               }
             }
@@ -519,11 +519,11 @@ void cppTranslateWalkedSystemUnits(KeyValueList* systemunits) {
             iter000 = iter000->rest) {
         file = ((StringWrapper*)(iter000->key));
         units = ((List*)(iter000->value));
-        oCURRENTFILEo.set(fileBaseName(file->wrapperValue));
-        oTRANSLATIONUNITSo.set(units);
+        oCURRENTFILEo = fileBaseName(file->wrapperValue);
+        oTRANSLATIONUNITSo = units;
         { 
           BIND_STELLA_SPECIAL(oMODULEo, Module*, computeFileUnitsModule(units));
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
           translateAndOutputUnitsToFile(file->wrapperValue, "C++");
         }
         cleanUpTranslationUnitsSpecial();
@@ -547,7 +547,7 @@ char* cppYieldSystemHeaderFileGuard(char* systemname) {
 }
 
 void cppOutputSystemHeaderFile() {
-  { SystemDefinition* system = oCURRENTSYSTEMDEFINITIONo.get();
+  { SystemDefinition* system = oCURRENTSYSTEMDEFINITIONo;
     char* systemname = system->name;
     char* headeroutputfile = makeFileName(cppYieldSystemHeaderFileName(systemname), KWD_CPP_TRANSLATE_FILE_CPP_HEADER, true);
 
@@ -557,12 +557,12 @@ void cppOutputSystemHeaderFile() {
         headeroutputstream = openOutputFile(headeroutputfile, 0);
         { 
           BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, headeroutputstream);
-          BIND_STELLA_SPECIAL(oMODULEo, Module*, getCardinalModule(oCURRENTSYSTEMDEFINITIONo.get()));
+          BIND_STELLA_SPECIAL(oMODULEo, Module*, getCardinalModule(oCURRENTSYSTEMDEFINITIONo));
           BIND_STELLA_SPECIAL(oCPP_CURRENT_UNIT_MODULEo, Module*, NULL);
-          *(oCURRENT_STREAMo.get()->nativeStream) << "// " << fileNameWithoutDirectory(headeroutputfile) << std::endl << std::endl;
-          *(oCURRENT_STREAMo.get()->nativeStream) << "#ifndef " << cppYieldSystemHeaderFileGuard(systemname) << std::endl << "#define " << cppYieldSystemHeaderFileGuard(systemname) << std::endl << std::endl;
+          *(oCURRENT_STREAMo->nativeStream) << "// " << fileNameWithoutDirectory(headeroutputfile) << std::endl << std::endl;
+          *(oCURRENT_STREAMo->nativeStream) << "#ifndef " << cppYieldSystemHeaderFileGuard(systemname) << std::endl << "#define " << cppYieldSystemHeaderFileGuard(systemname) << std::endl << std::endl;
           if (((boolean)(system->requiredSystems))) {
-            *(oCURRENT_STREAMo.get()->nativeStream) << "// Required systems:" << std::endl;
+            *(oCURRENT_STREAMo->nativeStream) << "// Required systems:" << std::endl;
             { StringWrapper* reqsys = NULL;
               Cons* iter000 = system->requiredSystems;
 
@@ -572,41 +572,51 @@ void cppOutputSystemHeaderFile() {
               }
             }
           }
-          *(oCURRENT_STREAMo.get()->nativeStream) << "// System-wide forward declarations:" << std::endl;
-          { Module* currentnamespacemodule = NULL;
+          *(oCURRENT_STREAMo->nativeStream) << "// System-wide forward declarations:" << std::endl;
+          { Object* module = NULL;
+            Cons* iter001 = cons(oMODULEo, collectDefinedModulesFromSystemFile(system)->remove(oMODULEo));
 
-            { Class* clasS = NULL;
-              Iterator* iter001 = allClasses(oMODULEo.get(), true);
+            for (module, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+              module = iter001->value;
+              { Module* currentnamespacemodule = NULL;
 
-              for (clasS, iter001; iter001->nextP(); ) {
-                clasS = ((Class*)(iter001->value));
-                if (createNativeClassP(clasS)) {
-                  oCPP_CURRENT_UNIT_MODULEo.set(clasS->homeModule());
-                  cppOutputNamespaceChange(currentnamespacemodule, oCPP_CURRENT_UNIT_MODULEo.get());
-                  currentnamespacemodule = oCPP_CURRENT_UNIT_MODULEo.get();
-                  *(oCURRENT_STREAMo.get()->nativeStream) << "class " << cppTranslateClassName(clasS->classType)->wrapperValue << ";" << std::endl;
+                { Class* clasS = NULL;
+                  Iterator* iter002 = allClasses(((Module*)(module)), true);
+
+                  for (clasS, iter002; iter002->nextP(); ) {
+                    clasS = ((Class*)(iter002->value));
+                    if (createNativeClassP(clasS)) {
+                      oCPP_CURRENT_UNIT_MODULEo = clasS->homeModule();
+                      if (!((boolean)(currentnamespacemodule))) {
+                        *(oCURRENT_STREAMo->nativeStream) << std::endl;
+                      }
+                      cppOutputNamespaceChange(currentnamespacemodule, oCPP_CURRENT_UNIT_MODULEo);
+                      currentnamespacemodule = oCPP_CURRENT_UNIT_MODULEo;
+                      *(oCURRENT_STREAMo->nativeStream) << "class " << cppTranslateClassName(clasS->classType)->wrapperValue << ";" << std::endl;
+                    }
+                  }
+                }
+                if (((boolean)(currentnamespacemodule))) {
+                  *(oCURRENT_STREAMo->nativeStream) << std::endl;
+                  cppOutputNamespaceFooter(oCPP_CURRENT_UNIT_MODULEo);
                 }
               }
             }
-            *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
-            if (((boolean)(currentnamespacemodule))) {
-              cppOutputNamespaceFooter(oCPP_CURRENT_UNIT_MODULEo.get());
-            }
-            *(oCURRENT_STREAMo.get()->nativeStream) << std::endl << std::endl;
           }
-          *(oCURRENT_STREAMo.get()->nativeStream) << "// System components:" << std::endl;
+          *(oCURRENT_STREAMo->nativeStream) << std::endl;
+          *(oCURRENT_STREAMo->nativeStream) << "// System components:" << std::endl;
           if (stringEqlP(systemname, "stella")) {
             cppOutputIncludeDirective(cppRelativizeHeaderFile(makeFileNameFromRelativePath(listO(3, wrapString("cpp-lib"), wrapString("cpp-primal"), NIL), KWD_CPP_TRANSLATE_FILE_CPP_HEADER), systemname), false);
           }
           { StringWrapper* file = NULL;
-            Cons* iter002 = filesPlusSystemStartup(systemDefinitionSourceFiles(system));
+            Cons* iter003 = filesPlusSystemStartup(systemDefinitionSourceFiles(system));
 
-            for (file, iter002; !(iter002 == NIL); iter002 = iter002->rest) {
-              file = ((StringWrapper*)(iter002->value));
+            for (file, iter003; !(iter003 == NIL); iter003 = iter003->rest) {
+              file = ((StringWrapper*)(iter003->value));
               cppOutputIncludeDirective(cppRelativizeHeaderFile(makeFileName(file->wrapperValue, KWD_CPP_TRANSLATE_FILE_CPP_HEADER, true), systemname), false);
             }
           }
-          *(oCURRENT_STREAMo.get()->nativeStream) << std::endl << "#endif" << std::endl;
+          *(oCURRENT_STREAMo->nativeStream) << std::endl << "#endif" << std::endl;
         }
       }
 catch (...) {
@@ -623,7 +633,7 @@ catch (...) {
 }
 
 char* cppYieldSystemsRootDirectory() {
-  { char* directory = oCURRENTSYSTEMDEFINITIONo.get()->directory;
+  { char* directory = oCURRENTSYSTEMDEFINITIONo->directory;
     char* root = "..";
 
     for (;;) {
@@ -644,8 +654,8 @@ char* cppYieldStellaRootDirectory() {
 
     { 
       BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONo, SystemDefinition*, getSystemDefinition("STELLA"));
-      BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo.get())) ? oCURRENTSYSTEMDEFINITIONo.get()->directory : NULL));
-      if (((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
+      BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo)) ? oCURRENTSYSTEMDEFINITIONo->directory : NULL));
+      if (((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
         {
           return (stringConcatenate(systemsroot, "/", 1, fileBaseName(directoryFileName(directoryParentDirectory(makeFileName("dummy", KWD_CPP_TRANSLATE_FILE_CPP_CODE, true), 1)))));
         }
@@ -661,13 +671,13 @@ char* cppYieldStellaRootDirectory() {
 void cppOutputSystemMakefile() {
   { char* makefile = makeFileName("Makefile", KWD_CPP_TRANSLATE_FILE_STELLA, true);
     char* templatefile = stringConcatenate(fileNameWithoutExtension(makefile), ".in", 0);
-    SystemDefinition* system = oCURRENTSYSTEMDEFINITIONo.get();
+    SystemDefinition* system = oCURRENTSYSTEMDEFINITIONo;
 
     if (!(probeFileP(templatefile))) {
       { 
         BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONo, SystemDefinition*, getSystemDefinition("STELLA"));
-        BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo.get())) ? oCURRENTSYSTEMDEFINITIONo.get()->directory : NULL));
-        if (((boolean)(oCURRENTSYSTEMDEFINITIONo.get()))) {
+        BIND_STELLA_SPECIAL(oCURRENTSYSTEMDEFINITIONSUBDIRECTORYo, char*, (((boolean)(oCURRENTSYSTEMDEFINITIONo)) ? oCURRENTSYSTEMDEFINITIONo->directory : NULL));
+        if (((boolean)(oCURRENTSYSTEMDEFINITIONo))) {
           {
             makefile = makeFileName("Makefile-default", KWD_CPP_TRANSLATE_FILE_STELLA, true);
             templatefile = stringConcatenate(fileNameWithoutExtension(makefile), ".in", 0);
@@ -683,6 +693,7 @@ void cppOutputSystemMakefile() {
       OutputStringStream* requiredsystems = newOutputStringStream();
       OutputStringStream* requiredsystemdirs = newOutputStringStream();
       OutputStringStream* allrequiredsystems = newOutputStringStream();
+      char* nativesystemroot = fileNameDirectory(makeFileName("foo", KWD_CPP_TRANSLATE_FILE_CPP_CODE, true));
 
       variables->insertAt(wrapString("SYSTEM-NAME"), wrapString(system->name));
       variables->insertAt(wrapString("PROGRAM-NAME"), wrapString(system->name));
@@ -694,7 +705,7 @@ void cppOutputSystemMakefile() {
 
         for (file, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
           file = ((StringWrapper*)(iter000->value));
-          *(systemfiles->nativeStream) << fileNameWithoutDirectory(makeFileName(file->wrapperValue, KWD_CPP_TRANSLATE_FILE_CPP_CODE, true)) << " ";
+          *(systemfiles->nativeStream) << relativizeFileName(makeFileName(file->wrapperValue, KWD_CPP_TRANSLATE_FILE_CPP_CODE, true), nativesystemroot) << " ";
         }
       }
       variables->insertAt(wrapString("SYSTEM-FILES"), wrapString(systemfiles->theStringReader()));
@@ -846,12 +857,12 @@ void helpStartupCppTranslateFile1() {
 void startupCppTranslateFile() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupCppTranslateFile1();
     }
     if (currentStartupTimePhaseP(4)) {
-      oCURRENT_STREAMo.set(STANDARD_OUTPUT);
+      oCURRENT_STREAMo = STANDARD_OUTPUT;
     }
     if (currentStartupTimePhaseP(6)) {
       finalizeClasses();

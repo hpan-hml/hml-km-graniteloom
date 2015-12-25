@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -129,7 +129,7 @@ Object* inform(Cons* body) {
 Object* warn(Cons* body) {
   // Signal warning message, placing non-string arguments in quotes.
   body = formatMessageArguments(body, false);
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_STREAMS_COMMON_LISP) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_STREAMS_COMMON_LISP) {
     return (listO(3, SYM_STREAMS_STELLA_PRINT_STREAM, KWD_STREAMS_WARN, body->concatenate(NIL, 0)));
   }
   else {
@@ -162,7 +162,7 @@ Object* error(Cons* body) {
 Object* continuableError(Cons* body) {
   // Signal error message, placing non-string arguments in quotes.
   body = formatMessageArguments(body, false);
-  if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_STREAMS_JAVA) {
+  if (oTRANSLATOROUTPUTLANGUAGEo == KWD_STREAMS_JAVA) {
     if ((body->length() == 1) &&
         isaP(body->value, SGT_STREAMS_STELLA_STRING_WRAPPER)) {
       return (listO(4, SYM_STREAMS_STELLA_LET, cons(listO(3, SYM_STREAMS_STELLA_ERROR_MESSAGE_, wrapString(((StringWrapper*)(body->value))->wrapperValue), NIL), NIL), listO(4, SYM_STREAMS_STELLA_VERBATIM, KWD_STREAMS_JAVA, wrapString("Native.continuableError(error_message_)"), NIL), NIL));
@@ -262,7 +262,7 @@ Object* walkWarn(Cons* body) {
 
 Object* safety(IntegerWrapper* level, Object* test, Cons* body) {
   // Signal warning message, placing non-string arguments in quotes.
-  if (level->wrapperValue > oSAFETYo.get()) {
+  if (level->wrapperValue > oSAFETYo) {
     return (NULL);
   }
   body = formatMessageArguments(body, false);
@@ -1970,7 +1970,7 @@ void startupStreams() {
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupStreams1();
       helpStartupStreams2();

@@ -20,7 +20,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -39,7 +39,7 @@
 |                                                                            |
 +---------------------------- END LICENSE BLOCK ----------------------------*/
 
-// Version: sdbc-support.cc,v 1.10 2010/10/11 22:35:14 hans Exp
+// Version: sdbc-support.cc,v 1.11 2014/04/17 22:17:12 hans Exp
 
 // C Support file for sdbc.
 
@@ -284,6 +284,7 @@ int ODBC_Connect(char *connectionString, SQLHENV *henv, SQLHDBC *hdbc, int *conn
   Cons* fetchRow(SQLHENV *henv, SQLHDBC *hdbc, SQLHSTMT *hstmt, short numCols, Cons* types) {
     short colNum;
     SDWORD colIndicator;
+    // TO DO: fix these arbitrarily fixed buffer sizes (there are a few others as well)!!!!!
     char fetchBuffer[1000];
     Cons* currentRow = NIL;
     SQLRETURN status = SQLFetch (*hstmt);
@@ -291,10 +292,6 @@ int ODBC_Connect(char *connectionString, SQLHENV *henv, SQLHDBC *hdbc, int *conn
     GeneralizedSymbol* colType = NULL;
 
     if (status == SQL_NO_DATA_FOUND) {
-      if (debug) {
-	std::cout << "ODBC support: freeing statement..." << std::endl;
-      }
-      SQLFreeStmt (hstmt, SQL_CLOSE);
       return NULL;
     }    
 
@@ -321,7 +318,7 @@ int ODBC_Connect(char *connectionString, SQLHENV *henv, SQLHDBC *hdbc, int *conn
 	if (status != SQL_SUCCESS) {
 	  ODBC_Errors (status, henv, hdbc, hstmt, "SQLExec");
 	} else {
-	  char* valueString = new char[strlen(fetchBuffer) + 1];
+	  char* valueString = new (GC) char[strlen(fetchBuffer) + 1];
 	  strcpy(valueString, fetchBuffer);
 	  valueWrapper = wrapString(valueString);
 	}
@@ -458,11 +455,21 @@ int ODBC_Connect(char *connectionString, SQLHENV *henv, SQLHDBC *hdbc, int *conn
     }
     while (SQLMoreResults (*hstmt) == SQL_SUCCESS);
 
-    if (debug) {
-      std::cout << "ODBC support: freeing hstmt..." << std::endl;
-    }
   endCursor:
-    SQLFreeStmt (*hstmt, SQL_CLOSE);
+    // NOTE: SQL_CLOSE only close the cursor, it does not free up any resources.  This is useful
+    // if we wanted to reuse the statement handle which we could try in the future.  See
+    // http://publib.boulder.ibm.com/infocenter/iseries/v5r3/index.jsp?topic=%2Fcli%2Frzadpfnfstmt.htm
+    // for a good description (even though for DB2).
+    // Also: we might want to fold the closing into the calling routines, since different closing
+    // might be required, for example, for prepared statements.
+    SQLRETURN retCode = 0;
+    //retCode += SQLFreeStmt(*hstmt, SQL_UNBIND);
+    //retCode += SQLFreeStmt(*hstmt, SQL_RESET_PARAMS);
+    //retCode += SQLFreeStmt(*hstmt, SQL_CLOSE);
+    retCode += SQLFreeStmt(*hstmt, SQL_DROP);
+    if (debug || (retCode > 0)) {
+      std::cout << "ODBC support: freed hstmt, ret=" << retCode << "..." << std::endl;
+    }
 
     if (tableResult->emptyP()) {
       return NULL;
@@ -655,7 +662,7 @@ Object* executeSQL(NativeConnection* nativeConnection, char* sqlRequest, Cons* t
     SDWORD colIndicator;
     short colScale;
     short colNullable;
-    SQLHSTMT *hstmt = new SQLHSTMT();
+    SQLHSTMT *hstmt = new (GC) SQLHSTMT();
     SQLHENV *henv = nativeConnection->henv;
     SQLHDBC *hdbc = nativeConnection->hdbc;
     short numCols;

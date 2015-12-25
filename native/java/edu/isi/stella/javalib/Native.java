@@ -20,7 +20,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2013      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -39,7 +39,7 @@
 |                                                                            |
 +---------------------------- END LICENSE BLOCK ----------------------------*/
 
-// Version: Native.java,v 1.59 2010/04/26 21:45:15 hans Exp
+// Version: Native.java,v 1.61 2013/01/24 00:33:24 hans Exp
 
 // Native Java stuff for STELLA
 
@@ -48,6 +48,8 @@ package edu.isi.stella.javalib;
 
 import edu.isi.stella.*;
 import java.io.*;
+import java.lang.management.ThreadMXBean;
+import java.lang.management.ManagementFactory;
 
 public class Native {
 
@@ -350,9 +352,12 @@ public class Native {
   }
 
   public static String formatFloat (double v, int n) {
+    // TO DO: allocate this formatter in a thread-local cache
     final java.text.DecimalFormat formatter = new java.text.DecimalFormat();
     formatter.setMinimumFractionDigits(n);
     formatter.setMaximumFractionDigits(n);
+    formatter.setGroupingUsed(false);                          // match what Lisp is doing
+    formatter.setRoundingMode(java.math.RoundingMode.HALF_UP); // match better what Lisp is doing
     return formatter.format(v);
   }
 
@@ -652,14 +657,19 @@ public class Native {
    //
 
   public static long getTicktock () {
-    return java.lang.System.currentTimeMillis();
+    ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+    if (bean.isCurrentThreadCpuTimeSupported()) {
+      return bean.getCurrentThreadCpuTime();
+    } else {
+      return java.lang.System.currentTimeMillis();
+    }
   }
 
   public static double ticktockDifference (long t1, long t2) {
     // The difference in two TICKTOCK time values in seconds.
     // The resolution is implementation dependent but will normally be some fractional
     // value of a second.
-    return (t2 - t1) / 1000.0;
+    return (t2 - t1) * ticktockResolution();
   }
 
   public static double ticktockResolution () {
@@ -667,7 +677,8 @@ public class Native {
     // difference in two TICKTOCK time values in seconds.  This resolution is
     // implementation dependent.  It may also not be realizable in practice, since
     // the timing grain size may be larger than this resolution.
-    return 0.001;
+    ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+    return bean.isCurrentThreadCpuTimeSupported() ? 1.0e-9 : 1.0e-3;
   }
 
 

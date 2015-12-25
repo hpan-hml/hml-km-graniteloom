@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2000-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2000-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -47,8 +47,8 @@ package edu.isi.ontosaurus;
 
 import edu.isi.stella.javalib.Native;
 import edu.isi.stella.javalib.StellaSpecialVariable;
-import edu.isi.stella.*;
 import edu.isi.powerloom.logic.*;
+import edu.isi.stella.*;
 
 public class _StartupHtmlUtilities {
   public static void startupHtmlUtilities() {
@@ -72,6 +72,11 @@ public class _StartupHtmlUtilities {
         if (Stella.currentStartupTimePhaseP(7)) {
           Stella.defineFunctionObject("MAKE-HTML-BODY-TAG", "(DEFUN (MAKE-HTML-BODY-TAG STRING) ((BACKGROUNDCOLOR STRING)))", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "makeHtmlBodyTag", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), null);
           Stella.defineFunctionObject("HTML-LINE-BREAK", "(DEFUN HTML-LINE-BREAK ((STREAM NATIVE-OUTPUT-STREAM)))", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "htmlLineBreak", new java.lang.Class [] {Native.find_java_class("java.io.PrintStream")}), null);
+          Stella.defineFunctionObject("GET-HTML-OBJECT-TYPE", "(DEFUN (GET-HTML-OBJECT-TYPE STRING) ((OBJECT OBJECT)))", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "getHtmlObjectType", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+          Stella.defineFunctionObject("GET-HTML-OBJECT-LOOKUP-MODULE", "(DEFUN (GET-HTML-OBJECT-LOOKUP-MODULE STRING) ((OBJECT OBJECT)))", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "getHtmlObjectLookupModule", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+          Stella.defineFunctionObject("GET-HTML-OBJECT-HANDLE", "(DEFUN (GET-HTML-OBJECT-HANDLE STRING) ((OBJECT OBJECT)))", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "getHtmlObjectHandle", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+          Stella.defineFunctionObject("GET-HTML-OBJECT-TITLE", "(DEFUN (GET-HTML-OBJECT-TITLE STRING) ((OBJECT OBJECT)))", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "getHtmlObjectTitle", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+          Stella.defineFunctionObject("GET-HTML-OBJECT-TITLE-PREFIX", "(DEFUN (GET-HTML-OBJECT-TITLE-PREFIX STRING) ((OBJECT OBJECT)))", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "getHtmlObjectTitlePrefix", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
           Stella.defineFunctionObject("HTML-WRITE-URL-IN-DETAIL", "(DEFUN HTML-WRITE-URL-IN-DETAIL ((STREAM NATIVE-OUTPUT-STREAM) (ACTION STRING) (OBJECTTYPE STRING) (CONTEXTNAME STRING) (OBJECTNAME STRING)))", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "htmlWriteUrlInDetail", new java.lang.Class [] {Native.find_java_class("java.io.PrintStream"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String")}), null);
           Stella.defineFunctionObject("HTML-WRITE-3PART-HREF-IN-DETAIL", "(DEFUN HTML-WRITE-3PART-HREF-IN-DETAIL ((STREAM NATIVE-OUTPUT-STREAM) (TARGET STRING) (ACTION STRING) (OBJECT-TYPE STRING) (CONTEXT-NAME STRING) (OBJECT-NAME STRING) (OBJECT-TITLE-PREFIX STRING) (OBJECT-TITLE STRING) (OBJECT-TITLE-SUFFIX STRING) (RAWTITLE? BOOLEAN)))", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "htmlWrite3PartHrefInDetail", new java.lang.Class [] {Native.find_java_class("java.io.PrintStream"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), java.lang.Boolean.TYPE}), null);
           Stella.defineFunctionObject("HTML-WRITE-HREF-IN-DETAIL", "(DEFUN HTML-WRITE-HREF-IN-DETAIL ((STREAM NATIVE-OUTPUT-STREAM) (TARGET STRING) (ACTION STRING) (OBJECTTYPE STRING) (CONTEXTNAME STRING) (OBJECTNAME STRING) (OBJECTTITLE STRING) (RAWTITLE? BOOLEAN)))", Native.find_java_method("edu.isi.ontosaurus.OntosaurusUtil", "htmlWriteHrefInDetail", new java.lang.Class [] {Native.find_java_class("java.io.PrintStream"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String"), java.lang.Boolean.TYPE}), null);

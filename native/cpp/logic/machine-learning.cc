@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -308,7 +308,7 @@ void saveTrainingExamples() {
 
 int createPropositionalTrainingExamples(List* examples, OutputFileStream* nameFile, OutputFileStream* dataFile) {
   { int numInputs = 0;
-    Module* home = oMODULEo.get();
+    Module* home = oMODULEo;
     int temp = 0;
     Vector* input = NULL;
 
@@ -378,7 +378,7 @@ void fillInExampleOutputs(List* examples, Symbol* slotName) {
 }
 
 void detectNoiseInTrainingExamples(List* examples) {
-  { Module* home = oMODULEo.get();
+  { Module* home = oMODULEo;
     int sigLength = 0;
     boolean same = true;
 
@@ -647,7 +647,7 @@ int oldGenerateClassificationTrainingExamples(Vector* instances, Surrogate* conc
           example->output = (target ? TRUE_WRAPPER : FALSE_WRAPPER);
           example->concept = conceptName;
           example->name = objectName(((LogicObject*)((instances->theArray)[i])));
-          example->module = oMODULEo.get();
+          example->module = oMODULEo;
           example->input = createInputSignature(consQuery);
           example->timestamp = -1;
           oTRAINING_EXAMPLESo->push(example);
@@ -805,7 +805,7 @@ int generateTrainingExamples(Vector* instances, Surrogate* concept) {
           }
         }
         if (!(!((boolean)(example)))) {
-          example->module = oMODULEo.get();
+          example->module = oMODULEo;
           example->timestamp = -1;
           numExamples = numExamples + 1;
           oTRAINING_EXAMPLESo->push(example);
@@ -870,7 +870,7 @@ int generateClassificationTrainingExamples(Vector* instances, Surrogate* concept
           if (createSignatureP) {
             example->input = createInputSignature(classificationQuery);
           }
-          example->module = oMODULEo.get();
+          example->module = oMODULEo;
           example->timestamp = -1;
           numExamples = numExamples + 1;
           oTRAINING_EXAMPLESo->push(example);
@@ -1147,7 +1147,7 @@ List* helpGetAssertionStructure(Symbol* inst, int depth) {
 
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, home);
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       facts = allFactsOfInstance(getInstance(inst), false, false);
     }
     { Proposition* fact = NULL;
@@ -1262,7 +1262,7 @@ Cons* oldRecursiveBuildAntecedent(Symbol* inst, int depth) {
 
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, home);
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       facts = allFactsOfInstance(getInstance(inst), false, false);
     }
     { Proposition* fact = NULL;
@@ -1385,7 +1385,7 @@ Object* consifyArgument(Object* arg) {
       { Object* arg001 = arg;
         PatternVariable* arg = ((PatternVariable*)(arg001));
 
-        if (!((boolean)(oQUERYITERATORo.get()))) {
+        if (!((boolean)(oQUERYITERATORo))) {
           return (internSymbol(getSkolemPrintName(arg)));
         }
         else {
@@ -1548,7 +1548,7 @@ Cons* propositionToCons(Proposition* prop) {
 
 void thingifyUntypedInstances() {
   { LogicObject* item = NULL;
-    Iterator* iter000 = allNamedInstances(oMODULEo.get(), true);
+    Iterator* iter000 = allNamedInstances(oMODULEo, true);
 
     for (item, iter000; iter000->nextP(); ) {
       item = ((LogicObject*)(iter000->value));
@@ -1623,7 +1623,7 @@ void helpStartupMachineLearning1() {
 void startupMachineLearning() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupMachineLearning1();
     }

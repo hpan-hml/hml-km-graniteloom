@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -565,6 +565,38 @@ public class PLI {
    */
   public static LogicObject sGetRelation(String name, String moduleName, Environment environment) {
     return (PLI.getRelation(name, ((Module)(PLI.safelyGetModule(moduleName, environment))), environment));
+  }
+
+  /** Return relations that have been referenced but not defined in <code>module</code>.
+   * @param module
+   * @param environment
+   * @return PlIterator
+   */
+  public static PlIterator getUndefinedRelations(Module module, Environment environment) {
+    { Module mdl000 = module;
+      Context cxt000 = mdl000;
+
+      if (mdl000 == null) {
+        mdl000 = ((Module)(Stella.$MODULE$.get()));
+        cxt000 = ((Context)(Stella.$CONTEXT$.get()));
+      }
+      { Object old$Module$000 = Stella.$MODULE$.get();
+        Object old$Context$000 = Stella.$CONTEXT$.get();
+
+        try {
+          Native.setSpecial(Stella.$MODULE$, mdl000);
+          Native.setSpecial(Stella.$CONTEXT$, cxt000);
+          environment = environment;
+          synchronized (Logic.$POWERLOOM_LOCK$) {
+            return (PLI.consToPlIterator(Logic.callListUndefinedRelations(module, false)));
+          }
+
+        } finally {
+          Stella.$CONTEXT$.set(old$Context$000);
+          Stella.$MODULE$.set(old$Module$000);
+        }
+      }
+    }
   }
 
   /** Return the name, qualified as necessary, so that <code>obj</code> can be found from
@@ -1235,6 +1267,38 @@ public class PLI {
       Cons arguments = elements.rest;
 
       return (PLI.consToPlIterator(PLI.helpGetPropositions(((LogicObject)(relation)), arguments, 0, ((Module)(module)), environment)));
+    }
+  }
+
+  /** Return inconsistent propositions visible in <code>module</code>.
+   * @param module
+   * @param environment
+   * @return PlIterator
+   */
+  public static PlIterator getInconsistentPropositions(Module module, Environment environment) {
+    { Module mdl000 = module;
+      Context cxt000 = mdl000;
+
+      if (mdl000 == null) {
+        mdl000 = ((Module)(Stella.$MODULE$.get()));
+        cxt000 = ((Context)(Stella.$CONTEXT$.get()));
+      }
+      { Object old$Module$000 = Stella.$MODULE$.get();
+        Object old$Context$000 = Stella.$CONTEXT$.get();
+
+        try {
+          Native.setSpecial(Stella.$MODULE$, mdl000);
+          Native.setSpecial(Stella.$CONTEXT$, cxt000);
+          environment = environment;
+          synchronized (Logic.$POWERLOOM_LOCK$) {
+            return (PLI.iteratorToPlIterator(Logic.allInconsistentPropositions(module, false)));
+          }
+
+        } finally {
+          Stella.$CONTEXT$.set(old$Context$000);
+          Stella.$MODULE$.set(old$Module$000);
+        }
+      }
     }
   }
 
@@ -3682,7 +3746,7 @@ public class PLI {
         rule = ((Proposition)(iter000.value));
         Logic.printLogicalForm(rule, stream);
         {
-          stream.nativeStream.println();
+          stream.nativeStream.println("");
           stream.nativeStream.println();
         }
 ;
@@ -5022,10 +5086,7 @@ public class PLI {
     }
   }
 
-  /** Main PowerLoom entry point for your code in C++ and Java.
-   * @param argv059
-   */
-  public static void main(String[] argv059) {
+  public static void main(String[] argv061) {
     System.out.println("Initializing STELLA...");
     StartupStellaSystem.startupStellaSystem();
     System.out.println("Initializing PowerLoom...");

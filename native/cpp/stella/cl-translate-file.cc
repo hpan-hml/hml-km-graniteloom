@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -59,7 +59,7 @@ void ptrans(Object* statement) {
 
 void helpLptrans(Object* statement) {
   { 
-    BIND_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword*, oTRANSLATOROUTPUTLANGUAGEo.get());
+    BIND_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword*, oTRANSLATOROUTPUTLANGUAGEo);
     BIND_STELLA_SPECIAL(oPRINTPRETTYCODEpo, boolean, true);
     setTranslatorOutputLanguage(KWD_CL_TRANSLATE_FILE_COMMON_LISP);
     { boolean declarationP = declarationTreeP(((Cons*)(statement)));
@@ -138,13 +138,13 @@ void clOutputAllUnitsToFile(char* sourcefile) {
     OutputFileStream* outputstream = newOutputFileStream(outputfile);
     std::ostream* nativeoutputstream = outputstream->nativeStream;
 
-    if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+    if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
       std::cout << "Writing " << "`" << outputfile << "'" << "..." << std::endl;
     }
     outputFileHeader(outputstream, outputfile);
     *(nativeoutputstream) << ";;; Auxiliary variables:" << std::endl << std::endl;
     { TranslationUnit* unit = NULL;
-      Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+      Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
 
       for (unit, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         unit = ((TranslationUnit*)(iter000->value));
@@ -154,10 +154,10 @@ void clOutputAllUnitsToFile(char* sourcefile) {
       }
     }
     clOutputForwardDeclarations(nativeoutputstream);
-    if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_FILE_USE_COMMON_LISP_STRUCTS) &&
-        (!oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_FILE_USE_COMMON_LISP_VECTOR_STRUCTS))) {
+    if (oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_FILE_USE_COMMON_LISP_STRUCTS) &&
+        (!oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_FILE_USE_COMMON_LISP_VECTOR_STRUCTS))) {
       { TranslationUnit* unit = NULL;
-        Cons* iter001 = oTRANSLATIONUNITSo.get()->theConsList;
+        Cons* iter001 = oTRANSLATIONUNITSo->theConsList;
 
         for (unit, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
           unit = ((TranslationUnit*)(iter001->value));
@@ -168,7 +168,7 @@ void clOutputAllUnitsToFile(char* sourcefile) {
       }
     }
     { TranslationUnit* unit = NULL;
-      Cons* iter002 = oTRANSLATIONUNITSo.get()->theConsList;
+      Cons* iter002 = oTRANSLATIONUNITSo->theConsList;
 
       for (unit, iter002; !(iter002 == NIL); iter002 = iter002->rest) {
         unit = ((TranslationUnit*)(iter002->value));
@@ -182,7 +182,7 @@ void clOutputAllUnitsToFile(char* sourcefile) {
 }
 
 void clOutputFileHeader(OutputStream* stream, char* file, boolean ensurepackageP) {
-  { char* package = oMODULEo.get()->lispPackage();
+  { char* package = oMODULEo->lispPackage();
 
     *(stream->nativeStream) << ";;; -*- Mode: Lisp; Package: " << package << "; Syntax: COMMON-LISP; Base: 10 -*-" << std::endl << std::endl;
     if (file != NULL) {
@@ -215,7 +215,7 @@ void clOutputForwardDeclarations(std::ostream* stream) {
     List* forwardreferencedvariables = newList();
 
     { TranslationUnit* unit = NULL;
-      Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+      Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
 
       for (unit, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         unit = ((TranslationUnit*)(iter000->value));
@@ -225,7 +225,7 @@ void clOutputForwardDeclarations(std::ostream* stream) {
       }
     }
     { TranslationUnit* unit = NULL;
-      Cons* iter001 = oTRANSLATIONUNITSo.get()->theConsList;
+      Cons* iter001 = oTRANSLATIONUNITSo->theConsList;
 
       for (unit, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
         unit = ((TranslationUnit*)(iter001->value));
@@ -276,7 +276,7 @@ void clTranslateWalkedSystemUnits(KeyValueList* systemunits) {
     BIND_STELLA_SPECIAL(oCURRENTFILEo, char*, NULL);
     BIND_STELLA_SPECIAL(oTRANSLATIONUNITSo, List*, NULL);
     { List* classunits = newList();
-      boolean useclstructsP = oCURRENT_STELLA_FEATURESo.get()->membP(KWD_CL_TRANSLATE_FILE_USE_COMMON_LISP_STRUCTS);
+      boolean useclstructsP = oCURRENT_STELLA_FEATURESo->membP(KWD_CL_TRANSLATE_FILE_USE_COMMON_LISP_STRUCTS);
       char* filename = NULL;
 
       { StringWrapper* file = NULL;
@@ -288,9 +288,9 @@ void clTranslateWalkedSystemUnits(KeyValueList* systemunits) {
               iter000 = iter000->rest) {
           file = ((StringWrapper*)(iter000->key));
           units = ((List*)(iter000->value));
-          oCURRENTFILEo.set(fileBaseName(file->wrapperValue));
+          oCURRENTFILEo = fileBaseName(file->wrapperValue);
           if (useclstructsP) {
-            oTRANSLATIONUNITSo.set(newList());
+            oTRANSLATIONUNITSo = newList();
             { TranslationUnit* unit = NULL;
               Cons* iter001 = units->theConsList;
 
@@ -300,39 +300,39 @@ void clTranslateWalkedSystemUnits(KeyValueList* systemunits) {
                   classunits->push(unit);
                 }
                 else {
-                  oTRANSLATIONUNITSo.get()->push(unit);
+                  oTRANSLATIONUNITSo->push(unit);
                 }
               }
             }
-            oTRANSLATIONUNITSo.get()->reverse();
+            oTRANSLATIONUNITSo->reverse();
           }
           else {
-            oTRANSLATIONUNITSo.set(units);
+            oTRANSLATIONUNITSo = units;
           }
           { 
             BIND_STELLA_SPECIAL(oMODULEo, Module*, computeFileUnitsModule(units));
-            BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+            BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
             translateAndOutputUnitsToFile(file->wrapperValue, "Common Lisp");
           }
           cleanUpTranslationUnitsSpecial();
         }
       }
       if (useclstructsP) {
-        if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+        if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
           std::cout << "Collecting CL structure class definitions..." << std::endl;
         }
         { StringWrapper* file = NULL;
-          Cons* iter002 = filesPlusSystemStartup(systemDefinitionSourceFiles(oCURRENTSYSTEMDEFINITIONo.get()));
+          Cons* iter002 = filesPlusSystemStartup(systemDefinitionSourceFiles(oCURRENTSYSTEMDEFINITIONo));
 
           for (file, iter002; !(iter002 == NIL); iter002 = iter002->rest) {
             file = ((StringWrapper*)(iter002->value));
             if (!((boolean)(((List*)(systemunits->lookup(wrapString(filename = makeFileName(file->wrapperValue, KWD_CL_TRANSLATE_FILE_STELLA, true)))))))) {
-              oTRANSLATIONUNITSo.set(newList());
-              oCURRENTFILEo.set(fileBaseName(filename));
-              oTRANSLATIONUNITSo.set(newList());
+              oTRANSLATIONUNITSo = newList();
+              oCURRENTFILEo = fileBaseName(filename);
+              oTRANSLATIONUNITSo = newList();
               operateOnFile(filename, KWD_CL_TRANSLATE_FILE_FINALIZE);
               { TranslationUnit* unit = NULL;
-                Cons* iter003 = oTRANSLATIONUNITSo.get()->theConsList;
+                Cons* iter003 = oTRANSLATIONUNITSo->theConsList;
                 Cons* collect000 = NULL;
 
                 for  (unit, iter003, collect000; 
@@ -455,10 +455,10 @@ char* clYieldStructClassFileName(char* systemname) {
 }
 
 void clOutputSystemClStructsFile(List* classunits) {
-  { char* outputfile = makeFileName(clYieldStructClassFileName(oCURRENTSYSTEMDEFINITIONo.get()->name), KWD_CL_TRANSLATE_FILE_LISP, true);
+  { char* outputfile = makeFileName(clYieldStructClassFileName(oCURRENTSYSTEMDEFINITIONo->name), KWD_CL_TRANSLATE_FILE_LISP, true);
     OutputFileStream* outputstream = newOutputFileStream(outputfile);
     List* classes = newList();
-    Module* currentmodule = oMODULEo.get();
+    Module* currentmodule = oMODULEo;
     char* package = NULL;
     List* ensuredpackages = list(0);
 
@@ -490,19 +490,19 @@ void clOutputSystemClStructsFile(List* classunits) {
       }
     }
     classes = sortClStructClasses(classes);
-    if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+    if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
       std::cout << "Writing " << "`" << outputfile << "'" << "..." << std::endl;
     }
     { 
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo.get());
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       if (classes->nonEmptyP()) {
-        oMODULEo.set(((Class*)(classes->first()))->homeModule());
+        oMODULEo = ((Class*)(classes->first()))->homeModule();
       }
       else {
-        oMODULEo.set(getStellaModule(oCURRENTSYSTEMDEFINITIONo.get()->cardinalModule, true));
+        oMODULEo = getStellaModule(oCURRENTSYSTEMDEFINITIONo->cardinalModule, true);
       }
-      currentmodule = oMODULEo.get();
+      currentmodule = oMODULEo;
       clOutputFileHeader(outputstream, outputfile, true);
       { TranslationUnit* unit = NULL;
         Cons* iter001 = classunits->theConsList;
@@ -518,10 +518,10 @@ void clOutputSystemClStructsFile(List* classunits) {
           clasS = ((Class*)(iter002->value));
           unit->theObject = clasS;
           unit->annotation = NULL;
-          oMODULEo.set(clasS->homeModule());
-          if (!(oMODULEo.get() == currentmodule)) {
-            currentmodule = oMODULEo.get();
-            package = oMODULEo.get()->lispPackage();
+          oMODULEo = clasS->homeModule();
+          if (!(oMODULEo == currentmodule)) {
+            currentmodule = oMODULEo;
+            package = oMODULEo->lispPackage();
             if (!(ensuredpackages->memberP(wrapString(package)))) {
               ensuredpackages->push(wrapString(package));
               *(outputstream->nativeStream) << std::endl;
@@ -564,7 +564,7 @@ void clRetranslateStella(boolean productionsettingsP) {
 void startupClTranslateFile() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       KWD_CL_TRANSLATE_FILE_COMMON_LISP = ((Keyword*)(internRigidSymbolWrtModule("COMMON-LISP", NULL, 2)));
       SYM_CL_TRANSLATE_FILE_STELLA_GLOBAL_VARIABLE = ((Symbol*)(internRigidSymbolWrtModule("GLOBAL-VARIABLE", NULL, 0)));

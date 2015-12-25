@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2009      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: backlinks.ste,v 1.44 2010/06/17 23:01:31 tar Exp
+;;; Version: backlinks.ste,v 1.47 2014/04/17 00:43:04 hans Exp
 
 ;;; Indexing that maps proposition arguments to dependent propositions
 
@@ -95,6 +95,19 @@ first class logic objects."
          (return index))
        (setq index (create-backlinks-index self))
        (setf (dependent-propositions-index self) index)
+       (return index)))
+    (PROPOSITION
+     (let ((index (dependent-propositions-index self)))
+       (when (defined? index)
+         (return index))
+       (unless (or (empty? (dependent-propositions self))
+                   (descriptive? self))
+         ;; we create this index lazily upon first demand, since for most props
+         ;; we don't need it and the simple dependents list is sufficient:
+         (setq index (create-backlinks-index self))
+         (setf (dependent-propositions-index self) index)
+         (foreach prop in (dependent-propositions self)
+             do (help-add-dependent-proposition index prop self)))
        (return index)))
     (WRAPPER
      (typecase self
@@ -159,6 +172,9 @@ specialized indices.")
   ;;    twice in a proposition:
   (let ((allDependentPropositions (dependent-propositions-list index))
         (table (predicate-propositions-table index)))
+    ;; cheap "duplicate" check for repeated args of `proposition':
+    (when (eql? (first allDependentPropositions) proposition)
+      (return))
     (when (null? table)
       ;; if the number of dependent propositions is below
       ;;    '*specialized-backlinks-crossover-point*', insert into
@@ -177,6 +193,11 @@ specialized indices.")
 
 (defun add-dependent-proposition-link ((self OBJECT) (proposition PROPOSITION))
   ;; Add `proposition' to the backlinks index of `self' (if it has one).
+  ;; IMPORTANT: this generally does not check whether a backlink has already been added
+  ;; previously; however, to facilitate easy backlinking of propositions with repeated
+  ;; arguments (e.g, literals such as offsets, costs, etc.), it will check whether the
+  ;; most recently added link for `self' is to `proposition' and avoid the duplicate
+  ;; for such cases (see also `fasten-down-one-proposition').
   (let ((description?
          ;; tricky/ugly: we are not always in description mode when dealing
          ;;    with description propositions; keying in on the `descriptive?'
@@ -187,11 +208,19 @@ specialized indices.")
        (case (kind self)
          (:CONSTANT NULL)
          (otherwise
-          (let ((index (dependent-propositions self)))
+          (let ((index (dependent-propositions self))
+                (backlinks (dependent-propositions-index self))) ;; just lookup, don't' create it
+            ;; cheap "duplicate" check for repeated args of `proposition':
+            (when (eql? (first index) proposition)
+              (return))
             (when (eql? index NIL-NON-PAGING-INDEX)
               (setq index (create-sequence-index :NON-PAGING NIL))
               (setf (dependent-propositions self) index))
-            (insert (dependent-propositions self) proposition)))))
+            (insert index proposition)
+            ;; for propositions, we only create backlinks indices when they are
+            ;; needed, but once they are created, they need to be maintained:
+            (when (defined? backlinks)
+              (help-add-dependent-proposition backlinks proposition self))))))
       (LOGIC-OBJECT
        ;; The backlinking and descriptions saga:
        ;; - we need to make sure that "assertions" within descriptions are unfindable by
@@ -252,7 +281,10 @@ specialized indices.")
   ;; Remove `proposition' from the backlinks index of `self' (if it has one).
   (typecase self
     (PROPOSITION
-     (remove (dependent-propositions self) proposition))
+     (remove (dependent-propositions self) proposition)
+     (let ((backlinks (dependent-propositions-index self))) ;; just lookup, don't' create it
+       (when (defined? backlinks)
+         (help-remove-dependent-proposition backlinks proposition))))
     (LOGIC-OBJECT
      (help-remove-dependent-proposition
       (get-backlinks-index self) proposition))
@@ -288,6 +320,24 @@ specialized indices.")
   ;; Remove backlinks to all propositions from 'self'.
   (setf (dependent-propositions-index self) NULL) )
 
+(defmethod (remove-deleted-members (LIKE self)) ((self BACKLINKS-INDEX))
+  ;; Remove any deleted elements in any of `self's lists and tables.
+  (when (defined? (dependent-propositions-list self))
+    (remove-deleted-members (dependent-propositions-list self)))
+  (when (defined? (dependent-isa-propositions-list self))
+    (remove-deleted-members (dependent-isa-propositions-list self)))
+  (let ((table (predicate-propositions-table self))
+        ;; the explicit typing we need here is kludgey, clean this up:
+        (hashTable (STELLA-HASH-TABLE OF OBJECT PROPOSITIONS-INDEX)
+                   (choose (defined? table)
+                           (the-stella-hash-table table)
+                           NULL)))
+    (when (defined? hashTable)
+      (foreach (key index) in hashTable
+          do (ignore key)
+             (remove-deleted-members index)))
+    (return self)))
+
 
   ;;
 ;;;;;; Logic Argument Wrappers
@@ -318,9 +368,13 @@ specialized indices.")
 ;;;   - if we fix object-eql? for wrappers, the various rewrap kludges in
 ;;;     find-similar-proposition and find-duplicate-complex-proposition can
 ;;;     probably go away
+;;;   - propositions whose variables point to a literal won't have the variable
+;;;     value rewrapped properly, e.g., (= ?x/"foo" "foo")
 ;;; + disable mixed rewrapping for now; the only way to get literal indexing then
 ;;;   is to turn on `*backlink-all-proposition-arguments?*'.
 ;;; - `*backlink-all-proposition-arguments?*' should become a setable feature
+;;; - need to support backlinks for long-integers
+;;; - maybe strings should only be backlinked up to a maximum length
 
 (startup-time-progn
   (setq *wrapped-type-table*
@@ -423,7 +477,7 @@ so that they can all support backlink indices.")
 
 ;;; TO DO: SEE WHETHER WE CAN MERGE THIS WITH THE VARIOUS `SELECT-' FUNCTIONS.
 
-(defun (unfiltered-dependent-propositions PROPOSITIONS-INDEX) 
+(defun (help-unfiltered-dependent-propositions PROPOSITIONS-INDEX) 
     ((self OBJECT) (relation SURROGATE))
   ;; Return an index containing propositions with operator 'relation'
   ;;    that reference 'self'.  If 'relation' is NULL, return all
@@ -476,6 +530,34 @@ so that they can all support backlink indices.")
                           where (eql? (operator prop) relation)))
                (setq list pagingList))))
          (return list))))))
+
+(defun (unfiltered-dependent-propositions PROPOSITIONS-INDEX) ((self OBJECT) (relation SURROGATE))
+  ;; Return an index containing propositions with operator 'relation'
+  ;;    that reference 'self'.  If 'relation' is NULL, return all
+  ;;    propositions that reference 'self'.
+  (let ((result (help-unfiltered-dependent-propositions self relation)))
+    (when (have-active-object-stores?)
+      ;; handle objects from non-persistent modules with assertions in a local store:
+      (let ((baseResult result))
+        (cond ((null? relation)
+               (setq result (maybe-wrap-sequence-index baseResult NULL :DEPENDENTS self NULL)))
+              (otherwise
+               ;; if `relation' is defined we might have to filter relative to it similar
+               ;; to what we do above in `help-unfiltered-dependent-propositions':
+               (setq result (maybe-wrap-sequence-index baseResult NULL :RELATION relation self))
+               (when (not (eql? result baseResult))
+                 ;; we wrapped, see whether we have to filter:
+                 (let ((index (get-backlinks-index self)))
+                   (when (and (defined? index)
+                              (or (eql? baseResult (dependent-propositions-list index))
+                                  (eql? baseResult (dependent-isa-propositions-list index))))
+                     ;; we have a heterogeneous list, filter it:
+                     (setf (the-sequence result)
+                       (collect prop in (the-sequence baseResult)
+                                where (eql? (operator (cast prop PROPOSITION)) relation)))
+                      ;; invalidate cached length:
+                     (setf (the-sequence-length result) NULL))))))))
+    (return result)))
 
 ;;; WOULD BE NICE IF WE COULD GET RID OF THESE TWO FUNCTIONS TO MAKE ALL THIS
 ;;;    ACCESS MORE UNIFORM AND HANDLED IN AS FEW PLACES AS POSSIBLE (THERE IS 
@@ -827,18 +909,23 @@ so that they can all support backlink indices.")
   ;;    kind will be returned (which makes various follow-up control structure
   ;;    simpler to write).
   (let ((kind (pattern-kind pattern))
-        (arguments (pattern-arguments pattern)))
+        (arguments (pattern-arguments pattern))
+        (result PROPOSITIONS-INDEX NULL))
     (case kind
       (:DEPENDENTS
-       (return (unfiltered-dependent-propositions (first arguments) NULL)))
+       (setq result (unfiltered-dependent-propositions (first arguments) NULL)))
       (:ISA
-       (return (select-isa-propositions pattern)))
+       (setq result (select-isa-propositions pattern)))
       (:RELATION
-       (return (select-relation-propositions pattern)))
+       (setq result (select-relation-propositions pattern)))
       (:RULES
        (return (select-rule-propositions pattern)))
       (otherwise
-       (error "select-propositions: Can't yet handle pattern " pattern)))))
+       (error "select-propositions: Can't yet handle pattern " pattern)))
+    (when  (have-active-object-stores?)
+      ;; handle objects from non-persistent modules with assertions in a store:
+      (setq result (maybe-wrap-sequence-index result pattern NULL NULL NULL)))
+    (return result)))
 
 (defun (select-isa-propositions PROPOSITIONS-INDEX)
     ((pattern SELECTION-PATTERN))
@@ -1294,26 +1381,30 @@ so that they can all support backlink indices.")
 ;;;;;; Description extensions (:ISA backlinks from description arguments)
   ;;
 
-(defun (get-description-extension PROPOSITIONS-INDEX)
-       ((description NAMED-DESCRIPTION) (update? BOOLEAN))
+(defun (get-description-extension PROPOSITIONS-INDEX) ((description NAMED-DESCRIPTION)
+                                                       (update? BOOLEAN))
   ;; Find or create a description extension for 'self'.
   ;; If 'update?', return a writable list.
-  ;; TO DO: RETHINK THE `update?' ARGUMENT, IT SEEMS OBSOLETE SINCE WE ALWAYS
-  ;;    WANT A PROPER INDEX FOR DESCRIPTIONS COMING FROM PERSISTENT STORES.
-  (let ((extension (extension description)))
-    (cond
-     ((and (defined? extension)
-           (not (eql? extension NIL-PAGING-INDEX)))
-      (return extension))
-     (update?
-      (setq extension 
-            (create-sequence-index 
-             :PAGING
-             (make-relation-extension-pattern
-              (surrogate-value-inverse description))))
-      (setf (extension description) extension)
-      (return extension))
-     (otherwise (return NIL-PAGING-INDEX))) ))
+  (let ((extension (extension description))
+        (result PROPOSITIONS-INDEX NULL))
+    (cond ((and (defined? extension)
+                (not (eql? extension NIL-PAGING-INDEX)))
+           (setq result extension))
+          (update?
+           (setq extension
+             (create-sequence-index 
+              :PAGING
+              (make-relation-extension-pattern
+               (surrogate-value-inverse description))))
+           (setf (extension description) extension)
+           (setq result extension))
+          (otherwise
+           (setq result NIL-PAGING-INDEX)))
+    (when (have-active-object-stores?)
+      ;; handle descriptions from non-persistent modules with assertions in a store:
+      (setq result
+        (maybe-wrap-sequence-index result NULL :RELATION (surrogate-value-inverse description) NULL)))
+    (return result)))
 
 (defun cleanup-description-extension ((description NAMED-DESCRIPTION))
   ;; Remove any deleted members of the extension.
@@ -1349,6 +1440,10 @@ isn't visible in the corresponding class extension.")
     ((:ISA :PREDICATE :FUNCTION)
      (let ((description (get-description (relationRef self))))
        ;; see if 'self' should not be added to the extension:
+    ;;;;;; CAUTION: NOT RECORDING HYPOTHETICAL INSTANCES MIGHT PREVENT
+    ;;;;;; CERTAIN UNIVERSAL INTRODUCTION PROOFS TO GO THROUGH, IF THEY
+    ;;;;;; REQUIRE PROVING A GOAL WITHOUT ANY BINDINGS - WAS BRIEFLY AN
+    ;;;;;; ISSUE IN THE LBR DOMAIN
        (foreach arg in (arguments self)
                 do
                 (typecase arg
@@ -1368,10 +1463,11 @@ isn't visible in the corresponding class extension.")
                   (otherwise NULL)))
        ;; we need to force creation of the extension regardless of whether
        ;;    or not we insert into it:
-       (let ((extension (get-description-extension description TRUE)))
-         ;; go ahead and insert it:
-         (when (not *loadingRegenerableObjects?*)
-           (insert extension self)))))
+       (get-description-extension description TRUE)
+       ;; go ahead and insert it:
+       (when (not *loadingRegenerableObjects?*)
+         ;; Access the real extension index here, not the potentially wrapped one:
+         (insert (extension description) self))))
     (otherwise NULL)) )
 
 (defun (all-extension-members ITERATOR) ((description NAMED-DESCRIPTION))

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -69,10 +69,10 @@ public class _StartupSoapEnv {
           SoapEnv.SYM_SOAP_ENV_faultstring = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("faultstring", null, 0)));
           SoapEnv.SYM_SOAP_ENV_faultactor = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("faultactor", null, 0)));
           SoapEnv.SYM_SOAP_ENV_detail = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("detail", null, 0)));
-          SoapEnv.SGT_SOAP_ENV_faultcode = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("faultcode", null, 1)));
-          SoapEnv.SGT_SOAP_ENV_faultstring = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("faultstring", null, 1)));
-          SoapEnv.SGT_SOAP_ENV_faultactor = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("faultactor", null, 1)));
-          SoapEnv.SGT_SOAP_ENV_detail = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("detail", null, 1)));
+          SoapEnv.SGT_SOAP_ENV_FaultCode = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FaultCode", null, 1)));
+          SoapEnv.SGT_SOAP_ENV_FaultString = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FaultString", null, 1)));
+          SoapEnv.SGT_SOAP_ENV_FaultActor = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("FaultActor", null, 1)));
+          SoapEnv.SGT_SOAP_ENV_Detail = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("Detail", null, 1)));
           SoapEnv.SYM_SOAP_ENV_STARTUP_SOAP_ENV = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-SOAP-ENV", null, 0)));
         }
         if (Stella.currentStartupTimePhaseP(5)) {
@@ -86,27 +86,27 @@ public class _StartupSoapEnv {
             renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.Body", "new_Body", new java.lang.Class [] {});
             renamed_Class.classSlotAccessorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.Body", "access_Body_Slot_Value", new java.lang.Class [] {Native.find_java_class("edu.isi.webtools.objects.soap_env.Body"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE});
           }
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("Fault", "(DEFCLASS Fault (XMLObject) :PUBLIC-SLOTS ((faultcode :TYPE faultcode) (faultstring :TYPE faultstring) (faultactor :TYPE faultactor) (detail :TYPE detail)))");
+          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("Fault", "(DEFCLASS Fault (XMLObject) :PUBLIC-SLOTS ((faultcode :TYPE FaultCode) (faultstring :TYPE FaultString) (faultactor :TYPE FaultActor) (detail :TYPE Detail)))");
 
             renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.Fault", "new_Fault", new java.lang.Class [] {});
             renamed_Class.classSlotAccessorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.Fault", "access_Fault_Slot_Value", new java.lang.Class [] {Native.find_java_class("edu.isi.webtools.objects.soap_env.Fault"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE});
           }
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("faultcode", "(DEFCLASS faultcode (XMLObject))");
+          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("FaultCode", "(DEFCLASS FaultCode (XMLObject))");
 
-            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.faultcode", "new_faultcode", new java.lang.Class [] {});
+            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.FaultCode", "new_FaultCode", new java.lang.Class [] {});
           }
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("faultstring", "(DEFCLASS faultstring (XMLObject))");
+          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("FaultString", "(DEFCLASS FaultString (XMLObject))");
 
-            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.faultstring", "new_faultstring", new java.lang.Class [] {});
+            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.FaultString", "new_FaultString", new java.lang.Class [] {});
           }
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("faultactor", "(DEFCLASS faultactor (XMLObject))");
+          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("FaultActor", "(DEFCLASS FaultActor (XMLObject))");
 
-            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.faultactor", "new_faultactor", new java.lang.Class [] {});
+            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.FaultActor", "new_FaultActor", new java.lang.Class [] {});
           }
-          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("detail", "(DEFCLASS detail (XMLObject) :PUBLIC-SLOTS ((contents :TYPE XMLObject)))");
+          { Stella_Class renamed_Class = Stella.defineClassFromStringifiedSource("Detail", "(DEFCLASS Detail (XMLObject) :PUBLIC-SLOTS ((contents :TYPE XMLObject)))");
 
-            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.detail", "new_detail", new java.lang.Class [] {});
-            renamed_Class.classSlotAccessorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.detail", "access_detail_Slot_Value", new java.lang.Class [] {Native.find_java_class("edu.isi.webtools.objects.soap_env.detail"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE});
+            renamed_Class.classConstructorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.Detail", "new_Detail", new java.lang.Class [] {});
+            renamed_Class.classSlotAccessorCode = Native.find_java_method("edu.isi.webtools.objects.soap_env.Detail", "access_Detail_Slot_Value", new java.lang.Class [] {Native.find_java_class("edu.isi.webtools.objects.soap_env.Detail"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Boolean.TYPE});
           }
         }
         if (Stella.currentStartupTimePhaseP(6)) {

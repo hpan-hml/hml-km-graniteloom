@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -95,7 +95,7 @@ Object* accessDateTimeLogicWrapperSlotValue(DateTimeLogicWrapper* self, Symbol* 
 void DateTimeLogicWrapper::printObject(std::ostream* stream) {
   { DateTimeLogicWrapper* self = this;
 
-    if (oPRINTREADABLYpo.get()) {
+    if (oPRINTREADABLYpo) {
       *(stream) << ((DateTimeObject*)(self->wrapperValue));
     }
     else {
@@ -698,11 +698,12 @@ DateTimeLogicWrapper* timepointOfOComputation(IntegerWrapper* yy, IntegerWrapper
 void timepointOfOEvaluator(Proposition* self) {
   equateEquivalentFunctionPropositions(self);
   { Object* storedvalue = valueOf((self->arguments->theArray)[7]);
-    Object* computedvalue = computeRelationValue(self, ((cpp_function_code)(&timepointOfOComputation)), false);
+    MethodSlot* computation = lookupFunction(SYM_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_TIMEPOINT_OFo_COMPUTATION);
+    Object* computedvalue = computeRelationValue(self, computation, false);
 
     if (((boolean)(computedvalue)) &&
         (!eqlP(computedvalue, storedvalue))) {
-      equateValues(computedvalue, storedvalue);
+      equateValues(self, computedvalue, storedvalue);
     }
   }
 }
@@ -858,7 +859,7 @@ double helpGetTimeZone(Object* timeZoneSpecifier) {
       { Object* timeZoneSpecifier000 = timeZoneSpecifier;
         StringWrapper* timeZoneSpecifier = ((StringWrapper*)(timeZoneSpecifier000));
 
-        { FloatWrapper* zone = ((FloatWrapper*)(oZONE_STRINGSo.get()->lookup(stringDowncase(timeZoneSpecifier->wrapperValue))));
+        { FloatWrapper* zone = ((FloatWrapper*)(oZONE_STRINGSo->lookup(stringDowncase(timeZoneSpecifier->wrapperValue))));
 
           if (!((boolean)(zone))) {
             return (NULL_FLOAT);
@@ -1110,6 +1111,7 @@ void helpStartupTimepointSupport1() {
     SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM = ((Surrogate*)(internRigidSymbolWrtModule("SKOLEM", getStellaModule("/LOGIC", true), 1)));
     SGT_TIMEPOINT_SUPPORT_UNIT_SUPPORT_DIM_NUMBER_LOGIC_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("DIM-NUMBER-LOGIC-WRAPPER", getStellaModule("/UNIT-SUPPORT", true), 1)));
     SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE = ((Surrogate*)(internRigidSymbolWrtModule("CS-VALUE", getStellaModule("/STELLA", true), 1)));
+    SYM_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_TIMEPOINT_OFo_COMPUTATION = ((Symbol*)(internRigidSymbolWrtModule("TIMEPOINT-OF*-COMPUTATION", NULL, 0)));
     KWD_TIMEPOINT_SUPPORT_FAILURE = ((Keyword*)(internRigidSymbolWrtModule("FAILURE", NULL, 2)));
     KWD_TIMEPOINT_SUPPORT_TERMINAL_FAILURE = ((Keyword*)(internRigidSymbolWrtModule("TERMINAL-FAILURE", NULL, 2)));
     KWD_TIMEPOINT_SUPPORT_MONDAY = ((Keyword*)(internRigidSymbolWrtModule("MONDAY", NULL, 2)));
@@ -1134,7 +1136,7 @@ void helpStartupTimepointSupport1() {
 void startupTimepointSupport() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/TIMEPOINT-SUPPORT", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupTimepointSupport1();
     }
@@ -1217,6 +1219,8 @@ Surrogate* SGT_TIMEPOINT_SUPPORT_LOGIC_SKOLEM = NULL;
 Surrogate* SGT_TIMEPOINT_SUPPORT_UNIT_SUPPORT_DIM_NUMBER_LOGIC_WRAPPER = NULL;
 
 Surrogate* SGT_TIMEPOINT_SUPPORT_STELLA_CS_VALUE = NULL;
+
+Symbol* SYM_TIMEPOINT_SUPPORT_TIMEPOINT_SUPPORT_TIMEPOINT_OFo_COMPUTATION = NULL;
 
 Keyword* KWD_TIMEPOINT_SUPPORT_FAILURE = NULL;
 

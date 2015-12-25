@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -72,7 +72,7 @@ Class* stringLookupClass(char* name) {
     Surrogate* surrogate = NULL;
 
     { Module* module = NULL;
-      Cons* iter000 = visibleModules(oMODULEo.get());
+      Cons* iter000 = visibleModules(oMODULEo);
 
       for (module, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         module = ((Module*)(iter000->value));
@@ -181,7 +181,7 @@ boolean bindToSurrogateP(Object* self, char* name, boolean clipoldvalueP, boolea
       return (true);
     }
     oldmodule = ((Module*)(oldsurrogate->homeContext));
-    if (!(oldmodule == oMODULEo.get())) {
+    if (!(oldmodule == oMODULEo)) {
       surrogate->surrogateValue = self;
       if (askforpermissionP) {
         *(STANDARD_WARNING->nativeStream) << "Warning: " << "Shadowing the " << "`" << self->primaryType()->symbolName << "'" << " named " << "`" << name << "'" << std::endl;
@@ -198,7 +198,7 @@ boolean bindToSurrogateP(Object* self, char* name, boolean clipoldvalueP, boolea
       return (true);
     }
     else if (clipoldvalueP) {
-      if (oWARNIFREDEFINEpo.get()) {
+      if (oWARNIFREDEFINEpo) {
         std::cout << "Redefining the " << "`" << self->primaryType()->symbolName << "'" << " named " << "`" << name << "'" << std::endl;
       }
       surrogate->surrogateValue = self;
@@ -211,7 +211,7 @@ boolean bindToSurrogateP(Object* self, char* name, boolean clipoldvalueP, boolea
     }
     else {
       if (askforpermissionP) {
-        *(STANDARD_WARNING->nativeStream) << "Warning: " << "Can't define the " << "`" << self->primaryType()->symbolName << "'" << " named " << "`" << name << "'" << " in module " << "`" << oMODULEo.get() << "'" << std::endl << "   because that term is already bound to " << "`" << oldvalue << "'" << std::endl << std::endl;
+        *(STANDARD_WARNING->nativeStream) << "Warning: " << "Can't define the " << "`" << self->primaryType()->symbolName << "'" << " named " << "`" << name << "'" << " in module " << "`" << oMODULEo << "'" << std::endl << "   because that term is already bound to " << "`" << oldvalue << "'" << std::endl << std::endl;
         if (yesOrNoP("Do it anyway? ")) {
           surrogate->surrogateValue = self;
           _Return1 = oldvalue;
@@ -240,12 +240,12 @@ void Class::unbindFromSurrogate() {
 }
 
 Symbol* shadowSymbol(char* name) {
-  return (((Symbol*)(internRigidSymbolLocally(name, oMODULEo.get(), SYMBOL_SYM))));
+  return (((Symbol*)(internRigidSymbolLocally(name, oMODULEo, SYMBOL_SYM))));
 }
 
 Surrogate* shadowSurrogate(char* name) {
   shadowSymbol(name);
-  return (((Surrogate*)(internRigidSymbolLocally(name, oMODULEo.get(), SURROGATE_SYM))));
+  return (((Surrogate*)(internRigidSymbolLocally(name, oMODULEo, SURROGATE_SYM))));
 }
 
 boolean shadowedSymbolP(GeneralizedSymbol* symbol) {
@@ -489,9 +489,9 @@ Class* defineStellaClass(Surrogate* name, List* supers, List* slots, KeywordKeyV
     Object* oldclass = NULL;
     boolean successP = false;
 
-    if ((!(name->homeContext == oMODULEo.get())) &&
-        (!visibleFromP(name->homeContext, oMODULEo.get()))) {
-      *(STANDARD_WARNING->nativeStream) << "Warning: " << "Can't define a class named " << "`" << name << "'" << " because the module " << std::endl << "   " << "`" << name->homeContext->contextName() << "'" << " is not visible from the current module " << "`" << oMODULEo.get()->contextName() << "'" << "." << std::endl << std::endl;
+    if ((!(name->homeContext == oMODULEo)) &&
+        (!visibleFromP(name->homeContext, oMODULEo))) {
+      *(STANDARD_WARNING->nativeStream) << "Warning: " << "Can't define a class named " << "`" << name << "'" << " because the module " << std::endl << "   " << "`" << name->homeContext->contextName() << "'" << " is not visible from the current module " << "`" << oMODULEo->contextName() << "'" << "." << std::endl << std::endl;
       return (NULL);
     }
     { boolean value000 = false;
@@ -531,9 +531,9 @@ Class* defineStellaClass(Surrogate* name, List* supers, List* slots, KeywordKeyV
             iter001 = iter001->rest) {
         s = ((Surrogate*)(iter001->value));
         if ((!stellaClassP(s->surrogateValue)) &&
-            ((!(((Module*)(s->homeContext)) == oMODULEo.get())) &&
-             visibleFromP(((Module*)(s->homeContext)), oMODULEo.get()))) {
-          if (oDEBUGLEVELo.get() >= 3) {
+            ((!(((Module*)(s->homeContext)) == oMODULEo)) &&
+             visibleFromP(((Module*)(s->homeContext)), oMODULEo))) {
+          if (oDEBUGLEVELo >= 3) {
             std::cout << "Automatically shadowing bogus super " << "`" << s << "'" << " of class " << "`" << name << "'" << std::endl;
           }
           s = shadowSurrogate(s->symbolName);
@@ -1415,7 +1415,7 @@ void addPrimaryType(Class* clasS) {
 void finalizeOneClass(Class* clasS) {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, clasS->homeModule());
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (((boolean)(((Symbol*)(dynamicSlotValue(clasS->dynamicSlots, SYM_CLASSES_STELLA_CLASS_EXTENSION_NAME, NULL)))))) {
       setDynamicSlotValue(clasS->dynamicSlots, SYM_CLASSES_STELLA_STORED_ACTIVEp, TRUE_WRAPPER, NULL);
     }
@@ -2441,7 +2441,7 @@ Slot* safeLookupSlot(Class* clasS, Symbol* slotName) {
 Slot* lookupVisibleSlot(Class* clasS, Object* slotName) {
   { Slot* slot = NULL;
     char* slotnamestring = NULL;
-    Module* module = oMODULEo.get();
+    Module* module = oMODULEo;
 
     { Surrogate* testValue000 = safePrimaryType(slotName);
 
@@ -3117,7 +3117,7 @@ void repairSlots() {
 
 void disconnectClasses() {
   { Surrogate* surrogate = NULL;
-    Iterator* iter000 = allSurrogates(oMODULEo.get(), false);
+    Iterator* iter000 = allSurrogates(oMODULEo, false);
 
     for (surrogate, iter000; iter000->nextP(); ) {
       surrogate = ((Surrogate*)(iter000->value));
@@ -3493,7 +3493,7 @@ Surrogate* lookupSlotref(Surrogate* self, Symbol* slotname) {
     if (!((boolean)(slotref))) {
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, (((boolean)(slot)) ? slot->homeModule() : ((Module*)(((Symbol*)(slotname->permanentify()))->homeContext))));
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         slotref = internSlotref(self->symbolName, slotname->symbolName);
       }
       slotref->surrogateValue = slot;
@@ -3822,7 +3822,7 @@ void helpStartupClasses4() {
 void startupClasses() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupClasses1();
       helpStartupClasses2();

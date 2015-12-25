@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: kif-out.ste,v 1.85 2010/09/09 23:30:44 hans Exp
+;;; Version: kif-out.ste,v 1.88 2014/04/16 00:10:14 hans Exp
 
 ;;; Translation of logical STELLA parse trees to a KIF output stream.
 
@@ -88,6 +88,37 @@ Each function should have the signature `((self OBJECT) (stream OUTPUT-STREAM))'
 Any return values will be ignored."
   :public? TRUE
   (insert-at *logic-dialect-print-functions* dialect fn))
+
+(defspecial *printQuantifiedObjectsStack* CONS NULL
+  :documentation "Used to register objects that quantify variables, so we
+can decide in certain contexts whether to print a variable or its value.")
+
+(defun push-quantified-object ((object OBJECT))
+  (when (defined? *printQuantifiedObjectsStack*)
+    (pushq *printQuantifiedObjectsStack* object)))
+
+(defun pop-quantified-object ()
+  (when (defined? *printQuantifiedObjectsStack*)
+    (setq *printQuantifiedObjectsStack* (rest *printQuantifiedObjectsStack*))))
+
+(defun (quantified-object-variable? BOOLEAN) ((var SKOLEM))
+  ;; Return TRUE if `var' is quantified by one of the currently
+  ;; visible quantified objects.
+  (when (defined? *printQuantifiedObjectsStack*)
+    (foreach obj in *printQuantifiedObjectsStack*
+        do (typecase obj
+             (PROPOSITION
+              (when (member? (io-variables obj) var)
+                (return TRUE)))
+             (DESCRIPTION
+              (when (or (member? (io-variables obj) var)
+                        (member? (internal-variables obj) var))
+                (return TRUE)))
+             ((VECTOR CONS LIST)
+              (when (member? obj var)
+                (return TRUE)))
+             (otherwise NULL))))
+  (return FALSE))
 
 (defun (maybe-downcase STRING) ((string STRING))
   ;; Downcase `string' if so indicated.
@@ -160,13 +191,15 @@ or use the current dialect if 'dialect' is NULL."
   :documentation "Print the logical form `form' to `stream' according to
 the current setting of `*logic-dialect*'.  Pretty-printing is controlled
 by the current setting of `*prettyPrintLogicalForms?*'."
-  (print-logical-form-in-dialect form *logic-dialect* stream))
+  (special ((*printQuantifiedObjectsStack* NIL))
+    (print-logical-form-in-dialect form *logic-dialect* stream)))
 
 (defun pretty-print-logical-form ((form OBJECT) (stream OUTPUT-STREAM))
   :public? TRUE
   :documentation "Pretty-print the logical form `form' to `stream' according
 to the current setting of `*logic-dialect*'."
-  (special ((*prettyPrintLogicalForms?* TRUE))
+  (special ((*prettyPrintLogicalForms?* TRUE)
+            (*printQuantifiedObjectsStack* NIL))
     (print-logical-form-in-dialect form *logic-dialect* stream) ))
 
 (defun print-unformatted-logical-form ((form OBJECT) (stream OUTPUT-STREAM))
@@ -174,7 +207,8 @@ to the current setting of `*logic-dialect*'."
   :documentation "Print the logical form `form' to `stream' according to
 the current setting of `*logic-dialect*'.  Pretty-printing is explicitly
 forced to be turned off."
-  (special ((*prettyPrintLogicalForms?* FALSE))
+  (special ((*prettyPrintLogicalForms?* FALSE)
+            (*printQuantifiedObjectsStack* NIL))
     (print-logical-form-in-dialect form *logic-dialect* stream) ))
 
 (defun print-formula ((formula OBJECT) (indent INTEGER))
@@ -191,7 +225,8 @@ forced to be turned off."
   (let ((currentIndentCounter *indentCounter*))
     (special ((*indentCounter* currentIndentCounter)
 	      (*printLogicalFormStream* stream)
-	      (*prettyPrintKif?* *prettyPrintLogicalForms?*))
+	      (*prettyPrintKif?* *prettyPrintLogicalForms?*)
+              (*printQuantifiedObjectsStack* NIL))
       (print-as-kif-internal self) )))
 
 (defun print-as-kif-internal ((self OBJECT))
@@ -392,12 +427,8 @@ forced to be turned off."
        (when (eql? (operator self) PL-KERNEL-KB/@FORK)
          (setq separateLines? TRUE)))
       (:FUNCTION 
-       (if *printFunctionsAsRelations?*
-	   ;; Print as a proposition
-	   (setq operator (stringified-kif-operator self))
-	 (progn 
-	   (print-kif-function-proposition self)
-	   (return))))
+       (print-kif-function-proposition self)
+       (return))
       (:IMPLIES
        (print-kif-IMPLIES-proposition self)
        (return))
@@ -417,13 +448,21 @@ forced to be turned off."
      operator (arguments self) separateLines? FALSE)))
 
 (defun print-kif-FUNCTION-proposition ((self PROPOSITION))
-  ;; Print 'self' as an equality between the function expression and '??'.
+  ;; Print 'self' as an equality between the function term and
+  ;; its value (unless `*printFunctionsAsRelations?*' is true in
+  ;; which case it will print like a regular relation proposition).
   (let ((stream *printLogicalFormStream*)
         (downCasedName (stringified-kif-operator self))
-        (lastArgument OBJECT (last-argument self)))
-    (print-stream stream "(= ")
-    (print-kif-operator-with-arguments
-     downCasedName (arguments self) FALSE TRUE)
+        (lastArgument OBJECT (last-argument self))
+        (printAsRelation? *printFunctionsAsRelations?*))
+    (unless printAsRelation?
+      (print-stream stream "(= "))
+    (print-stream stream "(" downCasedName " ")
+    (increase-indent (+ (length downCasedName) 2))
+    (print-kif-arguments (arguments self) FALSE TRUE)
+    (decrease-indent (+ (length downCasedName) 2))
+    (unless printAsRelation?
+      (print-stream stream ")"))
     (print-stream stream " ")
     (when (defined? lastArgument)
       (typecase lastArgument
@@ -476,6 +515,7 @@ forced to be turned off."
 
 (defun print-kif-quantification ((self PROPOSITION))
   ;; Print :FORALL or :EXISTS proposition.
+  (push-quantified-object self)
   (let ((stream *printLogicalFormStream*)
         (tail PROPOSITION (nth (arguments self) 0))
         (head PROPOSITION
@@ -514,20 +554,23 @@ forced to be turned off."
       (print-stream stream ")")
       (decrease-indent (+ (length (symbol-name implicationOperator)) 2)))
     (decrease-indent NULL)
-    (print-stream stream ")") ))
+    (print-stream stream ")")
+    (pop-quantified-object)))
 
 (defun print-kif-top-level-exists-proposition ((self PROPOSITION))
   ;; Print a top-level exists proposition whose variables got skolemized.
-  (let ((stream *printLogicalFormStream*))
+  (let ((stream *printLogicalFormStream*)
+        (variables (collect-skolemized-exists-variables self)))
+    (push-quantified-object variables)
     (print-stream stream "(" (stringified-surrogate PL-KERNEL-KB/@EXISTS) " ")
-    (print-kif-quantified-variables
-     (collect-skolemized-exists-variables self) FALSE)
+    (print-kif-quantified-variables variables FALSE)
     (print-stream stream EOL)
     (increase-indent NULL)
     (print-indent stream NULL)
     (print-kif-proposition self)
     (decrease-indent NULL)
-    (print-stream stream ")") ))
+    (print-stream stream ")")
+    (pop-quantified-object)))
 
 
 ;;; Printing KIF terms:
@@ -557,7 +600,9 @@ forced to be turned off."
   ;; Print unbound skolem 'self' as a question  variable;
   ;; Otherwise, print the skolem value.
   (let ((stream *printLogicalFormStream*))
-    (cond (suppressDefiningProposition?
+    (cond ((quantified-object-variable? self)
+           (print-skolem-name self stream))
+          (suppressDefiningProposition?
 	   (print-skolem self stream FALSE))
 	  ((defined? (defining-proposition self))
 	   (print-kif-FUNCTION-expression (defining-proposition self)))
@@ -567,7 +612,9 @@ forced to be turned off."
 (defun print-kif-variable ((self PATTERN-VARIABLE))
   ;; Print the name of the variable 'self', or its value.
   (let ((stream *printLogicalFormStream*))
-    (print-variable self stream) ))
+    (if (quantified-object-variable? self)
+        (print-quantified-variable self stream)
+      (print-variable self stream) )))
 
 ;; NOT CLEAR THAT THIS IS HOW WE WANT TO PRINT NATIVE COLLECTIONS:
 (defun print-kif-stella-collection ((self COLLECTION))
@@ -586,6 +633,7 @@ forced to be turned off."
   ;; Tricky: Temporarily bind '*queryIterator*' to insure that local variables
   ;;    aren't interpreted as variables bound on a query goal stack.
   (special ((*queryIterator* NULL))
+   (push-quantified-object self)
    (let ((stream *printLogicalFormStream*)
          (complement (relative-complement self)))
      (cond
@@ -623,7 +671,8 @@ forced to be turned off."
        (print-kif-quantified-variables (io-variables self) TRUE)
        (print-stream stream " ")
        (print-kif-description-proposition self FALSE)
-       (print-stream stream ")") )) )))
+       (print-stream stream ")") ))
+     (pop-quantified-object))))
 
   ;;
 ;;;;;; Goal tracing utilities
@@ -756,13 +805,17 @@ forced to be turned off."
       (print-stream stream "(" (stringified-surrogate operatorPrefix) " ")
       (increase-indent operatorPrefixIndent)
       ;; Print the head:
+      (push-quantified-object head)
       (special ((*skolemNameMappingTable* headVariableMapping))
         (print-kif-description-proposition head reversePolarity?))
+      (pop-quantified-object)
       (print-stream stream EOL)
       ;; Print the tail:
       (print-indent stream NULL)
+      (push-quantified-object tail)
       (special ((*skolemNameMappingTable* tailVariableMapping))
         (print-kif-description-proposition tail reversePolarity?))
+      (pop-quantified-object)
       (print-stream stream "))")
       (decrease-indent operatorPrefixIndent)
       (decrease-indent NULL) )))
@@ -809,10 +862,13 @@ forced to be turned off."
 						  PL-KERNEL-KB/@HIDDEN-RELATION
 						  FALSE))))
 
-(defun (excluded-proposition? BOOLEAN) ((proposition PROPOSITION))
-  ;; Return TRUE if `proposition' shouldn't be saved.
-  (when (or (unknown? proposition)
-            (defined? (lookup *excludedPropositions* proposition))
+(defun (excluded-proposition? BOOLEAN) ((proposition PROPOSITION) (module MODULE))
+  ;; Return TRUE if `proposition' shouldn't be saved for `module'.
+  (when (and (unknown? proposition)
+             (eql? (home-module proposition) module))
+    ;; this isn't a retraction of an inherited proposition:
+    (return TRUE))
+  (when (or (defined? (lookup *excludedPropositions* proposition))
             ;; exclude results of rule inversion:
             (defined? (master-proposition proposition)))
     (return TRUE))
@@ -985,16 +1041,18 @@ can be :terse, :verbose, or :source.  Used by `describe'."
 
 ;;; Pretty-printing assertions:
 
-(defun pretty-print-assertion
-    ((proposition PROPOSITION) (stream OUTPUT-STREAM))
+(defun pretty-print-assertion ((proposition PROPOSITION) (stream OUTPUT-STREAM))
   ;; Print an assertion operation for `proposition' onto `stream'.
-  (let ((operator (choose (default-truth-value? (truth-value proposition))
-                          (quote PRESUME)
-                          (quote ASSERT)))
-        (name (surrogate-value-inverse proposition)))
+  (let ((operator (quote ASSERT))
+        (name (surrogate-value-inverse proposition))
+        (truthValue (truth-value proposition)))
     (when (defined? name)
       (pretty-print-named-rule name stream)
       (return))
+    (cond ((default-truth-value? truthValue)
+           (setq operator (quote PRESUME)))
+          ((unknown-truth-value? truthValue)
+           (setq operator (quote RETRACT))))
     (special ((*printMode* :ORIGINAL)
               (*printLogicalFormStream* stream)
               (*indentCounter* 8))
@@ -1155,8 +1213,9 @@ either be an output stream or a persistent OBJECT-STORE."
       (special ((*excludedPropositions* (new HASH-TABLE)))
 	(exclude-originated-propositions)
 	(let ((reversedPropositions NIL))
-	  (foreach p in (locally-conceived-propositions module)
-	      where (not (excluded-proposition? p))
+          (foreach p in (all-propositions module FALSE)
+	      where (and (locally-modified-proposition? p module)
+                         (not (excluded-proposition? p module)))
 	      do (pushq reversedPropositions p))
 	  (foreach p in reversedPropositions
 	      do (save-object p store))))
@@ -1166,11 +1225,36 @@ either be an output stream or a persistent OBJECT-STORE."
 	(OBJECT-STORE
 	 (store-module-trailer store module))))))
 
-(defun save-module ((name NAME) (file STRING))
+(defun save-module (&rest (options OBJECT))
+  :documentation "Save all definitions and assertions of the specified :module (which
+defaults to the current module) to a file or persistent store.  If :file is specified,
+the KB is saved to that file.  If no :file is specified but the specified :module is
+associated with a persistent store, the KB will saved to that store, otherwise, an
+error will be signalled.  The specifics on how a save operation will proceed for a
+persistent store depends on the particular type of store (see respective documentation).
+For backwards compatibility, this command also supports the old <module> <file> arguments
+specified without keywords."
   :command? TRUE :public? TRUE
-  :documentation
-  "Save all definitions and assertions of module `name' to `file'."
-  (let ((module (coerce-to-module name TRUE)))
-    (when (defined? module)
-      (with-output-file (stream file)
-	(do-save-module module stream))) ))
+  (let ((optionsList (coerce-&rest-to-cons options))
+        (theOptions
+         (parse-options
+          (choose (keyword? (first optionsList))
+                  optionsList
+                  ;; we have an old-style invocation, construct an argument list:
+                  (cons-list :module (first optionsList) :file (second optionsList)))
+          (bquote (:module @MODULE
+                   :file @STRING))
+          TRUE FALSE))
+        (theModule MODULE (lookup-with-default theOptions :module *module*))
+        (file STRING-WRAPPER (lookup-with-default theOptions :file NULL)))
+    (cond ((and (defined? theModule)
+                (defined? file))
+           (pl-log :medium "Saving module " (module-full-name theModule) " to " file "...")
+           (with-output-file (stream file)
+             (do-save-module theModule stream)))
+          ((and (defined? theModule)
+                (defined? (object-store theModule)))
+           (pl-log :medium "Saving module " (module-full-name theModule) " to the associated store...")
+           (do-save-module theModule (object-store theModule)))
+          ((null? file)
+           (error "save-module: no file or persistent store specified to save to")))))

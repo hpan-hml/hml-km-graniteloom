@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -1085,11 +1085,42 @@ Object* yieldStringConstantTree(char* string) {
   }
 }
 
+boolean defineFunctionObjectEagerlyP(MethodSlot* function) {
+  { Class* methodclass = ((Class*)(SGT_METHODS_STELLA_METHOD_SLOT->surrogateValue));
+    StorageSlot* slot = NULL;
+
+    { Object* slotname = NULL;
+      Object* value = NULL;
+      KvCons* iter000 = function->dynamicSlots->theKvList;
+
+      for  (slotname, value, iter000; 
+            ((boolean)(iter000)); 
+            iter000 = iter000->rest) {
+        slotname = iter000->key;
+        value = iter000->value;
+        value = value;
+        slot = ((StorageSlot*)(lookupSlot(methodclass, ((Symbol*)(slotname)))));
+        if (((boolean)(slot)) &&
+            ((boolean)(((Symbol*)(dynamicSlotValue(slot->dynamicSlots, SYM_METHODS_STELLA_SLOT_OPTION_HANDLER, NULL)))))) {
+          return (true);
+        }
+      }
+    }
+    return (false);
+  }
+}
+
 Cons* yieldDefineStellaMethodObject(MethodSlot* method, MethodSlot* codemethod, MethodSlot* wrappermethod) {
-  { char* name = stringify(method->slotName);
+  { Object* name = wrapString(stringify(method->slotName));
 
     if (method->methodFunctionP) {
-      return (listO(3, SYM_METHODS_STELLA_DEFINE_FUNCTION_OBJECT, (stringEqlP(name, method->slotName->symbolName) ? wrapString(name) : wrapString(stringConcatenate(" ", name, 0))), cons(yieldStringConstantTree(method->methodStringifiedSource), cons((((boolean)(codemethod)) ? ((StandardObject*)(listO(4, SYM_METHODS_STELLA_THE_CODE, KWD_METHODS_FUNCTION, codemethod->slotName, NIL))) : ((StandardObject*)(SYM_METHODS_STELLA_NULL))), cons((((boolean)(wrappermethod)) ? ((StandardObject*)(listO(4, SYM_METHODS_STELLA_THE_CODE, KWD_METHODS_FUNCTION, wrappermethod->slotName, cons(wrappermethod, NIL)))) : ((StandardObject*)(SYM_METHODS_STELLA_NULL))), NIL)))));
+      if (defineFunctionObjectEagerlyP(method)) {
+        name = SYM_METHODS_STELLA_NULL;
+      }
+      else if (!eqlToStringP(name, method->slotName->symbolName)) {
+        name = wrapString(stringConcatenate(" ", ((StringWrapper*)(name))->wrapperValue, 0));
+      }
+      return (listO(3, SYM_METHODS_STELLA_DEFINE_FUNCTION_OBJECT, name, cons(yieldStringConstantTree(method->methodStringifiedSource), cons((((boolean)(codemethod)) ? ((StandardObject*)(listO(4, SYM_METHODS_STELLA_THE_CODE, KWD_METHODS_FUNCTION, codemethod->slotName, NIL))) : ((StandardObject*)(SYM_METHODS_STELLA_NULL))), cons((((boolean)(wrappermethod)) ? ((StandardObject*)(listO(4, SYM_METHODS_STELLA_THE_CODE, KWD_METHODS_FUNCTION, wrappermethod->slotName, cons(wrappermethod, NIL)))) : ((StandardObject*)(SYM_METHODS_STELLA_NULL))), NIL)))));
     }
     else {
       return (listO(3, SYM_METHODS_STELLA_DEFINE_METHOD_OBJECT, yieldStringConstantTree(method->methodStringifiedSource), cons((((boolean)(codemethod)) ? ((StandardObject*)(listO(4, SYM_METHODS_STELLA_THE_CODE, KWD_METHODS_METHOD, codemethod->slotOwner, cons(codemethod->slotName, NIL)))) : ((StandardObject*)(SYM_METHODS_STELLA_NULL))), cons(SYM_METHODS_STELLA_NULL, NIL))));
@@ -2169,7 +2200,7 @@ MethodSlot* lookupFunction(Symbol* functionsymbol) {
         oFUNCTION_LOOKUP_TABLEo->insertAt(functionsymbol, oldfunction);
         { 
           BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule(modulename, true));
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
           function = defineMethodFromStringifiedSource(functionsymbol->symbolName, NULL, definition);
         }
         if (((boolean)(function))) {
@@ -2193,7 +2224,7 @@ MethodSlot* lookupFunctionByName(char* name) {
     Symbol* symbol = NULL;
 
     { Module* module = NULL;
-      Cons* iter000 = visibleModules(oMODULEo.get());
+      Cons* iter000 = visibleModules(oMODULEo);
 
       for (module, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         module = ((Module*)(iter000->value));
@@ -2320,24 +2351,40 @@ boolean undefineConflictingDefinitionsP(MethodSlot* newslot) {
 }
 
 void defineFunctionObject(char* name, char* definition, cpp_function_code code, cpp_function_code wrappercode) {
-  { Object* namesymbol = ((name[0] == ' ') ? readSExpressionFromString(name) : internSymbolInModule(name, NULL, false));
-    StandardObject* oldfunction = ((StandardObject*)(oFUNCTION_LOOKUP_TABLEo->lookup(((Symbol*)(namesymbol)))));
-    Vector* record = stella::newVector(((wrappercode != NULL) ? 5 : 4));
+  if (name == NULL) {
+    { MethodSlot* function = defineMethodFromStringifiedSource(NULL, NULL, definition);
 
-    if (((boolean)(oldfunction)) &&
-        (oldfunction->primaryType() == SGT_METHODS_STELLA_VECTOR)) {
-      oldfunction = NULL;
+      if (((boolean)(function))) {
+        if (code != NULL) {
+          function->functionCode = code;
+        }
+        if (wrappercode != NULL) {
+          setDynamicSlotValue(function->dynamicSlots, SYM_METHODS_STELLA_EVALUATOR_WRAPPER_CODE, wrapFunctionCode(wrappercode), NULL_FUNCTION_CODE_WRAPPER);
+        }
+        oFUNCTION_LOOKUP_TABLEo->insertAt(function->slotName, function);
+      }
     }
-    (record->theArray)[0] = (wrapString(definition));
-    (record->theArray)[1] = oldfunction;
-    (record->theArray)[2] = (wrapString(oMODULEo.get()->moduleFullName));
-    if (code != NULL) {
-      (record->theArray)[3] = (wrapFunctionCode(code));
+  }
+  else {
+    { Object* namesymbol = ((name[0] == ' ') ? readSExpressionFromString(name) : internSymbolInModule(name, NULL, false));
+      StandardObject* oldfunction = ((StandardObject*)(oFUNCTION_LOOKUP_TABLEo->lookup(((Symbol*)(namesymbol)))));
+      Vector* record = stella::newVector(((wrappercode != NULL) ? 5 : 4));
+
+      if (((boolean)(oldfunction)) &&
+          (oldfunction->primaryType() == SGT_METHODS_STELLA_VECTOR)) {
+        oldfunction = NULL;
+      }
+      (record->theArray)[0] = (wrapString(definition));
+      (record->theArray)[1] = oldfunction;
+      (record->theArray)[2] = (wrapString(oMODULEo->moduleFullName));
+      if (code != NULL) {
+        (record->theArray)[3] = (wrapFunctionCode(code));
+      }
+      if (wrappercode != NULL) {
+        (record->theArray)[4] = (wrapFunctionCode(wrappercode));
+      }
+      oFUNCTION_LOOKUP_TABLEo->insertAt(((Symbol*)(namesymbol)), record);
     }
-    if (wrappercode != NULL) {
-      (record->theArray)[4] = (wrapFunctionCode(wrappercode));
-    }
-    oFUNCTION_LOOKUP_TABLEo->insertAt(((Symbol*)(namesymbol)), record);
   }
 }
 
@@ -2545,7 +2592,7 @@ void defineStellaGlobalVariableFromStringifiedSource(char* stringifiedsource) {
 Module* recordVariableHomeModule(GlobalVariable* self) {
   { Symbol* name = self->variableName;
     Module* namemodule = ((Module*)(name->homeContext));
-    Module* definitionmodule = oMODULEo.get();
+    Module* definitionmodule = oMODULEo;
     Module* homemodule = namemodule;
 
     if (explicitlyQualifiedNameP(name, definitionmodule)) {
@@ -2687,15 +2734,17 @@ void helpStartupMethods1() {
     KWD_METHODS_EVALUATE_ARGUMENTSp = ((Keyword*)(internRigidSymbolWrtModule("EVALUATE-ARGUMENTS?", NULL, 2)));
     SYM_METHODS_STELLA_METHOD_EVALUATE_ARGUMENTSp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-EVALUATE-ARGUMENTS?", NULL, 0)));
     SYM_METHODS_STELLA_CONCATENATE = ((Symbol*)(internRigidSymbolWrtModule("CONCATENATE", NULL, 0)));
+    SGT_METHODS_STELLA_METHOD_SLOT = ((Surrogate*)(internRigidSymbolWrtModule("METHOD-SLOT", NULL, 1)));
+    SYM_METHODS_STELLA_SLOT_OPTION_HANDLER = ((Symbol*)(internRigidSymbolWrtModule("SLOT-OPTION-HANDLER", NULL, 0)));
     SYM_METHODS_STELLA_DEFINE_FUNCTION_OBJECT = ((Symbol*)(internRigidSymbolWrtModule("DEFINE-FUNCTION-OBJECT", NULL, 0)));
     SYM_METHODS_STELLA_THE_CODE = ((Symbol*)(internRigidSymbolWrtModule("THE-CODE", NULL, 0)));
-    KWD_METHODS_FUNCTION = ((Keyword*)(internRigidSymbolWrtModule("FUNCTION", NULL, 2)));
-    SYM_METHODS_STELLA_DEFINE_METHOD_OBJECT = ((Symbol*)(internRigidSymbolWrtModule("DEFINE-METHOD-OBJECT", NULL, 0)));
   }
 }
 
 void helpStartupMethods2() {
   {
+    KWD_METHODS_FUNCTION = ((Keyword*)(internRigidSymbolWrtModule("FUNCTION", NULL, 2)));
+    SYM_METHODS_STELLA_DEFINE_METHOD_OBJECT = ((Symbol*)(internRigidSymbolWrtModule("DEFINE-METHOD-OBJECT", NULL, 0)));
     KWD_METHODS_METHOD = ((Keyword*)(internRigidSymbolWrtModule("METHOD", NULL, 2)));
     SGT_METHODS_STELLA_BOOLEAN = ((Surrogate*)(internRigidSymbolWrtModule("BOOLEAN", NULL, 1)));
     SYM_METHODS_STELLA_SUPER_CLASSES = ((Symbol*)(internRigidSymbolWrtModule("SUPER-CLASSES", NULL, 0)));
@@ -2717,7 +2766,6 @@ void helpStartupMethods2() {
     SYM_METHODS_STELLA_VARIABLE_ARITY_TABLEp = ((Symbol*)(internRigidSymbolWrtModule("VARIABLE-ARITY-TABLE?", NULL, 0)));
     SGT_METHODS_STELLA_VECTOR = ((Surrogate*)(internRigidSymbolWrtModule("VECTOR", NULL, 1)));
     SYM_METHODS_STELLA_EVALUATOR_WRAPPER_CODE = ((Symbol*)(internRigidSymbolWrtModule("EVALUATOR-WRAPPER-CODE", NULL, 0)));
-    SGT_METHODS_STELLA_METHOD_SLOT = ((Surrogate*)(internRigidSymbolWrtModule("METHOD-SLOT", NULL, 1)));
     SYM_METHODS_STELLA_METHOD_MACROp = ((Symbol*)(internRigidSymbolWrtModule("METHOD-MACRO?", NULL, 0)));
     SYM_METHODS_STELLA_VARIABLE_TYPE_SPECIFIER = ((Symbol*)(internRigidSymbolWrtModule("VARIABLE-TYPE-SPECIFIER", NULL, 0)));
     SYM_METHODS_STELLA_DEFSPECIAL = ((Symbol*)(internRigidSymbolWrtModule("DEFSPECIAL", NULL, 0)));
@@ -2760,6 +2808,7 @@ void helpStartupMethods3() {
     defineFunctionObject("DEFINE-STELLA-METHOD-SLOT", "(DEFUN (DEFINE-STELLA-METHOD-SLOT METHOD-SLOT) ((INPUTNAME SYMBOL) (RETURNTYPES CONS) (FUNCTION? BOOLEAN) (INPUTPARAMETERS CONS) (OPTIONS KEYWORD-KEY-VALUE-LIST)) :DOCUMENTATION \"Define a new Stella method object (a slot), and attach it\nto the class identified by the first parameter in 'inputParameters'.\")", ((cpp_function_code)(&defineStellaMethodSlot)), NULL);
     defineFunctionObject("ATTACH-METHOD-SLOT-TO-OWNER", "(DEFUN (ATTACH-METHOD-SLOT-TO-OWNER METHOD-SLOT) ((NEWMETHOD METHOD-SLOT)))", ((cpp_function_code)(&attachMethodSlotToOwner)), NULL);
     defineFunctionObject("YIELD-STRING-CONSTANT-TREE", "(DEFUN (YIELD-STRING-CONSTANT-TREE OBJECT) ((STRING STRING)))", ((cpp_function_code)(&yieldStringConstantTree)), NULL);
+    defineFunctionObject("DEFINE-FUNCTION-OBJECT-EAGERLY?", "(DEFUN (DEFINE-FUNCTION-OBJECT-EAGERLY? BOOLEAN) ((FUNCTION METHOD-SLOT)))", ((cpp_function_code)(&defineFunctionObjectEagerlyP)), NULL);
     defineFunctionObject("YIELD-DEFINE-STELLA-METHOD-OBJECT", "(DEFUN (YIELD-DEFINE-STELLA-METHOD-OBJECT CONS) ((METHOD METHOD-SLOT) (CODEMETHOD METHOD-SLOT) (WRAPPERMETHOD METHOD-SLOT)))", ((cpp_function_code)(&yieldDefineStellaMethodObject)), NULL);
     defineFunctionObject("YIELD-CLASS-PARAMETER-TYPES", "(DEFUN (YIELD-CLASS-PARAMETER-TYPES (CONS OF TYPE)) ((CLASS CLASS)))", ((cpp_function_code)(&yieldClassParameterTypes)), NULL);
     defineFunctionObject("OPTIMISTIC-SUBTYPE-OF?", "(DEFUN (OPTIMISTIC-SUBTYPE-OF? BOOLEAN) ((SUBTYPE TYPE) (SUPERTYPE TYPE)))", ((cpp_function_code)(&optimisticSubtypeOfP)), NULL);
@@ -2790,14 +2839,13 @@ void helpStartupMethods3() {
     defineFunctionObject("EXTRACT-PARAMETER-TYPE", "(DEFUN (EXTRACT-PARAMETER-TYPE TYPE-SPEC BOOLEAN) ((SELF TYPE-SPEC) (PARAMETER SYMBOL)) :PUBLIC? TRUE)", ((cpp_function_code)(&extractParameterType)), NULL);
     defineFunctionObject("COMPUTE-ANCHORED-TYPE-SPEC", "(DEFUN (COMPUTE-ANCHORED-TYPE-SPEC TYPE-SPEC) ((OWNERTYPE TYPE-SPEC) (RELTYPE ANCHORED-TYPE-SPECIFIER)))", ((cpp_function_code)(&computeAnchoredTypeSpec)), NULL);
     defineFunctionObject("COMPUTE-RELATIVE-TYPE-SPEC", "(DEFUN (COMPUTE-RELATIVE-TYPE-SPEC TYPE-SPEC) ((RELATIVETYPE TYPE-SPEC) (OWNERTYPE TYPE-SPEC)))", ((cpp_function_code)(&computeRelativeTypeSpec)), NULL);
-    defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF SLOT) (FIRSTARGTYPE TYPE-SPEC)))", ((cpp_method_code)(&Slot::computeReturnTypeSpec)), ((cpp_method_code)(NULL)));
   }
 }
 
 void startupMethods() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupMethods1();
       helpStartupMethods2();
@@ -2811,6 +2859,7 @@ void startupMethods() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupMethods3();
+      defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF SLOT) (FIRSTARGTYPE TYPE-SPEC)))", ((cpp_method_code)(&Slot::computeReturnTypeSpec)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF METHOD-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", ((cpp_method_code)(&MethodSlot::computeReturnTypeSpec)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (COMPUTE-RETURN-TYPE-SPEC TYPE-SPEC) ((SELF STORAGE-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", ((cpp_method_code)(&StorageSlot::computeReturnTypeSpec)), ((cpp_method_code)(NULL)));
       defineFunctionObject("YIELD-TYPE-SPEC-TREE", "(DEFUN (YIELD-TYPE-SPEC-TREE OBJECT) ((SELF TYPE-SPEC)))", ((cpp_function_code)(&yieldTypeSpecTree)), NULL);
@@ -2968,6 +3017,10 @@ Symbol* SYM_METHODS_STELLA_METHOD_EVALUATE_ARGUMENTSp = NULL;
 
 Symbol* SYM_METHODS_STELLA_CONCATENATE = NULL;
 
+Surrogate* SGT_METHODS_STELLA_METHOD_SLOT = NULL;
+
+Symbol* SYM_METHODS_STELLA_SLOT_OPTION_HANDLER = NULL;
+
 Symbol* SYM_METHODS_STELLA_DEFINE_FUNCTION_OBJECT = NULL;
 
 Symbol* SYM_METHODS_STELLA_THE_CODE = NULL;
@@ -3017,8 +3070,6 @@ Symbol* SYM_METHODS_STELLA_VARIABLE_ARITY_TABLEp = NULL;
 Surrogate* SGT_METHODS_STELLA_VECTOR = NULL;
 
 Symbol* SYM_METHODS_STELLA_EVALUATOR_WRAPPER_CODE = NULL;
-
-Surrogate* SGT_METHODS_STELLA_METHOD_SLOT = NULL;
 
 Symbol* SYM_METHODS_STELLA_METHOD_MACROp = NULL;
 

@@ -9,7 +9,6 @@ using namespace stella;
 using namespace stella_plx;
 
 int main() {
-  // Main PowerLoom entry point for your code in C++ and Java.
   std::cout << "Initializing STELLA..." << std::endl;
   startupStellaSystem();
   std::cout << "Initializing PowerLoom..." << std::endl;

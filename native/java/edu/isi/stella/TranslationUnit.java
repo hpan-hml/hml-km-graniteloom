@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -876,7 +876,8 @@ public class TranslationUnit extends StandardObject {
       ((List)(Stella.$TRANSLATIONUNITS$.get())).push(unit);
       if (!(initialvaluetree == Stella.KWD_UNBOUND_SPECIAL_VARIABLE)) {
         if (global.variableSpecialP &&
-            Stella.translateToJavaP()) {
+            (Stella.translateToJavaP() ||
+             Stella.supportUnexecP())) {
           global.variableConstantP = false;
           Cons.walkAuxiliaryTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Cons.cons(Stella.KWD_GLOBALS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SYS_SET_DEFAULT, Cons.cons(global.variableName, Cons.cons(Cons.cons(initialvaluetree, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))));
           initialvaluetree = Stella.KWD_UNBOUND_SPECIAL_VARIABLE;
@@ -893,7 +894,12 @@ public class TranslationUnit extends StandardObject {
         else {
           global.variableConstantP = false;
           Cons.walkAuxiliaryTree(Cons.list$(Cons.cons(Stella.SYM_STELLA_STARTUP_TIME_PROGN, Cons.cons(Stella.KWD_GLOBALS, Cons.cons(Cons.list$(Cons.cons(Stella.SYM_STELLA_SETQ, Cons.cons(global.variableName, Cons.cons(Cons.cons(initialvaluetree, Stella.NIL), Stella.NIL)))), Cons.cons(Stella.NIL, Stella.NIL))))));
-          initialvaluetree = StandardObject.typeToWalkedNullValueTree(GlobalVariable.globalVariableTypeSpec(global), StandardObject.typeSpecToBaseType(global.variableType));
+          if (Stella.supportUnexecP()) {
+            initialvaluetree = Stella.KWD_UNBOUND_SPECIAL_VARIABLE;
+          }
+          else {
+            initialvaluetree = StandardObject.typeToWalkedNullValueTree(GlobalVariable.globalVariableTypeSpec(global), StandardObject.typeSpecToBaseType(global.variableType));
+          }
         }
       }
       unit.codeRegister = initialvaluetree;

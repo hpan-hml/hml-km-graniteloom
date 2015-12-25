@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -349,7 +349,7 @@ void PartialMatchFrame::setFramePartialTruth(TruthValue* truthvalue, double poss
       }
       self->positiveScore = posscore;
       self->negativeScore = negscore;
-      setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(posscore), NULL_FLOAT_WRAPPER);
+      setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(posscore), NULL_FLOAT_WRAPPER);
     }
   }
 }
@@ -379,7 +379,7 @@ void PartialMatchFrame::propagateFramePartialTruth(ControlFrame* target) {
         targetpmf->positiveScore = source->positiveScore;
         targetpmf->negativeScore = source->negativeScore;
       }
-      setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(targetpmf->positiveScore), NULL_FLOAT_WRAPPER);
+      setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(targetpmf->positiveScore), NULL_FLOAT_WRAPPER);
     }
   }
 }
@@ -539,10 +539,10 @@ void PartialMatchFrame::setBasePartialMatchTruth(Proposition* prop, Keyword* tru
 
     prop = prop;
     if (truth == KWD_PARTIAL_MATCH_TRUE) {
-      setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(1.0), NULL_FLOAT_WRAPPER);
+      setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(1.0), NULL_FLOAT_WRAPPER);
     }
     else if (truth == KWD_PARTIAL_MATCH_FAIL) {
-      setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(0.0), NULL_FLOAT_WRAPPER);
+      setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(0.0), NULL_FLOAT_WRAPPER);
     }
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
@@ -1469,18 +1469,18 @@ void NnPartialMatch::setBasePartialMatchTruth(Proposition* prop, Keyword* truth)
           else {
             setDynamicSlotValue(prop->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_MATCH_SCORE, wrapFloat(1.0), NULL_FLOAT_WRAPPER);
           }
-          setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(((FloatWrapper*)(dynamicSlotValue(prop->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_MATCH_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue), NULL_FLOAT_WRAPPER);
+          setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(((FloatWrapper*)(dynamicSlotValue(prop->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_MATCH_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue), NULL_FLOAT_WRAPPER);
         }
       }
       else {
-        setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(1.0), NULL_FLOAT_WRAPPER);
+        setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(1.0), NULL_FLOAT_WRAPPER);
       }
     }
     else if (truth == KWD_PARTIAL_MATCH_FAIL) {
       if (((boolean)(prop))) {
         setDynamicSlotValue(prop->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_MATCH_SCORE, wrapFloat(0.0), NULL_FLOAT_WRAPPER);
       }
-      setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(0.0), NULL_FLOAT_WRAPPER);
+      setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(0.0), NULL_FLOAT_WRAPPER);
     }
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
@@ -1495,14 +1495,14 @@ void NnPartialMatch::setBasePartialMatchTruth(Proposition* prop, Keyword* truth)
 void NnPartialMatch::setCachePartialTruth(AtomicGoalCache* cache) {
   { NnPartialMatch* self = this;
 
-    cache->positiveScore = ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue;
+    cache->positiveScore = ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue;
   }
 }
 
 void NnPartialMatch::setJustificationPartialTruth(Justification* justification) {
   { NnPartialMatch* self = this;
 
-    justification->positiveScore = ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue;
+    justification->positiveScore = ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue;
   }
 }
 
@@ -1701,11 +1701,11 @@ PartialMatchFrame* makePartialMatchFrame(QueryIterator* query) {
 
         { Module* temp000 = matchmode->homeModule();
 
-          { Module* module = (((boolean)(temp000)) ? temp000 : oMODULEo.get());
+          { Module* module = (((boolean)(temp000)) ? temp000 : oMODULEo);
 
             { 
               BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
               clasS = stringLookupClass(classname);
               if (!((boolean)(clasS))) {
                 clasS = stringGetObject(classname, NULL);
@@ -1758,7 +1758,7 @@ void PartialMatchFrame::initializePartialMatchStrategy(QueryIterator* query) {
 }
 
 void createAndLinkPartialMatchFrame(ControlFrame* frame, Keyword* kind) {
-  { PartialMatchFrame* strategy = oQUERYITERATORo.get()->partialMatchStrategy;
+  { PartialMatchFrame* strategy = oQUERYITERATORo->partialMatchStrategy;
     PartialMatchFrame* partialmatchframe = strategy->createPartialMatchFrame(frame, kind);
 
     partialmatchframe->kind = kind;
@@ -1824,7 +1824,7 @@ boolean unboundVariablesInFrameP(ControlFrame* frame) {
 
 void recordLatestPartialMatchScore(ControlFrame* frame) {
   { Proposition* prop = NULL;
-    double score = ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue;
+    double score = ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue;
     PartialMatchFrame* pframe = frame->partialMatchFrame;
 
     { Keyword* testValue000 = frame->state;
@@ -1849,7 +1849,7 @@ void recordLatestPartialMatchScore(ControlFrame* frame) {
            (!((boolean)(argumentBoundTo(prop->arguments->last())))))))) {
       pframe->unboundVars = cons(((PatternVariable*)(prop->arguments->last())), pframe->unboundVars);
     }
-    pframe->recordPartialMatchScore(((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue, pframe->propositionWeight(prop));
+    pframe->recordPartialMatchScore(((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue, pframe->propositionWeight(prop));
   }
 }
 
@@ -1879,7 +1879,7 @@ boolean computePartialMatchScoreP(ControlFrame* frame) {
       else {
       }
     }
-    setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(score), NULL_FLOAT_WRAPPER);
+    setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(score), NULL_FLOAT_WRAPPER);
     partialmatchframe->positiveScore = score;
     setDynamicSlotValue(frame->proposition->dynamicSlots, SYM_PARTIAL_MATCH_LOGIC_MATCH_SCORE, wrapFloat(score), NULL_FLOAT_WRAPPER);
     if (unboundVariablesInFrameP(frame)) {
@@ -2262,7 +2262,7 @@ Iterator* allMatchingPartialPropositions(Proposition* self) {
 }
 
 boolean partialArgumentsUnifyWithArgumentsP(Proposition* subproposition, Proposition* referenceproposition) {
-  { PatternRecord* patternrecord = oQUERYITERATORo.get()->currentPatternRecord;
+  { PatternRecord* patternrecord = oQUERYITERATORo->currentPatternRecord;
     int ubstackoffset = patternrecord->topUnbindingStackOffset;
     boolean successP = false;
 
@@ -2527,7 +2527,7 @@ void helpStartupPartialMatch3() {
 void startupPartialMatch() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupPartialMatch1();
       SYM_PARTIAL_MATCH_LOGIC_SUPPORT = ((Symbol*)(internRigidSymbolWrtModule("SUPPORT", NULL, 0)));
@@ -2581,7 +2581,7 @@ void startupPartialMatch() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AND-MISSED-A-BINDING* BOOLEAN FALSE)");
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, oPL_KERNEL_MODULEo);
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         createLogicInstance(SGT_PARTIAL_MATCH_PL_KERNEL_KB_NULL, NULL);
       }
     }

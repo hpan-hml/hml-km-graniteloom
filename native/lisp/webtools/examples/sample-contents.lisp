@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -84,7 +84,8 @@
 (CL:DEFUN |access-SampleContents-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-SAMPLE-CONTENTS-SAMPLE-sampleAttr|)
-    (CL:IF SETVALUE? (CL:SETF (|%sampleAttr| SELF) (%WRAPPER-VALUE VALUE))
+    (CL:IF SETVALUE?
+     (CL:SETF (|%sampleAttr| SELF) (%WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%sampleAttr| SELF)))))
    ((CL:EQ SLOTNAME |SYM-SAMPLE-CONTENTS-SAMPLE-sub|)
     (CL:IF SETVALUE? (CL:SETF (|%sub| SELF) VALUE)
@@ -118,7 +119,8 @@
 (CL:DEFUN |access-SampleNested-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-SAMPLE-CONTENTS-SAMPLE-nestedAttr|)
-    (CL:IF SETVALUE? (CL:SETF (|%nestedAttr| SELF) (%WRAPPER-VALUE VALUE))
+    (CL:IF SETVALUE?
+     (CL:SETF (|%nestedAttr| SELF) (%WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%nestedAttr| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
@@ -130,8 +132,8 @@
 ;;; (DEFCLASS SampleListItem ...)
 
 (CL:DEFCLASS |SampleListItem| (|XMLObject|)
-  ((|itemID| :TYPE CL:SIMPLE-STRING :INITFORM STELLA::NULL-STRING :ALLOCATION
-    :INSTANCE :ACCESSOR |%itemID|)))
+  ((|itemID| :TYPE CL:SIMPLE-STRING :INITFORM STELLA::NULL-STRING
+    :ALLOCATION :INSTANCE :ACCESSOR |%itemID|)))
 
 (CL:DEFUN |new-SampleListItem| ()
   (CL:LET* ((SELF NULL))
@@ -216,7 +218,8 @@
      (CL:FUNCTION STARTUP-SAMPLE-CONTENTS) NULL)
     (CL:LET*
      ((FUNCTION
-       (LOOKUP-FUNCTION SYM-SAMPLE-CONTENTS-SAMPLE-STARTUP-SAMPLE-CONTENTS)))
+       (LOOKUP-FUNCTION
+        SYM-SAMPLE-CONTENTS-SAMPLE-STARTUP-SAMPLE-CONTENTS)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
       SYM-SAMPLE-CONTENTS-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupSampleContents") NULL-STRING-WRAPPER)))

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -872,7 +872,7 @@ boolean deriveSatelliteRulesForGoalP(Proposition* forallprop, Description* goald
 
     { 
       BIND_STELLA_SPECIAL(oCONTEXTo, Context*, forallprop->homeContext);
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
       { Proposition* goal = NULL;
         Cons* iter000 = findMatchableGoals(forallprop, KWD_RULES_HEAD)->theConsList;
 
@@ -954,7 +954,7 @@ boolean deriveSatelliteRulesForGoalP(Proposition* forallprop, Description* goald
           ((boolean)(((TruthValue*)(accessInContext(forallprop->truthValue, forallprop->homeContext, false)))))) {
         { 
           BIND_STELLA_SPECIAL(oCONTEXTo, Context*, forallprop->homeContext);
-          BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+          BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
           { 
             BIND_STELLA_SPECIAL(oINVISIBLEASSERTIONpo, boolean, true);
             { Proposition* satellite = NULL;
@@ -990,11 +990,11 @@ DEFINE_STELLA_SPECIAL(oDERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONSo, List* , NUL
 void deriveDeferredSatelliteRules(Description* self) {
   if (oLAZY_SATELLITE_RULESpo) {
     { 
-      BIND_STELLA_SPECIAL(oDERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONSo, List*, ((List*)(((!((boolean)(oDERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONSo.get()))) ? newList() : oDERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONSo.get()))));
-      if (oDERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONSo.get()->membP(self)) {
+      BIND_STELLA_SPECIAL(oDERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONSo, List*, ((List*)(((!((boolean)(oDERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONSo))) ? newList() : oDERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONSo))));
+      if (oDERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONSo->membP(self)) {
         return;
       }
-      oDERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONSo.get()->insert(self);
+      oDERIVE_DEFERRED_SATELLITE_RULES_INVOCATIONSo->insert(self);
       if ((!((boolean)(((SequenceIndex*)(dynamicSlotValue(self->dynamicSlots, SYM_RULES_LOGIC_RULES_WITH_DEFERRED_SATELLITES, NULL)))))) &&
           (!((boolean)(((Description*)(dynamicSlotValue(self->dynamicSlots, SYM_RULES_LOGIC_COMPLEMENT_DESCRIPTION, NULL))))))) {
         return;
@@ -1414,6 +1414,7 @@ Cons* callGetRules(Object* relationref) {
 
 Cons* getRules(Object* relation) {
   // Return the list of rules associated with `relation'.
+  processDefinitions();
   return (callGetRules(relation));
 }
 
@@ -1421,6 +1422,7 @@ void deleteRules(Object* relation) {
   // Delete the list of rules associated with `relation'.
   // This function is included mainly for debugging purposes, when
   // a user wants to verify the behavior of different sets of rules.
+  processDefinitions();
   { Proposition* r = NULL;
     Cons* iter000 = callGetRules(relation);
 
@@ -1433,16 +1435,17 @@ void deleteRules(Object* relation) {
 
 void printRules(Object* relation) {
   // Print the list of true rules associated with `relation'.
+  processDefinitions();
   { 
     BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getQueryContext());
-    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+    BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
     { Proposition* rule = NULL;
       Cons* iter000 = callGetRules(relation);
 
       for (rule, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         rule = ((Proposition*)(iter000->value));
         if ((!rule->deletedP()) &&
-            ((oREVERSEPOLARITYpo.get() ? falseP(rule) : (trueP(rule) ||
+            ((oREVERSEPOLARITYpo ? falseP(rule) : (trueP(rule) ||
             functionWithDefinedValueP(rule))))) {
           prettyPrintLogicalForm(rule, STANDARD_OUTPUT);
           std::cout << std::endl << std::endl;
@@ -1626,7 +1629,7 @@ void helpStartupRules1() {
 void startupRules() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupRules1();
     }

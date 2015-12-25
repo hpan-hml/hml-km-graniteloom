@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 2000-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 2000-2013      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: html-utilities.ste,v 1.17 2010/02/12 20:22:25 hans Exp
+;;; Version: html-utilities.ste,v 1.19 2013/02/27 03:50:41 hans Exp
 
 (in-package "STELLA")
 
@@ -71,6 +71,65 @@
 
 (defun html-line-break ((stream NATIVE-OUTPUT-STREAM))
   (print-stream stream "<BR>" EOL))
+
+
+(defun (get-html-object-type STRING) ((object OBJECT))
+  ;; Return the type of `object' as which it should be rendered in HTML.
+  ;; Return NULL if we don't know how to handle this type of object.
+  (let ((objectType STRING NULL))
+    (typecase object
+      (LOGIC-OBJECT
+       (cond ((class? object)
+              (setq objectType "concept"))
+             ((relation? object)
+              (setq objectType "relation"))
+             (otherwise
+              (setq objectType "object"))))
+      (MODULE
+       (setq objectType "context"))
+      (otherwise NULL))
+    (return objectType)))
+
+(defun (get-html-object-lookup-module STRING) ((object OBJECT))
+  ;; Return the name of the module in which `object' should be looked up and described.
+  ;; This lookup is performed by `html-write-object-response-page' (which see).
+  (let ((lookupModule (home-module object)))
+    (when (and (defined? *module*)
+               (visible-from? lookupModule *module*))
+      (setq lookupModule *module*))
+    (return (name lookupModule))))
+
+(defun (get-html-object-handle STRING) ((object OBJECT))
+  ;; Return the string that can be used to lookup `object' relative to its write module.
+  ;; This lookup is performed by `html-write-object-response-page' (which see).
+  (let ((name (object-name object)))
+    (cond ((defined? name)
+           (return (visible-name name TRUE)))
+          ((function-output-skolem? object)
+           (return (stringify (generate-term object))))
+          (otherwise
+           ;; This is for the benefit of `html-write-object-response-page-internal':
+           (return (stringify object))))))
+
+(defun (get-html-object-title STRING) ((object OBJECT))
+  ;; Return the bare title string that should be displayed when `object' is described.
+  (let ((name (object-name object)))
+    (cond ((defined? name)
+           (return (local-print-name name FALSE)))
+          ((function-output-skolem? object)
+           (return (stringify (generate-term object))))
+          (otherwise
+           (return (stringify object))))))
+
+(defun (get-html-object-title-prefix STRING) ((object OBJECT))
+  ;; Return the module prefix string that should be displayed when `object' is described.
+  (let ((name (object-name object)))
+    (if (or (and (defined? name)
+                 (not (visible-symbol? name)))
+            (and (null? name)
+                 (not (visible-from? (home-module object) *module*))))
+        (return (concatenate (module-full-name (home-module object)) MODULE-SEPARATOR-STRING))
+      (return ""))))
 
 
 (defun html-write-url-in-detail ((stream NATIVE-OUTPUT-STREAM) 
@@ -115,51 +174,41 @@
   (return))
 
 (defun html-write-href-in-detail ((stream NATIVE-OUTPUT-STREAM) 
-				 (target STRING)
-				 (action STRING)
-				 (objectType STRING)
-				 (contextName STRING)
-				 (objectName STRING)
-				 (objectTitle STRING)
-				 (rawTitle? BOOLEAN))
+                                  (target STRING)
+                                  (action STRING)
+                                  (objectType STRING)
+                                  (contextName STRING)
+                                  (objectName STRING)
+                                  (objectTitle STRING)
+                                  (rawTitle? BOOLEAN))
   (html-write-3part-href-in-detail
    stream target action objectType contextName objectName "" objectTitle "" rawTitle?))
 
 (defun html-write-href ((stream NATIVE-OUTPUT-STREAM) 
-		       (action STRING)
-		       (objectType STRING)
-		       (object STANDARD-OBJECT))
+                        (action STRING)
+                        (objectType STRING)
+                        (object STANDARD-OBJECT))
   (typecase object
     (LOGIC-OBJECT
-     (let ((writeModule (home-module object))
-           (name (object-name object))
-           (write-name (local-print-name name FALSE))
-           (module-prefix (choose (visible-symbol? name) 
-                                  "" 
-                                  (concatenate (module-full-name (interned-in name))
-                                               MODULE-SEPARATOR-STRING))))
-       (when (and (isa? *module* @MODULE)
-		  (member? (all-super-contexts *module*) writeModule))
-	 (setq writeModule *module*))
-       (html-write-3part-href-in-detail stream 
-				        NULL
-				        action
-				        objectType
-				        (name writeModule)
-				        (visible-name name TRUE)
-                                        module-prefix
-				        write-name
-                                        ""
-				        FALSE) ))
+     (html-write-3part-href-in-detail stream 
+                                      NULL
+                                      action
+                                      objectType
+                                      (get-html-object-lookup-module object)
+                                      (get-html-object-handle object)
+                                      (get-html-object-title-prefix object)
+                                      (get-html-object-title object)
+                                      ""
+                                      FALSE))
     (MODULE
-     (html-write-href-in-detail stream 
-			       NULL
-			       action
-			       objectType
-			       (name object)
-			       (name object)
-			       (name object)
-			       FALSE) )
+     (html-write-href-in-detail stream
+                                NULL
+                                action
+                                objectType
+                                (name object)
+                                (name object)
+                                (name object)
+                                FALSE) )
     (otherwise
      (print STANDARD-ERROR "Don't know how to write HREF for object" object)
      (print-stream stream object)))
@@ -168,33 +217,15 @@
 (defun html-write-url ((stream NATIVE-OUTPUT-STREAM) 
 		       (action STRING)
 		       (object STANDARD-OBJECT))
-  (let ((objectType STRING NULL))
-    (typecase object
-      (LOGIC-OBJECT
-       (let ((writeModule (home-module object)))
-	 (when (and (isa? *module* @MODULE)
-		    (member? (all-super-contexts *module*) writeModule))
-	   (setq writeModule *module*))
-	 (cond ((class? object)
-		(setq objectType "concept"))
-	       ((relation? object)
-		(setq objectType "relation"))
-	       (otherwise
-		(setq objectType "object")))
-	 (html-write-url-in-detail stream 
-				   action
-				   objectType
-				   (name writeModule)
-				   (visible-name (object-name object) TRUE)) ))
-      (MODULE
-       (html-write-url-in-detail stream 
-				 action
-				 "context"
-				 (name object)
-				 (name object)) )
-      (otherwise
-       (print-stream STANDARD-ERROR "Don't know how to write URL for object " object EOL)))
-    (return)))
+  (typecase object
+    ((LOGIC-OBJECT MODULE)
+     (html-write-url-in-detail stream
+                               action
+                               (get-html-object-type object)
+                               (get-html-object-lookup-module object)
+                               (get-html-object-handle object)))
+    (otherwise
+     (print-stream STANDARD-ERROR "Don't know how to write URL for object " object EOL))))
 
 (defun html-write-javascript ((stream NATIVE-OUTPUT-STREAM) (js STRING))
   (print-stream stream 

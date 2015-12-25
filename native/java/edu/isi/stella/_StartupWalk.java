@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -58,6 +58,7 @@ public class _StartupWalk {
       Stella.KWD_USE_CPP_GARBAGE_COLLECTOR = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("USE-CPP-GARBAGE-COLLECTOR", null, 2)));
       Stella.KWD_MINIMIZE_JAVA_PREFIXES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MINIMIZE-JAVA-PREFIXES", null, 2)));
       Stella.KWD_TRANSLATE_WITH_COPYRIGHT_HEADER = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TRANSLATE-WITH-COPYRIGHT-HEADER", null, 2)));
+      Stella.KWD_SUPPORT_UNEXEC = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SUPPORT-UNEXEC", null, 2)));
       Stella.SYM_STELLA_MEMBp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MEMB?", null, 0)));
       Stella.SYM_STELLA_$TRACED_KEYWORDS$ = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("*TRACED-KEYWORDS*", null, 0)));
       Stella.SYM_STELLA_PRINT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PRINT", null, 0)));
@@ -109,12 +110,12 @@ public class _StartupWalk {
       Stella.SYM_STELLA_ILLEGAL_EXPRESSION_FLAGGED_BY_THE_TRANSLATOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ILLEGAL-EXPRESSION-FLAGGED-BY-THE-TRANSLATOR", null, 0)));
       Stella.SYM_STELLA_BAD_SYS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("BAD-SYS", null, 0)));
       Stella.SGT_STELLA_NUMBER = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("NUMBER", null, 1)));
-      Stella.SYM_STELLA_INTEGER_TO_BOOLEAN_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTEGER-TO-BOOLEAN-WRAPPER", null, 0)));
     }
   }
 
   static void helpStartupWalk2() {
     {
+      Stella.SYM_STELLA_INTEGER_TO_BOOLEAN_WRAPPER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTEGER-TO-BOOLEAN-WRAPPER", null, 0)));
       Stella.SYM_STELLA_INTEGER_TO_BOOLEAN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTEGER-TO-BOOLEAN", null, 0)));
       Stella.SYM_STELLA_MUTABLE_STRING_TO_STRING = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("MUTABLE-STRING-TO-STRING", null, 0)));
       Stella.SYM_STELLA_STRING_TO_MUTABLE_STRING = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STRING-TO-MUTABLE-STRING", null, 0)));
@@ -174,12 +175,12 @@ public class _StartupWalk {
       Stella.KWD_PLACE_WHERE_VRLET_WAS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PLACE-WHERE-VRLET-WAS", null, 2)));
       Stella.KWD_PLACE_WHERE_LAST_EXPRESSION_WAS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PLACE-WHERE-LAST-EXPRESSION-WAS", null, 2)));
       Stella.SYM_STELLA_IT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IT", null, 0)));
-      Stella.SYM_STELLA_WRAPPEDVALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAPPEDVALUE", null, 0)));
     }
   }
 
   static void helpStartupWalk3() {
     {
+      Stella.SYM_STELLA_WRAPPEDVALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WRAPPEDVALUE", null, 0)));
       Stella.SYM_STELLA_DYNAMICSLOTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DYNAMICSLOTS", null, 0)));
       Stella.SYM_STELLA_NEWVALUE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("NEWVALUE", null, 0)));
       Stella.SYM_STELLA_FOUNDMATCHINGENTRYp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("FOUNDMATCHINGENTRY?", null, 0)));
@@ -239,12 +240,12 @@ public class _StartupWalk {
       Stella.SYM_STELLA_STRING_EQLp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STRING-EQL?", null, 0)));
       Stella.SYM_STELLA_SAFE_PRIMARY_TYPE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SAFE-PRIMARY-TYPE", null, 0)));
       Stella.SGT_STELLA_PROCESS_LOCK_OBJECT = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PROCESS-LOCK-OBJECT", null, 1)));
-      Stella.SYM_STELLA_EQL_TO_BOOLEANp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EQL-TO-BOOLEAN?", null, 0)));
     }
   }
 
   static void helpStartupWalk4() {
     {
+      Stella.SYM_STELLA_EQL_TO_BOOLEANp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EQL-TO-BOOLEAN?", null, 0)));
       Stella.SYM_STELLA_EQL_TO_INTEGERp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EQL-TO-INTEGER?", null, 0)));
       Stella.SYM_STELLA_EQL_TO_LONG_INTEGERp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EQL-TO-LONG-INTEGER?", null, 0)));
       Stella.SYM_STELLA_EQL_TO_FLOATp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("EQL-TO-FLOAT?", null, 0)));
@@ -305,7 +306,7 @@ public class _StartupWalk {
 
   static void helpStartupWalk5() {
     {
-      Stella.$AVAILABLE_STELLA_FEATURES$ = List.list(Cons.cons(Stella.KWD_WARN_ABOUT_UNDEFINED_METHODS, Cons.cons(Stella.KWD_WARN_ABOUT_MISSING_METHODS, Cons.cons(Stella.KWD_SUPPRESS_WARNINGS, Cons.cons(Stella.KWD_USE_HARDCODED_SYMBOLS, Cons.cons(Stella.KWD_USE_COMMON_LISP_STRUCTS, Cons.cons(Stella.KWD_USE_COMMON_LISP_CONSES, Cons.cons(Stella.KWD_USE_CPP_GARBAGE_COLLECTOR, Cons.cons(Stella.KWD_MINIMIZE_JAVA_PREFIXES, Cons.cons(Stella.KWD_TRANSLATE_WITH_COPYRIGHT_HEADER, Stella.NIL))))))))));
+      Stella.$AVAILABLE_STELLA_FEATURES$ = List.list(Cons.cons(Stella.KWD_WARN_ABOUT_UNDEFINED_METHODS, Cons.cons(Stella.KWD_WARN_ABOUT_MISSING_METHODS, Cons.cons(Stella.KWD_SUPPRESS_WARNINGS, Cons.cons(Stella.KWD_USE_HARDCODED_SYMBOLS, Cons.cons(Stella.KWD_USE_COMMON_LISP_STRUCTS, Cons.cons(Stella.KWD_USE_COMMON_LISP_CONSES, Cons.cons(Stella.KWD_USE_CPP_GARBAGE_COLLECTOR, Cons.cons(Stella.KWD_MINIMIZE_JAVA_PREFIXES, Cons.cons(Stella.KWD_TRANSLATE_WITH_COPYRIGHT_HEADER, Cons.cons(Stella.KWD_SUPPORT_UNEXEC, Stella.NIL)))))))))));
       Stella.$CURRENT_STELLA_FEATURES$.setDefaultValue(List.list(Stella.NIL));
       Stella.$DEFAULT_STELLA_FEATURES$ = List.list(Cons.cons(Stella.KWD_WARN_ABOUT_UNDEFINED_METHODS, Cons.cons(Stella.KWD_WARN_ABOUT_MISSING_METHODS, Cons.cons(Stella.KWD_USE_CPP_GARBAGE_COLLECTOR, Cons.cons(Stella.KWD_USE_COMMON_LISP_CONSES, Cons.cons(Stella.KWD_MINIMIZE_JAVA_PREFIXES, Stella.NIL))))));
       Stella.resetStellaFeatures();
@@ -364,6 +365,7 @@ public class _StartupWalk {
       Stella.defineFunctionObject("METHOD-CALL-INLINING-ENABLED?", "(DEFUN (METHOD-CALL-INLINING-ENABLED? BOOLEAN) ())", Native.find_java_method("edu.isi.stella.Stella", "methodCallInliningEnabledP", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("OPTIMIZE-BOOLEAN-TESTS?", "(DEFUN (OPTIMIZE-BOOLEAN-TESTS? BOOLEAN) ())", Native.find_java_method("edu.isi.stella.Stella", "optimizeBooleanTestsP", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("CHECK-FOR-ILLEGAL-RETURN?", "(DEFUN (CHECK-FOR-ILLEGAL-RETURN? BOOLEAN) ())", Native.find_java_method("edu.isi.stella.Stella", "checkForIllegalReturnP", new java.lang.Class [] {}), null);
+      Stella.defineFunctionObject("SUPPORT-UNEXEC?", "(DEFUN (SUPPORT-UNEXEC? BOOLEAN) ())", Native.find_java_method("edu.isi.stella.Stella", "supportUnexecP", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("NAME-QUOTED-TREE", "(DEFUN (NAME-QUOTED-TREE STRING) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "nameQuotedTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("GET-QUOTED-TREE", "(DEFUN (GET-QUOTED-TREE CONS) ((TREE-NAME STRING) (MODULENAME STRING)) :DOCUMENTATION \"Return the quoted tree with name `tree-name'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "getQuotedTree", new java.lang.Class [] {Native.find_java_class("java.lang.String"), Native.find_java_class("java.lang.String")}), null);
       Stella.defineFunctionObject("CLEAR-TRANSLATION-UNIT", "(DEFUN CLEAR-TRANSLATION-UNIT ((SELF TRANSLATION-UNIT)))", Native.find_java_method("edu.isi.stella.TranslationUnit", "clearTranslationUnit", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.TranslationUnit")}), null);
@@ -407,12 +409,12 @@ public class _StartupWalk {
       Stella.defineFunctionObject("START-FUNCTION-CALL-LOGGING", "(DEFUN START-FUNCTION-CALL-LOGGING ((FILENAME STRING)) :DOCUMENTATION \"Start function call logging to `fileName'.\" :COMMAND? TRUE :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "startFunctionCallLogging", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), Native.find_java_method("edu.isi.stella.Cons", "startFunctionCallLoggingEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
       Stella.defineFunctionObject("STOP-FUNCTION-CALL-LOGGING", "(DEFUN STOP-FUNCTION-CALL-LOGGING () :DOCUMENTATION \"Stop function call logging and close the current log file.\" :COMMAND? TRUE :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "stopFunctionCallLogging", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("SET-CALL-LOG-BREAK-POINT", "(DEFUN SET-CALL-LOG-BREAK-POINT ((COUNT INTEGER)) :DOCUMENTATION \"Set a call log break point to `count'.  Execution will be\ninterrupted right at the entry of the `count'th logged function call.\" :COMMAND? TRUE :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "setCallLogBreakPoint", new java.lang.Class [] {java.lang.Integer.TYPE}), Native.find_java_method("edu.isi.stella.Cons", "setCallLogBreakPointEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
-      Stella.defineFunctionObject("BREAK-PROGRAM", "(DEFUN BREAK-PROGRAM ((MESSAGE STRING)) :DOCUMENTATION \"Interrupt the program and print `message'.  Continue after\nconfirmation with the user.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "breakProgram", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), null);
     }
   }
 
   static void helpStartupWalk7() {
     {
+      Stella.defineFunctionObject("BREAK-PROGRAM", "(DEFUN BREAK-PROGRAM ((MESSAGE STRING)) :DOCUMENTATION \"Interrupt the program and print `message'.  Continue after\nconfirmation with the user.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "breakProgram", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), null);
       Stella.defineFunctionObject("TERMINATE-PROGRAM", "(DEFUN TERMINATE-PROGRAM () :DOCUMENTATION \"Terminate and exit the program with normal exit code.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Stella", "terminateProgram", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("PO", "(DEFUN PO ((THING OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "po", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("VARIABLE-EQL?", "(DEFUN (VARIABLE-EQL? BOOLEAN) ((VAR1 SYMBOL) (VAR2 SYMBOL)))", Native.find_java_method("edu.isi.stella.Symbol", "variableEqlP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.Symbol")}), null);
@@ -472,12 +474,12 @@ public class _StartupWalk {
       Stella.defineFunctionObject("SET-TARGET-LANGUAGE-TYPE", "(DEFUN (SET-TARGET-LANGUAGE-TYPE CONS TYPE-SPEC) ((SYSTREE CONS) (TYPE TYPE)))", Native.find_java_method("edu.isi.stella.Cons", "setTargetLanguageType", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Surrogate"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("WALK-A-TREE", "(DEFUN (WALK-A-TREE OBJECT TYPE-SPEC) ((TREE OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "walkATree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("HELP-WALK-A-TREE", "(DEFUN (HELP-WALK-A-TREE OBJECT TYPE-SPEC) ((TREE OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "helpWalkATree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("[Ljava.lang.Object;")}), null);
-      Stella.defineFunctionObject("WALK-A-CONS-TREE", "(DEFUN (WALK-A-CONS-TREE CONS TYPE-SPEC) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "walkAConsTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("[Ljava.lang.Object;")}), null);
     }
   }
 
   static void helpStartupWalk8() {
     {
+      Stella.defineFunctionObject("WALK-A-CONS-TREE", "(DEFUN (WALK-A-CONS-TREE CONS TYPE-SPEC) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "walkAConsTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("INCREMENTAL-TRANSLATION?", "(DEFUN (INCREMENTAL-TRANSLATION? BOOLEAN) ())", Native.find_java_method("edu.isi.stella.Stella", "incrementalTranslationP", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("CONSTRUCT-SYMBOL-CONSTANT-NAME", "(DEFUN (CONSTRUCT-SYMBOL-CONSTANT-NAME STRING) ((SYMBOL GENERALIZED-SYMBOL)))", Native.find_java_method("edu.isi.stella.GeneralizedSymbol", "constructSymbolConstantName", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.GeneralizedSymbol")}), null);
       Stella.defineFunctionObject("YIELD-SYMBOL-CONSTANT-NAME", "(DEFUN (YIELD-SYMBOL-CONSTANT-NAME SYMBOL) ((SYMBOL GENERALIZED-SYMBOL)))", Native.find_java_method("edu.isi.stella.GeneralizedSymbol", "yieldSymbolConstantName", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.GeneralizedSymbol")}), null);
@@ -537,12 +539,12 @@ public class _StartupWalk {
       Stella.defineFunctionObject("WALK-UNWIND-PROTECT-SPECIAL-TREE", "(DEFUN (WALK-UNWIND-PROTECT-SPECIAL-TREE CONS TYPE-SPEC) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "walkUnwindProtectSpecialTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("WALK-CAST-TREE", "(DEFUN (WALK-CAST-TREE CONS TYPE-SPEC) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "walkCastTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("VALUES-TREE?", "(DEFUN (VALUES-TREE? BOOLEAN) ((TREE OBJECT)))", Native.find_java_method("edu.isi.stella.Stella_Object", "valuesTreeP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("WALK-VALUES-TREE", "(DEFUN (WALK-VALUES-TREE CONS TYPE-SPEC) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "walkValuesTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("[Ljava.lang.Object;")}), null);
     }
   }
 
   static void helpStartupWalk9() {
     {
+      Stella.defineFunctionObject("WALK-VALUES-TREE", "(DEFUN (WALK-VALUES-TREE CONS TYPE-SPEC) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "walkValuesTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("WALK-MV-EXPRESSION-TREE", "(DEFUN (WALK-MV-EXPRESSION-TREE OBJECT CONS (LIST OF TYPE-SPEC)) ((TREE OBJECT) (TARGETTYPES (LIST OF TYPE-SPEC)) (OPERATOR SYMBOL)))", Native.find_java_method("edu.isi.stella.Stella_Object", "walkMvExpressionTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.List"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("LISTIFY-TYPE-SPEC", "(DEFUN (LISTIFY-TYPE-SPEC (LIST OF TYPE-SPEC)) ((TYPESPEC TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.StandardObject", "listifyTypeSpec", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.StandardObject")}), null);
       Stella.defineFunctionObject("SLOT-FROM-EXPRESSION-TREE", "(DEFUN (SLOT-FROM-EXPRESSION-TREE SLOT) ((TREE CONS)))", Native.find_java_method("edu.isi.stella.Cons", "slotFromExpressionTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), null);
@@ -602,12 +604,12 @@ public class _StartupWalk {
       Stella.defineFunctionObject("PASS-VARIABLE-ARGUMENTS-AS-LIST?", "(DEFUN (PASS-VARIABLE-ARGUMENTS-AS-LIST? BOOLEAN) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "passVariableArgumentsAsListP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
       Stella.defineFunctionObject("VARIABLE-ARGUMENTS-TYPE", "(DEFUN (VARIABLE-ARGUMENTS-TYPE TYPE-SPEC) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "variableArgumentsType", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
       Stella.defineFunctionObject("VARIABLE-ARGUMENTS-NAME", "(DEFUN (VARIABLE-ARGUMENTS-NAME SYMBOL) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "variableArgumentsName", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
-      Stella.defineFunctionObject("YIELD-LISTIFIED-VARIABLE-ARGUMENTS-TYPE", "(DEFUN (YIELD-LISTIFIED-VARIABLE-ARGUMENTS-TYPE TYPE-SPEC) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "yieldListifiedVariableArgumentsType", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
     }
   }
 
   static void helpStartupWalk10() {
     {
+      Stella.defineFunctionObject("YIELD-LISTIFIED-VARIABLE-ARGUMENTS-TYPE", "(DEFUN (YIELD-LISTIFIED-VARIABLE-ARGUMENTS-TYPE TYPE-SPEC) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "yieldListifiedVariableArgumentsType", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
       Stella.defineFunctionObject("YIELD-LISTIFIED-VARIABLE-ARGUMENTS", "(DEFUN (YIELD-LISTIFIED-VARIABLE-ARGUMENTS CONS) ((WALKEDARGS CONS) (TARGETTYPE TYPE-SPEC) (WRAPARGS? BOOLEAN)))", Native.find_java_method("edu.isi.stella.Cons", "yieldListifiedVariableArguments", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.StandardObject"), java.lang.Boolean.TYPE}), null);
       Stella.defineFunctionObject("FINISH-WALKING-ARGUMENT-LIST-TREE", "(DEFUN (FINISH-WALKING-ARGUMENT-LIST-TREE OBJECT TYPE-SPEC) ((SELF SLOT) (TREE CONS) (FIRSTARGTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.Slot", "finishWalkingArgumentListTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Slot"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.StandardObject"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("WALK-VARIABLE-ARGUMENTS", "(DEFUN (WALK-VARIABLE-ARGUMENTS CONS) ((ARGUMENTS CONS) (METHOD METHOD-SLOT) (FIRSTARGTYPE TYPE-SPEC)))", Native.find_java_method("edu.isi.stella.Cons", "walkVariableArguments", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.MethodSlot"), Native.find_java_class("edu.isi.stella.StandardObject")}), null);
@@ -667,12 +669,12 @@ public class _StartupWalk {
       Stella.defineFunctionObject("WALK-STARTUP-TIME-PROGN-UNIT", "(DEFUN WALK-STARTUP-TIME-PROGN-UNIT ((UNIT TRANSLATION-UNIT)))", Native.find_java_method("edu.isi.stella.TranslationUnit", "walkStartupTimePrognUnit", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.TranslationUnit")}), null);
       Stella.defineFunctionObject("EARLIER-STARTUP-UNIT?", "(DEFUN (EARLIER-STARTUP-UNIT? BOOLEAN) ((UNIT1 TRANSLATION-UNIT) (UNIT2 TRANSLATION-UNIT)))", Native.find_java_method("edu.isi.stella.TranslationUnit", "earlierStartupUnitP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.TranslationUnit"), Native.find_java_class("edu.isi.stella.TranslationUnit")}), null);
       Stella.defineFunctionObject("COMBINE-STARTUP-FUNCTION-UNITS", "(DEFUN (COMBINE-STARTUP-FUNCTION-UNITS CONS) ((STARTUPFNNAME SYMBOL)))", Native.find_java_method("edu.isi.stella.Symbol", "combineStartupFunctionUnits", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Symbol")}), null);
-      Stella.defineExternalSlotFromStringifiedSource("(DEFSLOT METHOD-SLOT METHOD-STARTUP-CLASSNAME :TYPE STRING :ALLOCATION :DYNAMIC)");
     }
   }
 
   static void helpStartupWalk11() {
     {
+      Stella.defineExternalSlotFromStringifiedSource("(DEFSLOT METHOD-SLOT METHOD-STARTUP-CLASSNAME :TYPE STRING :ALLOCATION :DYNAMIC)");
       Stella.defineMethodObject("(DEFMETHOD (METHOD-STARTUP-FUNCTION? BOOLEAN) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "methodStartupFunctionP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("EXTRACT-STARTUP-FUNCTION-UNITS", "(DEFUN EXTRACT-STARTUP-FUNCTION-UNITS ((STARTUPUNITS (LIST OF TRANSLATION-UNIT)) (STARTUPFNNAME SYMBOL)))", Native.find_java_method("edu.isi.stella.List", "extractStartupFunctionUnits", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.List"), Native.find_java_class("edu.isi.stella.Symbol")}), null);
       Stella.defineFunctionObject("YIELD-STARTUP-FUNCTION-NAME", "(DEFUN (YIELD-STARTUP-FUNCTION-NAME SYMBOL) ((FILE STRING)))", Native.find_java_method("edu.isi.stella.Stella", "yieldStartupFunctionName", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), null);
@@ -710,7 +712,9 @@ public class _StartupWalk {
       Stella.defineFunctionObject("CREATE-LISP-MACRO-UNITS", "(DEFUN CREATE-LISP-MACRO-UNITS ((NAME SYMBOL) (METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.Symbol", "createLispMacroUnits", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
       Stella.defineFunctionObject("COMMAND?", "(DEFUN (COMMAND? BOOLEAN) ((METHOD METHOD-SLOT)) :DOCUMENTATION \"Return `true' if `method' is an evaluable command.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.MethodSlot", "commandP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
       Stella.defineFunctionObject("LOOKUP-COMMAND", "(DEFUN (LOOKUP-COMMAND METHOD-SLOT) ((NAME SYMBOL)) :DOCUMENTATION \"If `name' names an evaluable command return its associated\ncommand object;  otherwise, return `null'.  Currently, commands are not\npolymorphic, i.e., they can only be implemented by functions.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Symbol", "lookupCommand", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Symbol")}), null);
+      Stella.defineFunctionObject("LOOKUP-COMMAND-LIKE-FUNCTION", "(DEFUN (LOOKUP-COMMAND-LIKE-FUNCTION METHOD-SLOT) ((NAME SYMBOL)) :DOCUMENTATION \"Look up a function with `name' that can be evaluated via `apply'\njust like a command, regardless of whether it was marked as such.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.stella.Symbol", "lookupCommandLikeFunction", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Symbol")}), null);
       Stella.defineFunctionObject("METHOD-MUST-BE-EVALUABLE?", "(DEFUN (METHOD-MUST-BE-EVALUABLE? BOOLEAN) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "methodMustBeEvaluableP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
+      Stella.defineFunctionObject("METHOD-CALLABLE-VIA-APPLY?", "(DEFUN (METHOD-CALLABLE-VIA-APPLY? BOOLEAN) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "methodCallableViaApplyP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
       Stella.defineFunctionObject("METHOD-NEEDS-EVALUATOR-WRAPPER?", "(DEFUN (METHOD-NEEDS-EVALUATOR-WRAPPER? BOOLEAN) ((METHOD METHOD-SLOT)))", Native.find_java_method("edu.isi.stella.MethodSlot", "methodNeedsEvaluatorWrapperP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.MethodSlot")}), null);
       Stella.defineFunctionObject("YIELD-EVALUATOR-WRAPPER-NAME", "(DEFUN (YIELD-EVALUATOR-WRAPPER-NAME SYMBOL) ((METHODNAME SYMBOL)))", Native.find_java_method("edu.isi.stella.Symbol", "yieldEvaluatorWrapperName", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Symbol")}), null);
       Stella.defineFunctionObject("YIELD-ARGUMENT-ACCESS-TREE", "(DEFUN (YIELD-ARGUMENT-ACCESS-TREE OBJECT) ((ARGUMENTSVARIABLE SYMBOL) (INDEX INTEGER) (RESTARGUMENT? BOOLEAN)))", Native.find_java_method("edu.isi.stella.Symbol", "yieldArgumentAccessTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Symbol"), java.lang.Integer.TYPE, java.lang.Boolean.TYPE}), null);
@@ -773,7 +777,7 @@ public class _StartupWalk {
         }
         if (Stella.currentStartupTimePhaseP(9)) {
           Stella_Object.inModule(((StringWrapper)(Stella_Object.copyConsTree(StringWrapper.wrapString("/STELLA")))));
-          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AVAILABLE-STELLA-FEATURES* (LIST OF KEYWORD) (LIST :WARN-ABOUT-UNDEFINED-METHODS :WARN-ABOUT-MISSING-METHODS :SUPPRESS-WARNINGS :USE-HARDCODED-SYMBOLS :USE-COMMON-LISP-STRUCTS :USE-COMMON-LISP-CONSES :USE-CPP-GARBAGE-COLLECTOR :MINIMIZE-JAVA-PREFIXES :TRANSLATE-WITH-COPYRIGHT-HEADER) :DOCUMENTATION \"List of available STELLA features.\" :PUBLIC? TRUE)");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *AVAILABLE-STELLA-FEATURES* (LIST OF KEYWORD) (LIST :WARN-ABOUT-UNDEFINED-METHODS :WARN-ABOUT-MISSING-METHODS :SUPPRESS-WARNINGS :USE-HARDCODED-SYMBOLS :USE-COMMON-LISP-STRUCTS :USE-COMMON-LISP-CONSES :USE-CPP-GARBAGE-COLLECTOR :MINIMIZE-JAVA-PREFIXES :TRANSLATE-WITH-COPYRIGHT-HEADER :SUPPORT-UNEXEC) :DOCUMENTATION \"List of available STELLA features.\" :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *CURRENT-STELLA-FEATURES* (LIST OF KEYWORD) (LIST) :DOCUMENTATION \"List of currently enabled STELLA features.\" :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEFAULT-STELLA-FEATURES* (LIST OF KEYWORD) (LIST :WARN-ABOUT-UNDEFINED-METHODS :WARN-ABOUT-MISSING-METHODS :USE-CPP-GARBAGE-COLLECTOR :USE-COMMON-LISP-CONSES :MINIMIZE-JAVA-PREFIXES) :DOCUMENTATION \"List of STELLA features enabled by default and after resetting them\nwith `reset-stella-features'.\" :PUBLIC? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TRACED-KEYWORDS* (LIST OF KEYWORD) NULL :PUBLIC? TRUE)");

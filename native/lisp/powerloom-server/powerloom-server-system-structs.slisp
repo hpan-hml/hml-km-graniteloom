@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2002-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2002-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -219,8 +219,9 @@ not actually be realized in surface syntax."
 (CL:DEFSTRUCT (|item| (:CONC-NAME |%item.|) (:INCLUDE STELLA::|XMLObject|) (:CONSTRUCTOR |%MAKE-item| ()) (:COPIER ()) (:PREDICATE ())) (|type| STELLA::NULL-STRING :TYPE CL:SIMPLE-STRING))
 
 (CL:DEFSTRUCT
- (|proposition| (:CONC-NAME |%proposition.|) (:INCLUDE STELLA::|XMLObject|)
-  (:CONSTRUCTOR |%MAKE-proposition| ()) (:COPIER ()) (:PREDICATE ())))
+ (|proposition| (:CONC-NAME |%proposition.|)
+  (:INCLUDE STELLA::|XMLObject|) (:CONSTRUCTOR |%MAKE-proposition| ())
+  (:COPIER ()) (:PREDICATE ())))
 
 (CL:DEFSTRUCT (|tuple| (:CONC-NAME |%tuple.|) (:INCLUDE STELLA::|XMLObject|) (:CONSTRUCTOR |%MAKE-tuple| ()) (:COPIER ()) (:PREDICATE ())) (NRESULTS STELLA::NULL)
   (ITEM STELLA::NULL))
@@ -235,13 +236,16 @@ not actually be realized in surface syntax."
 
 (CL:DEFSTRUCT
  (|powerloomerror| (:CONC-NAME |%powerloomerror.|)
-  (:INCLUDE STELLA::|XMLObject|) (:CONSTRUCTOR |%MAKE-powerloomerror| ())
+  (:INCLUDE STELLA::|XMLObject|)
+  (:CONSTRUCTOR |%MAKE-powerloomerror| ()) (:COPIER ())
+  (:PREDICATE ())))
+
+(CL:DEFSTRUCT
+ (|stellaerror| (:CONC-NAME |%stellaerror.|)
+  (:INCLUDE STELLA::|XMLObject|) (:CONSTRUCTOR |%MAKE-stellaerror| ())
   (:COPIER ()) (:PREDICATE ())))
 
 (CL:DEFSTRUCT
- (|stellaerror| (:CONC-NAME |%stellaerror.|) (:INCLUDE STELLA::|XMLObject|)
-  (:CONSTRUCTOR |%MAKE-stellaerror| ()) (:COPIER ()) (:PREDICATE ())))
-
-(CL:DEFSTRUCT
- (|nativeerror| (:CONC-NAME |%nativeerror.|) (:INCLUDE STELLA::|XMLObject|)
-  (:CONSTRUCTOR |%MAKE-nativeerror| ()) (:COPIER ()) (:PREDICATE ())))
+ (|nativeerror| (:CONC-NAME |%nativeerror.|)
+  (:INCLUDE STELLA::|XMLObject|) (:CONSTRUCTOR |%MAKE-nativeerror| ())
+  (:COPIER ()) (:PREDICATE ())))

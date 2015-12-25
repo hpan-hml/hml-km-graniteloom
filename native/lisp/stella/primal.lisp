@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -66,6 +66,9 @@
 (CL:DEFVAR SYM-PRIMAL-STELLA-MIN NULL)
 (CL:DEFVAR SYM-PRIMAL-STELLA-MAX NULL)
 (CL:DEFVAR KWD-PRIMAL-WHITE-SPACE NULL)
+(CL:DEFVAR KWD-PRIMAL-ASCII-CASE-SENSITIVE NULL)
+(CL:DEFVAR KWD-PRIMAL-ASCII-CASE-INSENSITIVE NULL)
+(CL:DEFVAR KWD-PRIMAL-ASCII-CASE-NORMALIZED NULL)
 (CL:DEFVAR KWD-PRIMAL-UPCASE NULL)
 (CL:DEFVAR KWD-PRIMAL-DOWNCASE NULL)
 (CL:DEFVAR KWD-PRIMAL-CAPITALIZE NULL)
@@ -75,8 +78,12 @@
 (CL:DEFVAR KWD-PRIMAL-CENTER NULL)
 (CL:DEFVAR SYM-PRIMAL-STELLA-HASH-CODE NULL)
 (CL:DEFVAR KWD-PRIMAL-JAVA NULL)
+(CL:DEFVAR KWD-PRIMAL-UNIX NULL)
+(CL:DEFVAR KWD-PRIMAL-MAC NULL)
+(CL:DEFVAR KWD-PRIMAL-WINDOWS NULL)
 (CL:DEFVAR SYM-PRIMAL-STELLA-LIST-DIRECTORY-FILES NULL)
 (CL:DEFVAR KWD-PRIMAL-COMMON-LISP NULL)
+(CL:DEFVAR SYM-PRIMAL-STELLA-LIST-DIRECTORY-FILES-RECURSIVELY NULL)
 (CL:DEFVAR KWD-PRIMAL-TYPE-4 NULL)
 (CL:DEFVAR KWD-PRIMAL-RANDOM NULL)
 (CL:DEFVAR SYM-PRIMAL-STELLA-SLEEP NULL)
@@ -558,7 +565,10 @@ or from Hour-Minute-Second format to decimal hours."
 
 (CL:DECLAIM (CL:FTYPE (CL:FUNCTION (CL:FIXNUM) CL:FIXNUM) RANDOM))
 (CL:DEFUN RANDOM (N)
-  "Generate a random integer in the interval [0..n-1]."
+  "Generate a random integer in the interval [0..n-1].
+The random number generator is seeded based on the current time every
+time STELLA starts up; however, your mileage may vary depending on
+the native language implementation."
   (CL:DECLARE (CL:TYPE CL:FIXNUM N))
   #+MCL
   (CL:CHECK-TYPE N CL:FIXNUM)
@@ -568,7 +578,8 @@ or from Hour-Minute-Second format to decimal hours."
 ;;; (DEFUN SEED-RANDOM-NUMBER-GENERATOR ...)
 
 (CL:DEFUN SEED-RANDOM-NUMBER-GENERATOR ()
-  "Seeds the random number generator with the current time."
+  "Seeds the random number generator based on the current time."
+  (SETQ CL:*RANDOM-STATE* (CL:MAKE-RANDOM-STATE CL:T))
   :VOID)
 
 ;;; (DEFUN (SQRT FLOAT) ...)
@@ -663,6 +674,13 @@ or from Hour-Minute-Second format to decimal hours."
   (CL:CHECK-TYPE Y CL:DOUBLE-FLOAT)
   (CL:RETURN-FROM ATAN2 (CL:ATAN X Y)))
 
+;;; (DEFCONSTANT RECIPROCAL-NL2 ...)
+
+(CL:DEFVAR RECIPROCAL-NL2 NULL-FLOAT
+  "1 / (log 2) Reciprocal of the Log base e of 2.
+Used for log 2 conversions.")
+(CL:DECLAIM (CL:TYPE CL:DOUBLE-FLOAT RECIPROCAL-NL2))
+
 ;;; (DEFCONSTANT RECIPROCAL-NL10 ...)
 
 (CL:DEFVAR RECIPROCAL-NL10 NULL-FLOAT
@@ -681,6 +699,17 @@ Used for log 10 conversions.")
   (CL:CHECK-TYPE N CL:DOUBLE-FLOAT)
   (CL:RETURN-FROM LOG (CL:LOG N)))
 
+;;; (DEFUN (LOG2 FLOAT) ...)
+
+(CL:DECLAIM
+ (CL:FTYPE (CL:FUNCTION (CL:DOUBLE-FLOAT) CL:DOUBLE-FLOAT) LOG2))
+(CL:DEFUN LOG2 (N)
+  "Return the logarithm (base 2) of `n'."
+  (CL:DECLARE (CL:TYPE CL:DOUBLE-FLOAT N))
+  #+MCL
+  (CL:CHECK-TYPE N CL:DOUBLE-FLOAT)
+  (CL:RETURN-FROM LOG2 (CL:LOG n 2.0d0)))
+
 ;;; (DEFUN (LOG10 FLOAT) ...)
 
 (CL:DECLAIM
@@ -690,7 +719,7 @@ Used for log 10 conversions.")
   (CL:DECLARE (CL:TYPE CL:DOUBLE-FLOAT N))
   #+MCL
   (CL:CHECK-TYPE N CL:DOUBLE-FLOAT)
-  (CL:RETURN-FROM LOG10 (CL:LOG N 10.0D0)))
+  (CL:RETURN-FROM LOG10 (CL:LOG n 10.0d0)))
 
 ;;; (DEFUN (EXP FLOAT) ...)
 
@@ -1242,6 +1271,139 @@ contains white space characters."
   (CL:CHECK-TYPE Y CL:SIMPLE-STRING)
   (CL:RETURN-FROM STRING-GREATER?
    (CL:NULL (CL:STRING-NOT-GREATERP X Y))))
+
+;;; (DEFUN (STRING-COMPARE-CASE-NORMALIZED INTEGER) ...)
+
+(CL:DECLAIM
+ (CL:FTYPE (CL:FUNCTION (CL:SIMPLE-STRING CL:SIMPLE-STRING) CL:FIXNUM)
+  STRING-COMPARE-CASE-NORMALIZED))
+(CL:DEFUN STRING-COMPARE-CASE-NORMALIZED (X Y)
+  "Compare `x' and `y' and return -1, 0, or 1, depending on whether
+`x' is less than, equal, or greater than `y' relative to the :ascii-case-normalized
+collation.  In this collation `a < A < b' which gives strings that only differ in case a
+definite order while otherwise behaving identically to :ascii-case-insensitive.  This is
+similar to using a Java Collator for Locale.US with strength set to TERTIARY (which see)."
+  (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING X Y))
+  #+MCL
+  (CL:CHECK-TYPE X CL:SIMPLE-STRING)
+  #+MCL
+  (CL:CHECK-TYPE Y CL:SIMPLE-STRING)
+  (CL:LET*
+   ((XLENGTH (CL:THE CL:FIXNUM (CL:LENGTH X)))
+    (YLENGTH (CL:THE CL:FIXNUM (CL:LENGTH Y))) (XCH NULL-CHARACTER)
+    (YCH NULL-CHARACTER))
+   (CL:DECLARE (CL:TYPE CL:FIXNUM XLENGTH YLENGTH))
+   (CL:LET*
+    ((I NULL-INTEGER) (ITER-000 0)
+     (UPPER-BOUND-000 (CL:1- (MIN XLENGTH YLENGTH))))
+    (CL:DECLARE (CL:TYPE CL:FIXNUM I ITER-000 UPPER-BOUND-000))
+    (CL:LOOP WHILE (CL:<= ITER-000 UPPER-BOUND-000) DO
+     (CL:SETQ I ITER-000)
+     (CL:SETQ XCH
+      (CL:LET ((SELF X) (POSITION I))
+       (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+        (CL:TYPE CL:FIXNUM POSITION))
+       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+        (CL:THE CL:FIXNUM POSITION))))
+     (CL:SETQ YCH
+      (CL:LET ((SELF Y) (POSITION I))
+       (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+        (CL:TYPE CL:FIXNUM POSITION))
+       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+        (CL:THE CL:FIXNUM POSITION))))
+     (CL:WHEN (CL:NOT (CL:EQL XCH YCH))
+      (CL:LET*
+       ((XCHDOWN
+         (CL:LET
+          ((SELF *CHARACTER-DOWNCASE-TABLE*)
+           (POSITION (CL:THE CL:FIXNUM (CL:CHAR-CODE XCH))))
+          (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+           (CL:TYPE CL:FIXNUM POSITION))
+          (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+           (CL:THE CL:FIXNUM POSITION))))
+        (YCHDOWN
+         (CL:LET
+          ((SELF *CHARACTER-DOWNCASE-TABLE*)
+           (POSITION (CL:THE CL:FIXNUM (CL:CHAR-CODE YCH))))
+          (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+           (CL:TYPE CL:FIXNUM POSITION))
+          (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+           (CL:THE CL:FIXNUM POSITION)))))
+       (CL:IF (CL:EQL XCHDOWN YCHDOWN)
+        (CL:IF
+         (CL:< (CL:THE CL:FIXNUM (CL:CHAR-CODE XCH))
+          (CL:THE CL:FIXNUM (CL:CHAR-CODE YCH)))
+         (CL:RETURN-FROM STRING-COMPARE-CASE-NORMALIZED 1)
+         (CL:RETURN-FROM STRING-COMPARE-CASE-NORMALIZED -1))
+        (CL:IF
+         (CL:< (CL:THE CL:FIXNUM (CL:CHAR-CODE XCHDOWN))
+          (CL:THE CL:FIXNUM (CL:CHAR-CODE YCHDOWN)))
+         (CL:RETURN-FROM STRING-COMPARE-CASE-NORMALIZED -1)
+         (CL:RETURN-FROM STRING-COMPARE-CASE-NORMALIZED 1)))))
+     (CL:SETQ ITER-000 (CL:1+ ITER-000))))
+   (CL:COND
+    ((CL:= XLENGTH YLENGTH)
+     (CL:RETURN-FROM STRING-COMPARE-CASE-NORMALIZED 0))
+    ((CL:< XLENGTH YLENGTH)
+     (CL:RETURN-FROM STRING-COMPARE-CASE-NORMALIZED -1))
+    (CL:T (CL:RETURN-FROM STRING-COMPARE-CASE-NORMALIZED 1)))))
+
+;;; (DEFUN (COMPARE-STRINGS INTEGER) ...)
+
+(CL:DECLAIM
+ (CL:FTYPE
+  (CL:FUNCTION (CL:SIMPLE-STRING CL:SIMPLE-STRING CL:T) CL:FIXNUM)
+  COMPARE-STRINGS))
+(CL:DEFUN COMPARE-STRINGS (X Y COLLATION)
+  "Compare `x' and `y' and return -1, 0, or 1, depending on whether
+`x' is less than, equal, or greater than `y' relative to `collation'.  Currently
+supported values for `collation' are :ascii-case-sensitive, :ascii-case-insensitive
+:ascii-case-normalized.  The first two correspond to `string-compare' called with
+the appropriate third argument.  :ascii-case-normalized calls the function
+`string-compare-case-normalized' (which see)."
+  (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING X Y))
+  #+MCL
+  (CL:CHECK-TYPE X CL:SIMPLE-STRING)
+  #+MCL
+  (CL:CHECK-TYPE Y CL:SIMPLE-STRING)
+  (CL:COND
+   ((CL:EQ COLLATION KWD-PRIMAL-ASCII-CASE-SENSITIVE)
+    (CL:RETURN-FROM COMPARE-STRINGS (STRING-COMPARE X Y CL:T)))
+   ((CL:EQ COLLATION KWD-PRIMAL-ASCII-CASE-INSENSITIVE)
+    (CL:RETURN-FROM COMPARE-STRINGS (STRING-COMPARE X Y CL:NIL)))
+   ((CL:EQ COLLATION KWD-PRIMAL-ASCII-CASE-NORMALIZED)
+    (CL:RETURN-FROM COMPARE-STRINGS
+     (STRING-COMPARE-CASE-NORMALIZED X Y)))
+   (CL:T
+    (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
+     (%%PRINT-STREAM (%NATIVE-STREAM STREAM-000)
+      "compare-strings: unsupported collation: `" COLLATION "'")
+     (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000)))))))
+
+;;; (DEFUN (SAFE-COMPARE-STRINGS INTEGER) ...)
+
+(CL:DECLAIM
+ (CL:FTYPE
+  (CL:FUNCTION (CL:SIMPLE-STRING CL:SIMPLE-STRING CL:T) CL:FIXNUM)
+  SAFE-COMPARE-STRINGS))
+(CL:DEFUN SAFE-COMPARE-STRINGS (X Y COLLATION)
+  "Variant of `compare-strings' that also tolerates NULL values.
+NULL sorts after everything else in any collation."
+  (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING X Y))
+  #+MCL
+  (CL:CHECK-TYPE X CL:SIMPLE-STRING)
+  #+MCL
+  (CL:CHECK-TYPE Y CL:SIMPLE-STRING)
+  (CL:COND
+   ((CL:EQ X STELLA::NULL-STRING)
+    (CL:IF (CL:EQ Y STELLA::NULL-STRING)
+     (CL:RETURN-FROM SAFE-COMPARE-STRINGS 0)
+     (CL:RETURN-FROM SAFE-COMPARE-STRINGS 1)))
+   ((CL:EQ Y STELLA::NULL-STRING)
+    (CL:RETURN-FROM SAFE-COMPARE-STRINGS -1))
+   (CL:T
+    (CL:RETURN-FROM SAFE-COMPARE-STRINGS
+     (COMPARE-STRINGS X Y COLLATION)))))
 
 ;;; (DEFUN (MAKE-MUTABLE-STRING MUTABLE-STRING) ...)
 
@@ -1836,6 +1998,19 @@ unmodified and uncopied."
     (CL:RETURN-FROM STRING-TRIM (SUBSEQUENCE STRING START (CL:1+ END)))
     (CL:RETURN-FROM STRING-TRIM STRING))))
 
+;;; (DEFUN (INT-TO-STRING STRING) ...)
+
+(CL:DECLAIM
+ (CL:FTYPE (CL:FUNCTION (CL:FIXNUM) CL:SIMPLE-STRING) INT-TO-STRING))
+(CL:DEFUN INT-TO-STRING (I)
+  "Convert `i' to its string representation and return the result.
+This is a convenience function that expects regular integers as opposed to longs
+which is useful in contexts where we do automatic unwrapping based on the target."
+  (CL:DECLARE (CL:TYPE CL:FIXNUM I))
+  #+MCL
+  (CL:CHECK-TYPE I CL:FIXNUM)
+  (CL:RETURN-FROM INT-TO-STRING (INTEGER-TO-STRING (CL:TRUNCATE I))))
+
 ;;; (DEFUN (CHARACTER-TO-STRING STRING) ...)
 
 (CL:DECLAIM
@@ -1843,6 +2018,118 @@ unmodified and uncopied."
 (CL:DEFUN CHARACTER-TO-STRING (C)
   "Convert `c' into a one-element string and return the result."
   (CL:RETURN-FROM CHARACTER-TO-STRING (MAKE-STRING 1 C)))
+
+;;; (DEFUN (STELLA-INTEGER-TO-STRING-IN-BASE STRING) ...)
+
+(CL:DECLAIM
+ (CL:FTYPE (CL:FUNCTION (CL:T CL:FIXNUM) CL:SIMPLE-STRING)
+  STELLA-INTEGER-TO-STRING-IN-BASE))
+(CL:DEFUN STELLA-INTEGER-TO-STRING-IN-BASE (INTEGER BASE)
+  "STELLA version of `integer-to-string-in-base' which is faster than
+the C++ version we have but slower than the native Java version."
+  (CL:DECLARE (CL:TYPE CL:FIXNUM BASE))
+  #+MCL
+  (CL:CHECK-TYPE BASE CL:FIXNUM)
+  (CL:WHEN (CL:NOT (CL:AND (CL:>= BASE 2) (CL:<= BASE 36)))
+   (CL:ERROR
+    "Safety violation: integer-to-string-in-base: illegal base: `~A'"
+    BASE))
+  (CL:WHEN (CL:= INTEGER 0)
+   (CL:RETURN-FROM STELLA-INTEGER-TO-STRING-IN-BASE "0"))
+  (CL:LET* ((OFFSET (CL:IF (CL:< INTEGER 0) 1 0)))
+   (CL:DECLARE (CL:TYPE CL:FIXNUM OFFSET))
+   (CL:WHEN (CL:= OFFSET 1) (CL:SETQ INTEGER (CL:- 0 INTEGER)))
+   (CL:LET*
+    ((INTEGERBITS (INTEGER-LENGTH INTEGER))
+     (BASEBITS (INTEGER-LENGTH (CL:TRUNCATE BASE)))
+     (BUFFERLENGTH
+      (CL:+ OFFSET
+       (CL:LET ((X INTEGERBITS) (Y (CL:1- BASEBITS)))
+        (CL:DECLARE (CL:TYPE CL:FIXNUM X Y))
+        (CL:THE CL:FIXNUM (CL:VALUES (CL:TRUNCATE X Y))))
+       1))
+     (BUFFER (MAKE-RAW-MUTABLE-STRING BUFFERLENGTH))
+     (INDEX BUFFERLENGTH)
+     (TABLE "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ") (REMAINDER 0)
+     (DIGIT 0) (BASE-1 (CL:1- BASE)))
+    (CL:DECLARE
+     (CL:TYPE CL:FIXNUM INTEGERBITS BASEBITS BUFFERLENGTH INDEX DIGIT
+      BASE-1)
+     (CL:TYPE CL:SIMPLE-STRING BUFFER TABLE))
+    (CL:COND
+     ((CL:= (CL:THE CL:FIXNUM (CL:LOGAND BASE BASE-1)) 0)
+      (CL:SETQ BASEBITS (CL:1- BASEBITS))
+      (CL:LOOP WHILE (CL:> INTEGER 0) DO (CL:SETQ INDEX (CL:1- INDEX))
+       (CL:SETQ DIGIT
+        (CL:TRUNCATE (CL:LOGAND INTEGER (CL:TRUNCATE BASE-1))))
+       (CL:SETQ INTEGER
+        (CL:LET ((ARG INTEGER) (COUNT BASEBITS))
+         (CL:DECLARE (CL:TYPE CL:FIXNUM COUNT))
+         (CL:ASH ARG (CL:THE CL:FIXNUM (CL:- COUNT)))))
+       (CL:LET
+        ((SELF BUFFER)
+         (CH
+          (CL:LET ((SELF TABLE) (POSITION DIGIT))
+           (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+            (CL:TYPE CL:FIXNUM POSITION))
+           (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+            (CL:THE CL:FIXNUM POSITION))))
+         (POSITION INDEX))
+        (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+         (CL:TYPE CL:FIXNUM POSITION))
+        (SETF
+         (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+          (CL:THE CL:FIXNUM POSITION))
+         (CL:THE CL:CHARACTER CH)))))
+     (CL:T
+      (CL:LOOP WHILE (CL:> INTEGER 0) DO (CL:SETQ INDEX (CL:1- INDEX))
+       (CL:SETQ REMAINDER
+        (CL:LET ((X INTEGER) (Y (CL:TRUNCATE BASE)))
+         (CL:VALUES (CL:TRUNCATE X Y))))
+       (CL:SETQ DIGIT
+        (CL:TRUNCATE (CL:- INTEGER (CL:* REMAINDER BASE))))
+       (CL:SETQ INTEGER REMAINDER)
+       (CL:LET
+        ((SELF BUFFER)
+         (CH
+          (CL:LET ((SELF TABLE) (POSITION DIGIT))
+           (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+            (CL:TYPE CL:FIXNUM POSITION))
+           (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+            (CL:THE CL:FIXNUM POSITION))))
+         (POSITION INDEX))
+        (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+         (CL:TYPE CL:FIXNUM POSITION))
+        (SETF
+         (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+          (CL:THE CL:FIXNUM POSITION))
+         (CL:THE CL:CHARACTER CH))))))
+    (CL:WHEN (CL:= OFFSET 1) (CL:SETQ INDEX (CL:1- INDEX))
+     (CL:LET ((SELF BUFFER) (CH #\-) (POSITION INDEX))
+      (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+       (CL:TYPE CL:FIXNUM POSITION))
+      (SETF
+       (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+        (CL:THE CL:FIXNUM POSITION))
+       (CL:THE CL:CHARACTER CH))))
+    (CL:IF (CL:= INDEX 0)
+     (CL:RETURN-FROM STELLA-INTEGER-TO-STRING-IN-BASE BUFFER)
+     (CL:RETURN-FROM STELLA-INTEGER-TO-STRING-IN-BASE
+      (SUBSEQUENCE BUFFER INDEX BUFFERLENGTH))))))
+
+;;; (DEFUN (STRING-TO-INT INTEGER) ...)
+
+(CL:DECLAIM
+ (CL:FTYPE (CL:FUNCTION (CL:SIMPLE-STRING) CL:FIXNUM) STRING-TO-INT))
+(CL:DEFUN STRING-TO-INT (STRING)
+  "Convert a `string' representation of an integer into an integer.
+This is a convenience function that ensures a regular integer return value.  If
+`string' represents a long integer, the behavior is undefined."
+  (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING STRING))
+  #+MCL
+  (CL:CHECK-TYPE STRING CL:SIMPLE-STRING)
+  (CL:RETURN-FROM STRING-TO-INT
+   (CL:TRUNCATE (STRING-TO-INTEGER STRING))))
 
 ;;; (DEFUN (FORMAT-WITH-PADDING STRING) ...)
 
@@ -3118,7 +3405,14 @@ do not necessarily generate different hash codes."
 ;;; (DEFMETHOD (HASH-CODE INTEGER) ...)
 
 (CL:DEFMETHOD HASH-CODE ((SELF LONG-INTEGER-WRAPPER))
-  (CL:RETURN-FROM HASH-CODE (CL:TRUNCATE (%WRAPPER-VALUE SELF))))
+  (CL:RETURN-FROM HASH-CODE
+   (CL:TRUNCATE
+    (CL:LOGAND
+     (CL:LOGXOR (%WRAPPER-VALUE SELF)
+      (CL:LET ((ARG (%WRAPPER-VALUE SELF)) (COUNT 32))
+       (CL:DECLARE (CL:TYPE CL:FIXNUM COUNT))
+       (CL:ASH ARG (CL:THE CL:FIXNUM (CL:- COUNT)))))
+     (CL:TRUNCATE MOST-POSITIVE-INTEGER)))))
 
 ;;; (DEFMETHOD (HASH-CODE INTEGER) ...)
 
@@ -3163,7 +3457,14 @@ do not necessarily generate different hash codes."
 ;;; (DEFMETHOD (HASH-CODE INTEGER) ...)
 
 (%%DEFINTEGERMETHOD HASH-CODE ((SELF CL:INTEGER))
-  (CL:RETURN-FROM HASH-CODE (CL:TRUNCATE SELF)))
+  (CL:RETURN-FROM HASH-CODE
+   (CL:TRUNCATE
+    (CL:LOGAND
+     (CL:LOGXOR SELF
+      (CL:LET ((ARG SELF) (COUNT 32))
+       (CL:DECLARE (CL:TYPE CL:FIXNUM COUNT))
+       (CL:ASH ARG (CL:THE CL:FIXNUM (CL:- COUNT)))))
+     (CL:TRUNCATE MOST-POSITIVE-INTEGER)))))
 
 ;;; (DEFMETHOD (HASH-CODE INTEGER) ...)
 
@@ -3367,13 +3668,35 @@ will be initialized to NULL."
   (CL:SETQ SELF SELF)
   :VOID)
 
+;;; (DEFUN (NATIVE-PROBE-DIRECTORY? BOOLEAN) ...)
+
+(CL:DEFUN NATIVE-PROBE-DIRECTORY? (FILENAME)
+  "Return true if file `fileName' exists and is a directory.
+Note that this does not necessarily mean that the directory can also be read.
+This does not handle any necessary pathname translations or error conditions."
+  (CL:LET* ((RESULT CL:NIL))
+   (CL:SETQ RESULT (PROBE-FILE? (FILE-NAME-AS-DIRECTORY FILENAME)))
+   (CL:RETURN-FROM NATIVE-PROBE-DIRECTORY? RESULT)))
+
 ;;; (DEFUN (PROBE-FILE? BOOLEAN) ...)
 
 (CL:DEFUN PROBE-FILE? (FILENAME)
   "Return true if file `fileName' exists.  Note that this does
-not necessarily mean that the file can also be read."
+not necessarily mean that the file can also be read.
+IMPORTANT Java idiosyncrasy: if file `foo/bar' exists and is not a directory,
+Java will also say `foo/bar/' exists, which is different behavior than in Lisp
+and C++.  For this reason, make sure to always use `probe-directory?' to test
+whether a directory exists."
   (CL:RETURN-FROM PROBE-FILE?
    (NATIVE-PROBE-FILE? (TRANSLATE-LOGICAL-PATHNAME FILENAME))))
+
+;;; (DEFUN (PROBE-DIRECTORY? BOOLEAN) ...)
+
+(CL:DEFUN PROBE-DIRECTORY? (FILENAME)
+  "Return true if file `fileName' exists and is a directory.
+Note that this does not necessarily mean that the directory can also be read."
+  (CL:RETURN-FROM PROBE-DIRECTORY?
+   (NATIVE-PROBE-DIRECTORY? (TRANSLATE-LOGICAL-PATHNAME FILENAME))))
 
 ;;; (DEFUN (FILE-WRITE-DATE CALENDAR-DATE) ...)
 
@@ -3459,6 +3782,33 @@ any data already in `toFile'."
     (CL:WHEN (CL:NOT (CL:EQ FROM NULL)) (FREE FROM))))
   :VOID)
 
+;;; (DEFUN (GET-TEMP-DIRECTORY STRING) ...)
+
+(CL:DECLAIM
+ (CL:FTYPE (CL:FUNCTION () CL:SIMPLE-STRING) GET-TEMP-DIRECTORY))
+(CL:DEFUN GET-TEMP-DIRECTORY ()
+  "Return a suitable directory for temporary files.
+Uses the value of `stella.tempDirectory' if defined; otherwise, it
+will use a suitable OS-specific default.  The returned directory will
+end in a separator for immediate concatenation with a physical filename."
+  (CL:LET*
+   ((DIR (%GET-PROPERTY (WRAP-STRING "stella.tempDirectory") NIL)))
+   (CL:WHEN (CL:EQ DIR NULL)
+    (CL:LET* ((TEST-VALUE-000 (OPERATING-SYSTEM)))
+     (CL:COND
+      ((CL:OR (CL:EQ TEST-VALUE-000 KWD-PRIMAL-UNIX)
+        (CL:EQ TEST-VALUE-000 KWD-PRIMAL-MAC))
+       (CL:SETQ DIR (WRAP-STRING "/tmp/")))
+      ((CL:EQ TEST-VALUE-000 KWD-PRIMAL-WINDOWS)
+       (CL:SETQ DIR (WRAP-STRING "C:\\WINDOWS\\TEMP\\")))
+      (CL:T
+       (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
+        (%%PRINT-STREAM (%NATIVE-STREAM STREAM-000) "`" TEST-VALUE-000
+         "' is not a valid case option")
+        (CL:ERROR
+         (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))))
+   (CL:RETURN-FROM GET-TEMP-DIRECTORY (%WRAPPER-VALUE DIR))))
+
 ;;; (DEFUN (MAKE-TEMPORARY-FILE-NAME STRING) ...)
 
 (CL:DECLAIM
@@ -3505,12 +3855,10 @@ or OS process.  If necessary, this case can be handled by the caller."
   #+MCL
   (CL:CHECK-TYPE DIRECTORY CL:SIMPLE-STRING)
   (CL:LET*
-   ((FILES NULL)
-    (DIRNAMELENGTH (CL:THE CL:FIXNUM (CL:LENGTH DIRECTORY)))
-    (DIRSEP (DIRECTORY-SEPARATOR-STRING)) (CHECKDUPLICATES? CL:NIL)
-    (NORMFILE STELLA::NULL-STRING) (NORMALIZEDFILES NIL))
-   (CL:DECLARE (CL:TYPE CL:FIXNUM DIRNAMELENGTH)
-    (CL:TYPE CL:SIMPLE-STRING DIRSEP NORMFILE))
+   ((FILES NULL) (DIRSEP (DIRECTORY-SEPARATOR-STRING))
+    (CHECKDUPLICATES? CL:NIL) (NORMFILE STELLA::NULL-STRING)
+    (NORMALIZEDFILES NIL))
+   (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING DIRSEP NORMFILE))
    #+allegro (setq files (cl:directory directory))
        #+cmucl (setq files (cl:directory directory))
        #+lispworks (setq files (cl:directory (string-concatenate directory "*")))
@@ -3528,14 +3876,12 @@ or OS process.  If necessary, this case can be handled by the caller."
     (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
      (CL:SETQ FILE (%%VALUE ITER-000))
      (CL:TAGBODY (CL:SETQ NORMFILE (%WRAPPER-VALUE FILE))
-      (CL:WHEN (STARTS-WITH? NORMFILE DIRECTORY 0)
-       (CL:SETQ NORMFILE
-        (SUBSEQUENCE NORMFILE DIRNAMELENGTH NULL-INTEGER)))
       (CL:WHEN (ENDS-WITH? NORMFILE DIRSEP NULL-INTEGER)
        (CL:SETQ NORMFILE
         (SUBSEQUENCE NORMFILE 0
          (CL:- (CL:THE CL:FIXNUM (CL:LENGTH NORMFILE))
           (CL:THE CL:FIXNUM (CL:LENGTH DIRSEP))))))
+      (CL:SETQ NORMFILE (FILE-NAME-WITHOUT-DIRECTORY NORMFILE))
       (CL:WHEN
        (CL:OR (STRING-EQL? NORMFILE ".") (STRING-EQL? NORMFILE ".."))
        (CL:GO :CONTINUE))
@@ -3612,6 +3958,63 @@ e.g., Lisp will convert . or .. into absolute pathnames."
    (CL-INCREMENTALLY-TRANSLATE EXPRESSION)))
 
 (CL:SETF (CL:MACRO-FUNCTION (CL:QUOTE |/STELLA/LIST-DIRECTORY-FILES|)) (CL:MACRO-FUNCTION (CL:QUOTE LIST-DIRECTORY-FILES)))
+
+;;; (DEFUN (LIST-DIRECTORY-FILES-RECURSIVELY (CONS OF STRING-WRAPPER)) ...)
+
+(CL:DEFUN %LIST-DIRECTORY-FILES-RECURSIVELY (DIRECTORY)
+  "Just like `list-directory-files' (which see) but also recurses into
+subdirectories.  Files at the top level of `directory' will be bare file names without
+a `directory' component.  Files in subdirectories will be prefixed with the relative
+subdirectory path starting right below `directory'.  The sort order is lexicographic
+within directories which results in a depth-first presentation order of files."
+  (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING DIRECTORY))
+  #+MCL
+  (CL:CHECK-TYPE DIRECTORY CL:SIMPLE-STRING)
+  (CL:SETQ DIRECTORY
+   (TRANSLATE-LOGICAL-PATHNAME (FILE-NAME-AS-DIRECTORY DIRECTORY)))
+  (ENSURE-FILE-EXISTS DIRECTORY "list-directory-files")
+  (CL:LET* ((FILES NIL))
+   (CL:LET* ((FILE NULL) (ITER-000 (%LIST-DIRECTORY-FILES DIRECTORY)))
+    (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
+     (CL:SETQ FILE (%%VALUE ITER-000))
+     (CL:COND
+      ((PROBE-DIRECTORY? (CONCATENATE DIRECTORY (%WRAPPER-VALUE FILE)))
+       (CL:SETQ FILE
+        (WRAP-STRING (FILE-NAME-AS-DIRECTORY (%WRAPPER-VALUE FILE))))
+       (CL:LET*
+        ((SUBFILE NULL)
+         (ITER-001
+          (%LIST-DIRECTORY-FILES-RECURSIVELY
+           (CONCATENATE DIRECTORY (%WRAPPER-VALUE FILE)))))
+        (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-001 NIL)) DO
+         (CL:SETQ SUBFILE (%%VALUE ITER-001))
+         (CL:SETQ FILES
+          (CONS
+           (WRAP-STRING
+            (CONCATENATE (UNWRAP-STRING FILE)
+             (%WRAPPER-VALUE SUBFILE)))
+           FILES))
+         (CL:SETQ ITER-001 (%%REST ITER-001)))))
+      (CL:T (CL:SETQ FILES (CONS FILE FILES))))
+     (CL:SETQ ITER-000 (%%REST ITER-000))))
+   (CL:RETURN-FROM %LIST-DIRECTORY-FILES-RECURSIVELY (REVERSE FILES))))
+
+(CL:DEFUN LIST-DIRECTORY-FILES-RECURSIVELY-EVALUATOR-WRAPPER (ARGUMENTS)
+  (CL:RETURN-FROM LIST-DIRECTORY-FILES-RECURSIVELY-EVALUATOR-WRAPPER
+   (%LIST-DIRECTORY-FILES-RECURSIVELY
+    (%WRAPPER-VALUE (%%VALUE ARGUMENTS)))))
+
+(CL:DEFMACRO LIST-DIRECTORY-FILES-RECURSIVELY (CL:&WHOLE EXPRESSION CL:&REST IGNORE)
+  "Just like `list-directory-files' (which see) but also recurses into
+subdirectories.  Files at the top level of `directory' will be bare file names without
+a `directory' component.  Files in subdirectories will be prefixed with the relative
+subdirectory path starting right below `directory'.  The sort order is lexicographic
+within directories which results in a depth-first presentation order of files."
+  (CL:DECLARE (CL:IGNORE IGNORE))
+  (CL:LET ((*IGNORETRANSLATIONERRORS?* FALSE))
+   (CL-INCREMENTALLY-TRANSLATE EXPRESSION)))
+
+(CL:SETF (CL:MACRO-FUNCTION (CL:QUOTE |/STELLA/LIST-DIRECTORY-FILES-RECURSIVELY|)) (CL:MACRO-FUNCTION (CL:QUOTE LIST-DIRECTORY-FILES-RECURSIVELY)))
 
 ;;; (DEFMETHOD (LOGNOT INTEGER) ...)
 
@@ -3834,9 +4237,13 @@ bytes 7 and 8, - bytes 9 and 10, - then followed by bytes 11-16."
   "Convert a Lisp object into a STELLA object."
   (CL:LET* ((RESULT SELF)) (CL:typecase self
         (CL:NULL (cl:setq result STELLA::NIL))
-        (CL:CONS (cl:setq result (stella::cons (stellify (CL:car self))
-                                               (stellify (CL:cdr self)))))
-        (CL:KEYWORD (cl:setq result (intern-keyword (CL:symbol-name self))))
+        (CL:CONS
+          (CL:setq result STELLA::NIL)
+          (CL:dolist (x self)
+            (CL:setq result (STELLA::cons (stellify x) result)))
+          (CL:setq result (STELLA::reverse result)))
+        (CL:KEYWORD
+          (CL:setq result (intern-keyword (CL:symbol-name self))))
         (CL:SYMBOL
          (CL:if (cl:eq self CL:t)
            (cl:setq result TRUE-WRAPPER)
@@ -3965,6 +4372,12 @@ exception.  For example, in Java it prints a stack trace.  In Lisp, it is vendor
     (INTERN-RIGID-SYMBOL-WRT-MODULE "MAX" NULL 0))
    (CL:SETQ KWD-PRIMAL-WHITE-SPACE
     (INTERN-RIGID-SYMBOL-WRT-MODULE "WHITE-SPACE" NULL 2))
+   (CL:SETQ KWD-PRIMAL-ASCII-CASE-SENSITIVE
+    (INTERN-RIGID-SYMBOL-WRT-MODULE "ASCII-CASE-SENSITIVE" NULL 2))
+   (CL:SETQ KWD-PRIMAL-ASCII-CASE-INSENSITIVE
+    (INTERN-RIGID-SYMBOL-WRT-MODULE "ASCII-CASE-INSENSITIVE" NULL 2))
+   (CL:SETQ KWD-PRIMAL-ASCII-CASE-NORMALIZED
+    (INTERN-RIGID-SYMBOL-WRT-MODULE "ASCII-CASE-NORMALIZED" NULL 2))
    (CL:SETQ KWD-PRIMAL-UPCASE
     (INTERN-RIGID-SYMBOL-WRT-MODULE "UPCASE" NULL 2))
    (CL:SETQ KWD-PRIMAL-DOWNCASE
@@ -3983,10 +4396,19 @@ exception.  For example, in Java it prints a stack trace.  In Lisp, it is vendor
     (INTERN-RIGID-SYMBOL-WRT-MODULE "HASH-CODE" NULL 0))
    (CL:SETQ KWD-PRIMAL-JAVA
     (INTERN-RIGID-SYMBOL-WRT-MODULE "JAVA" NULL 2))
+   (CL:SETQ KWD-PRIMAL-UNIX
+    (INTERN-RIGID-SYMBOL-WRT-MODULE "UNIX" NULL 2))
+   (CL:SETQ KWD-PRIMAL-MAC
+    (INTERN-RIGID-SYMBOL-WRT-MODULE "MAC" NULL 2))
+   (CL:SETQ KWD-PRIMAL-WINDOWS
+    (INTERN-RIGID-SYMBOL-WRT-MODULE "WINDOWS" NULL 2))
    (CL:SETQ SYM-PRIMAL-STELLA-LIST-DIRECTORY-FILES
     (INTERN-RIGID-SYMBOL-WRT-MODULE "LIST-DIRECTORY-FILES" NULL 0))
    (CL:SETQ KWD-PRIMAL-COMMON-LISP
     (INTERN-RIGID-SYMBOL-WRT-MODULE "COMMON-LISP" NULL 2))
+   (CL:SETQ SYM-PRIMAL-STELLA-LIST-DIRECTORY-FILES-RECURSIVELY
+    (INTERN-RIGID-SYMBOL-WRT-MODULE "LIST-DIRECTORY-FILES-RECURSIVELY"
+     NULL 0))
    (CL:SETQ KWD-PRIMAL-TYPE-4
     (INTERN-RIGID-SYMBOL-WRT-MODULE "TYPE-4" NULL 2))
    (CL:SETQ KWD-PRIMAL-RANDOM
@@ -4241,10 +4663,12 @@ This can be used to convert from Degree-Minute-Second to decimal degrees
 or from Hour-Minute-Second format to decimal hours.\")"
     (CL:FUNCTION BASE60-TO-FLOAT) NULL)
    (DEFINE-FUNCTION-OBJECT "RANDOM"
-    "(DEFUN (RANDOM INTEGER) ((N INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Generate a random integer in the interval [0..n-1].\")"
-    (CL:FUNCTION RANDOM) NULL)
+    "(DEFUN (RANDOM INTEGER) ((N INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Generate a random integer in the interval [0..n-1].
+The random number generator is seeded based on the current time every
+time STELLA starts up; however, your mileage may vary depending on
+the native language implementation.\")" (CL:FUNCTION RANDOM) NULL)
    (DEFINE-FUNCTION-OBJECT "SEED-RANDOM-NUMBER-GENERATOR"
-    "(DEFUN SEED-RANDOM-NUMBER-GENERATOR () :PUBLIC? TRUE :DOCUMENTATION \"Seeds the random number generator with the current time.\")"
+    "(DEFUN SEED-RANDOM-NUMBER-GENERATOR () :DOCUMENTATION \"Seeds the random number generator based on the current time.\" :PUBLIC? TRUE)"
     (CL:FUNCTION SEED-RANDOM-NUMBER-GENERATOR) NULL)
    (DEFINE-FUNCTION-OBJECT "SQRT"
     "(DEFUN (SQRT FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the square root of `n'.\" (RETURN (VERBATIM :COMMON-LISP (CL:SQRT N) :CPP \"::sqrt(n)\" :JAVA \"Math.sqrt(n)\")))"
@@ -4273,8 +4697,11 @@ or from Hour-Minute-Second format to decimal hours.\")"
    (DEFINE-FUNCTION-OBJECT "LOG"
     "(DEFUN (LOG FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the natural logarithm (base e) of `n'.\" (RETURN (VERBATIM :COMMON-LISP (CL:LOG N) :CPP \"::log(n)\" :JAVA \"Math.log(n)\")))"
     (CL:FUNCTION LOG) NULL)
+   (DEFINE-FUNCTION-OBJECT "LOG2"
+    "(DEFUN (LOG2 FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the logarithm (base 2) of `n'.\" (RETURN (VERBATIM :COMMON-LISP \"(CL:LOG n 2.0d0)\" :OTHERWISE (* (LOG N) RECIPROCAL-NL2))))"
+    (CL:FUNCTION LOG2) NULL)
    (DEFINE-FUNCTION-OBJECT "LOG10"
-    "(DEFUN (LOG10 FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the logarithm (base 10) of `n'.\" (RETURN (VERBATIM :COMMON-LISP (CL:LOG N 10.0D0) :OTHERWISE (* (LOG N) RECIPROCAL-NL10))))"
+    "(DEFUN (LOG10 FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the logarithm (base 10) of `n'.\" (RETURN (VERBATIM :COMMON-LISP \"(CL:LOG n 10.0d0)\" :OTHERWISE (* (LOG N) RECIPROCAL-NL10))))"
     (CL:FUNCTION LOG10) NULL)
    (DEFINE-FUNCTION-OBJECT "EXP"
     "(DEFUN (EXP FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the e to the power `n'.\" (RETURN (VERBATIM :COMMON-LISP (CL:EXP N) :CPP \"::exp(n)\" :JAVA \"Math.exp(n)\")))"
@@ -4388,6 +4815,25 @@ contains white space characters.\" :PUBLIC? TRUE)"
    (DEFINE-FUNCTION-OBJECT "STRING-GREATER?"
     "(DEFUN (STRING-GREATER? BOOLEAN) ((X STRING) (Y STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return true if `x' is lexicographically > `y', ignoring case.\")"
     (CL:FUNCTION STRING-GREATER?) NULL)
+   (DEFINE-FUNCTION-OBJECT "STRING-COMPARE-CASE-NORMALIZED"
+    "(DEFUN (STRING-COMPARE-CASE-NORMALIZED INTEGER) ((X STRING) (Y STRING)) :DOCUMENTATION \"Compare `x' and `y' and return -1, 0, or 1, depending on whether
+`x' is less than, equal, or greater than `y' relative to the :ascii-case-normalized
+collation.  In this collation `a < A < b' which gives strings that only differ in case a
+definite order while otherwise behaving identically to :ascii-case-insensitive.  This is
+similar to using a Java Collator for Locale.US with strength set to TERTIARY (which see).\" :PUBLIC? TRUE)"
+    (CL:FUNCTION STRING-COMPARE-CASE-NORMALIZED) NULL)
+   (DEFINE-FUNCTION-OBJECT "COMPARE-STRINGS"
+    "(DEFUN (COMPARE-STRINGS INTEGER) ((X STRING) (Y STRING) (COLLATION KEYWORD)) :DOCUMENTATION \"Compare `x' and `y' and return -1, 0, or 1, depending on whether
+`x' is less than, equal, or greater than `y' relative to `collation'.  Currently
+supported values for `collation' are :ascii-case-sensitive, :ascii-case-insensitive
+:ascii-case-normalized.  The first two correspond to `string-compare' called with
+the appropriate third argument.  :ascii-case-normalized calls the function
+`string-compare-case-normalized' (which see).\" :PUBLIC? TRUE)"
+    (CL:FUNCTION COMPARE-STRINGS) NULL)
+   (DEFINE-FUNCTION-OBJECT "SAFE-COMPARE-STRINGS"
+    "(DEFUN (SAFE-COMPARE-STRINGS INTEGER) ((X STRING) (Y STRING) (COLLATION KEYWORD)) :DOCUMENTATION \"Variant of `compare-strings' that also tolerates NULL values.
+NULL sorts after everything else in any collation.\" :PUBLIC? TRUE)"
+    (CL:FUNCTION SAFE-COMPARE-STRINGS) NULL)
    (DEFINE-FUNCTION-OBJECT "MAKE-STRING"
     "(DEFUN (MAKE-STRING STRING) ((SIZE INTEGER) (INITCHAR CHARACTER)) :DOCUMENTATION \"Return a new string filled with `size' `initchar's.\" :PUBLIC? TRUE :NATIVE? TRUE)"
     NULL NULL)
@@ -4405,7 +4851,11 @@ contains white space characters.\" :PUBLIC? TRUE)"
 of `string1', `string2', and `otherStrings'.  The two mandatory parameters
 allow us to optimize the common binary case by not relying on the somewhat
 less efficient variable arguments mechanism.\")"
-    (CL:FUNCTION CONCATENATE) NULL)
+    (CL:FUNCTION CONCATENATE) NULL))
+  :VOID)
+
+(CL:DEFUN HELP-STARTUP-PRIMAL4 ()
+  (CL:PROGN
    (DEFINE-FUNCTION-OBJECT "STRING-UPCASE"
     "(DEFUN (STRING-UPCASE STRING) ((STRING STRING)) :DOCUMENTATION \"Return an upper-case copy of `string'.\" :NATIVE? TRUE :PUBLIC? TRUE)"
     NULL NULL)
@@ -4417,11 +4867,7 @@ less efficient variable arguments mechanism.\")"
     NULL NULL)
    (DEFINE-METHOD-OBJECT
     "(DEFMETHOD (COPY STRING) ((STRING STRING)) :DOCUMENTATION \"Return a copy of `string'.\" :NATIVE? TRUE)"
-    NULL NULL))
-  :VOID)
-
-(CL:DEFUN HELP-STARTUP-PRIMAL4 ()
-  (CL:PROGN
+    NULL NULL)
    (DEFINE-METHOD-OBJECT
     "(DEFMETHOD (SUBSTITUTE STRING) ((SELF STRING) (NEW-CHAR CHARACTER) (OLD-CHAR CHARACTER)) :DOCUMENTATION \"Substitute all occurences of `old-char' with `new-char'
 in the string `self'.\" :NATIVE? TRUE :PUBLIC? TRUE)" NULL NULL)
@@ -4468,6 +4914,11 @@ unmodified and uncopied.\" :PUBLIC? TRUE)" (CL:FUNCTION STRING-TRIM)
     "(DEFUN (INTEGER-TO-STRING STRING) ((I LONG-INTEGER)) :DOCUMENTATION \"Convert `i' to its string representation and return the result.
  This is more efficient than using a string stream.\" :NATIVE? TRUE :PUBLIC? TRUE)"
     NULL NULL)
+   (DEFINE-FUNCTION-OBJECT "INT-TO-STRING"
+    "(DEFUN (INT-TO-STRING STRING) ((I INTEGER)) :DOCUMENTATION \"Convert `i' to its string representation and return the result.
+This is a convenience function that expects regular integers as opposed to longs
+which is useful in contexts where we do automatic unwrapping based on the target.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (INTEGER-TO-STRING I)))"
+    (CL:FUNCTION INT-TO-STRING) NULL)
    (DEFINE-FUNCTION-OBJECT "INTEGER-TO-HEX-STRING"
     "(DEFUN (INTEGER-TO-HEX-STRING STRING) ((I LONG-INTEGER)) :DOCUMENTATION \"Convert `i' to a string representation in hexadecimal notation and return the result.\" :NATIVE? TRUE :PUBLIC? TRUE)"
     NULL NULL)
@@ -4486,9 +4937,18 @@ efficient than using a string stream.\" :NATIVE? TRUE :PUBLIC? TRUE)"
    (DEFINE-FUNCTION-OBJECT "CHARACTER-TO-STRING"
     "(DEFUN (CHARACTER-TO-STRING STRING) ((C CHARACTER)) :DOCUMENTATION \"Convert `c' into a one-element string and return the result.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (MAKE-STRING 1 C)))"
     (CL:FUNCTION CHARACTER-TO-STRING) NULL)
+   (DEFINE-FUNCTION-OBJECT "STELLA-INTEGER-TO-STRING-IN-BASE"
+    "(DEFUN (STELLA-INTEGER-TO-STRING-IN-BASE STRING) ((INTEGER LONG-INTEGER) (BASE INTEGER)) :DOCUMENTATION \"STELLA version of `integer-to-string-in-base' which is faster than
+the C++ version we have but slower than the native Java version.\" :PUBLIC? TRUE)"
+    (CL:FUNCTION STELLA-INTEGER-TO-STRING-IN-BASE) NULL)
    (DEFINE-FUNCTION-OBJECT "STRING-TO-INTEGER"
     "(DEFUN (STRING-TO-INTEGER LONG-INTEGER) ((STRING STRING)) :DOCUMENTATION \"Convert a `string' representation of an integer into an integer.\" :NATIVE? TRUE :PUBLIC? TRUE)"
     NULL NULL)
+   (DEFINE-FUNCTION-OBJECT "STRING-TO-INT"
+    "(DEFUN (STRING-TO-INT INTEGER) ((STRING STRING)) :DOCUMENTATION \"Convert a `string' representation of an integer into an integer.
+This is a convenience function that ensures a regular integer return value.  If
+`string' represents a long integer, the behavior is undefined.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (STRING-TO-INTEGER STRING)))"
+    (CL:FUNCTION STRING-TO-INT) NULL)
    (DEFINE-FUNCTION-OBJECT "STRING-TO-FLOAT"
     "(DEFUN (STRING-TO-FLOAT FLOAT) ((STRING STRING)) :DOCUMENTATION \"Convert a `string' representation of a float into a float.\" :NATIVE? TRUE :PUBLIC? TRUE)"
     NULL NULL)
@@ -4629,7 +5089,11 @@ strings.  If there is no mismatch, then `null' values are returned.\")"
    (DEFINE-FUNCTION-OBJECT "NON-MATCHING-POSITION"
     "(DEFUN (NON-MATCHING-POSITION INTEGER) ((SOURCE STRING) (START INTEGER) (MATCH STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Returns the index into `source', starting from `start', of the first
 character that is not included in `match'.\")"
-    (CL:FUNCTION NON-MATCHING-POSITION) NULL)
+    (CL:FUNCTION NON-MATCHING-POSITION) NULL))
+  :VOID)
+
+(CL:DEFUN HELP-STARTUP-PRIMAL5 ()
+  (CL:PROGN
    (DEFINE-FUNCTION-OBJECT "HELP-ADVANCE-PAST-WHITESPACE"
     "(DEFUN (HELP-ADVANCE-PAST-WHITESPACE INTEGER) ((SOURCE STRING) (START INTEGER) (END INTEGER)) :PUBLIC? FALSE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Helper for `advance-past-whitespace' that requires `end' to be properly set.\" (WHILE (AND (< START END) (WHITE-SPACE-CHARACTER? (NTH SOURCE START))) (++ START)) (RETURN START))"
     (CL:FUNCTION HELP-ADVANCE-PAST-WHITESPACE) NULL)
@@ -4658,11 +5122,7 @@ and ending up to but not including position `end', counting from zero.  An
    (DEFINE-FUNCTION-OBJECT "STRINGIFY"
     "(DEFUN (STRINGIFY STRING) ((EXPRESSION OBJECT)) :DOCUMENTATION \"Print `expression' onto a string and return the result.
 Printing is done with `*printReadably?*' set to true and with `*printPretty?*'
-set to false.\" :NATIVE? TRUE :PUBLIC? TRUE)" NULL NULL))
-  :VOID)
-
-(CL:DEFUN HELP-STARTUP-PRIMAL5 ()
-  (CL:PROGN
+set to false.\" :NATIVE? TRUE :PUBLIC? TRUE)" NULL NULL)
    (DEFINE-FUNCTION-OBJECT "UNSTRINGIFY"
     "(DEFUN (UNSTRINGIFY OBJECT) ((STRING STRING)) :DOCUMENTATION \"Read a STELLA expression from `string' and return the result.
 This is identical to `read-s-expression-from-string'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (READ-S-EXPRESSION-FROM-STRING STRING)))"
@@ -4775,7 +5235,7 @@ do not necessarily generate different hash codes.\" :PUBLIC? TRUE)"
     "(DEFMETHOD (HASH-CODE INTEGER) ((SELF INTEGER-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))"
     (CL:FUNCTION HASH-CODE) NULL)
    (DEFINE-METHOD-OBJECT
-    "(DEFMETHOD (HASH-CODE INTEGER) ((SELF LONG-INTEGER-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (CAST (WRAPPER-VALUE SELF) INTEGER))))"
+    "(DEFMETHOD (HASH-CODE INTEGER) ((SELF LONG-INTEGER-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))"
     (CL:FUNCTION HASH-CODE) NULL)
    (DEFINE-METHOD-OBJECT
     "(DEFMETHOD (HASH-CODE INTEGER) ((SELF FLOAT-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))"
@@ -4793,7 +5253,7 @@ do not necessarily generate different hash codes.\" :PUBLIC? TRUE)"
     "(DEFMETHOD (HASH-CODE INTEGER) ((SELF INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN SELF))"
     (CL:FUNCTION HASH-CODE) NULL)
    (DEFINE-METHOD-OBJECT
-    "(DEFMETHOD (HASH-CODE INTEGER) ((SELF LONG-INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (CAST SELF INTEGER)))"
+    "(DEFMETHOD (HASH-CODE INTEGER) ((SELF LONG-INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (CAST (LOGAND (LOGXOR SELF (SHIFT-RIGHT SELF 32)) MOST-POSITIVE-INTEGER) INTEGER)))"
     (CL:FUNCTION HASH-CODE) NULL)
    (DEFINE-METHOD-OBJECT
     "(DEFMETHOD (HASH-CODE INTEGER) ((SELF FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:SXHASH SELF) :CPP \"(size_t)self\" :JAVA \"(int)(Double.doubleToLongBits(self)^(Double.doubleToLongBits(self)>>>32))\")))"
@@ -4845,10 +5305,27 @@ will be initialized to NULL.\" :PUBLIC? TRUE)"
 not necessarily mean that the file can also be read.  This does not handle any
 necessary pathname translations or error conditions.\" :NATIVE? TRUE :PUBLIC? TRUE)"
     NULL NULL)
+   (DEFINE-FUNCTION-OBJECT "NATIVE-PROBE-DIRECTORY?"
+    "(DEFUN (NATIVE-PROBE-DIRECTORY? BOOLEAN) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return true if file `fileName' exists and is a directory.
+Note that this does not necessarily mean that the directory can also be read.
+This does not handle any necessary pathname translations or error conditions.\" :PUBLIC? TRUE)"
+    (CL:FUNCTION NATIVE-PROBE-DIRECTORY?) NULL)
    (DEFINE-FUNCTION-OBJECT "PROBE-FILE?"
     "(DEFUN (PROBE-FILE? BOOLEAN) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return true if file `fileName' exists.  Note that this does
-not necessarily mean that the file can also be read.\")"
-    (CL:FUNCTION PROBE-FILE?) NULL)
+not necessarily mean that the file can also be read.
+IMPORTANT Java idiosyncrasy: if file `foo/bar' exists and is not a directory,
+Java will also say `foo/bar/' exists, which is different behavior than in Lisp
+and C++.  For this reason, make sure to always use `probe-directory?' to test
+whether a directory exists.\" :PUBLIC? TRUE)" (CL:FUNCTION PROBE-FILE?)
+    NULL)
+   (DEFINE-FUNCTION-OBJECT "PROBE-DIRECTORY?"
+    "(DEFUN (PROBE-DIRECTORY? BOOLEAN) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return true if file `fileName' exists and is a directory.
+Note that this does not necessarily mean that the directory can also be read.\" :PUBLIC? TRUE)"
+    (CL:FUNCTION PROBE-DIRECTORY?) NULL))
+  :VOID)
+
+(CL:DEFUN HELP-STARTUP-PRIMAL6 ()
+  (CL:PROGN
    (DEFINE-FUNCTION-OBJECT "NATIVE-FILE-WRITE-DATE"
     "(DEFUN (NATIVE-FILE-WRITE-DATE CALENDAR-DATE) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return the time at which file `fileName' was last modified or
 NULL if that cannot be determined.  This does not handle any necessary pathname
@@ -4881,15 +5358,17 @@ any necessary pathname translations or error conditions.\" :NATIVE? TRUE :PUBLIC
     (CL:FUNCTION RENAME-FILE) NULL)
    (DEFINE-FUNCTION-OBJECT "COPY-STREAM-TO-STREAM"
     "(DEFUN COPY-STREAM-TO-STREAM ((IN INPUT-STREAM) (OUT OUTPUT-STREAM)) :DOCUMENTATION \"Copy `in' verbatimely to `out'.  Does the right thing for binary data.\" :PUBLIC? TRUE)"
-    (CL:FUNCTION COPY-STREAM-TO-STREAM) NULL))
-  :VOID)
-
-(CL:DEFUN HELP-STARTUP-PRIMAL6 ()
-  (CL:PROGN
+    (CL:FUNCTION COPY-STREAM-TO-STREAM) NULL)
    (DEFINE-FUNCTION-OBJECT "COPY-FILE"
     "(DEFUN COPY-FILE ((FROMFILE FILE-NAME) (TOFILE FILE-NAME)) :DOCUMENTATION \"Copy file `fromFile' to file `toFile', clobbering
 any data already in `toFile'.\" :PUBLIC? TRUE)" (CL:FUNCTION COPY-FILE)
     NULL)
+   (DEFINE-FUNCTION-OBJECT "GET-TEMP-DIRECTORY"
+    "(DEFUN (GET-TEMP-DIRECTORY STRING) () :DOCUMENTATION \"Return a suitable directory for temporary files.
+Uses the value of `stella.tempDirectory' if defined; otherwise, it
+will use a suitable OS-specific default.  The returned directory will
+end in a separator for immediate concatenation with a physical filename.\" :PUBLIC? TRUE)"
+    (CL:FUNCTION GET-TEMP-DIRECTORY) NULL)
    (DEFINE-FUNCTION-OBJECT "MAKE-TEMPORARY-FILE-NAME"
     "(DEFUN (MAKE-TEMPORARY-FILE-NAME STRING) ((PREFIX STRING) (SUFFIX STRING)) :DOCUMENTATION \"Return a file name of the form `<prefix>NNNNNN<suffix>'
 which is guaranteed to not refer to any existing file.  A null `prefix'
@@ -4919,6 +5398,14 @@ syntax.  This is mostly consistent across native languages, but some differences
 e.g., Lisp will convert . or .. into absolute pathnames.\" :PUBLIC? TRUE :COMMAND? TRUE)"
     (CL:FUNCTION %LIST-DIRECTORY-FILES)
     (CL:FUNCTION LIST-DIRECTORY-FILES-EVALUATOR-WRAPPER))
+   (DEFINE-FUNCTION-OBJECT "LIST-DIRECTORY-FILES-RECURSIVELY"
+    "(DEFUN (LIST-DIRECTORY-FILES-RECURSIVELY (CONS OF STRING-WRAPPER)) ((DIRECTORY STRING)) :DOCUMENTATION \"Just like `list-directory-files' (which see) but also recurses into
+subdirectories.  Files at the top level of `directory' will be bare file names without
+a `directory' component.  Files in subdirectories will be prefixed with the relative
+subdirectory path starting right below `directory'.  The sort order is lexicographic
+within directories which results in a depth-first presentation order of files.\" :PUBLIC? TRUE :COMMAND? TRUE)"
+    (CL:FUNCTION %LIST-DIRECTORY-FILES-RECURSIVELY)
+    (CL:FUNCTION LIST-DIRECTORY-FILES-RECURSIVELY-EVALUATOR-WRAPPER))
    (DEFINE-METHOD-OBJECT
     "(DEFMETHOD (LOGNOT INTEGER) ((ARG INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGNOT ARG) :CPP \"(~ arg)\" :JAVA \"(~ arg)\")))"
     (CL:FUNCTION LOGNOT) NULL)
@@ -5114,6 +5601,8 @@ exception.  For example, in Java it prints a stack trace.  In Lisp, it is vendor
     (CL:SETQ MOST-NEGATIVE-INTEGER (CL:1+ NULL-INTEGER))
     (CL:SETQ MOST-NEGATIVE-LONG-INTEGER (CL:1+ NULL-LONG-INTEGER))
     (CL:SETQ LEAST-NEGATIVE-FLOAT (CL:- 0 LEAST-POSITIVE-FLOAT))
+    (CL:SETQ RECIPROCAL-NL2
+     (CL:/ 1.0d0 (CL:THE CL:DOUBLE-FLOAT (CL:LOG 2.0d0))))
     (CL:SETQ RECIPROCAL-NL10
      (CL:/ 1.0d0 (CL:THE CL:DOUBLE-FLOAT (CL:LOG 10.0d0))))
     (CL:SETQ LONG-INTEGER-BIT-WIDTH
@@ -5186,6 +5675,9 @@ type.  For example, NULL-INTEGER represents the undefined INTEGER value.\")")
      "(DEFCONSTANT LEAST-NEGATIVE-FLOAT FLOAT (- LEAST-POSITIVE-FLOAT) :PUBLIC? TRUE)")
     (SEED-RANDOM-NUMBER-GENERATOR)
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
+     "(DEFCONSTANT RECIPROCAL-NL2 FLOAT (/ 1.0 (LOG 2.0)) :DOCUMENTATION \"1 / (log 2) Reciprocal of the Log base e of 2.
+Used for log 2 conversions.\")")
+    (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
      "(DEFCONSTANT RECIPROCAL-NL10 FLOAT (/ 1.0 (LOG 10.0)) :DOCUMENTATION \"1 / (log 10) Reciprocal of the Log base e of 10.
 Used for log 10 conversions.\")")
     (REGISTER-NATIVE-NAME SYM-PRIMAL-STELLA-FLOOR KWD-PRIMAL-CPP
@@ -5246,6 +5738,9 @@ format to enable processing by Lisps with different fixnum sizes.\" :PUBLIC? TRU
      "(DEFGLOBAL *HASH-TABLE-SIZE-PRIMES* (VECTOR OF INTEGER-WRAPPER) NULL :DOCUMENTATION \"List of prime numbers approximately growing by a factor of 2
 that are suitable to be used as hash table sizes.\" :PUBLIC? TRUE)")
     (REGISTER-NATIVE-NAME SYM-PRIMAL-STELLA-LIST-DIRECTORY-FILES
+     KWD-PRIMAL-COMMON-LISP KWD-PRIMAL-FUNCTION)
+    (REGISTER-NATIVE-NAME
+     SYM-PRIMAL-STELLA-LIST-DIRECTORY-FILES-RECURSIVELY
      KWD-PRIMAL-COMMON-LISP KWD-PRIMAL-FUNCTION)
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
      "(DEFCONSTANT LONG-INTEGER-BIT-WIDTH INTEGER (ROUND (/ (LOG (* MOST-POSITIVE-LONG-INTEGER 2.0)) (LOG 2))) :DOCUMENTATION \"The number of bits in a long integer.\")")

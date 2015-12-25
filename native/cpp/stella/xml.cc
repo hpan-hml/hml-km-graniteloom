@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -1080,6 +1080,33 @@ Cons* oXML_TOKENIZER_TABLE_DEFINITIONo = NULL;
 
 TokenizerTable* oXML_TOKENIZER_TABLEo = NULL;
 
+// If true, all whitespace between tags (newlines, trailing WP, etc.)
+// will be preserved.  This is a kludge to allow us to read certain `illegal' XML files
+// where this whitespace is significant but not appropriately encoded.
+DEFINE_STELLA_SPECIAL(oXML_PRESERVE_ALL_WHITESPACEpo, boolean , false);
+
+TokenizerTable* oXML_WHITESPACE_PRESERVING_TOKENIZER_TABLEo = NULL;
+
+TokenizerTable* getXmlWhitespacePreservingTokenizerTable() {
+  if (!((boolean)(oXML_WHITESPACE_PRESERVING_TOKENIZER_TABLEo))) {
+    { Cons* tokenizerdefinition = ((Cons*)(copyConsTree(oXML_TOKENIZER_TABLE_DEFINITIONo)));
+
+      tokenizerdefinition->secondSetter(listO(10, KWD_XML_SKIP_WHITESPACE, SYM_XML_STELLA_x, wrapString("<"), KWD_XML_OPEN_TAG, KWD_XML_EOF, KWD_XML_EOF, SYM_XML_STELLA_o, KWD_XML_OTHERWISE, KWD_XML_CONTENT, NIL));
+      oXML_WHITESPACE_PRESERVING_TOKENIZER_TABLEo = parseTokenizerDefinition(tokenizerdefinition);
+    }
+  }
+  return (oXML_WHITESPACE_PRESERVING_TOKENIZER_TABLEo);
+}
+
+TokenizerTable* getXmlTokenizerTable() {
+  if (oXML_PRESERVE_ALL_WHITESPACEpo) {
+    return (getXmlWhitespacePreservingTokenizerTable());
+  }
+  else {
+    return (oXML_TOKENIZER_TABLEo);
+  }
+}
+
 TokenizerToken* tokenizeXmlExpression(InputStream* stream, TokenizerToken* tokenlist, char* regiontagname, boolean skiptoregionP, boolean& _Return1) {
   { int parenbalance = 0;
     char* starttag = NULL;
@@ -1095,7 +1122,7 @@ TokenizerToken* tokenizeXmlExpression(InputStream* stream, TokenizerToken* token
       tokenlist = newTokenizerToken();
       tokencursor = tokenlist;
     }
-    { TokenizerTable* tok_table_ = oXML_TOKENIZER_TABLEo;
+    { TokenizerTable* tok_table_ = getXmlTokenizerTable();
       char* tok_transitions_ = tok_table_->transitions;
       Object** tok_statenames_ = tok_table_->stateNames->theArray;
       int tok_tokenstart_ = -1;
@@ -1156,7 +1183,8 @@ TokenizerToken* tokenizeXmlExpression(InputStream* stream, TokenizerToken* token
                 tok_cursor_ = 0;
               }
             }
-            tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | ((int)(unsigned char) (tok_buffer_[tok_cursor_]))))]);
+            tok_nextstate_ = (int)(unsigned char) (tok_buffer_[tok_cursor_]);
+            tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | tok_nextstate_))]);
             if ((tok_nextstate_ & 128) == 0) {
               tok_state_ = tok_nextstate_;
               tok_cursor_ = tok_cursor_ + 1;
@@ -1262,19 +1290,21 @@ TokenizerToken* tokenizeXmlExpression(InputStream* stream, TokenizerToken* token
         }
         else if (tokentype == KWD_XML_CONTENT) {
           tokencontent = getTokenTextInternal(tok_buffer_, tok_tokenstart_, tok_cursor_, tok_size_, false);
-          { int cursor = strlen(tokencontent);
+          if (!(oXML_PRESERVE_ALL_WHITESPACEpo)) {
+            { int cursor = strlen(tokencontent);
 
-            { int i = NULL_INTEGER;
-              int iter000 = 0;
+              { int i = NULL_INTEGER;
+                int iter000 = 0;
 
-              for (i, iter000; true; iter000 = iter000 + 1) {
-                i = iter000;
-                if (!(oCHARACTER_TYPE_TABLEo[(int)(unsigned char) (tokencontent[(cursor = cursor - 1)])] == KWD_XML_WHITE_SPACE)) {
-                  if (i > 0) {
-                    i = 0 - i;
-                    tokencontent = getTokenTextInternal(tok_buffer_, tok_tokenstart_, ((i < 0) ? (tok_cursor_ + i) : (tok_tokenstart_ + i)), tok_size_, false);
+                for (i, iter000; true; iter000 = iter000 + 1) {
+                  i = iter000;
+                  if (!(oCHARACTER_TYPE_TABLEo[(int)(unsigned char) (tokencontent[(cursor = cursor - 1)])] == KWD_XML_WHITE_SPACE)) {
+                    if (i > 0) {
+                      i = 0 - i;
+                      tokencontent = getTokenTextInternal(tok_buffer_, tok_tokenstart_, ((i < 0) ? (tok_cursor_ + i) : (tok_tokenstart_ + i)), tok_size_, false);
+                    }
+                    break;
                   }
-                  break;
                 }
               }
             }
@@ -2907,6 +2937,8 @@ void helpStartupXml4() {
     defineFunctionObject("DECODE-XML-STRING", "(DEFUN (DECODE-XML-STRING STRING) ((DOCTYPE XML-DOCTYPE) (INPUT STRING) (PE-REFERENCE-ALLOWED? BOOLEAN)))", ((cpp_function_code)(&decodeXmlString)), NULL);
     defineFunctionObject("NORMALIZE-ATTRIBUTE-VALUE", "(DEFUN (NORMALIZE-ATTRIBUTE-VALUE STRING) ((DOCTYPE XML-DOCTYPE) (INPUT STRING) (PE-REFERENCE-ALLOWED? BOOLEAN)))", ((cpp_function_code)(&normalizeAttributeValue)), NULL);
     defineFunctionObject("PROCESS-DOCTYPE", "(DEFUN (PROCESS-DOCTYPE XML-DOCTYPE) ((DOCTYPE-DECLARATION CONS)) :PUBLIC? TRUE :DOCUMENTATION \"Takes an S-Expression representing a doctype and processes into\na DOCTYPE object.\")", ((cpp_function_code)(&processDoctype)), NULL);
+    defineFunctionObject("GET-XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE", "(DEFUN (GET-XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE TOKENIZER-TABLE) ())", ((cpp_function_code)(&getXmlWhitespacePreservingTokenizerTable)), NULL);
+    defineFunctionObject("GET-XML-TOKENIZER-TABLE", "(DEFUN (GET-XML-TOKENIZER-TABLE TOKENIZER-TABLE) ())", ((cpp_function_code)(&getXmlTokenizerTable)), NULL);
     defineFunctionObject("TOKENIZE-XML-EXPRESSION", "(DEFUN (TOKENIZE-XML-EXPRESSION TOKENIZER-TOKEN BOOLEAN) ((STREAM INPUT-STREAM) (TOKENLIST TOKENIZER-TOKEN) (REGIONTAGNAME STRING) (SKIPTOREGION? BOOLEAN)))", ((cpp_function_code)(&tokenizeXmlExpression)), NULL);
     defineFunctionObject("PROCESS-ATTRIBUTE-LIST", "(DEFUN (PROCESS-ATTRIBUTE-LIST CONS) ((REVERSEATTRIBUTELIST CONS) (ELEMENT XML-ELEMENT) (NAMESPACE-TABLE (KV-CONS OF STRING-WRAPPER STRING-WRAPPER))))", ((cpp_function_code)(&processAttributeList)), NULL);
     defineFunctionObject("XML-TOKEN-LIST-TO-S-EXPRESSION", "(DEFUN (XML-TOKEN-LIST-TO-S-EXPRESSION OBJECT) ((TOKENLIST TOKENIZER-TOKEN) (DOCTYPE XML-DOCTYPE) (DOCTYPE-DEFINITION? BOOLEAN)) :DOCUMENTATION \"Convert the XML `tokenList' (using `doctype' for guidance) into a\nrepresentative s-expression and return the result.    The `doctype' argument is\ncurrently only used for expansion of entity references.  It can be 'null'.  The\nflag `doctype-definition?' should be true only when processing the DTD definition\nof a DOCTYPE tag, since it enables substitution of parameter entity values.\n\nEvery XML tag is represented as a cons-list starting with the tag as its header,\nfollowed by a possibly empty list of keyword value pairs representing tag attributes,\nfollowed by a possibly empty list of content expressions which might themselves\nbe XML expressions.  For example, the expression\n\n    <a a1=v1 a2='v2'> foo <b a3=v3/> bar </a>\n\nbecomes\n\n   (<a> (<a1> \\\"v1\\\" <a2> \\\"v2\\\") \\\"foo\\\" (<b> (<a3> \\\"v3\\\")) \\\"bar\\\")\n\nwhen represented as an s-expre" "ssion.  The tag names are subtypes of XML-OBJECT\nsuch as XML-ELEMENT, XML-LOCAL-ATTRIBUTE, XML-GLOBAL-ATTRIBUTE, etc.\n?, ! and [ prefixed tags are encoded as their own subtypes of XML-OBJECT, namely\nXML-PROCESSING-INSTRUCTION, XML-DECLARATION, XML-SPECIAL, XML-COMMENT, etc.\nCDATA is an XML-SPECIAL tag with a name of CDATA.\n\nThe name is available using class accessors.\" :PUBLIC? TRUE)", ((cpp_function_code)(&xmlTokenListToSExpression)), NULL);
@@ -2937,15 +2969,13 @@ void helpStartupXml4() {
     defineFunctionObject("GET-XML-CDATA-CONTENT", "(DEFUN (GET-XML-CDATA-CONTENT STRING) ((FORM CONS)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the CDATA content of a CDATA `form'.  Does NOT make sure that `form'\nactually is a CDATA form, so bad things can happen if it is given wrong input.\" (RETURN (UNWRAP-STRING (FIRST (CAST (SECOND FORM) CONS)))))", ((cpp_function_code)(&getXmlCdataContent)), NULL);
     defineMethodObject("(DEFMETHOD (XML-ELEMENT-MATCH? BOOLEAN) ((TAG XML-ELEMENT) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Returns `true' if `tag' is an XML element with the name `name'\nin namespace `namespace'.  Note that `namespace' is the full URI, not an abbreviation.\nAlso, `namespace' may be `null', in which case `tag' must not have a namespace\nassociated with it.\" (RETURN (AND (EQL? (NAME TAG) NAME) (EQL? (NAMESPACE-URI TAG) NAMESPACE))))", ((cpp_method_code)(&XmlElement::xmlElementMatchP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is an XML attribute with name `name'\nin namespace `namespace'.  Note that `namespace' is the full URI, not an\nabbreviation.  Also, `namespace' may be `null', in which case `attribute'\nmust not have a namespace associated with it.\")", ((cpp_method_code)(&XmlAttribute::xmlAttributeMatchP)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-GLOBAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is a global  XML attribute with name `name'\nin namespace `namespace'.  Note that `namespace' is the full URI, not an\nabbreviation.  Also, `namespace' may be `null', in which case `attribute'\nmust not have a namespace associated with it.\")", ((cpp_method_code)(&XmlGlobalAttribute::xmlAttributeMatchP)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-LOCAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is a local XML attribute with name `name'.\nNote that `namespace' must be `null' and that the `attribute's parent element\nelement is not considered by the match.  To take the parent element into\naccount use `xml-local-attribute-match?'.\")", ((cpp_method_code)(&XmlLocalAttribute::xmlAttributeMatchP)), ((cpp_method_code)(NULL)));
   }
 }
 
 void startupXml() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupXml1();
       helpStartupXml2();
@@ -2965,6 +2995,8 @@ void startupXml() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupXml4();
+      defineMethodObject("(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-GLOBAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is a global  XML attribute with name `name'\nin namespace `namespace'.  Note that `namespace' is the full URI, not an\nabbreviation.  Also, `namespace' may be `null', in which case `attribute'\nmust not have a namespace associated with it.\")", ((cpp_method_code)(&XmlGlobalAttribute::xmlAttributeMatchP)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-LOCAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is a local XML attribute with name `name'.\nNote that `namespace' must be `null' and that the `attribute's parent element\nelement is not considered by the match.  To take the parent element into\naccount use `xml-local-attribute-match?'.\")", ((cpp_method_code)(&XmlLocalAttribute::xmlAttributeMatchP)), ((cpp_method_code)(NULL)));
       defineFunctionObject("XML-GLOBAL-ATTRIBUTE-MATCH?", "(DEFUN (XML-GLOBAL-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-GLOBAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :GLOBALLY-INLINE? TRUE (RETURN (AND (STRING-EQL? (NAME ATTRIBUTE) NAME) (EQL? (NAMESPACE-URI ATTRIBUTE) NAMESPACE))))", ((cpp_function_code)(&xmlGlobalAttributeMatchP)), NULL);
       defineFunctionObject("XML-LOCAL-ATTRIBUTE-MATCH?", "(DEFUN (XML-LOCAL-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-LOCAL-ATTRIBUTE) (NAME STRING) (ELEMENT-NAME STRING) (ELEMENT-NAMESPACE STRING)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return true if `attribute' is a local attribute with `name' and whose\nparent element matches `element-name' and `element-namespace'.\" (RETURN (AND (STRING-EQL? (NAME ATTRIBUTE) NAME) (XML-ELEMENT-MATCH? (PARENT-ELEMENT ATTRIBUTE) ELEMENT-NAME ELEMENT-NAMESPACE))))", ((cpp_function_code)(&xmlLocalAttributeMatchP)), NULL);
       defineFunctionObject("XML-LOOKUP-ATTRIBUTE", "(DEFUN (XML-LOOKUP-ATTRIBUTE STRING) ((ATTRIBUTES CONS) (NAME STRING) (NAMESPACE STRING)) :DOCUMENTATION \"Find the XML attribute in `attributes' with `name' and `namespace' and\nreturn its value.  Note that it is assumed that all `attributes' come from\nthe same known tag, hence, the parent elements of any local attributes are\nnot considered by the lookup.\" :PUBLIC? TRUE)", ((cpp_function_code)(&xmlLookupAttribute)), NULL);
@@ -2994,6 +3026,8 @@ void startupXml() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *XML-TOKENIZER-TABLE-DEFINITION* CONS (BQUOTE ((:START :INCLUDE :SKIP-WHITESPACE) (:SKIP-WHITESPACE ! (#\\  #\\Tab #\\Linefeed #\\Return) :SKIP-WHITESPACE ! \"<\" :OPEN-TAG :EOF :EOF * :OTHERWISE :CONTENT) (:CONTENT ! \"<\" :OPEN-TAG :EOF :EOF :OTHERWISE :CONTENT) (:OPEN-TAG * \">\" :START-TAG-END ! \"/\" :OPEN-END-TAG \"?\" :OPEN-PI-TAG \"!\" :OPEN-DECLARATION-TAG (#\\  #\\Tab #\\Linefeed #\\Return) :OPEN-TAG * :OTHERWISE :START-TAG) (:START-TAG * \">\" :START-TAG-END ! \"/\" :OPEN-EMPTY-TAG-END ! (#\\  #\\Tab #\\Linefeed #\\Return) :SKIP-TO-ATTRIBUTE-NAME :OTHERWISE :START-TAG) (:OPEN-PI-TAG * :ANY :START-PI-TAG) (:START-PI-TAG ! \"?\" :OPEN-PI-TAG-END * (#\\  #\\Tab #\\Linefeed #\\Return) :PI-TAG-DATA :OTHERWISE :START-PI-TAG) (:PI-TAG-DATA \"?\" (:PI-TAG-DATA-OR-END :PI-TAG-DATA) :OTHERWISE :PI-TAG-DATA) (:PI-TAG-DATA-OR-END * \">\" :EMPTY-TAG-END :OTHERWISE :PI-TAG-DATA) (:OPEN-PI-TAG-END * \">\" :EMPTY-TAG-END :OTHERWISE :ERROR) (:OPEN-END-TAG ! \">\" :END-TAG-END * :OTHERWISE :END-TAG) (:EN" "D-TAG ! \">\" :END-TAG-END :OTHERWISE :END-TAG) (:SKIP-TO-ATTRIBUTE-NAME * \">\" :START-TAG-END ! \"/\" :OPEN-EMPTY-TAG-END ! (#\\  #\\Tab #\\Linefeed #\\Return) :SKIP-TO-ATTRIBUTE-NAME * :OTHERWISE :ATTRIBUTE-NAME) (:ATTRIBUTE-NAME * \">\" :START-TAG-END ! \"/\" :OPEN-EMPTY-TAG-END ! (#\\= #\\  #\\Tab #\\Linefeed #\\Return) :SKIP-TO-ATTRIBUTE-VALUE :OTHERWISE :ATTRIBUTE-NAME) (:SKIP-TO-ATTRIBUTE-VALUE * \">\" :START-TAG-END ! \"/\" :OPEN-EMPTY-TAG-END (#\\= #\\  #\\Tab #\\Linefeed #\\Return) :SKIP-TO-ATTRIBUTE-VALUE * \"'\" :SINGLE-QUOTED-ATTRIBUTE-VALUE * \"\\\"\" :DOUBLE-QUOTED-ATTRIBUTE-VALUE * :OTHERWISE :UNQUOTED-ATTRIBUTE-VALUE) (:SINGLE-QUOTED-ATTRIBUTE-VALUE \"'\" :QUOTED-ATTRIBUTE-VALUE :OTHERWISE :SINGLE-QUOTED-ATTRIBUTE-VALUE) (:DOUBLE-QUOTED-ATTRIBUTE-VALUE \"\\\"\" :QUOTED-ATTRIBUTE-VALUE :OTHERWISE :DOUBLE-QUOTED-ATTRIBUTE-VALUE) (:QUOTED-ATTRIBUTE-VALUE :INCLUDE :SKIP-TO-ATTRIBUTE-NAME) (:UNQUOTED-ATTRIBUTE-VALUE * \">\" :START-TAG-END ! \"/\" :OPEN-EMPTY-TAG-END ! (#\\  #\\Tab #\\Linefeed #\\" "Return) :SKIP-TO-ATTRIBUTE-NAME :OTHERWISE :UNQUOTED-ATTRIBUTE-VALUE) (:OPEN-DECLARATION-TAG \"-\" :START-TAG-OR-COMMENT \"[\" :OPEN-SPECIAL-TAG * :OTHERWISE :START-DECLARATION-TAG) (:START-DECLARATION-TAG * \">\" :EMPTY-TAG-END ! (#\\  #\\Tab #\\Linefeed #\\Return) :DECLARATION-WHITESPACE :OTHERWISE :START-DECLARATION-TAG) (:DECLARATION-WHITESPACE ! (#\\  #\\Tab #\\Linefeed #\\Return) :DECLARATION-WHITESPACE * \">\" :EMPTY-TAG-END * \"[\" :DECLARATION-TAG-MARKUP-DATA-START * \"'\" :SINGLE-QUOTED-DECLARATION-TAG-DATA * \"\\\"\" :DOUBLE-QUOTED-DECLARATION-TAG-DATA * :OTHERWISE :DECLARATION-TAG-DATA) (:DECLARATION-TAG-DATA ! (#\\  #\\Tab #\\Linefeed #\\Return) :DECLARATION-WHITESPACE * \">\" :EMPTY-TAG-END * \"[\" :DECLARATION-TAG-MARKUP-DATA-START \"'\" :SINGLE-QUOTED-DECLARATION-TAG-DATA \"\\\"\" :DOUBLE-QUOTED-DECLARATION-TAG-DATA :OTHERWISE :DECLARATION-TAG-DATA) (:SINGLE-QUOTED-DECLARATION-TAG-DATA \"'\" :QUOTED-DECLARATION-TAG-DATA :OTHERWISE :SINGLE-QUOTED-DECLARATION-TAG-DATA) (:DOUBLE-QUOTED-DECLARATI" "ON-TAG-DATA \"\\\"\" :QUOTED-DECLARATION-TAG-DATA :OTHERWISE :DOUBLE-QUOTED-DECLARATION-TAG-DATA) (:QUOTED-DECLARATION-TAG-DATA :INCLUDE :DECLARATION-WHITESPACE) (:DECLARATION-TAG-MARKUP-DATA-START \"]\" :DECLARATION-TAG-MARKUP-DATA :OTHERWISE :DECLARATION-TAG-MARKUP-DATA-START) (:DECLARATION-TAG-MARKUP-DATA * \">\" :EMPTY-TAG-END :OTHERWISE :ERROR) (:OPEN-SPECIAL-TAG * :ANY :START-SPECIAL-TAG) (:START-SPECIAL-TAG * \"[\" :SPECIAL-TAG-DATA :OTHERWISE :START-SPECIAL-TAG) (:SPECIAL-TAG-DATA \"]\" :SPECIAL-TAG-DATA-OR-END :OTHERWISE :SPECIAL-TAG-DATA) (:SPECIAL-TAG-DATA-OR-END \"]\" (:SPECIAL-TAG-DATA-OR-END2 :SPECIAL-TAG-DATA) :OTHERWISE :SPECIAL-TAG-DATA) (:SPECIAL-TAG-DATA-OR-END2 * \">\" :DATA-TAG-END :OTHERWISE :SPECIAL-TAG-DATA) (:START-TAG-OR-COMMENT \"-\" :COMMENT-BODY * :OTHERWISE :START-TAG) (:COMMENT-BODY \"-\" :END-COMMENT-OR-COMMENT :OTHERWISE :COMMENT-BODY) (:END-COMMENT-OR-COMMENT \"-\" :END-COMMENT-OR-COMMENT2 :OTHERWISE :COMMENT-BODY) (:END-COMMENT-OR-COMMENT2 \">\" :COMMENT :OTHERWISE :ERROR) " "(:COMMENT :INCLUDE :START) (:START-TAG-END :INCLUDE :START) (:DATA-TAG-END :INCLUDE :START) (:END-TAG-END :INCLUDE :START) (:OPEN-EMPTY-TAG-END * \">\" :EMPTY-TAG-END :OTHERWISE :ERROR) (:EMPTY-TAG-END :INCLUDE :START) (:ERROR :INCLUDE :START))))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *XML-TOKENIZER-TABLE* TOKENIZER-TABLE NULL)");
       oXML_TOKENIZER_TABLEo = parseTokenizerDefinition(oXML_TOKENIZER_TABLE_DEFINITIONo);
+      defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *XML-PRESERVE-ALL-WHITESPACE?* BOOLEAN FALSE :DOCUMENTATION \"If true, all whitespace between tags (newlines, trailing WP, etc.)\nwill be preserved.  This is a kludge to allow us to read certain `illegal' XML files\nwhere this whitespace is significant but not appropriately encoded.\")");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE* TOKENIZER-TABLE NULL)");
     }
   }
 }

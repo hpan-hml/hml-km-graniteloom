@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -47,22 +47,23 @@
 
 ;;; Auxiliary variables:
 
+(CL:DEFVAR KWD-EXTENSIONS-DOCUMENTATION NULL)
 (CL:DEFVAR SYM-EXTENSIONS-PLX-STARTUP-EXTENSIONS NULL)
 (CL:DEFVAR SYM-EXTENSIONS-STELLA-METHOD-STARTUP-CLASSNAME NULL)
 
 ;;; Forward declarations:
 
-(CL:DECLAIM (CL:SPECIAL *STARTUP-TIME-PHASE* *MODULE* STANDARD-OUTPUT EOL))
+(CL:DECLAIM
+ (CL:SPECIAL *STARTUP-TIME-PHASE* *MODULE* STANDARD-OUTPUT EOL))
 
 ;;; (DEFUN MAIN ...)
 
 (CL:DEFUN MAIN ()
-  "Main PowerLoom entry point for your code in C++ and Java."
-  (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT) "Initializing STELLA..."
-   EOL)
+  (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT)
+   "Initializing STELLA..." EOL)
   (STARTUP-STELLA-SYSTEM)
-  (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT) "Initializing PowerLoom..."
-   EOL)
+  (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT)
+   "Initializing PowerLoom..." EOL)
   (STARTUP-LOGIC-SYSTEM)
   (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT)
    "Initializing PowerLoom extensions..." EOL)
@@ -76,6 +77,8 @@
     (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
+    (CL:SETQ KWD-EXTENSIONS-DOCUMENTATION
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "DOCUMENTATION" NULL 2))
     (CL:SETQ SYM-EXTENSIONS-PLX-STARTUP-EXTENSIONS
      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-EXTENSIONS" NULL 0))
     (CL:SETQ SYM-EXTENSIONS-STELLA-METHOD-STARTUP-CLASSNAME
@@ -83,14 +86,14 @@
       (GET-STELLA-MODULE "/STELLA" CL:T) 0)))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7)
-    (DEFINE-FUNCTION-OBJECT "MAIN"
-     "(DEFUN MAIN () :PUBLIC? TRUE :DOCUMENTATION \"Main PowerLoom entry point for your code in C++ and Java.\")"
+    (DEFINE-FUNCTION-OBJECT "MAIN" "(DEFUN MAIN () :PUBLIC? TRUE)"
      (CL:FUNCTION MAIN) NULL)
     (DEFINE-FUNCTION-OBJECT "STARTUP-EXTENSIONS"
      "(DEFUN STARTUP-EXTENSIONS () :PUBLIC? TRUE)"
      (CL:FUNCTION STARTUP-EXTENSIONS) NULL)
     (CL:LET*
-     ((FUNCTION (LOOKUP-FUNCTION SYM-EXTENSIONS-PLX-STARTUP-EXTENSIONS)))
+     ((FUNCTION
+       (LOOKUP-FUNCTION SYM-EXTENSIONS-PLX-STARTUP-EXTENSIONS)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
       SYM-EXTENSIONS-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupExtensions") NULL-STRING-WRAPPER)))

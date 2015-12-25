@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: ontology.ste,v 1.17 2006/11/20 21:29:12 hans Exp
+;;; Version: ontology.ste,v 1.18 2014/04/17 21:50:06 hans Exp
 
 ;;; Ontology for Powerloom-to-RDBMS interface.
 
@@ -102,6 +102,8 @@ source, all connection information can be kept in some external file such as
   :documentation "The connection string used for a JDBC connection."
   :goes-true-demon RDBMS/db-update-demon
   :goes-unknown-demon RDBMS/db-update-demon)
+
+;;; We had to shadow the next two relation symbols in RDBMS to avoid a conflict.
 
 (deffunction RDBMS/host ((?db RDBMS/Database)) :-> (?host STRING)
   :documentation "The host of a database server."

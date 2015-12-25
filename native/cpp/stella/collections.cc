@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -869,45 +869,37 @@ AbstractCollection* VectorSequence::remove(Object* value) {
   { VectorSequence* self = this;
 
     { Object** array = self->theArray;
-      int firstshiftoffset = -1;
-      int lastshiftoffset = self->sequenceLength - 1;
+      int length = self->sequenceLength;
+      int nhits = 0;
 
       { int i = NULL_INTEGER;
         int iter000 = 0;
-        int upperBound000 = lastshiftoffset;
-        boolean unboundedP000 = upperBound000 == NULL_INTEGER;
+        int upperBound000 = length - 1;
 
-        for  (i, iter000, upperBound000, unboundedP000; 
-              unboundedP000 ||
-                  (iter000 <= upperBound000); 
+        for  (i, iter000, upperBound000; 
+              iter000 <= upperBound000; 
               iter000 = iter000 + 1) {
           i = iter000;
           if (eqlP(array[i], value)) {
-            firstshiftoffset = i + 1;
-            break;
+            nhits = nhits + 1;
+          }
+          else if (nhits > 0) {
+            array[(i - nhits)] = (array[i]);
           }
         }
       }
-      if (firstshiftoffset == -1) {
-        return (self);
-      }
-      if (firstshiftoffset <= lastshiftoffset) {
-        { int j = NULL_INTEGER;
-          int iter001 = firstshiftoffset;
-          int upperBound001 = lastshiftoffset;
-          boolean unboundedP001 = upperBound001 == NULL_INTEGER;
+      self->sequenceLength = length - nhits;
+      { int i = NULL_INTEGER;
+        int iter001 = self->sequenceLength;
+        int upperBound001 = length - 1;
 
-          for  (j, iter001, upperBound001, unboundedP001; 
-                unboundedP001 ||
-                    (iter001 <= upperBound001); 
-                iter001 = iter001 + 1) {
-            j = iter001;
-            array[(j - 1)] = (array[j]);
-          }
+        for  (i, iter001, upperBound001; 
+              iter001 <= upperBound001; 
+              iter001 = iter001 + 1) {
+          i = iter001;
+          array[i] = NULL;
         }
       }
-      array[lastshiftoffset] = NULL;
-      self->sequenceLength = lastshiftoffset;
       return (self);
     }
   }
@@ -1088,6 +1080,54 @@ Vector* Vector::sort(cpp_function_code predicate) {
       }
       heapSortNativeVector(self->theArray, self->length(), predicate);
       return (self);
+    }
+  }
+}
+
+Vector* Vector::sortTuples(int n, cpp_function_code predicate) {
+  // Just like `sort' but assumes each element of `self' is a tuple (a cons)
+  // whose `n'-th element (0-based) will be used for comparison.
+  { Vector* self = this;
+
+    { int length = self->length();
+
+      if (length == 0) {
+        return (self);
+      }
+      else if (predicate == NULL) {
+        predicate = chooseSortPredicate(((Cons*)((self->theArray)[0]))->nth(n));
+      }
+      { 
+        BIND_STELLA_SPECIAL(oSORT_TUPLE_COMPARE_PREDICATEo, cpp_function_code, predicate);
+        BIND_STELLA_SPECIAL(oSORT_TUPLE_COMPARE_INDEXo, int, n);
+        heapSortNativeVector(self->theArray, self->length(), ((cpp_function_code)(&sortTupleCompareP)));
+        return (self);
+      }
+    }
+  }
+}
+
+Vector* Vector::sortObjects(StorageSlot* slot, cpp_function_code predicate) {
+  // Just like `sort' but assumes each element of `self' has a `slot'
+  // whose value will be used for comparison.  Elements must be descendants of
+  // STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+  // it will cause value wrapping everytime `slot' is read.
+  { Vector* self = this;
+
+    { int length = self->length();
+
+      if (length == 0) {
+        return (self);
+      }
+      else if (predicate == NULL) {
+        predicate = chooseSortPredicate(readSlotValue(((StandardObject*)((self->theArray)[0])), slot));
+      }
+      { 
+        BIND_STELLA_SPECIAL(oSORT_TUPLE_COMPARE_PREDICATEo, cpp_function_code, predicate);
+        BIND_STELLA_SPECIAL(oSORT_OBJECTS_COMPARE_SLOTo, StorageSlot*, slot);
+        heapSortNativeVector(self->theArray, self->length(), ((cpp_function_code)(&sortObjectsCompareP)));
+        return (self);
+      }
     }
   }
 }
@@ -1285,6 +1325,37 @@ void Heap::initializeHeap() {
   }
 }
 
+Vector* Heap::copy() {
+  // Return a copy of the heap `self'.
+  { Heap* self = this;
+
+    { int length = self->fillPointer;
+
+      { Heap* self000 = newHeap(self->predicate, self->arraySize);
+
+        self000->fillPointer = length;
+        { Heap* copy = self000;
+          Object** sourcearray = self->theArray;
+          Object** copyarray = copy->theArray;
+
+          { int i = NULL_INTEGER;
+            int iter000 = 0;
+            int upperBound000 = length - 1;
+
+            for  (i, iter000, upperBound000; 
+                  iter000 <= upperBound000; 
+                  iter000 = iter000 + 1) {
+              i = iter000;
+              copyarray[i] = (sourcearray[i]);
+            }
+          }
+          return (copy);
+        }
+      }
+    }
+  }
+}
+
 void Heap::clear() {
   // Clear `self' by setting its active length to zero.
   { Heap* self = this;
@@ -1309,8 +1380,18 @@ boolean Heap::emptyP() {
   }
 }
 
+Object* Heap::last() {
+  // Return the last item in the heap `self' which will be the
+  // largest or best item if `self' is a sorted min-heap with a '<' predicate.
+  { Heap* self = this;
+
+    return ((self->theArray)[(self->length() - 1)]);
+  }
+}
+
 Object* Heap::heapRoot() {
   // Return the root of `self' (NULL if `self' is empty).
+  // The root contains the minimum element of a min-heap with '<' predicate.
   { Heap* self = this;
 
     return ((self->emptyP() ? NULL : (self->theArray)[0]));
@@ -1438,9 +1519,10 @@ void Heap::replaceHeapRoot(Object* value) {
 void Heap::insertIfBetter(Object* value) {
   // Insert `value' into `self' and restore the heap property.
   // If `self' has available room, simply insert `value'.  If the heap is full, only
-  // insert `value' if it is better than the current root (i.e., the minimum of `self'
-  // if `self's `predicate' has `<' semantics).  In that case, replace the root of
-  // `self' and restore the heap property.  This is useful to build and maintain a
+  // insert `value' if it is better than the current root (i.e., if `value' is
+  // greater than the minimum of `self' for the case of a min-heap where `self's
+  // `predicate' has `<' semantics).  In that case, replace the root of `self'
+  // and restore the heap property.  This is useful to build and maintain a
   // heap with some top-N elements (relative to `predicate') where the root (or
   // minimum) of `self' is the currently weakest element at the end of the list.
   { Heap* self = this;
@@ -3752,22 +3834,26 @@ void helpStartupCollections4() {
     defineFunctionObject("VECTOR-NEXT?", "(DEFUN (VECTOR-NEXT? BOOLEAN) ((SELF ALL-PURPOSE-ITERATOR)))", ((cpp_function_code)(&vectorNextP)), NULL);
     defineMethodObject("(DEFMETHOD (BUT-LAST (ITERATOR OF (LIKE (ANY-VALUE SELF)))) ((SELF VECTOR)) :DOCUMENTATION \"Generate all but the last element of the vector `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Vector::butLast)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (SORT (VECTOR OF (LIKE (ANY-VALUE SELF)))) ((SELF VECTOR) (PREDICATE FUNCTION-CODE)) :PUBLIC? TRUE :DOCUMENTATION \"Perform a destructive sort of `self' according to\n`predicate', and return the result.  If `predicate' has a '<' semantics, the\nresult will be in ascending order.  If `predicate' is `null', a\nsuitable '<' predicate is chosen depending on the first element of `self',\nand it is assumed that all elements of `self' have the same type (supported\nelement types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT).\")", ((cpp_method_code)(&Vector::sort)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (SORT-TUPLES (VECTOR OF (LIKE (ANY-VALUE SELF)))) ((SELF VECTOR) (N INTEGER) (PREDICATE FUNCTION-CODE)) :PUBLIC? TRUE :DOCUMENTATION \"Just like `sort' but assumes each element of `self' is a tuple (a cons)\nwhose `n'-th element (0-based) will be used for comparison.\")", ((cpp_method_code)(&Vector::sortTuples)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (SORT-OBJECTS (VECTOR OF (LIKE (ANY-VALUE SELF)))) ((SELF VECTOR) (SLOT STORAGE-SLOT) (PREDICATE FUNCTION-CODE)) :DOCUMENTATION \"Just like `sort' but assumes each element of `self' has a `slot'\nwhose value will be used for comparison.  Elements must be descendants of\nSTANDARD OBJECT.  Note that while this will work with literal-valued slots,\nit will cause value wrapping everytime `slot' is read.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Vector::sortObjects)), ((cpp_method_code)(NULL)));
     defineFunctionObject("HEAP-SORT-NATIVE-VECTOR", "(DEFUN HEAP-SORT-NATIVE-VECTOR ((VECTOR NATIVE-VECTOR) (SIZE INTEGER) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&heapSortNativeVector)), NULL);
     defineFunctionObject("HEAP-SORT-HEAPIFY", "(DEFUN HEAP-SORT-HEAPIFY ((VECTOR NATIVE-VECTOR) (SIZE INTEGER) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&heapSortHeapify)), NULL);
     defineFunctionObject("HEAP-SORT-SIFT-DOWN", "(DEFUN HEAP-SORT-SIFT-DOWN ((VECTOR NATIVE-VECTOR) (START INTEGER) (END INTEGER) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&heapSortSiftDown)), NULL);
     defineFunctionObject("QUICK-SORT-PICK-SPLIT-ELEMENT", "(DEFUN (QUICK-SORT-PICK-SPLIT-ELEMENT OBJECT) ((VECTOR NATIVE-VECTOR) (START INTEGER) (END INTEGER) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&quickSortPickSplitElement)), NULL);
     defineFunctionObject("QUICK-SORT-NATIVE-VECTOR", "(DEFUN QUICK-SORT-NATIVE-VECTOR ((VECTOR NATIVE-VECTOR) (START INTEGER) (END INTEGER) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&quickSortNativeVector)), NULL);
     defineMethodObject("(DEFMETHOD INITIALIZE-HEAP ((SELF HEAP)))", ((cpp_method_code)(&Heap::initializeHeap)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (COPY (HEAP OF (LIKE (ANY-VALUE SELF)))) ((SELF HEAP)) :DOCUMENTATION \"Return a copy of the heap `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::copy)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD CLEAR ((SELF HEAP)) :DOCUMENTATION \"Clear `self' by setting its active length to zero.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::clear)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF HEAP)) :DOCUMENTATION \"Return the length of the currently filled portion of `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::length)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF HEAP)) :DOCUMENTATION \"Return TRUE if `self' is empty.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::emptyP)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (HEAP-ROOT (LIKE (ANY-VALUE SELF))) ((SELF HEAP)) :DOCUMENTATION \"Return the root of `self' (NULL if `self' is empty).\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::heapRoot)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (LAST (LIKE (ANY-VALUE SELF))) ((SELF HEAP)) :DOCUMENTATION \"Return the last item in the heap `self' which will be the\nlargest or best item if `self' is a sorted min-heap with a '<' predicate.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::last)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (HEAP-ROOT (LIKE (ANY-VALUE SELF))) ((SELF HEAP)) :DOCUMENTATION \"Return the root of `self' (NULL if `self' is empty).\nThe root contains the minimum element of a min-heap with '<' predicate.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::heapRoot)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (FAST-HEAP-ROOT (LIKE (ANY-VALUE SELF))) ((SELF HEAP)) :DOCUMENTATION \"Return the root of `self' which is assumed to be non-empty.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NTH SELF 0)))", ((cpp_method_code)(&Heap::fastHeapRoot)), ((cpp_method_code)(NULL)));
     defineFunctionObject("HEAP-SIFT-UP", "(DEFUN HEAP-SIFT-UP ((HEAP NATIVE-VECTOR) (START INTEGER) (END INTEGER) (VALUE (LIKE (ANY-VALUE SELF))) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&heapSiftUp)), NULL);
     defineFunctionObject("HEAP-SIFT-DOWN", "(DEFUN HEAP-SIFT-DOWN ((HEAP NATIVE-VECTOR) (START INTEGER) (END INTEGER) (VALUE (LIKE (ANY-VALUE SELF))) (PREDICATE FUNCTION-CODE)))", ((cpp_function_code)(&heapSiftDown)), NULL);
     defineMethodObject("(DEFMETHOD INSERT ((SELF HEAP) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Insert `value' into `self' and restore the heap property.\nSignal an error if there is no more room in `self'.  Maintains `self' as\na Min-heap if `self's `predicate' has `<' semantics; otherwise as a Max-heap.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::insert)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD REPLACE-HEAP-ROOT ((SELF HEAP) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Replace the current root of `self' with `value' and restore\nthe heap property.  Signal an error if `self' is empty.  Maintains `self' as\na Min-heap if `self's `predicate' has `<' semantics; otherwise as a Max-heap.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::replaceHeapRoot)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD INSERT-IF-BETTER ((SELF HEAP) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Insert `value' into `self' and restore the heap property.\nIf `self' has available room, simply insert `value'.  If the heap is full, only\ninsert `value' if it is better than the current root (i.e., the minimum of `self'\nif `self's `predicate' has `<' semantics).  In that case, replace the root of\n`self' and restore the heap property.  This is useful to build and maintain a\nheap with some top-N elements (relative to `predicate') where the root (or\nminimum) of `self' is the currently weakest element at the end of the list.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::insertIfBetter)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD INSERT-IF-BETTER ((SELF HEAP) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Insert `value' into `self' and restore the heap property.\nIf `self' has available room, simply insert `value'.  If the heap is full, only\ninsert `value' if it is better than the current root (i.e., if `value' is\ngreater than the minimum of `self' for the case of a min-heap where `self's\n`predicate' has `<' semantics).  In that case, replace the root of `self'\nand restore the heap property.  This is useful to build and maintain a\nheap with some top-N elements (relative to `predicate') where the root (or\nminimum) of `self' is the currently weakest element at the end of the list.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::insertIfBetter)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD HEAPIFY ((SELF HEAP)) :DOCUMENTATION \"Restore the heap property of `self' according to its\n`predicate'.  Normally, this is not needed, since insert operations\npreserve the heap property.  However, this can be useful after bulk\ninsertion of values or if `predicate' has been changed.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::heapify)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (SORT (HEAP OF (LIKE (ANY-VALUE SELF)))) ((SELF HEAP) (PREDICATE FUNCTION-CODE)) :DOCUMENTATION \"Sort the heap `self' according to `predicate' (in\nascending order if `predicate' has `<' semantics).  If `predicate'\nis NULL simply use `self's internal predicate (the normal case).\nIf it is different from `self's internal predicate, heapify `self' first\naccording to the new predicate, store the new predicate in `self' and\nthen sort the heap.  Note that a sorted array automatically satisfies\nthe heap property.  This is slightly different than a regular heap\nsort due to the way HEAP's are maintained; however, the complexity is\nthe same.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Heap::sort)), ((cpp_method_code)(NULL)));
     defineFunctionObject("INITIALIZE-STELLA-HASH-TABLE", "(DEFUN INITIALIZE-STELLA-HASH-TABLE ((SELF STELLA-HASH-TABLE)))", ((cpp_function_code)(&initializeStellaHashTable)), NULL);
@@ -3804,17 +3890,13 @@ void helpStartupCollections4() {
     defineMethodObject("(DEFMETHOD (CONSIFY CONS) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Collect all entries of `self' into a cons list of\n`(<key> <value>)' pairs and return the result.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::consify)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (OBJECT-EQUAL? BOOLEAN) ((X KEY-VALUE-MAP) (Y OBJECT)) :DOCUMENTATION \"Return TRUE if `x' and `y' represent the same set of key/value pairs.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::objectEqualP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return an `equal?' hash code for `self'.  Note that this\nis O(N) in the number of entries of `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&KeyValueMap::equalHashCode)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("HASH-SET", "(DEFUN (HASH-SET HASH-SET) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return an `eql?' HASH-SET containing `values'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&hashSet)), NULL);
-    defineFunctionObject("COERCE-TO-HASH-SET", "(DEFUN (COERCE-TO-HASH-SET HASH-SET) ((SELF OBJECT) (EQUALTEST? BOOLEAN)) :DOCUMENTATION \"Coerce the collection `self' into a HASH-SET.  Use an\nequal test if `equalTest?' is TRUE (`equalTest?' will be ignored if `self'\nalready is a HASH-SET).\" :PUBLIC? TRUE)", ((cpp_function_code)(&coerceToHashSet)), NULL);
-    defineMethodObject("(DEFMETHOD (MEMBER? BOOLEAN) ((SELF HASH-SET) (OBJECT OBJECT)) :DOCUMENTATION \"Return TRUE iff `object' is a member of the set `self'.\nUses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::memberP)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD INSERT ((SELF HASH-SET) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Add `value' to the set `self' unless it is already a member.\nUses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::insert)), ((cpp_method_code)(NULL)));
   }
 }
 
 void startupCollections() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupCollections1();
     }
@@ -3830,6 +3912,10 @@ void startupCollections() {
     if (currentStartupTimePhaseP(7)) {
       helpStartupCollections3();
       helpStartupCollections4();
+      defineFunctionObject("HASH-SET", "(DEFUN (HASH-SET HASH-SET) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return an `eql?' HASH-SET containing `values'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&hashSet)), NULL);
+      defineFunctionObject("COERCE-TO-HASH-SET", "(DEFUN (COERCE-TO-HASH-SET HASH-SET) ((SELF OBJECT) (EQUALTEST? BOOLEAN)) :DOCUMENTATION \"Coerce the collection `self' into a HASH-SET.  Use an\nequal test if `equalTest?' is TRUE (`equalTest?' will be ignored if `self'\nalready is a HASH-SET).\" :PUBLIC? TRUE)", ((cpp_function_code)(&coerceToHashSet)), NULL);
+      defineMethodObject("(DEFMETHOD (MEMBER? BOOLEAN) ((SELF HASH-SET) (OBJECT OBJECT)) :DOCUMENTATION \"Return TRUE iff `object' is a member of the set `self'.\nUses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::memberP)), ((cpp_method_code)(NULL)));
+      defineMethodObject("(DEFMETHOD INSERT ((SELF HASH-SET) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Add `value' to the set `self' unless it is already a member.\nUses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::insert)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (REMOVE (LIKE SELF)) ((SELF HASH-SET) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Destructively remove `value' from the set `self' if it is a member and\nreturn `self'.  Uses an `eql?' test by default or `equal?' if `equal-test?' of\n`self' is TRUE.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::remove)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (REMOVE-IF (LIKE SELF)) ((SELF HASH-SET) (TEST? FUNCTION-CODE)) :DOCUMENTATION \"Destructively remove all elements of the set `self' for which\n'test?' evaluates to TRUE.  `test?' takes a single argument of type OBJECT and\nreturns TRUE or FALSE.  Returns `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::removeIf)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (POP (LIKE (ANY-VALUE SELF))) ((SELF HASH-SET)) :DOCUMENTATION \"Remove and return an arbitrary element of the set `self'.\nReturn NULL if the set is empty.  Performance note: for large sets implemented\nvia hash tables it takes O(N) to empty out the set with repeated calls to `pop',\nsince the emptier the table gets, the longer it takes to find an element.\nTherefore, it is usually better to use iteration with embedded removals for\nsuch cases.\" :PUBLIC? TRUE)", ((cpp_method_code)(&HashSet::pop)), ((cpp_method_code)(NULL)));

@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2008      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2012      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: rule-induction.ste,v 1.12 2008/09/08 23:37:49 hans Exp
+;;; Version: rule-induction.ste,v 1.14 2012/05/07 23:57:56 hans Exp
 
 ;;; Rule induction code.  
 
@@ -1462,8 +1462,8 @@ TRUE if we want to have final rules as general as possible."
     
     (if *OPTIMIZE-INDUCED-QUERIES*
 	(setq query (make-query nil cons-query nil (bquote (:timeout 300))))
-      (setq query (make-query nil cons-query nil 
-			      (bquote (:timeout 300 :dont-optimize? true)))))
+	(setq query (make-query nil cons-query nil 
+				(bquote (:timeout 300 :dont-optimize? true)))))
     (return (true-truth-value? (call-ask query)))))
     
 (defun (link-variables-in-induced-rule (LIST of (CONS of CONS)))

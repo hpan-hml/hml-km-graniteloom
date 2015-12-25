@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -123,7 +123,7 @@ void idlOutputStatement(Object* statement) {
 void idlIndent() {
   { int i = NULL_INTEGER;
     int iter000 = 1;
-    int upperBound000 = oIDL_INDENT_CHARSo.get();
+    int upperBound000 = oIDL_INDENT_CHARSo;
     boolean unboundedP000 = upperBound000 == NULL_INTEGER;
 
     for  (i, iter000, upperBound000, unboundedP000; 
@@ -132,41 +132,41 @@ void idlIndent() {
           iter000 = iter000 + 1) {
       i = iter000;
       i = i;
-      *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+      *(oCURRENT_STREAMo->nativeStream) << " ";
     }
   }
 }
 
 void idlBumpIndent() {
-  oIDL_INDENT_CHARSo.set(oIDL_INDENT_CHARSo.get() + 2);
+  oIDL_INDENT_CHARSo = oIDL_INDENT_CHARSo + 2;
 }
 
 void idlUnbumpIndent() {
-  oIDL_INDENT_CHARSo.set(oIDL_INDENT_CHARSo.get() - 2);
+  oIDL_INDENT_CHARSo = oIDL_INDENT_CHARSo - 2;
 }
 
 void idlOutputTypedef(Cons* typedeF) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "typedef " << ((StringWrapper*)(typedeF->rest->value))->wrapperValue << " " << ((StringWrapper*)(typedeF->value))->wrapperValue << ";" << std::endl << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "typedef " << ((StringWrapper*)(typedeF->rest->value))->wrapperValue << " " << ((StringWrapper*)(typedeF->value))->wrapperValue << ";" << std::endl << std::endl;
 }
 
 void idlOutputEnumerands(Cons* enumerands) {
   if (((boolean)(((Cons*)(enumerands->value))))) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(((Cons*)(enumerands->value))->rest->value))->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(((Cons*)(enumerands->value))->rest->value))->wrapperValue;
   }
   { Cons* enumerand = NULL;
     Cons* iter000 = enumerands->rest;
 
     for (enumerand, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       enumerand = ((Cons*)(iter000->value));
-      *(oCURRENT_STREAMo.get()->nativeStream) << ", " << ((StringWrapper*)(enumerand->rest->value))->wrapperValue;
+      *(oCURRENT_STREAMo->nativeStream) << ", " << ((StringWrapper*)(enumerand->rest->value))->wrapperValue;
     }
   }
 }
 
 void idlOutputEnum(Cons* enuM) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "enum {";
+  *(oCURRENT_STREAMo->nativeStream) << "enum {";
   idlOutputEnumerands(((Cons*)(((Cons*)(enuM->nth(4)))->rest->value)));
-  *(oCURRENT_STREAMo.get()->nativeStream) << "};" << std::endl << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "};" << std::endl << std::endl;
 }
 
 void idlOutputTypeExpression(Cons* typeexpression) {
@@ -175,7 +175,7 @@ void idlOutputTypeExpression(Cons* typeexpression) {
 
     for (typeexpr, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       typeexpr = ((StringWrapper*)(iter000->value));
-      *(oCURRENT_STREAMo.get()->nativeStream) << typeexpr->wrapperValue << " ";
+      *(oCURRENT_STREAMo->nativeStream) << typeexpr->wrapperValue << " ";
     }
   }
 }
@@ -187,7 +187,7 @@ void Object::idlOutputLiteral() {
 }
 
 void stringIdlOutputLiteral(char* string) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "\"" << replaceSubstrings(replaceSubstrings(replaceSubstrings(replaceSubstrings(string, "\\\\", "\\"), "\\\"", makeString(1, '"')), "\\n", makeString(1, '\n')), "\\r", makeString(1, '\r')) << "\"";
+  *(oCURRENT_STREAMo->nativeStream) << "\"" << replaceSubstrings(replaceSubstrings(replaceSubstrings(replaceSubstrings(string, "\\\\", "\\"), "\\\"", makeString(1, '"')), "\\n", makeString(1, '\n')), "\\r", makeString(1, '\r')) << "\"";
 }
 
 void StringWrapper::idlOutputLiteral() {
@@ -207,28 +207,28 @@ void MutableStringWrapper::idlOutputLiteral() {
 void QuotedExpression::idlOutputLiteral() {
   { QuotedExpression* tree = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "\"" << tree << "\"";
+    *(oCURRENT_STREAMo->nativeStream) << "\"" << tree << "\"";
   }
 }
 
 void Symbol::idlOutputLiteral() {
   { Symbol* symbol = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << idlTranslateSymbolName(symbol)->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << idlTranslateSymbolName(symbol)->wrapperValue;
   }
 }
 
 void Surrogate::idlOutputLiteral() {
   { Surrogate* surrogate = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << idlTranslateSurrogateName(surrogate)->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << idlTranslateSurrogateName(surrogate)->wrapperValue;
   }
 }
 
 void Keyword::idlOutputLiteral() {
   { Keyword* keyword = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << idlTranslateKeywordName(keyword)->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << idlTranslateKeywordName(keyword)->wrapperValue;
   }
 }
 
@@ -237,40 +237,40 @@ void idlOutputAtomicExpression(Object* atom) {
 }
 
 void idlOutputComment(StringWrapper* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "// " << tree->wrapperValue << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "// " << tree->wrapperValue << std::endl;
 }
 
 void idlOutputIdentifier(StringWrapper* identifier) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << identifier->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << identifier->wrapperValue;
 }
 
 void idlOutputDerivedClasses(Cons* classList) {
   if (((boolean)(((StringWrapper*)(classList->value))))) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(classList->value))->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(classList->value))->wrapperValue;
   }
   { StringWrapper* clasS = NULL;
     Cons* iter000 = classList->rest;
 
     for (clasS, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       clasS = ((StringWrapper*)(iter000->value));
-      *(oCURRENT_STREAMo.get()->nativeStream) << ", " << clasS->wrapperValue;
+      *(oCURRENT_STREAMo->nativeStream) << ", " << clasS->wrapperValue;
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+  *(oCURRENT_STREAMo->nativeStream) << " ";
 }
 
 void idlOutputTemplateParameters(Cons* parameters) {
   if (!(parameters == NIL)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "template <class " << ((StringWrapper*)(parameters->value))->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << "template <class " << ((StringWrapper*)(parameters->value))->wrapperValue;
     { StringWrapper* parameter = NULL;
       Cons* iter000 = parameters->rest;
 
       for (parameter, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         parameter = ((StringWrapper*)(iter000->value));
-        *(oCURRENT_STREAMo.get()->nativeStream) << ", class " << parameter->wrapperValue;
+        *(oCURRENT_STREAMo->nativeStream) << ", class " << parameter->wrapperValue;
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << ">" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << ">" << std::endl;
   }
 }
 
@@ -282,12 +282,12 @@ void idlOutputInterface(Cons* classdef) {
   if (idlOutputTemplateClassesP()) {
     idlOutputTemplateParameters(((Cons*)(classdef->rest->value)));
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << "interface " << ((StringWrapper*)(classdef->value))->wrapperValue << " ";
+  *(oCURRENT_STREAMo->nativeStream) << "interface " << ((StringWrapper*)(classdef->value))->wrapperValue << " ";
   if (!(((Cons*)(classdef->rest->rest->value)) == NIL)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << ": ";
+    *(oCURRENT_STREAMo->nativeStream) << ": ";
     idlOutputDerivedClasses(((Cons*)(classdef->rest->rest->value)));
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << "{" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "{" << std::endl;
   { Object* statement = NULL;
     Cons* iter000 = classdef->nthRest(4);
 
@@ -296,19 +296,19 @@ void idlOutputInterface(Cons* classdef) {
       idlOutputStatement(statement);
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << "};" << std::endl << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "};" << std::endl << std::endl;
 }
 
 void idlOutputStruct(Cons* classdef) {
   if (idlOutputTemplateClassesP()) {
     idlOutputTemplateParameters(((Cons*)(classdef->rest->value)));
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << "struct " << ((StringWrapper*)(classdef->value))->wrapperValue << " ";
+  *(oCURRENT_STREAMo->nativeStream) << "struct " << ((StringWrapper*)(classdef->value))->wrapperValue << " ";
   if (!(((Cons*)(classdef->rest->rest->value)) == NIL)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << ": ";
+    *(oCURRENT_STREAMo->nativeStream) << ": ";
     idlOutputDerivedClasses(((Cons*)(classdef->rest->rest->value)));
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << "{" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "{" << std::endl;
   { Object* statement = NULL;
     Cons* iter000 = classdef->nthRest(4);
 
@@ -317,17 +317,17 @@ void idlOutputStruct(Cons* classdef) {
       idlOutputStatement(statement);
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << "};" << std::endl << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "};" << std::endl << std::endl;
 }
 
 void idlOutputOneFormalParameter(Cons* parameter) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(parameter->value))->wrapperValue << " " << ((StringWrapper*)(parameter->rest->value))->wrapperValue << " " << ((StringWrapper*)(parameter->rest->rest->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(parameter->value))->wrapperValue << " " << ((StringWrapper*)(parameter->rest->value))->wrapperValue << " " << ((StringWrapper*)(parameter->rest->rest->value))->wrapperValue;
 }
 
 void idlOutputFormalParameters(Cons* parameters) {
   { int nParameters = parameters->length();
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+    *(oCURRENT_STREAMo->nativeStream) << "(";
     { Cons* parameter = NULL;
       Cons* iter000 = parameters;
       int n = NULL_INTEGER;
@@ -346,9 +346,9 @@ void idlOutputFormalParameters(Cons* parameters) {
         if (n == nParameters) {
           if (parameter->value == SYM_IDL_OUTPUT_STELLA_IDL_VAR_ARGS) {
             {
-              *(oCURRENT_STREAMo.get()->nativeStream) << "int ";
-              *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(parameter->rest->value))->wrapperValue;
-              *(oCURRENT_STREAMo.get()->nativeStream) << ", ...";
+              *(oCURRENT_STREAMo->nativeStream) << "int ";
+              *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(parameter->rest->value))->wrapperValue;
+              *(oCURRENT_STREAMo->nativeStream) << ", ...";
             }
           }
           else {
@@ -358,18 +358,18 @@ void idlOutputFormalParameters(Cons* parameters) {
         else {
           {
             idlOutputOneFormalParameter(parameter);
-            *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+            *(oCURRENT_STREAMo->nativeStream) << ", ";
           }
         }
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+    *(oCURRENT_STREAMo->nativeStream) << ")";
   }
 }
 
 void idlOutputFunctionSignature(Cons* function) {
   idlOutputTypeExpression(((Cons*)(function->value)));
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(function->rest->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(function->rest->value))->wrapperValue;
   idlOutputFormalParameters(((Cons*)(function->rest->rest->value)));
 }
 
@@ -382,8 +382,8 @@ void idlOutputDeclarations(Cons* declarations) {
       declaration = ((Cons*)(iter000->value));
       idlIndent();
       idlOutputTypeExpression(((Cons*)(declaration->value)));
-      *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(declaration->rest->value))->wrapperValue;
-      *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(declaration->rest->value))->wrapperValue;
+      *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
     }
   }
   idlUnbumpIndent();
@@ -393,10 +393,10 @@ void idlOutputSignature(Cons* signature, boolean outputmethodclassP) {
   idlOutputTypeExpression(((Cons*)(signature->rest->value)));
   if (outputmethodclassP &&
       ((boolean)(signature->value))) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(signature->value))->wrapperValue;
-    *(oCURRENT_STREAMo.get()->nativeStream) << "::";
+    *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(signature->value))->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << "::";
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(signature->rest->rest->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(signature->rest->rest->value))->wrapperValue;
   idlOutputFormalParameters(((Cons*)(signature->fourth())));
 }
 
@@ -410,7 +410,7 @@ void idlOutputSignatures(Cons* signatures) {
       signature = iter000->value;
       idlIndent();
       idlOutputSignature(((Cons*)(signature)), false);
-      *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
     }
   }
   idlUnbumpIndent();
@@ -419,7 +419,7 @@ void idlOutputSignatures(Cons* signatures) {
 void startupIdlOutput() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SGT_IDL_OUTPUT_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", NULL, 1)));
       SYM_IDL_OUTPUT_STELLA_IDL_COMMENT = ((Symbol*)(internRigidSymbolWrtModule("IDL_COMMENT", NULL, 0)));

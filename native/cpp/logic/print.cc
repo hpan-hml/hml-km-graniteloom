@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -122,6 +122,10 @@ void printTopLevelObject(Object* self, std::ostream* nativestream) {
   }
 }
 
+// If set to TRUE, modify printing so that it
+// doesn't break and is more informative during a debugging session.
+boolean oDEBUG_PRINT_MODEpo = false;
+
 // Controls the kind of detail that gets printed about
 // individual objects.  Values are :ORIGINAL, :REALISTIC, :FLAT, :DEBUG-LOW, and
 //  :DEBUG-HIGH.
@@ -133,7 +137,7 @@ DEFINE_STELLA_SPECIAL(oPRINTFUNCTIONSASRELATIONSpo, boolean , false);
 
 void printLogicObject(LogicObject* self, OutputStream* stream, boolean toplevelP) {
   { char* prefix = ((toplevelP &&
-        (!oPRINTREADABLYpo.get())) ? (char*)"|i|" : (char*)"");
+        (!oPRINTREADABLYpo)) ? (char*)"|i|" : (char*)"");
 
     if (((boolean)(self->surrogateValueInverse))) {
       if ((!(self->surrogateValueInverse->surrogateValue == self)) &&
@@ -157,8 +161,8 @@ char* VALUE_OF_SEPARATOR = "//";
 DEFINE_STELLA_SPECIAL(oSKOLEMNAMEMAPPINGTABLEo, KeyValueMap* , NULL);
 
 char* getSkolemPrintName(Skolem* self) {
-  if (((boolean)(oSKOLEMNAMEMAPPINGTABLEo.get()))) {
-    { Skolem* substituteskolem = ((Skolem*)(oSKOLEMNAMEMAPPINGTABLEo.get()->lookup(self)));
+  if (((boolean)(oSKOLEMNAMEMAPPINGTABLEo))) {
+    { Skolem* substituteskolem = ((Skolem*)(oSKOLEMNAMEMAPPINGTABLEo->lookup(self)));
 
       return ((((boolean)(substituteskolem)) ? substituteskolem->skolemName->symbolName : self->skolemName->symbolName));
     }
@@ -172,8 +176,8 @@ void printValueOfChain(Skolem* self, OutputStream* stream, Object* chainend) {
   if (!((boolean)(chainend))) {
     chainend = self;
   }
-  if ((oPRINTMODEo.get() == KWD_PRINT_REALISTIC) ||
-      (oPRINTMODEo.get() == KWD_PRINT_ORIGINAL)) {
+  if ((oPRINTMODEo == KWD_PRINT_REALISTIC) ||
+      (oPRINTMODEo == KWD_PRINT_ORIGINAL)) {
     if (subtypeOfP(safePrimaryType(self), SGT_PRINT_LOGIC_PATTERN_VARIABLE)) {
       { Skolem* self000 = self;
         PatternVariable* self = ((PatternVariable*)(self000));
@@ -188,8 +192,8 @@ void printValueOfChain(Skolem* self, OutputStream* stream, Object* chainend) {
       printVariableValue(chainend, stream);
     }
   }
-  else if ((oPRINTMODEo.get() == KWD_PRINT_FLAT) ||
-      (oPRINTMODEo.get() == KWD_PRINT_DEBUG_LOW)) {
+  else if ((oPRINTMODEo == KWD_PRINT_FLAT) ||
+      (oPRINTMODEo == KWD_PRINT_DEBUG_LOW)) {
     printSkolemName(self, stream);
     if (self == chainend) {
       return;
@@ -197,7 +201,7 @@ void printValueOfChain(Skolem* self, OutputStream* stream, Object* chainend) {
     *(stream->nativeStream) << VALUE_OF_SEPARATOR;
     printVariableValue(chainend, stream);
   }
-  else if (oPRINTMODEo.get() == KWD_PRINT_DEBUG_HIGH) {
+  else if (oPRINTMODEo == KWD_PRINT_DEBUG_HIGH) {
     printSkolemName(self, stream);
     if (self == chainend) {
       return;
@@ -256,7 +260,7 @@ void printValueOfChain(Skolem* self, OutputStream* stream, Object* chainend) {
   else {
     { OutputStringStream* stream001 = newOutputStringStream();
 
-      *(stream001->nativeStream) << "`" << oPRINTMODEo.get() << "'" << " is not a valid case option";
+      *(stream001->nativeStream) << "`" << oPRINTMODEo << "'" << " is not a valid case option";
       throw *newStellaException(stream001->theStringReader());
     }
   }
@@ -297,8 +301,8 @@ void printSkolem(Skolem* self, OutputStream* stream, boolean toplevelP) {
   toplevelP = toplevelP;
   { char* prefix = "|SK|";
 
-    if ((oPRINTMODEo.get() == KWD_PRINT_ORIGINAL) ||
-        (oPRINTMODEo.get() == KWD_PRINT_REALISTIC)) {
+    if ((oPRINTMODEo == KWD_PRINT_ORIGINAL) ||
+        (oPRINTMODEo == KWD_PRINT_REALISTIC)) {
       prefix = "";
       if (((boolean)(nativeValueOf(self)))) {
         printVariableValue(nativeValueOf(self), stream);
@@ -322,12 +326,12 @@ void printSkolem(Skolem* self, OutputStream* stream, boolean toplevelP) {
 }
 
 void printVariable(PatternVariable* self, OutputStream* stream) {
-  if (((boolean)(oCURRENTJUSTIFICATIONo.get())) &&
+  if (((boolean)(oCURRENTJUSTIFICATIONo)) &&
       ((boolean)(justificationArgumentBoundTo(self, NULL)))) {
     prettyPrintLogicalForm(justificationArgumentBoundTo(self, NULL), stream);
     return;
   }
-  { Object* value = (((boolean)(oPRINTINFRAMEo.get())) ? boundToInFrame(self, oPRINTINFRAMEo.get()) : safeBoundTo(self));
+  { Object* value = (((boolean)(oPRINTINFRAMEo)) ? boundToInFrame(self, oPRINTINFRAMEo) : safeBoundTo(self));
 
     if (((boolean)(value))) {
       printVariableName(self, stream);
@@ -343,7 +347,7 @@ void printVariable(PatternVariable* self, OutputStream* stream) {
 }
 
 void printQuantifiedVariable(PatternVariable* self, OutputStream* stream) {
-  if (oPRINTREADABLYpo.get()) {
+  if (oPRINTREADABLYpo) {
     printVariableName(self, stream);
   }
   else {
@@ -359,13 +363,13 @@ void printProposition(Proposition* self, OutputStream* stream, boolean toplevelP
       return;
     }
     if (toplevelP &&
-        (!oPRINTREADABLYpo.get())) {
+        (!oPRINTREADABLYpo)) {
       if (defaultTrueP(self) ||
           defaultFalseP(self)) {
         prefix = (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PRINT_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue ? (char*)"|pd|" : (char*)"|p|");
       }
       else if (((!self->deletedP()) &&
-          ((oREVERSEPOLARITYpo.get() ? falseP(self) : (trueP(self) ||
+          ((oREVERSEPOLARITYpo ? falseP(self) : (trueP(self) ||
           functionWithDefinedValueP(self))))) ||
           falseP(self)) {
         prefix = (((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_PRINT_LOGIC_DESCRIPTIVEp, FALSE_WRAPPER)))->wrapperValue ? (char*)"|Pd|" : (char*)"|P|");
@@ -391,10 +395,6 @@ void printProposition(Proposition* self, OutputStream* stream, boolean toplevelP
   printLogicalForm(self, stream);
 }
 
-// If set to TRUE, simplify printing so that it
-// doesn't break during a debugging session.
-boolean oDEBUG_MODEpo = false;
-
 void printDescription(Description* self, OutputStream* stream, boolean toplevelP) {
   if (self->deletedP()) {
     *(stream->nativeStream) << "|dElEtEd-description|";
@@ -403,13 +403,13 @@ void printDescription(Description* self, OutputStream* stream, boolean toplevelP
     }
     return;
   }
-  if (oLOADINGREGENERABLEOBJECTSpo.get() ||
+  if (oLOADINGREGENERABLEOBJECTSpo ||
       (coerceWrappedBooleanToBoolean(self->badP_reader()) ||
-       oDEBUG_MODEpo)) {
+       oDEBUG_PRINT_MODEpo)) {
     *(stream->nativeStream) << "|d|";
   }
   else if (toplevelP &&
-      (!oPRINTREADABLYpo.get())) {
+      (!oPRINTREADABLYpo)) {
     if (classP(self)) {
       *(stream->nativeStream) << "|c|";
     }
@@ -429,7 +429,7 @@ void printDescription(Description* self, OutputStream* stream, boolean toplevelP
 void startupPrint() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SGT_PRINT_LOGIC_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("DESCRIPTION", NULL, 1)));
       SGT_PRINT_LOGIC_PATTERN_VARIABLE = ((Surrogate*)(internRigidSymbolWrtModule("PATTERN-VARIABLE", NULL, 1)));
@@ -450,7 +450,7 @@ void startupPrint() {
       SYM_PRINT_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
     }
     if (currentStartupTimePhaseP(4)) {
-      oPRINTMODEo.set(KWD_PRINT_FLAT);
+      oPRINTMODEo = KWD_PRINT_FLAT;
     }
     if (currentStartupTimePhaseP(6)) {
       finalizeClasses();
@@ -481,12 +481,12 @@ void startupPrint() {
     }
     if (currentStartupTimePhaseP(9)) {
       inModule(((StringWrapper*)(copyConsTree(wrapString("LOGIC")))));
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEBUG-PRINT-MODE?* BOOLEAN FALSE :DOCUMENTATION \"If set to TRUE, modify printing so that it\ndoesn't break and is more informative during a debugging session.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTMODE* KEYWORD :FLAT :DOCUMENTATION \"Controls the kind of detail that gets printed about\nindividual objects.  Values are :ORIGINAL, :REALISTIC, :FLAT, :DEBUG-LOW, and\n :DEBUG-HIGH.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTFUNCTIONSASRELATIONS?* BOOLEAN FALSE :DOCUMENTATION \"Controls whether functions are printed as relations (F i v) or\nas functions (= (F i) v).\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT VARIABLE-BINDING-SEPARATOR STRING \"/\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT VALUE-OF-SEPARATOR STRING \"//\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SKOLEMNAMEMAPPINGTABLE* (ENTITY-MAPPING OF SKOLEM SKOLEM) NULL :DOCUMENTATION \"If set, maps some skolems to names other than\ntheir own.\")");
-      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DEBUG-MODE?* BOOLEAN FALSE :DOCUMENTATION \"If set to TRUE, simplify printing so that it\ndoesn't break during a debugging session.\")");
     }
   }
 }

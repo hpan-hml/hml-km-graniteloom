@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -68,7 +68,7 @@ Object* runFetchQuery(char* host, int port, char* queryId, char* taskId, char* s
       writeHtmlEscapingUrlSpecialCharacters(url->nativeStream, database);
       *(url->nativeStream) << "&";
       *(url->nativeStream) << parameters;
-      reply = ((InputStream*  (*) (char*, int, char*, unknown))autoload("HTTP/HTTP-GET-DATA", "webtools", SGT_FETCH_INTERFACE_RDBMS_RUN_FETCH_QUERY, true))(host, port, url->theStringReader(), NULL);
+      reply = ((InputStream*  (*) (char*, int, char*, Object*))autoload("HTTP/HTTP-GET-DATA", "webtools", SGT_FETCH_INTERFACE_RDBMS_RUN_FETCH_QUERY, true))(host, port, url->theStringReader(), ((Object*)(NULL)));
       { Object* exp = NULL;
         XmlExpressionIterator* iter000 = xmlExpressions(reply, NULL);
 
@@ -349,7 +349,7 @@ Iterator* fetchEdbQuery(Proposition* proposition, LogicObject* database, Object*
         initializeMemoizationTable(SGT_FETCH_INTERFACE_RDBMS_F_FETCH_EDB_QUERY_MEMO_TABLE_000, "(:MAX-VALUES 10000 :TIMESTAMPS (:META-KB-UPDATE :EXTERNAL-DB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_FETCH_INTERFACE_RDBMS_F_FETCH_EDB_QUERY_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), getQueryPatternMemoizationKey(proposition), oCONTEXTo.get(), (oREVERSEPOLARITYpo.get() ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, 6);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), getQueryPatternMemoizationKey(proposition), oCONTEXTo, (oREVERSEPOLARITYpo ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, 6);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -454,12 +454,12 @@ void evaluateFetchQuery(KeyValueList* keys, std::ostream* out) {
   try {
     { Module* temp000 = getStellaModule("EELD-EDB", false);
 
-      { Module* mdl000 = (((boolean)(temp000)) ? temp000 : oMODULEo.get());
+      { Module* mdl000 = (((boolean)(temp000)) ? temp000 : oMODULEo);
         Context* cxt000 = mdl000;
 
         if (!((boolean)(mdl000))) {
-          mdl000 = oMODULEo.get();
-          cxt000 = oCONTEXTo.get();
+          mdl000 = oMODULEo;
+          cxt000 = oCONTEXTo;
         }
         { 
           BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -625,7 +625,7 @@ Cons* generateTableAssertions(char* tableName, Cons* xmlAnswer, Module* module, 
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
       { Object* answer = NULL;
         Cons* iter000 = xmlAnswer->rest->rest;
 
@@ -693,7 +693,7 @@ Cons* fetchQueryAssertions(char* host, int port, LogicObject* fetchQuery, char* 
 void startupFetchInterface() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/RDBMS", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SGT_FETCH_INTERFACE_RDBMS_RUN_FETCH_QUERY = ((Surrogate*)(internRigidSymbolWrtModule("RUN-FETCH-QUERY", NULL, 1)));
       SGT_FETCH_INTERFACE_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", getStellaModule("/STELLA", true), 1)));

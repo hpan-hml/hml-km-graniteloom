@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -204,13 +204,13 @@ DEFINE_STELLA_SPECIAL(oINFERENCELEVELo, NormalInferenceLevel* , NULL);
 NormalInferenceLevel* currentInferenceLevel() {
   // Return the current inference level that is active in the
   // current query, the current module, or, otherwise, globally.
-  { InferenceLevel* level = (((boolean)(oQUERYITERATORo.get())) ? oQUERYITERATORo.get()->inferenceLevel : ((InferenceLevel*)(dynamicSlotValue(oMODULEo.get()->dynamicSlots, SYM_QUERY_LOGIC_INFERENCE_LEVEL, NULL))));
+  { InferenceLevel* level = (((boolean)(oQUERYITERATORo)) ? oQUERYITERATORo->inferenceLevel : ((InferenceLevel*)(dynamicSlotValue(oMODULEo->dynamicSlots, SYM_QUERY_LOGIC_INFERENCE_LEVEL, NULL))));
 
     if (((boolean)(level))) {
       return (((NormalInferenceLevel*)(level)));
     }
     else {
-      return (oINFERENCELEVELo.get());
+      return (oINFERENCELEVELo);
     }
   }
 }
@@ -237,7 +237,7 @@ InferenceLevel* getInferenceLevel(Keyword* levelkeyword) {
   else {
     *(STANDARD_WARNING->nativeStream) << "Warning: " << "Illegal inference level: " << "`" << levelkeyword << "'" << "." << std::endl << "   Legal values are :ASSERTION :SHALLOW :SUBSUMPTION :BACKTRACKING :NORMAL :REFUTATION." << std::endl << std::endl;
   }
-  return (oINFERENCELEVELo.get());
+  return (oINFERENCELEVELo);
 }
 
 Keyword* setInferenceLevel(Object* level, Object* module) {
@@ -262,11 +262,11 @@ Keyword* callSetInferenceLevel(Keyword* levelkeyword, Module* module) {
     if (((boolean)(module))) {
       setDynamicSlotValue(module->dynamicSlots, SYM_QUERY_LOGIC_INFERENCE_LEVEL, level, NULL);
     }
-    else if (((boolean)(oQUERYITERATORo.get()))) {
-      oQUERYITERATORo.get()->inferenceLevel = level;
+    else if (((boolean)(oQUERYITERATORo))) {
+      oQUERYITERATORo->inferenceLevel = level;
     }
     else {
-      oINFERENCELEVELo.set(((NormalInferenceLevel*)(level)));
+      oINFERENCELEVELo = ((NormalInferenceLevel*)(level));
     }
     return (level->keyword);
   }
@@ -276,7 +276,7 @@ Keyword* callSetInferenceLevel(Keyword* levelkeyword, Module* module) {
 DEFINE_STELLA_SPECIAL(oDONTUSEDEFAULTKNOWLEDGEpo, boolean , false);
 
 boolean usingDefaultKnowledgeP() {
-  return (!oDONTUSEDEFAULTKNOWLEDGEpo.get());
+  return (!oDONTUSEDEFAULTKNOWLEDGEpo);
 }
 
 // Value for the maximum depth allowable during
@@ -1470,7 +1470,7 @@ BooleanVector* argumentsVectorToBooleanVector(Vector* argumentsvector) {
           { Object* arg000 = arg;
             PatternVariable* arg = ((PatternVariable*)(arg000));
 
-            boundP = ((boolean)((oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(arg->boundToOffset)]));
+            boundP = ((boolean)((oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(arg->boundToOffset)]));
           }
         }
         else {
@@ -1585,20 +1585,20 @@ void activatePatternRecord(PatternRecord* patternrecord, int variablecount) {
       }
     }
     patternrecord->topUnbindingStackOffset = -1;
-    oQUERYITERATORo.get()->currentPatternRecord = patternrecord;
+    oQUERYITERATORo->currentPatternRecord = patternrecord;
   }
 }
 
 void resetCurrentPatternRecord(ControlFrame* frame, Keyword* localorparent) {
   if (localorparent == KWD_QUERY_LOCAL) {
-    oQUERYITERATORo.get()->currentPatternRecord = frame->patternRecord;
+    oQUERYITERATORo->currentPatternRecord = frame->patternRecord;
   }
   else if (localorparent == KWD_QUERY_PARENT) {
     if (((boolean)(frame->inheritedPatternRecord))) {
-      oQUERYITERATORo.get()->currentPatternRecord = frame->inheritedPatternRecord;
+      oQUERYITERATORo->currentPatternRecord = frame->inheritedPatternRecord;
     }
     else {
-      oQUERYITERATORo.get()->currentPatternRecord = oQUERYITERATORo.get()->baseControlFrame->patternRecord;
+      oQUERYITERATORo->currentPatternRecord = oQUERYITERATORo->baseControlFrame->patternRecord;
     }
   }
   else {
@@ -1611,8 +1611,8 @@ void resetCurrentPatternRecord(ControlFrame* frame, Keyword* localorparent) {
 }
 
 void printEnvironmentStacks() {
-  { ControlFrame* frame = oQUERYITERATORo.get()->currentControlFrame;
-    PatternRecord* currentpatternrecord = oQUERYITERATORo.get()->currentPatternRecord;
+  { ControlFrame* frame = oQUERYITERATORo->currentControlFrame;
+    PatternRecord* currentpatternrecord = oQUERYITERATORo->currentPatternRecord;
 
     std::cout << "-------------------------" << std::endl;
     std::cout << "current-control-frame " << frame << std::endl;
@@ -1643,9 +1643,9 @@ void printEnvironmentStacks() {
 void setPatternVariableBinding(PatternVariable* variable, Object* value) {
   if (((boolean)(oTRACED_KEYWORDSo)) &&
       oTRACED_KEYWORDSo->membP(KWD_QUERY_QUERY_STACKS)) {
-    std::cout << "set-pattern-variable-binding: " << variable << " " << value << "  F" << debugFrameId(oQUERYITERATORo.get()->currentPatternRecord->controlFrame) << std::endl;
+    std::cout << "set-pattern-variable-binding: " << variable << " " << value << "  F" << debugFrameId(oQUERYITERATORo->currentPatternRecord->controlFrame) << std::endl;
   }
-  { PatternRecord* patternrecord = oQUERYITERATORo.get()->currentPatternRecord;
+  { PatternRecord* patternrecord = oQUERYITERATORo->currentPatternRecord;
     int vboffset = variable->boundToOffset;
     int ubstackoffset = patternrecord->topUnbindingStackOffset + 1;
 
@@ -1656,7 +1656,7 @@ void setPatternVariableBinding(PatternVariable* variable, Object* value) {
 }
 
 void changePatternVariableBinding(PatternVariable* variable, Object* newvalue) {
-  { PatternRecord* patternrecord = oQUERYITERATORo.get()->currentPatternRecord;
+  { PatternRecord* patternrecord = oQUERYITERATORo->currentPatternRecord;
     int vboffset = variable->boundToOffset;
 
     (patternrecord->variableBindings->theArray)[vboffset] = newvalue;
@@ -1722,12 +1722,12 @@ boolean newBindingsSinceLastChoicePointP(ControlFrame* frame) {
 }
 
 Object* boundTo(PatternVariable* self) {
-  return ((oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(self->boundToOffset)]);
+  return ((oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(self->boundToOffset)]);
 }
 
 Object* safeBoundTo(PatternVariable* self) {
-  if (((boolean)(oQUERYITERATORo.get()))) {
-    { Vector* bindings = oQUERYITERATORo.get()->currentPatternRecord->variableBindings;
+  if (((boolean)(oQUERYITERATORo))) {
+    { Vector* bindings = oQUERYITERATORo->currentPatternRecord->variableBindings;
       int offset = self->boundToOffset;
 
       if (((boolean)(bindings)) &&
@@ -1801,7 +1801,7 @@ Object* argumentBoundTo(Object* self) {
       { Object* self000 = self;
         PatternVariable* self = ((PatternVariable*)(self000));
 
-        { Object* value = (oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(self->boundToOffset)];
+        { Object* value = (oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(self->boundToOffset)];
 
           if ((!((boolean)(value))) &&
               ((boolean)(((Object*)(accessInContext(self->variableValue, self->homeContext, false)))))) {
@@ -1852,9 +1852,9 @@ Object* safeArgumentBoundTo(Object* self) {
 
       { Object* value = NULL;
 
-        if (((boolean)(oQUERYITERATORo.get())) &&
+        if (((boolean)(oQUERYITERATORo)) &&
             (self->boundToOffset != NULL_INTEGER)) {
-          value = (oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(self->boundToOffset)];
+          value = (oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(self->boundToOffset)];
         }
         if ((!((boolean)(value))) &&
             ((boolean)(((Object*)(accessInContext(self->variableValue, self->homeContext, false)))))) {
@@ -1879,13 +1879,13 @@ boolean helpUnifyAttributesP(Object* value1, Object* value2) {
 }
 
 boolean failsUnificationTypeCheckP(PatternVariable* v1, Object* i2) {
-  if (oTYPE_CHECK_STRATEGYo.get() == KWD_QUERY_NONE) {
+  if (oTYPE_CHECK_STRATEGYo == KWD_QUERY_NONE) {
     return (false);
   }
-  else if (oTYPE_CHECK_STRATEGYo.get() == KWD_QUERY_LOOKUP) {
+  else if (oTYPE_CHECK_STRATEGYo == KWD_QUERY_LOOKUP) {
     { Surrogate* type = v1->skolemType;
-      boolean typeisokP = (((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) ||
+      boolean typeisokP = (((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) ||
           checkStrictTypeP(i2, type, true);
 
       if ((!typeisokP) &&
@@ -1897,14 +1897,14 @@ boolean failsUnificationTypeCheckP(PatternVariable* v1, Object* i2) {
       }
     }
   }
-  else if (oTYPE_CHECK_STRATEGYo.get() == KWD_QUERY_SHALLOW_DISJOINT) {
+  else if (oTYPE_CHECK_STRATEGYo == KWD_QUERY_SHALLOW_DISJOINT) {
     if (((boolean)(v1->skolemType)) &&
         disjointClassesP(getDescription(v1->skolemType), getDescription(logicalType(i2)))) {
       return (true);
     }
     return (false);
   }
-  else if (oTYPE_CHECK_STRATEGYo.get() == KWD_QUERY_DISJOINT) {
+  else if (oTYPE_CHECK_STRATEGYo == KWD_QUERY_DISJOINT) {
     { Surrogate* type1 = NULL;
       Surrogate* type2 = NULL;
 
@@ -1951,17 +1951,17 @@ boolean failsUnificationTypeCheckP(PatternVariable* v1, Object* i2) {
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oTYPE_CHECK_STRATEGYo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oTYPE_CHECK_STRATEGYo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
 }
 
 boolean failsAntecedentTypeCheckP(PatternVariable* v1, Object* i2) {
-  if (oTYPE_CHECK_STRATEGYo.get() == KWD_QUERY_LOOKUP) {
+  if (oTYPE_CHECK_STRATEGYo == KWD_QUERY_LOOKUP) {
     { Surrogate* type = v1->skolemType;
-      boolean typeisokP = (((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) ||
+      boolean typeisokP = (((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) ||
           checkStrictTypeP(i2, type, true);
 
       if ((!typeisokP) &&
@@ -1973,20 +1973,20 @@ boolean failsAntecedentTypeCheckP(PatternVariable* v1, Object* i2) {
       }
     }
   }
-  else if (oTYPE_CHECK_STRATEGYo.get() == KWD_QUERY_NONE) {
+  else if (oTYPE_CHECK_STRATEGYo == KWD_QUERY_NONE) {
     return (false);
   }
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oTYPE_CHECK_STRATEGYo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oTYPE_CHECK_STRATEGYo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
 }
 
 boolean helpBindVariableToValueP(PatternVariable* variable, Object* value) {
-  if (oTYPE_CHECK_STRATEGYo.get() == KWD_QUERY_LOOKUP) {
+  if (oTYPE_CHECK_STRATEGYo == KWD_QUERY_LOOKUP) {
     { boolean typeisokP = false;
 
       typeisokP = checkCoercedTypeP(value, variable->skolemType, true, value);
@@ -2000,16 +2000,16 @@ boolean helpBindVariableToValueP(PatternVariable* variable, Object* value) {
       }
     }
   }
-  else if (oTYPE_CHECK_STRATEGYo.get() == KWD_QUERY_NONE) {
+  else if (oTYPE_CHECK_STRATEGYo == KWD_QUERY_NONE) {
   }
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oTYPE_CHECK_STRATEGYo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oTYPE_CHECK_STRATEGYo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
-  { Object* boundtovalue = (oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(variable->boundToOffset)];
+  { Object* boundtovalue = (oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(variable->boundToOffset)];
     Object* variablevalue = ((Object*)(accessInContext(variable->variableValue, variable->homeContext, false)));
 
     elaborateInstance(value);
@@ -2035,9 +2035,9 @@ boolean helpBindVariableToValueP(PatternVariable* variable, Object* value) {
 boolean bindVariableToValueP(PatternVariable* variable, Object* value, boolean autocleanupP) {
   if ((!((boolean)(value))) ||
       (!argumentBoundP(value))) {
-    if ((((boolean)(oQUERYITERATORo.get())) &&
-        ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) &&
-        oQUERYITERATORo.get()->partialMatchStrategy->allowUnboundVariablesP()) {
+    if ((((boolean)(oQUERYITERATORo)) &&
+        ((boolean)(oQUERYITERATORo->partialMatchStrategy))) &&
+        oQUERYITERATORo->partialMatchStrategy->allowUnboundVariablesP()) {
       return (true);
     }
     { 
@@ -2049,7 +2049,7 @@ boolean bindVariableToValueP(PatternVariable* variable, Object* value, boolean a
   }
   value = instantiateExternalBindings(value);
   if (autocleanupP) {
-    { PatternRecord* patternrecord = oQUERYITERATORo.get()->currentPatternRecord;
+    { PatternRecord* patternrecord = oQUERYITERATORo->currentPatternRecord;
       int ubstackoffset = patternrecord->topUnbindingStackOffset;
       boolean successP = false;
 
@@ -2067,9 +2067,9 @@ boolean bindVariableToValueP(PatternVariable* variable, Object* value, boolean a
 
 boolean bindArgumentToValueP(Object* argument, Object* value, boolean autocleanupP) {
   if (!((boolean)(value))) {
-    if ((((boolean)(oQUERYITERATORo.get())) &&
-        ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) &&
-        oQUERYITERATORo.get()->partialMatchStrategy->allowUnboundVariablesP()) {
+    if ((((boolean)(oQUERYITERATORo)) &&
+        ((boolean)(oQUERYITERATORo->partialMatchStrategy))) &&
+        oQUERYITERATORo->partialMatchStrategy->allowUnboundVariablesP()) {
       return (true);
     }
     { 
@@ -2142,7 +2142,7 @@ boolean bindArgumentToValueP(Object* argument, Object* value, boolean autocleanu
 }
 
 boolean bindVectorOfArgumentsToValuesP(Vector* arguments, Cons* values) {
-  { PatternRecord* patternrecord = oQUERYITERATORo.get()->currentPatternRecord;
+  { PatternRecord* patternrecord = oQUERYITERATORo->currentPatternRecord;
     int ubstackoffset = patternrecord->topUnbindingStackOffset;
     boolean successP = false;
 
@@ -2185,11 +2185,11 @@ void printControlFrameStack(ControlFrame* frame) {
 }
 
 void pcs() {
-  printControlFrameStack(oQUERYITERATORo.get()->baseControlFrame);
+  printControlFrameStack(oQUERYITERATORo->baseControlFrame);
 }
 
 PatternVariable* variableFromUnbindingOffset(Description* description, int uboffset) {
-  { PatternRecord* patternrecord = oQUERYITERATORo.get()->currentPatternRecord;
+  { PatternRecord* patternrecord = oQUERYITERATORo->currentPatternRecord;
     int offset = ((IntegerWrapper*)((patternrecord->unbindingStack->theArray)[uboffset]))->wrapperValue;
 
     { PatternVariable* vbl = NULL;
@@ -2231,7 +2231,7 @@ DEFINE_STELLA_SPECIAL(oPRINTINFRAMEo, ControlFrame* , NULL);
 void printOneVariableBinding(PatternVariable* variable) {
   std::cout << variable->skolemName << "=";
   if (variable->boundToOffset != NULL_INTEGER) {
-    { Object* value = (((boolean)(oPRINTINFRAMEo.get())) ? boundToInFrame(variable, oPRINTINFRAMEo.get()) : safeBoundTo(variable));
+    { Object* value = (((boolean)(oPRINTINFRAMEo)) ? boundToInFrame(variable, oPRINTINFRAMEo) : safeBoundTo(variable));
 
       printUnformattedLogicalForm(value, STANDARD_OUTPUT);
     }
@@ -2396,7 +2396,7 @@ void printGoalInGoalTree(ControlFrame* frame, int depth) {
 
 int computeFrameDepth(ControlFrame* frame) {
   { int depth = 0;
-    ControlFrame* cursor = (((boolean)(oQUERYITERATORo.get())) ? oQUERYITERATORo.get()->baseControlFrame : ((ControlFrame*)(NULL)));
+    ControlFrame* cursor = (((boolean)(oQUERYITERATORo)) ? oQUERYITERATORo->baseControlFrame : ((ControlFrame*)(NULL)));
 
     while (((boolean)(cursor))) {
       if (cursor == frame) {
@@ -2430,9 +2430,98 @@ void unwindToChoicePointsBelowFrame(ControlFrame* frame) {
   unwindToChoicePoint(frame);
 }
 
+HashSet* oTRACED_GOALSo = NULL;
+
+void traceGoal(Object* name) {
+  { NamedDescription* description = getDescription(name);
+
+    if (!((boolean)(description))) {
+      *(STANDARD_WARNING->nativeStream) << "Warning: " << "No such relation: " << "`" << name << "'" << std::endl;
+      return;
+    }
+    oTRACED_GOALSo->insert(description);
+    addTrace(consList(1, KWD_QUERY_GOAL_TREE));
+  }
+}
+
+void untraceGoal(Object* name) {
+  { NamedDescription* description = getDescription(name);
+
+    if (!((boolean)(description))) {
+      *(STANDARD_WARNING->nativeStream) << "Warning: " << "No such relation: " << "`" << name << "'" << std::endl;
+      return;
+    }
+    oTRACED_GOALSo->remove(description);
+    { boolean foundP000 = false;
+
+      { NamedDescription* goal = NULL;
+        DictionaryIterator* iter000 = ((DictionaryIterator*)(oTRACED_GOALSo->allocateIterator()));
+
+        for (goal, iter000; iter000->nextP(); ) {
+          goal = ((NamedDescription*)(iter000->value));
+          if (!goal->deletedP()) {
+            foundP000 = true;
+            break;
+          }
+        }
+      }
+      if (!(foundP000)) {
+        dropTrace(consList(1, KWD_QUERY_GOAL_TREE));
+      }
+    }
+  }
+}
+
+void clearTracedGoals() {
+  dropTrace(consList(1, KWD_QUERY_GOAL_TREE));
+  oTRACED_GOALSo->clear();
+}
+
+boolean restrictedGoalTracingP() {
+  { boolean testValue000 = false;
+
+    testValue000 = traceKeywordP(KWD_QUERY_GOAL_TREE);
+    if (testValue000) {
+      { boolean foundP000 = false;
+
+        { NamedDescription* goal = NULL;
+          DictionaryIterator* iter000 = ((DictionaryIterator*)(oTRACED_GOALSo->allocateIterator()));
+
+          for (goal, iter000; iter000->nextP(); ) {
+            goal = ((NamedDescription*)(iter000->value));
+            if (!goal->deletedP()) {
+              foundP000 = true;
+              break;
+            }
+          }
+        }
+        testValue000 = foundP000;
+      }
+    }
+    { boolean value000 = testValue000;
+
+      return (value000);
+    }
+  }
+}
+
+boolean traceThisGoalP(ControlFrame* frame, Keyword* lastmove) {
+  lastmove = lastmove;
+  if (frame->state == KWD_QUERY_ATOMIC_GOAL) {
+    return (oTRACED_GOALSo->memberP(getDescription(frame->proposition->operatoR)));
+  }
+  else {
+    return (false);
+  }
+}
+
 void traceGoalTree(ControlFrame* frame, int depth, Keyword* lastmove) {
   if (lastmove == KWD_QUERY_DOWN) {
     unwindToChoicePointsBelowFrame(frame);
+  }
+  if (restrictedGoalTracingP() &&
+      (!traceThisGoalP(frame, lastmove))) {
+    return;
   }
   if ((frame->state == KWD_QUERY_ITERATIVE_FORALL) &&
       (lastmove == KWD_QUERY_DOWN)) {
@@ -2507,8 +2596,8 @@ void traceGoalTree(ControlFrame* frame, int depth, Keyword* lastmove) {
           }
           else {
             {
-              if (((boolean)(oQUERYITERATORo.get())) &&
-                  ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+              if (((boolean)(oQUERYITERATORo)) &&
+                  ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
                 std::cout << std::endl;
               }
               if (((boolean)(frame->patternRecord->collectionList))) {
@@ -2563,34 +2652,7 @@ void traceGoalTree(ControlFrame* frame, int depth, Keyword* lastmove) {
       { TruthValue* truthvalue = frame->truthValue;
 
         if (((boolean)(truthvalue))) {
-          std::cout << "truth=";
-          if ((truthvalue == TRUE_TRUTH_VALUE) ||
-              (truthvalue == DEFAULT_TRUE_TRUTH_VALUE)) {
-            if ((truthvalue == DEFAULT_TRUE_TRUTH_VALUE) ||
-                (truthvalue == DEFAULT_FALSE_TRUTH_VALUE)) {
-              std::cout << "t";
-            }
-            else {
-              std::cout << "T";
-            }
-          }
-          else if ((truthvalue == FALSE_TRUTH_VALUE) ||
-              (truthvalue == DEFAULT_FALSE_TRUTH_VALUE)) {
-            if ((truthvalue == DEFAULT_TRUE_TRUTH_VALUE) ||
-                (truthvalue == DEFAULT_FALSE_TRUTH_VALUE)) {
-              std::cout << "f";
-            }
-            else {
-              std::cout << "F";
-            }
-          }
-          else if ((truthvalue == UNKNOWN_TRUTH_VALUE) ||
-              (!((boolean)(truthvalue)))) {
-            std::cout << "U";
-          }
-          else {
-            std::cout << "?";
-          }
+          std::cout << "truth=" << truthValueToString(truthvalue, true);
         }
       }
     }
@@ -2619,34 +2681,7 @@ void traceGoalTree(ControlFrame* frame, int depth, Keyword* lastmove) {
         std::cout << ":";
       }
       if (((boolean)(truthvalue))) {
-        std::cout << " truth=";
-        if ((truthvalue == TRUE_TRUTH_VALUE) ||
-            (truthvalue == DEFAULT_TRUE_TRUTH_VALUE)) {
-          if ((truthvalue == DEFAULT_TRUE_TRUTH_VALUE) ||
-              (truthvalue == DEFAULT_FALSE_TRUTH_VALUE)) {
-            std::cout << "t";
-          }
-          else {
-            std::cout << "T";
-          }
-        }
-        else if ((truthvalue == FALSE_TRUTH_VALUE) ||
-            (truthvalue == DEFAULT_FALSE_TRUTH_VALUE)) {
-          if ((truthvalue == DEFAULT_TRUE_TRUTH_VALUE) ||
-              (truthvalue == DEFAULT_FALSE_TRUTH_VALUE)) {
-            std::cout << "f";
-          }
-          else {
-            std::cout << "F";
-          }
-        }
-        else if ((truthvalue == UNKNOWN_TRUTH_VALUE) ||
-            (!((boolean)(truthvalue)))) {
-          std::cout << "U";
-        }
-        else {
-          std::cout << "?";
-        }
+        std::cout << " truth=" << truthValueToString(truthvalue, true);
       }
     }
   }
@@ -2668,6 +2703,41 @@ void traceGoalTree(ControlFrame* frame, int depth, Keyword* lastmove) {
       std::cout << std::endl;
     }
     else {
+    }
+  }
+}
+
+void traceGoalStack(ControlFrame* frame) {
+  if (!((boolean)(frame))) {
+    frame = oQUERYITERATORo->currentControlFrame;
+  }
+  { Cons* frames = cons(frame, NIL);
+
+    for (;;) {
+      frame = frame->up;
+      if (!((boolean)(frame))) {
+        break;
+      }
+      else {
+        frames = cons(frame, frames);
+      }
+    }
+    { ControlFrame* frm = NULL;
+      Cons* iter000 = frames;
+      int i = NULL_INTEGER;
+      int iter001 = 1;
+
+      for  (frm, iter000, i, iter001; 
+            !(iter000 == NIL); 
+            iter000 = iter000->rest,
+            iter001 = iter001 + 1) {
+        frm = ((ControlFrame*)(iter000->value));
+        i = iter001;
+        { 
+          BIND_STELLA_SPECIAL(oPRINTINFRAMEo, ControlFrame*, frm);
+          traceGoalTree(frm, i, KWD_QUERY_DOWN);
+        }
+      }
     }
   }
 }
@@ -2698,10 +2768,10 @@ Keyword* oldInterpretAndScores(ControlFrame* frame, Keyword* lastmove) {
       pmf->successP = lastmove == KWD_QUERY_UP_TRUE;
       recordLatestPartialMatchScore(frame);
       if (traceKeywordP(KWD_QUERY_GOAL_TREE)) {
-        std::cout << ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue << ", " << frame->partialMatchFrame->computeAndScore() << std::endl;
+        std::cout << ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue << ", " << frame->partialMatchFrame->computeAndScore() << std::endl;
       }
       if (!(pmf->unboundVars == NIL)) {
-        setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(0.0), NULL_FLOAT_WRAPPER);
+        setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(0.0), NULL_FLOAT_WRAPPER);
         for (;;) {
           { boolean testValue000 = false;
 
@@ -2741,7 +2811,7 @@ Keyword* oldInterpretAndScores(ControlFrame* frame, Keyword* lastmove) {
             allVariablesUnboundP(((Proposition*)((frame->proposition->arguments->theArray)[(frame->argumentCursor + 1)])))) {
           i = i + 1;
           frame->argumentCursor = frame->argumentCursor + 1;
-          setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(0.0), NULL_FLOAT_WRAPPER);
+          setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(0.0), NULL_FLOAT_WRAPPER);
           recordLatestPartialMatchScore(frame);
         }
         if ((i > 0) &&
@@ -2803,9 +2873,9 @@ Keyword* interpretIterativeForallScores(ControlFrame* frame, Keyword* lastmove) 
       (lastmove == KWD_QUERY_UP_FAIL)) {
     recordLatestPartialMatchScore(frame);
     if (traceKeywordP(KWD_QUERY_GOAL_TREE)) {
-      std::cout << "ITERATIVE-FORALL " << ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue << std::endl;
+      std::cout << "ITERATIVE-FORALL " << ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue << std::endl;
     }
-    if (((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue < 0.9) {
+    if (((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue < 0.9) {
       lastmove = KWD_QUERY_UP_FAIL;
     }
   }
@@ -2840,7 +2910,7 @@ Keyword* oldInterpretOrScores(ControlFrame* frame, Keyword* lastmove) {
       (lastmove == KWD_QUERY_UP_FAIL)) {
     recordLatestPartialMatchScore(frame);
     if (traceKeywordP(KWD_QUERY_GOAL_TREE)) {
-      std::cout << ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue << ", " << frame->partialMatchFrame->computeOrScore() << std::endl;
+      std::cout << ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue << ", " << frame->partialMatchFrame->computeOrScore() << std::endl;
     }
     if (computePartialMatchOrSuccessP(frame)) {
       lastmove = KWD_QUERY_UP_TRUE;
@@ -2878,7 +2948,7 @@ Keyword* ControlFrame::continuePartialOrProof(Keyword* lastmove) {
 
 Keyword* oldInterpretFailScore(ControlFrame* frame, Keyword* lastmove) {
   if (lastmove == KWD_QUERY_DOWN) {
-    setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(0.0), NULL_FLOAT_WRAPPER);
+    setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(0.0), NULL_FLOAT_WRAPPER);
     if (!((boolean)(frame->partialMatchFrame))) {
       createAndLinkPartialMatchFrame(frame, KWD_QUERY_NOT);
     }
@@ -2931,7 +3001,7 @@ Keyword* oldInterpretGoalScores(ControlFrame* frame, Keyword* lastmove) {
   else if ((lastmove == KWD_QUERY_UP_TRUE) ||
       (lastmove == KWD_QUERY_UP_FAIL)) {
     if (traceKeywordP(KWD_QUERY_GOAL_TREE)) {
-      std::cout << ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue << std::endl;
+      std::cout << ((FloatWrapper*)(dynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue << std::endl;
     }
     if ((frame->currentStrategy == KWD_QUERY_FULL_SUBQUERY) ||
         (frame->currentStrategy == KWD_QUERY_ANTECEDENTS)) {
@@ -3126,8 +3196,8 @@ ParallelControlFrame* parallelizeControlFrame(ControlFrame* frame) {
         }
       }
     }
-    if (oQUERYITERATORo.get()->currentControlFrame == frame) {
-      oQUERYITERATORo.get()->currentControlFrame = parallelparent;
+    if (oQUERYITERATORo->currentControlFrame == frame) {
+      oQUERYITERATORo->currentControlFrame = parallelparent;
     }
     return (parallelparent);
   }
@@ -3143,16 +3213,16 @@ void enterParallelThread(ParallelControlFrame* pframe, ParallelThread* childthre
   else {
     childthread = pframe->currentChildThread;
   }
-  pframe->savedParentParallelThread = oQUERYITERATORo.get()->currentParallelThread;
-  oQUERYITERATORo.get()->currentParallelThread = childthread;
-  pframe->savedParentContext = oCONTEXTo.get();
+  pframe->savedParentParallelThread = oQUERYITERATORo->currentParallelThread;
+  oQUERYITERATORo->currentParallelThread = childthread;
+  pframe->savedParentContext = oCONTEXTo;
   if (((boolean)(childthread->hypotheticalWorld))) {
     childthread->hypotheticalWorld->changeContext();
   }
 }
 
 void exitParallelThread(ParallelControlFrame* pframe) {
-  oQUERYITERATORo.get()->currentParallelThread = pframe->savedParentParallelThread;
+  oQUERYITERATORo->currentParallelThread = pframe->savedParentParallelThread;
   if (((boolean)(pframe->savedParentContext))) {
     if ((!((boolean)(pframe->down))) &&
         ((boolean)(pframe->currentChildThread->hypotheticalWorld))) {
@@ -3178,7 +3248,7 @@ World* enterHypotheticalWorld(ParallelControlFrame* pframe) {
     if (!((boolean)(world))) {
       {
         childthread->hypotheticalWorld = pushMonotonicWorld();
-        initializeInferenceWorld(((World*)(oCONTEXTo.get())));
+        initializeInferenceWorld(((World*)(oCONTEXTo)));
       }
     }
     else {
@@ -3188,8 +3258,8 @@ World* enterHypotheticalWorld(ParallelControlFrame* pframe) {
 }
 
 boolean partialMatchModeP() {
-  return (((boolean)(oQUERYITERATORo.get())) &&
-      ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)));
+  return (((boolean)(oQUERYITERATORo)) &&
+      ((boolean)(oQUERYITERATORo->partialMatchStrategy)));
 }
 
 boolean executeBackwardChainingProofP(QueryIterator* query) {
@@ -3220,8 +3290,8 @@ boolean executeBackwardChainingProofP(QueryIterator* query) {
       }
       frame->truthValue = NULL;
       setDynamicSlotValue(frame->dynamicSlots, SYM_QUERY_LOGIC_JUSTIFICATION, NULL, NULL);
-      if (((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+      if (((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
         frame->partialMatchFrame = query->partialMatchStrategy;
         frame->partialMatchFrame->clearFramePartialTruth();
       }
@@ -3317,8 +3387,8 @@ boolean executeBackwardChainingProofP(QueryIterator* query) {
               if ((oCACHE_SUCCEEDED_GOALSpo ||
                   oCACHE_FAILED_GOALSpo) &&
                   ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_QUERY_DUPLICATE_GOALS) &&
-                   (!(((boolean)(oQUERYITERATORo.get())) &&
-                  ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)))))) {
+                   (!(((boolean)(oQUERYITERATORo)) &&
+                  ((boolean)(oQUERYITERATORo->partialMatchStrategy)))))) {
                 cacheGoal(frame, true, false, clockticks);
               }
               else {
@@ -3349,8 +3419,8 @@ boolean executeBackwardChainingProofP(QueryIterator* query) {
               if ((oCACHE_SUCCEEDED_GOALSpo ||
                   oCACHE_FAILED_GOALSpo) &&
                   ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_QUERY_DUPLICATE_GOALS) &&
-                   (!(((boolean)(oQUERYITERATORo.get())) &&
-                  ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)))))) {
+                   (!(((boolean)(oQUERYITERATORo)) &&
+                  ((boolean)(oQUERYITERATORo->partialMatchStrategy)))))) {
                 cacheGoal(frame, true, true, clockticks);
               }
               else {
@@ -3380,8 +3450,8 @@ boolean executeBackwardChainingProofP(QueryIterator* query) {
               if ((oCACHE_SUCCEEDED_GOALSpo ||
                   oCACHE_FAILED_GOALSpo) &&
                   ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_QUERY_DUPLICATE_GOALS) &&
-                   (!(((boolean)(oQUERYITERATORo.get())) &&
-                  ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)))))) {
+                   (!(((boolean)(oQUERYITERATORo)) &&
+                  ((boolean)(oQUERYITERATORo->partialMatchStrategy)))))) {
                 cacheGoal(frame, false, false, clockticks);
               }
               else {
@@ -3444,8 +3514,8 @@ boolean executeBackwardChainingProofP(QueryIterator* query) {
               if ((oCACHE_SUCCEEDED_GOALSpo ||
                   oCACHE_FAILED_GOALSpo) &&
                   ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_QUERY_DUPLICATE_GOALS) &&
-                   (!(((boolean)(oQUERYITERATORo.get())) &&
-                  ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)))))) {
+                   (!(((boolean)(oQUERYITERATORo)) &&
+                  ((boolean)(oQUERYITERATORo->partialMatchStrategy)))))) {
                 cacheGoal(frame, false, true, clockticks);
               }
               else {
@@ -3492,8 +3562,8 @@ Keyword* evaluateNextMove(ControlFrame* frame, Keyword* lastmove, int clockticks
   { Keyword* testValue000 = frame->state;
 
     if (testValue000 == KWD_QUERY_AND) {
-      if (((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+      if (((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
         return (frame->continuePartialAndProof(frame, lastmove));
       }
       else {
@@ -3501,8 +3571,8 @@ Keyword* evaluateNextMove(ControlFrame* frame, Keyword* lastmove, int clockticks
       }
     }
     else if (testValue000 == KWD_QUERY_OR) {
-      if (((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+      if (((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
         return (frame->continuePartialOrProof(lastmove));
       }
       else {
@@ -3510,8 +3580,8 @@ Keyword* evaluateNextMove(ControlFrame* frame, Keyword* lastmove, int clockticks
       }
     }
     else if (testValue000 == KWD_QUERY_NOT) {
-      if (((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+      if (((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
         return (frame->continuePartialNotProof(lastmove));
       }
       else {
@@ -3527,8 +3597,8 @@ Keyword* evaluateNextMove(ControlFrame* frame, Keyword* lastmove, int clockticks
     }
     else if ((testValue000 == KWD_QUERY_ATOMIC_GOAL) ||
         (testValue000 == KWD_QUERY_STRATEGY)) {
-      if (((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+      if (((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
         return (frame->continuePartialStrategiesProofs(lastmove));
       }
       else {
@@ -3546,8 +3616,8 @@ Keyword* evaluateNextMove(ControlFrame* frame, Keyword* lastmove, int clockticks
     }
     else if ((testValue000 == KWD_QUERY_CONTAINED_BY) ||
         (testValue000 == KWD_QUERY_ITERATIVE_FORALL)) {
-      if (((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+      if (((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
         lastmove = interpretIterativeForallScores(frame, lastmove);
       }
       return (continueContainedByProof(frame, lastmove));
@@ -3559,8 +3629,8 @@ Keyword* evaluateNextMove(ControlFrame* frame, Keyword* lastmove, int clockticks
       return (continueConstantProof(frame, lastmove));
     }
     else if (testValue000 == KWD_QUERY_FAIL) {
-      if (((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+      if (((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
         return (frame->continuePartialFailProof(lastmove));
       }
       else {
@@ -3663,7 +3733,7 @@ Keyword* continueAndProof(ControlFrame* frame, Keyword* lastmove) {
             }
           }
         }
-        if (oRECORD_JUSTIFICATIONSpo.get()) {
+        if (oRECORD_JUSTIFICATIONSpo) {
           recordAndIntroductionJustification(frame, lastmove);
         }
         if (((boolean)(frame->down))) {
@@ -3769,7 +3839,7 @@ Keyword* continueOrProof(ControlFrame* frame, Keyword* lastmove) {
     }
     else if (lastmove == KWD_QUERY_UP_TRUE) {
       frame->truthValue = frame->result->truthValue;
-      if (oRECORD_JUSTIFICATIONSpo.get()) {
+      if (oRECORD_JUSTIFICATIONSpo) {
         recordOrIntroductionJustification(frame, lastmove);
       }
       if (!((boolean)(frame->down))) {
@@ -3777,7 +3847,7 @@ Keyword* continueOrProof(ControlFrame* frame, Keyword* lastmove) {
       }
       if ((frame->argumentCursor >= proposition->arguments->length()) ||
           ((!newBindingsSinceLastChoicePointP(frame)) &&
-           (!oGENERATE_ALL_PROOFSpo.get()))) {
+           (!oGENERATE_ALL_PROOFSpo))) {
         if (((boolean)(frame->down))) {
           popFramesUpTo(frame->down);
         }
@@ -3846,7 +3916,7 @@ Keyword* continueNotProof(ControlFrame* frame, Keyword* lastmove) {
   }
   else if (lastmove == KWD_QUERY_UP_TRUE) {
     frame->truthValue = invertTruthValue(frame->result->truthValue);
-    if (oRECORD_JUSTIFICATIONSpo.get()) {
+    if (oRECORD_JUSTIFICATIONSpo) {
       recordDisproofJustification(frame, lastmove);
     }
     if (!((boolean)(frame->down))) {
@@ -3858,7 +3928,7 @@ Keyword* continueNotProof(ControlFrame* frame, Keyword* lastmove) {
   }
   else if (lastmove == KWD_QUERY_UP_FAIL) {
     frame->truthValue = invertTruthValue(frame->result->truthValue);
-    if (oRECORD_JUSTIFICATIONSpo.get() &&
+    if (oRECORD_JUSTIFICATIONSpo &&
         ((boolean)(((Justification*)(dynamicSlotValue(frame->result->dynamicSlots, SYM_QUERY_LOGIC_JUSTIFICATION, NULL)))))) {
       recordDisproofJustification(frame, lastmove);
     }
@@ -3963,8 +4033,8 @@ boolean checkForDuplicateGoalP(ControlFrame* frame) {
       if ((oCACHE_SUCCEEDED_GOALSpo ||
           oCACHE_FAILED_GOALSpo) &&
           ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_QUERY_DUPLICATE_GOALS) &&
-           (!(((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)))))) {
+           (!(((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy)))))) {
         dontCacheGoalFailureBetweenFrames(frame, duplicateframe->down);
       }
       return (true);
@@ -4016,7 +4086,7 @@ Keyword* initiateAtomicGoalProofs(ControlFrame* frame) {
             strategies = getQuotedTree("((:SPECIALIST :LOOKUP-GOAL-CACHES :LOOKUP-ASSERTIONS :SHALLOW-DISPROOF) \"/LOGIC\")", "/LOGIC");
           }
           if ((proposition->kind == KWD_QUERY_FUNCTION) &&
-              (!oREVERSEPOLARITYpo.get())) {
+              (!oREVERSEPOLARITYpo)) {
             strategies = copyConsList(strategies)->concatenate(consList(1, KWD_QUERY_MANUFACTURE_SKOLEM), 0);
           }
         }
@@ -4515,7 +4585,7 @@ boolean transferPatternQueryBindingsP(ControlFrame* frame, boolean futurebinding
         i = iter000;
         if (!((boolean)(collect000))) {
           {
-            collect000 = cons(((!coerceWrappedBooleanToBoolean(((BooleanWrapper*)((booleanvector->theArray)[i])))) ? (oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(((PatternVariable*)((iovariables->theArray)[i]))->boundToOffset)] : NULL), NIL);
+            collect000 = cons(((!coerceWrappedBooleanToBoolean(((BooleanWrapper*)((booleanvector->theArray)[i])))) ? (oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(((PatternVariable*)((iovariables->theArray)[i]))->boundToOffset)] : NULL), NIL);
             if (iovariablevalues == NIL) {
               iovariablevalues = collect000;
             }
@@ -4526,14 +4596,14 @@ boolean transferPatternQueryBindingsP(ControlFrame* frame, boolean futurebinding
         }
         else {
           {
-            collect000->rest = cons(((!coerceWrappedBooleanToBoolean(((BooleanWrapper*)((booleanvector->theArray)[i])))) ? (oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(((PatternVariable*)((iovariables->theArray)[i]))->boundToOffset)] : NULL), NIL);
+            collect000->rest = cons(((!coerceWrappedBooleanToBoolean(((BooleanWrapper*)((booleanvector->theArray)[i])))) ? (oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(((PatternVariable*)((iovariables->theArray)[i]))->boundToOffset)] : NULL), NIL);
             collect000 = collect000->rest;
           }
         }
       }
     }
     resetCurrentPatternRecord(frame, KWD_QUERY_PARENT);
-    { PatternRecord* parentpatternrecord = oQUERYITERATORo.get()->currentPatternRecord;
+    { PatternRecord* parentpatternrecord = oQUERYITERATORo->currentPatternRecord;
 
       topunbindingoffset = parentpatternrecord->topUnbindingStackOffset;
       { Object* value = NULL;
@@ -4594,7 +4664,7 @@ void collectPatternQueryBindings(ControlFrame* frame) {
         v = ((PatternVariable*)((vector000->theArray)[index000]));
         if (!((boolean)(collect000))) {
           {
-            collect000 = cons((oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(v->boundToOffset)], NIL);
+            collect000 = cons((oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(v->boundToOffset)], NIL);
             if (iovariablevalues == NIL) {
               iovariablevalues = collect000;
             }
@@ -4605,7 +4675,7 @@ void collectPatternQueryBindings(ControlFrame* frame) {
         }
         else {
           {
-            collect000->rest = cons((oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(v->boundToOffset)], NIL);
+            collect000->rest = cons((oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(v->boundToOffset)], NIL);
             collect000 = collect000->rest;
           }
         }
@@ -4652,7 +4722,7 @@ Keyword* continuePatternProof(ControlFrame* frame, Keyword* lastmove) {
       if (((boolean)(result->partialMatchFrame))) {
         result->partialMatchFrame->propagateFramePartialTruth(frame);
       }
-      if (oRECORD_JUSTIFICATIONSpo.get()) {
+      if (oRECORD_JUSTIFICATIONSpo) {
         recordPatternJustification(frame, lastmove);
       }
       if (((boolean)(frame->patternRecord->collectionList))) {
@@ -4671,7 +4741,7 @@ Keyword* continuePatternProof(ControlFrame* frame, Keyword* lastmove) {
         if (futurebindingsP) {
           {
             if (((BooleanWrapper*)(dynamicSlotValue(frame->dynamicSlots, SYM_QUERY_LOGIC_CACHED_SINGLE_VALUEDp, FALSE_WRAPPER)))->wrapperValue &&
-                (!oGENERATE_ALL_PROOFSpo.get())) {
+                (!oGENERATE_ALL_PROOFSpo)) {
               popFramesUpTo(frame->down);
               return (KWD_QUERY_FINAL_SUCCESS);
             }
@@ -4698,7 +4768,7 @@ Keyword* continuePatternProof(ControlFrame* frame, Keyword* lastmove) {
       if (((boolean)(result->partialMatchFrame))) {
         result->partialMatchFrame->propagateFramePartialTruth(frame);
       }
-      if (oRECORD_JUSTIFICATIONSpo.get()) {
+      if (oRECORD_JUSTIFICATIONSpo) {
         recordPatternJustification(frame, lastmove);
       }
       if (((boolean)(frame->patternRecord->collectionList))) {
@@ -4762,7 +4832,7 @@ boolean disjointTermsP(Description* d1, Description* d2) {
               initializeMemoizationTable(SGT_QUERY_LOGIC_F_DISJOINT_TERMSp_MEMO_TABLE_000, "(:MAX-VALUES 10000 :TIMESTAMPS (:META-KB-UPDATE))");
               memoTable000 = ((MemoizationTable*)(SGT_QUERY_LOGIC_F_DISJOINT_TERMSp_MEMO_TABLE_000->surrogateValue));
             }
-            memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), d1, d2, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, -1);
+            memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), d1, d2, oCONTEXTo, MEMOIZED_NULL_VALUE, -1);
             memoizedValue000 = memoizedEntry000->value;
           }
           if (((boolean)(memoizedValue000))) {
@@ -4825,7 +4895,7 @@ boolean memberOfCollectionP(Object* member, Object* collection) {
           }
           { boolean memberP = foundP000;
 
-            if (oREVERSEPOLARITYpo.get()) {
+            if (oREVERSEPOLARITYpo) {
               return (!memberP);
             }
             else {
@@ -4872,7 +4942,7 @@ boolean memberOfCollectionP(Object* member, Object* collection) {
                 }
               }
             }
-            if (oREVERSEPOLARITYpo.get()) {
+            if (oREVERSEPOLARITYpo) {
               return (!successP);
             }
             else {
@@ -4887,7 +4957,7 @@ boolean memberOfCollectionP(Object* member, Object* collection) {
                 p = ((Proposition*)(iter003->value));
                 { LogicObject* subcollection = ((LogicObject*)(valueOf((p->arguments->theArray)[1])));
 
-                  if ((oREVERSEPOLARITYpo.get() ? collectionImpliesCollectionP(collection, subcollection) : collectionImpliesCollectionP(subcollection, collection))) {
+                  if ((oREVERSEPOLARITYpo ? collectionImpliesCollectionP(collection, subcollection) : collectionImpliesCollectionP(subcollection, collection))) {
                     return (true);
                   }
                 }
@@ -5239,8 +5309,8 @@ int oDUPLICATEINSTANCESCACHECROSSOVERPOINTo = 20;
 boolean DescriptionExtensionIterator::nextP() {
   { DescriptionExtensionIterator* self = this;
 
-    { boolean withinqueryP = ((boolean)(oQUERYITERATORo.get()));
-      PatternRecord* patternrecord = (withinqueryP ? oQUERYITERATORo.get()->currentPatternRecord : ((PatternRecord*)(NULL)));
+    { boolean withinqueryP = ((boolean)(oQUERYITERATORo));
+      PatternRecord* patternrecord = (withinqueryP ? oQUERYITERATORo->currentPatternRecord : ((PatternRecord*)(NULL)));
       int ubstackoffset = (withinqueryP ? (patternrecord->topUnbindingStackOffset + 1) : ((int)(NULL_INTEGER)));
 
       for (;;) {
@@ -5251,7 +5321,7 @@ boolean DescriptionExtensionIterator::nextP() {
           { Proposition* value = ((Proposition*)(self->extensionIterator->value));
 
             if (!(((!value->deletedP()) &&
-                ((oREVERSEPOLARITYpo.get() ? falseP(value) : (trueP(value) ||
+                ((oREVERSEPOLARITYpo ? falseP(value) : (trueP(value) ||
                 functionWithDefinedValueP(value))))) &&
                 ((!((boolean)(self->referenceProposition))) ||
                  argumentsMatchArgumentsP(value, self->referenceProposition)))) {
@@ -5341,7 +5411,7 @@ ControlFrame* helpFindDuplicatedGoal(ControlFrame* goalframe, ControlFrame*& _Re
     ControlFrame* restartframe = NULL;
     int restartdepth = NULL_INTEGER;
 
-    testframe = oQUERYITERATORo.get()->baseControlFrame->down;
+    testframe = oQUERYITERATORo->baseControlFrame->down;
     for (;;) {
       testgoal = testframe->proposition;
       { boolean testValue000 = false;
@@ -5418,7 +5488,7 @@ ControlFrame* helpFindDuplicatedGoal(ControlFrame* goalframe, ControlFrame*& _Re
 ControlFrame* findDuplicatedGoal(ControlFrame* frame, ControlFrame*& _Return1, int& _Return2) {
   { ControlFrame* trialframe = frame;
     Proposition* trialgoal = NULL;
-    ControlFrame* firstrealcontrolframe = oQUERYITERATORo.get()->baseControlFrame->down;
+    ControlFrame* firstrealcontrolframe = oQUERYITERATORo->baseControlFrame->down;
 
     while (!(trialframe == firstrealcontrolframe)) {
       trialgoal = trialframe->proposition;
@@ -5455,7 +5525,7 @@ ControlFrame* findDuplicatedGoal(ControlFrame* frame, ControlFrame*& _Return1, i
         oTRACED_KEYWORDSo->membP(KWD_QUERY_GOAL_CACHES)) {
       std::cout << "FAILED TO FIND DUPLICATE GOAL" << std::endl;
     }
-    oQUERYITERATORo.get()->failedToFindDuplicateSubgoalP = true;
+    oQUERYITERATORo->failedToFindDuplicateSubgoalP = true;
     _Return1 = NULL;
     _Return2 = NULL_INTEGER;
     return (NULL);
@@ -5468,26 +5538,33 @@ ControlFrame* handleDepthViolation(ControlFrame* frame, int depth, int& _Return1
        oTRACED_KEYWORDSo->membP(KWD_QUERY_GOAL_CACHES))) {
     std::cout << "*** Inference depth cutoff: depth=" << depth << std::endl;
   }
-  oQUERYITERATORo.get()->triggeredDepthCutoffP = true;
+  if (traceKeywordP(KWD_QUERY_GOAL_CUTOFFS) &&
+      (!traceKeywordP(KWD_QUERY_GOAL_TREE))) {
+    traceGoalStack(frame);
+    if (!(yesOrNoP("**** Continue tracing? "))) {
+      dropTrace(consList(1, KWD_QUERY_GOAL_CUTOFFS));
+    }
+  }
+  oQUERYITERATORo->triggeredDepthCutoffP = true;
   if ((oCACHE_SUCCEEDED_GOALSpo ||
       oCACHE_FAILED_GOALSpo) &&
       ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_QUERY_DUPLICATE_GOALS) &&
-       (!(((boolean)(oQUERYITERATORo.get())) &&
-      ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)))))) {
-    dontCacheGoalFailureBetweenFrames(frame, oQUERYITERATORo.get()->baseControlFrame);
+       (!(((boolean)(oQUERYITERATORo)) &&
+      ((boolean)(oQUERYITERATORo->partialMatchStrategy)))))) {
+    dontCacheGoalFailureBetweenFrames(frame, oQUERYITERATORo->baseControlFrame);
   }
   registerInferenceCutoff(frame, KWD_QUERY_DEPTH_VIOLATION);
-  oQUERYITERATORo.get()->depthCutoffsP = true;
+  oQUERYITERATORo->depthCutoffsP = true;
   if ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_QUERY_DUPLICATE_GOALS) ||
       (oDUPLICATE_SUBGOAL_STRATEGYo == KWD_QUERY_DUPLICATE_GOALS_WITH_CACHING)) {
     setFrameTruthValue(frame, UNKNOWN_TRUTH_VALUE);
-    if ((((boolean)(oQUERYITERATORo.get())) &&
-        ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) &&
+    if ((((boolean)(oQUERYITERATORo)) &&
+        ((boolean)(oQUERYITERATORo->partialMatchStrategy))) &&
         (!((boolean)(frame->partialMatchFrame)))) {
       createAndLinkPartialMatchFrame(frame, NULL);
       frame->partialMatchFrame->setFramePartialTruth(NULL, 0.0, NULL_FLOAT, true);
     }
-    if (oRECORD_JUSTIFICATIONSpo.get()) {
+    if (oRECORD_JUSTIFICATIONSpo) {
       { PrimitiveStrategy* self000 = newPrimitiveStrategy();
 
         self000->inferenceRule = KWD_QUERY_DEPTH_CUTOFF;
@@ -5534,20 +5611,20 @@ ControlFrame* handleTimeout(ControlFrame* frame, int depth, int& _Return1) {
   if ((oCACHE_SUCCEEDED_GOALSpo ||
       oCACHE_FAILED_GOALSpo) &&
       ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_QUERY_DUPLICATE_GOALS) &&
-       (!(((boolean)(oQUERYITERATORo.get())) &&
-      ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)))))) {
-    dontCacheGoalFailureBetweenFrames(frame, oQUERYITERATORo.get()->baseControlFrame);
+       (!(((boolean)(oQUERYITERATORo)) &&
+      ((boolean)(oQUERYITERATORo->partialMatchStrategy)))))) {
+    dontCacheGoalFailureBetweenFrames(frame, oQUERYITERATORo->baseControlFrame);
   }
   registerInferenceCutoff(frame, KWD_QUERY_TIMEOUT);
   setFrameTruthValue(frame, UNKNOWN_TRUTH_VALUE);
-  if (((boolean)(oQUERYITERATORo.get())) &&
-      ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+  if (((boolean)(oQUERYITERATORo)) &&
+      ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
     if (!((boolean)(frame->partialMatchFrame))) {
       createAndLinkPartialMatchFrame(frame, NULL);
     }
     frame->partialMatchFrame->setFramePartialTruth(NULL, 0.0, NULL_FLOAT, true);
   }
-  if (oRECORD_JUSTIFICATIONSpo.get()) {
+  if (oRECORD_JUSTIFICATIONSpo) {
     { PrimitiveStrategy* self000 = newPrimitiveStrategy();
 
       self000->inferenceRule = KWD_QUERY_TIMEOUT;
@@ -6111,9 +6188,9 @@ void printControlFrame(ControlFrame* self, std::ostream* stream) {
         *(stream) << " DESC: " << ((Description*)(dynamicSlotValue(self->dynamicSlots, SYM_QUERY_LOGIC_DESCRIPTION, NULL)));
       }
       if (printtimesP) {
-        *(stream) << " CLOCK: " << oQUERYITERATORo.get()->currentClockTicks << " START: " << self->startingClockTicks << " TICKS: " << self->allottedClockTicks;
+        *(stream) << " CLOCK: " << oQUERYITERATORo->currentClockTicks << " START: " << self->startingClockTicks << " TICKS: " << self->allottedClockTicks;
       }
-      *(stream) << " " << self->proposition << "]";
+      *(stream) << ((self->reversePolarityP ? (char*)" ~" : (char*)" ")) << self->proposition << "]";
     }
   }
 }
@@ -6141,19 +6218,89 @@ void printGoalStack(ControlFrame* frame, boolean verboseP) {
 }
 
 void pgs() {
-  printGoalStack(oQUERYITERATORo.get()->baseControlFrame, false);
+  printGoalStack(oQUERYITERATORo->baseControlFrame, false);
 }
 
 void vpgs() {
-  printGoalStack(oQUERYITERATORo.get()->baseControlFrame, true);
+  printGoalStack(oQUERYITERATORo->baseControlFrame, true);
+}
+
+int oQUERY_ITERATOR_DEBUG_ID_COUNTERo = 0;
+
+void QueryIterator::debugIdSetter(char* id) {
+  // Set the debug ID of `self' to `id'.  If `id' is NULL, simply
+  // use the current ID counter and increment it appropriately.
+  { QueryIterator* self = this;
+
+    if (oDEBUG_PRINT_MODEpo) {
+      { char* counter = integerToString(((long long int)(oQUERY_ITERATOR_DEBUG_ID_COUNTERo = oQUERY_ITERATOR_DEBUG_ID_COUNTERo + 1)));
+
+        setDynamicSlotValue(self->dynamicSlots, SYM_QUERY_LOGIC_DEBUG_ID, (blankStringP(id) ? wrapString(counter) : wrapString(stringConcatenate(id, ":", 1, counter))), NULL_STRING_WRAPPER);
+      }
+    }
+  }
 }
 
 void printQueryIterator(QueryIterator* self, std::ostream* stream) {
-  if (oPRINTREADABLYpo.get()) {
-    printQueryIteratorReadably(self, stream);
-  }
-  else {
-    printQueryIteratorOrnately(self, stream);
+  { Object* format = lookupQueryOption(self, KWD_QUERY_FORMAT);
+    Object* file = lookupQueryOption(self, KWD_QUERY_OUTPUT_FILE);
+    Object* ifexists = lookupQueryOptionWithDefault(self, KWD_QUERY_IF_EXISTS, KWD_QUERY_SUPERSEDE);
+    OutputFileStream* filestream = NULL;
+
+    try {
+      if (((boolean)(file))) {
+        { boolean outputheaderP = oPOWERLOOM_KB_FILE_EXTENSIONSo->memberP(wrapString(fileExtension(((StringWrapper*)(file))->wrapperValue))) &&
+              ((!(ifexists == KWD_QUERY_APPEND)) ||
+               (!probeFileP(((StringWrapper*)(file))->wrapperValue)));
+
+          filestream = openOutputFile(((StringWrapper*)(file))->wrapperValue, 2, KWD_QUERY_IF_EXISTS, ((Keyword*)(ifexists)));
+          if (outputheaderP) {
+            printModuleFileHeader(oMODULEo, filestream);
+          }
+          stream = filestream->nativeStream;
+        }
+      }
+      if (oDEBUG_PRINT_MODEpo) {
+        *(stream) << "[" << ((StringWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_QUERY_LOGIC_DEBUG_ID, NULL_STRING_WRAPPER)))->wrapperValue << "] ";
+      }
+      if (format == KWD_QUERY_VERTICAL) {
+        printQueryIteratorOrnately(self, stream);
+      }
+      else if (format == KWD_QUERY_LIST) {
+        printQueryIteratorReadably(self, stream);
+      }
+      else if (format == KWD_QUERY_TSV) {
+        printQueryIteratorTabSeparated(self, stream);
+      }
+      else if (consP(format)) {
+        printQueryIteratorViaTemplate(self, stream);
+      }
+      else if (stringP(format)) {
+        printQueryIteratorViaTemplate(self, stream);
+      }
+      else if ((!((boolean)(format))) ||
+          (format == KWD_QUERY_HORIZONTAL)) {
+        if (oPRINTREADABLYpo) {
+          printQueryIteratorReadably(self, stream);
+        }
+        else {
+          printQueryIteratorOrnately(self, stream);
+        }
+      }
+      else {
+        *(STANDARD_WARNING->nativeStream) << "Warning: " << "Output format " << "`" << format << "'" << " is not yet supported" << std::endl;
+        printQueryIteratorOrnately(self, stream);
+      }
+    }
+catch (...) {
+      if (((boolean)(filestream))) {
+        closeStream(filestream);
+      }
+      throw;
+    }
+    if (((boolean)(filestream))) {
+      closeStream(filestream);
+    }
   }
 }
 
@@ -6201,7 +6348,7 @@ void printQueryIteratorOrnately(QueryIterator* self, std::ostream* stream) {
         DictionaryIterator* iter000 = ((DictionaryIterator*)(solutions->allocateIterator()));
         int i = NULL_INTEGER;
         int iter001 = 1;
-        int upperBound000 = oPRINTLENGTHo.get();
+        int upperBound000 = oPRINTLENGTHo;
         boolean unboundedP000 = upperBound000 == NULL_INTEGER;
 
         for  (solution, iter000, i, iter001, upperBound000, unboundedP000; 
@@ -6212,10 +6359,8 @@ void printQueryIteratorOrnately(QueryIterator* self, std::ostream* stream) {
           solution = ((QuerySolution*)(iter000->value));
           i = iter001;
           printQueryIteratorSolutionOrnately(self, solution, i, stream);
-          if (i < nofsolutions) {
-            *(stream) << std::endl;
-          }
-          if ((i == oPRINTLENGTHo.get()) &&
+          *(stream) << std::endl;
+          if ((i == oPRINTLENGTHo) &&
               (i < nofsolutions)) {
             *(stream) << "  ......" << std::endl;
           }
@@ -6226,48 +6371,78 @@ void printQueryIteratorOrnately(QueryIterator* self, std::ostream* stream) {
 }
 
 void printQueryIteratorSolutionOrnately(QueryIterator* self, QuerySolution* solution, int solutionnumber, std::ostream* stream) {
-  if (solutionnumber == NULL_INTEGER) {
-    solutionnumber = 0;
-    { QuerySolution* solution = NULL;
-      DictionaryIterator* iter000 = ((DictionaryIterator*)(self->solutions->allocateIterator()));
+  { int nsolutions = self->solutions->length();
+    boolean verticalP = testQueryOptionValueP(self, KWD_QUERY_FORMAT, KWD_QUERY_VERTICAL);
+    int maxdigits = stella::floor(::log((((double)(nsolutions)))) * RECIPROCAL_NL10) + 1;
+    int solnumberdigits = 0;
 
-      for (solution, iter000; iter000->nextP(); ) {
-        solution = ((QuerySolution*)(iter000->value));
-        if (!equalP(solution->bindings, solution)) {
-          solutionnumber = solutionnumber + 1;
+    if (solutionnumber == NULL_INTEGER) {
+      solutionnumber = 0;
+      { QuerySolution* solution = NULL;
+        DictionaryIterator* iter000 = ((DictionaryIterator*)(self->solutions->allocateIterator()));
+
+        for (solution, iter000; iter000->nextP(); ) {
+          solution = ((QuerySolution*)(iter000->value));
+          if (!equalP(solution->bindings, solution)) {
+            solutionnumber = solutionnumber + 1;
+          }
         }
       }
     }
-  }
-  { 
-    BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-    *(stream) << "  #" << solutionnumber << ": ";
-    { Object* value = NULL;
-      Vector* vector000 = solution->bindings;
-      int index000 = 0;
-      int length000 = vector000->length();
-      PatternVariable* variable = NULL;
-      Vector* vector001 = self->externalVariables;
-      int index001 = 0;
-      int length001 = vector001->length();
-      int vi = NULL_INTEGER;
-      int iter001 = 0;
+    solnumberdigits = stella::floor(::log((((double)(solutionnumber)))) * RECIPROCAL_NL10) + 1;
+    { 
+      BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+      if (!(verticalP)) {
+        { int i = NULL_INTEGER;
+          int iter001 = solnumberdigits;
+          int upperBound000 = maxdigits - 1;
 
-      for  (value, vector000, index000, length000, variable, vector001, index001, length001, vi, iter001; 
-            (index000 < length000) &&
-                (index001 < length001); 
-            index000 = index000 + 1,
-            index001 = index001 + 1,
-            iter001 = iter001 + 1) {
-        value = (vector000->theArray)[index000];
-        variable = ((PatternVariable*)((vector001->theArray)[index001]));
-        vi = iter001;
-        *(stream) << (((vi == 0) ? (char*)"" : (char*)", ")) << variable->skolemName << "=" << value;
+          for  (i, iter001, upperBound000; 
+                iter001 <= upperBound000; 
+                iter001 = iter001 + 1) {
+            i = iter001;
+            i = i;
+            *(stream) << " ";
+          }
+        }
       }
-    }
-    if (((boolean)(self->partialMatchStrategy)) &&
-        (solution->matchScore != NULL_FLOAT)) {
-      *(stream) << " " << solution->matchScore;
+      *(stream) << "#" << solutionnumber << ": ";
+      { Object* value = NULL;
+        Vector* vector000 = solution->bindings;
+        int index000 = 0;
+        int length000 = vector000->length();
+        PatternVariable* variable = NULL;
+        Vector* vector001 = self->externalVariables;
+        int index001 = 0;
+        int length001 = vector001->length();
+        int vi = NULL_INTEGER;
+        int iter002 = 0;
+
+        for  (value, vector000, index000, length000, variable, vector001, index001, length001, vi, iter002; 
+              (index000 < length000) &&
+                  (index001 < length001); 
+              index000 = index000 + 1,
+              index001 = index001 + 1,
+              iter002 = iter002 + 1) {
+          value = (vector000->theArray)[index000];
+          variable = ((PatternVariable*)((vector001->theArray)[index001]));
+          vi = iter002;
+          if (verticalP) {
+            *(stream) << std::endl << "  ";
+          }
+          else if (vi > 0) {
+            *(stream) << ", ";
+          }
+          *(stream) << variable->skolemName << "=" << value;
+        }
+      }
+      if (((boolean)(self->partialMatchStrategy)) &&
+          (solution->matchScore != NULL_FLOAT)) {
+        if (verticalP) {
+          *(stream) << std::endl << " ";
+        }
+        *(stream) << " " << solution->matchScore;
+      }
     }
   }
 }
@@ -6275,7 +6450,7 @@ void printQueryIteratorSolutionOrnately(QueryIterator* self, QuerySolution* solu
 void traceSolution(QueryIterator* self, QuerySolution* solution, int solutionnumber) {
   if (traceKeywordP(KWD_QUERY_TRACE_SOLUTIONS)) {
     std::cout << "SOLUTION ";
-    printQueryIteratorSolutionOrnately(oQUERYITERATORo.get(), solution, solutionnumber, STANDARD_OUTPUT->nativeStream);
+    printQueryIteratorSolutionOrnately(self, solution, solutionnumber, STANDARD_OUTPUT->nativeStream);
     std::cout << std::endl;
   }
 }
@@ -6286,62 +6461,309 @@ void printQueryIteratorReadably(QueryIterator* self, std::ostream* stream) {
     boolean atomicsingletonsP = ((BooleanWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_QUERY_LOGIC_ATOMIC_SINGLETONSp, FALSE_WRAPPER)))->wrapperValue &&
         (!((boolean)(self->partialMatchStrategy)));
 
-    *(stream) << "(";
-    { QuerySolution* solution = NULL;
-      DictionaryIterator* iter000 = ((DictionaryIterator*)(solutions->allocateIterator()));
-      int i = NULL_INTEGER;
-      int iter001 = 1;
-      int upperBound000 = oPRINTLENGTHo.get();
-      boolean unboundedP000 = upperBound000 == NULL_INTEGER;
+    { 
+      BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+      *(stream) << "(";
+      { QuerySolution* solution = NULL;
+        DictionaryIterator* iter000 = ((DictionaryIterator*)(solutions->allocateIterator()));
+        int i = NULL_INTEGER;
+        int iter001 = 1;
+        int upperBound000 = oPRINTLENGTHo;
+        boolean unboundedP000 = upperBound000 == NULL_INTEGER;
 
-      for  (solution, iter000, i, iter001, upperBound000, unboundedP000; 
-            iter000->nextP() &&
-                (unboundedP000 ||
-                 (iter001 <= upperBound000)); 
-            iter001 = iter001 + 1) {
-        solution = ((QuerySolution*)(iter000->value));
-        i = iter001;
-        if (!(firstP)) {
-          if (atomicsingletonsP) {
-            *(stream) << " ";
-          }
-          else {
-            *(stream) << std::endl << " ";
-          }
-        }
-        firstP = false;
-        if (!(atomicsingletonsP)) {
-          *(stream) << "(";
-        }
-        { Object* value = NULL;
-          Vector* vector000 = solution->bindings;
-          int index000 = 0;
-          int length000 = vector000->length();
-          int vi = NULL_INTEGER;
-          int iter002 = 0;
-
-          for  (value, vector000, index000, length000, vi, iter002; 
-                index000 < length000; 
-                index000 = index000 + 1,
-                iter002 = iter002 + 1) {
-            value = (vector000->theArray)[index000];
-            vi = iter002;
-            *(stream) << (((vi == 0) ? (char*)"" : (char*)" ")) << value;
-            if (((boolean)(self->partialMatchStrategy))) {
-              *(stream) << " " << solution->matchScore;
+        for  (solution, iter000, i, iter001, upperBound000, unboundedP000; 
+              iter000->nextP() &&
+                  (unboundedP000 ||
+                   (iter001 <= upperBound000)); 
+              iter001 = iter001 + 1) {
+          solution = ((QuerySolution*)(iter000->value));
+          i = iter001;
+          if (!(firstP)) {
+            if (atomicsingletonsP) {
+              *(stream) << " ";
+            }
+            else {
+              *(stream) << std::endl << " ";
             }
           }
+          firstP = false;
+          if (!(atomicsingletonsP)) {
+            *(stream) << "(";
+          }
+          { Object* value = NULL;
+            Vector* vector000 = solution->bindings;
+            int index000 = 0;
+            int length000 = vector000->length();
+            int vi = NULL_INTEGER;
+            int iter002 = 0;
+
+            for  (value, vector000, index000, length000, vi, iter002; 
+                  index000 < length000; 
+                  index000 = index000 + 1,
+                  iter002 = iter002 + 1) {
+              value = (vector000->theArray)[index000];
+              vi = iter002;
+              *(stream) << (((vi == 0) ? (char*)"" : (char*)" ")) << value;
+              if (((boolean)(self->partialMatchStrategy))) {
+                *(stream) << " " << solution->matchScore;
+              }
+            }
+          }
+          if (!(atomicsingletonsP)) {
+            *(stream) << ")";
+          }
+          if ((i == oPRINTLENGTHo) &&
+              (i < solutions->length())) {
+            *(stream) << " ...";
+          }
         }
-        if (!(atomicsingletonsP)) {
-          *(stream) << ")";
-        }
-        if ((i == oPRINTLENGTHo.get()) &&
-            (i < solutions->length())) {
-          *(stream) << " ...";
+      }
+      *(stream) << ")" << std::endl;
+    }
+  }
+}
+
+void printQueryIteratorTabSeparated(QueryIterator* self, std::ostream* stream) {
+  { QuerySolutionTable* solutions = self->solutions;
+    char separator = '\t';
+
+    { 
+      BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+      { QuerySolution* solution = NULL;
+        DictionaryIterator* iter000 = ((DictionaryIterator*)(solutions->allocateIterator()));
+        int i = NULL_INTEGER;
+        int iter001 = 1;
+        int upperBound000 = oPRINTLENGTHo;
+        boolean unboundedP000 = upperBound000 == NULL_INTEGER;
+
+        for  (solution, iter000, i, iter001, upperBound000, unboundedP000; 
+              iter000->nextP() &&
+                  (unboundedP000 ||
+                   (iter001 <= upperBound000)); 
+              iter001 = iter001 + 1) {
+          solution = ((QuerySolution*)(iter000->value));
+          i = iter001;
+          { Object* value = NULL;
+            Vector* vector000 = solution->bindings;
+            int index000 = 0;
+            int length000 = vector000->length();
+            int vi = NULL_INTEGER;
+            int iter002 = 0;
+
+            for  (value, vector000, index000, length000, vi, iter002; 
+                  index000 < length000; 
+                  index000 = index000 + 1,
+                  iter002 = iter002 + 1) {
+              value = (vector000->theArray)[index000];
+              vi = iter002;
+              if (vi > 0) {
+                *(stream) << separator;
+              }
+              *(stream) << value;
+              if (((boolean)(self->partialMatchStrategy))) {
+                *(stream) << separator << solution->matchScore;
+              }
+            }
+          }
+          *(stream) << std::endl;
+          if ((i == oPRINTLENGTHo) &&
+              (i < solutions->length())) {
+            *(stream) << "..." << std::endl;
+          }
         }
       }
     }
-    *(stream) << ")" << std::endl;
+  }
+}
+
+Cons* parseQueryIteratorStringTemplate(QueryIterator* self, char* templatE) {
+  { char* normalizedtemplate = stringUpcase(templatE);
+    Vector* variables = self->externalVariables;
+
+    { Cons* value000 = NIL;
+
+      { PatternVariable* var = NULL;
+        Vector* vector000 = variables;
+        int index000 = 0;
+        int length000 = vector000->length();
+        Cons* collect000 = NULL;
+
+        for  (var, vector000, index000, length000, collect000; 
+              index000 < length000; 
+              index000 = index000 + 1) {
+          var = ((PatternVariable*)((vector000->theArray)[index000]));
+          if (!((boolean)(collect000))) {
+            {
+              collect000 = cons(wrapString(stringUpcase(var->skolemName->symbolName)), NIL);
+              if (value000 == NIL) {
+                value000 = collect000;
+              }
+              else {
+                addConsToEndOfConsList(value000, collect000);
+              }
+            }
+          }
+          else {
+            {
+              collect000->rest = cons(wrapString(stringUpcase(var->skolemName->symbolName)), NIL);
+              collect000 = collect000->rest;
+            }
+          }
+        }
+      }
+      { Cons* variablenames = value000;
+        int start = 0;
+        int varstart = 0;
+        Cons* result = NIL;
+
+        for (;;) {
+          varstart = stringPosition(normalizedtemplate, '?', start);
+          if (varstart == NULL_INTEGER) {
+            result = cons(wrapString(stringSubsequence(templatE, start, NULL_INTEGER)), result);
+            break;
+          }
+          else {
+            { Object* name = NULL;
+              Cons* iter000 = variablenames;
+              int i = NULL_INTEGER;
+              int iter001 = 0;
+
+              for  (name, iter000, i, iter001; 
+                    !(iter000 == NIL); 
+                    iter000 = iter000->rest,
+                    iter001 = iter001 + 1) {
+                name = iter000->value;
+                i = iter001;
+                if (startsWithP(normalizedtemplate, ((StringWrapper*)(name))->wrapperValue, varstart)) {
+                  result = cons(wrapString(stringSubsequence(templatE, start, varstart)), result);
+                  result = cons(wrapInteger(i), result);
+                  start = varstart + strlen((unwrapString(((StringWrapper*)(name)))));
+                  break;
+                }
+              }
+            }
+            if (start <= varstart) {
+              result = cons(wrapString(stringSubsequence(templatE, start, varstart + 1)), result);
+              start = varstart + 1;
+            }
+          }
+        }
+        return (result->reverse());
+      }
+    }
+  }
+}
+
+void printQueryIteratorViaTemplate(QueryIterator* self, std::ostream* stream) {
+  { Object* templatE = lookupQueryOption(self, KWD_QUERY_FORMAT);
+    Cons* parsedtemplate = NULL;
+    Vector* variables = self->externalVariables;
+    QuerySolutionTable* solutions = self->solutions;
+
+    { 
+      BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+      { QuerySolution* solution = NULL;
+        DictionaryIterator* iter000 = ((DictionaryIterator*)(solutions->allocateIterator()));
+        int i = NULL_INTEGER;
+        int iter001 = 1;
+        int upperBound000 = oPRINTLENGTHo;
+        boolean unboundedP000 = upperBound000 == NULL_INTEGER;
+
+        for  (solution, iter000, i, iter001, upperBound000, unboundedP000; 
+              iter000->nextP() &&
+                  (unboundedP000 ||
+                   (iter001 <= upperBound000)); 
+              iter001 = iter001 + 1) {
+          solution = ((QuerySolution*)(iter000->value));
+          i = iter001;
+          { Surrogate* testValue000 = safePrimaryType(templatE);
+
+            if (testValue000 == SGT_QUERY_STELLA_CONS) {
+              { Object* template000 = templatE;
+                Cons* templatE = ((Cons*)(template000));
+
+                parsedtemplate = ((Cons*)(copyConsTree(templatE)));
+                { Object* value = NULL;
+                  Vector* vector000 = solution->bindings;
+                  int index000 = 0;
+                  int length000 = vector000->length();
+                  PatternVariable* var = NULL;
+                  Vector* vector001 = variables;
+                  int index001 = 0;
+                  int length001 = vector001->length();
+
+                  for  (value, vector000, index000, length000, var, vector001, index001, length001; 
+                        (index000 < length000) &&
+                            (index001 < length001); 
+                        index000 = index000 + 1,
+                        index001 = index001 + 1) {
+                    value = (vector000->theArray)[index000];
+                    var = ((PatternVariable*)((vector001->theArray)[index001]));
+                    substituteConsTree(parsedtemplate, value, var->skolemName);
+                  }
+                }
+                if (((boolean)(self->partialMatchStrategy))) {
+                  substituteConsTree(parsedtemplate, wrapFloat(solution->matchScore), SYM_QUERY_PL_KERNEL_KB_pMATCH_SCORE);
+                }
+                *(stream) << parsedtemplate << std::endl;
+              }
+            }
+            else if (subtypeOfStringP(testValue000)) {
+              { Object* template001 = templatE;
+                StringWrapper* templatE = ((StringWrapper*)(template001));
+
+                if (!((boolean)(parsedtemplate))) {
+                  parsedtemplate = parseQueryIteratorStringTemplate(self, templatE->wrapperValue);
+                }
+                { Object* elt = NULL;
+                  Cons* iter002 = parsedtemplate;
+
+                  for (elt, iter002; !(iter002 == NIL); iter002 = iter002->rest) {
+                    elt = iter002->value;
+                    { Surrogate* testValue001 = safePrimaryType(elt);
+
+                      if (subtypeOfStringP(testValue001)) {
+                        { Object* elt000 = elt;
+                          StringWrapper* elt = ((StringWrapper*)(elt000));
+
+                          *(stream) << elt->wrapperValue;
+                        }
+                      }
+                      else if (subtypeOfIntegerP(testValue001)) {
+                        { Object* elt001 = elt;
+                          IntegerWrapper* elt = ((IntegerWrapper*)(elt001));
+
+                          *(stream) << (solution->bindings->theArray)[(elt->wrapperValue)];
+                        }
+                      }
+                      else {
+                        { OutputStringStream* stream000 = newOutputStringStream();
+
+                          *(stream000->nativeStream) << "`" << testValue001 << "'" << " is not a valid case option";
+                          throw *newStellaException(stream000->theStringReader());
+                        }
+                      }
+                    }
+                  }
+                }
+                *(stream) << std::endl;
+              }
+            }
+            else {
+              { OutputStringStream* stream001 = newOutputStringStream();
+
+                *(stream001->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+                throw *newStellaException(stream001->theStringReader());
+              }
+            }
+          }
+          if ((i == oPRINTLENGTHo) &&
+              (i < solutions->length())) {
+            *(stream) << ";;; ...";
+          }
+        }
+      }
+    }
   }
 }
 
@@ -6413,10 +6835,11 @@ QueryIterator* initializeQueryIterator(QueryIterator* queryiterator, Description
         setDynamicSlotValue(description->dynamicSlots, SYM_QUERY_LOGIC_DONT_OPTIMIZEp, TRUE_WRAPPER, FALSE_WRAPPER);
         setDynamicSlotValue(description->proposition->dynamicSlots, SYM_QUERY_LOGIC_DONT_OPTIMIZEp, TRUE_WRAPPER, FALSE_WRAPPER);
       }
-      queryiterator->queryContext = oCONTEXTo.get();
+      queryiterator->queryContext = oCONTEXTo;
       queryiterator->baseControlFrame = basecontrolframe;
       queryiterator->currentControlFrame = basecontrolframe;
       oCONTROL_FRAME_ID_COUNTERo = 0;
+      queryiterator->debugIdSetter(NULL);
       basecontrolframe->proposition = description->proposition;
       basecontrolframe->up = NULL;
       setDynamicSlotValue(basecontrolframe->dynamicSlots, SYM_QUERY_LOGIC_GOAL_CACHE, NULL, NULL);
@@ -6424,7 +6847,7 @@ QueryIterator* initializeQueryIterator(QueryIterator* queryiterator, Description
       externalvariables = allocateCollectionVariables(basecontrolframe, description);
       { 
         BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getQueryContext());
-        BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+        BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
         if (((boolean)(outsidebindings))) {
           setDynamicSlotValue(queryiterator->dynamicSlots, SYM_QUERY_LOGIC_INITIAL_BINDINGS, outsidebindings, NULL);
           if (outsidebindings->length() > externalvariables->length()) {
@@ -6561,6 +6984,7 @@ boolean QueryIterator::querySucceededP() {
 
 boolean QueryIterator::nextP() {
   { QueryIterator* self = this;
+    Justification* dummy1;
 
     if (self->exhaustedP) {
       return (false);
@@ -6596,7 +7020,7 @@ boolean QueryIterator::nextP() {
           for (;;) {
             { 
               BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getQueryContext());
-              BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+              BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
               for (;;) {
                 solution->bindings->clear();
                 solution->truthValue = UNKNOWN_TRUTH_VALUE;
@@ -6618,7 +7042,7 @@ boolean QueryIterator::nextP() {
                         iter000 = iter000 + 1) {
                     ev = ((PatternVariable*)((vector000->theArray)[index000]));
                     i = iter000;
-                    (solution->bindings->theArray)[i] = (valueOf((oQUERYITERATORo.get()->currentPatternRecord->variableBindings->theArray)[(ev->boundToOffset)]));
+                    (solution->bindings->theArray)[i] = (valueOf((oQUERYITERATORo->currentPatternRecord->variableBindings->theArray)[(ev->boundToOffset)]));
                   }
                 }
                 self->foundAtLeastOneSolutionP = true;
@@ -6627,27 +7051,54 @@ boolean QueryIterator::nextP() {
                   solution->truthValue = (((boolean)(temp000)) ? temp000 : UNKNOWN_TRUTH_VALUE);
                 }
                 solution->justification = ((Justification*)(dynamicSlotValue(baseframe->dynamicSlots, SYM_QUERY_LOGIC_JUSTIFICATION, NULL)));
-                if (((boolean)(oQUERYITERATORo.get())) &&
-                    ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+                if (((boolean)(oQUERYITERATORo)) &&
+                    ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
                   solution->matchScore = ((((boolean)(baseframe->partialMatchFrame)) &&
                       ((baseframe->partialMatchFrame->positiveScore != NULL_FLOAT) ||
                        (baseframe->partialMatchFrame->negativeScore != NULL_FLOAT))) ? baseframe->partialMatchFrame->positiveScore : ((FloatWrapper*)(dynamicSlotValue(self->dynamicSlots, SYM_QUERY_LOGIC_LATEST_POSITIVE_SCORE, NULL_FLOAT_WRAPPER)))->wrapperValue);
                 }
                 duplicate = ((QuerySolution*)(self->solutions->lookup(solution->bindings)));
                 if (((boolean)(duplicate)) &&
-                    ((!(((boolean)(oQUERYITERATORo.get())) &&
-                    ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)))) ||
+                    ((!(((boolean)(oQUERYITERATORo)) &&
+                    ((boolean)(oQUERYITERATORo->partialMatchStrategy)))) ||
                      (solution->matchScore <= duplicate->matchScore))) {
                   continue;
                 }
                 if (((baseframe->truthValue == DEFAULT_TRUE_TRUTH_VALUE) ||
                     (baseframe->truthValue == DEFAULT_FALSE_TRUTH_VALUE)) &&
-                    tryToDefeatLastAnswerP(self)) {
+                    tryToDefeatLastAnswerP(self, dummy1)) {
                   continue;
                 }
-                baseframe->truthValue = solution->truthValue;
+                if (testQueryOptionP(oQUERYITERATORo, KWD_QUERY_FOUR_VALUEDp)) {
+                  { boolean answer = false;
+                    Justification* negativeJustification = NULL;
+
+                    answer = tryToDefeatLastAnswerP(self, negativeJustification);
+                    if (answer) {
+                      if (self->queryIsTrueFalseP()) {
+                        {
+                          solution->truthValue = INCONSISTENT_TRUTH_VALUE;
+                          if (oRECORD_JUSTIFICATIONSpo) {
+                            solution->justification = createClashJustification(baseframe->proposition, consList(2, solution->justification, negativeJustification), KWD_QUERY_BACKWARD);
+                          }
+                          baseframe->truthValue = INCONSISTENT_TRUTH_VALUE;
+                          setDynamicSlotValue(baseframe->dynamicSlots, SYM_QUERY_LOGIC_JUSTIFICATION, solution->justification, NULL);
+                          self->solutions->insertAt(solution->bindings, solution);
+                          self->exhaustedP = false;
+                          self->value = solution;
+                          return (true);
+                        }
+                      }
+                      else {
+                        continue;
+                      }
+                    }
+                  }
+                }
                 setDynamicSlotValue(baseframe->dynamicSlots, SYM_QUERY_LOGIC_JUSTIFICATION, solution->justification, NULL);
                 self->solutions->insertAt(solution->bindings, solution);
+                self->value = solution;
+                self->exhaustedP = false;
                 return (true);
               }
             }
@@ -6678,19 +7129,22 @@ boolean QueryIterator::nextP() {
   }
 }
 
-boolean tryToDefeatLastAnswerP(QueryIterator* self) {
+boolean tryToDefeatLastAnswerP(QueryIterator* self, Justification*& _Return1) {
   { QueryIterator* negatedquery = (self->queryIsTrueFalseP() ? self : ((QueryIterator*)(dynamicSlotValue(self->dynamicSlots, SYM_QUERY_LOGIC_AUXILIARY_QUERY, NULL))));
     Context* querycontext = self->queryContext;
     boolean strictpositiveanswerP = false;
     boolean strictnegativeanswerP = false;
     boolean defeatedP = false;
+    Justification* negativejustification = NULL;
 
     if (!((boolean)(negatedquery))) {
       negatedquery = createQueryIterator(self->queryDescription(), ((QuerySolution*)(self->value))->bindings);
+      negatedquery->debugIdSetter("negatedQuery");
       negatedquery->queryContext = querycontext;
     }
     else {
       if (self == ((QueryIterator*)(dynamicSlotValue(negatedquery->dynamicSlots, SYM_QUERY_LOGIC_AUXILIARY_QUERY, NULL)))) {
+        _Return1 = NULL;
         return (false);
       }
       setDynamicSlotValue(negatedquery->dynamicSlots, SYM_QUERY_LOGIC_INITIAL_BINDINGS, ((QuerySolution*)(self->value))->bindings, NULL);
@@ -6712,6 +7166,7 @@ boolean tryToDefeatLastAnswerP(QueryIterator* self) {
           std::cout << "Looking for conflicting strict conclusion:" << std::endl;
         }
         strictnegativeanswerP = negatedquery->nextP();
+        negativejustification = ((Justification*)(dynamicSlotValue(negatedquery->baseControlFrame->dynamicSlots, SYM_QUERY_LOGIC_JUSTIFICATION, NULL)));
       }
       negatedquery->baseControlFrame->reversePolarityP = false;
       negatedquery->reset();
@@ -6727,9 +7182,8 @@ boolean tryToDefeatLastAnswerP(QueryIterator* self) {
         if (strictnegativeanswerP) {
           { 
             BIND_STELLA_SPECIAL(oQUERYITERATORo, QueryIterator*, negatedquery);
-            std::cout << std::endl << "CONTRADICTION: Discovered strict arguments for" << std::endl << "    " << "`" << negatedquery->baseControlFrame->proposition << "'" << std::endl << "and its negation." << std::endl << std::endl;
+            defeatedP = true;
           }
-          defeatedP = true;
         }
         else {
           defeatedP = false;
@@ -6740,6 +7194,7 @@ boolean tryToDefeatLastAnswerP(QueryIterator* self) {
       }
     }
     setDynamicSlotValue(negatedquery->dynamicSlots, SYM_QUERY_LOGIC_AUXILIARY_QUERY, NULL, NULL);
+    _Return1 = negativejustification;
     return (defeatedP);
   }
 }
@@ -6857,8 +7312,8 @@ QueryIterator* makeQuery(Object* iovariables, Object* querytree, Cons* externalb
       BIND_STELLA_SPECIAL(oTERMUNDERCONSTRUCTIONo, Object*, prefixquerytree);
       BIND_STELLA_SPECIAL(oQUERYITERATORo, QueryIterator*, NULL);
       { 
-        BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo.get());
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oMODULEo, Module*, oMODULEo);
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         description = evaluateDescriptionTerm(prefixquerytree, false);
       }
     }
@@ -7174,6 +7629,10 @@ void processQueryOptions(QueryIterator* query, Object* options) {
             value = coerceToBoolean(value);
             theoptions->insertAt(key, value);
           }
+          else if (testValue000 == KWD_QUERY_FOUR_VALUEDp) {
+            value = coerceToBoolean(value);
+            theoptions->insertAt(key, value);
+          }
           else if (testValue000 == KWD_QUERY_ITERATIVE_DEEPENINGp) {
             value = coerceToBoolean(value);
             theoptions->insertAt(key, value);
@@ -7282,13 +7741,99 @@ void processQueryOptions(QueryIterator* query, Object* options) {
               }
             }
           }
-          else if (testValue000 == KWD_QUERY_MATCH_MODE) {
+          else if (testValue000 == KWD_QUERY_FORMAT) {
+            theoptions->removeAt(key);
             { Surrogate* testValue006 = safePrimaryType(value);
 
               if (subtypeOfP(testValue006, SGT_QUERY_STELLA_GENERALIZED_SYMBOL)) {
                 { Object* value011 = value;
                   GeneralizedSymbol* value = ((GeneralizedSymbol*)(value011));
 
+                  if (stringEqlP(value->symbolName, "HORIZONTAL")) {
+                    theoptions->insertAt(key, KWD_QUERY_HORIZONTAL);
+                  }
+                  else if (stringEqlP(value->symbolName, "VERTICAL")) {
+                    theoptions->insertAt(key, KWD_QUERY_VERTICAL);
+                  }
+                  else if (stringEqlP(value->symbolName, "TSV")) {
+                    theoptions->insertAt(key, KWD_QUERY_TSV);
+                  }
+                  else if (stringEqlP(value->symbolName, "LIST") ||
+                      stringEqlP(value->symbolName, "CONS")) {
+                    theoptions->insertAt(key, KWD_QUERY_LIST);
+                  }
+                }
+              }
+              else if (testValue006 == SGT_QUERY_STELLA_CONS) {
+                { Object* value012 = value;
+                  Cons* value = ((Cons*)(value012));
+
+                  theoptions->insertAt(key, value);
+                }
+              }
+              else if (subtypeOfStringP(testValue006)) {
+                { Object* value013 = value;
+                  StringWrapper* value = ((StringWrapper*)(value013));
+
+                  theoptions->insertAt(key, value);
+                }
+              }
+              else {
+              }
+            }
+            if (!(((boolean)(theoptions->lookup(key))))) {
+              { OutputStringStream* stream008 = newOutputStringStream();
+
+                { 
+                  BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+                  *(stream008->nativeStream) << "PARSING ERROR: " << "Illegal :FORMAT value: " << "`" << value << "'" << "." << std::endl;
+                  helpSignalPropositionError(stream008, KWD_QUERY_ERROR);
+                }
+                throw *newParsingError(stream008->theStringReader());
+              }
+            }
+          }
+          else if (testValue000 == KWD_QUERY_READABLE_VALUESp) {
+            theoptions->insertAt(key, coerceToBoolean(value));
+          }
+          else if (testValue000 == KWD_QUERY_OUTPUT_FILE) {
+            theoptions->insertAt(key, wrapString(coerceToString(value)));
+          }
+          else if (testValue000 == KWD_QUERY_IF_EXISTS) {
+            theoptions->removeAt(key);
+            if (subtypeOfP(safePrimaryType(value), SGT_QUERY_STELLA_GENERALIZED_SYMBOL)) {
+              { Object* value014 = value;
+                GeneralizedSymbol* value = ((GeneralizedSymbol*)(value014));
+
+                if (stringEqlP(value->symbolName, "APPEND")) {
+                  theoptions->insertAt(key, KWD_QUERY_APPEND);
+                }
+                else if (stringEqlP(value->symbolName, "SUPERSEDE")) {
+                  theoptions->insertAt(key, KWD_QUERY_SUPERSEDE);
+                }
+              }
+            }
+            else {
+            }
+            if (!(((boolean)(theoptions->lookup(key))))) {
+              { OutputStringStream* stream009 = newOutputStringStream();
+
+                { 
+                  BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+                  *(stream009->nativeStream) << "PARSING ERROR: " << "Illegal :IF-EXISTS value: " << "`" << value << "'" << "." << std::endl;
+                  helpSignalPropositionError(stream009, KWD_QUERY_ERROR);
+                }
+                throw *newParsingError(stream009->theStringReader());
+              }
+            }
+          }
+          else if (testValue000 == KWD_QUERY_MATCH_MODE) {
+            { Surrogate* testValue007 = safePrimaryType(value);
+
+              if (subtypeOfP(testValue007, SGT_QUERY_STELLA_GENERALIZED_SYMBOL)) {
+                { Object* value015 = value;
+                  GeneralizedSymbol* value = ((GeneralizedSymbol*)(value015));
+
                   if (stringP(value)) {
                     theoptions->insertAt(key, value->keywordify());
                   }
@@ -7297,9 +7842,9 @@ void processQueryOptions(QueryIterator* query, Object* options) {
                   }
                 }
               }
-              else if (subtypeOfStringP(testValue006)) {
-                { Object* value012 = value;
-                  StringWrapper* value = ((StringWrapper*)(value012));
+              else if (subtypeOfStringP(testValue007)) {
+                { Object* value016 = value;
+                  StringWrapper* value = ((StringWrapper*)(value016));
 
                   if (stringP(value)) {
                     theoptions->insertAt(key, value->keywordify());
@@ -7310,43 +7855,43 @@ void processQueryOptions(QueryIterator* query, Object* options) {
                 }
               }
               else {
-                { OutputStringStream* stream008 = newOutputStringStream();
+                { OutputStringStream* stream010 = newOutputStringStream();
 
                   { 
                     BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-                    *(stream008->nativeStream) << "PARSING ERROR: " << "Illegal :MATCH-MODE value: " << "`" << value << "'" << "." << std::endl;
-                    helpSignalPropositionError(stream008, KWD_QUERY_ERROR);
+                    *(stream010->nativeStream) << "PARSING ERROR: " << "Illegal :MATCH-MODE value: " << "`" << value << "'" << "." << std::endl;
+                    helpSignalPropositionError(stream010, KWD_QUERY_ERROR);
                   }
-                  throw *newParsingError(stream008->theStringReader());
+                  throw *newParsingError(stream010->theStringReader());
                 }
               }
             }
           }
           else if (testValue000 == KWD_QUERY_MINIMUM_SCORE) {
-            { Surrogate* testValue007 = safePrimaryType(value);
+            { Surrogate* testValue008 = safePrimaryType(value);
 
-              if (subtypeOfIntegerP(testValue007)) {
-                { Object* value013 = value;
-                  IntegerWrapper* value = ((IntegerWrapper*)(value013));
+              if (subtypeOfIntegerP(testValue008)) {
+                { Object* value017 = value;
+                  IntegerWrapper* value = ((IntegerWrapper*)(value017));
 
                   theoptions->insertAt(key, wrapFloat(((double)(value->wrapperValue))));
                 }
               }
-              else if (subtypeOfFloatP(testValue007)) {
-                { Object* value014 = value;
-                  FloatWrapper* value = ((FloatWrapper*)(value014));
+              else if (subtypeOfFloatP(testValue008)) {
+                { Object* value018 = value;
+                  FloatWrapper* value = ((FloatWrapper*)(value018));
 
                 }
               }
               else {
-                { OutputStringStream* stream009 = newOutputStringStream();
+                { OutputStringStream* stream011 = newOutputStringStream();
 
                   { 
                     BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-                    *(stream009->nativeStream) << "PARSING ERROR: " << "Illegal :MINIMUM-SCORE value: " << "`" << value << "'" << "." << std::endl;
-                    helpSignalPropositionError(stream009, KWD_QUERY_ERROR);
+                    *(stream011->nativeStream) << "PARSING ERROR: " << "Illegal :MINIMUM-SCORE value: " << "`" << value << "'" << "." << std::endl;
+                    helpSignalPropositionError(stream011, KWD_QUERY_ERROR);
                   }
-                  throw *newParsingError(stream009->theStringReader());
+                  throw *newParsingError(stream011->theStringReader());
                 }
               }
             }
@@ -7355,30 +7900,30 @@ void processQueryOptions(QueryIterator* query, Object* options) {
             theoptions->insertAt(key, coerceToBoolean(value));
           }
           else if (testValue000 == KWD_QUERY_MAXIMUM_UNKNOWNS) {
-            { Surrogate* testValue008 = safePrimaryType(value);
+            { Surrogate* testValue009 = safePrimaryType(value);
 
-              if (subtypeOfIntegerP(testValue008)) {
-                { Object* value015 = value;
-                  IntegerWrapper* value = ((IntegerWrapper*)(value015));
+              if (subtypeOfIntegerP(testValue009)) {
+                { Object* value019 = value;
+                  IntegerWrapper* value = ((IntegerWrapper*)(value019));
 
                 }
               }
-              else if (subtypeOfFloatP(testValue008)) {
-                { Object* value016 = value;
-                  FloatWrapper* value = ((FloatWrapper*)(value016));
+              else if (subtypeOfFloatP(testValue009)) {
+                { Object* value020 = value;
+                  FloatWrapper* value = ((FloatWrapper*)(value020));
 
                   theoptions->insertAt(key, wrapInteger(((int)(value->wrapperValue))));
                 }
               }
               else {
-                { OutputStringStream* stream010 = newOutputStringStream();
+                { OutputStringStream* stream012 = newOutputStringStream();
 
                   { 
                     BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
-                    *(stream010->nativeStream) << "PARSING ERROR: " << "Illegal :MAXIMUM-UNKNOWNS value: " << "`" << value << "'" << "." << std::endl;
-                    helpSignalPropositionError(stream010, KWD_QUERY_ERROR);
+                    *(stream012->nativeStream) << "PARSING ERROR: " << "Illegal :MAXIMUM-UNKNOWNS value: " << "`" << value << "'" << "." << std::endl;
+                    helpSignalPropositionError(stream012, KWD_QUERY_ERROR);
                   }
-                  throw *newParsingError(stream010->theStringReader());
+                  throw *newParsingError(stream012->theStringReader());
                 }
               }
             }
@@ -7429,8 +7974,24 @@ Object* lookupQueryOption(Object* queryoroptions, Keyword* key) {
   }
 }
 
+Object* lookupQueryOptionWithDefault(Object* queryoroptions, Keyword* key, Object* defaulT) {
+  { Object* value = lookupQueryOption(queryoroptions, key);
+
+    if (((boolean)(value))) {
+      return (value);
+    }
+    else {
+      return (defaulT);
+    }
+  }
+}
+
 boolean testQueryOptionP(Object* queryoroptions, Keyword* key) {
   return (eqlP(lookupQueryOption(queryoroptions, key), TRUE_WRAPPER));
+}
+
+boolean testQueryOptionValueP(Object* queryoroptions, Keyword* key, Object* value) {
+  return (eqlP(lookupQueryOption(queryoroptions, key), value));
 }
 
 Object* lookupDeferredQueryOption(Object* queryoroptions, Keyword* key, Surrogate* coercetotype) {
@@ -7611,29 +8172,31 @@ TruthValue* callAsk(Object* query) {
     BIND_STELLA_SPECIAL(oREVERSEPOLARITYpo, boolean, false);
     BIND_STELLA_SPECIAL(oINFERENCELEVELo, NormalInferenceLevel*, currentInferenceLevel());
     BIND_STELLA_SPECIAL(oGENERATE_ALL_PROOFSpo, boolean, false);
-    { TruthValue* truthvalue = NULL;
-      boolean threevaluedaskP = testQueryOptionP(oQUERYITERATORo.get(), KWD_QUERY_THREE_VALUEDp);
+    { TruthValue* truthValue = NULL;
+      boolean threevaluedaskP = testQueryOptionP(oQUERYITERATORo, KWD_QUERY_THREE_VALUEDp);
+      boolean fourvaluedaskP = testQueryOptionP(oQUERYITERATORo, KWD_QUERY_FOUR_VALUEDp);
 
       if (!((boolean)(oMOST_RECENT_QUERYo))) {
-        oMOST_RECENT_QUERYo = oQUERYITERATORo.get();
+        oMOST_RECENT_QUERYo = oQUERYITERATORo;
       }
-      oQUERYITERATORo.get()->nextP();
-      { TruthValue* temp000 = oQUERYITERATORo.get()->baseControlFrame->truthValue;
+      oQUERYITERATORo->nextP();
+      { TruthValue* temp000 = oQUERYITERATORo->baseControlFrame->truthValue;
 
-        truthvalue = (((boolean)(temp000)) ? temp000 : UNKNOWN_TRUTH_VALUE);
+        truthValue = (((boolean)(temp000)) ? temp000 : UNKNOWN_TRUTH_VALUE);
       }
-      if (threevaluedaskP &&
-          ((truthvalue == UNKNOWN_TRUTH_VALUE) ||
-           (!((boolean)(truthvalue))))) {
-        oQUERYITERATORo.get()->baseControlFrame->reversePolarityP = true;
-        oQUERYITERATORo.get()->reset();
-        oQUERYITERATORo.get()->nextP();
-        { TruthValue* temp001 = oQUERYITERATORo.get()->baseControlFrame->truthValue;
+      if (((truthValue == UNKNOWN_TRUTH_VALUE) ||
+          (!((boolean)(truthValue)))) &&
+          (threevaluedaskP ||
+           fourvaluedaskP)) {
+        oQUERYITERATORo->baseControlFrame->reversePolarityP = true;
+        oQUERYITERATORo->reset();
+        oQUERYITERATORo->nextP();
+        { TruthValue* temp001 = oQUERYITERATORo->baseControlFrame->truthValue;
 
-          truthvalue = (((boolean)(temp001)) ? temp001 : UNKNOWN_TRUTH_VALUE);
+          truthValue = (((boolean)(temp001)) ? temp001 : UNKNOWN_TRUTH_VALUE);
         }
       }
-      return (truthvalue);
+      return (truthValue);
     }
   }
 }
@@ -7813,10 +8376,10 @@ QueryIterator* callRetrieve(Object* query) {
       BIND_STELLA_SPECIAL(oGENERATE_ALL_PROOFSpo, boolean, testQueryOptionP(thequery, KWD_QUERY_ALL_PROOFSp));
       { int i = NULL_INTEGER;
         int iter000 = 1;
-        int upperBound000 = lookupHowManySolutions(oQUERYITERATORo.get());
+        int upperBound000 = lookupHowManySolutions(oQUERYITERATORo);
         boolean unboundedP000 = upperBound000 == NULL_INTEGER;
         QuerySolution* solution = NULL;
-        QueryIterator* iter001 = oQUERYITERATORo.get();
+        QueryIterator* iter001 = oQUERYITERATORo;
 
         for  (i, iter000, upperBound000, unboundedP000, solution, iter001; 
               (unboundedP000 ||
@@ -7826,7 +8389,7 @@ QueryIterator* callRetrieve(Object* query) {
           i = iter000;
           solution = ((QuerySolution*)(iter001->value));
           if (traceKeywordP(KWD_QUERY_TRACE_SOLUTIONS)) {
-            traceSolution(oQUERYITERATORo.get(), solution, i);
+            traceSolution(oQUERYITERATORo, solution, i);
           }
         }
       }
@@ -7842,7 +8405,13 @@ QueryIterator* callRetrieve(Object* query) {
         else {
         }
       }
-      return (oQUERYITERATORo.get());
+      if (oQUERYITERATORo->timeoutP) {
+        plLog(KWD_QUERY_HIGH, 1, wrapString("The query timed out"));
+      }
+      if (oQUERYITERATORo->depthCutoffsP) {
+        plLog(KWD_QUERY_HIGH, 1, wrapString("The query had depth cutoffs"));
+      }
+      return (oQUERYITERATORo);
     }
   }
 }
@@ -7855,7 +8424,8 @@ QueryIterator* retrieve(Cons* query) {
   // 	 
   //   (retrieve [<integer> | all]
   //             [[{<vardecl> | (<vardecl>+)}]
-  //             <proposition>])
+  //              <proposition>
+  //              [<option-keyword> <option-value>]])
   // 	
   // The variables and proposition are similar to an `exists' sentence or
   // `kappa' term without the explicit quantifier.  If variables are declared,
@@ -7877,6 +8447,28 @@ QueryIterator* retrieve(Cons* query) {
   // so far.  Calling `retrieve' without any arguments (or only with the first
   // argument) will generate one (or more) solutions to the most recently
   // asked query.
+  // 
+  // `retrieve' supports the following options:
+  //   :TIMEOUT Time limit on query effort in seconds.
+  //   :MAXIMUM-DEPTH Inference depth cutoff in goal depth.
+  //   :INFERENCE-LEVEL Level of inference to use.  The values in order of effort
+  //      and power are ASSERTION, SHALLOW, SUBSUMPTION, BACKTRACKING, NORMAL
+  //      and REFUTATION. Default is NORMAL.
+  //   :FOUR-VALUED? Will attempt to disprove values and find conflicts.
+  //   :ITERATIVE-DEEPENING? Controls whether the search strategy will use
+  //      depth-first or breadth-first search.
+  //   :DONT-OPTIMIZE? Option to disable re-arrangement of clauses by the query
+  //      optimizer.  If TRUE, then use the order of clauses as given in the query.
+  //   :SORT-BY one of SCORE, VALUES, VALUES-DESCENDING, VALUES-ASCENDING.  
+  //      SCORE is only meaningful for partial match mode.  The value sorting
+  //      is done by values in order in the tuple.  Default is ascending.
+  //   :MATCH-MODE Allows choice of matching mode.  One of STRICT, INCREMENTAL, 
+  //      NEURAL-NETWORK, or other plug-in partial-match mode.
+  //      The default is STRICT.
+  //   :MINIMUM-SCORE The minimum score to return.  Only useful in partial match
+  //     mode.
+  //   :MAXIMUM-UNKNOWNS The maximum number of unknown values to allow.  Only useful
+  //     for whynot matching.
   // 
   // KIF examples:
   // 	 
@@ -8170,6 +8762,8 @@ Cons* applyCachedRetrieve(Cons* variables, Cons* querybody, Cons* inputbindings,
     { 
       BIND_STELLA_SPECIAL(oQUERYITERATORo, QueryIterator*, queryiterator);
       BIND_STELLA_SPECIAL(oREVERSEPOLARITYpo, boolean, false);
+      BIND_STELLA_SPECIAL(oINFERENCELEVELo, NormalInferenceLevel*, currentInferenceLevel());
+      BIND_STELLA_SPECIAL(oGENERATE_ALL_PROOFSpo, boolean, testQueryOptionP(queryiterator, KWD_QUERY_ALL_PROOFSp));
       while (queryiterator->nextP()) {
       }
     }
@@ -8247,7 +8841,7 @@ Cons* applyCachedRetrieve(Cons* variables, Cons* querybody, Cons* inputbindings,
           }
           outputbindings = cons(tuple, outputbindings);
           truthvalues = cons(s->truthValue, truthvalues);
-          if (oRECORD_JUSTIFICATIONSpo.get()) {
+          if (oRECORD_JUSTIFICATIONSpo) {
             justifications = cons(s->justification, justifications);
           }
         }
@@ -8267,12 +8861,18 @@ boolean applyCachedAsk(Cons* inputvariables, Cons* querybody, Cons* inputbinding
   { QueryIterator* queryiterator = makeCachedQuery(inputvariables, querybody, inputbindings, options, cacheid);
 
     if (((boolean)(queryiterator))) {
-      { TruthValue* truthvalue = callAsk(queryiterator);
+      { 
+        BIND_STELLA_SPECIAL(oQUERYITERATORo, QueryIterator*, queryiterator);
+        BIND_STELLA_SPECIAL(oREVERSEPOLARITYpo, boolean, false);
+        BIND_STELLA_SPECIAL(oINFERENCELEVELo, NormalInferenceLevel*, currentInferenceLevel());
+        BIND_STELLA_SPECIAL(oGENERATE_ALL_PROOFSpo, boolean, false);
+        { TruthValue* truthvalue = callAsk(queryiterator);
 
-        freeCachedQuery(queryiterator, cacheid);
-        _Return1 = truthvalue;
-        return ((truthvalue == TRUE_TRUTH_VALUE) ||
-            (truthvalue == DEFAULT_TRUE_TRUTH_VALUE));
+          freeCachedQuery(queryiterator, cacheid);
+          _Return1 = truthvalue;
+          return ((truthvalue == TRUE_TRUTH_VALUE) ||
+              (truthvalue == DEFAULT_TRUE_TRUTH_VALUE));
+        }
       }
     }
     else {
@@ -8305,7 +8905,7 @@ LogicObject* getPrototype(Description* description) {
 }
 
 TruthValue* unaryDescriptionSpecializesDescriptionP(Description* sub, Description* super) {
-  if (oREVERSEPOLARITYpo.get()) {
+  if (oREVERSEPOLARITYpo) {
     return (UNKNOWN_TRUTH_VALUE);
   }
   if (collectionImpliesCollectionP(sub, super)) {
@@ -8322,7 +8922,7 @@ TruthValue* unaryDescriptionSpecializesDescriptionP(Description* sub, Descriptio
 
     try {
       { 
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getInferenceCache(oMODULEo.get(), KWD_QUERY_META));
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getInferenceCache(oMODULEo, KWD_QUERY_META));
         result = callAsk(createQueryIterator(super, stella::vector(1, getPrototype(sub))));
       }
     }
@@ -8341,14 +8941,14 @@ TruthValue* unaryDescriptionSpecializesDescriptionP(Description* sub, Descriptio
 
 TruthValue* descriptionSpecializesDescriptionP(Description* sub, Description* super) {
   if (!(sub->arity() == super->arity())) {
-    if (oREVERSEPOLARITYpo.get()) {
+    if (oREVERSEPOLARITYpo) {
       return (TRUE_TRUTH_VALUE);
     }
     else {
       return (FALSE_TRUTH_VALUE);
     }
   }
-  if (oREVERSEPOLARITYpo.get()) {
+  if (oREVERSEPOLARITYpo) {
     return (UNKNOWN_TRUTH_VALUE);
   }
   if (collectionImpliesCollectionP(sub, super)) {
@@ -8368,7 +8968,7 @@ TruthValue* descriptionSpecializesDescriptionP(Description* sub, Description* su
     TruthValue* result = UNKNOWN_TRUTH_VALUE;
 
     pushMonotonicWorld();
-    initializeInferenceWorld(((World*)(oCONTEXTo.get())));
+    initializeInferenceWorld(((World*)(oCONTEXTo)));
     { int i = NULL_INTEGER;
       int iter000 = 0;
       int upperBound000 = skolemsvector->length() - 1;
@@ -8400,14 +9000,14 @@ TruthValue* descriptionSpecializesDescriptionP(Description* sub, Description* su
 
 TruthValue* vectorSatisfiesDescriptionP(Vector* vector, Description* description) {
   if (!(vector->length() == description->arity())) {
-    if (oREVERSEPOLARITYpo.get()) {
+    if (oREVERSEPOLARITYpo) {
       return (TRUE_TRUTH_VALUE);
     }
     else {
       return (FALSE_TRUTH_VALUE);
     }
   }
-  if (oREVERSEPOLARITYpo.get()) {
+  if (oREVERSEPOLARITYpo) {
     return (UNKNOWN_TRUTH_VALUE);
   }
   try {
@@ -8512,7 +9112,7 @@ TruthValue* specializesP(Object* subobject, Object* superobject) {
 
     finalizeObjects();
     { 
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getInferenceCache(oMODULEo.get(), KWD_QUERY_META));
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getInferenceCache(oMODULEo, KWD_QUERY_META));
       if (((boolean)(subdescription)) &&
           ((boolean)(superdescription))) {
         return (descriptionSpecializesDescriptionP(subdescription, superdescription));
@@ -8760,7 +9360,7 @@ TruthValue* satisfiesP(Object* instanceortuple, Object* relationref) {
       finalizeObjects();
       { 
         BIND_STELLA_SPECIAL(oCONTEXTo, Context*, getQueryContext());
-        BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+        BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
         if (isaP(instanceortuple, SGT_QUERY_STELLA_COLLECTION) ||
             consP(instanceortuple)) {
           { Vector* vector = coerceToVector(instanceortuple);
@@ -8842,7 +9442,7 @@ Cons* updatePropositionsFromQuery(QueryIterator* query, Description* description
       description = querydescription;
     }
     if (!((boolean)(module))) {
-      module = oMODULEo.get();
+      module = oMODULEo;
     }
     proposition = description->proposition;
     if (variableArityP(description) &&
@@ -8865,9 +9465,8 @@ Cons* updatePropositionsFromQuery(QueryIterator* query, Description* description
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
-      dontcheckduplicatesP = namedDescriptionP(description) &&
-          getDescriptionExtension(((NamedDescription*)(description)), false)->emptyP();
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
+      dontcheckduplicatesP = false;
       { QuerySolution* solution = NULL;
         DictionaryIterator* iter000 = ((DictionaryIterator*)(solutions->allocateIterator()));
         int i = NULL_INTEGER;
@@ -9052,7 +9651,7 @@ Cons* assertFromQuery(Cons* query, Cons* options) {
         pattern = ((Description*)(conceiveTerm(theoptions->lookup(KWD_QUERY_PATTERN))));
       }
       { 
-        BIND_STELLA_SPECIAL(oRECORD_JUSTIFICATIONSpo, boolean, oRECORD_JUSTIFICATIONSpo.get() ||
+        BIND_STELLA_SPECIAL(oRECORD_JUSTIFICATIONSpo, boolean, oRECORD_JUSTIFICATIONSpo ||
             coerceWrappedBooleanToBoolean(((BooleanWrapper*)(recordjustificationsP))));
         return (updatePropositionsFromQuery(getQueryIteratorFromCommand(query), coerceToDescription((((boolean)(pattern)) ? pattern : theoptions->lookup(KWD_QUERY_RELATION)), NULL), ((Module*)(theoptions->lookup(KWD_QUERY_MODULE))), KWD_QUERY_ASSERT_TRUE, coerceWrappedBooleanToBoolean(((BooleanWrapper*)(recordjustificationsP)))));
       }
@@ -9099,7 +9698,7 @@ Cons* retractFromQueryEvaluatorWrapper(Cons* arguments) {
 }
 
 char* displaySettings() {
-  std::cout << std::endl << "*LAZY-SATELLITE-RULES?*" << " =  " << oLAZY_SATELLITE_RULESpo << std::endl << "*CACHE-SUCCEEDED-GOALS?*" << " =  " << oCACHE_SUCCEEDED_GOALSpo << std::endl << "*CACHE-FAILED-GOALS?*" << " =  " << oCACHE_FAILED_GOALSpo << std::endl << "*CACHE-GOAL-QUANTUM*" << " =  " << oCACHE_GOAL_QUANTUMo << std::endl << "*CACHE-INFERABLE-SUBCOLLECTIONS?*" << " =  " << oCACHE_INFERABLE_SUBCOLLECTIONSpo << std::endl << "*INFERENCELEVEL*" << " =  " << oINFERENCELEVELo.get() << std::endl << "*MAXIMUM-BACKTRACKING-DEPTH*" << " =  " << oMAXIMUM_BACKTRACKING_DEPTHo << std::endl << "*TYPE-CHECK-STRATEGY*" << " =  " << oTYPE_CHECK_STRATEGYo.get() << std::endl << "*DUPLICATE-SUBGOAL-STRATEGY*" << " =  " << oDUPLICATE_SUBGOAL_STRATEGYo << std::endl << "*DUPLICATE-GOAL-SEARCH-DEPTH*" << " =  " << oDUPLICATE_GOAL_SEARCH_DEPTHo << std::endl << "*DUPLICATE-RULE-SEARCH-DEPTH*" << " =  " << oDUPLICATE_RULE_SEARCH_DEPTHo << std::endl << "*GLOBALLY-CLOSED-COLLECTIONS?*" << " =  " << oGLOBALLY_CLOSED_COLLECTIONSpo << std::endl << "*DEFAULT-MAXIMUM-DEPTH*" << " =  " << oDEFAULT_MAXIMUM_DEPTHo << std::endl << "*INITIAL-BACKTRACKING-DEPTH*" << " =  " << oINITIAL_BACKTRACKING_DEPTHo << std::endl << "*ITERATIVE-DEEPENING-MODE?*" << " =  " << oITERATIVE_DEEPENING_MODEpo << std::endl << "*DUPLICATEINSTANCESCACHECROSSOVERPOINT*" << " =  " << oDUPLICATEINSTANCESCACHECROSSOVERPOINTo << std::endl << "*CLASSIFY-FROM-NON-INFERABLE-PARENTS-ONLY?*" << " =  " << oCLASSIFY_FROM_NON_INFERABLE_PARENTS_ONLYpo.get() << std::endl << std::endl;
+  std::cout << std::endl << "*LAZY-SATELLITE-RULES?*" << " =  " << oLAZY_SATELLITE_RULESpo << std::endl << "*CACHE-SUCCEEDED-GOALS?*" << " =  " << oCACHE_SUCCEEDED_GOALSpo << std::endl << "*CACHE-FAILED-GOALS?*" << " =  " << oCACHE_FAILED_GOALSpo << std::endl << "*CACHE-GOAL-QUANTUM*" << " =  " << oCACHE_GOAL_QUANTUMo << std::endl << "*CACHE-INFERABLE-SUBCOLLECTIONS?*" << " =  " << oCACHE_INFERABLE_SUBCOLLECTIONSpo << std::endl << "*INFERENCELEVEL*" << " =  " << oINFERENCELEVELo << std::endl << "*MAXIMUM-BACKTRACKING-DEPTH*" << " =  " << oMAXIMUM_BACKTRACKING_DEPTHo << std::endl << "*TYPE-CHECK-STRATEGY*" << " =  " << oTYPE_CHECK_STRATEGYo << std::endl << "*DUPLICATE-SUBGOAL-STRATEGY*" << " =  " << oDUPLICATE_SUBGOAL_STRATEGYo << std::endl << "*DUPLICATE-GOAL-SEARCH-DEPTH*" << " =  " << oDUPLICATE_GOAL_SEARCH_DEPTHo << std::endl << "*DUPLICATE-RULE-SEARCH-DEPTH*" << " =  " << oDUPLICATE_RULE_SEARCH_DEPTHo << std::endl << "*GLOBALLY-CLOSED-COLLECTIONS?*" << " =  " << oGLOBALLY_CLOSED_COLLECTIONSpo << std::endl << "*DEFAULT-MAXIMUM-DEPTH*" << " =  " << oDEFAULT_MAXIMUM_DEPTHo << std::endl << "*INITIAL-BACKTRACKING-DEPTH*" << " =  " << oINITIAL_BACKTRACKING_DEPTHo << std::endl << "*ITERATIVE-DEEPENING-MODE?*" << " =  " << oITERATIVE_DEEPENING_MODEpo << std::endl << "*DUPLICATEINSTANCESCACHECROSSOVERPOINT*" << " =  " << oDUPLICATEINSTANCESCACHECROSSOVERPOINTo << std::endl << "*CLASSIFY-FROM-NON-INFERABLE-PARENTS-ONLY?*" << " =  " << oCLASSIFY_FROM_NON_INFERABLE_PARENTS_ONLYpo << std::endl << std::endl;
   return ("");
 }
 
@@ -9244,13 +9843,13 @@ void helpStartupQuery3() {
     SYM_QUERY_LOGIC_MASTER_PROPOSITION = ((Symbol*)(internRigidSymbolWrtModule("MASTER-PROPOSITION", NULL, 0)));
     KWD_QUERY_FLAT = ((Keyword*)(internRigidSymbolWrtModule("FLAT", NULL, 2)));
     KWD_QUERY_REALISTIC = ((Keyword*)(internRigidSymbolWrtModule("REALISTIC", NULL, 2)));
+    KWD_QUERY_ATOMIC_GOAL = ((Keyword*)(internRigidSymbolWrtModule("ATOMIC-GOAL", NULL, 2)));
     KWD_QUERY_DOWN = ((Keyword*)(internRigidSymbolWrtModule("DOWN", NULL, 2)));
     KWD_QUERY_ITERATIVE_FORALL = ((Keyword*)(internRigidSymbolWrtModule("ITERATIVE-FORALL", NULL, 2)));
     KWD_QUERY_STATE_MACHINE = ((Keyword*)(internRigidSymbolWrtModule("STATE-MACHINE", NULL, 2)));
     KWD_QUERY_PARALLEL_STRATEGIES = ((Keyword*)(internRigidSymbolWrtModule("PARALLEL-STRATEGIES", NULL, 2)));
     KWD_QUERY_STRATEGY = ((Keyword*)(internRigidSymbolWrtModule("STRATEGY", NULL, 2)));
     KWD_QUERY_SPECIALIST = ((Keyword*)(internRigidSymbolWrtModule("SPECIALIST", NULL, 2)));
-    KWD_QUERY_ATOMIC_GOAL = ((Keyword*)(internRigidSymbolWrtModule("ATOMIC-GOAL", NULL, 2)));
     SYM_QUERY_LOGIC_ANTECEDENTS_RULE = ((Symbol*)(internRigidSymbolWrtModule("ANTECEDENTS-RULE", NULL, 0)));
     KWD_QUERY_UP_TRUE = ((Keyword*)(internRigidSymbolWrtModule("UP-TRUE", NULL, 2)));
     KWD_QUERY_UP_FAIL = ((Keyword*)(internRigidSymbolWrtModule("UP-FAIL", NULL, 2)));
@@ -9326,6 +9925,7 @@ void helpStartupQuery4() {
     SYM_QUERY_LOGIC_ALREADY_GENERATED_TABLE = ((Symbol*)(internRigidSymbolWrtModule("ALREADY-GENERATED-TABLE", NULL, 0)));
     SYM_QUERY_LOGIC_REMOVING_DUPLICATESp = ((Symbol*)(internRigidSymbolWrtModule("REMOVING-DUPLICATES?", NULL, 0)));
     KWD_QUERY_GOAL_CACHES = ((Keyword*)(internRigidSymbolWrtModule("GOAL-CACHES", NULL, 2)));
+    KWD_QUERY_GOAL_CUTOFFS = ((Keyword*)(internRigidSymbolWrtModule("GOAL-CUTOFFS", NULL, 2)));
     KWD_QUERY_DEPTH_VIOLATION = ((Keyword*)(internRigidSymbolWrtModule("DEPTH-VIOLATION", NULL, 2)));
     KWD_QUERY_DEPTH_CUTOFF = ((Keyword*)(internRigidSymbolWrtModule("DEPTH-CUTOFF", NULL, 2)));
     KWD_QUERY_TECHNICAL = ((Keyword*)(internRigidSymbolWrtModule("TECHNICAL", NULL, 2)));
@@ -9343,10 +9943,27 @@ void helpStartupQuery4() {
     SGT_QUERY_LOGIC_QUERY_SOLUTION_TABLE_ITERATOR = ((Surrogate*)(internRigidSymbolWrtModule("QUERY-SOLUTION-TABLE-ITERATOR", NULL, 1)));
     SYM_QUERY_STELLA_THE_TABLE = ((Symbol*)(internRigidSymbolWrtModule("THE-TABLE", getStellaModule("/STELLA", true), 0)));
     SYM_QUERY_STELLA_CURSOR = ((Symbol*)(internRigidSymbolWrtModule("CURSOR", getStellaModule("/STELLA", true), 0)));
+    SYM_QUERY_LOGIC_DEBUG_ID = ((Symbol*)(internRigidSymbolWrtModule("DEBUG-ID", NULL, 0)));
+    KWD_QUERY_FORMAT = ((Keyword*)(internRigidSymbolWrtModule("FORMAT", NULL, 2)));
+    KWD_QUERY_OUTPUT_FILE = ((Keyword*)(internRigidSymbolWrtModule("OUTPUT-FILE", NULL, 2)));
+    KWD_QUERY_IF_EXISTS = ((Keyword*)(internRigidSymbolWrtModule("IF-EXISTS", NULL, 2)));
+    KWD_QUERY_SUPERSEDE = ((Keyword*)(internRigidSymbolWrtModule("SUPERSEDE", NULL, 2)));
+    KWD_QUERY_APPEND = ((Keyword*)(internRigidSymbolWrtModule("APPEND", NULL, 2)));
+    KWD_QUERY_VERTICAL = ((Keyword*)(internRigidSymbolWrtModule("VERTICAL", NULL, 2)));
+    KWD_QUERY_LIST = ((Keyword*)(internRigidSymbolWrtModule("LIST", NULL, 2)));
+    KWD_QUERY_TSV = ((Keyword*)(internRigidSymbolWrtModule("TSV", NULL, 2)));
+    KWD_QUERY_HORIZONTAL = ((Keyword*)(internRigidSymbolWrtModule("HORIZONTAL", NULL, 2)));
     KWD_QUERY_TRACE_SOLUTIONS = ((Keyword*)(internRigidSymbolWrtModule("TRACE-SOLUTIONS", NULL, 2)));
     SYM_QUERY_LOGIC_ATOMIC_SINGLETONSp = ((Symbol*)(internRigidSymbolWrtModule("ATOMIC-SINGLETONS?", NULL, 0)));
+    SGT_QUERY_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", getStellaModule("/STELLA", true), 1)));
+    SYM_QUERY_PL_KERNEL_KB_pMATCH_SCORE = ((Symbol*)(internRigidSymbolWrtModule("?MATCH-SCORE", getStellaModule("/PL-KERNEL-KB", true), 0)));
     KWD_QUERY_EXECUTE_QUERY = ((Keyword*)(internRigidSymbolWrtModule("EXECUTE-QUERY", NULL, 2)));
     KWD_QUERY_DONT_OPTIMIZEp = ((Keyword*)(internRigidSymbolWrtModule("DONT-OPTIMIZE?", NULL, 2)));
+  }
+}
+
+void helpStartupQuery5() {
+  {
     SYM_QUERY_LOGIC_DONT_OPTIMIZEp = ((Symbol*)(internRigidSymbolWrtModule("DONT-OPTIMIZE?", NULL, 0)));
     SYM_QUERY_LOGIC_INITIAL_BINDINGS = ((Symbol*)(internRigidSymbolWrtModule("INITIAL-BINDINGS", NULL, 0)));
     KWD_QUERY_ITERATIVE_DEEPENINGp = ((Keyword*)(internRigidSymbolWrtModule("ITERATIVE-DEEPENING?", NULL, 2)));
@@ -9355,16 +9972,13 @@ void helpStartupQuery4() {
     KWD_QUERY_STRICT = ((Keyword*)(internRigidSymbolWrtModule("STRICT", NULL, 2)));
     KWD_QUERY_DEFERRED_OPTIONS = ((Keyword*)(internRigidSymbolWrtModule("DEFERRED-OPTIONS", NULL, 2)));
     KWD_QUERY_ERROR = ((Keyword*)(internRigidSymbolWrtModule("ERROR", NULL, 2)));
+    KWD_QUERY_FOUR_VALUEDp = ((Keyword*)(internRigidSymbolWrtModule("FOUR-VALUED?", NULL, 2)));
+    KWD_QUERY_BACKWARD = ((Keyword*)(internRigidSymbolWrtModule("BACKWARD", NULL, 2)));
     SYM_QUERY_STELLA_TRUE = ((Symbol*)(internRigidSymbolWrtModule("TRUE", getStellaModule("/STELLA", true), 0)));
     SYM_QUERY_LOGIC_KAPPA = ((Symbol*)(internRigidSymbolWrtModule("KAPPA", NULL, 0)));
     SYM_QUERY_STELLA_EXISTS = ((Symbol*)(internRigidSymbolWrtModule("EXISTS", getStellaModule("/STELLA", true), 0)));
     KWD_QUERY_HOW_MANY = ((Keyword*)(internRigidSymbolWrtModule("HOW-MANY", NULL, 2)));
     KWD_QUERY_SORT_BY = ((Keyword*)(internRigidSymbolWrtModule("SORT-BY", NULL, 2)));
-  }
-}
-
-void helpStartupQuery5() {
-  {
     KWD_QUERY_SCORE = ((Keyword*)(internRigidSymbolWrtModule("SCORE", NULL, 2)));
     KWD_QUERY_CHECK_VARIABLESp = ((Keyword*)(internRigidSymbolWrtModule("CHECK-VARIABLES?", NULL, 2)));
     KWD_QUERY_MOVEOUT = ((Keyword*)(internRigidSymbolWrtModule("MOVEOUT", NULL, 2)));
@@ -9378,11 +9992,12 @@ void helpStartupQuery5() {
     KWD_QUERY_VALUES = ((Keyword*)(internRigidSymbolWrtModule("VALUES", NULL, 2)));
     KWD_QUERY_VALUES_DESCENDING = ((Keyword*)(internRigidSymbolWrtModule("VALUES-DESCENDING", NULL, 2)));
     KWD_QUERY_VALUES_ASCENDING = ((Keyword*)(internRigidSymbolWrtModule("VALUES-ASCENDING", NULL, 2)));
+    KWD_QUERY_READABLE_VALUESp = ((Keyword*)(internRigidSymbolWrtModule("READABLE-VALUES?", NULL, 2)));
     KWD_QUERY_MINIMUM_SCORE = ((Keyword*)(internRigidSymbolWrtModule("MINIMUM-SCORE", NULL, 2)));
     KWD_QUERY_MAXIMIZE_SCOREp = ((Keyword*)(internRigidSymbolWrtModule("MAXIMIZE-SCORE?", NULL, 2)));
     KWD_QUERY_MAXIMUM_UNKNOWNS = ((Keyword*)(internRigidSymbolWrtModule("MAXIMUM-UNKNOWNS", NULL, 2)));
     SGT_QUERY_STELLA_PROPERTY_LIST = ((Surrogate*)(internRigidSymbolWrtModule("PROPERTY-LIST", getStellaModule("/STELLA", true), 1)));
-    SGT_QUERY_STELLA_CONS = ((Surrogate*)(internRigidSymbolWrtModule("CONS", getStellaModule("/STELLA", true), 1)));
+    KWD_QUERY_HIGH = ((Keyword*)(internRigidSymbolWrtModule("HIGH", NULL, 2)));
     KWD_QUERY_DYNAMIC = ((Keyword*)(internRigidSymbolWrtModule("DYNAMIC", NULL, 2)));
     KWD_QUERY_DYNAMIC_WITH_CLUSTERING = ((Keyword*)(internRigidSymbolWrtModule("DYNAMIC-WITH-CLUSTERING", NULL, 2)));
     SGT_QUERY_PL_KERNEL_KB_CONCEPT_PROTOTYPE = ((Surrogate*)(internRigidSymbolWrtModule("CONCEPT-PROTOTYPE", getStellaModule("/PL-KERNEL-KB", true), 1)));
@@ -9412,52 +10027,53 @@ void helpStartupQuery5() {
 
 void helpStartupQuery6() {
   {
-    { NormalInferenceLevel* self029 = newNormalInferenceLevel();
+    { NormalInferenceLevel* self030 = newNormalInferenceLevel();
 
-      self029->keyword = KWD_QUERY_NORMAL;
-      NORMAL_INFERENCE = self029;
+      self030->keyword = KWD_QUERY_NORMAL;
+      NORMAL_INFERENCE = self030;
     }
-    { BacktrackingInferenceLevel* self030 = newBacktrackingInferenceLevel();
+    { BacktrackingInferenceLevel* self031 = newBacktrackingInferenceLevel();
 
-      self030->keyword = KWD_QUERY_BACKTRACKING;
-      BACKTRACKING_INFERENCE = self030;
+      self031->keyword = KWD_QUERY_BACKTRACKING;
+      BACKTRACKING_INFERENCE = self031;
     }
-    { SubsumptionInferenceLevel* self031 = newSubsumptionInferenceLevel();
+    { SubsumptionInferenceLevel* self032 = newSubsumptionInferenceLevel();
 
-      self031->keyword = KWD_QUERY_SUBSUMPTION;
-      SUBSUMPTION_INFERENCE = self031;
+      self032->keyword = KWD_QUERY_SUBSUMPTION;
+      SUBSUMPTION_INFERENCE = self032;
     }
-    { ShallowInferenceLevel* self032 = newShallowInferenceLevel();
+    { ShallowInferenceLevel* self033 = newShallowInferenceLevel();
 
-      self032->keyword = KWD_QUERY_SHALLOW;
-      SHALLOW_INFERENCE = self032;
+      self033->keyword = KWD_QUERY_SHALLOW;
+      SHALLOW_INFERENCE = self033;
     }
-    { AssertionInferenceLevel* self033 = newAssertionInferenceLevel();
+    { AssertionInferenceLevel* self034 = newAssertionInferenceLevel();
 
-      self033->keyword = KWD_QUERY_ASSERTION;
-      ASSERTION_INFERENCE = self033;
+      self034->keyword = KWD_QUERY_ASSERTION;
+      ASSERTION_INFERENCE = self034;
     }
-    { RefutationInferenceLevel* self034 = newRefutationInferenceLevel();
+    { RefutationInferenceLevel* self035 = newRefutationInferenceLevel();
 
-      self034->keyword = KWD_QUERY_REFUTATION;
-      REFUTATION_INFERENCE = self034;
+      self035->keyword = KWD_QUERY_REFUTATION;
+      REFUTATION_INFERENCE = self035;
     }
-    oINFERENCELEVELo.set(NORMAL_INFERENCE);
+    oINFERENCELEVELo = NORMAL_INFERENCE;
     oMAXIMUM_BACKTRACKING_DEPTHo = oDEFAULT_MAXIMUM_DEPTHo;
-    oTYPE_CHECK_STRATEGYo.set(KWD_QUERY_LOOKUP);
+    oTYPE_CHECK_STRATEGYo = KWD_QUERY_LOOKUP;
     oDUPLICATE_SUBGOAL_STRATEGYo = KWD_QUERY_DUPLICATE_GOALS;
     oDUPLICATE_GOAL_SEARCH_DEPTHo = NULL_INTEGER;
     oDUPLICATE_RULE_SEARCH_DEPTHo = NULL_INTEGER;
-    { PropertyList* self035 = newPropertyList();
+    { PropertyList* self036 = newPropertyList();
 
-      self035->thePlist = listO(3, KWD_QUERY_UPCLASSIFY, wrapCharacter('u'), listO(3, KWD_QUERY_DOWNCLASSIFY, wrapCharacter('d'), listO(3, KWD_QUERY_PROPAGATE, wrapCharacter('f'), listO(3, KWD_QUERY_PARTIAL_MATCH, wrapCharacter('p'), NIL))));
-      oTHINKING_DOT_TABLEo = self035;
+      self036->thePlist = listO(3, KWD_QUERY_UPCLASSIFY, wrapCharacter('u'), listO(3, KWD_QUERY_DOWNCLASSIFY, wrapCharacter('d'), listO(3, KWD_QUERY_PROPAGATE, wrapCharacter('f'), listO(3, KWD_QUERY_PARTIAL_MATCH, wrapCharacter('p'), NIL))));
+      oTHINKING_DOT_TABLEo = self036;
     }
-    { BooleanVectorIndexNode* self036 = newBooleanVectorIndexNode();
+    { BooleanVectorIndexNode* self037 = newBooleanVectorIndexNode();
 
-      self036->theVector = newBooleanVector(0);
-      oBOOLEAN_VECTOR_INDEXo = self036;
+      self037->theVector = newBooleanVector(0);
+      oBOOLEAN_VECTOR_INDEXo = self037;
     }
+    oTRACED_GOALSo = newHashSet();
     oINLINE_QUERY_CACHEo = newKeyValueMap();
   }
 }
@@ -9611,19 +10227,25 @@ void helpStartupQuery8() {
     defineFunctionObject("COMPUTE-FRAME-DEPTH", "(DEFUN (COMPUTE-FRAME-DEPTH INTEGER) ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&computeFrameDepth)), NULL);
     defineFunctionObject("PRINT-VERTICAL-BARS", "(DEFUN PRINT-VERTICAL-BARS ((DEPTH INTEGER)))", ((cpp_function_code)(&printVerticalBars)), NULL);
     defineFunctionObject("UNWIND-TO-CHOICE-POINTS-BELOW-FRAME", "(DEFUN UNWIND-TO-CHOICE-POINTS-BELOW-FRAME ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&unwindToChoicePointsBelowFrame)), NULL);
+    defineFunctionObject("TRACE-GOAL", "(DEFUN TRACE-GOAL ((NAME NAME)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&traceGoal)), NULL);
+    defineFunctionObject("UNTRACE-GOAL", "(DEFUN UNTRACE-GOAL ((NAME NAME)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", ((cpp_function_code)(&untraceGoal)), NULL);
+    defineFunctionObject("CLEAR-TRACED-GOALS", "(DEFUN CLEAR-TRACED-GOALS () :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&clearTracedGoals)), NULL);
+    defineFunctionObject("RESTRICTED-GOAL-TRACING?", "(DEFUN (RESTRICTED-GOAL-TRACING? BOOLEAN) ())", ((cpp_function_code)(&restrictedGoalTracingP)), NULL);
+    defineFunctionObject("TRACE-THIS-GOAL?", "(DEFUN (TRACE-THIS-GOAL? BOOLEAN) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&traceThisGoalP)), NULL);
     defineFunctionObject("TRACE-GOAL-TREE", "(DEFUN TRACE-GOAL-TREE ((FRAME CONTROL-FRAME) (DEPTH INTEGER) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&traceGoalTree)), NULL);
+    defineFunctionObject("TRACE-GOAL-STACK", "(DEFUN TRACE-GOAL-STACK ((FRAME CONTROL-FRAME)))", ((cpp_function_code)(&traceGoalStack)), NULL);
     defineFunctionObject("OLD-INTERPRET-AND-SCORES", "(DEFUN (OLD-INTERPRET-AND-SCORES KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&oldInterpretAndScores)), NULL);
+  }
+}
+
+void helpStartupQuery9() {
+  {
     defineMethodObject("(DEFMETHOD (CONTINUE-PARTIAL-AND-PROOF KEYWORD) ((SELF CONTROL-FRAME) (FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_method_code)(&ControlFrame::continuePartialAndProof)), ((cpp_method_code)(NULL)));
     defineFunctionObject("INTERPRET-ITERATIVE-FORALL-SCORES", "(DEFUN (INTERPRET-ITERATIVE-FORALL-SCORES KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&interpretIterativeForallScores)), NULL);
     defineFunctionObject("OLD-INTERPRET-OR-SCORES", "(DEFUN (OLD-INTERPRET-OR-SCORES KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&oldInterpretOrScores)), NULL);
     defineMethodObject("(DEFMETHOD (CONTINUE-PARTIAL-OR-PROOF KEYWORD) ((SELF CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_method_code)(&ControlFrame::continuePartialOrProof)), ((cpp_method_code)(NULL)));
     defineFunctionObject("OLD-INTERPRET-FAIL-SCORE", "(DEFUN (OLD-INTERPRET-FAIL-SCORE KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&oldInterpretFailScore)), NULL);
     defineMethodObject("(DEFMETHOD (CONTINUE-PARTIAL-NOT-PROOF KEYWORD) ((SELF CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_method_code)(&ControlFrame::continuePartialNotProof)), ((cpp_method_code)(NULL)));
-  }
-}
-
-void helpStartupQuery9() {
-  {
     defineFunctionObject("OLD-INTERPRET-GOAL-SCORES", "(DEFUN (OLD-INTERPRET-GOAL-SCORES KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&oldInterpretGoalScores)), NULL);
     defineFunctionObject("ATTACH-SUPPORT", "(DEFUN ATTACH-SUPPORT ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&attachSupport)), NULL);
     defineMethodObject("(DEFMETHOD (CONTINUE-PARTIAL-STRATEGIES-PROOFS KEYWORD) ((SELF CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_method_code)(&ControlFrame::continuePartialStrategiesProofs)), ((cpp_method_code)(NULL)));
@@ -9678,17 +10300,17 @@ void helpStartupQuery9() {
     defineFunctionObject("HANDLE-TIMEOUT", "(DEFUN (HANDLE-TIMEOUT CONTROL-FRAME INTEGER) ((FRAME CONTROL-FRAME) (DEPTH INTEGER)))", ((cpp_function_code)(&handleTimeout)), NULL);
     defineMethodObject("(DEFMETHOD (LOOKUP (LIKE (ANY-VALUE SELF))) ((SELF QUERY-SOLUTION-TABLE) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Lookup the solution identified by `key' in `self' and\nreturn its value, or NULL if no such solution exists.\" :PUBLIC? TRUE)", ((cpp_method_code)(&QuerySolutionTable::lookup)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD INSERT-AT ((SELF QUERY-SOLUTION-TABLE) (KEY (LIKE (ANY-KEY SELF))) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Insert `value' identified by `key' into `self'.  If a solution\nwith that key already exists, destructively modify it with the slot values of\n`value'.  This is necessary to preserve the order of solutions in `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&QuerySolutionTable::insertAt)), ((cpp_method_code)(NULL)));
+  }
+}
+
+void helpStartupQuery10() {
+  {
     defineMethodObject("(DEFMETHOD (DELETED? BOOLEAN) ((SELF QUERY-SOLUTION)))", ((cpp_method_code)(&QuerySolution::deletedP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (DELETED?-SETTER BOOLEAN) ((SELF QUERY-SOLUTION) (VALUE BOOLEAN)))", ((cpp_method_code)(&QuerySolution::deletedPSetter)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD REMOVE-AT ((SELF QUERY-SOLUTION-TABLE) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Remove the solution identified by `key' from `self'.\nTo preserve the solution ordering chain, the solution is marked as deleted\nand will be completely removed upon the next iteration through `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&QuerySolutionTable::removeAt)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (POP (LIKE (ANY-VALUE SELF))) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Remove and return the first solution of `self' or NULL\nif the table is empty.\" :PUBLIC? TRUE)", ((cpp_method_code)(&QuerySolutionTable::pop)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Return the number of entries in `self'.\" :PUBLIC? TRUE)", ((cpp_method_code)(&QuerySolutionTable::length)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Return TRUE if `self' has zero entries.\" :PUBLIC? TRUE)", ((cpp_method_code)(&QuerySolutionTable::emptyP)), ((cpp_method_code)(NULL)));
-  }
-}
-
-void helpStartupQuery10() {
-  {
     defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Return TRUE if `self' has at least 1 entry.\" :PUBLIC? TRUE)", ((cpp_method_code)(&QuerySolutionTable::nonEmptyP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (NTH (LIKE (ANY-VALUE SELF))) ((SELF QUERY-SOLUTION-TABLE) (POSITION INTEGER)) :DOCUMENTATION \"Return the nth solution in `self', or NULL if it is empty.\" :PUBLIC? TRUE)", ((cpp_method_code)(&QuerySolutionTable::nth)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD CLEAR ((SELF QUERY-SOLUTION-TABLE)))", ((cpp_method_code)(&QuerySolutionTable::clear)), ((cpp_method_code)(NULL)));
@@ -9702,11 +10324,16 @@ void helpStartupQuery10() {
     defineFunctionObject("PRINT-GOAL-STACK", "(DEFUN PRINT-GOAL-STACK ((FRAME CONTROL-FRAME) (VERBOSE? BOOLEAN)) :DOCUMENTATION \"Print stack of goals.  Assumes that query has been interrupted\nwith a full stack of control frames.\")", ((cpp_function_code)(&printGoalStack)), NULL);
     defineFunctionObject("PGS", "(DEFUN PGS ())", ((cpp_function_code)(&pgs)), NULL);
     defineFunctionObject("VPGS", "(DEFUN VPGS ())", ((cpp_function_code)(&vpgs)), NULL);
+    defineExternalSlotFromStringifiedSource("(DEFSLOT QUERY-ITERATOR DEBUG-ID :TYPE STRING :ALLOCATION :DYNAMIC)");
+    defineMethodObject("(DEFMETHOD DEBUG-ID-SETTER ((SELF QUERY-ITERATOR) (ID STRING)) :DOCUMENTATION \"Set the debug ID of `self' to `id'.  If `id' is NULL, simply\nuse the current ID counter and increment it appropriately.\")", ((cpp_method_code)(&QueryIterator::debugIdSetter)), ((cpp_method_code)(NULL)));
     defineFunctionObject("PRINT-QUERY-ITERATOR", "(DEFUN PRINT-QUERY-ITERATOR ((SELF QUERY-ITERATOR) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printQueryIterator)), NULL);
     defineFunctionObject("PRINT-QUERY-ITERATOR-ORNATELY", "(DEFUN PRINT-QUERY-ITERATOR-ORNATELY ((SELF QUERY-ITERATOR) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printQueryIteratorOrnately)), NULL);
     defineFunctionObject("PRINT-QUERY-ITERATOR-SOLUTION-ORNATELY", "(DEFUN PRINT-QUERY-ITERATOR-SOLUTION-ORNATELY ((SELF QUERY-ITERATOR) (SOLUTION QUERY-SOLUTION) (SOLUTIONNUMBER INTEGER) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printQueryIteratorSolutionOrnately)), NULL);
     defineFunctionObject("TRACE-SOLUTION", "(DEFUN TRACE-SOLUTION ((SELF QUERY-ITERATOR) (SOLUTION QUERY-SOLUTION) (SOLUTIONNUMBER INTEGER)))", ((cpp_function_code)(&traceSolution)), NULL);
     defineFunctionObject("PRINT-QUERY-ITERATOR-READABLY", "(DEFUN PRINT-QUERY-ITERATOR-READABLY ((SELF QUERY-ITERATOR) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printQueryIteratorReadably)), NULL);
+    defineFunctionObject("PRINT-QUERY-ITERATOR-TAB-SEPARATED", "(DEFUN PRINT-QUERY-ITERATOR-TAB-SEPARATED ((SELF QUERY-ITERATOR) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printQueryIteratorTabSeparated)), NULL);
+    defineFunctionObject("PARSE-QUERY-ITERATOR-STRING-TEMPLATE", "(DEFUN (PARSE-QUERY-ITERATOR-STRING-TEMPLATE CONS) ((SELF QUERY-ITERATOR) (TEMPLATE STRING)))", ((cpp_function_code)(&parseQueryIteratorStringTemplate)), NULL);
+    defineFunctionObject("PRINT-QUERY-ITERATOR-VIA-TEMPLATE", "(DEFUN PRINT-QUERY-ITERATOR-VIA-TEMPLATE ((SELF QUERY-ITERATOR) (STREAM NATIVE-OUTPUT-STREAM)))", ((cpp_function_code)(&printQueryIteratorViaTemplate)), NULL);
     defineFunctionObject("ALLOCATE-QUERY-ITERATOR", "(DEFUN (ALLOCATE-QUERY-ITERATOR QUERY-ITERATOR) ())", ((cpp_function_code)(&allocateQueryIterator)), NULL);
     defineMethodObject("(DEFMETHOD FREE ((SELF QUERY-ITERATOR)))", ((cpp_method_code)(&QueryIterator::free)), ((cpp_method_code)(NULL)));
     defineFunctionObject("FREE-QUERY-ITERATOR", "(DEFUN FREE-QUERY-ITERATOR ((SELF QUERY-ITERATOR)))", ((cpp_function_code)(&freeQueryIterator)), NULL);
@@ -9719,14 +10346,16 @@ void helpStartupQuery10() {
     defineMethodObject("(DEFMETHOD (QUERY-IS-PARTIAL? BOOLEAN) ((SELF QUERY-ITERATOR)))", ((cpp_method_code)(&QueryIterator::queryIsPartialP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (QUERY-SUCCEEDED? BOOLEAN) ((SELF QUERY-ITERATOR)))", ((cpp_method_code)(&QueryIterator::querySucceededP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF QUERY-ITERATOR)))", ((cpp_method_code)(&QueryIterator::nextP)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("TRY-TO-DEFEAT-LAST-ANSWER?", "(DEFUN (TRY-TO-DEFEAT-LAST-ANSWER? BOOLEAN) ((SELF QUERY-ITERATOR)))", ((cpp_function_code)(&tryToDefeatLastAnswerP)), NULL);
+    defineFunctionObject("TRY-TO-DEFEAT-LAST-ANSWER?", "(DEFUN (TRY-TO-DEFEAT-LAST-ANSWER? BOOLEAN JUSTIFICATION) ((SELF QUERY-ITERATOR)))", ((cpp_function_code)(&tryToDefeatLastAnswerP)), NULL);
     defineMethodObject("(DEFMETHOD RESET ((SELF QUERY-ITERATOR)))", ((cpp_method_code)(&QueryIterator::reset)), ((cpp_method_code)(NULL)));
     defineFunctionObject("STANDARDIZE-QUERY-TREE", "(DEFUN (STANDARDIZE-QUERY-TREE CONS) ((IOVARIABLES OBJECT) (QUERYBODY OBJECT) (EXTERNALVARIABLES CONS)))", ((cpp_function_code)(&standardizeQueryTree)), NULL);
     defineFunctionObject("MAKE-QUERY", "(DEFUN (MAKE-QUERY QUERY-ITERATOR) ((IOVARIABLES OBJECT) (QUERYTREE OBJECT) (EXTERNALBINDINGS CONS) (OPTIONS OBJECT)))", ((cpp_function_code)(&makeQuery)), NULL);
     defineFunctionObject("PARSE-QUERY-AND-OPTIONS", "(DEFUN (PARSE-QUERY-AND-OPTIONS OBJECT OBJECT PROPERTY-LIST) ((|QUERY&OPTIONS| CONS)))", ((cpp_function_code)(&parseQueryAndOptions)), NULL);
     defineFunctionObject("PROCESS-QUERY-OPTIONS", "(DEFUN PROCESS-QUERY-OPTIONS ((QUERY QUERY-ITERATOR) (OPTIONS OBJECT)))", ((cpp_function_code)(&processQueryOptions)), NULL);
     defineFunctionObject("LOOKUP-QUERY-OPTION", "(DEFUN (LOOKUP-QUERY-OPTION OBJECT) ((QUERYOROPTIONS OBJECT) (KEY KEYWORD)))", ((cpp_function_code)(&lookupQueryOption)), NULL);
+    defineFunctionObject("LOOKUP-QUERY-OPTION-WITH-DEFAULT", "(DEFUN (LOOKUP-QUERY-OPTION-WITH-DEFAULT OBJECT) ((QUERYOROPTIONS OBJECT) (KEY KEYWORD) (DEFAULT OBJECT)))", ((cpp_function_code)(&lookupQueryOptionWithDefault)), NULL);
     defineFunctionObject("TEST-QUERY-OPTION?", "(DEFUN (TEST-QUERY-OPTION? BOOLEAN) ((QUERYOROPTIONS OBJECT) (KEY KEYWORD)))", ((cpp_function_code)(&testQueryOptionP)), NULL);
+    defineFunctionObject("TEST-QUERY-OPTION-VALUE?", "(DEFUN (TEST-QUERY-OPTION-VALUE? BOOLEAN) ((QUERYOROPTIONS OBJECT) (KEY KEYWORD) (VALUE OBJECT)))", ((cpp_function_code)(&testQueryOptionValueP)), NULL);
     defineFunctionObject("LOOKUP-DEFERRED-QUERY-OPTION", "(DEFUN (LOOKUP-DEFERRED-QUERY-OPTION OBJECT) ((QUERYOROPTIONS OBJECT) (KEY KEYWORD) (COERCETOTYPE TYPE)))", ((cpp_function_code)(&lookupDeferredQueryOption)), NULL);
     defineFunctionObject("LOOKUP-HOW-MANY-SOLUTIONS", "(DEFUN (LOOKUP-HOW-MANY-SOLUTIONS INTEGER) ((QUERYOROPTIONS OBJECT)))", ((cpp_function_code)(&lookupHowManySolutions)), NULL);
     defineFunctionObject("RUN-YES-OR-NO-QUERY?", "(DEFUN (RUN-YES-OR-NO-QUERY? THREE-VALUED-BOOLEAN) ((QUERY QUERY-ITERATOR)))", ((cpp_function_code)(&runYesOrNoQueryP)), NULL);
@@ -9736,8 +10365,13 @@ void helpStartupQuery10() {
     defineFunctionObject("ASK", "(DEFUN (ASK TRUTH-VALUE) (|&REST| (|PROPOSITION&OPTIONS| PARSE-TREE)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Perform inference to determine whether the proposition specified in\n`proposition&options' is true.  Return the truth-value found.  `ask'\nwill spend most of its effort to determine whether the proposition\nis true and only a little effort via shallow inference strategies to\ndetermine whether it is false.  To find out whether a proposition is\nfalse with full inference effort `ask' its negation.\n\nKIF example: `(ask (happy Fred))' will return TRUE if Fred was indeed\nfound to be happy.  Note, that for this query to run, the logic\nconstant `Fred' and the relation `happy' must already be defined (see\n`assert').  Use `(set/unset-feature goal-trace)' to en/disable goal\ntracing of the inference engine.\n\nThe `ask' command supports the following options: `:TIMEOUT' is an\ninteger or floating point time limit, specified in seconds.  For\nexample, the command `(ask (ner" "vous Fred) :timeout 2.0)' will cease\ninference after two seconds if a proof has not been found by then.\nIf the `:DONT-OPTIMIZE?' is given as TRUE, it tells PowerLoom to\nnot optimize the order of clauses in the query before evaluating it.\nThis is useful for cases where a specific evaluation order of the\nclauses is required (or the optimizer doesn't do the right thing).\nIf `:THREE-VALUED?' is given as TRUE, PowerLoom will try to prove\nthe negation of the query with full effort in case the given query\nreturned UNKNOWN.  By default, PowerLoom uses full effort to prove\nthe query as stated and only a little opportunistic effort to see\nwhether it is actually false.\")", ((cpp_function_code)(&ask)), ((cpp_function_code)(&askEvaluatorWrapper)));
     defineFunctionObject("RETRIEVE-BINDINGS", "(DEFUN (RETRIEVE-BINDINGS QUERY-ITERATOR) ((QUERY OBJECT) (NOFBINDINGS INTEGER)))", ((cpp_function_code)(&retrieveBindings)), NULL);
     defineFunctionObject("CREATE-RETRIEVE-QUERY", "(DEFUN (CREATE-RETRIEVE-QUERY QUERY-ITERATOR) ((QUERY OBJECT)))", ((cpp_function_code)(&createRetrieveQuery)), NULL);
+  }
+}
+
+void helpStartupQuery11() {
+  {
     defineFunctionObject("CALL-RETRIEVE", "(DEFUN (CALL-RETRIEVE QUERY-ITERATOR) ((QUERY OBJECT)) :DOCUMENTATION \"Callable version of `retrieve' (which see).  Accepts queries\nspecified by a query iterator, or specified as a CONS-list of arguments as they\nwould be supplied to `retrieve'.  Raises LOGIC-EXCEPTIONs in case of illegal\nqueries and logical expressions.\" :PUBLIC? TRUE)", ((cpp_function_code)(&callRetrieve)), NULL);
-    defineFunctionObject("RETRIEVE", "(DEFUN (RETRIEVE QUERY-ITERATOR) (|&REST| (QUERY PARSE-TREE)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Retrieve elements of a relation (tuples) that satisfy a proposition.\nThe accepted syntax is:\n	 \n  (retrieve [<integer> | all]\n            [[{<vardecl> | (<vardecl>+)}]\n            <proposition>])\n	\nThe variables and proposition are similar to an `exists' sentence or\n`kappa' term without the explicit quantifier.  If variables are declared,\nthey must match the free variables referenced by <proposition>.  Otherwise,\nthe free variables referenced in <proposition> will be used as the query\nvariables.  If <proposition> is omitted, the most recently asked query\nwill be continued.\n\nA solution is a set of bindings for the listed variables for which\n<proposition> is true.  The optional first argument controls how many\nsolutions should be generated before control is returned.  The keyword\n`all' indicates that all solutions should be generated.  By default,\n`retrieve' r" "eturns after it has found one new solution or if it cannot\nfind any more solutions.\n\n`retrieve' returns an iterator which saves all the necessary state of\na query and stores all generated solutions.  When used interactively,\nthe returned iterator will print out with the set of solutions collected\nso far.  Calling `retrieve' without any arguments (or only with the first\nargument) will generate one (or more) solutions to the most recently\nasked query.\n\nKIF examples:\n	 \n  (retrieve (happy ?x))\n	\nwill try to find one happy entity and store it in the returned \nquery iterator.\n	 \n  (retrieve 10 (happy ?x))\n	\nwill try to find 10 happy entities.\n	 \n  (retrieve 10)\n	\nwill try to find the next 10 happy entities..\n	 \n  (retrieve all (happy ?x))\n	\nwill find all happy entities.\n	 \n  (retrieve all (?x Person) (happy ?x))\n	\nwill to find all happy people.  Here we used the optional retrieve variable\nsyntax to restrict the acceptable solutions.  The above is equivalent to\nthe following query:" "\n	 \n  (retrieve all (and (Person ?x) (happy ?x)))\n	\nSimilarly,\n	 \n  (retrieve all (?x Person))\n  (retrieve all (Person ?x))\n  (retrieve all ?x (Person ?x))\n	\nwill find all people.  Note that in the first case we only specify a query\nvariable and its type but omit the logic sentence which defaults to TRUE.  This\nsomewhat impoverished looking query can be paraphrased as \\\"retrieve all ?x of\ntype Person such that TRUE.\\\"\n	 \n  (retrieve ?x (or (happy ?x) (parent-of Fred ?x)))\n	\nwill try to find a person that is happy or has Fred as a parent.\n	 \n  (retrieve (?y ?x) (parent-of ?x ?y))\n	\nwill try to find the one pair of parent/child and return it in the order\nof child/parent.\n	 \n  (retrieve all (?x Person)\n            (exists (?y Person) (parent-of ?x ?y)))\n	\nwill generate the set of all parents.  Note, that for these queries to run,\nthe class `Person', the relations `happy' and `parent-of', and the logic\nconstant `Fred' must already be defined (see `assert').\n\nUse `(set/unset-fea" "ture trace-subgoals)' to en/disable goal tracing of the\ninference engine.\")", ((cpp_function_code)(&retrieve)), ((cpp_function_code)(&retrieveEvaluatorWrapper)));
+    defineFunctionObject("RETRIEVE", stringConcatenate("(DEFUN (RETRIEVE QUERY-ITERATOR) (|&REST| (QUERY PARSE-TREE)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Retrieve elements of a relation (tuples) that satisfy a proposition.\nThe accepted syntax is:\n	 \n  (retrieve [<integer> | all]\n            [[{<vardecl> | (<vardecl>+)}]\n             <proposition>\n             [<option-keyword> <option-value>]])\n	\nThe variables and proposition are similar to an `exists' sentence or\n`kappa' term without the explicit quantifier.  If variables are declared,\nthey must match the free variables referenced by <proposition>.  Otherwise,\nthe free variables referenced in <proposition> will be used as the query\nvariables.  If <proposition> is omitted, the most recently asked query\nwill be continued.\n\nA solution is a set of bindings for the listed variables for which\n<proposition> is true.  The optional first argument controls how many\nsolutions should be generated before control is returned.  The keyword\n`all' indicates that all solution" "s should be generated.  By default,\n`retrieve' returns after it has found one new solution or if it cannot\nfind any more solutions.\n\n`retrieve' returns an iterator which saves all the necessary state of\na query and stores all generated solutions.  When used interactively,\nthe returned iterator will print out with the set of solutions collected\nso far.  Calling `retrieve' without any arguments (or only with the first\nargument) will generate one (or more) solutions to the most recently\nasked query.\n\n`retrieve' supports the following options:\n  :TIMEOUT Time limit on query effort in seconds.\n  :MAXIMUM-DEPTH Inference depth cutoff in goal depth.\n  :INFERENCE-LEVEL Level of inference to use.  The values in order of effort\n     and power are ASSERTION, SHALLOW, SUBSUMPTION, BACKTRACKING, NORMAL\n     and REFUTATION. Default is NORMAL.\n  :FOUR-VALUED? Will attempt to disprove values and find conflicts.\n  :ITERATIVE-DEEPENING? Controls whether the search strategy will use\n     depth-first or bread" "th-first search.\n  :DONT-OPTIMIZE? Option to disable re-arrangement of clauses by the query\n     optimizer.  If TRUE, then use the order of clauses as given in the query.\n  :SORT-BY one of SCORE, VALUES, VALUES-DESCENDING, VALUES-ASCENDING.  \n     SCORE is only meaningful for partial match mode.  The value sorting\n     is done by values in order in the tuple.  Default is ascending.\n  :MATCH-MODE Allows choice of matching mode.  One of STRICT, INCREMENTAL, \n     NEURAL-NETWORK, or other plug-in partial-match mode.\n     The default is STRICT.\n  :MINIMUM-SCORE The minimum score to return.  Only useful in partial match\n    mode.\n  :MAXIMUM-UNKNOWNS The maximum number of unknown values to allow.  Only useful\n    for whynot matching.\n\nKIF examples:\n	 \n  (retrieve (happy ?x))\n	\nwill try to find one happy entity and store it in the returned \nquery iterator.\n	 \n  (retrieve 10 (happy ?x))\n	\nwill try to find 10 happy entities.\n	 \n  (retrieve 10)\n	\nwill try to find the next 10 happy entities.." "\n	 \n  (retrieve all (happy ?x))\n	\nwill find all happy entities.\n	 \n  (retrieve all (?x Person) (happy ?x))\n	\nwill to find all happy people.  Here we used the optional retrieve variable\nsyntax to restrict the acceptable solutions.  The above is equivalent to\nthe following query:\n	 \n  (retrieve all (and (Person ?x) (happy ?x)))\n	\nSimilarly,\n	 \n  (retrieve all (?x Person))\n  (retrieve all (Person ?x))\n  (retrieve all ?x (Person ?x))\n	\nwill find all people.  Note that in the first case we only specify a query\nvariable and its type but omit the logic sentence which defaults to TRUE.  This\nsomewhat impoverished looking query can be paraphrased as \\\"retrieve all ?x of\ntype Person such that TRUE.\\\"\n	 \n  (retrieve ?x (or (happy ?x) (parent-of Fred ?x)))\n	\nwill try to find a person that is happy or has Fred as a parent.\n	 \n  (retrieve (?y ?x) (parent-of ?x ?y))\n	\nwill try to find the one pair of parent/child and return it in the order\nof child/parent.\n	 \n  (retrieve all (?x Person" ")\n         ", "   (exists (?y Person) (parent-of ?x ?y)))\n	\nwill generate the set of all parents.  Note, that for these queries to run,\nthe class `Person', the relations `happy' and `parent-of', and the logic\nconstant `Fred' must already be defined (see `assert').\n\nUse `(set/unset-feature trace-subgoals)' to en/disable goal tracing of the\ninference engine.\")", 0), ((cpp_function_code)(&retrieve)), ((cpp_function_code)(&retrieveEvaluatorWrapper)));
     defineMethodObject("(DEFMETHOD (CONSIFY-CURRENT-SOLUTIONS CONS) ((SELF QUERY-ITERATOR)) :DOCUMENTATION \"Collect the current solutions of `self' into a cons list\nof result tuples.  If `:SINGLETONS? TRUE', collect a list of atoms rather than a\nlist of lists for tuples of arity=1.\" :PUBLIC? TRUE)", ((cpp_method_code)(&QueryIterator::consifyCurrentSolutions)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (CONSIFY CONS) ((SELF QUERY-ITERATOR)) :DOCUMENTATION \"Generate all solutions for the query self, and collect them into a cons list\nof result tuples.  If `:SINGLETONS? TRUE', collect a list of atoms rather than a\nlist of lists for tuples of arity=1.\" :PUBLIC? TRUE)", ((cpp_method_code)(&QueryIterator::consify)), ((cpp_method_code)(NULL)));
     defineFunctionObject("CONSIFY-QUERY", "(DEFUN (CONSIFY-QUERY CONS) ((SELF QUERY-ITERATOR)) :GLOBALLY-INLINE? TRUE (RETURN (CONSIFY SELF)))", ((cpp_function_code)(&consifyQuery)), NULL);
@@ -9749,11 +10383,6 @@ void helpStartupQuery10() {
     defineFunctionObject("APPLY-CACHED-RETRIEVE", "(DEFUN (APPLY-CACHED-RETRIEVE CONS CONS CONS) ((VARIABLES CONS) (QUERYBODY CONS) (INPUTBINDINGS CONS) (OPTIONS OBJECT) (CACHEID SYMBOL)) :PUBLIC? TRUE)", ((cpp_function_code)(&applyCachedRetrieve)), NULL);
     defineFunctionObject("APPLY-CACHED-ASK", "(DEFUN (APPLY-CACHED-ASK BOOLEAN TRUTH-VALUE) ((INPUTVARIABLES CONS) (QUERYBODY CONS) (INPUTBINDINGS CONS) (OPTIONS OBJECT) (CACHEID SYMBOL)) :PUBLIC? TRUE)", ((cpp_function_code)(&applyCachedAsk)), NULL);
     defineFunctionObject("GET-PROTOTYPE", "(DEFUN (GET-PROTOTYPE LOGIC-OBJECT) ((DESCRIPTION DESCRIPTION)) :PUBLIC? TRUE)", ((cpp_function_code)(&getPrototype)), NULL);
-  }
-}
-
-void helpStartupQuery11() {
-  {
     defineFunctionObject("UNARY-DESCRIPTION-SPECIALIZES-DESCRIPTION?", "(DEFUN (UNARY-DESCRIPTION-SPECIALIZES-DESCRIPTION? TRUTH-VALUE) ((SUB DESCRIPTION) (SUPER DESCRIPTION)))", ((cpp_function_code)(&unaryDescriptionSpecializesDescriptionP)), NULL);
     defineFunctionObject("DESCRIPTION-SPECIALIZES-DESCRIPTION?", "(DEFUN (DESCRIPTION-SPECIALIZES-DESCRIPTION? TRUTH-VALUE) ((SUB DESCRIPTION) (SUPER DESCRIPTION)) :PUBLIC? TRUE)", ((cpp_function_code)(&descriptionSpecializesDescriptionP)), NULL);
     defineFunctionObject("VECTOR-SATISFIES-DESCRIPTION?", "(DEFUN (VECTOR-SATISFIES-DESCRIPTION? TRUTH-VALUE) ((VECTOR VECTOR) (DESCRIPTION DESCRIPTION)) :PUBLIC? TRUE)", ((cpp_function_code)(&vectorSatisfiesDescriptionP)), NULL);
@@ -9781,7 +10410,7 @@ void helpStartupQuery11() {
 void startupQuery() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupQuery1();
       helpStartupQuery2();
@@ -9834,6 +10463,7 @@ void startupQuery() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *THINKING-DOT-TABLE* (PROPERTY-LIST OF KEYWORD CHARACTER-WRAPPER) (NEW PROPERTY-LIST :THE-PLIST (BQUOTE (:UPCLASSIFY |&| (WRAP-LITERAL #\\u) :DOWNCLASSIFY |&| (WRAP-LITERAL #\\d) :PROPAGATE |&| (WRAP-LITERAL #\\f) :PARTIAL-MATCH |&| (WRAP-LITERAL #\\p)))) :DOCUMENTATION \"Maps kind of thinking keywords to characters.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *BOOLEAN-VECTOR-INDEX* BOOLEAN-VECTOR-INDEX-NODE (NEW BOOLEAN-VECTOR-INDEX-NODE :THE-VECTOR (NEW BOOLEAN-VECTOR :ARRAY-SIZE 0)) :DOCUMENTATION \"Points to the head of a discrimination tree of containing\nall boolean vectors.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTINFRAME* CONTROL-FRAME NULL :DOCUMENTATION \"If set, controls diagnostic printing by making\nvariable bindings appear relative to the frame '*printInFrame*'.\")");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TRACED-GOALS* (HASH-SET OF NAMED-DESCRIPTION NAMED-DESCRIPTION) (NEW HASH-SET))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CONTROL-FRAME-ID-COUNTER* INTEGER -1 :DOCUMENTATION \"Generates unique IDs for control frames.  Used only for debugging.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *REVERSEPOLARITY?* BOOLEAN FALSE :PUBLIC? TRUE :DOCUMENTATION \"Signals atomic proposition provers that polarity is negative.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TRACE-DISJOINTNESS-SUBGOALS?* BOOLEAN FALSE :DOCUMENTATION \"If true and goal tracing is on, subgoals of disjointness\nqueries will also be traced.\" :PUBLIC? TRUE)");
@@ -9842,6 +10472,7 @@ void startupQuery() {
       defineExplanationPhrase(KWD_QUERY_DEPTH_CUTOFF, KWD_QUERY_LAY, "because the maximum inference search depth was exceeded", 0);
       defineExplanationPhrase(KWD_QUERY_TIMEOUT, KWD_QUERY_TECHNICAL, "because of an inference timeout", 0);
       defineExplanationPhrase(KWD_QUERY_TIMEOUT, KWD_QUERY_LAY, "because the allotted inference CPU time was exceeded", 0);
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *QUERY-ITERATOR-DEBUG-ID-COUNTER* INTEGER 0)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MOST-RECENT-QUERY* QUERY-ITERATOR NULL)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *INLINE-QUERY-CACHE* (KEY-VALUE-MAP OF SYMBOL (LIST OF QUERY-ITERATOR)) (NEW KEY-VALUE-MAP) :DOCUMENTATION \"Caches queries used in-line by code, so that they don't have to\nbe reparsed and reoptimized each time they are invoked.\" :THREAD-LOCAL? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAX-CACHED-QUERIES-PER-ID* INTEGER 10)");
@@ -10109,6 +10740,8 @@ Keyword* KWD_QUERY_FLAT = NULL;
 
 Keyword* KWD_QUERY_REALISTIC = NULL;
 
+Keyword* KWD_QUERY_ATOMIC_GOAL = NULL;
+
 Keyword* KWD_QUERY_DOWN = NULL;
 
 Keyword* KWD_QUERY_ITERATIVE_FORALL = NULL;
@@ -10120,8 +10753,6 @@ Keyword* KWD_QUERY_PARALLEL_STRATEGIES = NULL;
 Keyword* KWD_QUERY_STRATEGY = NULL;
 
 Keyword* KWD_QUERY_SPECIALIST = NULL;
-
-Keyword* KWD_QUERY_ATOMIC_GOAL = NULL;
 
 Symbol* SYM_QUERY_LOGIC_ANTECEDENTS_RULE = NULL;
 
@@ -10263,6 +10894,8 @@ Symbol* SYM_QUERY_LOGIC_REMOVING_DUPLICATESp = NULL;
 
 Keyword* KWD_QUERY_GOAL_CACHES = NULL;
 
+Keyword* KWD_QUERY_GOAL_CUTOFFS = NULL;
+
 Keyword* KWD_QUERY_DEPTH_VIOLATION = NULL;
 
 Keyword* KWD_QUERY_DEPTH_CUTOFF = NULL;
@@ -10297,9 +10930,33 @@ Symbol* SYM_QUERY_STELLA_THE_TABLE = NULL;
 
 Symbol* SYM_QUERY_STELLA_CURSOR = NULL;
 
+Symbol* SYM_QUERY_LOGIC_DEBUG_ID = NULL;
+
+Keyword* KWD_QUERY_FORMAT = NULL;
+
+Keyword* KWD_QUERY_OUTPUT_FILE = NULL;
+
+Keyword* KWD_QUERY_IF_EXISTS = NULL;
+
+Keyword* KWD_QUERY_SUPERSEDE = NULL;
+
+Keyword* KWD_QUERY_APPEND = NULL;
+
+Keyword* KWD_QUERY_VERTICAL = NULL;
+
+Keyword* KWD_QUERY_LIST = NULL;
+
+Keyword* KWD_QUERY_TSV = NULL;
+
+Keyword* KWD_QUERY_HORIZONTAL = NULL;
+
 Keyword* KWD_QUERY_TRACE_SOLUTIONS = NULL;
 
 Symbol* SYM_QUERY_LOGIC_ATOMIC_SINGLETONSp = NULL;
+
+Surrogate* SGT_QUERY_STELLA_CONS = NULL;
+
+Symbol* SYM_QUERY_PL_KERNEL_KB_pMATCH_SCORE = NULL;
 
 Keyword* KWD_QUERY_EXECUTE_QUERY = NULL;
 
@@ -10320,6 +10977,10 @@ Keyword* KWD_QUERY_STRICT = NULL;
 Keyword* KWD_QUERY_DEFERRED_OPTIONS = NULL;
 
 Keyword* KWD_QUERY_ERROR = NULL;
+
+Keyword* KWD_QUERY_FOUR_VALUEDp = NULL;
+
+Keyword* KWD_QUERY_BACKWARD = NULL;
 
 Symbol* SYM_QUERY_STELLA_TRUE = NULL;
 
@@ -10357,6 +11018,8 @@ Keyword* KWD_QUERY_VALUES_DESCENDING = NULL;
 
 Keyword* KWD_QUERY_VALUES_ASCENDING = NULL;
 
+Keyword* KWD_QUERY_READABLE_VALUESp = NULL;
+
 Keyword* KWD_QUERY_MINIMUM_SCORE = NULL;
 
 Keyword* KWD_QUERY_MAXIMIZE_SCOREp = NULL;
@@ -10365,7 +11028,7 @@ Keyword* KWD_QUERY_MAXIMUM_UNKNOWNS = NULL;
 
 Surrogate* SGT_QUERY_STELLA_PROPERTY_LIST = NULL;
 
-Surrogate* SGT_QUERY_STELLA_CONS = NULL;
+Keyword* KWD_QUERY_HIGH = NULL;
 
 Keyword* KWD_QUERY_DYNAMIC = NULL;
 

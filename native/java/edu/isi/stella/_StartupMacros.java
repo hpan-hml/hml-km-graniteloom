@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -69,6 +69,7 @@ public class _StartupMacros {
           Stella.SYM_STELLA_ONLY_IF = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ONLY-IF", null, 0)));
           Stella.SYM_STELLA_WARN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("WARN", null, 0)));
           Stella.KWD_STARTUP_SYSTEMp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-SYSTEM?", null, 2)));
+          Stella.SYM_STELLA_IF_STELLA_FEATURE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IF-STELLA-FEATURE", null, 0)));
           Stella.SYM_STELLA_INTEGER = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INTEGER", null, 0)));
           Stella.SYM_STELLA_ARRAY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ARRAY", null, 0)));
           Stella.SYM_STELLA_rrARGS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("%%ARGS", null, 0)));

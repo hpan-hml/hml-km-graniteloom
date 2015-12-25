@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2012      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: xml.ste,v 1.30 2010/06/17 22:55:40 tar Exp
+;;; Version: xml.ste,v 1.31 2012/10/13 01:06:57 hans Exp
 
 ;;; Stream tokenizers and the Stella reader.  
 
@@ -600,6 +600,8 @@ a DOCTYPE object."
      ((:start
        :include :skip-whitespace)
 
+      ;; if this state ever changes or moves, make sure to adapt
+      ;; `get-xml-whitespace-preserving-tokenizer-table' as needed:
       (:skip-whitespace
        ! (#\space #\tab #\linefeed #\return) :skip-whitespace
        ! "<" :open-tag
@@ -790,6 +792,34 @@ a DOCTYPE object."
   (setq *XML-tokenizer-table*
     (parse-tokenizer-definition *xml-tokenizer-table-definition*)))
 
+(defspecial *xml-preserve-all-whitespace?* BOOLEAN FALSE
+  :documentation "If true, all whitespace between tags (newlines, trailing WP, etc.)
+will be preserved.  This is a kludge to allow us to read certain `illegal' XML files
+where this whitespace is significant but not appropriately encoded.")
+
+(defglobal *XML-whitespace-preserving-tokenizer-table* TOKENIZER-TABLE NULL)
+
+(defun (get-xml-whitespace-preserving-tokenizer-table TOKENIZER-TABLE) ()
+  (when (null? *XML-whitespace-preserving-tokenizer-table*)
+    ;; build this table only if we need it:
+    (let ((tokenizerDefinition (copy-cons-tree *xml-tokenizer-table-definition*)))
+      (setf (second tokenizerDefinition)
+        (bquote
+         (:skip-whitespace
+          ! "<" :open-tag
+          :eof :eof
+          * :otherwise :content)))
+      (setq *XML-whitespace-preserving-tokenizer-table*
+        (parse-tokenizer-definition tokenizerDefinition))))
+  (return *XML-whitespace-preserving-tokenizer-table*))
+
+(defun (get-xml-tokenizer-table TOKENIZER-TABLE) ()
+  ;; Access the currently appropriate tokenizer table.
+  (if *xml-preserve-all-whitespace?*
+      (return (get-xml-whitespace-preserving-tokenizer-table))
+    (return *XML-tokenizer-table*)))
+
+
 (defun (tokenize-XML-expression TOKENIZER-TOKEN BOOLEAN)
     ((stream INPUT-STREAM) (tokenList TOKENIZER-TOKEN)
      (regionTagName STRING) (skipToRegion? BOOLEAN))
@@ -820,7 +850,7 @@ a DOCTYPE object."
     (when (null? tokenList)
       (setq tokenList (new TOKENIZER-TOKEN))
       (setq tokenCursor tokenList))
-    (with-tokenizer *xml-tokenizer-table* stream
+    (with-tokenizer (get-xml-tokenizer-table) stream
       (loop
         (get-next-token FALSE)
         (when (end-of-tokens?)
@@ -883,16 +913,17 @@ a DOCTYPE object."
            (setq tokenContent (get-token-text FALSE 1 -2)))
           (:CONTENT
            (setq tokenContent (get-token-text FALSE))
-           ;; remove trailing whitespace - this could be optimized by
-           ;;    trimming directly in the tokenizer buffer:
-           (let ((cursor (length tokenContent)))
-             (foreach i in (interval 0 NULL)
-                 where (not (white-space-character?
-                             (nth tokenContent (-- cursor))))
-                 do (when (> i 0)
-                      (setq i (- i))
-                      (setq tokenContent (get-token-text FALSE 0 i)))
-                    (break))))
+           (unless *xml-preserve-all-whitespace?*
+             ;; remove trailing whitespace - this could be optimized by
+             ;;    trimming directly in the tokenizer buffer:
+             (let ((cursor (length tokenContent)))
+               (foreach i in (interval 0 NULL)
+                   where (not (white-space-character?
+                               (nth tokenContent (-- cursor))))
+                   do (when (> i 0)
+                        (setq i (- i))
+                        (setq tokenContent (get-token-text FALSE 0 i)))
+                      (break)))))
           (:ERROR
            (save-tokenizer-stream-state)
            (signal-read-error "Illegal XML syntax: " tokenContent))

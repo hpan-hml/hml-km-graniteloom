@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -171,7 +171,7 @@ Context* changeContextSlowly(Context* self) {
     return (self->changeContext());
   }
   else {
-    return (oCONTEXTo.get());
+    return (oCONTEXTo);
   }
 }
 
@@ -180,7 +180,7 @@ Context* cc(Cons* name) {
   // value of the new current context.  If no `name' is supplied, return
   // the pre-existing value of the current context.  `cc' is a no-op if the
   // context reference cannot be successfully evaluated.
-  { Context* context = oCONTEXTo.get();
+  { Context* context = oCONTEXTo;
     Object* namespec = name->value;
 
     if (((boolean)(namespec))) {
@@ -226,7 +226,7 @@ Context* ccc(Cons* name) {
   // In CommonLisp, if the new context is case sensitive, then change
   // the readtable case to the value of CL-USER::*STELLA-CASE-SENSITIVE-READ-MODE*
   // [default = :INVERT], otherwise to :UPCASE.
-  { Context* context = oCONTEXTo.get();
+  { Context* context = oCONTEXTo;
     Object* namespec = name->value;
     boolean casesensitiveP = context->baseModule->caseSensitiveP;
 
@@ -314,7 +314,7 @@ void printContext(Context* self, std::ostream* stream) {
     if (((self->contextNumber) % 2)) {
       number = number + 1;
     }
-    if (oPRINTREADABLYpo.get()) {
+    if (oPRINTREADABLYpo) {
       if (name != NULL) {
         *(stream) << name;
       }
@@ -380,16 +380,16 @@ Object* accessInContext(Object* value, Context* homecontext, boolean dontinherit
       (!(((boolean)(value)) &&
       (value->primaryType() == SGT_CONTEXTS_STELLA_CS_VALUE)))) {
     if (dontinheritP) {
-      if (oCONTEXTo.get() == homecontext) {
+      if (oCONTEXTo == homecontext) {
         return (value);
       }
     }
     else {
       if ((!((boolean)(homecontext))) ||
-          (((oCONTEXTo.get() == homecontext) ||
-          oCONTEXTo.get()->allSuperContexts->membP(homecontext)) ||
+          (((oCONTEXTo == homecontext) ||
+          oCONTEXTo->allSuperContexts->membP(homecontext)) ||
            (isaP(homecontext, SGT_CONTEXTS_STELLA_MODULE) &&
-            visibleFromP(homecontext, oMODULEo.get())))) {
+            visibleFromP(homecontext, oMODULEo)))) {
         return (value);
       }
     }
@@ -398,7 +398,7 @@ Object* accessInContext(Object* value, Context* homecontext, boolean dontinherit
   { KvCons* kvcons = ((CsValue*)(value))->theKvList;
     int contextnumber = NULL_INTEGER;
 
-    { Context* target = oCONTEXTo.get();
+    { Context* target = oCONTEXTo;
 
       contextnumber = target->contextNumber;
       while (((boolean)(kvcons)) &&
@@ -437,7 +437,7 @@ Object* accessInContext(Object* value, Context* homecontext, boolean dontinherit
       }
     }
     { Context* target = NULL;
-      Cons* iter000 = oCONTEXTo.get()->allSuperContexts;
+      Cons* iter000 = oCONTEXTo->allSuperContexts;
 
       for (target, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         target = ((Context*)(iter000->value));
@@ -553,8 +553,8 @@ Object* updateInContext(Object* oldvalue, Object* newvalue, Context* homecontext
       csvalue = ((CsValue*)(oldvalue));
     }
     else {
-      if ((homecontext == oCONTEXTo.get()) &&
-          (oCONTEXTo.get()->childContexts->emptyP() ||
+      if ((homecontext == oCONTEXTo) &&
+          (oCONTEXTo->childContexts->emptyP() ||
            (!copytochildrenP))) {
         return (newvalue);
       }
@@ -567,7 +567,7 @@ Object* updateInContext(Object* oldvalue, Object* newvalue, Context* homecontext
         }
       }
     }
-    csvalue->insertAt(oCONTEXTo.get(), newvalue);
+    csvalue->insertAt(oCONTEXTo, newvalue);
     if (copytochildrenP) {
       copyCurrentValueToChildren(csvalue, homecontext, newvalue);
     }
@@ -577,7 +577,7 @@ Object* updateInContext(Object* oldvalue, Object* newvalue, Context* homecontext
 
 void copyCurrentValueToChildren(CsValue* csvalue, Context* homecontext, Object* parentvalue) {
   { Context* childcxt = NULL;
-    Cons* iter000 = oCONTEXTo.get()->childContexts->theConsList;
+    Cons* iter000 = oCONTEXTo->childContexts->theConsList;
 
     for (childcxt, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       childcxt = ((Context*)(iter000->value));
@@ -597,7 +597,7 @@ void copyCurrentValueToChildren(CsValue* csvalue, Context* homecontext, Object* 
 void startupContexts() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SGT_CONTEXTS_STELLA_CS_VALUE = ((Surrogate*)(internRigidSymbolWrtModule("CS-VALUE", NULL, 1)));
       SGT_CONTEXTS_STELLA_MODULE = ((Surrogate*)(internRigidSymbolWrtModule("MODULE", NULL, 1)));

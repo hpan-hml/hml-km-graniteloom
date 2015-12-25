@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2013      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: macros.ste,v 1.52 2006/11/22 00:24:11 hans Exp
+;;; Version: macros.ste,v 1.53 2013/10/22 00:44:22 hans Exp
 
 ;;; Macros that define some built-in Stella operators.
 
@@ -389,6 +389,14 @@ FALSE.  There can only be one DEFMAIN per module."
           (bquote
            ((& (system-startup-function-symbol *currentSystemDefinition*))))
           NIL)))
+    (setq startupFunctionCall
+      (bquote ((if-stella-feature :support-unexec
+                   (verbatim
+                     ;; add re-initialization of streams in case we restart an image, this might need to be improved:
+                     :cpp "freopen (\"/dev/tty\",\"w\",stdout); freopen (\"/dev/tty\",\"w\",stderr); freopen (\"/dev/tty\",\"r\",stdin)"
+                     :otherwise NULL)
+                   NULL)
+                 && startupFunctionCall)))
     ;; remove `defmain'-specific options:
     (remove-at options :STARTUP-SYSTEM?)
     (remove-at options :PUBLIC?) ;; force `:PUBLIC? TRUE'

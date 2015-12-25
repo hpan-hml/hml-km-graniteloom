@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -83,12 +83,11 @@ public class _StartupLoomToKif {
       Logic.SYM_LOGIC_THE_ORDERED_SET = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-ORDERED-SET", null, 0)));
       Logic.SYM_LOGIC_SATISFIES = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SATISFIES", null, 0)));
       Logic.SYM_LOGIC_DOMAIN = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DOMAIN", null, 0)));
-      Logic.SYM_LOGIC_DOMAINS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DOMAINS", null, 0)));
+      Logic.SYM_STELLA_DOMAINS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DOMAINS", Stella.getStellaModule("/STELLA", true), 0)));
       Logic.SYM_LOGIC_RANGE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RANGE", null, 0)));
       Logic.SYM_LOGIC_COMPOSE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COMPOSE", null, 0)));
       Logic.SYM_LOGIC_SUPERRELATIONS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUPERRELATIONS", null, 0)));
       Logic.SYM_LOGIC_SUPERCONCEPTS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SUPERCONCEPTS", null, 0)));
-      Logic.SYM_STELLA_RETRACT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RETRACT", Stella.getStellaModule("/STELLA", true), 0)));
       Logic.KWD_3_VALUED_P = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("3-VALUED-P", null, 2)));
       Logic.SYM_STELLA_ASK = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ASK", Stella.getStellaModule("/STELLA", true), 0)));
       Logic.SYM_STELLA_CONSIFY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CONSIFY", Stella.getStellaModule("/STELLA", true), 0)));
@@ -112,12 +111,12 @@ public class _StartupLoomToKif {
       Logic.KWD_SINGLE_VALUED = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SINGLE-VALUED", null, 2)));
       Logic.SYM_PL_KERNEL_KB_CLOSED = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CLOSED", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
       Logic.KWD_COMMUTATIVE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("COMMUTATIVE", null, 2)));
+      Logic.SYM_PL_KERNEL_KB_COMMUTATIVE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COMMUTATIVE", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
     }
   }
 
   static void helpStartupLoomToKif2() {
     {
-      Logic.SYM_PL_KERNEL_KB_COMMUTATIVE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("COMMUTATIVE", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
       Logic.KWD_SYMMETRIC = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SYMMETRIC", null, 2)));
       Logic.SYM_PL_KERNEL_KB_SYMMETRIC = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("SYMMETRIC", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
       Logic.KWD_CLOS_CLASS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("CLOS-CLASS", null, 2)));

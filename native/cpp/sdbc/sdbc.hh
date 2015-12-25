@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -157,6 +157,7 @@ public:
 
 
 // Global declarations:
+extern int oDB_CONNECTION_RENEWAL_INTERVALo;
 extern DECLARE_STELLA_SPECIAL(oSQL_COMMAND_TEMPLATESo, KeyValueMap* );
 extern char* oSQL_CMD_TEMPLATE_VARIABLE_PREFIXo;
 
@@ -171,6 +172,7 @@ Object* accessResultSetIteratorSlotValue(ResultSetIterator* self, Symbol* slotna
 Connection* connect(Cons* keysAndValues);
 Connection* connectEvaluatorWrapper(Cons* arguments);
 Connection* callConnect(Cons* keysAndValues);
+int ODbConnectionRenewalIntervalOSetter(int value);
 int getMaxConnectionLifetime(Connection* con);
 void maybeRenewConnection(Connection* con);
 boolean jdbcConnectionStringP(char* string);

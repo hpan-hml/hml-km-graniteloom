@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2012      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: load-stella.lisp,v 1.37 2008/07/24 21:39:15 tar Exp
+;;; Version: load-stella.lisp,v 1.38 2012/04/20 23:30:33 hans Exp
 
 ;;; Load STELLA.
 
@@ -204,7 +204,7 @@ hash tables grow large).")
 #+allegro (setq excl:*print-nickname* t)
 #+allegro (tpl:setq-default excl:*print-nickname* t)
 
-#-:cmu19
+#-:cmu
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (unless (fboundp 'with-compilation-unit)
     (defmacro with-compilation-unit ((&rest options) &body body)

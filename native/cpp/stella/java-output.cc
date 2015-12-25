@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -72,17 +72,17 @@ void javaOutputParseTree(Cons* constree) {
 }
 
 void javaBumpIndent() {
-  oJAVA_INDENT_CHARSo.set(oJAVA_INDENT_CHARSo.get() + 2);
+  oJAVA_INDENT_CHARSo = oJAVA_INDENT_CHARSo + 2;
 }
 
 void javaUnbumpIndent() {
-  oJAVA_INDENT_CHARSo.set(oJAVA_INDENT_CHARSo.get() - 2);
+  oJAVA_INDENT_CHARSo = oJAVA_INDENT_CHARSo - 2;
 }
 
 void javaIndent() {
   { int i = NULL_INTEGER;
     int iter000 = 1;
-    int upperBound000 = oJAVA_INDENT_CHARSo.get();
+    int upperBound000 = oJAVA_INDENT_CHARSo;
     boolean unboundedP000 = upperBound000 == NULL_INTEGER;
 
     for  (i, iter000, upperBound000, unboundedP000; 
@@ -91,7 +91,7 @@ void javaIndent() {
           iter000 = iter000 + 1) {
       i = iter000;
       i = i;
-      *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+      *(oCURRENT_STREAMo->nativeStream) << " ";
     }
   }
 }
@@ -294,16 +294,16 @@ void javaOutputStatement(Object* statement) {
 
 void javaMaybeOutputStatementWithParentheses(Object* statement) {
   if (javaOperatorP(statement)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+    *(oCURRENT_STREAMo->nativeStream) << "(";
   }
   javaOutputStatement(statement);
   if (javaOperatorP(statement)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+    *(oCURRENT_STREAMo->nativeStream) << ")";
   }
 }
 
 void javaOutputIdentifier(StringWrapper* identifier) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << identifier->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << identifier->wrapperValue;
 }
 
 void Object::javaOutputLiteral() {
@@ -313,7 +313,66 @@ void Object::javaOutputLiteral() {
 }
 
 void stringJavaOutputLiteral(char* string) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "\"" << replaceSubstrings(replaceSubstrings(replaceSubstrings(replaceSubstrings(string, "\\\\", "\\"), "\\\"", makeString(1, '"')), "\\n", makeString(1, '\n')), "\\r", makeString(1, '\r')) << "\"";
+  { int maxsize = 65535 - 1;
+    int length = strlen(string);
+    boolean toolongP = length > maxsize;
+    int chunksize = 0;
+
+    if (toolongP) {
+      { 
+        BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+        signalTranslationWarning();
+        if (!(suppressWarningsP())) {
+          printErrorContext(">> WARNING: ", STANDARD_WARNING);
+          *(STANDARD_WARNING->nativeStream) << std::endl << " " << "Encountered too long string constant (" << "`" << stringSubsequence(string, 0, 80) << "'" << "...), breaking it up which is INEFFICIENT" << "." << std::endl;
+        }
+      }
+      *(oCURRENT_STREAMo->nativeStream) << "new String().concat(";
+    }
+    *(oCURRENT_STREAMo->nativeStream) << "\"";
+    { char ch = NULL_CHARACTER;
+      char* vector000 = string;
+      int index000 = 0;
+      int length000 = strlen(vector000);
+
+      for  (ch, vector000, index000, length000; 
+            index000 < length000; 
+            index000 = index000 + 1) {
+        ch = vector000[index000];
+        chunksize = chunksize + 1;
+        switch (ch) {
+          case '\n': 
+            *(oCURRENT_STREAMo->nativeStream) << "\\n";
+            chunksize = chunksize + 1;
+          break;
+          case '\r': 
+            *(oCURRENT_STREAMo->nativeStream) << "\\r";
+            chunksize = chunksize + 1;
+          break;
+          case '"': 
+            *(oCURRENT_STREAMo->nativeStream) << "\\\"";
+            chunksize = chunksize + 1;
+          break;
+          case '\\': 
+            *(oCURRENT_STREAMo->nativeStream) << "\\\\";
+            chunksize = chunksize + 1;
+          break;
+          default:
+            *(oCURRENT_STREAMo->nativeStream) << ch;
+          break;
+        }
+        if ((chunksize >= maxsize) &&
+            toolongP) {
+          *(oCURRENT_STREAMo->nativeStream) << "\").concat(\"";
+          chunksize = 0;
+        }
+      }
+    }
+    *(oCURRENT_STREAMo->nativeStream) << "\"";
+    if (toolongP) {
+      *(oCURRENT_STREAMo->nativeStream) << ")";
+    }
+  }
 }
 
 void StringWrapper::javaOutputLiteral() {
@@ -326,9 +385,9 @@ void StringWrapper::javaOutputLiteral() {
 void MutableStringWrapper::javaOutputLiteral() {
   { MutableStringWrapper* string = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "new StringBuffer(";
+    *(oCURRENT_STREAMo->nativeStream) << "new StringBuffer(";
     stringJavaOutputLiteral((string->wrapperValue));
-    *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+    *(oCURRENT_STREAMo->nativeStream) << ")";
   }
 }
 
@@ -337,28 +396,28 @@ void CharacterWrapper::javaOutputLiteral() {
 
     switch (character->wrapperValue) {
       case '\'': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\''";
+        *(oCURRENT_STREAMo->nativeStream) << "'\\''";
       break;
       case '\\': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\\\'";
+        *(oCURRENT_STREAMo->nativeStream) << "'\\\\'";
       break;
       case '\n': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\n'";
+        *(oCURRENT_STREAMo->nativeStream) << "'\\n'";
       break;
       case '\b': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\b'";
+        *(oCURRENT_STREAMo->nativeStream) << "'\\b'";
       break;
       case '\t': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\t'";
+        *(oCURRENT_STREAMo->nativeStream) << "'\\t'";
       break;
       case '\r': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\r'";
+        *(oCURRENT_STREAMo->nativeStream) << "'\\r'";
       break;
       case '\f': 
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'\\f'";
+        *(oCURRENT_STREAMo->nativeStream) << "'\\f'";
       break;
       default:
-        *(oCURRENT_STREAMo.get()->nativeStream) << "'" << character->wrapperValue << "'";
+        *(oCURRENT_STREAMo->nativeStream) << "'" << character->wrapperValue << "'";
       break;
     }
   }
@@ -367,21 +426,21 @@ void CharacterWrapper::javaOutputLiteral() {
 void IntegerWrapper::javaOutputLiteral() {
   { IntegerWrapper* inT = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << inT->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << inT->wrapperValue;
   }
 }
 
 void LongIntegerWrapper::javaOutputLiteral() {
   { LongIntegerWrapper* inT = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << inT->wrapperValue << "l";
+    *(oCURRENT_STREAMo->nativeStream) << inT->wrapperValue << "l";
   }
 }
 
 void FloatWrapper::javaOutputLiteral() {
   { FloatWrapper* floaT = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << floaT->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << floaT->wrapperValue;
   }
 }
 
@@ -389,31 +448,31 @@ void BooleanWrapper::javaOutputLiteral() {
   { BooleanWrapper* boolean = this;
 
     if (boolean->wrapperValue) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "true";
+      *(oCURRENT_STREAMo->nativeStream) << "true";
     }
     else {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "false";
+      *(oCURRENT_STREAMo->nativeStream) << "false";
     }
   }
 }
 
 void javaOutputMakeArray(Cons* statement) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "new ";
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(statement->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << "new ";
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(statement->value))->wrapperValue;
   { Object* dimension = NULL;
     Cons* iter000 = statement->rest;
 
     for (dimension, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       dimension = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << "[";
+      *(oCURRENT_STREAMo->nativeStream) << "[";
       javaOutputStatement(dimension);
-      *(oCURRENT_STREAMo.get()->nativeStream) << "]";
+      *(oCURRENT_STREAMo->nativeStream) << "]";
     }
   }
 }
 
 void javaOutputArray(Cons* arrayelements) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "{";
+  *(oCURRENT_STREAMo->nativeStream) << "{";
   if (((boolean)(arrayelements->value))) {
     javaOutputStatement(arrayelements->value);
   }
@@ -422,17 +481,17 @@ void javaOutputArray(Cons* arrayelements) {
 
     for (element, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       element = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+      *(oCURRENT_STREAMo->nativeStream) << ", ";
       javaOutputStatement(element);
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}";
+  *(oCURRENT_STREAMo->nativeStream) << "}";
 }
 
 void javaOutputAnonymousArray(Cons* statement) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "new ";
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(statement->value))->wrapperValue;
-  *(oCURRENT_STREAMo.get()->nativeStream) << " [] ";
+  *(oCURRENT_STREAMo->nativeStream) << "new ";
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(statement->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << " [] ";
   javaOutputArray(statement->rest);
 }
 
@@ -443,46 +502,46 @@ void javaOutputAref(Cons* statement) {
 
     for (dimension, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       dimension = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << "[";
+      *(oCURRENT_STREAMo->nativeStream) << "[";
       javaOutputStatement(dimension);
-      *(oCURRENT_STREAMo.get()->nativeStream) << "]";
+      *(oCURRENT_STREAMo->nativeStream) << "]";
     }
   }
 }
 
 void javaOutputSlotValue(Cons* statement) {
   javaOutputStatement(statement->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "." << ((StringWrapper*)(statement->rest->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << "." << ((StringWrapper*)(statement->rest->value))->wrapperValue;
 }
 
 void javaOutputSlotValueSetter(Cons* statement) {
   javaOutputStatement(statement->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "." << ((StringWrapper*)(statement->rest->value))->wrapperValue << " = ";
+  *(oCURRENT_STREAMo->nativeStream) << "." << ((StringWrapper*)(statement->rest->value))->wrapperValue << " = ";
   javaOutputStatement(statement->rest->rest->value);
 }
 
 void javaOutputImplementsInterfaces(Cons* interfacelist) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(interfacelist->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(interfacelist->value))->wrapperValue;
   { StringWrapper* interface = NULL;
     Cons* iter000 = interfacelist->rest;
 
     for (interface, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       interface = ((StringWrapper*)(iter000->value));
-      *(oCURRENT_STREAMo.get()->nativeStream) << ", " << interface->wrapperValue;
+      *(oCURRENT_STREAMo->nativeStream) << ", " << interface->wrapperValue;
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+  *(oCURRENT_STREAMo->nativeStream) << " ";
 }
 
 void javaOutputClass(Cons* classdef, boolean exceptionclassP) {
   javaOutputClassDeclaration(classdef);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "{" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "{" << std::endl;
   javaBumpIndent();
   javaOutputClassVariableDefinitions(((Cons*)(classdef->nth(6))));
   javaOutputClassConstructors(((Cons*)(classdef->nth(7))), ((StringWrapper*)(classdef->fourth()))->wrapperValue, exceptionclassP);
   javaOutputClassMethods(((Cons*)(classdef->nth(8))));
   javaUnbumpIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl << std::endl;
 }
 
 void javaOutputClassDeclaration(Cons* classdef) {
@@ -494,15 +553,15 @@ void javaOutputClassDeclaration(Cons* classdef) {
 
     for (m, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       m = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(m))->wrapperValue << " ";
+      *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(m))->wrapperValue << " ";
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(classdef->rest->rest->value))->wrapperValue << " " << ((StringWrapper*)(classdef->fourth()))->wrapperValue << " ";
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(classdef->rest->rest->value))->wrapperValue << " " << ((StringWrapper*)(classdef->fourth()))->wrapperValue << " ";
   if (((boolean)(classdef->fifth()))) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "extends " << ((StringWrapper*)(classdef->fifth()))->wrapperValue << " ";
+    *(oCURRENT_STREAMo->nativeStream) << "extends " << ((StringWrapper*)(classdef->fifth()))->wrapperValue << " ";
   }
   if (!(((Cons*)(classdef->nth(5))) == NIL)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << "implements ";
+    *(oCURRENT_STREAMo->nativeStream) << "implements ";
     javaOutputImplementsInterfaces(((Cons*)(classdef->nth(5))));
   }
 }
@@ -549,35 +608,35 @@ void javaOutputClassMethods(Cons* methods) {
 
 void javaOutputExceptionConstructor(char* exceptionname) {
   javaIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "public " << exceptionname << " (String message) {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "public " << exceptionname << " (String message) {" << std::endl;
   javaBumpIndent();
   javaIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "super(message);" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "super(message);" << std::endl;
   javaUnbumpIndent();
   javaIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl << std::endl;
 }
 
 void javaOutputNamedStatement(Cons* namedstatement) {
   javaOutputStatement(namedstatement->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << " : ";
+  *(oCURRENT_STREAMo->nativeStream) << " : ";
   javaOutputStatement(namedstatement->rest->value);
 }
 
 void javaOutputFormalParameters(Cons* parameters) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+  *(oCURRENT_STREAMo->nativeStream) << "(";
   if (!(parameters == NIL)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(((Cons*)(parameters->value))->value))->wrapperValue << " " << ((StringWrapper*)(((Cons*)(parameters->value))->rest->value))->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(((Cons*)(parameters->value))->value))->wrapperValue << " " << ((StringWrapper*)(((Cons*)(parameters->value))->rest->value))->wrapperValue;
     { Cons* parameter = NULL;
       Cons* iter000 = parameters->rest;
 
       for (parameter, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         parameter = ((Cons*)(iter000->value));
-        *(oCURRENT_STREAMo.get()->nativeStream) << ", " << ((StringWrapper*)(parameter->value))->wrapperValue << " " << ((StringWrapper*)(parameter->rest->value))->wrapperValue;
+        *(oCURRENT_STREAMo->nativeStream) << ", " << ((StringWrapper*)(parameter->value))->wrapperValue << " " << ((StringWrapper*)(parameter->rest->value))->wrapperValue;
       }
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+  *(oCURRENT_STREAMo->nativeStream) << ")";
 }
 
 void javaOutputMethodSignature(Cons* method) {
@@ -586,11 +645,11 @@ void javaOutputMethodSignature(Cons* method) {
 
     for (m, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       m = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(m))->wrapperValue << " ";
+      *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(m))->wrapperValue << " ";
     }
   }
   javaOutputTypeExpression(((Cons*)(method->rest->value)));
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(method->rest->rest->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(method->rest->rest->value))->wrapperValue;
   javaOutputFormalParameters(((Cons*)(method->fourth())));
 }
 
@@ -630,25 +689,25 @@ void javaOutputMethod(Cons* method) {
     javaIndent();
     javaOutputMethodSignature(method);
     if (!(body == NIL)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << " {" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << " {" << std::endl;
       javaBumpIndent();
       javaOutputStatement(body);
       javaUnbumpIndent();
       javaIndent();
-      *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
     }
     else if (((Cons*)(method->value))->memberP(wrapString("abstract"))) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
     }
     else if (((Cons*)(method->rest->value))->memberP(wrapString("void"))) {
       std::cout << "Note: Void method " << "`" << method->rest->rest->value << "'" << " has an empty body." << std::endl;
-      *(oCURRENT_STREAMo.get()->nativeStream) << " {}" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << " {}" << std::endl;
     }
     else {
       *(STANDARD_WARNING->nativeStream) << "Warning: " << "Method " << "`" << method->rest->rest->value << "'" << " has an empty body but is not abstract or void!" << std::endl;
-      *(oCURRENT_STREAMo.get()->nativeStream) << " {}" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << " {}" << std::endl;
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << std::endl;
   }
 }
 
@@ -656,11 +715,11 @@ void Cons::javaOutputLiteral() {
   { Cons* cons = this;
 
     if (cons == NIL) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "NIL";
+      *(oCURRENT_STREAMo->nativeStream) << "NIL";
     }
     else {
       {
-        *(oCURRENT_STREAMo.get()->nativeStream) << "(" << cons->value << " . ";
+        *(oCURRENT_STREAMo->nativeStream) << "(" << cons->value << " . ";
         cons->rest->javaOutputLiteral();
       }
     }
@@ -670,28 +729,28 @@ void Cons::javaOutputLiteral() {
 void QuotedExpression::javaOutputLiteral() {
   { QuotedExpression* tree = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "\"" << tree << "\"";
+    *(oCURRENT_STREAMo->nativeStream) << "\"" << tree << "\"";
   }
 }
 
 void Symbol::javaOutputLiteral() {
   { Symbol* symbol = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << javaTranslateSymbolName(symbol)->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << javaTranslateSymbolName(symbol)->wrapperValue;
   }
 }
 
 void Surrogate::javaOutputLiteral() {
   { Surrogate* surrogate = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << javaTranslateSurrogateName(surrogate)->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << javaTranslateSurrogateName(surrogate)->wrapperValue;
   }
 }
 
 void Keyword::javaOutputLiteral() {
   { Keyword* keyword = this;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << javaTranslateKeywordName(keyword)->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << javaTranslateKeywordName(keyword)->wrapperValue;
   }
 }
 
@@ -701,7 +760,7 @@ void javaOutputTypeExpression(Cons* typeexpression) {
 
     for (typeexpr, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       typeexpr = ((StringWrapper*)(iter000->value));
-      *(oCURRENT_STREAMo.get()->nativeStream) << typeexpr->wrapperValue << " ";
+      *(oCURRENT_STREAMo->nativeStream) << typeexpr->wrapperValue << " ";
     }
   }
 }
@@ -747,7 +806,7 @@ void javaOutputStatements(Cons* statementlist) {
         }
         javaOutputStatement(statement);
         if (javaOutputSemicolonP(((Cons*)(statement)))) {
-          *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+          *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
         }
       }
     }
@@ -767,11 +826,11 @@ void javaOutputDeclarations(Cons* declarations) {
       }
       javaIndent();
       javaOutputTypeExpression(((Cons*)(declaration->value)));
-      *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(declaration->rest->value))->wrapperValue;
-      *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(declaration->rest->value))->wrapperValue;
+      *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << std::endl;
   javaUnbumpIndent();
 }
 
@@ -788,7 +847,7 @@ char* javaHeuristicallyTranslateName(char* stellaName, Cons* caseConvertedNameLi
   }
   { boolean testValue000 = false;
 
-    if (oMODULEo.get()->caseSensitiveP) {
+    if (oMODULEo->caseSensitiveP) {
       testValue000 = true;
     }
     else {
@@ -837,11 +896,11 @@ void javaOutputCommentString(char* comment, char* commentStart, char* commentCon
     boolean escapeP = false;
     boolean eolLastP = false;
     boolean insideQuoteP = false;
-    OutputStream* savedStream = oCURRENT_STREAMo.get();
+    OutputStream* savedStream = oCURRENT_STREAMo;
     OutputStringStream* stringStream = NULL;
     char* stellaName = NULL;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << commentStart;
+    *(oCURRENT_STREAMo->nativeStream) << commentStart;
     { char chaR = NULL_CHARACTER;
       char* vector000 = comment;
       int index000 = 0;
@@ -856,14 +915,14 @@ void javaOutputCommentString(char* comment, char* commentStart, char* commentCon
             if (!(returnP)) {
               if (eolLastP &&
                   javadocCommentP) {
-                *(oCURRENT_STREAMo.get()->nativeStream) << "<p>" << std::endl;
+                *(oCURRENT_STREAMo->nativeStream) << "<p>" << std::endl;
               }
               else {
-                *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+                *(oCURRENT_STREAMo->nativeStream) << std::endl;
               }
               eolLastP = true;
               javaIndent();
-              *(oCURRENT_STREAMo.get()->nativeStream) << commentContinuation;
+              *(oCURRENT_STREAMo->nativeStream) << commentContinuation;
             }
             escapeP = false;
             returnP = false;
@@ -871,13 +930,13 @@ void javaOutputCommentString(char* comment, char* commentStart, char* commentCon
           case '\r': 
             if (eolLastP &&
                 javadocCommentP) {
-              *(oCURRENT_STREAMo.get()->nativeStream) << "<p>" << std::endl;
+              *(oCURRENT_STREAMo->nativeStream) << "<p>" << std::endl;
             }
             else {
-              *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+              *(oCURRENT_STREAMo->nativeStream) << std::endl;
             }
             javaIndent();
-            *(oCURRENT_STREAMo.get()->nativeStream) << commentContinuation;
+            *(oCURRENT_STREAMo->nativeStream) << commentContinuation;
             eolLastP = true;
             returnP = true;
             escapeP = false;
@@ -885,15 +944,15 @@ void javaOutputCommentString(char* comment, char* commentStart, char* commentCon
           break;
           case '`': 
             if (escapeP) {
-              *(oCURRENT_STREAMo.get()->nativeStream) << chaR;
+              *(oCURRENT_STREAMo->nativeStream) << chaR;
             }
             else if (insideQuoteP) {
               *(STANDARD_WARNING->nativeStream) << "Warning: " << "Encountered unescaped ` inside ` form in comment " << "`" << comment << "'" << std::endl;
-              *(oCURRENT_STREAMo.get()->nativeStream) << chaR;
+              *(oCURRENT_STREAMo->nativeStream) << chaR;
             }
             else {
               stringStream = newOutputStringStream();
-              oCURRENT_STREAMo.set(stringStream);
+              oCURRENT_STREAMo = stringStream;
               insideQuoteP = true;
             }
             escapeP = false;
@@ -902,28 +961,28 @@ void javaOutputCommentString(char* comment, char* commentStart, char* commentCon
           break;
           case '\'': 
             if (escapeP) {
-              *(oCURRENT_STREAMo.get()->nativeStream) << chaR;
+              *(oCURRENT_STREAMo->nativeStream) << chaR;
             }
             else if (insideQuoteP) {
-              oCURRENT_STREAMo.set(savedStream);
+              oCURRENT_STREAMo = savedStream;
               stellaName = stringStream->theStringReader();
               if (javadocCommentP) {
-                *(oCURRENT_STREAMo.get()->nativeStream) << "<code>";
+                *(oCURRENT_STREAMo->nativeStream) << "<code>";
               }
               else {
-                *(oCURRENT_STREAMo.get()->nativeStream) << "`";
+                *(oCURRENT_STREAMo->nativeStream) << "`";
               }
-              *(oCURRENT_STREAMo.get()->nativeStream) << javaHeuristicallyTranslateName(stellaName, caseConvertedNameList);
+              *(oCURRENT_STREAMo->nativeStream) << javaHeuristicallyTranslateName(stellaName, caseConvertedNameList);
               if (javadocCommentP) {
-                *(oCURRENT_STREAMo.get()->nativeStream) << "</code>";
+                *(oCURRENT_STREAMo->nativeStream) << "</code>";
               }
               else {
-                *(oCURRENT_STREAMo.get()->nativeStream) << "'";
+                *(oCURRENT_STREAMo->nativeStream) << "'";
               }
               insideQuoteP = false;
             }
             else {
-              *(oCURRENT_STREAMo.get()->nativeStream) << chaR;
+              *(oCURRENT_STREAMo->nativeStream) << chaR;
             }
             escapeP = false;
             returnP = false;
@@ -932,7 +991,7 @@ void javaOutputCommentString(char* comment, char* commentStart, char* commentCon
           case '\\': 
             if (escapeP) {
               {
-                *(oCURRENT_STREAMo.get()->nativeStream) << chaR;
+                *(oCURRENT_STREAMo->nativeStream) << chaR;
                 escapeP = false;
               }
             }
@@ -945,10 +1004,10 @@ void javaOutputCommentString(char* comment, char* commentStart, char* commentCon
           default:
             if (insideQuoteP ||
                 (!javadocCommentP)) {
-              *(oCURRENT_STREAMo.get()->nativeStream) << chaR;
+              *(oCURRENT_STREAMo->nativeStream) << chaR;
             }
             else {
-              writeHtmlCharacterQuotingSpecialCharacters(oCURRENT_STREAMo.get()->nativeStream, chaR);
+              writeHtmlCharacterQuotingSpecialCharacters(oCURRENT_STREAMo->nativeStream, chaR);
             }
             returnP = false;
             escapeP = false;
@@ -959,19 +1018,19 @@ void javaOutputCommentString(char* comment, char* commentStart, char* commentCon
     }
     if (insideQuoteP) {
       *(STANDARD_WARNING->nativeStream) << "Warning: " << "Comment ended while inside a ` form in comment " << "`" << comment << "'" << std::endl;
-      oCURRENT_STREAMo.set(savedStream);
-      *(oCURRENT_STREAMo.get()->nativeStream) << "`";
-      *(oCURRENT_STREAMo.get()->nativeStream) << stringStream->theStringReader();
+      oCURRENT_STREAMo = savedStream;
+      *(oCURRENT_STREAMo->nativeStream) << "`";
+      *(oCURRENT_STREAMo->nativeStream) << stringStream->theStringReader();
     }
     if ((commentEnd != NULL) &&
         (!stringEqlP(commentEnd, ""))) {
       {
         javaIndent();
-        *(oCURRENT_STREAMo.get()->nativeStream) << commentEnd;
+        *(oCURRENT_STREAMo->nativeStream) << commentEnd;
       }
     }
     else {
-      *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << std::endl;
     }
   }
 }
@@ -1019,26 +1078,26 @@ void javaOutputJavadocComment(StringWrapper* tree, Cons* parameterNamesAndTypes,
       for (n, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
         n = ((StringWrapper*)(iter001->value));
         javaIndent();
-        *(oCURRENT_STREAMo.get()->nativeStream) << " * @param " << n->wrapperValue << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << " * @param " << n->wrapperValue << std::endl;
       }
     }
     if (((boolean)(returnValue)) &&
         (!stringEqlP(returnValue->wrapperValue, "void"))) {
       javaIndent();
-      *(oCURRENT_STREAMo.get()->nativeStream) << " * @return " << returnValue->wrapperValue << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << " * @return " << returnValue->wrapperValue << std::endl;
     }
     if ((author != NULL) &&
         (!(author == ""))) {
       javaIndent();
-      *(oCURRENT_STREAMo.get()->nativeStream) << " * @author " << author << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << " * @author " << author << std::endl;
     }
     if ((version != NULL) &&
         (!(version == ""))) {
       javaIndent();
-      *(oCURRENT_STREAMo.get()->nativeStream) << " * @version " << version << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << " * @version " << version << std::endl;
     }
     javaIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << " */" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << " */" << std::endl;
   }
 }
 
@@ -1098,39 +1157,39 @@ void javaOutputVerbatim(StringWrapper* verbatimstatement) {
 
     if (stringMemberP(vstring, '\n') ||
         stringMemberP(vstring, '\r')) {
-      substituteTemplateVariablesToStream(makeTokenizerStringStream(vstring), oCURRENT_STREAMo.get(), oJAVA_STELLA_PACKAGE_MAPPINGo);
+      substituteTemplateVariablesToStream(makeTokenizerStringStream(vstring), oCURRENT_STREAMo, oJAVA_STELLA_PACKAGE_MAPPINGo);
     }
     else {
-      *(oCURRENT_STREAMo.get()->nativeStream) << substituteTemplateVariablesInString(vstring, oJAVA_STELLA_PACKAGE_MAPPINGo);
+      *(oCURRENT_STREAMo->nativeStream) << substituteTemplateVariablesInString(vstring, oJAVA_STELLA_PACKAGE_MAPPINGo);
     }
   }
 }
 
 void javaOutputMake(Cons* statement) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "new ";
+  *(oCURRENT_STREAMo->nativeStream) << "new ";
   javaOutputStatement(statement->value);
   javaOutputStatement(statement->rest->value);
 }
 
 void javaOutputCast(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "((" << ((StringWrapper*)(tree->rest->value))->wrapperValue << ")(";
+  *(oCURRENT_STREAMo->nativeStream) << "((" << ((StringWrapper*)(tree->rest->value))->wrapperValue << ")(";
   javaOutputStatement(tree->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << "))";
+  *(oCURRENT_STREAMo->nativeStream) << "))";
 }
 
 void javaOutputProgn(Cons* progn) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "{" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "{" << std::endl;
   javaBumpIndent();
   javaOutputStatement(progn);
   javaUnbumpIndent();
   javaIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
 }
 
 void javaOutputBlock(Cons* block) {
   { boolean firststatementP = true;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "{ ";
+    *(oCURRENT_STREAMo->nativeStream) << "{ ";
     javaBumpIndent();
     { Cons* declaration = NULL;
       Cons* iter000 = ((Cons*)(block->value));
@@ -1141,60 +1200,60 @@ void javaOutputBlock(Cons* block) {
           javaIndent();
         }
         firststatementP = false;
-        *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(declaration->value))->wrapperValue;
-        *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+        *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(declaration->value))->wrapperValue;
+        *(oCURRENT_STREAMo->nativeStream) << " ";
         javaOutputStatement(declaration->rest->value);
         if (!(!((boolean)(declaration->rest->rest->value)))) {
-          *(oCURRENT_STREAMo.get()->nativeStream) << " = ";
+          *(oCURRENT_STREAMo->nativeStream) << " = ";
           javaOutputStatement(declaration->rest->rest->value);
         }
-        *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << std::endl;
     javaOutputStatement(block->rest->value);
     javaUnbumpIndent();
     javaIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
   }
 }
 
 void javaOutputWithProcessLock(Cons* synch) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "synchronized (";
+  *(oCURRENT_STREAMo->nativeStream) << "synchronized (";
   javaOutputStatement(synch->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ") ";
+  *(oCURRENT_STREAMo->nativeStream) << ") ";
   javaOutputProgn(((Cons*)(synch->rest->value)));
 }
 
 void javaOutputReturn(Cons* returnstatement) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "return";
+  *(oCURRENT_STREAMo->nativeStream) << "return";
   if (((boolean)(returnstatement))) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << " (";
+    *(oCURRENT_STREAMo->nativeStream) << " (";
     javaOutputStatement(returnstatement);
-    *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+    *(oCURRENT_STREAMo->nativeStream) << ")";
   }
 }
 
 void javaOutputThrow(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "throw new ";
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(tree->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << "throw new ";
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(tree->value))->wrapperValue;
 }
 
 void javaOutputCatch(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << " catch (";
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(((Cons*)(tree->value))->value))->wrapperValue;
-  *(oCURRENT_STREAMo.get()->nativeStream) << " ";
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(((Cons*)(tree->value))->rest->value))->wrapperValue;
-  *(oCURRENT_STREAMo.get()->nativeStream) << ") {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << " catch (";
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(((Cons*)(tree->value))->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << " ";
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(((Cons*)(tree->value))->rest->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << ") {" << std::endl;
   javaBumpIndent();
   javaOutputStatements(tree->rest);
   javaUnbumpIndent();
   javaIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}";
+  *(oCURRENT_STREAMo->nativeStream) << "}";
 }
 
 void javaOutputUnwindProtect(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "try {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "try {" << std::endl;
   javaBumpIndent();
   if (javaPrognP(tree->value)) {
     javaOutputStatement(((Cons*)(tree->value))->rest->value);
@@ -1203,25 +1262,25 @@ void javaOutputUnwindProtect(Cons* tree) {
     javaIndent();
     javaOutputStatement(tree->value);
     if (javaOutputSemicolonP(((Cons*)(tree->value)))) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
     }
   }
   else {
     javaOutputStatement(tree->value);
   }
   javaUnbumpIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << std::endl;
   javaIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "} finally {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "} finally {" << std::endl;
   javaBumpIndent();
   javaOutputStatements(tree->rest);
   javaUnbumpIndent();
   javaIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
 }
 
 void javaOutputHandlerCase(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "try {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "try {" << std::endl;
   javaBumpIndent();
   if (javaPrognP(tree->value)) {
     javaOutputStatement(((Cons*)(tree->value))->rest->value);
@@ -1231,19 +1290,19 @@ void javaOutputHandlerCase(Cons* tree) {
       javaIndent();
       javaOutputStatement(tree->value);
       if (javaOutputSemicolonP(((Cons*)(tree->value)))) {
-        *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
       }
     }
   }
   javaUnbumpIndent();
   javaIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}";
+  *(oCURRENT_STREAMo->nativeStream) << "}";
   javaOutputStatements(tree->rest);
-  *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << std::endl;
 }
 
 void javaOutputSignal(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "throw ";
+  *(oCURRENT_STREAMo->nativeStream) << "throw ";
   javaOutputStatement(tree);
 }
 
@@ -1254,57 +1313,57 @@ void javaOutputGlobalDefinition(Cons* global) {
   }
   javaIndent();
   javaOutputStatement(global->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(global->rest->rest->value))->wrapperValue;
+  *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(global->rest->rest->value))->wrapperValue;
   if (!(global->rest->rest->rest == NIL)) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << " = ";
+    *(oCURRENT_STREAMo->nativeStream) << " = ";
     javaOutputStatement(global->fourth());
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl << std::endl;
 }
 
 void javaOutputActualsAsConsExpression(Cons* arglist) {
   if (arglist == NIL) {
-    *(oCURRENT_STREAMo.get()->nativeStream) << javaPrependGlobalClassName("NIL", oSTELLA_MODULEo);
+    *(oCURRENT_STREAMo->nativeStream) << javaPrependGlobalClassName("NIL", oSTELLA_MODULEo);
   }
   else {
     {
-      *(oCURRENT_STREAMo.get()->nativeStream) << ((StringWrapper*)(oJAVA_STELLA_PACKAGE_MAPPINGo->lookup(wrapString("STELLAROOT")))) << ".Stella_Object.cons(";
+      *(oCURRENT_STREAMo->nativeStream) << ((StringWrapper*)(oJAVA_STELLA_PACKAGE_MAPPINGo->lookup(wrapString("STELLAROOT")))) << ".Stella_Object.cons(";
       javaOutputStatement(arglist->value);
-      *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+      *(oCURRENT_STREAMo->nativeStream) << ", ";
       javaOutputActualsAsConsExpression(arglist->rest);
-      *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+      *(oCURRENT_STREAMo->nativeStream) << ")";
     }
   }
 }
 
 void javaOutputFuncall(Cons* funcall) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << javaYieldFullNativeClassName() << ".funcall(";
+  *(oCURRENT_STREAMo->nativeStream) << javaYieldFullNativeClassName() << ".funcall(";
   javaOutputStatement(funcall->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ", null, new java.lang.Object [] ";
+  *(oCURRENT_STREAMo->nativeStream) << ", null, new java.lang.Object [] ";
   javaOutputArray(((Cons*)(funcall->rest->rest->value))->rest);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+  *(oCURRENT_STREAMo->nativeStream) << ")";
 }
 
 void javaOutputMethodCodeCall(Cons* methodcall) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << javaYieldFullNativeClassName() << ".funcall(";
+  *(oCURRENT_STREAMo->nativeStream) << javaYieldFullNativeClassName() << ".funcall(";
   javaOutputStatement(methodcall->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+  *(oCURRENT_STREAMo->nativeStream) << ", ";
   javaOutputStatement(methodcall->rest->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ", new java.lang.Object []";
+  *(oCURRENT_STREAMo->nativeStream) << ", new java.lang.Object []";
   javaOutputArray(((Cons*)(methodcall->fourth()))->rest);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+  *(oCURRENT_STREAMo->nativeStream) << ")";
 }
 
 void javaOutputBreak(Cons* tag) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "break ";
+  *(oCURRENT_STREAMo->nativeStream) << "break ";
   javaOutputStatement(tag);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
 }
 
 void javaOutputContinue(Cons* tag) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "continue ";
+  *(oCURRENT_STREAMo->nativeStream) << "continue ";
   javaOutputStatement(tag);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
 }
 
 boolean javaStatementReturnsP(Cons* statement) {
@@ -1386,9 +1445,9 @@ void javaOutputCase(Cons* casE) {
     Object* defaultcase = casE->rest->value;
     Object* conditions = casE->rest->rest->value;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "switch (";
+    *(oCURRENT_STREAMo->nativeStream) << "switch (";
     javaOutputStatement(keyform);
-    *(oCURRENT_STREAMo.get()->nativeStream) << ") {" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << ") {" << std::endl;
     javaBumpIndent();
     { Cons* c = NULL;
       Cons* iter000 = ((Cons*)(conditions));
@@ -1403,9 +1462,9 @@ void javaOutputCase(Cons* casE) {
             for (cond, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
               cond = iter001->value;
               javaIndent();
-              *(oCURRENT_STREAMo.get()->nativeStream) << "case ";
+              *(oCURRENT_STREAMo->nativeStream) << "case ";
               javaOutputStatement(cond);
-              *(oCURRENT_STREAMo.get()->nativeStream) << ": " << std::endl;
+              *(oCURRENT_STREAMo->nativeStream) << ": " << std::endl;
             }
           }
           javaBumpIndent();
@@ -1413,7 +1472,7 @@ void javaOutputCase(Cons* casE) {
           javaUnbumpIndent();
           if (!(javaLastStatementReturnsP(((Cons*)(condition->rest->value))))) {
             javaIndent();
-            *(oCURRENT_STREAMo.get()->nativeStream) << "break;" << std::endl;
+            *(oCURRENT_STREAMo->nativeStream) << "break;" << std::endl;
           }
         }
       }
@@ -1422,17 +1481,17 @@ void javaOutputCase(Cons* casE) {
       std::cerr << "Safety violation: " << "INTERNAL ERROR: `java-output-case' expects an `otherwise' clause.";
     }
     javaIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "default:" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "default:" << std::endl;
     javaBumpIndent();
     javaOutputStatement(defaultcase);
     javaUnbumpIndent();
     if (!(javaLastStatementReturnsP(((Cons*)(defaultcase))))) {
       javaIndent();
-      *(oCURRENT_STREAMo.get()->nativeStream) << "break;" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << "break;" << std::endl;
     }
     javaUnbumpIndent();
     javaIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
   }
 }
 
@@ -1444,13 +1503,13 @@ void javaOutputCond(Cons* cond) {
 
     if (((boolean)(defaultcondition)) &&
         (conditions == NIL)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "if (true) ";
+      *(oCURRENT_STREAMo->nativeStream) << "if (true) ";
       javaOutputStatement(defaultcondition);
       return;
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << "if (";
+    *(oCURRENT_STREAMo->nativeStream) << "if (";
     javaOutputStatement(firstcondition->value);
-    *(oCURRENT_STREAMo.get()->nativeStream) << ") ";
+    *(oCURRENT_STREAMo->nativeStream) << ") ";
     javaOutputStatement(firstcondition->rest->value);
     { Object* c = NULL;
       Cons* iter000 = restconditions;
@@ -1460,16 +1519,16 @@ void javaOutputCond(Cons* cond) {
         { Cons* condition = ((Cons*)(c));
 
           javaIndent();
-          *(oCURRENT_STREAMo.get()->nativeStream) << "else if (";
+          *(oCURRENT_STREAMo->nativeStream) << "else if (";
           javaOutputStatement(condition->value);
-          *(oCURRENT_STREAMo.get()->nativeStream) << ") ";
+          *(oCURRENT_STREAMo->nativeStream) << ") ";
           javaOutputStatement(condition->rest->value);
         }
       }
     }
     if (((boolean)(defaultcondition))) {
       javaIndent();
-      *(oCURRENT_STREAMo.get()->nativeStream) << "else ";
+      *(oCURRENT_STREAMo->nativeStream) << "else ";
       javaOutputStatement(defaultcondition);
     }
   }
@@ -1486,37 +1545,37 @@ boolean javaBlockP(Object* tree) {
 }
 
 void javaOutputIf(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "if (";
+  *(oCURRENT_STREAMo->nativeStream) << "if (";
   javaOutputStatement(tree->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ") ";
+  *(oCURRENT_STREAMo->nativeStream) << ") ";
   if (javaPrognP(tree->rest->value) ||
       javaBlockP(tree->rest->value)) {
     javaOutputStatement(tree->rest->value);
   }
   else {
     {
-      *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << std::endl;
       javaBumpIndent();
       javaIndent();
       javaOutputStatement(tree->rest->value);
-      *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
       javaUnbumpIndent();
     }
   }
   if (!(!((boolean)(tree->rest->rest->value)))) {
     javaIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "else ";
+    *(oCURRENT_STREAMo->nativeStream) << "else ";
     if (javaPrognP(tree->rest->rest->value) ||
         javaBlockP(tree->rest->rest->value)) {
       javaOutputStatement(tree->rest->rest->value);
     }
     else {
       {
-        *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << std::endl;
         javaBumpIndent();
         javaIndent();
         javaOutputStatement(tree->rest->rest->value);
-        *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
         javaUnbumpIndent();
       }
     }
@@ -1524,42 +1583,42 @@ void javaOutputIf(Cons* tree) {
 }
 
 void javaOutputWhen(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "if (";
+  *(oCURRENT_STREAMo->nativeStream) << "if (";
   javaOutputStatement(tree->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ") {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << ") {" << std::endl;
   javaBumpIndent();
   javaOutputStatement(tree->rest->value);
   javaUnbumpIndent();
   javaIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
 }
 
 void javaOutputUnless(Cons* tree) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "if (!(";
+  *(oCURRENT_STREAMo->nativeStream) << "if (!(";
   javaOutputStatement(tree->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ")) {" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << ")) {" << std::endl;
   javaBumpIndent();
   javaOutputStatement(tree->rest->value);
   javaUnbumpIndent();
   javaIndent();
-  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
 }
 
 void javaOutputAssignment(Cons* assignment) {
   javaOutputStatement(assignment->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << " = ";
+  *(oCURRENT_STREAMo->nativeStream) << " = ";
   javaOutputStatement(assignment->rest->value);
 }
 
 void javaOutputLoop(Cons* loop) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "for (;;) ";
+  *(oCURRENT_STREAMo->nativeStream) << "for (;;) ";
   javaOutputStatement(loop->value);
 }
 
 void javaOutputWhile(Cons* loop) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "while (";
+  *(oCURRENT_STREAMo->nativeStream) << "while (";
   javaOutputStatement(loop->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ") ";
+  *(oCURRENT_STREAMo->nativeStream) << ") ";
   javaOutputStatement(loop->rest->value);
 }
 
@@ -1570,28 +1629,28 @@ void javaOutputForeach(Cons* loop) {
     int nofnextassignments = nextassignments->length();
     Cons* body = ((Cons*)(loop->fifth()));
     boolean eolseparateexpressionsP = (nofnextassignments > 2) ||
-        (oJAVA_INDENT_CHARSo.get() > 35);
+        (oJAVA_INDENT_CHARSo > 35);
 
     if (nofnextassignments == 0) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "while (";
+      *(oCURRENT_STREAMo->nativeStream) << "while (";
       javaOutputStatement(continuationtest);
-      *(oCURRENT_STREAMo.get()->nativeStream) << ") {" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << ") {" << std::endl;
       javaBumpIndent();
       javaOutputStatements(valueassignments->concatenate(body, 0));
       javaUnbumpIndent();
       javaIndent();
-      *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
       return;
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << "for (;";
+    *(oCURRENT_STREAMo->nativeStream) << "for (;";
     javaBumpIndent();
     javaBumpIndent();
     javaBumpIndent();
     javaOutputStatement(continuationtest);
-    *(oCURRENT_STREAMo.get()->nativeStream) << "; ";
+    *(oCURRENT_STREAMo->nativeStream) << "; ";
     if (!(nextassignments == NIL)) {
       if (eolseparateexpressionsP) {
-        *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << std::endl;
       }
       { Object* next = NULL;
         Cons* iter000 = nextassignments;
@@ -1610,22 +1669,22 @@ void javaOutputForeach(Cons* loop) {
           javaOutputStatement(next);
           if (!(i == nofnextassignments)) {
             if (eolseparateexpressionsP) {
-              *(oCURRENT_STREAMo.get()->nativeStream) << "," << std::endl;
+              *(oCURRENT_STREAMo->nativeStream) << "," << std::endl;
             }
             else {
-              *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+              *(oCURRENT_STREAMo->nativeStream) << ", ";
             }
           }
         }
       }
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << ") {" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << ") {" << std::endl;
     javaUnbumpIndent();
     javaUnbumpIndent();
     javaOutputStatements(valueassignments->concatenate(body, 0));
     javaUnbumpIndent();
     javaIndent();
-    *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+    *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
   }
 }
 
@@ -1663,7 +1722,7 @@ void javaOutputPrintStream(Cons* exps, boolean nativestreamP) {
       }
     }
     if (embeddedeolP) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "{" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << "{" << std::endl;
       javaBumpIndent();
     }
     { ConsIterator* it = exps->rest->allocateIterator();
@@ -1678,7 +1737,7 @@ void javaOutputPrintStream(Cons* exps, boolean nativestreamP) {
               }
               javaHelpOutputPrintStream(stream, javaReverseAndConsolidateStrings(printitems), nativestreamP, true);
               if (embeddedeolP) {
-                *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+                *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
               }
               printitems = NIL;
             }
@@ -1695,13 +1754,13 @@ void javaOutputPrintStream(Cons* exps, boolean nativestreamP) {
       }
       javaHelpOutputPrintStream(stream, javaReverseAndConsolidateStrings(printitems), nativestreamP, false);
       if (embeddedeolP) {
-        *(oCURRENT_STREAMo.get()->nativeStream) << ";" << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << ";" << std::endl;
       }
     }
     if (embeddedeolP) {
       javaUnbumpIndent();
       javaIndent();
-      *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+      *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
     }
   }
 }
@@ -1751,39 +1810,39 @@ void javaHelpOutputPrintStream(Object* stream, Cons* exps, boolean nativestreamP
   if (stream == SYM_JAVA_OUTPUT_STELLA_JAVA_STANDARD_OUT) {
     if (((boolean)(stringGetStellaClass("SYSTEM", false))) ||
         inheritedClassNameConflictsP("SYSTEM")) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "java.lang.System.out";
+      *(oCURRENT_STREAMo->nativeStream) << "java.lang.System.out";
     }
     else {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "System.out";
+      *(oCURRENT_STREAMo->nativeStream) << "System.out";
     }
   }
   else if (stream == SYM_JAVA_OUTPUT_STELLA_JAVA_STANDARD_ERROR) {
     if (((boolean)(stringGetStellaClass("SYSTEM", false))) ||
         inheritedClassNameConflictsP("SYSTEM")) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "java.lang.System.err";
+      *(oCURRENT_STREAMo->nativeStream) << "java.lang.System.err";
     }
     else {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "System.err";
+      *(oCURRENT_STREAMo->nativeStream) << "System.err";
     }
   }
   else {
     javaOutputStatement(stream);
     if (!nativestreamP) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << ".nativeStream";
+      *(oCURRENT_STREAMo->nativeStream) << ".nativeStream";
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << ((endoflineP ? (char*)".println(" : (char*)".print("));
+  *(oCURRENT_STREAMo->nativeStream) << ((endoflineP ? (char*)".println(" : (char*)".print("));
   javaMaybeOutputStatementWithParentheses(exps->value);
   { Object* e = NULL;
     Cons* iter000 = exps->rest;
 
     for (e, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       e = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << " + ";
+      *(oCURRENT_STREAMo->nativeStream) << " + ";
       javaMaybeOutputStatementWithParentheses(e);
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+  *(oCURRENT_STREAMo->nativeStream) << ")";
 }
 
 boolean javaIndentableBinaryOperatorP(StringWrapper* operatoR) {
@@ -1808,7 +1867,7 @@ void javaOutputUnaryOperator(Cons* expression) {
   { StringWrapper* op = ((StringWrapper*)(expression->value));
     Object* arg = expression->rest->value;
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << op->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << op->wrapperValue;
     javaMaybeOutputStatementWithParentheses(arg);
   }
 }
@@ -1825,7 +1884,7 @@ void javaHelpOutputBinaryOperator(Cons* expression, int nestlevel) {
     Object* arg2 = expression->rest->rest->value;
 
     if (javaNestedOperatorNeedsParenthesesP(op, arg1)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+      *(oCURRENT_STREAMo->nativeStream) << "(";
     }
     if (javaBinaryOperatorP(op)) {
       javaHelpOutputBinaryOperator(((Cons*)(arg1))->rest, nestlevel + 1);
@@ -1834,15 +1893,15 @@ void javaHelpOutputBinaryOperator(Cons* expression, int nestlevel) {
       javaOutputStatement(arg1);
     }
     if (javaNestedOperatorNeedsParenthesesP(op, arg1)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+      *(oCURRENT_STREAMo->nativeStream) << ")";
     }
-    *(oCURRENT_STREAMo.get()->nativeStream) << " ";
-    *(oCURRENT_STREAMo.get()->nativeStream) << op->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << " ";
+    *(oCURRENT_STREAMo->nativeStream) << op->wrapperValue;
     if (javaIndentableBinaryOperatorP(op)) {
       {
-        *(oCURRENT_STREAMo.get()->nativeStream) << std::endl;
+        *(oCURRENT_STREAMo->nativeStream) << std::endl;
         javaIndent();
-        *(oCURRENT_STREAMo.get()->nativeStream) << "    ";
+        *(oCURRENT_STREAMo->nativeStream) << "    ";
         { int i = NULL_INTEGER;
           int iter000 = 1;
           int upperBound000 = nestlevel;
@@ -1854,16 +1913,16 @@ void javaHelpOutputBinaryOperator(Cons* expression, int nestlevel) {
                 iter000 = iter000 + 1) {
             i = iter000;
             i = i;
-            *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+            *(oCURRENT_STREAMo->nativeStream) << " ";
           }
         }
       }
     }
     else {
-      *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+      *(oCURRENT_STREAMo->nativeStream) << " ";
     }
     if (javaNestedOperatorNeedsParenthesesP(op, arg2)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+      *(oCURRENT_STREAMo->nativeStream) << "(";
     }
     if (javaBinaryOperatorP(arg2)) {
       javaHelpOutputBinaryOperator(((Cons*)(arg2))->rest, nestlevel + 1);
@@ -1872,7 +1931,7 @@ void javaHelpOutputBinaryOperator(Cons* expression, int nestlevel) {
       javaOutputStatement(arg2);
     }
     if (javaNestedOperatorNeedsParenthesesP(op, arg2)) {
-      *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+      *(oCURRENT_STREAMo->nativeStream) << ")";
     }
   }
 }
@@ -1888,36 +1947,36 @@ void javaOutputTernaryOperator(Cons* expression) {
     StringWrapper* op2 = ((StringWrapper*)(expression->fourth()));
     Object* arg3 = expression->fifth();
 
-    *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+    *(oCURRENT_STREAMo->nativeStream) << "(";
     javaMaybeOutputStatementWithParentheses(arg1);
-    *(oCURRENT_STREAMo.get()->nativeStream) << " ";
-    *(oCURRENT_STREAMo.get()->nativeStream) << op1->wrapperValue;
-    *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+    *(oCURRENT_STREAMo->nativeStream) << " ";
+    *(oCURRENT_STREAMo->nativeStream) << op1->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << " ";
     javaMaybeOutputStatementWithParentheses(arg2);
-    *(oCURRENT_STREAMo.get()->nativeStream) << " ";
-    *(oCURRENT_STREAMo.get()->nativeStream) << op2->wrapperValue;
-    *(oCURRENT_STREAMo.get()->nativeStream) << " ";
+    *(oCURRENT_STREAMo->nativeStream) << " ";
+    *(oCURRENT_STREAMo->nativeStream) << op2->wrapperValue;
+    *(oCURRENT_STREAMo->nativeStream) << " ";
     javaMaybeOutputStatementWithParentheses(arg3);
-    *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+    *(oCURRENT_STREAMo->nativeStream) << ")";
   }
 }
 
 void javaOutputMethodCall(Cons* methodcall) {
   javaMaybeOutputStatementWithParentheses(methodcall->rest->rest->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ".";
+  *(oCURRENT_STREAMo->nativeStream) << ".";
   javaOutputStatement(methodcall->rest->value);
   javaOutputStatement(methodcall->fourth());
 }
 
 void javaOutputFunctionCall(Cons* functioncall) {
   javaMaybeOutputStatementWithParentheses(functioncall->value);
-  *(oCURRENT_STREAMo.get()->nativeStream) << ".";
+  *(oCURRENT_STREAMo->nativeStream) << ".";
   javaOutputStatement(functioncall->rest->value);
   javaOutputStatement(functioncall->rest->rest->value);
 }
 
 void javaOutputActualParameters(Cons* parameters) {
-  *(oCURRENT_STREAMo.get()->nativeStream) << "(";
+  *(oCURRENT_STREAMo->nativeStream) << "(";
   if (((boolean)(parameters->value))) {
     javaOutputStatement(parameters->value);
   }
@@ -1926,11 +1985,11 @@ void javaOutputActualParameters(Cons* parameters) {
 
     for (parameter, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
       parameter = iter000->value;
-      *(oCURRENT_STREAMo.get()->nativeStream) << ", ";
+      *(oCURRENT_STREAMo->nativeStream) << ", ";
       javaOutputStatement(parameter);
     }
   }
-  *(oCURRENT_STREAMo.get()->nativeStream) << ")";
+  *(oCURRENT_STREAMo->nativeStream) << ")";
 }
 
 void helpStartupJavaOutput1() {
@@ -2080,7 +2139,7 @@ void helpStartupJavaOutput3() {
 void startupJavaOutput() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupJavaOutput1();
       helpStartupJavaOutput2();

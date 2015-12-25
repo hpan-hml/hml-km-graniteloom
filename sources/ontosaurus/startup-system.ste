@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2000-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2000-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -57,12 +57,12 @@
 
 (STARTUP-TIME-PROGN :MODULES
  (DEFINE-MODULE-FROM-STRINGIFIED-SOURCE "/ONTOSAURUS"
-  "(:LISP-PACKAGE \"STELLA\" :JAVA-PACKAGE \"edu.isi.ontosaurus\" :JAVA-CATCHALL-CLASS \"OntosaurusUtil\" :USES (\"STELLA\" \"LOGIC\") :CODE-ONLY? TRUE)"))
+  "(:LISP-PACKAGE \"STELLA\" :JAVA-PACKAGE \"edu.isi.ontosaurus\" :JAVA-CATCHALL-CLASS \"OntosaurusUtil\" :USES (\"LOGIC\" \"STELLA\") :CODE-ONLY? TRUE)"))
 
 (STARTUP-TIME-PROGN
  (FOREACH PHASE IN
-  (INTERVAL (PHASE-TO-INTEGER :EARLY-INITS) (PHASE-TO-INTEGER :FINAL)) DO
-  (SETQ *STARTUP-TIME-PHASE* PHASE) (STARTUP-HTML-MACROS)
+  (INTERVAL (PHASE-TO-INTEGER :EARLY-INITS) (PHASE-TO-INTEGER :FINAL))
+  DO (SETQ *STARTUP-TIME-PHASE* PHASE) (STARTUP-HTML-MACROS)
   (STARTUP-HTML-UTILITIES) (STARTUP-NEW-PPRINT) (STARTUP-HTML-PPRINT)
   (STARTUP-CONTROL-PANEL-SCRIPT) (STARTUP-HTML-DESCRIBE-OBJECT)
   (STARTUP-TOP-WINDOW) (STARTUP-GENERAL-QUERY) (STARTUP-VISUALIZE)

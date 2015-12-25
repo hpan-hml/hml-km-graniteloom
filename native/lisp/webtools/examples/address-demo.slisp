@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -74,7 +74,8 @@
      (CL:FUNCTION STARTUP-ADDRESS-DEMO) NULL)
     (CL:LET*
      ((FUNCTION
-       (LOOKUP-FUNCTION SYM-ADDRESS-DEMO-ADDRESS-DEMO-STARTUP-ADDRESS-DEMO)))
+       (LOOKUP-FUNCTION
+        SYM-ADDRESS-DEMO-ADDRESS-DEMO-STARTUP-ADDRESS-DEMO)))
      (SET-DYNAMIC-SLOT-VALUE (%METHOD-SLOT.DYNAMIC-SLOTS FUNCTION)
       SYM-ADDRESS-DEMO-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupAddressDemo") NULL-STRING-WRAPPER)))
@@ -82,9 +83,12 @@
     (CLEANUP-UNFINALIZED-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 9)
     (%IN-MODULE (COPY-CONS-TREE (WRAP-STRING "ADDRESS-DEMO")))
-    (INSERT-AT *NAMESPACE-PREFIX-URI-TABLE* (WRAP-STRING "ADDRESS-DEMO")
+    (INSERT-AT *NAMESPACE-PREFIX-URI-TABLE*
+     (WRAP-STRING "ADDRESS-DEMO")
      (WRAP-STRING "urn:xml-soap-address-demo"))
     (INSERT-AT *NAMESPACE-URI-PREFIX-TABLE*
-     (WRAP-STRING "urn:xml-soap-address-demo") (WRAP-STRING "ADDRESS-DEMO"))
+     (WRAP-STRING "urn:xml-soap-address-demo")
+     (WRAP-STRING "ADDRESS-DEMO"))
     (CL:SETQ *INVISIBLE-NAMESPACES-ON-OUTPUT*
-     (CONS (WRAP-STRING "ADDRESS-DEMO") *INVISIBLE-NAMESPACES-ON-OUTPUT*)))))
+     (CONS (WRAP-STRING "ADDRESS-DEMO")
+      *INVISIBLE-NAMESPACES-ON-OUTPUT*)))))

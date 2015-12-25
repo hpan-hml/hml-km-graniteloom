@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -59,6 +59,78 @@ public class Vector extends Sequence {
       self.theArray = null;
       self.initializeVector();
       return (self);
+    }
+  }
+
+  /** Just like <code>sort</code> but assumes each element of <code>self</code> has a <code>slot</code>
+   * whose value will be used for comparison.  Elements must be descendants of
+   * STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+   * it will cause value wrapping everytime <code>slot</code> is read.
+   * @param slot
+   * @param predicate
+   * @return Vector
+   */
+  public Vector sortObjects(StorageSlot slot, java.lang.reflect.Method predicate) {
+    { Vector self = this;
+
+      { int length = self.length();
+
+        if (length == 0) {
+          return (self);
+        }
+        else if (predicate == null) {
+          predicate = Stella_Object.chooseSortPredicate(StandardObject.readSlotValue(((StandardObject)((self.theArray)[0])), slot));
+        }
+        { Object old$SortTupleComparePredicate$000 = Stella.$SORT_TUPLE_COMPARE_PREDICATE$.get();
+          Object old$SortObjectsCompareSlot$000 = Stella.$SORT_OBJECTS_COMPARE_SLOT$.get();
+
+          try {
+            Native.setSpecial(Stella.$SORT_TUPLE_COMPARE_PREDICATE$, predicate);
+            Native.setSpecial(Stella.$SORT_OBJECTS_COMPARE_SLOT$, slot);
+            Stella.heapSortNativeVector(self.theArray, self.length(), Native.find_java_method("edu.isi.stella.Stella_Object", "sortObjectsCompareP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}));
+            return (self);
+
+          } finally {
+            Stella.$SORT_OBJECTS_COMPARE_SLOT$.set(old$SortObjectsCompareSlot$000);
+            Stella.$SORT_TUPLE_COMPARE_PREDICATE$.set(old$SortTupleComparePredicate$000);
+          }
+        }
+      }
+    }
+  }
+
+  /** Just like <code>sort</code> but assumes each element of <code>self</code> is a tuple (a cons)
+   * whose <code>n</code>-th element (0-based) will be used for comparison.
+   * @param n
+   * @param predicate
+   * @return Vector
+   */
+  public Vector sortTuples(int n, java.lang.reflect.Method predicate) {
+    { Vector self = this;
+
+      { int length = self.length();
+
+        if (length == 0) {
+          return (self);
+        }
+        else if (predicate == null) {
+          predicate = Stella_Object.chooseSortPredicate(((Cons)((self.theArray)[0])).nth(n));
+        }
+        { Object old$SortTupleComparePredicate$000 = Stella.$SORT_TUPLE_COMPARE_PREDICATE$.get();
+          Object old$SortTupleCompareIndex$000 = Stella.$SORT_TUPLE_COMPARE_INDEX$.get();
+
+          try {
+            Native.setSpecial(Stella.$SORT_TUPLE_COMPARE_PREDICATE$, predicate);
+            Native.setIntSpecial(Stella.$SORT_TUPLE_COMPARE_INDEX$, n);
+            Stella.heapSortNativeVector(self.theArray, self.length(), Native.find_java_method("edu.isi.stella.Cons", "sortTupleCompareP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons")}));
+            return (self);
+
+          } finally {
+            Stella.$SORT_TUPLE_COMPARE_INDEX$.set(old$SortTupleCompareIndex$000);
+            Stella.$SORT_TUPLE_COMPARE_PREDICATE$.set(old$SortTupleComparePredicate$000);
+          }
+        }
+      }
     }
   }
 

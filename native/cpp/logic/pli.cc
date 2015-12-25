@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -386,7 +386,7 @@ Context* safelyGetModule(char* name, Environment* environment) {
   environment = environment;
   if ((name == NULL) ||
       stringEqlP(name, "")) {
-    return (oMODULEo.get());
+    return (oMODULEo);
   }
   return (getStellaModule(name, true));
 }
@@ -474,7 +474,7 @@ Cons* sequenceToConsList(Object* sequence) {
 Cons* explodeStringList(char* stringlist, Module* module) {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     { Cons* expression = ((Cons*)(readSExpressionFromString(stringlist)));
       Object* term = NULL;
       Cons* result = NIL;
@@ -530,8 +530,8 @@ Symbol* getSymbol(char* name, Module* module, Environment* environment) {
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -574,8 +574,8 @@ Object* getObject(char* name, Module* module, Environment* environment) {
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -604,8 +604,8 @@ LogicObject* getConcept(char* name, Module* module, Environment* environment) {
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -634,8 +634,8 @@ LogicObject* getRelation(char* name, Module* module, Environment* environment) {
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -657,6 +657,27 @@ LogicObject* sGetRelation(char* name, char* moduleName, Environment* environment
   return (getRelation(name, ((Module*)(safelyGetModule(moduleName, environment))), environment));
 }
 
+PlIterator* getUndefinedRelations(Module* module, Environment* environment) {
+  // Return relations that have been referenced but not defined in `module'.
+  { Module* mdl000 = module;
+    Context* cxt000 = mdl000;
+
+    if (!((boolean)(mdl000))) {
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
+    }
+    { 
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, cxt000);
+      environment = environment;
+      // Should be synchronized on process lock oPOWERLOOM_LOCKo
+      {
+        return (consToPlIterator(callListUndefinedRelations(module, false)));
+      }
+    }
+  }
+}
+
 char* getNameInModule(Object* obj, Module* module, Environment* environment) {
   // Return the name, qualified as necessary, so that `obj' can be found from
   // `module'.  If there is no name for the object return `null'.
@@ -664,8 +685,8 @@ char* getNameInModule(Object* obj, Module* module, Environment* environment) {
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -959,8 +980,8 @@ Object* stringToObject(char* string, LogicObject* type, Module* module, Environm
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1067,7 +1088,7 @@ Cons* helpGetTrueExtensionMembers(NamedDescription* relation, boolean specialize
             iter000->nextP(); ) {
         p = iter000->value;
         if ((!((Proposition*)(p))->deletedP()) &&
-            ((oREVERSEPOLARITYpo.get() ? falseP(((Proposition*)(p))) : (trueP(((Proposition*)(p))) ||
+            ((oREVERSEPOLARITYpo ? falseP(((Proposition*)(p))) : (trueP(((Proposition*)(p))) ||
             functionWithDefinedValueP(((Proposition*)(p))))))) {
           if (!((boolean)(collect000))) {
             {
@@ -1104,7 +1125,7 @@ Cons* helpGetTrueExtensionMembers(NamedDescription* relation, boolean specialize
                 for (p, iter002; iter002->nextP(); ) {
                   p = iter002->value;
                   if ((!((Proposition*)(p))->deletedP()) &&
-                      ((oREVERSEPOLARITYpo.get() ? falseP(((Proposition*)(p))) : (trueP(((Proposition*)(p))) ||
+                      ((oREVERSEPOLARITYpo ? falseP(((Proposition*)(p))) : (trueP(((Proposition*)(p))) ||
                       functionWithDefinedValueP(((Proposition*)(p))))))) {
                     result = cons(p, result);
                   }
@@ -1128,8 +1149,8 @@ Cons* helpGetPropositions(LogicObject* relation, Cons* arguments, int limit, Mod
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1160,7 +1181,7 @@ Cons* helpGetPropositions(LogicObject* relation, Cons* arguments, int limit, Mod
               Cons* results = NIL;
 
               if (!(assertionsonlyP)) {
-                oCONTEXTo.set(getPropertyTestContext());
+                oCONTEXTo = getPropertyTestContext();
               }
               { Proposition* p = NULL;
                 Iterator* iter001 = iterator;
@@ -1290,6 +1311,27 @@ PlIterator* sGetPropositions(char* relationAndArguments, char* moduleName, Envir
   }
 }
 
+PlIterator* getInconsistentPropositions(Module* module, Environment* environment) {
+  // Return inconsistent propositions visible in `module'.
+  { Module* mdl000 = module;
+    Context* cxt000 = mdl000;
+
+    if (!((boolean)(mdl000))) {
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
+    }
+    { 
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, cxt000);
+      environment = environment;
+      // Should be synchronized on process lock oPOWERLOOM_LOCKo
+      {
+        return (iteratorToPlIterator(allInconsistentPropositions(module, false)));
+      }
+    }
+  }
+}
+
 Proposition* getBinaryProposition(LogicObject* relation, Object* arg1, Object* arg2, Module* module, Environment* environment) {
   // Return a proposition such that (`relation' `arg1' `arg2')
   // is true.  The `relation' argument must be bound to a relation.  One or both
@@ -1301,8 +1343,8 @@ Proposition* getBinaryProposition(LogicObject* relation, Object* arg1, Object* a
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1363,8 +1405,8 @@ PlIterator* getInferredBinaryPropositionValues(LogicObject* relation, Object* ar
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1407,8 +1449,8 @@ PlIterator* getPropositionsOf(LogicObject* object, Module* module, Environment* 
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1447,8 +1489,8 @@ PlIterator* getPropositionsInModule(Module* module, Environment* environment) {
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1456,7 +1498,7 @@ PlIterator* getPropositionsInModule(Module* module, Environment* environment) {
       environment = environment;
       // Should be synchronized on process lock oPOWERLOOM_LOCKo
       {
-        return (consToPlIterator(allPropositions(oMODULEo.get(), true)->consify()));
+        return (consToPlIterator(allPropositions(oMODULEo, true)->consify()));
       }
     }
   }
@@ -1491,8 +1533,8 @@ boolean isTrueProposition(Proposition* proposition, Module* module, Environment*
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1501,7 +1543,7 @@ boolean isTrueProposition(Proposition* proposition, Module* module, Environment*
       // Should be synchronized on process lock oPOWERLOOM_LOCKo
       {
         return ((!proposition->deletedP()) &&
-            ((oREVERSEPOLARITYpo.get() ? falseP(proposition) : (trueP(proposition) ||
+            ((oREVERSEPOLARITYpo ? falseP(proposition) : (trueP(proposition) ||
             functionWithDefinedValueP(proposition)))));
       }
     }
@@ -1527,8 +1569,8 @@ boolean isSubrelation(LogicObject* sub, LogicObject* super, Module* module, Envi
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1549,8 +1591,8 @@ PlIterator* getProperSubrelations(LogicObject* relation, Module* module, Environ
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1571,8 +1613,8 @@ PlIterator* getDirectSubrelations(LogicObject* relation, Module* module, Environ
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1593,8 +1635,8 @@ PlIterator* getProperSuperrelations(LogicObject* relation, Module* module, Envir
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1615,8 +1657,8 @@ PlIterator* getDirectSuperrelations(LogicObject* relation, Module* module, Envir
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1636,8 +1678,8 @@ boolean isA(Object* object, LogicObject* concept, Module* module, Environment* e
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1659,8 +1701,8 @@ PlIterator* getConceptInstances(LogicObject* concept, Module* module, Environmen
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1708,8 +1750,8 @@ PlIterator* getDirectConceptInstances(LogicObject* concept, Module* module, Envi
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1757,8 +1799,8 @@ PlIterator* getConceptInstancesMatchingValue(LogicObject* concept, LogicObject* 
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1794,8 +1836,8 @@ Object* getConceptInstanceMatchingValue(LogicObject* concept, LogicObject* relat
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1827,8 +1869,8 @@ Cons* helpGetTypes(LogicObject* object, Module* module, Environment* environment
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1875,8 +1917,8 @@ PlIterator* getRelationExtension(LogicObject* relation, Module* module, Environm
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -1914,7 +1956,7 @@ Module* getModule(char* name, Environment* environment) {
 Module* getCurrentModule(Environment* environment) {
   // Return the currently set module
   environment = environment;
-  return (oMODULEo.get());
+  return (oMODULEo);
 }
 
 Module* getHomeModule(LogicObject* object) {
@@ -1952,7 +1994,7 @@ Module* changeModule(Module* module) {
   // If `module' is `null', then no switch is performed and the current
   // module is returned.
   if (!((boolean)(module))) {
-    return (oMODULEo.get());
+    return (oMODULEo);
   }
   return (module->changeModule());
 }
@@ -2048,8 +2090,8 @@ char* generateUniqueName(char* prefix, Module* module, Environment* environment)
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2057,11 +2099,11 @@ char* generateUniqueName(char* prefix, Module* module, Environment* environment)
       environment = environment;
       // Should be synchronized on process lock oPOWERLOOM_LOCKo
       {
-        if (!(oMODULEo.get()->caseSensitiveP ||
+        if (!(oMODULEo->caseSensitiveP ||
             allUpperCaseStringP(prefix))) {
           prefix = stringUpcase(prefix);
         }
-        return (yieldUniqueGensymName(prefix, oMODULEo.get()));
+        return (yieldUniqueGensymName(prefix, oMODULEo));
       }
     }
   }
@@ -2071,7 +2113,7 @@ Keyword* createKeyword(char* name) {
   // Returns the Stella keyword `name', creating it if
   // necessary.  `name' is treated case-sensitively.  This should
   // generally not be necessary to do.
-  return (((Keyword*)(internRigidSymbolWrtModule(name, oMODULEo.get(), KEYWORD_SYM))));
+  return (((Keyword*)(internRigidSymbolWrtModule(name, oMODULEo, KEYWORD_SYM))));
 }
 
 Symbol* createSymbol(char* name, Module* module, Environment* environment) {
@@ -2083,8 +2125,8 @@ Symbol* createSymbol(char* name, Module* module, Environment* environment) {
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2092,7 +2134,7 @@ Symbol* createSymbol(char* name, Module* module, Environment* environment) {
       environment = environment;
       // Should be synchronized on process lock oPOWERLOOM_LOCKo
       {
-        return (internSymbolInModule(name, oMODULEo.get(), false));
+        return (internSymbolInModule(name, oMODULEo, false));
       }
     }
   }
@@ -2120,8 +2162,8 @@ LogicObject* createObject(char* name, LogicObject* concept, Module* module, Envi
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2141,7 +2183,7 @@ LogicObject* createObject(char* name, LogicObject* concept, Module* module, Envi
             nameSymbol = internSymbolInModule(generateUniqueName(nameSymbol->symbolName, ((Module*)(nameSymbol->homeContext)), NULL), ((Module*)(nameSymbol->homeContext)), true);
           }
           else {
-            nameSymbol = internSymbolInModule(generateUniqueName("I", NULL, NULL), oMODULEo.get(), true);
+            nameSymbol = internSymbolInModule(generateUniqueName("I", NULL, NULL), oMODULEo, true);
           }
           objectSurrogate = lookupSurrogateInModule(nameSymbol->symbolName, ((Module*)(nameSymbol->homeContext)), false);
           if (!((boolean)(objectSurrogate))) {
@@ -2196,8 +2238,8 @@ LogicObject* createConcept(char* name, LogicObject* parent, Module* module, Envi
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2254,8 +2296,8 @@ LogicObject* createRelation(char* name, int arity, Module* module, Environment* 
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2274,7 +2316,7 @@ LogicObject* createRelation(char* name, int arity, Module* module, Environment* 
               i = iter000;
               if (!((boolean)(collect000))) {
                 {
-                  collect000 = cons(yieldSystemDefinedParameterName(i, oMODULEo.get()), NIL);
+                  collect000 = cons(yieldSystemDefinedParameterName(i, oMODULEo), NIL);
                   if (args == NIL) {
                     args = collect000;
                   }
@@ -2285,7 +2327,7 @@ LogicObject* createRelation(char* name, int arity, Module* module, Environment* 
               }
               else {
                 {
-                  collect000->rest = cons(yieldSystemDefinedParameterName(i, oMODULEo.get()), NIL);
+                  collect000->rest = cons(yieldSystemDefinedParameterName(i, oMODULEo), NIL);
                   collect000 = collect000->rest;
                 }
               }
@@ -2336,8 +2378,8 @@ LogicObject* createFunction(char* name, int arity, Module* module, Environment* 
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2356,7 +2398,7 @@ LogicObject* createFunction(char* name, int arity, Module* module, Environment* 
               i = iter000;
               if (!((boolean)(collect000))) {
                 {
-                  collect000 = cons(yieldSystemDefinedParameterName(i, oMODULEo.get()), NIL);
+                  collect000 = cons(yieldSystemDefinedParameterName(i, oMODULEo), NIL);
                   if (args == NIL) {
                     args = collect000;
                   }
@@ -2367,7 +2409,7 @@ LogicObject* createFunction(char* name, int arity, Module* module, Environment* 
               }
               else {
                 {
-                  collect000->rest = cons(yieldSystemDefinedParameterName(i, oMODULEo.get()), NIL);
+                  collect000->rest = cons(yieldSystemDefinedParameterName(i, oMODULEo), NIL);
                   collect000 = collect000->rest;
                 }
               }
@@ -2410,8 +2452,8 @@ void registerSpecialistFunction(char* name, cpp_function_code functionReference,
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2442,8 +2484,8 @@ void sRegisterSpecialistFunction(char* name, char* nativeName, char* moduleName,
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2475,8 +2517,8 @@ void registerComputationFunction(char* name, cpp_function_code functionReference
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2508,8 +2550,8 @@ void sRegisterComputationFunction(char* name, char* nativeName, int arity, char*
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2531,8 +2573,8 @@ LogicObject* createEnumeratedList(Cons* members, Module* module, Environment* en
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2560,8 +2602,8 @@ LogicObject* createEnumeratedSet(Cons* members, Module* module, Environment* env
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2612,8 +2654,8 @@ Proposition* assertUnaryProposition(LogicObject* relation, Object* arg, Module* 
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2639,8 +2681,8 @@ Proposition* assertBinaryProposition(LogicObject* relation, Object* arg, Object*
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2666,8 +2708,8 @@ Proposition* assertNaryProposition(Object* relationAndArguments, Module* module,
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2688,8 +2730,8 @@ Proposition* retractUnaryProposition(LogicObject* relation, Object* arg, Module*
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2715,8 +2757,8 @@ Proposition* retractBinaryProposition(LogicObject* relation, Object* arg, Object
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2742,8 +2784,8 @@ Proposition* retractNaryProposition(Object* relationAndArguments, Module* module
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2765,8 +2807,8 @@ Proposition* assertProposition(Proposition* proposition, Module* module, Environ
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2796,8 +2838,8 @@ PlIterator* sAssertProposition(char* sentence, char* moduleName, Environment* en
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2829,8 +2871,8 @@ Proposition* retractProposition(Proposition* proposition, Module* module, Enviro
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2860,8 +2902,8 @@ PlIterator* sRetractProposition(char* sentence, char* moduleName, Environment* e
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2903,8 +2945,8 @@ PlIterator* conceive(Object* sentence, Module* module, Environment* environment)
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -2979,8 +3021,8 @@ PlIterator* sConceive(char* sentence, char* moduleName, Environment* environment
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3006,8 +3048,8 @@ PlIterator* getRules(LogicObject* relation, Module* module, Environment* environ
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3070,7 +3112,7 @@ void runForwardRules(Object* module, boolean forceP) {
   // and forward inferencing will be disabled until this function is
   // called again.
   if (!((boolean)(module))) {
-    module = oMODULEo.get();
+    module = oMODULEo;
   }
   if (((boolean)(module))) {
     callRunForwardRules(((Module*)(module)), forceP);
@@ -3229,12 +3271,12 @@ void load(char* filename, Environment* environment) {
   // The file should contain an `in-module' declaration that specifies the module
   // within which all remaining commands are to be evaluated.  The remaining commands
   // are evaluated one-by-one, applying the function `evaluate' to each of them.
-  { Module* mdl000 = oMODULEo.get();
+  { Module* mdl000 = oMODULEo;
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3260,8 +3302,8 @@ void loadInModule(char* filename, Module* module, Environment* environment) {
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3281,12 +3323,12 @@ void loadStream(InputStream* stream, Environment* environment) {
   // the module within which all remaining commands are to be evaluated.
   // The remaining commands are evaluated one-by-one, applying the function
   // `evaluate' to each of them.
-  { Module* mdl000 = oMODULEo.get();
+  { Module* mdl000 = oMODULEo;
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3312,8 +3354,8 @@ void loadStreamInModule(InputStream* stream, Module* module, Environment* enviro
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3335,12 +3377,12 @@ void loadNativeStream(std::istream* stream, Environment* environment) {
   // the module within which all remaining commands are to be evaluated
   // The remaining commands are evaluated one-by-one, applying the function
   // `evaluate' to each of them.
-  { Module* mdl000 = oMODULEo.get();
+  { Module* mdl000 = oMODULEo;
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3372,8 +3414,8 @@ void loadNativeStreamInModule(std::istream* stream, Module* module, Environment*
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3428,8 +3470,8 @@ void saveModule(Module* module, char* filename, char* ifexists, Environment* env
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3441,7 +3483,7 @@ void saveModule(Module* module, char* filename, char* ifexists, Environment* env
 
             try {
               stream = openOutputFile(filename, 0);
-              doSaveModule(oMODULEo.get(), stream);
+              doSaveModule(oMODULEo, stream);
             }
 catch (...) {
               if (((boolean)(stream))) {
@@ -3573,8 +3615,8 @@ Object* getNthValue(Object* sequence, int n, Module* module, Environment* enviro
                   Context* cxt000 = mdl000;
 
                   if (!((boolean)(mdl000))) {
-                    mdl000 = oMODULEo.get();
-                    cxt000 = oCONTEXTo.get();
+                    mdl000 = oMODULEo;
+                    cxt000 = oCONTEXTo;
                   }
                   { 
                     BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3707,8 +3749,8 @@ Cons* getEnumeratedCollectionMembers(Object* collection, Module* module, Environ
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3741,8 +3783,8 @@ Object* evaluate(Object* command, Module* module, Environment* environment) {
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3772,8 +3814,8 @@ Object* sEvaluate(char* command, char* moduleName, Environment* environment) {
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3898,8 +3940,8 @@ TruthValue* ask(Cons* query, Module* module, Environment* environment) {
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -3942,8 +3984,8 @@ TruthValue* sAsk(char* query, char* moduleName, Environment* environment) {
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -4017,8 +4059,8 @@ PlIterator* retrieve(Cons* query, Module* module, Environment* environment) {
     Context* cxt000 = mdl000;
 
     if (!((boolean)(mdl000))) {
-      mdl000 = oMODULEo.get();
-      cxt000 = oCONTEXTo.get();
+      mdl000 = oMODULEo;
+      cxt000 = oCONTEXTo;
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -4076,8 +4118,8 @@ PlIterator* sRetrieve(char* query, char* moduleName, Environment* environment) {
       Context* cxt000 = mdl000;
 
       if (!((boolean)(mdl000))) {
-        mdl000 = oMODULEo.get();
-        cxt000 = oCONTEXTo.get();
+        mdl000 = oMODULEo;
+        cxt000 = oCONTEXTo;
       }
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, mdl000);
@@ -4119,7 +4161,6 @@ PlIterator* sRetrieve(char* query, char* moduleName, Environment* environment) {
 }
 
 int main() {
-  // Main PowerLoom entry point for your code in C++ and Java.
   std::cout << "Initializing STELLA..." << std::endl;
   startupStellaSystem();
   std::cout << "Initializing PowerLoom..." << std::endl;
@@ -4172,6 +4213,7 @@ void helpStartupPli1() {
     SGT_PLI_STELLA_FLOAT_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("FLOAT-WRAPPER", getStellaModule("/STELLA", true), 1)));
     SGT_PLI_STELLA_NUMBER_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("NUMBER-WRAPPER", getStellaModule("/STELLA", true), 1)));
     SGT_PLI_STELLA_STRING_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("STRING-WRAPPER", getStellaModule("/STELLA", true), 1)));
+    KWD_PLI_DOCUMENTATION = ((Keyword*)(internRigidSymbolWrtModule("DOCUMENTATION", NULL, 2)));
     SYM_PLI_PLI_STARTUP_PLI = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-PLI", NULL, 0)));
     SYM_PLI_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", getStellaModule("/STELLA", true), 0)));
   }
@@ -4208,6 +4250,7 @@ void helpStartupPli2() {
     defineFunctionObject("S-GET-CONCEPT", "(DEFUN (S-GET-CONCEPT LOGIC-OBJECT) ((NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return a class/concept named `name' that is local to\nor visible from the module `module-name'.  A module name of `null' or the\nempty string refers to the current module.  If no module can be found\nwith the name `module-name', then a Stella `no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetConcept)), NULL);
     defineFunctionObject("GET-RELATION", "(DEFUN (GET-RELATION LOGIC-OBJECT) ((NAME STRING) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return a concept or relation named `name' that is local to\nor visible from the module `module'.\")", ((cpp_function_code)(&getRelation)), NULL);
     defineFunctionObject("S-GET-RELATION", "(DEFUN (S-GET-RELATION LOGIC-OBJECT) ((NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return a concept or relation named `name' that is local to\nor visible from the module `module-name'.  A module name of `null' or the\nempty string refers to the current module.  If no module can be found\nwith the name `module-name', then a Stella `no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetRelation)), NULL);
+    defineFunctionObject("GET-UNDEFINED-RELATIONS", "(DEFUN (GET-UNDEFINED-RELATIONS (PL-ITERATOR OF LOGIC-OBJECT)) ((MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return relations that have been referenced but not defined in `module'.\")", ((cpp_function_code)(&getUndefinedRelations)), NULL);
     defineFunctionObject("GET-NAME-IN-MODULE", "(DEFUN (GET-NAME-IN-MODULE STRING) ((OBJ OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the name, qualified as necessary, so that `obj' can be found from\n`module'.  If there is no name for the object return `null'.\")", ((cpp_function_code)(&getNameInModule)), NULL);
     defineFunctionObject("GET-NAME", "(DEFUN (GET-NAME STRING) ((OBJ OBJECT)) :DOCUMENTATION \"Return the fully qualified name of `obj', if it has one.  Otherwise return `null'.\")", ((cpp_function_code)(&getName)), NULL);
     defineFunctionObject("GET-SHORT-NAME", "(DEFUN (GET-SHORT-NAME STRING) ((OBJ OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the short name of `obj', if it has one.  Otherwise return `null'.\")", ((cpp_function_code)(&getShortName)), NULL);
@@ -4222,6 +4265,7 @@ void helpStartupPli2() {
     defineFunctionObject("S-GET-PROPOSITION", "(DEFUN (S-GET-PROPOSITION PROPOSITION) ((RELATION-AND-ARGUMENTS STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return a proposition matching `relation-and-arguments' that\nhas been asserted (or inferred by forward chaining).  `relation-and-arguments'\nis a string that begins with a left parenthesis, followed by a relation name, \none or more argument identifiers, and terminated by a right parenthesis.  Each\nargument identifier can be the name of a logical constant, a literal\nreference (e.g., a number), the null identifier, or a variable (an identifier that begins\nwith a question mark). Each occurrence of a null or a variable acts like a wild card.\nIf more than one proposition matches the input criteria, the selection among\nsatisficing propositions is arbitrary.  This procedure is normally applied to\nsingle-valued relations or functions.\n\nA module name of `null' or the\nempty string refers to the current module.  If no module can be found\nwith the name `module-" "name', then a Stella `no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetProposition)), NULL);
     defineFunctionObject("GET-PROPOSITIONS", "(DEFUN (GET-PROPOSITIONS (PL-ITERATOR OF PROPOSITION)) ((RELATION-AND-ARGUMENTS OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return propositions matching `relation-and-arguments' that\nhave been asserted (or inferred by forward chaining).  `relation-and-arguments'\nis a sequence containing objects and nulls.  The first argument must be the\nname of a relation.  A null value acts like a wild card.\")", ((cpp_function_code)(&getPropositions)), NULL);
     defineFunctionObject("S-GET-PROPOSITIONS", "(DEFUN (S-GET-PROPOSITIONS (PL-ITERATOR OF PROPOSITION)) ((RELATION-AND-ARGUMENTS STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return propositions matching `relation-and-arguments' that\nhave been asserted (or inferred by forward chaining).  `relation-and-arguments'\nis a string that begins with a left parenthesis, followed by a relation name, \none or more argument identifiers, and terminated by a right parenthesis.  Each\nargument identifier can be the name of a logical constant, a literal \nreference (e.g., a number), the null identifier, or a variable (an identifier that begins\nwith a question mark). Each occurrence of a null or a variable acts like a wild card.\n\nA module name of `null' or the\nempty string refers to the current module.  If no module can be found\nwith the name `module-name', then a Stella `no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetPropositions)), NULL);
+    defineFunctionObject("GET-INCONSISTENT-PROPOSITIONS", "(DEFUN (GET-INCONSISTENT-PROPOSITIONS (PL-ITERATOR OF PROPOSITION)) ((MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return inconsistent propositions visible in `module'.\")", ((cpp_function_code)(&getInconsistentPropositions)), NULL);
     defineFunctionObject("GET-BINARY-PROPOSITION", "(DEFUN (GET-BINARY-PROPOSITION PROPOSITION) ((RELATION LOGIC-OBJECT) (ARG1 OBJECT) (ARG2 OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return a proposition such that (`relation' `arg1' `arg2')\nis true.  The `relation' argument must be bound to a relation.  One or both\nof the `arg1' and `arg2' arguments may be set to NULL, which is interpreted\nas a wildcard. If more than one proposition matches the input criteria,\nthe selection is arbitrary.  This procedure is normally applied to single-valued\nrelations or functions.\")", ((cpp_function_code)(&getBinaryProposition)), NULL);
     defineFunctionObject("GET-BINARY-PROPOSITIONS", "(DEFUN (GET-BINARY-PROPOSITIONS (PL-ITERATOR OF PROPOSITION)) ((RELATION LOGIC-OBJECT) (ARG1 OBJECT) (ARG2 OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return propositions such that (`relation' `arg1' `arg2')\nis true.  The `relation' argument\nmust be bound to a relation.  One or both of the `arg1' and `arg2' arguments\nmay be set to NULL, which is interpreted as a wildcard.\")", ((cpp_function_code)(&getBinaryPropositions)), NULL);
     defineFunctionObject("GET-INFERRED-BINARY-PROPOSITION-VALUES", "(DEFUN (GET-INFERRED-BINARY-PROPOSITION-VALUES PL-ITERATOR) ((RELATION LOGIC-OBJECT) (ARG OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return all values `v' such that (`relation' `arg' `v')\nhas been asserted or can be inferred.\")", ((cpp_function_code)(&getInferredBinaryPropositionValues)), NULL);
@@ -4237,13 +4281,13 @@ void helpStartupPli2() {
     defineFunctionObject("IS-SUBRELATION", "(DEFUN (IS-SUBRELATION BOOLEAN) ((SUB LOGIC-OBJECT) (SUPER LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return TRUE if `sub' is a subconcept/subrelation of `super'.\")", ((cpp_function_code)(&isSubrelation)), NULL);
     defineFunctionObject("GET-PROPER-SUBRELATIONS", "(DEFUN (GET-PROPER-SUBRELATIONS (PL-ITERATOR OF LOGIC-OBJECT)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return relations that specialize `relation'.\nNon-reflexive.\")", ((cpp_function_code)(&getProperSubrelations)), NULL);
     defineFunctionObject("GET-DIRECT-SUBRELATIONS", "(DEFUN (GET-DIRECT-SUBRELATIONS (PL-ITERATOR OF LOGIC-OBJECT)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return relations that directly specialize `relation'.\nNon-reflexive.\")", ((cpp_function_code)(&getDirectSubrelations)), NULL);
-    defineFunctionObject("GET-PROPER-SUPERRELATIONS", "(DEFUN (GET-PROPER-SUPERRELATIONS (PL-ITERATOR OF LOGIC-OBJECT)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return relations that generalize `relation'.\nNon-reflexive.\")", ((cpp_function_code)(&getProperSuperrelations)), NULL);
-    defineFunctionObject("GET-DIRECT-SUPERRELATIONS", "(DEFUN (GET-DIRECT-SUPERRELATIONS (PL-ITERATOR OF LOGIC-OBJECT)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return relations that directly generalize `relation'.\nNon-reflexive.\")", ((cpp_function_code)(&getDirectSuperrelations)), NULL);
   }
 }
 
 void helpStartupPli3() {
   {
+    defineFunctionObject("GET-PROPER-SUPERRELATIONS", "(DEFUN (GET-PROPER-SUPERRELATIONS (PL-ITERATOR OF LOGIC-OBJECT)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return relations that generalize `relation'.\nNon-reflexive.\")", ((cpp_function_code)(&getProperSuperrelations)), NULL);
+    defineFunctionObject("GET-DIRECT-SUPERRELATIONS", "(DEFUN (GET-DIRECT-SUPERRELATIONS (PL-ITERATOR OF LOGIC-OBJECT)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return relations that directly generalize `relation'.\nNon-reflexive.\")", ((cpp_function_code)(&getDirectSuperrelations)), NULL);
     defineFunctionObject("IS-A", "(DEFUN (IS-A BOOLEAN) ((OBJECT OBJECT) (CONCEPT LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return TRUE if `object' is a member of the concept `concept'.\")", ((cpp_function_code)(&isA)), NULL);
     defineFunctionObject("GET-CONCEPT-INSTANCES", "(DEFUN (GET-CONCEPT-INSTANCES PL-ITERATOR) ((CONCEPT LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return instances of the concept `concept'.\nInclude instances of subconcepts of `concept'.  Depending on `concept',\nthe return values could be (wrapped) literals.\")", ((cpp_function_code)(&getConceptInstances)), NULL);
     defineFunctionObject("S-GET-CONCEPT-INSTANCES", "(DEFUN (S-GET-CONCEPT-INSTANCES PL-ITERATOR) ((CONCEPT-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return instances of concept `concept-name'.\nInclude instances of subconcepts of `concept-name'.  Depending on `concept-name',\nthe return values could be (wrapped) literals.\n\nA module name of `null' or the empty string refers to the current module. \nIf no module can be found with the name `module-name', then a Stella \n`no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetConceptInstances)), NULL);
@@ -4302,13 +4346,13 @@ void helpStartupPli3() {
     defineFunctionObject("CONCEIVE", "(DEFUN (CONCEIVE (PL-ITERATOR OF PROPOSITION)) ((SENTENCE OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Create one or more proposition objects from the sentence `sentence'\nin the  module `module'.  Return an iterator of the propositions.\nIf any of the new propositions has the same structure as an already existing\nproposition, an automatic check for duplicates will return the pre-existing\nproposition.  Multiple propositions may be returned for a single sentence\nbecause of normalization of equivalences, conjunctions, etc.\n\nSignals a `Proposition-Error' if PowerLoom could not conceive `sentence'.\")", ((cpp_function_code)(&conceive)), NULL);
     defineFunctionObject("S-CONCEIVE", "(DEFUN (S-CONCEIVE (PL-ITERATOR OF PROPOSITION)) ((SENTENCE STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Create one or more proposition objects from the sentence `sentence'\nin the  module named `module-name'.  Return an iterator of the propositions.\nIf any of the new propositions has the same structure as an already existing\nproposition, an automatic check for duplicates will return the pre-existing\nproposition.  Multiple propositions may be returned for a single sentence\nbecause of normalization of equivalences, conjunctions, etc.\n\nA module name of `null' or the empty string refers to the current module.\nIf no module can be found with the name `module-name', then a Stella\n`No-Such-Context-Exception' is thrown.\n\nSignals a `Proposition-Error' if PowerLoom could not conceive `sentence'.\")", ((cpp_function_code)(&sConceive)), NULL);
     defineFunctionObject("GET-RULES", "(DEFUN (GET-RULES (PL-ITERATOR OF PROPOSITION)) ((RELATION LOGIC-OBJECT) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return rules attached to the concept/relation `relation'\nin either antecedent or consequent position.\")", ((cpp_function_code)(&getRules)), NULL);
-    defineFunctionObject("S-GET-RULES", "(DEFUN (S-GET-RULES (PL-ITERATOR OF PROPOSITION)) ((RELATION-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return rules attached to the concept/relation named\n`relation-name' found in the module named `module-name'.\n\nA module name of `null' or the empty string refers to the current module.\nIf no module can be found with the name `module-name', then a Stella\n`No-Such-Context-Exception' is thrown.\")", ((cpp_function_code)(&sGetRules)), NULL);
-    defineFunctionObject("S-PRINT-RULES", "(DEFUN S-PRINT-RULES ((NAME STRING) (STREAM OUTPUT-STREAM) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :DOCUMENTATION \"Print rules attached to the concept/relation named `name'.\n\nA module name of `null' or the empty string refers to the\ncurrent module.  If no module can be found with the name `module-name',\nthen a Stella `no-such-context-exception' is thrown.\" :PUBLIC? TRUE)", ((cpp_function_code)(&sPrintRules)), NULL);
   }
 }
 
 void helpStartupPli4() {
   {
+    defineFunctionObject("S-GET-RULES", "(DEFUN (S-GET-RULES (PL-ITERATOR OF PROPOSITION)) ((RELATION-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return rules attached to the concept/relation named\n`relation-name' found in the module named `module-name'.\n\nA module name of `null' or the empty string refers to the current module.\nIf no module can be found with the name `module-name', then a Stella\n`No-Such-Context-Exception' is thrown.\")", ((cpp_function_code)(&sGetRules)), NULL);
+    defineFunctionObject("S-PRINT-RULES", "(DEFUN S-PRINT-RULES ((NAME STRING) (STREAM OUTPUT-STREAM) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :DOCUMENTATION \"Print rules attached to the concept/relation named `name'.\n\nA module name of `null' or the empty string refers to the\ncurrent module.  If no module can be found with the name `module-name',\nthen a Stella `no-such-context-exception' is thrown.\" :PUBLIC? TRUE)", ((cpp_function_code)(&sPrintRules)), NULL);
     defineFunctionObject("RUN-FORWARD-RULES", "(DEFUN RUN-FORWARD-RULES ((MODULE OBJECT) (FORCE? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Run forward inference rules in module `module'.\nIf `module' is NULL, the\ncurrent module will be used.  If forward inferencing is already up-to-date\nin the designated module, no additional inferencing will occur, unless `force'\nis set to TRUE, in which case all forward rules are run or rerun.\n\nCalling `run-forward-rules' temporarily puts the module into a mode where\nfuture assertional (monotonic) updates will trigger additional forward\ninference.  Once a non-monotonic update is performed, i.e., a retraction\nor clipping of relation value, all cached forward inferences will be discarded\nand forward inferencing will be disabled until this function is\ncalled again.\")", ((cpp_function_code)(&runForwardRules)), NULL);
     defineFunctionObject("GET-ARITY", "(DEFUN (GET-ARITY INTEGER) ((RELATION LOGIC-OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the arity of the relation `relation'.\")", ((cpp_function_code)(&getArity)), NULL);
     defineFunctionObject("S-GET-ARITY", "(DEFUN (S-GET-ARITY INTEGER) ((RELATION-NAME STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Return the arity of the relation named `relation-name'.\n\n A module name of `null' or the empty string refers to the\ncurrent module.  If no module can be found with the name `module-name',\nthen a Stella `no-such-context-exception' is thrown.\")", ((cpp_function_code)(&sGetArity)), NULL);
@@ -4355,7 +4399,7 @@ void helpStartupPli4() {
     defineFunctionObject("S-ASK", "(DEFUN (S-ASK TRUTH-VALUE) ((QUERY STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :DOCUMENTATION \"Returns a truth value for `query' in module `module-name' and `environment'.\n`query' has the same syntax as the PowerLoom `ask' command (which see) but\nwith the `ask' operator omitted.  Different from the PLI `ask' function, `s-ask'\ndoes not expect a top-level pair of parentheses.  For example, here are some legal\n`query' arguments:\n	 \n    \\\"(happy Fred)\\\"\n    \\\"(happy Fred) :inference-level :assertion\\\"\n    \\\"(happy Fred) :inference-level :assertion :timeout 1.0\\\"\n	\nNames in `query' will be interpreted relative to module `module-name'.\nA null `module-name' or the empty string refers to the current module.\nIf no module can be found with the name `module-name', then a STELLA\n`no-such-context-exception' is thrown.\nThe returned truth value represents the logical truth of the queried sentence\nas determined by PowerLoom.  It can be be tested via the functions `is-true',\n`is-false" "' and `is-unknown' (which see).\" :PUBLIC? TRUE)", ((cpp_function_code)(&sAsk)), NULL);
     defineFunctionObject("RETRIEVE", "(DEFUN (RETRIEVE PL-ITERATOR) ((QUERY CONS) (MODULE MODULE) (ENVIRONMENT ENVIRONMENT)) :DOCUMENTATION \"Returns an iterator of variable bindings that when substituted for the\nopen variables in `query' satisfy the query proposition.  The query is\nrun in `module' and relative to `environment'.  `query' has the same syntax\nas the PowerLoom `retrieve' command (which see) but with the `retrieve'\noperator omitted.    For example, here are some legal `query' arguments:\n	 \n    ((happy ?x))\n    (10 (happy ?x))\n    (all (happy ?x))\n    (all ?x (happy ?x))\n    (10 (happy ?x) :inference-level :assertion)\n    (10 (happy ?x) :inference-level :assertion :timeout 1.0)\n	\nIf there is only a single output variable (as in all the examples above)\neach element generated by the returned iterator will be a binding for\nthat variable - unless, the output variable was declared with a surrounding\npair of parentheses.  For example:\n	 \n    (all (?x) (happy ?x))\n	\nIn that case, the generated elements will be one-elemen" "t lists.  If there\nare multiple output variables, each element generated by the returned\niterator will be a list of variable bindings that can be accessed using\nthe various `get-nth-...' functions.  The list of output variables does\nnot need to be declared in which case they are taken to be the open variables\nin the query proposition in the order in which they were encountered.  If\norder does matter or should be different from its default, it can be forced\nby declaring the set of output variables.\" :PUBLIC? TRUE)", ((cpp_function_code)(&retrieve)), NULL);
     defineFunctionObject("S-RETRIEVE", "(DEFUN (S-RETRIEVE PL-ITERATOR) ((QUERY STRING) (MODULE-NAME STRING) (ENVIRONMENT ENVIRONMENT)) :PUBLIC? TRUE :DOCUMENTATION \"Returns an iterator of variable bindings that when substituted for the\nopen variables in `query' satisfy the query proposition.  The query is\nrun in `module' and relative to `environment'.  `query' has the same syntax\nas the PowerLoom `retrieve' command (which see) but with the `retrieve'\noperator omitted.  Different from the PLI `retrieve' function, `s-retrieve'\ndoes not expect a top-level pair of parentheses.  For example, here are some\nlegal `query' arguments:\n	 \n    \\\"(happy ?x)\\\"\n    \\\"10 (happy ?x)\\\"\n    \\\"all (happy ?x)\\\"\n    \\\"all ?x (happy ?x)\\\"\n    \\\"10 (happy ?x) :inference-level :assertion\\\"\n    \\\"10 (happy ?x) :inference-level :assertion :timeout 1.0\\\"\n	\nIf there is only a single output variable (as in all the examples above)\neach element generated by the returned iterator will be a binding for\nthat variable - unless, the output v" "ariable was declared with a surrounding\npair of parentheses.  For example:\n	 \n    \\\"all (?x) (happy ?x)\\\"\n	\nIn that case, the generated elements will be one-element lists.  If there\nare multiple output variables, each element generated by the returned\niterator will be a list of variable bindings that can be accessed using\nthe various `get-nth-...' functions.  The list of output variables does\nnot need to be declared in which case they are taken to be the open variables\nin the query proposition in the order in which they were encountered.  If\norder does matter or should be different from its default, it can be forced\nby declaring the set of output variables.\n\nNames in `query' will be interpreted relative to module `module-name'.\nA null `module-name' or the empty string refers to the current module.\nIf no module can be found with the name `module-name', then a STELLA\n`no-such-context-exception' is thrown.\" :PUBLIC? TRUE)", ((cpp_function_code)(&sRetrieve)), NULL);
-    defineFunctionObject("MAIN", "(DEFUN (MAIN INTEGER) () :PUBLIC? TRUE :DOCUMENTATION \"Main PowerLoom entry point for your code in C++ and Java.\")", ((cpp_function_code)(&main)), NULL);
+    defineFunctionObject("MAIN", "(DEFUN (MAIN INTEGER) () :PUBLIC? TRUE)", ((cpp_function_code)(&main)), NULL);
     defineFunctionObject("STARTUP-PLI", "(DEFUN STARTUP-PLI () :PUBLIC? TRUE)", ((cpp_function_code)(&startupPli)), NULL);
     { MethodSlot* function = lookupFunction(SYM_PLI_PLI_STARTUP_PLI);
 
@@ -4367,30 +4411,30 @@ void helpStartupPli4() {
 void startupPli() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/PLI", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupPli1();
     }
     if (currentStartupTimePhaseP(4)) {
-      { Environment* self058 = newEnvironment();
-
-        self058->level = "ASSERTION";
-        ASSERTION_ENV = self058;
-      }
-      { Environment* self059 = newEnvironment();
-
-        self059->level = "TAXONOMIC";
-        TAXONOMIC_ENV = self059;
-      }
       { Environment* self060 = newEnvironment();
 
-        self060->level = "INFERENCE";
-        INFERENCE_ENV = self060;
+        self060->level = "ASSERTION";
+        ASSERTION_ENV = self060;
       }
-      { PlIterator* self061 = newPlIterator();
+      { Environment* self061 = newEnvironment();
 
-        self061->cursor = NIL;
-        EMPTY_PL_ITERATOR = self061;
+        self061->level = "TAXONOMIC";
+        TAXONOMIC_ENV = self061;
+      }
+      { Environment* self062 = newEnvironment();
+
+        self062->level = "INFERENCE";
+        INFERENCE_ENV = self062;
+      }
+      { PlIterator* self063 = newPlIterator();
+
+        self063->cursor = NIL;
+        EMPTY_PL_ITERATOR = self063;
       }
     }
     if (currentStartupTimePhaseP(5)) {
@@ -4518,6 +4562,8 @@ Surrogate* SGT_PLI_STELLA_FLOAT_WRAPPER = NULL;
 Surrogate* SGT_PLI_STELLA_NUMBER_WRAPPER = NULL;
 
 Surrogate* SGT_PLI_STELLA_STRING_WRAPPER = NULL;
+
+Keyword* KWD_PLI_DOCUMENTATION = NULL;
 
 Symbol* SYM_PLI_PLI_STARTUP_PLI = NULL;
 

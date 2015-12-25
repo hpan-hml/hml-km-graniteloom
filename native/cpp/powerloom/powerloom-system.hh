@@ -10,8 +10,6 @@
 
 // System-wide forward declarations:
 
-
-
 // System components:
 #include "powerloom/powerloom.hh"
 #include "powerloom/startup-system.hh"

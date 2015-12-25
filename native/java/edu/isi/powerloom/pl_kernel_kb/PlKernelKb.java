@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -61,15 +61,15 @@ public class PlKernelKb {
 
   public static Symbol SYM_PL_KERNEL_KB_INTERVAL_UPPER_BOUND = null;
 
-  public static Symbol SYM_PL_KERNEL_KB_INTERVAL_MEMBER = null;
+  public static Symbol SYM_LOGIC_INTERVAL_MEMBER = null;
 
   public static Symbol SYM_STELLA_LOWER_BOUND = null;
 
   public static Symbol SYM_STELLA_UPPER_BOUND = null;
 
-  public static Symbol SYM_PL_KERNEL_KB_STRICT_LOWER_BOUNDp = null;
+  public static Symbol SYM_LOGIC_STRICT_LOWER_BOUNDp = null;
 
-  public static Symbol SYM_PL_KERNEL_KB_STRICT_UPPER_BOUNDp = null;
+  public static Symbol SYM_LOGIC_STRICT_UPPER_BOUNDp = null;
 
   public static Surrogate SGT_PL_KERNEL_KB_INTERVAL_CACHE_OF = null;
 
@@ -475,9 +475,74 @@ public class PlKernelKb {
         }
       }
       if (iterator != null) {
-        if (iterator.nextP()) {
-          PatternVariable.bindVariableToValueP(((PatternVariable)(collectionarg)), iterator.value, true);
-          return (Logic.KWD_CONTINUING_SUCCESS);
+        while (iterator.nextP()) {
+          if (PatternVariable.bindVariableToValueP(((PatternVariable)(collectionarg)), iterator.value, true)) {
+            return (Logic.KWD_CONTINUING_SUCCESS);
+          }
+        }
+        return (Logic.KWD_FAILURE);
+      }
+      return (Logic.KWD_FAILURE);
+    }
+  }
+
+  public static Keyword directInstanceOfSpecialist(ControlFrame frame, Keyword lastmove) {
+    { Proposition proposition = frame.proposition;
+      Vector arguments = proposition.arguments;
+      Stella_Object memberarg = (arguments.theArray)[0];
+      Stella_Object member = Logic.argumentBoundTo(memberarg);
+      Stella_Object collectionarg = (arguments.theArray)[1];
+      Stella_Object collection = Logic.argumentBoundTo(collectionarg);
+      Iterator iterator = ((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null)));
+
+      if (lastmove == Logic.KWD_UP_TRUE) {
+        return (((frame.down != null) ? Logic.KWD_CONTINUING_SUCCESS : Logic.KWD_FINAL_SUCCESS));
+      }
+      else if (lastmove == Logic.KWD_UP_FAIL) {
+        return (Logic.KWD_FAILURE);
+      }
+      else {
+      }
+      if (iterator == null) {
+        if ((collection != null) &&
+            (Logic.classP(collection) &&
+             Stella_Object.isaP(collection, Logic.SGT_LOGIC_NAMED_DESCRIPTION))) {
+          if (member == null) {
+            iterator = NamedDescription.allExtensionMembers(((NamedDescription)(collection)));
+          }
+          else if (Logic.ASSERTION_INFERENCE.levellizedTestTypeOnInstanceP(member, Logic.objectSurrogate(collection))) {
+            return (Logic.KWD_FINAL_SUCCESS);
+          }
+          else {
+            return (Logic.KWD_FAILURE);
+          }
+        }
+        else if (member != null) {
+          iterator = Logic.allDirectTypes(member).allocateIterator();
+        }
+        else {
+          return (Logic.KWD_FAILURE);
+        }
+        KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, iterator, null);
+      }
+      if (iterator != null) {
+        while (iterator.nextP()) {
+          { Stella_Object value = iterator.value;
+
+            if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(value), Logic.SGT_LOGIC_PROPOSITION)) {
+              { Proposition value000 = ((Proposition)(value));
+
+                if (PatternVariable.bindVariableToValueP(((PatternVariable)(memberarg)), (value000.arguments.theArray)[0], true)) {
+                  return (Logic.KWD_CONTINUING_SUCCESS);
+                }
+              }
+            }
+            else {
+              if (PatternVariable.bindVariableToValueP(((PatternVariable)(collectionarg)), value, true)) {
+                return (Logic.KWD_CONTINUING_SUCCESS);
+              }
+            }
+          }
         }
         return (Logic.KWD_FAILURE);
       }
@@ -497,7 +562,9 @@ public class PlKernelKb {
       if (iterator == null) {
         if ((subcollection != null) &&
             (supercollection != null)) {
-          if (LogicObject.collectionImpliesCollectionP(((LogicObject)(subcollection)), ((LogicObject)(supercollection)))) {
+          if (Stella_Object.isaP(subcollection, Logic.SGT_LOGIC_LOGIC_OBJECT) &&
+              (Stella_Object.isaP(supercollection, Logic.SGT_LOGIC_LOGIC_OBJECT) &&
+               LogicObject.collectionImpliesCollectionP(((LogicObject)(subcollection)), ((LogicObject)(supercollection))))) {
             return (Logic.selectTestResult(true, true, frame));
           }
           else if (Logic.testDisjointTermsP(subcollection, supercollection)) {
@@ -783,40 +850,188 @@ public class PlKernelKb {
     }
   }
 
-  public static Stella_Object propositionRelationComputation(Proposition p) {
-    { GeneralizedSymbol operator = p.operator;
+  public static Keyword totalValueSpecialist(ControlFrame frame, Keyword lastmove) {
+    { Proposition valueproposition = frame.proposition;
+      Vector valuearguments = valueproposition.arguments;
+      Stella_Object description = Logic.argumentBoundTo((valuearguments.theArray)[0]);
 
-      if (Surrogate.subtypeOfSurrogateP(Stella_Object.safePrimaryType(operator))) {
-        { Surrogate operator000 = ((Surrogate)(operator));
+      if (description != null) {
+        if (lastmove == Logic.KWD_UP_TRUE) {
+          if (((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null))) == null) {
+            KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, Logic.EMPTY_PROPOSITIONS_ITERATOR, null);
+          }
+          return (((frame.down != null) ? Logic.KWD_CONTINUING_SUCCESS : Logic.KWD_FINAL_SUCCESS));
+        }
+        else if (lastmove == Logic.KWD_UP_FAIL) {
+          if ((((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null))) != null) ||
+              frame.reversePolarityP) {
+            return (Logic.KWD_FAILURE);
+          }
+          else if (Stella_Object.isaP(description, Logic.SGT_LOGIC_NAMED_DESCRIPTION) &&
+              (NamedDescription.functionDescriptionP(((NamedDescription)(description))) &&
+               (Proposition.allKeyArgumentsBoundP(valueproposition) &&
+                (Logic.argumentBoundTo(valuearguments.last()) == null)))) {
+            { Cons value000 = Stella.NIL;
 
-          return (operator000.surrogateValue);
+              { int i = Stella.NULL_INTEGER;
+                int iter000 = 1;
+                int upperBound000 = valuearguments.length() - 2;
+                Cons collect000 = null;
+
+                for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
+                  i = iter000;
+                  if (collect000 == null) {
+                    {
+                      collect000 = Cons.cons(Logic.argumentBoundTo((valuearguments.theArray)[i]), Stella.NIL);
+                      if (value000 == Stella.NIL) {
+                        value000 = collect000;
+                      }
+                      else {
+                        Cons.addConsToEndOfConsList(value000, collect000);
+                      }
+                    }
+                  }
+                  else {
+                    {
+                      collect000.rest = Cons.cons(Logic.argumentBoundTo((valuearguments.theArray)[i]), Stella.NIL);
+                      collect000 = collect000.rest;
+                    }
+                  }
+                }
+              }
+              { Proposition functionprop = Logic.findOrCreateFunctionProposition(Logic.objectSurrogate(description), value000);
+
+                PatternVariable.bindVariableToValueP(((PatternVariable)((valueproposition.arguments.theArray)[(valueproposition.arguments.length() - 1)])), (functionprop.arguments.theArray)[(functionprop.arguments.length() - 1)], true);
+                return (Logic.KWD_FINAL_SUCCESS);
+              }
+            }
+          }
+          else {
+            return (Logic.KWD_FAILURE);
+          }
+        }
+        else if (lastmove == Logic.KWD_DOWN) {
+          return (PlKernelKb.holdsSpecialist(frame, lastmove));
+        }
+        else {
+          { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+            stream000.nativeStream.print("`" + lastmove + "' is not a valid case option");
+            throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+          }
         }
       }
       else {
-        return (null);
+        return (PlKernelKb.holdsSpecialist(frame, lastmove));
       }
     }
   }
 
-  public static Stella_Object propositionArgumentComputation(Proposition p, IntegerWrapper i) {
-    { Vector arguments = p.arguments;
+  public static Stella_Object propositionRelationComputation(Stella_Object p) {
+    if (Logic.functionOutputSkolemP(p)) {
+      p = ((Skolem)(p)).definingProposition;
+    }
+    if (Surrogate.subtypeOfP(Stella_Object.safePrimaryType(p), Logic.SGT_LOGIC_PROPOSITION)) {
+      { Proposition p000 = ((Proposition)(p));
 
-      if ((i.wrapperValue >= 0) &&
-          (i.wrapperValue < arguments.length())) {
-        return ((arguments.theArray)[(i.wrapperValue)]);
+        { GeneralizedSymbol operator = p000.operator;
+
+          if (Surrogate.subtypeOfSurrogateP(Stella_Object.safePrimaryType(operator))) {
+            { Surrogate operator000 = ((Surrogate)(operator));
+
+              return (operator000.surrogateValue);
+            }
+          }
+          else {
+          }
+        }
+      }
+    }
+    else {
+    }
+    return (null);
+  }
+
+  public static Stella_Object propositionArgumentComputation(Stella_Object p, IntegerWrapper i) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(p);
+
+      if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
+        { Proposition p000 = ((Proposition)(p));
+
+          { Vector arguments = p000.arguments;
+
+            if ((i.wrapperValue >= 0) &&
+                (i.wrapperValue < arguments.length())) {
+              return ((arguments.theArray)[(i.wrapperValue)]);
+            }
+          }
+        }
+      }
+      else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_SKOLEM)) {
+        { Skolem p000 = ((Skolem)(p));
+
+          if (Logic.functionOutputSkolemP(p000)) {
+            { Proposition prop = ((Skolem)(p000)).definingProposition;
+              Vector arguments = prop.arguments;
+
+              if ((i.wrapperValue >= 0) &&
+                  (i.wrapperValue < (arguments.length() - 1))) {
+                return ((arguments.theArray)[(i.wrapperValue)]);
+              }
+            }
+          }
+        }
       }
       else {
-        return (null);
       }
     }
+    return (null);
   }
 
-  public static Skolem propositionArgumentsComputation(Proposition p) {
-    return (Logic.createLogicalList(p.arguments.listify()));
+  public static Skolem propositionArgumentsComputation(Stella_Object p) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(p);
+
+      if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
+        { Proposition p000 = ((Proposition)(p));
+
+          return (Logic.createLogicalList(p000.arguments.listify()));
+        }
+      }
+      else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_SKOLEM)) {
+        { Skolem p000 = ((Skolem)(p));
+
+          if (Logic.functionOutputSkolemP(p000)) {
+            return (Logic.createLogicalList(((Skolem)(p000)).definingProposition.arguments.butLast().listify()));
+          }
+        }
+      }
+      else {
+      }
+    }
+    return (null);
   }
 
-  public static IntegerWrapper propositionArityComputation(Proposition p) {
-    return (IntegerWrapper.wrapInteger(p.arguments.length()));
+  public static IntegerWrapper propositionArityComputation(Stella_Object p) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(p);
+
+      if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_PROPOSITION)) {
+        { Proposition p000 = ((Proposition)(p));
+
+          return (IntegerWrapper.wrapInteger(p000.arguments.length()));
+        }
+      }
+      else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_SKOLEM)) {
+        { Skolem p000 = ((Skolem)(p));
+
+          if (Logic.functionOutputSkolemP(p000)) {
+            return (IntegerWrapper.wrapInteger(((Skolem)(p000)).definingProposition.arguments.length() - 1));
+          }
+        }
+      }
+      else {
+      }
+    }
+    return (null);
   }
 
   public static Keyword cutSpecialist(ControlFrame frame, Keyword lastmove) {
@@ -1164,7 +1379,7 @@ public class PlKernelKb {
         }
         Logic.callSetInferenceLevel(adjunct.savedInferenceLevel.keyword, null);
         Native.setSpecial(Logic.$INFERENCELEVEL$, ((NormalInferenceLevel)(adjunct.savedInferenceLevel)));
-        return (Logic.KWD_FAILURE);
+        return (Logic.KWD_TERMINAL_FAILURE);
       }
       else {
         { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -1379,7 +1594,19 @@ public class PlKernelKb {
         if (uniqueP) {
           members = (Stella_Object.consP(members.first()) ? members.removeDuplicatesEqual() : ((List)(members.removeDuplicates())));
         }
-        result = (listP ? Logic.createLogicalList(members) : Logic.createEnumeratedSet(members));
+        { Object old$Module$000 = Stella.$MODULE$.get();
+          Object old$Context$000 = Stella.$CONTEXT$.get();
+
+          try {
+            Native.setSpecial(Stella.$MODULE$, ((Module)(Stella.$MODULE$.get())));
+            Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
+            result = (listP ? Logic.createLogicalList(members) : Logic.createEnumeratedSet(members));
+
+          } finally {
+            Stella.$CONTEXT$.set(old$Context$000);
+            Stella.$MODULE$.set(old$Module$000);
+          }
+        }
       }
       { Keyword success = Logic.selectTestResult(Logic.bindArgumentToValueP(listarg, result, true), true, frame);
 
@@ -1399,35 +1626,6 @@ public class PlKernelKb {
           }
         }
         return (success);
-      }
-    }
-  }
-
-  public static Keyword lengthOfListSpecialist(ControlFrame frame, Keyword lastmove) {
-    { Proposition proposition = frame.proposition;
-      Stella_Object listarg = (proposition.arguments.theArray)[0];
-      Stella_Object listskolem = Logic.argumentBoundTo(listarg);
-      Stella_Object lengtharg = (proposition.arguments.theArray)[1];
-
-      lastmove = lastmove;
-      if ((listskolem != null) &&
-          (!Logic.logicalCollectionP(listskolem))) {
-        {
-          System.out.println();
-          System.out.println("Non list appears in second argument to 'LENGTH-OF-LIST'");
-          System.out.println();
-        }
-;
-        return (Logic.KWD_TERMINAL_FAILURE);
-      }
-      { List listvalue = Logic.assertedCollectionMembers(listskolem, true);
-        int len = Stella.NULL_INTEGER;
-
-        if (listvalue == null) {
-          return (Logic.KWD_TERMINAL_FAILURE);
-        }
-        len = ((List)(listvalue)).length();
-        return (Logic.selectTestResult(Logic.bindArgumentToValueP(lengtharg, IntegerWrapper.wrapInteger(len), true), true, frame));
       }
     }
   }
@@ -2276,11 +2474,17 @@ public class PlKernelKb {
   public static Keyword reflexiveRelationSpecialist(ControlFrame frame, Keyword lastmove) {
     lastmove = lastmove;
     { Proposition proposition = frame.proposition;
-      Stella_Object arg1 = Logic.argumentBoundTo((proposition.arguments.theArray)[0]);
-      Stella_Object arg2 = Logic.argumentBoundTo((proposition.arguments.theArray)[1]);
+      Stella_Object arg1 = (proposition.arguments.theArray)[0];
+      Stella_Object arg2 = (proposition.arguments.theArray)[1];
+      Stella_Object arg1Val = Logic.argumentBoundTo(arg1);
+      Stella_Object arg2Val = Logic.argumentBoundTo(arg2);
 
-      if (Stella_Object.eqlP(arg1, arg2) ||
-          Stella_Object.eqlP(Logic.argumentBoundTo(arg1), Logic.argumentBoundTo(arg2))) {
+      if ((arg1Val != null) &&
+          Logic.bindArgumentToValueP(arg2, arg1Val, true)) {
+        return (Logic.selectTestResult(true, true, frame));
+      }
+      else if ((arg2Val != null) &&
+          Logic.bindArgumentToValueP(arg1, arg2Val, true)) {
         return (Logic.selectTestResult(true, true, frame));
       }
       else {
@@ -2295,8 +2499,8 @@ public class PlKernelKb {
       Stella_Object arg1 = Logic.argumentBoundTo((proposition.arguments.theArray)[0]);
       Stella_Object arg2 = Logic.argumentBoundTo((proposition.arguments.theArray)[1]);
 
-      if (Stella_Object.eqlP(arg1, arg2) ||
-          Stella_Object.eqlP(Logic.argumentBoundTo(arg1), Logic.argumentBoundTo(arg2))) {
+      if ((arg1 != null) &&
+          Stella_Object.eqlP(arg1, arg2)) {
         return (Logic.selectTestResult(false, true, frame));
       }
       else {
@@ -2313,6 +2517,18 @@ public class PlKernelKb {
       }
       else {
         return (StringWrapper.wrapString(nameString));
+      }
+    }
+  }
+
+  public static StringWrapper objectPrintNameComputation(Stella_Object objectarg) {
+    { Symbol namesymbol = Logic.objectName(Logic.valueOf(objectarg));
+
+      if (namesymbol == null) {
+        return (null);
+      }
+      else {
+        return (StringWrapper.wrapString(namesymbol.relativeName(true)));
       }
     }
   }
@@ -2342,6 +2558,44 @@ public class PlKernelKb {
               return (value000);
             }
           }
+        }
+
+      } finally {
+        Stella.$CONTEXT$.set(old$Context$000);
+        Stella.$MODULE$.set(old$Module$000);
+      }
+    }
+  }
+
+  public static Stella_Object printNameToObjectComputation(Stella_Object namearg) {
+    { Object old$Module$000 = Stella.$MODULE$.get();
+      Object old$Context$000 = Stella.$CONTEXT$.get();
+
+      try {
+        Native.setSpecial(Stella.$MODULE$, ((Context)(Stella.$CONTEXT$.get())).baseModule);
+        Native.setSpecial(Stella.$CONTEXT$, ((Module)(Stella.$MODULE$.get())));
+        if (!Stella_Object.stringP(namearg)) {
+          { Stella_Object instance = Logic.getInstance(namearg);
+
+            if (instance != null) {
+              return (instance);
+            }
+          }
+        }
+        try {
+          { String nameargstring = edu.isi.powerloom.PLI.objectToString(namearg);
+            GeneralizedSymbol instancename = Stella.internStellaName(nameargstring);
+
+            { Stella_Object temp000 = Logic.getInstance(instancename);
+
+              { Stella_Object value000 = ((temp000 != null) ? temp000 : Logic.createLogicInstance(Surrogate.internSurrogateInModule(instancename.symbolName, ((Module)(instancename.homeContext)), true), null));
+
+                return (value000);
+              }
+            }
+          }
+        } catch (StellaException e000) {
+          return (null);
         }
 
       } finally {
@@ -3406,6 +3660,56 @@ public class PlKernelKb {
     }
   }
 
+  public static IntegerWrapper floorComputation(NumberWrapper x) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(x);
+
+      if (Surrogate.subtypeOfIntegerP(testValue000)) {
+        { IntegerWrapper x000 = ((IntegerWrapper)(x));
+
+          return (IntegerWrapper.wrapInteger(Native.floor(x000.wrapperValue)));
+        }
+      }
+      else if (Surrogate.subtypeOfFloatP(testValue000)) {
+        { FloatWrapper x000 = ((FloatWrapper)(x));
+
+          return (IntegerWrapper.wrapInteger(Native.floor(x000.wrapperValue)));
+        }
+      }
+      else {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+    }
+  }
+
+  public static IntegerWrapper ceilingComputation(NumberWrapper x) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(x);
+
+      if (Surrogate.subtypeOfIntegerP(testValue000)) {
+        { IntegerWrapper x000 = ((IntegerWrapper)(x));
+
+          return (IntegerWrapper.wrapInteger(Native.ceiling(x000.wrapperValue)));
+        }
+      }
+      else if (Surrogate.subtypeOfFloatP(testValue000)) {
+        { FloatWrapper x000 = ((FloatWrapper)(x));
+
+          return (IntegerWrapper.wrapInteger(Native.ceiling(x000.wrapperValue)));
+        }
+      }
+      else {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+    }
+  }
+
   public static Stella_Object plusConstraint(IntegerWrapper missingArgument, NumberWrapper x1, NumberWrapper x2, NumberWrapper x3) {
     { Stella_Object value = null;
 
@@ -3551,6 +3855,193 @@ public class PlKernelKb {
     }
   }
 
+  public static FloatWrapper logComputation(NumberWrapper x) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(x);
+
+      if (Surrogate.subtypeOfFloatP(testValue000)) {
+        { FloatWrapper x000 = ((FloatWrapper)(x));
+
+          return (((x000.wrapperValue > 0) ? FloatWrapper.wrapFloat(Math.log((x000.wrapperValue))) : null));
+        }
+      }
+      else if (Surrogate.subtypeOfIntegerP(testValue000)) {
+        { IntegerWrapper x000 = ((IntegerWrapper)(x));
+
+          return (((x000.wrapperValue > 0) ? FloatWrapper.wrapFloat(Math.log((x000.numberWrapperToFloat()))) : null));
+        }
+      }
+      else if (Surrogate.subtypeOfLongIntegerP(testValue000)) {
+        { LongIntegerWrapper x000 = ((LongIntegerWrapper)(x));
+
+          return (((x000.wrapperValue > 0) ? FloatWrapper.wrapFloat(Math.log((x000.numberWrapperToFloat()))) : null));
+        }
+      }
+      else {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+    }
+  }
+
+  public static FloatWrapper log10Computation(NumberWrapper x) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(x);
+
+      if (Surrogate.subtypeOfFloatP(testValue000)) {
+        { FloatWrapper x000 = ((FloatWrapper)(x));
+
+          return (((x000.wrapperValue > 0) ? FloatWrapper.wrapFloat(Math.log((x000.wrapperValue)) * Stella.RECIPROCAL_NL10) : null));
+        }
+      }
+      else if (Surrogate.subtypeOfIntegerP(testValue000)) {
+        { IntegerWrapper x000 = ((IntegerWrapper)(x));
+
+          return (((x000.wrapperValue > 0) ? FloatWrapper.wrapFloat(Math.log((x000.numberWrapperToFloat())) * Stella.RECIPROCAL_NL10) : null));
+        }
+      }
+      else if (Surrogate.subtypeOfLongIntegerP(testValue000)) {
+        { LongIntegerWrapper x000 = ((LongIntegerWrapper)(x));
+
+          return (((x000.wrapperValue > 0) ? FloatWrapper.wrapFloat(Math.log((x000.numberWrapperToFloat())) * Stella.RECIPROCAL_NL10) : null));
+        }
+      }
+      else {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+    }
+  }
+
+  public static FloatWrapper expComputation(NumberWrapper x) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(x);
+
+      if (Surrogate.subtypeOfFloatP(testValue000)) {
+        { FloatWrapper x000 = ((FloatWrapper)(x));
+
+          return (FloatWrapper.wrapFloat(Math.exp((x000.wrapperValue))));
+        }
+      }
+      else if (Surrogate.subtypeOfIntegerP(testValue000)) {
+        { IntegerWrapper x000 = ((IntegerWrapper)(x));
+
+          return (FloatWrapper.wrapFloat(Math.exp((x000.numberWrapperToFloat()))));
+        }
+      }
+      else if (Surrogate.subtypeOfLongIntegerP(testValue000)) {
+        { LongIntegerWrapper x000 = ((LongIntegerWrapper)(x));
+
+          return (FloatWrapper.wrapFloat(Math.exp((x000.numberWrapperToFloat()))));
+        }
+      }
+      else {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+    }
+  }
+
+  public static FloatWrapper exptComputation(NumberWrapper x, NumberWrapper n) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(x);
+
+      if (Surrogate.subtypeOfFloatP(testValue000)) {
+        { FloatWrapper x000 = ((FloatWrapper)(x));
+
+          return (FloatWrapper.wrapFloat(Math.pow((x000.wrapperValue),(Stella_Object.coerceToFloat(n)))));
+        }
+      }
+      else if (Surrogate.subtypeOfIntegerP(testValue000)) {
+        { IntegerWrapper x000 = ((IntegerWrapper)(x));
+
+          return (FloatWrapper.wrapFloat(Math.pow((x000.numberWrapperToFloat()),(Stella_Object.coerceToFloat(n)))));
+        }
+      }
+      else if (Surrogate.subtypeOfLongIntegerP(testValue000)) {
+        { LongIntegerWrapper x000 = ((LongIntegerWrapper)(x));
+
+          return (FloatWrapper.wrapFloat(Math.pow((x000.numberWrapperToFloat()),(Stella_Object.coerceToFloat(n)))));
+        }
+      }
+      else {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+    }
+  }
+
+  public static Stella_Object logConstraint(IntegerWrapper missingArgument, NumberWrapper x, NumberWrapper log) {
+    { Stella_Object value = null;
+
+      switch (missingArgument.wrapperValue) {
+        case -1: 
+          value = ((PlKernelKb.arithmeticEqualTest(PlKernelKb.logComputation(x), log) ||
+              PlKernelKb.arithmeticEqualTest(x, PlKernelKb.expComputation(log))) ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER);
+        break;
+        case 0: 
+          value = PlKernelKb.expComputation(log);
+        break;
+        case 1: 
+          value = PlKernelKb.logComputation(x);
+        break;
+        default:
+        break;
+      }
+      return (value);
+    }
+  }
+
+  public static Stella_Object log10Constraint(IntegerWrapper missingArgument, NumberWrapper x, NumberWrapper log) {
+    { Stella_Object value = null;
+
+      switch (missingArgument.wrapperValue) {
+        case -1: 
+          value = ((PlKernelKb.arithmeticEqualTest(PlKernelKb.log10Computation(x), log) ||
+              PlKernelKb.arithmeticEqualTest(x, PlKernelKb.exptComputation(FloatWrapper.wrapFloat(10.0), log))) ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER);
+        break;
+        case 0: 
+          value = PlKernelKb.exptComputation(FloatWrapper.wrapFloat(10.0), log);
+        break;
+        case 1: 
+          value = PlKernelKb.log10Computation(x);
+        break;
+        default:
+        break;
+      }
+      return (value);
+    }
+  }
+
+  public static Stella_Object expConstraint(IntegerWrapper missingArgument, NumberWrapper x, NumberWrapper y) {
+    { Stella_Object value = null;
+
+      switch (missingArgument.wrapperValue) {
+        case -1: 
+          value = ((PlKernelKb.arithmeticEqualTest(PlKernelKb.expComputation(x), y) ||
+              PlKernelKb.arithmeticEqualTest(x, PlKernelKb.logComputation(y))) ? Stella.TRUE_WRAPPER : Stella.FALSE_WRAPPER);
+        break;
+        case 0: 
+          value = PlKernelKb.logComputation(y);
+        break;
+        case 1: 
+          value = PlKernelKb.expComputation(x);
+        break;
+        default:
+        break;
+      }
+      return (value);
+    }
+  }
+
   public static void printInterval(java.io.PrintStream stream, Stella_Object lower, boolean strictLowerP, Stella_Object upper, boolean strictUpperP) {
     if (strictLowerP) {
       stream.print("(");
@@ -3626,7 +4117,7 @@ public class PlKernelKb {
             }
             proposition = value000;
           }
-          Logic.equateValues(Logic.valueOf((proposition.arguments.theArray)[(proposition.arguments.length() - 1)]), copycache);
+          Proposition.equateValues(proposition, Logic.valueOf((proposition.arguments.theArray)[(proposition.arguments.length() - 1)]), copycache);
           return (copycache);
         }
       }
@@ -4232,7 +4723,15 @@ public class PlKernelKb {
           PlKernelKb.getIntervalCache(((LogicObject)(value2))).propagateInequalityToIntervalCache(value1, PlKernelKb.inverseInequalityOperator(operator));
         }
         else {
-          Proposition.evaluatePredicateProposition(self);
+          if (PlKernelKb.compareIntervalBoundsP(operator, value1, value2)) {
+            Proposition.assignTruthValue(self, Stella.TRUE_WRAPPER);
+          }
+          else if (Proposition.trueP(self)) {
+            Proposition.signalTruthValueClash(self);
+          }
+          else {
+            Proposition.assignTruthValue(self, Stella.FALSE_WRAPPER);
+          }
         }
       }
     }
@@ -4264,102 +4763,104 @@ public class PlKernelKb {
   }
 
   public static Keyword subsequenceSpecialist(ControlFrame frame, Keyword lastmove) {
-    { Proposition proposition = frame.proposition;
-      Stella_Object superarg = (proposition.arguments.theArray)[0];
-      Stella_Object superargvalue = Logic.argumentBoundTo(superarg);
-      Stella_Object p1Arg = (proposition.arguments.theArray)[1];
-      Stella_Object p1Argvalue = Logic.argumentBoundTo(p1Arg);
-      Stella_Object p2Arg = (proposition.arguments.theArray)[2];
-      Stella_Object p2Argvalue = Logic.argumentBoundTo(p2Arg);
-      Stella_Object subarg = (proposition.arguments.theArray)[3];
-      Stella_Object subargvalue = Logic.argumentBoundTo(subarg);
+    lastmove = lastmove;
+    { Vector arguments = frame.proposition.arguments;
+      Stella_Object superarg = (arguments.theArray)[0];
+      Stella_Object p1Arg = (arguments.theArray)[1];
+      Stella_Object p2Arg = (arguments.theArray)[2];
+      Stella_Object subarg = (arguments.theArray)[3];
       Iterator iterator = ((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null)));
 
-      lastmove = lastmove;
       if (iterator == null) {
-        if (superargvalue == null) {
-          return (Logic.KWD_FAILURE);
-        }
-        else if (subargvalue == null) {
-          { int p1 = Stella.NULL_INTEGER;
-            int p2 = Stella.NULL_INTEGER;
-            String renamed_Super = null;
+        { Stella_Object superargvalue = Logic.argumentBoundTo(superarg);
+          String renamed_Super = (Stella_Object.stringP(superargvalue) ? StringWrapper.unwrapString(((StringWrapper)(superargvalue))) : edu.isi.powerloom.PLI.objectToString(superargvalue));
+          int superlength = Stella.NULL_INTEGER;
+          Stella_Object p1Argvalue = Logic.argumentBoundTo(p1Arg);
+          int p1 = Stella.NULL_INTEGER;
+          Stella_Object p2Argvalue = Logic.argumentBoundTo(p2Arg);
+          int p2 = Stella.NULL_INTEGER;
+          Stella_Object subargvalue = Logic.argumentBoundTo(subarg);
+          String sub = (Stella_Object.stringP(subargvalue) ? StringWrapper.unwrapString(((StringWrapper)(subargvalue))) : edu.isi.powerloom.PLI.objectToString(subargvalue));
+          int sublength = ((sub != null) ? sub.length() : ((int)(Stella.NULL_INTEGER)));
 
-            if ((p1Argvalue == null) ||
-                (p2Argvalue == null)) {
-              return (Logic.KWD_FAILURE);
+          if (renamed_Super == null) {
+            return (Logic.KWD_FAILURE);
+          }
+          superlength = renamed_Super.length();
+          if (p1Argvalue != null) {
+            if (Stella_Object.integerP(p1Argvalue)) {
+              p1 = ((IntegerWrapper)(p1Argvalue)).wrapperValue;
             }
             else {
-              {
-                p1 = ((IntegerWrapper)(p1Argvalue)).wrapperValue;
-                p2 = ((IntegerWrapper)(p2Argvalue)).wrapperValue;
-                renamed_Super = StringWrapper.unwrapString(((StringWrapper)(superargvalue)));
-                if ((p1 < 0) ||
-                    (p2 > renamed_Super.length())) {
-                  return (Logic.KWD_TERMINAL_FAILURE);
-                }
-                else {
-                  return (Logic.selectProofResult(Logic.bindArgumentToValueP(subarg, StringWrapper.wrapString(Native.string_subsequence(renamed_Super, p1, p2)), true), false, true));
-                }
-              }
+              return (Logic.KWD_TERMINAL_FAILURE);
+            }
+            if ((p1 < 0) ||
+                (p1 > superlength)) {
+              return (Logic.KWD_TERMINAL_FAILURE);
             }
           }
-        }
-        else if (p1Argvalue == null) {
-          if (p2Argvalue == null) {
-            {
-              iterator = SubstringPositionIterator.newSubstringPositionIterator(StringWrapper.unwrapString(((StringWrapper)(superargvalue))), StringWrapper.unwrapString(((StringWrapper)(subargvalue))));
-              KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, iterator, null);
+          if (p2Argvalue != null) {
+            if (Stella_Object.integerP(p2Argvalue)) {
+              p2 = ((IntegerWrapper)(p2Argvalue)).wrapperValue;
+            }
+            else {
+              return (Logic.KWD_TERMINAL_FAILURE);
+            }
+            if (p2 < 0) {
+              p2 = superlength + p2 + 1;
+            }
+            if ((p2 > superlength) ||
+                ((p1 != Stella.NULL_INTEGER) &&
+                 (p1 > p2))) {
+              return (Logic.KWD_TERMINAL_FAILURE);
             }
           }
-          else {
-            { int p2 = ((IntegerWrapper)(p2Argvalue)).wrapperValue;
-              String sub = StringWrapper.unwrapString(((StringWrapper)(subargvalue)));
-              int lsub = sub.length();
-
-              if (lsub > p2) {
+          if (sub == null) {
+            if ((p1 != Stella.NULL_INTEGER) &&
+                (p2 != Stella.NULL_INTEGER)) {
+              return (Logic.selectProofResult(Logic.bindArgumentToValueP(subarg, StringWrapper.wrapString(Native.string_subsequence(renamed_Super, p1, p2)), true), false, true));
+            }
+            else {
+              return (Logic.KWD_FAILURE);
+            }
+          }
+          else if (p1 == Stella.NULL_INTEGER) {
+            if (p2 == Stella.NULL_INTEGER) {
+              KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, SubstringPositionIterator.newSubstringPositionIterator(renamed_Super, sub), null);
+            }
+            else {
+              if (sublength > p2) {
                 return (Logic.KWD_TERMINAL_FAILURE);
               }
-              else if (Stella.stringEqlP(Native.string_subsequence(StringWrapper.unwrapString(((StringWrapper)(superargvalue))), p2 - lsub, p2), sub)) {
-                return (Logic.selectProofResult(Logic.bindArgumentToValueP(p1Arg, IntegerWrapper.wrapInteger(p2 - lsub), true), false, true));
+              else if (Stella.stringEqlP(Native.string_subsequence(renamed_Super, p2 - sublength, p2), sub)) {
+                return (Logic.selectProofResult(Logic.bindArgumentToValueP(p1Arg, IntegerWrapper.wrapInteger(p2 - sublength), true), false, true));
               }
               else {
                 return (Logic.KWD_TERMINAL_FAILURE);
               }
             }
           }
-        }
-        else if (p2Argvalue == null) {
-          { int p1 = ((IntegerWrapper)(p1Argvalue)).wrapperValue;
-            String sub = StringWrapper.unwrapString(((StringWrapper)(subargvalue)));
-            int lsub = sub.length();
-            String renamed_Super = StringWrapper.unwrapString(((StringWrapper)(superargvalue)));
-            int lsuper = renamed_Super.length();
-
-            if ((p1 < 0) ||
-                ((p1 + lsub) > lsuper)) {
+          else if (p2 == Stella.NULL_INTEGER) {
+            if ((p1 + sublength) > superlength) {
               return (Logic.KWD_TERMINAL_FAILURE);
             }
-            else if (Stella.stringEqlP(sub, Native.string_subsequence(renamed_Super, p1, p1 + lsub))) {
-              return (Logic.selectProofResult(Logic.bindArgumentToValueP(p2Arg, IntegerWrapper.wrapInteger(p1 + lsub), true), false, true));
+            else if (Stella.stringEqlP(sub, Native.string_subsequence(renamed_Super, p1, p1 + sublength))) {
+              return (Logic.selectProofResult(Logic.bindArgumentToValueP(p2Arg, IntegerWrapper.wrapInteger(p1 + sublength), true), false, true));
             }
             else {
               return (Logic.KWD_TERMINAL_FAILURE);
             }
           }
-        }
-        else {
-          { String superString = StringWrapper.unwrapString(((StringWrapper)(superargvalue)));
-            int beginIndex = IntegerWrapper.unwrapInteger(((IntegerWrapper)(p1Argvalue)));
-            int endIndex = IntegerWrapper.unwrapInteger(((IntegerWrapper)(p2Argvalue)));
-            boolean matchP = (endIndex <= superString.length()) &&
-                Logic.bindArgumentToValueP(subarg, StringWrapper.wrapString(Native.string_subsequence(superString, beginIndex, endIndex)), true);
+          else {
+            { boolean matchP = Logic.bindArgumentToValueP(subarg, StringWrapper.wrapString(Native.string_subsequence(renamed_Super, p1, p2)), true);
 
-            ControlFrame.setFrameTruthValue(frame, (matchP ? Logic.TRUE_TRUTH_VALUE : Logic.FALSE_TRUTH_VALUE));
-            return (Logic.selectProofResult(matchP, false, true));
+              ControlFrame.setFrameTruthValue(frame, (matchP ? Logic.TRUE_TRUTH_VALUE : Logic.FALSE_TRUTH_VALUE));
+              return (Logic.selectProofResult(matchP, false, true));
+            }
           }
         }
       }
+      iterator = ((Iterator)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_STELLA_ITERATOR, null)));
       if (iterator.nextP() &&
           (Logic.bindArgumentToValueP(p1Arg, ((Cons)(iterator.value)).value, true) &&
            Logic.bindArgumentToValueP(p2Arg, ((Cons)(iterator.value)).rest.value, true))) {
@@ -4371,44 +4872,101 @@ public class PlKernelKb {
     }
   }
 
-  static IntegerWrapper stringMatchComputationHelper(Stella_Object pattern, Stella_Object x, Stella_Object start, Stella_Object end, boolean ignoreCaseP) {
-    if (!(Stella_Object.stringP(pattern) &&
-        (Stella_Object.integerP(start) &&
-         Stella_Object.integerP(end)))) {
-      return (null);
+  public static String normalizeStringComputationArgs(Stella_Object x, Stella_Object start, Stella_Object end, boolean coerceP, Object [] MV_returnarray) {
+    if (!(Stella_Object.integerP(start) &&
+        Stella_Object.integerP(end))) {
+      { String _return_temp = null;
+
+        MV_returnarray[0] = IntegerWrapper.wrapInteger(Stella.NULL_INTEGER);
+        MV_returnarray[1] = IntegerWrapper.wrapInteger(Stella.NULL_INTEGER);
+        return (_return_temp);
+      }
     }
-    { String thepattern = ((StringWrapper)(pattern)).wrapperValue;
-      int thestart = ((IntegerWrapper)(start)).wrapperValue;
+    { int thestart = ((IntegerWrapper)(start)).wrapperValue;
       int theend = ((IntegerWrapper)(end)).wrapperValue;
       String name = (Stella_Object.stringP(x) ? ((StringWrapper)(x)).wrapperValue : Logic.objectNameString(x));
-      int namelength = name.length();
-      int matchposition = Stella.NULL_INTEGER;
+      int namelength = 0;
 
+      if ((name == null) &&
+          coerceP) {
+        name = edu.isi.powerloom.PLI.objectToString(x);
+      }
+      if (!(name != null)) {
+        { String _return_temp = null;
+
+          MV_returnarray[0] = IntegerWrapper.wrapInteger(Stella.NULL_INTEGER);
+          MV_returnarray[1] = IntegerWrapper.wrapInteger(Stella.NULL_INTEGER);
+          return (_return_temp);
+        }
+      }
+      namelength = name.length();
       if (thestart < 0) {
         thestart = namelength + thestart + 1;
       }
       if (thestart < 0) {
-        return (null);
+        { String _return_temp = null;
+
+          MV_returnarray[0] = IntegerWrapper.wrapInteger(Stella.NULL_INTEGER);
+          MV_returnarray[1] = IntegerWrapper.wrapInteger(Stella.NULL_INTEGER);
+          return (_return_temp);
+        }
       }
       if (theend < 0) {
         theend = namelength + theend + 1;
       }
       if ((theend < 0) ||
           (theend > namelength)) {
-        return (null);
-      }
-      if (ignoreCaseP) {
-        matchposition = Stella.stringSearchIgnoreCase(name, thepattern, thestart);
-      }
-      else {
-        matchposition = Native.stringSearch(name, thepattern, thestart);
-      }
-      if ((matchposition != Stella.NULL_INTEGER) &&
-          (matchposition < theend)) {
-        return (IntegerWrapper.wrapInteger(matchposition));
+        { String _return_temp = null;
+
+          MV_returnarray[0] = IntegerWrapper.wrapInteger(Stella.NULL_INTEGER);
+          MV_returnarray[1] = IntegerWrapper.wrapInteger(Stella.NULL_INTEGER);
+          return (_return_temp);
+        }
       }
       else {
-        return (null);
+        { String _return_temp = name;
+
+          MV_returnarray[0] = IntegerWrapper.wrapInteger(thestart);
+          MV_returnarray[1] = IntegerWrapper.wrapInteger(theend);
+          return (_return_temp);
+        }
+      }
+    }
+  }
+
+  public static IntegerWrapper stringMatchComputationHelper(Stella_Object pattern, Stella_Object x, Stella_Object start, Stella_Object end, boolean ignoreCaseP) {
+    if (!(Stella_Object.stringP(pattern))) {
+      return (null);
+    }
+    { String thepattern = ((StringWrapper)(pattern)).wrapperValue;
+      int matchposition = Stella.NULL_INTEGER;
+
+      { String name = null;
+        int thestart = Stella.NULL_INTEGER;
+        int theend = Stella.NULL_INTEGER;
+
+        { Object [] caller_MV_returnarray = new Object[2];
+
+          name = PlKernelKb.normalizeStringComputationArgs(x, start, end, false, caller_MV_returnarray);
+          thestart = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+          theend = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+        }
+        if (name == null) {
+          return (null);
+        }
+        if (ignoreCaseP) {
+          matchposition = Stella.stringSearchIgnoreCase(name, thepattern, thestart);
+        }
+        else {
+          matchposition = Native.stringSearch(name, thepattern, thestart);
+        }
+        if ((matchposition != Stella.NULL_INTEGER) &&
+            ((matchposition + thepattern.length()) <= theend)) {
+          return (IntegerWrapper.wrapInteger(matchposition));
+        }
+        else {
+          return (null);
+        }
       }
     }
   }
@@ -4421,17 +4979,212 @@ public class PlKernelKb {
     return (PlKernelKb.stringMatchComputationHelper(pattern, x, start, end, true));
   }
 
-  public static IntegerWrapper lengthComputation(Stella_Object x) {
-    if (Surrogate.subtypeOfStringP(Stella_Object.safePrimaryType(x))) {
-      { StringWrapper x000 = ((StringWrapper)(x));
+  public static StringWrapper stringUpcaseComputation(Stella_Object x, Stella_Object start, Stella_Object end) {
+    { String name = null;
+      int thestart = Stella.NULL_INTEGER;
+      int theend = Stella.NULL_INTEGER;
 
-        return (IntegerWrapper.wrapInteger((x000.wrapperValue).length()));
+      { Object [] caller_MV_returnarray = new Object[2];
+
+        name = PlKernelKb.normalizeStringComputationArgs(x, start, end, false, caller_MV_returnarray);
+        thestart = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+        theend = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+      }
+      if (name == null) {
+        return (null);
+      }
+      if ((thestart == 0) &&
+          (theend == name.length())) {
+        return (StringWrapper.wrapString(Native.stringUpcase(name)));
+      }
+      else {
+        return (StringWrapper.wrapString(Native.string_subsequence(name, 0, thestart) + Native.stringUpcase(Native.string_subsequence(name, thestart, theend)) + Native.string_subsequence(name, theend, Stella.NULL_INTEGER)));
       }
     }
-    else {
-      System.out.print("Length computation not yet implemented for Lists");
-      return (IntegerWrapper.wrapInteger(Stella.NULL_INTEGER));
+  }
+
+  public static StringWrapper stringDowncaseComputation(Stella_Object x, Stella_Object start, Stella_Object end) {
+    { String name = null;
+      int thestart = Stella.NULL_INTEGER;
+      int theend = Stella.NULL_INTEGER;
+
+      { Object [] caller_MV_returnarray = new Object[2];
+
+        name = PlKernelKb.normalizeStringComputationArgs(x, start, end, false, caller_MV_returnarray);
+        thestart = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+        theend = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+      }
+      if (name == null) {
+        return (null);
+      }
+      if ((thestart == 0) &&
+          (theend == name.length())) {
+        return (StringWrapper.wrapString(Native.stringDowncase(name)));
+      }
+      else {
+        return (StringWrapper.wrapString(Native.string_subsequence(name, 0, thestart) + Native.stringDowncase(Native.string_subsequence(name, thestart, theend)) + Native.string_subsequence(name, theend, Stella.NULL_INTEGER)));
+      }
     }
+  }
+
+  public static StringWrapper stringCapitalizeComputation(Stella_Object x, Stella_Object start, Stella_Object end) {
+    { String name = null;
+      int thestart = Stella.NULL_INTEGER;
+      int theend = Stella.NULL_INTEGER;
+
+      { Object [] caller_MV_returnarray = new Object[2];
+
+        name = PlKernelKb.normalizeStringComputationArgs(x, start, end, false, caller_MV_returnarray);
+        thestart = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+        theend = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+      }
+      if (name == null) {
+        return (null);
+      }
+      if ((thestart == 0) &&
+          (theend == name.length())) {
+        return (StringWrapper.wrapString(Native.stringCapitalize(name)));
+      }
+      else {
+        return (StringWrapper.wrapString(Native.string_subsequence(name, 0, thestart) + Native.stringCapitalize(Native.string_subsequence(name, thestart, theend)) + Native.string_subsequence(name, theend, Stella.NULL_INTEGER)));
+      }
+    }
+  }
+
+  public static StringWrapper stringReplaceComputation(Stella_Object x, Stella_Object from, Stella_Object to, Stella_Object start, Stella_Object end) {
+    { String name = null;
+      int thestart = Stella.NULL_INTEGER;
+      int theend = Stella.NULL_INTEGER;
+
+      { Object [] caller_MV_returnarray = new Object[2];
+
+        name = PlKernelKb.normalizeStringComputationArgs(x, start, end, false, caller_MV_returnarray);
+        thestart = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+        theend = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+      }
+      if ((name == null) ||
+          ((!Stella_Object.stringP(from)) ||
+           (!Stella_Object.stringP(to)))) {
+        return (null);
+      }
+      if ((thestart == 0) &&
+          (theend == name.length())) {
+        return (StringWrapper.wrapString(Stella.replaceSubstrings(name, ((StringWrapper)(to)).wrapperValue, ((StringWrapper)(from)).wrapperValue)));
+      }
+      else {
+        return (StringWrapper.wrapString(Native.string_subsequence(name, 0, thestart) + Stella.replaceSubstrings(Native.string_subsequence(name, thestart, theend), ((StringWrapper)(to)).wrapperValue, ((StringWrapper)(from)).wrapperValue) + Native.string_subsequence(name, theend, Stella.NULL_INTEGER)));
+      }
+    }
+  }
+
+  public static IntegerWrapper stringCompareComputationHelper(Stella_Object o1, Stella_Object o2, Stella_Object start1, Stella_Object end1, Stella_Object start2, Stella_Object end2, boolean ignorecaseP) {
+    { String name1 = null;
+      int thestart1 = Stella.NULL_INTEGER;
+      int theend1 = Stella.NULL_INTEGER;
+
+      { Object [] caller_MV_returnarray = new Object[2];
+
+        name1 = PlKernelKb.normalizeStringComputationArgs(o1, start1, end1, false, caller_MV_returnarray);
+        thestart1 = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+        theend1 = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+      }
+      if (name1 == null) {
+        return (null);
+      }
+      { String name2 = null;
+        int thestart2 = Stella.NULL_INTEGER;
+        int theend2 = Stella.NULL_INTEGER;
+
+        { Object [] caller_MV_returnarray = new Object[2];
+
+          name2 = PlKernelKb.normalizeStringComputationArgs(o2, start2, end2, false, caller_MV_returnarray);
+          thestart2 = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+          theend2 = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+        }
+        if (name2 == null) {
+          return (null);
+        }
+        if ((thestart1 > 0) ||
+            (theend1 < name1.length())) {
+          name1 = Native.string_subsequence(name1, thestart1, theend1);
+        }
+        if ((thestart2 > 0) ||
+            (theend2 < name2.length())) {
+          name2 = Native.string_subsequence(name2, thestart2, theend2);
+        }
+        return (IntegerWrapper.wrapInteger(Stella.stringCompare(name1, name2, !ignorecaseP)));
+      }
+    }
+  }
+
+  public static IntegerWrapper stringCompareComputation(Stella_Object o1, Stella_Object o2, Stella_Object start1, Stella_Object end1, Stella_Object start2, Stella_Object end2) {
+    return (PlKernelKb.stringCompareComputationHelper(o1, o2, start1, end1, start2, end2, false));
+  }
+
+  public static IntegerWrapper stringCompareIgnoreCaseComputation(Stella_Object o1, Stella_Object o2, Stella_Object start1, Stella_Object end1, Stella_Object start2, Stella_Object end2) {
+    return (PlKernelKb.stringCompareComputationHelper(o1, o2, start1, end1, start2, end2, true));
+  }
+
+  public static NumberWrapper stringToNumberComputation(Stella_Object x, Stella_Object start, Stella_Object end) {
+    { String name = null;
+      int thestart = Stella.NULL_INTEGER;
+      int theend = Stella.NULL_INTEGER;
+
+      { Object [] caller_MV_returnarray = new Object[2];
+
+        name = PlKernelKb.normalizeStringComputationArgs(x, start, end, false, caller_MV_returnarray);
+        thestart = ((int)(((IntegerWrapper)(caller_MV_returnarray[0])).wrapperValue));
+        theend = ((int)(((IntegerWrapper)(caller_MV_returnarray[1])).wrapperValue));
+      }
+      if (name == null) {
+        return (null);
+      }
+      if ((thestart > 0) ||
+          (theend < name.length())) {
+        name = Native.string_subsequence(name, thestart, theend);
+      }
+      try {
+        return (Stella.wrapIntegerValue(Native.stringToInteger(name)));
+      } catch (java.lang.Exception e000) {
+      }
+      try {
+        return (FloatWrapper.wrapFloat(Native.stringToFloat(name)));
+      } catch (java.lang.Exception e001) {
+      }
+      return (null);
+    }
+  }
+
+  public static IntegerWrapper lengthComputation(Stella_Object x) {
+    { Surrogate testValue000 = Stella_Object.safePrimaryType(x);
+
+      if (Surrogate.subtypeOfStringP(testValue000)) {
+        { StringWrapper x000 = ((StringWrapper)(x));
+
+          return (IntegerWrapper.wrapInteger((x000.wrapperValue).length()));
+        }
+      }
+      else if (Surrogate.subtypeOfP(testValue000, Logic.SGT_LOGIC_SKOLEM)) {
+        { Skolem x000 = ((Skolem)(x));
+
+          if (Logic.enumeratedListP(x000) ||
+              Logic.enumeratedSetP(x000)) {
+            return (IntegerWrapper.wrapInteger(x000.definingProposition.arguments.length() - 1));
+          }
+          else if (Logic.logicalCollectionP(x000)) {
+            { List listvalue = Logic.assertedCollectionMembers(x000, true);
+
+              if (listvalue != null) {
+                return (IntegerWrapper.wrapInteger(listvalue.length()));
+              }
+            }
+          }
+        }
+      }
+      else {
+      }
+    }
+    return (null);
   }
 
 }

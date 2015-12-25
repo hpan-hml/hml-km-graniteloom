@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -230,7 +230,7 @@ public class SystemDefinition extends StandardObject {
                     for (;!(iter004 == Stella.NIL); iter004 = iter004.rest) {
                       form = ((Cons)(iter004.value));
                       {
-                        outputstream.nativeStream.println(form);
+                        outputstream.nativeStream.println(form.toString());
                         outputstream.nativeStream.println();
                       }
 ;
@@ -255,6 +255,38 @@ public class SystemDefinition extends StandardObject {
         Stella.$CONTEXT$.set(old$Context$000);
         Stella.$MODULE$.set(old$Module$000);
       }
+    }
+  }
+
+  public static Cons collectDefinedModulesFromSystemFile(SystemDefinition system) {
+    { Cons startupforms = SystemDefinition.collectStartupFormsFromSystemFile(system);
+      Module module = null;
+      Cons modules = Stella.NIL;
+
+      { Cons form = null;
+        Cons iter000 = startupforms;
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          form = ((Cons)(iter000.value));
+          if (form.rest.value == Stella.KWD_MODULES) {
+            { Stella_Object def = null;
+              Cons iter001 = form.rest.rest;
+
+              for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+                def = iter001.value;
+                if (Stella_Object.consP(def) &&
+                    (((Cons)(def)).value == Stella.SYM_STELLA_DEFINE_MODULE_FROM_STRINGIFIED_SOURCE)) {
+                  module = Stella.getStellaModule(((StringWrapper)(((Cons)(def)).rest.value)).wrapperValue, false);
+                  if (module != null) {
+                    modules = Cons.cons(module, modules);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return (modules.reverse());
     }
   }
 

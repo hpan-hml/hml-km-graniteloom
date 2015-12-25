@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2011      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: cpp-translate-file.ste,v 1.70 2006/05/11 07:05:54 hans Exp
+;;; Version: cpp-translate-file.ste,v 1.71 2011/12/12 23:46:32 hans Exp
 
 ;;; Translating Stella files into C++.
 
@@ -471,23 +471,26 @@
        ;; TO DO: Generalize this to pick up classes from all modules defined by
        ;;    this system, not just its cardinal one:
        (print-stream *current-stream* "// System-wide forward declarations:" EOL)
-       (let ((currentNamespaceModule MODULE NULL))
-	 (foreach class in (all-classes *module* TRUE)
-            where (create-native-class? class)
-            do (setq *cpp-current-unit-module* (home-module class))
-               (cpp-output-namespace-change
-                currentNamespaceModule *cpp-current-unit-module*)
-               (setq currentNamespaceModule *cpp-current-unit-module*)
-               (print-stream *current-stream*
-                             "class "
-                             (wrapper-value
-                              (cpp-translate-class-name (class-type class)))
-                             ";" EOL))
-	 (print-stream *current-stream* EOL)
-	 (when (defined? currentNamespaceModule)
-	   ;; we did output some forward declarations, write the footer:
-	   (cpp-output-namespace-footer *cpp-current-unit-module*))
-	 (print-stream *current-stream* EOL EOL))
+       (foreach module in (cons *module* (remove (collect-defined-modules-from-system-file system) *module*))
+           do (let ((currentNamespaceModule MODULE NULL))
+                (foreach class in (all-classes module TRUE)
+                    where (create-native-class? class)
+                    do (setq *cpp-current-unit-module* (home-module class))
+                       (when (null? currentNamespaceModule)
+                         (print-stream *current-stream* EOL))
+                       (cpp-output-namespace-change
+                        currentNamespaceModule *cpp-current-unit-module*)
+                       (setq currentNamespaceModule *cpp-current-unit-module*)
+                       (print-stream *current-stream*
+                                     "class "
+                                     (wrapper-value
+                                      (cpp-translate-class-name (class-type class)))
+                                     ";" EOL))
+                (when (defined? currentNamespaceModule)
+                  ;; we did output some forward declarations, write the footer:
+                  (print-stream *current-stream* EOL)
+                  (cpp-output-namespace-footer *cpp-current-unit-module*))))
+       (print-stream *current-stream* EOL)
     
        ;; Include header files of all system components:
        (print-stream *current-stream* "// System components:" EOL)
@@ -569,7 +572,9 @@
           (systemFiles (new STRING-OUTPUT-STREAM))
           (requiredSystems (new STRING-OUTPUT-STREAM))
           (requiredSystemDirs (new STRING-OUTPUT-STREAM))
-          (allRequiredSystems (new STRING-OUTPUT-STREAM)))
+          (allRequiredSystems (new STRING-OUTPUT-STREAM))
+          (nativeSystemRoot
+           (file-name-directory (make-file-name "foo" :cpp-code TRUE))))
       (insert-at variables "SYSTEM-NAME" (name system))
       (insert-at variables "PROGRAM-NAME" (name system))
       (insert-at variables "MAIN-NAME"
@@ -581,8 +586,8 @@
       (foreach file in (files-plus-system-startup
                         (system-definition-source-files system))
           do (print-stream systemFiles
-                           (file-name-without-directory
-                            (make-file-name file :cpp-code TRUE))
+                           (relativize-file-name (make-file-name file :cpp-code TRUE)
+                                                 nativeSystemRoot)
                            " "))
       (insert-at variables "SYSTEM-FILES" (the-string systemFiles))
       (when (defined? (required-systems system))

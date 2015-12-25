@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -63,7 +63,7 @@ void jt() {
 void jptrans(Object* statement) {
   // Translate `statement' to C++ and print the result.
   { 
-    BIND_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword*, oTRANSLATOROUTPUTLANGUAGEo.get());
+    BIND_STELLA_SPECIAL(oTRANSLATOROUTPUTLANGUAGEo, Keyword*, oTRANSLATOROUTPUTLANGUAGEo);
     BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, STANDARD_OUTPUT);
     setTranslatorOutputLanguage(KWD_JAVA_TRANSLATE_FILE_JAVA);
     incrementallyTranslate(statement);
@@ -109,7 +109,7 @@ void javaOutputFlotsamUnitsToFile(HashTable* globalsht, HashTable* functionht, C
         module = ((Module*)(iter000->value));
         { 
           BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
           filename = javaMakeGlobalOutputFileName(module, false);
           if (flotsamFiles->memberP(wrapString(filename))) {
             *(STANDARD_WARNING->nativeStream) << "Warning: " << "Overwriting Flotsam file " << "`" << filename << "'" << ".  This is surely bad." << std::endl;
@@ -139,19 +139,19 @@ void javaOutputFlotsamUnitsToFileForModule(char* classoutputfile, Module* module
 
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         { OutputFileStream* classoutputstream = NULL;
 
           try {
             classoutputstream = openOutputFile(classoutputfile, 0);
             if (((boolean)(classunit))) {
-              oCURRENT_JAVA_OUTPUT_CLASSo.set(((Class*)(classunit->theObject)));
+              oCURRENT_JAVA_OUTPUT_CLASSo = ((Class*)(classunit->theObject));
               std::cout << "Translating " << "`" << clasS << "'" << "..." << std::endl;
-              classtranslation = javaTranslateDefineNativeClass(oCURRENT_JAVA_OUTPUT_CLASSo.get())->rest;
+              classtranslation = javaTranslateDefineNativeClass(oCURRENT_JAVA_OUTPUT_CLASSo)->rest;
             }
             { 
               BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, classoutputstream);
-              if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+              if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
                 if (((boolean)(classunit))) {
                   std::cout << "    Writing " << "`" << classoutputfile << "'" << " ..." << std::endl;
                 }
@@ -164,9 +164,9 @@ void javaOutputFlotsamUnitsToFileForModule(char* classoutputfile, Module* module
                 javaOutputClassDeclaration(classtranslation);
               }
               else {
-                *(oCURRENT_STREAMo.get()->nativeStream) << "public class " << javaYieldFlotsamClassName(module) << " ";
+                *(oCURRENT_STREAMo->nativeStream) << "public class " << javaYieldFlotsamClassName(module) << " ";
               }
-              *(oCURRENT_STREAMo.get()->nativeStream) << "{" << std::endl;
+              *(oCURRENT_STREAMo->nativeStream) << "{" << std::endl;
               javaBumpIndent();
               if (((boolean)(classunit))) {
                 javaOutputClassVariableDefinitions(((Cons*)(classtranslation->nth(6))));
@@ -183,8 +183,8 @@ void javaOutputFlotsamUnitsToFileForModule(char* classoutputfile, Module* module
                 }
               }
               if (((boolean)(classunit))) {
-                javaOutputClassConstructors(((Cons*)(classtranslation->nth(7))), javaYieldFlotsamClassName(module), ((boolean)(oCURRENT_JAVA_OUTPUT_CLASSo.get())) &&
-                    exceptionClassP(oCURRENT_JAVA_OUTPUT_CLASSo.get()));
+                javaOutputClassConstructors(((Cons*)(classtranslation->nth(7))), javaYieldFlotsamClassName(module), ((boolean)(oCURRENT_JAVA_OUTPUT_CLASSo)) &&
+                    exceptionClassP(oCURRENT_JAVA_OUTPUT_CLASSo));
                 { TranslationUnit* statement = NULL;
                   Cons* iter001 = ((Cons*)(classtranslation->nth(8)));
 
@@ -207,7 +207,7 @@ void javaOutputFlotsamUnitsToFileForModule(char* classoutputfile, Module* module
                 }
               }
               javaUnbumpIndent();
-              *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+              *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
             }
           }
 catch (...) {
@@ -230,7 +230,7 @@ void javaOutputFileHeader(OutputStream* stream, char* filename) {
   if (filename != NULL) {
     *(stream->nativeStream) << "// " << fileNameWithoutDirectory(filename) << std::endl << std::endl;
   }
-  { char* packageName = javaPackagePrefix(oMODULEo.get(), ".");
+  { char* packageName = javaPackagePrefix(oMODULEo, ".");
     Cons* importedPackages = NIL;
     char* name = NULL;
 
@@ -240,7 +240,7 @@ void javaOutputFileHeader(OutputStream* stream, char* filename) {
       packageName = stringSubsequence(packageName, 0, strlen(packageName) - 1);
       *(stream->nativeStream) << "package " << packageName << ";" << std::endl << std::endl;
     }
-    if (oMODULEo.get() == oSTELLA_MODULEo) {
+    if (oMODULEo == oSTELLA_MODULEo) {
       *(stream->nativeStream) << "import " << javaStellaPackage() << ".javalib.*;" << std::endl;
     }
     else {
@@ -255,9 +255,9 @@ void javaOutputFileHeader(OutputStream* stream, char* filename) {
         }
       }
     }
-    if (oCURRENT_STELLA_FEATURESo.get()->membP(KWD_JAVA_TRANSLATE_FILE_MINIMIZE_JAVA_PREFIXES)) {
+    if (oCURRENT_STELLA_FEATURESo->membP(KWD_JAVA_TRANSLATE_FILE_MINIMIZE_JAVA_PREFIXES)) {
       { Module* module = NULL;
-        Cons* iter000 = oMODULEo.get()->uses->theConsList;
+        Cons* iter000 = oMODULEo->uses->theConsList;
 
         for (module, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
           module = ((Module*)(iter000->value));
@@ -270,7 +270,7 @@ void javaOutputFileHeader(OutputStream* stream, char* filename) {
         }
       }
       { Context* module = NULL;
-        Cons* iter001 = oMODULEo.get()->allSuperContexts;
+        Cons* iter001 = oMODULEo->allSuperContexts;
 
         for (module, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
           module = ((Context*)(iter001->value));
@@ -292,7 +292,7 @@ void javaOutputClassToFile(Class* clasS) {
     BIND_STELLA_SPECIAL(oCURRENT_JAVA_OUTPUT_CLASSo, Class*, clasS);
     { 
       BIND_STELLA_SPECIAL(oCONTEXTo, Context*, clasS->homeModule());
-      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
       { char* classoutputfile = clasS->javaMakeCodeOutputFileName(false);
         Cons* translation = NIL;
 
@@ -304,7 +304,7 @@ void javaOutputClassToFile(Class* clasS) {
               BIND_STELLA_SPECIAL(oCURRENT_STREAMo, OutputStream*, classoutputstream);
               std::cout << "Translating " << "`" << clasS << "'" << "..." << std::endl;
               translation = javaTranslateDefineNativeClass(clasS);
-              if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+              if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
                 std::cout << "    Writing " << "`" << classoutputfile << "'" << "..." << std::endl;
               }
               javaOutputFileHeader(classoutputstream, clasS->javaMakeCodeOutputFileName(true));
@@ -355,18 +355,18 @@ void javaOutputStartupUnitsToFile(StringHashTable* startupht, Cons* keylist) {
               (!(!((boolean)(startupfunctions))))) {
             { 
               BIND_STELLA_SPECIAL(oMODULEo, Module*, ((TranslationUnit*)(startupfunctions->value))->homeModule());
-              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
               classoutputfile = stringJavaMakeCodeOutputFileName(classname->wrapperValue, false);
               { OutputFileStream* classoutputstream = NULL;
 
                 try {
                   classoutputstream = openOutputFile(classoutputfile, 0);
-                  oCURRENT_STREAMo.set(classoutputstream);
-                  if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+                  oCURRENT_STREAMo = classoutputstream;
+                  if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
                     std::cout << "Writing " << "`" << classoutputfile << "'" << "..." << std::endl;
                   }
                   javaOutputFileHeader(classoutputstream, stringJavaMakeCodeOutputFileName(classname->wrapperValue, true));
-                  *(oCURRENT_STREAMo.get()->nativeStream) << "public class " << classname->wrapperValue << " {" << std::endl;
+                  *(oCURRENT_STREAMo->nativeStream) << "public class " << classname->wrapperValue << " {" << std::endl;
                   javaBumpIndent();
                   { TranslationUnit* function = NULL;
                     Cons* iter001 = startupfunctions;
@@ -379,7 +379,7 @@ void javaOutputStartupUnitsToFile(StringHashTable* startupht, Cons* keylist) {
                     }
                   }
                   javaUnbumpIndent();
-                  *(oCURRENT_STREAMo.get()->nativeStream) << "}" << std::endl;
+                  *(oCURRENT_STREAMo->nativeStream) << "}" << std::endl;
                 }
 catch (...) {
                   if (((boolean)(classoutputstream))) {
@@ -444,9 +444,9 @@ void javaOutputAllUnitsToFile() {
     Module* codeoutputmodule = NULL;
 
     oJAVA_STELLA_PACKAGE_MAPPINGo->insertAt(wrapString("STELLAROOT"), wrapString(javaStellaPackage()));
-    oTRANSLATIONUNITSo.set(oTRANSLATIONUNITSo.get()->reverse());
+    oTRANSLATIONUNITSo = oTRANSLATIONUNITSo->reverse();
     { TranslationUnit* unit = NULL;
-      Cons* iter000 = oTRANSLATIONUNITSo.get()->theConsList;
+      Cons* iter000 = oTRANSLATIONUNITSo->theConsList;
 
       for (unit, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         unit = ((TranslationUnit*)(iter000->value));
@@ -508,7 +508,7 @@ void javaOutputAllUnitsToFile() {
 
             { 
               BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
               globals = ((Cons*)(globalsht->lookup(module)));
               if (!(((boolean)(globals)))) {
                 globals = NIL;
@@ -533,7 +533,7 @@ void javaOutputAllUnitsToFile() {
 }
 
 void javaInitializeFileTranslation() {
-  oJAVA_INDENT_CHARSo.set(0);
+  oJAVA_INDENT_CHARSo = 0;
 }
 
 void javaTranslateFile(char* filename) {
@@ -547,7 +547,7 @@ void javaTranslateFileAsPartOfSystem(char* filename) {
 void javaTranslateWalkedSystemUnits(KeyValueList* systemunits) {
   { 
     BIND_STELLA_SPECIAL(oTRANSLATIONUNITSo, List*, concatenateSystemUnits(systemunits));
-    if (oTRANSLATIONVERBOSITYLEVELo.get() >= 1) {
+    if (oTRANSLATIONVERBOSITYLEVELo >= 1) {
       std::cout << "Generating Java translations..." << std::endl;
     }
     javaOutputAllUnitsToFile();
@@ -563,7 +563,7 @@ void javaTranslateSystem(char* systemname) {
 void startupJavaTranslateFile() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       KWD_JAVA_TRANSLATE_FILE_COMMON_LISP = ((Keyword*)(internRigidSymbolWrtModule("COMMON-LISP", NULL, 2)));
       KWD_JAVA_TRANSLATE_FILE_JAVA = ((Keyword*)(internRigidSymbolWrtModule("JAVA", NULL, 2)));

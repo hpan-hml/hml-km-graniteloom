@@ -17933,3 +17933,2454 @@ Log Message:
   Fixed qualifier.
 
 
+
+****************************************
+Date:	Tuesday October 26, 2010 @ 16:30
+Author:	loom
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv20901
+
+Modified Files:
+	propagate.ste 
+Log Message:
+print-facts:
+  Improved output format and now sorts facts.
+
+
+
+****************************************
+Date:	Tuesday November 30, 2010 @ 17:13
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/utilities
+In directory blackcat.isi.edu:/tmp/cvs-serv21761/utilities
+
+Modified Files:
+	unit-defs.ste 
+Log Message:
+Added additional bit units.  Updated multiples for mass and added new volume units
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:16
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv32220
+
+Modified Files:
+	case-based.ste machine-learning.ste neural-network.ste 
+	rule-induction.ste 
+Log Message:
+Updated for argument change in MAKE-QUERY
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:17
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv32263
+
+Modified Files:
+	arithmetic.ste descriptions.ste propagate.ste 
+Log Message:
+Updated for argument change in EQUATE-VALUES
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:17
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic/extensions
+In directory blackcat.isi.edu:/tmp/cvs-serv32263/extensions
+
+Modified Files:
+	timepoint-support.ste 
+Log Message:
+Updated for argument change in EQUATE-VALUES
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:18
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv32307
+
+Modified Files:
+	api-support.ste 
+Log Message:
+Changed FILTER-INCONSISTENT-PROPOSITION? to use the inference cache
+Changed ALL-INCONSISTENT-PROPOSITIONS to record the module
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:18
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv32346
+
+Modified Files:
+	classify.ste 
+Log Message:
+ Minor change.  CODE => THE-CODE in commented out section.
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:20
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv32424
+
+Modified Files:
+	explanations.ste 
+Log Message:
+Added explanation phrases for :INCONSISTENT and :CLASH
+PRINT-EXPLANATION-TEXT: Added support for CLASH justifications.
+Added EXPLAIN-PROPOSITION to handle explanations for forward-chained
+  justifications which had to be attached to propositions.  Used to
+  explain mixed forward and backward reasoning results.
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:20
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv32463
+
+Modified Files:
+	justifications.ste 
+Log Message:
+Added NEGATED-FAIL-JUSTIFICATION
+Added CLASH-JUSTIFICATION and CREATE-CLASH-JUSTIFICATION to provide
+  justifications for clash results.
+Updated for argument change in INITIALIZE-QUERY-ITERATOR. 
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:21
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv32502
+
+Modified Files:
+	kif-in.ste 
+Log Message:
+Moved logic exception definitions from logic-macros.ste to
+kif-in.ste so that they are available early in the load process, but
+not in the preprocessed file logic-macros.ste, since there are now
+dependencies on classes defined later in the load process and the
+preprocessing would break.  Also added additional slots to the CLASH
+exceptions to pass more information back about what caused the
+clash.
+
+Added INTERVAL-CLASH exception with informative slots.
+Added EXCEPTION-RECORD to allow collection of exceptions and
+associated context information.
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:21
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv32541
+
+Modified Files:
+	logic-in.ste 
+Log Message:
+Minor. Removed blank line.
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:22
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv32616
+
+Modified Files:
+	logic-macros.ste 
+Log Message:
+Moved logic exception definitions from logic-macros.ste to
+kif-in.ste so that they are available early in the load process, but
+not in the preprocessed file logic-macros.ste, since there are now
+dependencies on classes defined later in the load process and the
+preprocessing would break.  Also added additional slots to the CLASH
+exceptions to pass more information back about what caused the
+clash.
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:23
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv32655
+
+Modified Files:
+	optimize.ste 
+Log Message:
+Updated for argument change in INITIALIZE-QUERY-ITERATOR.
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:23
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv32694
+
+Modified Files:
+	pli.ste 
+Log Message:
+Added GET-INCONSISTENT-PROPOSITIONS
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:24
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv301
+
+Modified Files:
+	propagate.ste 
+Log Message:
+Updated for argument change in EQUATE-VALUES. 
+
+Added *CLASH-EXCEPTIONS* list to collect clashes that occur during
+inference, especially during instance elaboration.  Also provided
+functions RESET-CLASH-EXCEPTIONS to clear the list and
+CULL-CLASH-EXCEPTIONS to remove exceptions for a particular context.
+The latter function is also added to the destroy context hook.
+
+Added EXCEPTION-RECORD-MATCHES-CONTEXT? as a helper function for
+   CULL-CLASH-EXCEPTIONS.
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:25
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv342
+
+Modified Files:
+	propositions.ste 
+Log Message:
+STRONGER-TRUTH-VALUE?: Compares truth values and returns stronger one.
+MERGE-TRUTH-VALUES: Merge truth values that come from two different
+  sources that should be the same.  Handles upgrades in streng th and
+  detection of inconsistencies.
+TRUTH-VALUE-TO-STRING: Added common code for output of truth values
+PRINT-TRUTH-VALUE: Updated to use common to-string code
+
+Updated SIGNAL-*-CLASH functions to provide more information in the
+  CLASH-EXCEPTION that they signal.
+Updated for argument change in EQUATE-VALUES, SIGNAL-UNIFICATION-CLASH,
+  ASSIGN-NATIVE-SLOT-VALUE, UNIFY-TYPES, CONSTRAIN-AS-SUBSET, and
+  EQUATE-COLLECTIONS
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:26
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv381
+
+Modified Files:
+	query.ste 
+Log Message:
+Added a DEBUG-ID to QUERY-ITERATOR to make tracing during debugging easier.
+Changed arguments to CREATE-QUERY-ITERATOR, INITIALIZE-QUERY-ITERATOR and
+  MAKE-QUERY to support the debug id.
+Updated truth value printing to use TRUTH-VALUE-TO-STRING
+Updated CONTROL-FRAME printing to indicate reverse polarity 
+
+TRACE-SOLUTION: Changed to use query-iterator argument rather than special variable.
+
+CALL-ASK
+TRY-TO-DEFEAT-LAST-ANSWER
+QUERY-ITERATOR.NEXT?
+   Updated to support :four-valued? keyword and processing.  This option will
+   for inconsistent values by trying to disprove any result, not just default
+   valued ones.  Also added support for clash justifications to the results.
+   BUG: :four-valued? doesn't work properly with :inference-level :refutation
+         or partial match mode.
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:27
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv421
+
+Modified Files:
+	specialists.ste 
+Log Message:
+Updated for argument change in INITIALIZE-QUERY-ITERATOR.
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:27
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv460
+
+Modified Files:
+	strategies.ste 
+Log Message:
+CONTINUE-STRATEGIES-PROOFS: Updated trace output to use TRUTH-VALUE-TO-STRING.
+TRY-DISJUNCTIVE-IMPLICATION-PROOF: Flipped test sense and clauses in IF to be easier to read.
+CONTINUE-FAIL-PROOF: Added support for reverse polarity.
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:28
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv499
+
+Modified Files:
+	whynot.ste 
+Log Message:
+Updated for argument change in CREATE-QUERY-ITERATOR.
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:28
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic/extensions
+In directory blackcat.isi.edu:/tmp/cvs-serv539/extensions
+
+Modified Files:
+	unit-support.ste 
+Log Message:
+Updated for argument change in LOGIC/SIGNAL-UNIFICATION-CLASH
+
+
+
+****************************************
+Date:	Monday December 6, 2010 @ 17:29
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic/demos
+In directory blackcat.isi.edu:/tmp/cvs-serv657/demos
+
+Added Files:
+	inconsistent-value.plm 
+Log Message:
+Added alpha release demo file for inconsistent reasoning, forward inference justification and :four-valued?
+
+
+
+****************************************
+Date:	Friday April 15, 2011 @ 13:58
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	arithmetic.ste 
+Log Message:
+INEQUALITY-evaluator:
+  FIXED: since this IS the evaluator and there is no constraint or
+  computation attached to inequalities, we have to handle the evaluation
+  of bound arguments here and can't farm it out to
+  `evaluate-predicate-proposition'.  This now raises appropriate
+  contradictions when we assert (or infer) things like
+  (> 8 9).  For an assertion to trigger this, we still need to
+  do `run-forward-rules'.
+
+
+
+****************************************
+Date:	Friday April 15, 2011 @ 17:21
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	api-support.ste 
+Log Message:
+all-propositions:
+  Fixed to not distructively modify the `visible-modules' list of a
+  module.
+
+
+
+****************************************
+Date:	Friday April 15, 2011 @ 17:23
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	propositions.ste 
+Log Message:
+list-inconsistent-propositions:
+  New user-level command.
+
+
+
+****************************************
+Date:	Friday April 15, 2011 @ 17:23
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	api-support.ste 
+Log Message:
+Updated copyright years.
+
+
+
+****************************************
+Date:	Friday April 15, 2011 @ 17:24
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic/demos
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic/demos
+
+Modified Files:
+	test-suite.plm 
+Log Message:
+Added test cases for fixed clash detection on inequalitities and new
+`list-inconsistent-propositions' command.
+
+
+
+****************************************
+Date:	Friday April 15, 2011 @ 17:26
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	descriptions.ste 
+Log Message:
+list-undefined-relations:
+  Updated to use a more "modern" keyword/value-style argument list
+  while still supporting the old invocation method as well.
+
+
+
+****************************************
+Date:	Friday April 15, 2011 @ 17:27
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	inference-caches.ste 
+Log Message:
+run-forward-rules:
+  Updated to use a more "modern" keyword/value-style argument list
+  while still supporting the old invocation method as well.
+
+
+
+****************************************
+Date:	Friday April 15, 2011 @ 17:29
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	classify.ste 
+Log Message:
+classify-relations, list-unclassified-relations, classify-instances,
+list-unclassified-instances:
+  Updated to use a more "modern" keyword/value-style argument list
+  while still supporting the old invocation method as well.
+
+
+
+****************************************
+Date:	Friday April 15, 2011 @ 17:32
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/powerloom/doc
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/powerloom/doc
+
+Modified Files:
+	manual.texi.in 
+Log Message:
+Added entries for:
+  LIST-INCONSISTENT-PROPOSITIONS)
+  LIST-UNCLASSIFIED-INSTANCES)
+  LIST-UNCLASSIFIED-RELATIONS)
+  LIST-UNDEFINED-RELATIONS)
+
+
+
+****************************************
+Date:	Friday April 15, 2011 @ 17:52
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-powerloom-snapshot/version
+
+Modified Files:
+	powerloom.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Tuesday April 19, 2011 @ 16:42
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv27735/sources/logic
+
+Modified Files:
+	logic-macros.ste pli.ste 
+Log Message:
+Updated PLI to add get-undefined-relations.
+
+
+
+****************************************
+Date:	Tuesday April 19, 2011 @ 16:43
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic
+In directory blackcat.isi.edu:/tmp/cvs-serv27775/sources/logic
+
+Modified Files:
+	query.ste 
+Log Message:
+Updated documentation on RETRIEVE to explain more keyword options.
+
+
+
+****************************************
+Date:	Tuesday April 19, 2011 @ 16:44
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/logic/demos
+In directory blackcat.isi.edu:/tmp/cvs-serv27886/demos
+
+Modified Files:
+	inconsistent-value.plm 
+Log Message:
+Fix listing to work in an inference cache
+
+
+
+****************************************
+Date:	Wednesday April 20, 2011 @ 12:48
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-powerloom-snapshot/version
+
+Modified Files:
+	powerloom.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Thursday May 5, 2011 @ 12:58
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	generate.ste 
+Log Message:
+generate-skolem:
+  Fixed generation of function term arguments.  Previously, a function
+  skolem that had a value assigned to it would generate the value
+  instead of the function term.  For example, (happy (boss fred))
+  would generate as (happy joe) if (boss fred joe), but (happy (boss
+  fred)) in case we didn't know who fred's boss was.  This was (1)
+  different from what the print code produced, and (2) problematic 
+  in cases where we used the generation code for saving a proposition 
+  (e.g., to a persistent store), since we lost the original
+  proposition and the association to the function term.  Now, we
+  always generate a function term for a function output skolem,
+  regardless of whether it is bound or not.
+
+
+
+****************************************
+Date:	Thursday May 5, 2011 @ 15:07
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	kif-out.ste 
+Log Message:
+help-print-kif-proposition:
+  Folded handling of `*printFunctionsAsRelations?*' into
+  `print-kif-function-proposition' for consistent printing of the
+  function value.
+
+print-kif-FUNCTION-proposition:
+  Now handles `*printFunctionsAsRelations?', since it handles the
+  printing of the function value different from regular term printing
+  (which would generate the function term as opposed to its value).
+  Now function propositions and their associated equality propositions
+  print identically, regardless of whether the = or relation syntax is
+  used.
+
+
+
+****************************************
+Date:	Thursday May 5, 2011 @ 15:12
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	generate.ste 
+Log Message:
+generate-proposition:
+  Now uses the new `generate-function-proposition' for function
+  propositions.
+
+generate-function-as-term:
+  Performance fix to avoid the use of `butlast' which generates an
+  iterator.
+
+generate-function-proposition:
+  New function that makes generation of function propositions
+  consistent with printing via `print-kif-function-proposition' (which
+  see).  This now will generate equal trees for a function
+  proposition and the associated equivalence prop.  It now also obeys
+  `*printFunctionsAsRelations?*'.
+
+
+
+****************************************
+Date:	Wednesday May 11, 2011 @ 17:14
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	api-support.ste 
+Log Message:
+all-unnamed-terms:
+  Fixed to return the collected `terms' in the result (which contains
+  all the function output skolems).  Also eliminated the
+  DESTRUCTIVE-LIST-ITERATOR which we don't use anymore.
+
+
+
+****************************************
+Date:	Thursday May 26, 2011 @ 14:50
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/powerloom/doc
+In directory blackcat.isi.edu:/tmp/cvs-serv19248/sources/powerloom/doc
+
+Modified Files:
+	manual.texi.in 
+Log Message:
+Updated system requirements to reflect new minimum versions.
+Added FAIL entries to grammar section of manual.
+
+
+
+****************************************
+Date:	Monday September 19, 2011 @ 17:41
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	arithmetic.ste 
+Log Message:
+subsequence-specialist:
+  Generalized to support -1 syntax for the string end and to do
+  argument coercion on the string arguments.  Also stream-lined logic
+  for better argument normalization, type and range checking.
+
+LENGTH-computation:
+  Generalized to also handle lists which allowed us to eliminate the
+  LENGTH-OF-LIST specialist.
+
+
+
+****************************************
+Date:	Monday September 19, 2011 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	pl-kernel-kb.ste 
+Log Message:
+cardinality, range-min-cardinality:
+  Now use `length' instead of `length-of-list'.
+
+length-of-list:
+  Eliminated, now handled by `length'.
+
+substring:
+  Generalized argument types and updated docstring.
+  Now handles -1 syntax for string end as well as argument coercion.
+
+length:
+  Updated docstring since we generalized it.
+  Kept `length-of-list' as a synonym for backwards compatibility.
+
+
+
+****************************************
+Date:	Monday September 19, 2011 @ 17:45
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	specialists.ste 
+Log Message:
+/PL-KERNEL-KB/LENGTH-OF-LIST-specialist:
+  Removed, now handled by `length-computation'.
+
+
+
+****************************************
+Date:	Monday September 19, 2011 @ 17:47
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic/demos
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic/demos
+
+Modified Files:
+	test-suite.plm 
+Log Message:
+Added test cases for `substring' and for consolidated `length'
+computation.
+
+
+
+****************************************
+Date:	Monday September 19, 2011 @ 18:01
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	propositions.ste 
+Log Message:
+evaluate-LITERAL-WRAPPER-term:
+  Improved: rewrap literals here, otherwise descriptive propositions
+  with variables bound to literals will not be rewrapped properly.  We
+  could probably handle this more specifically somewhere else, but this
+  is where we are headed anyway, so do it here.  For example, in a query
+  proposition such as `(= ?x "a")' ?x would be immediately bound to
+  "a" during query description evaluation, however, when we eventually
+  rewrap the arguments to the equality proposition, only the right
+  argument would be fixed, the variable value would still point to the
+  unwrapped literal.  This was harmless in most circumstances, but
+  could cause very large page-ins with persistent backend stores in
+  some cases, since we would ignore the binding because it didn't have
+  any backlinks.
+
+evaluate-LOGIC-OBJECT-term:
+  Evaluate variables unconditionally, in case somebody stuck them into
+  a parse tree.
+
+proposition-hash-index:
+  New argument `derefSurrogates?' which allows us to handle certain
+  descriptive propositions as if they were non-descriptive.
+  Also improved hashing of commutative propositions for the case where
+  both arguments are the same (as in `(= a a)').  In that case, all
+  propositions would wind up with the same hash code regardless of the
+  argument (due to the commutativity of x-or) which in turn could lead
+  to very large buckets with persistent stores that had large numbers
+  of (= (fn ...) (fn ...)) propositions.
+
+lookup-matching-proposition-in-bucket:
+  New function extracted from `find-duplicate-complex-proposition' so
+  we can utilize it elsewhere.
+
+find-duplicate-complex-proposition:
+  Adapted to new `proposition-hash-index' signature.
+  Now uses `lookup-matching-proposition-in-bucket'.
+
+find-matching-non-descriptive-proposition:
+  New function used by proposition justification query machinery which
+  hasn't been integrated yet.
+
+build-proposition:
+  Treat variable and proposition objects as already evaluated.
+
+evaluate-FUNCTION-term:
+  Use new `normalize-setof-arguments' instead of explicitly sorting
+  arguments here.
+
+normalize-setof-arguments:
+  New function.  Besides just sorting the arguments, this now also
+  removes duplicates.
+
+create-enumerated-set:
+  Rewritten with help of `normalize-setof-arguments'.
+
+
+
+****************************************
+Date:	Monday September 19, 2011 @ 18:03
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	optimize.ste 
+Log Message:
+new-find-similar-proposition:
+  Adapted to new `proposition-hash-index' signature.
+
+
+
+****************************************
+Date:	Monday September 19, 2011 @ 18:10
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	descriptions.ste 
+Log Message:
+create-primitive-description:
+  Fixed: signal that this description is named (to `named-description?')
+  so `equivalent-descriptions?' won't break due to the NULL proposition.
+  This error suddenly appeared due to a different hashcode being computed
+  after we added a function to STELLA; since we now always check for
+  duplicates when `assert-isa-proposition' is called, we might ask for
+  proposition equivalence with this unfinalized description as an
+  argument which would break `equivalent-descriptions?'.
+  This is a somewhat round-about fix, consider whether there is a more
+  elegant way.
+
+help-equivalent-propositions?:
+  Extracted and extended this logic so we can more easily test
+  equivalence of function propositions without having to introduce
+  a mapping or modifying an existing one.
+
+equivalent-propositions?:
+  Rewritten with help of `help-equivalent-propositions?'.
+
+equivalent-function-propositions?:
+  Rewritten with help of `help-equivalent-propositions?' so we don't
+  have to create a mapping each time.
+
+find-duplicate-complex-description:
+  Adapted to new signature of `proposition-hash-index'.
+
+
+
+****************************************
+Date:	Monday September 19, 2011 @ 18:21
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	propositions.ste 
+Log Message:
+Fixed typo in mode line.
+
+
+
+****************************************
+Date:	Tuesday September 20, 2011 @ 10:33
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-powerloom-snapshot/version
+
+Modified Files:
+	powerloom.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Tuesday October 25, 2011 @ 12:31
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	specialists.ste 
+Log Message:
+INSTANCE-OF-specialist:
+  Fixed to check whether the type variable was actually successfully
+  bound to the generated value.  Previously we would succeed with an
+  unbound variable due to the automatic unbinding logic.
+
+
+
+****************************************
+Date:	Monday November 14, 2011 @ 16:11
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	specialists.ste 
+Log Message:
+REFLEXIVE-RELATION-specialist:
+  Fixed to ensure that at least one argument is bound.
+  Generalized to bind the other arg to the bound one if it was
+  unbound.
+
+IRREFLEXIVE-RELATION-specialist:
+  Fixed to ensure that we only terminally fail if both arguments are
+  bound.  Otherwise, this would prevent us to find other asserted values
+  of the relation.
+
+
+
+****************************************
+Date:	Monday November 14, 2011 @ 16:11
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic/demos
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic/demos
+
+Modified Files:
+	test-suite.plm 
+Log Message:
+Added test cases for fixed irr/reflexive specialists.
+
+
+
+****************************************
+Date:	Friday March 2, 2012 @ 13:28
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	propagate.ste 
+Log Message:
+Various refactoring, cleanup and generalization to allow
+computations such as INSERT-ELEMENT to take skolem arguments if they
+can support it.  Previously, we couldn't insert a function term into a
+list with INSERT-ELEMENT unless the term was from a total function.
+
+COMPUTED-PROCEDURE:
+  Generalized to point to a STELLA function object instead of just
+  code, to give us access to the computation's argument types.
+
+stella-function-code-from-procedure:
+  Derived from the prior version of `function-code-from-procedure' to
+  return a STELLA function object instead of just code.
+  Now also caches that object unless we are in development mode.
+
+function-code-from-procedure:
+  Rewritten with help of new `stella-function-code-from-procedure'.
+
+lookup-constraint-function, lookup-computation-function,
+lookup-evaluator-function:
+  New function versions that return function objects instead of just code.
+
+lookup-constraint, lookup-computation, lookup-evaluator:
+  Rewritten with help of their new function analogues.
+
+bound-computation-input-skolem?:
+  Specialized version that replaces `computation-input-bound?'.
+
+argument-target-type:
+  New helper for accessing argument type information.
+
+compute-relation-value:
+  Generalized to allow skolem arguments if the computation supports it.
+  This allows computations such as INSERT-ELEMENT to insert skolem
+  terms into lists (which was not possible before and was the main
+  reason for all this refactoring).
+  Now takes a function argument instead of just the code so we can
+  lookup the computation function's argument types.
+  Simplified argument type access with new `argument-target-type'.
+
+compute-simple-relation-constraint:
+  Generalized similar to `compute-relation-value'.
+
+
+
+****************************************
+Date:	Friday March 2, 2012 @ 13:29
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	specialists.ste 
+Log Message:
+Various refactoring, cleanup and generalization to allow
+computations such as INSERT-ELEMENT to take skolem arguments if they
+can support it.  Previously, we couldn't insert a function term into a
+list with INSERT-ELEMENT unless the term was from a total function.
+
+COMPUTED-PROCEDURE:
+  Generalized to point to a STELLA function object instead of just
+  code, to give us access to the computation's argument types.
+
+stella-function-code-from-procedure:
+  Derived from the prior version of `function-code-from-procedure' to
+  return a STELLA function object instead of just code.
+  Now also caches that object unless we are in development mode.
+
+function-code-from-procedure:
+  Rewritten with help of new `stella-function-code-from-procedure'.
+
+lookup-constraint-function, lookup-computation-function,
+lookup-evaluator-function:
+  New function versions that return function objects instead of just code.
+
+lookup-constraint, lookup-computation, lookup-evaluator:
+  Rewritten with help of their new function analogues.
+
+bound-computation-input-skolem?:
+  Specialized version that replaces `computation-input-bound?'.
+
+argument-target-type:
+  New helper for accessing argument type information.
+
+compute-relation-value:
+  Generalized to allow skolem arguments if the computation supports it.
+  This allows computations such as INSERT-ELEMENT to insert skolem
+  terms into lists (which was not possible before and was the main
+  reason for all this refactoring).
+  Now takes a function argument instead of just the code so we can
+  lookup the computation function's argument types.
+  Simplified argument type access with new `argument-target-type'.
+
+compute-simple-relation-constraint:
+  Generalized similar to `compute-relation-value'.
+
+
+
+****************************************
+Date:	Friday March 2, 2012 @ 13:34
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	propagate.ste 
+Log Message:
+PREVIOUS COMMIT WAS BOGUS.  Adding this one to document changes.
+
+evaluate-FUNCTION-proposition:
+  Updated to new lookup functions and signatures of
+  `compute-simple-relation-constraint' and `compute-relation-value'.
+
+evaluate-PREDICATE-proposition:
+  Streamlined to use the same machinery as
+  `evaluate-FUNCTION-proposition' instead of its own special-purpose
+  evaluation code.  However, none of the PowerLoom computations or
+  constraints excercise this (since they are all defined on
+  functions), so this is untested.
+
+
+
+****************************************
+Date:	Friday March 2, 2012 @ 13:39
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic/extensions
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic/extensions
+
+Modified Files:
+	timepoint-support.ste 
+Log Message:
+timepoint-of*-evaluator:
+  Adapted to new signature of `compute-relation-value'.
+
+
+
+****************************************
+Date:	Friday March 2, 2012 @ 13:40
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic/demos
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic/demos
+
+Modified Files:
+	test-suite.plm 
+Log Message:
+Added test case for generalized computations that can take skolem
+arguments if they support them.
+
+
+
+****************************************
+Date:	Wednesday March 7, 2012 @ 13:47
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	api-support.ste 
+Log Message:
+locally-modified-proposition, filter-locally-modified-proposition,
+all-locally-modified-propositions:
+  New definitions to support saving of inherited propositions whose
+  truth value has been modified locally (asserted or retracted).
+
+
+
+****************************************
+Date:	Wednesday March 7, 2012 @ 13:52
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	kif-out.ste 
+Log Message:
+excluded-proposition?:
+  Generalized to let it determine whether an unknown proposition might
+  be a local retraction or not (in which case we do want to save the
+  retraction).
+
+pretty-print-assertion:
+  Generalized to support retraction.
+
+do-save-module:
+  Generalized to allow saving of inherited propositions whose truth
+  value has been locally modified.
+
+
+
+****************************************
+Date:	Friday April 20, 2012 @ 17:19
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-powerloom-snapshot/version
+
+Modified Files:
+	powerloom.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Monday April 30, 2012 @ 16:19
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	propositions.ste 
+Log Message:
+logical-type:
+  Added `PROPOSITION' case, so we can test (proposition ?p) goals.
+
+create-enumerated-set, create-logical-list:
+  Bring this in line with its 'finish-creating-function-proposition' model.
+  Ensure the output skolem (and its type prop) are allocated in the
+  same context as the function term proposition.  Otherwise, we might
+  pick up a duplicate in a sub or hypothetical context, but its
+  associated type proposition won't be true anymore, if it was
+  asserted in an unrelated inference cache.  This started to bite
+  with certain `nth-rest' queries, when because of this the rest term
+  wasn't recognized as a list term and would violate a type check when
+  bound to an implicit output variable (implicit variables get typed
+  automatically according to the function's range type).
+
+
+
+****************************************
+Date:	Monday April 30, 2012 @ 16:20
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic/demos
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic/demos
+
+Modified Files:
+	test-suite.plm 
+Log Message:
+Added test case for LIST/SET output variable in wrong context bug.
+
+
+
+****************************************
+Date:	Wednesday May 2, 2012 @ 3:28
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-powerloom-snapshot/version
+
+Modified Files:
+	powerloom.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:42
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	kif-in.ste 
+Log Message:
+Moved error class definitions from kif-in.ste to propositions.ste,
+since they seem to go there more "naturally".  Most of our basic
+object class definitions are in propositions, and there didn't seem to
+be a natural place for them in kif-in besides the fact that the file
+gets translated early.  Maybe we should eventually have a common file
+or something to that effect.
+
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:42
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	propositions.ste 
+Log Message:
+Moved error class definitions from kif-in.ste to propositions.ste,
+since they seem to go there more "naturally".  Most of our basic
+object class definitions are in propositions, and there didn't seem to
+be a natural place for them in kif-in besides the fact that the file
+gets translated early.  Maybe we should eventually have a common file
+or something to that effect.
+
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	print.ste 
+Log Message:
+*debug-print-mode?*:
+  Renamed from `*debug-mode?*' to better indicate its limited scope.
+
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:54
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	query.ste 
+Log Message:
+QUERY-ITERATOR.debug-id:
+  Moved into a DEFSLOT, since it is really just a debugging add-on.
+
+*query-iterator-debug-id-counter*, QUERY-ITERATOR.debug-id-setter:
+  New definitions to support more discriminate use of the debug-id
+  machinery.  This is also slightly generalized to combine a globally
+  incremented counter with any ID strings to distinguish recursive
+  invocations.
+
+print-query-iterator:
+  Adapted to the new `*debug-print-mode?*' variable name.
+
+create-query-iterator, initialize-query-iterator,
+allocate-query-iterator, try-to-defeat-last-answer?, make-query,
+create-ask-query, retrieve-bindings, create-retrieve-query,
+make-cached-query, unary-description-specializes-description?,
+description-specializes-description?, vector-satisfies-description?:
+  Backpatched the mandatory debug-id argument to `make-query' and
+  friends.  For now, only `try-to-defeat-last-answer?' sets up an
+  explicit debug ID.  This is machinery that's rarely used, and hence
+  having to supply a name on every call to `make-query' seems to be a
+  somewhat gratuitous extension of its API.  The new machinery allows
+  us to name query iterators explicitly or use their implicit naming
+  during debugging, thust providing the naming functionality but only
+  when it is really needed.
+
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:57
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	case-based.ste 
+Log Message:
+Backpatched/eliminated query debug ID arguments (see query.ste).
+
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:57
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	justifications.ste 
+Log Message:
+Backpatched/eliminated query debug ID arguments (see query.ste).
+
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:57
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	machine-learning.ste 
+Log Message:
+Backpatched/eliminated query debug ID arguments (see query.ste).
+
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:57
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	neural-network.ste 
+Log Message:
+Backpatched/eliminated query debug ID arguments (see query.ste).
+
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:57
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	optimize.ste 
+Log Message:
+Backpatched/eliminated query debug ID arguments (see query.ste).
+
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:57
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	rule-induction.ste 
+Log Message:
+Backpatched/eliminated query debug ID arguments (see query.ste).
+
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:57
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	specialists.ste 
+Log Message:
+Backpatched/eliminated query debug ID arguments (see query.ste).
+
+
+
+****************************************
+Date:	Monday May 7, 2012 @ 16:57
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom-release/sources/logic
+
+Modified Files:
+	whynot.ste 
+Log Message:
+Backpatched/eliminated query debug ID arguments (see query.ste).
+
+
+
+****************************************
+Date:	Tuesday May 8, 2012 @ 3:28
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-powerloom-snapshot/version
+
+Modified Files:
+	powerloom.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Wednesday March 27, 2013 @ 11:26
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/IC
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/IC
+
+Modified Files:
+	IC-entities.plm 
+Log Message:
+ENTITY-TO-DOMAIN-OBJECT has been promoted to text-to-objects.
+
+
+
+****************************************
+Date:	Wednesday March 27, 2013 @ 11:26
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/football
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/football
+
+Modified Files:
+	football-entities.plm 
+Log Message:
+ENTITY-TO-DOMAIN-OBJECT has been promoted to text-to-objects.
+
+
+
+****************************************
+Date:	Monday April 1, 2013 @ 16:34
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/coref
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/coref
+
+Modified Files:
+	coref-scoring.plm 
+Log Message:
+string-is-capitalized, capitalize-string:
+  Moved to utilities.plm.
+
+
+
+****************************************
+Date:	Monday April 1, 2013 @ 16:53
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/coref
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/coref
+
+Added Files:
+	story-coref.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Friday April 12, 2013 @ 17:29
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	backlinks.ste 
+Log Message:
+help-add-dependent-proposition, add-dependent-proposition-link:
+  New policy/kludge, where we check (cheaply) whether the to-be-linked
+  proposition has already been linked in the most recent call.
+  This avoids duplicates for cases where a proposition
+  has repeated arguments.  This commonly happens with literal
+  arguments such as bounds, offsets, etc.  Supporting this here is
+  a bit kludgey but cheaper than building it into the fasten-down logic.
+
+
+
+****************************************
+Date:	Tuesday April 15, 2014 @ 15:47
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	arithmetic.ste 
+Log Message:
+floor-computation, ceiling-computation, log-computation,
+log10-computation, exp-computation, expt-computation, log-constraint,
+log10-constraint, exp-constraint:
+  New definitions.
+
+integer-lower-bound, integer-upper-bound:
+  Need to qualify STELLA versions of `floor' and `ceiling' now due to
+  new definitions.
+
+subsequence-specialist:
+  Generalized counting from end semantics (don't just support -1).
+
+normalize-string-computation-args:
+  New helper function (which is also used extensively by KAgg now).
+
+string-match-computation-helper:
+  Rewritten with new `normalize-string-computation-args'.
+
+string-upcase-computation, string-downcase-computation,
+string-capitalize-computation, string-replace-computation,
+string-compare-computation-helper, string-compare-computation,
+string-compare-ignore-case-computation, string-to-number-computation:
+  New definitions.
+
+
+
+****************************************
+Date:	Tuesday April 15, 2014 @ 15:56
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	descriptions.ste 
+Log Message:
+*variableTypePropositions*:
+  Added missing initial value (we used to support this unbound syntax
+  at some point but not anymore).
+
+description?, unnamed-description?:
+  New predicates.
+
+
+
+****************************************
+Date:	Tuesday April 15, 2014 @ 16:07
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	generate.ste 
+Log Message:
+generate-expression, generate-description, generate-proposition,
+generate-descriptions-as-rule:
+  Properly manage variables of quantified objects.
+  
+generate-one-variable:
+  Print value instead of variable unless it is a variable declared by
+  a quantified object.
+
+generate-one-quantified-variable, generate-quantified-variables:
+  New functions.
+
+generate-operator, generate-proposition:
+  Properly handle EQUIVALENT propositions.
+
+
+
+****************************************
+Date:	Tuesday April 15, 2014 @ 17:01
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	justifications.ste 
+Log Message:
+Changed the method for recording variable substitutions to allow us to
+share justifications without copying them.  This problem first came up
+in MRP where we had very large justification trees (e.g., from
+`collect-into-set') which would then be copied each time we
+backtracked into a conjunct for a new variable binding.
+
+Class JUSTIFICATION:
+  Eliminated `pattern-justification' slot, since we now
+  structure-share justifications where possible.  Before we had to
+  copy them for each different set of variable bindings. 
+  We now have a substitution slot on each justification instead which
+  eliminates the need for back pointers to the pattern justification.
+
+justification-argument-bound-to:
+  Now simply look in the local substitution slot instead of running up
+  the pattern chain.
+
+yield-justification-substitution:
+  Eliminated, since unused and obsolete.
+
+JUSTIFICATION.shallow-copy:
+  New method.
+
+backlink-to-pattern-justification:
+  Rewritten for new scheme.
+
+record-AND-INTRODUCTION-justification:
+  Rewritten to avoid copying of conjunct propositions.
+
+
+
+****************************************
+Date:	Tuesday April 15, 2014 @ 17:10
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	kif-out.ste 
+Log Message:
+*printQuantifiedObjectsStack*, push-quantified-object,
+pop-quantified-object, quantified-object-variable?:
+  New support for better printing of quantified variables in rules and
+  descriptions that might be bound during a query.
+
+print-logical-form, pretty-print-logical-form,
+print-unformatted-logical-form, print-as-kif,
+print-kif-quantification, print-kif-top-level-exists-proposition,
+print-kif-skolem, print-kif-variable, print-kif-description,
+print-descriptions-as-kif-rule:
+  Adapted for new quantified variable printing.
+
+save-module:
+  New version that supports more modern keyword option syntax.
+
+
+
+****************************************
+Date:	Tuesday April 15, 2014 @ 17:17
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	logic-in.ste 
+Log Message:
+redefine-logic-object:
+  FIXED/ROBUSTIFIED: with function term redefinitions, we can get
+  deleted proposition from the old object, remove them.
+
+call-defproposition:
+  Generalized, to allow us to define named conjunctions
+  (e.g., for test cases).
+
+
+
+****************************************
+Date:	Tuesday April 15, 2014 @ 17:42
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	optimize.ste 
+Log Message:
+copy-proposition-argument:
+  Fixed: in `try-disjunctive-implication-proof' we call `inherit-proposition' directly
+  and we need to copy external propositon variables bound by the query iterator.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 12:47
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	pl-kernel-kb.ste 
+Log Message:
+value:
+  fixed/assigned specialist.
+
+total-value, term-relation, term-argument, term-arguments, term-arity,
+direct-instance-of, filler, floor, ceiling, log, log10, exp, expt
+  New definitions.
+
+collect-into-ascending-set, collect-into-descending-set,
+minimum-element, maximum-element:
+  Added :maximum-depth specification for nested `query'.
+
+nth-element, first-element, second-element, third-element,
+fourth-element, fifth-element, nth-head, nth-rest, insert-element,
+list-concatenate, minimum-value, maximum-value, sum, project-column,
+mean-value, median-value, standard-deviation, variance,
+string-concatenate, substring, string-match, string-match-ignore-case:
+  Added :closed annotation to support some iterative forall proofs;
+  conceivably, some of the numeric list computations could fail on
+  certain skolem arguments, but it seems not useful to be that general
+  in those cases compared to the benefit we get from closure.
+
+substring, string-match, string-match-ignore-case:
+  Improved counting-from-end semantics to allow -2, etc.
+
+string-upcase, string-downcase, string-capitalize, string-replace,
+string-compare, string-compare-ignore-case, string-to-number:
+  New definitions.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 12:50
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	powerloom.ste 
+Log Message:
+Updated copyright years.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 12:53
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	propagate.ste 
+Log Message:
+print-propagation-environment-stats:
+  New function.
+
+do-not-elaborate?:
+  New experimental function to control forward inference on certain
+  types of objects.
+
+post-related-facts:
+  Block elaboration if necessary.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 14:12
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	propositions.ste 
+Log Message:
+proposition-type?:
+  New predicate.
+
+signal-unification-clash, signal-variable-value-clash:
+  Use new `handle-clash-exception'.
+
+signal-truth-value-clash:
+  FIXED: fixed negated option syntax of `fasten-down-one-proposition'
+  to make sure we check for duplicates, since not doing that caused
+  serious blowup with inconsistent WA forward inference.
+  REFINED: instead, use new `conceive-inverted-proposition', since it
+  recursively checks for duplicates and hence will pick up argument
+  duplicates appropriately; it is also more efficient in case a negated
+  proposition already exists.
+
+PROPOSITION.clash-exceptions, get-visible-clash-exceptions, handle-clash-exception:
+  New (experimental) interface to allow user-defined handlers to deal
+  with clash exceptions.
+
+constant-proposition?:
+  New predicate.
+
+find-duplicate-proposition:
+  Handle object stores.
+
+fasten-down-one-proposition:
+  Regardless of *dont-check-for-duplicate-propositions?*, we always
+  check for function terms, since they are commonly referenced multiple
+  times and we need them to be identical.
+
+conceive-inverted-proposition:
+  New definition needed by weighted abduction code which can generate
+  a large number of contradictions.
+
+build-holds-proposition:
+  Generalized: allow holds about holds or other propositions.
+
+*auto-coerce-propositional-arguments?*:
+  Added :demon-property to make it settable.
+
+evaluate-first-argument, evaluate-FUNCTION-term:
+  Allow 0-arity terms such as `(listof)'.
+
+find-duplicate-function-proposition:
+  Eliminate `*loadingRegenerableObjects?*', since
+  `find-duplicate-proposition' now handles this.
+
+clear-logic-module-hook:
+  Also clear locally retracted propositions which are on a separate list.
+
+string-term-less?, safe-string-term-less?:
+  New comparison predicates that properly handle ordering (collation)
+  of terms that only differ in case.  Before we used case-insensitive
+  comparisons which consider such terms as equal which can lead to
+  randomly fluctuating result orders when we sort query results.
+
+object-name-less-than?, module-name-less-than?,
+proposition-less-than?, logic-form-less?:
+  Use new `string-term-less?' predicates.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 14:58
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	query.ste 
+Log Message:
+*traced-goals*, trace-goal, untrace-goal, clear-traced-goals,
+restricted-goal-tracing?, trace-this-goal?:
+  New experimental goal tracing support to better handle situations
+  where we have problems in large proofs.
+
+trace-goal-tree:
+  Obey new `restricted-goal-tracing?' predicate.
+
+trace-goal-stack:
+  New experimental goal tracing support to better handle situations
+  where we have problems in large proofs.  With this we can interrupt
+  a query and then trace the current goal stack; to make this useful
+  as a general command, this needs to be improved.
+
+handle-depth-violation:
+  Another addition to deal with debugging of depth cutoffs.
+  New trace keyword :GOAL-CUTOFFS
+
+print-query-iterator:
+  Revamped to support output :format's and :output-file's.
+
+print-query-iterator-ornately:
+  Fix for printing final newline.
+
+print-query-iterator-solution-ornately:
+  Support new :vertical format.
+
+print-query-iterator-readably:
+  Set `*printReadably?*' to true.
+
+print-query-iterator-tab-separated,
+parse-query-iterator-string-template,
+print-query-iterator-via-template:
+  New print support for tsv and template formats.
+
+process-query-options:
+  handle new :format, :readable-values?, :output-file and :if-exists
+  options for more control over output format and printing.
+
+lookup-query-option-with-default, test-query-option-value?:
+  New definitions.
+
+call-retrieve:
+  Annotate cutoffs and timeouts.
+  TO DO: add this to call-ask and the partial query functions.
+
+apply-cached-retrieve, apply-cached-ask:
+  Fixed: make sure we run the cached query with the right inference level.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 15:06
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	rules.ste 
+Log Message:
+get-rules, delete-rules, print-rules:
+  Process any pending definitions before we try to lookup rules.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 15:09
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	sequence-indices.ste 
+Log Message:
+*all-object-stores*, register-object-store, unregister-object-store,
+have-active-object-stores?, maybe-wrap-sequence-index:
+  New definitions to support handling of object stores.
+
+OBJECT-STORE.fetch-duplicate-proposition:
+  New abstract API method.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 15:34
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	specialists.ste 
+Log Message:
+DIRECT-INSTANCE-OF-specialist:
+  New specialist.  This needs to be remaned into
+  "asserted-intance-of".
+
+SUBSET-OF-specialist:
+  Fixed: guard against breakage with non-logic object terms such as
+  literals, etc.
+
+TOTAL-VALUE-specialist:
+  New specialist.
+
+PROPOSITION-RELATION-computation, PROPOSITION-ARGUMENT-computation,
+PROPOSITION-ARGUMENTS-computation, PROPOSITION-ARITY-computation:
+  Robustified: since the value computation code doesn't really check the physical
+  object type, and somebody might have asserted `(proposition <someatom>)'.
+  Generalized to also handle function terms.
+
+create-query-specialist-iterator:
+  Fixed: compute internal variables before we check for duplicate
+  descriptions.
+
+LEVELED-QUERY-specialist:
+  Return :TERMINAL-FAILURE upon failure, since there is no other way
+  to satisfy these goals.
+
+COLLECT-MEMBERS-specialist:
+  KLUDGE: ensure the function terms are allocated in the module and not the current
+  inference cache, since otherwise we can't assert-from-query about them; this means,
+  these terms won't get cleaned up when the inference cache gets destroyed...
+  NOTE: this kludge might have become obsolete with a recent patch to list term creation functions.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 15:53
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	specialize.ste 
+Log Message:
+SPECIALIZING-PROPOSITIONS-ITERATOR.next?:
+  Fixed: Copy selection pattern since we destructively modify it and it might
+  be referenced elsewhere (e.g., in memoized results).
+
+all-matching-propositions:
+  Handle reverse polarity when we don't have backlinked args (this
+  seems to be a remnant from the inference-with-Cyc days).
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 16:02
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	strategies.ste 
+Log Message:
+try-isa-proposition-proof:
+  Generalized so we can test (proposition ?p) goals.
+  Generalized so we can test (relation (kappa (...) ...)) goals for
+  kappas without any assertions.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 16:11
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	backlinks.ste 
+Log Message:
+get-backlinks-index, add-dependent-proposition-link, remove-dependent-proposition-link:
+  Now also support backlink indices on propositions so we can query
+  based on propositional arguments, for example.
+
+help-unfiltered-dependent-propositions:
+  What used to be `unfiltered-dependent-propositions'.
+
+unfiltered-dependent-propositions:
+  Handle object stores.
+
+select-propositions, get-description-extension, update-description-extension:
+  Handle object stores.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 16:54
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	specialists.ste 
+Log Message:
+DIRECT-INSTANCE-OF-specialist:
+  Docfix to describe the bug/problem with the current implementation of this.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 16:58
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	pl-kernel-kb.ste 
+Log Message:
+ direct-instance-of:
+  Docfix to describe the bug/problem with the current implementation of this.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 17:41
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	propositions.ste 
+Log Message:
+*deferred-terms-to-unlink*, destroy-proposition,
+clear-logic-module-hook:
+  FIX for a performance bug, where it took us a long time to clear a module
+  such as TEXT-DATA (1.5 min).  The culprit was that we had literal terms such as 20
+  that had lots of backlinks, and we were removing propositions from these lists one-by-one
+  which gaves us bad N-square runtime behavior.  By deferring the unlinking and then doing
+  it with a single `remove-deleted-members' at the end, we improve runtime by about 300 times.
+  The long backlinks lists were due to lots of duplicates from propositions with repeated
+  arguments (such as WA-ASSUME); after we fixed that, we would still save about a factor 20.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 17:43
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	backlinks.ste 
+Log Message:
+BACKLINKS-INDEX.remove-deleted-members:
+  New definition to support the performance fix for clearing modules
+  with literals that have large numbers of backlinks.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 17:50
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/kbs/semantic-web
+In directory rudemood:/home/hans/Documents/powerloom/kbs/semantic-web
+
+Modified Files:
+	owl.plm 
+Log Message:
+DataRange:
+  Added.
+
+inverseOf:
+  Fixed index of second NTH-DOMAIN spec.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 8:45
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-powerloom-snapshot/version
+
+Modified Files:
+	powerloom.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 15:28
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/utilities
+In directory rudemood:/home/hans/Documents/powerloom/sources/utilities
+
+Modified Files:
+	units.ste 
+Log Message:
+lookup-measure-for-unit:
+  New function.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:06
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/coref
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/coref
+
+Modified Files:
+	coref-scoring.plm 
+Log Message:
+mention-token-list:
+  Moved and re-implemented in `text-to-objects.plm'.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	TAC-KBP-2013-definitions.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	TAC-KBP-eval-utilities.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	age-detection-patterns.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	age-detection.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	display-utilities.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	employment-detection-patterns.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	employment-detection.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	family-detection-patterns.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	family-detection.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	name-linking.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	relation-detection2.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	title-detection-patterns.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	title-detection.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 17:44
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/kagg/kbs/TAC-KBP
+In directory rudemood:/home/hans/Documents/powerloom/sources/kagg/kbs/TAC-KBP
+
+Added Files:
+	training-annotations2.plm 
+Log Message:
+Initial revision.
+
+
+
+****************************************
+Date:	Friday April 18, 2014 @ 3:29
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-powerloom-snapshot/version
+
+Modified Files:
+	powerloom.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Wednesday April 30, 2014 @ 10:55
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	pl-kernel-kb.ste 
+Log Message:
+object-print-name, print-name-to-object:
+  New functions.
+
+
+
+****************************************
+Date:	Wednesday April 30, 2014 @ 10:57
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/home/hans/Documents/powerloom/sources/logic
+
+Modified Files:
+	specialists.ste 
+Log Message:
+/PL-KERNEL-KB/object-print-name-computation,
+/PL-KERNEL-KB/print-name-to-object-computation:
+  Computations to support new name functions.
+
+
+
+****************************************
+Date:	Thursday May 1, 2014 @ 3:29
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/logic
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-powerloom-snapshot/version
+
+Modified Files:
+	powerloom.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -71,13 +71,13 @@ public class SoapEnv {
 
   public static Symbol SYM_SOAP_ENV_detail = null;
 
-  public static Surrogate SGT_SOAP_ENV_faultcode = null;
+  public static Surrogate SGT_SOAP_ENV_FaultCode = null;
 
-  public static Surrogate SGT_SOAP_ENV_faultstring = null;
+  public static Surrogate SGT_SOAP_ENV_FaultString = null;
 
-  public static Surrogate SGT_SOAP_ENV_faultactor = null;
+  public static Surrogate SGT_SOAP_ENV_FaultActor = null;
 
-  public static Surrogate SGT_SOAP_ENV_detail = null;
+  public static Surrogate SGT_SOAP_ENV_Detail = null;
 
   public static Symbol SYM_SOAP_ENV_STARTUP_SOAP_ENV = null;
 

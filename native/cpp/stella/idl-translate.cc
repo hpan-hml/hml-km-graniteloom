@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -317,7 +317,7 @@ char* idlChangeCase(GeneralizedSymbol* symbol, Keyword* caseconvention) {
     char* name = symbol->symbolName;
 
     if (!((boolean)(module))) {
-      module = oMODULEo.get();
+      module = oMODULEo;
     }
     if (module->caseSensitiveP) {
       return (stringCopy(name));
@@ -648,7 +648,7 @@ void startupIdlTranslate() {
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupIdlTranslate1();
       SYM_IDL_TRANSLATE_STELLA_VOLATILE = ((Symbol*)(internRigidSymbolWrtModule("VOLATILE", NULL, 0)));

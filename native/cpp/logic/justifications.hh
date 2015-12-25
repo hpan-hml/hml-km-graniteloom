@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -57,11 +57,7 @@ public:
   Proposition* proposition;
   // Antecedents justifications of this justification.
   Cons* antecedents;
-  // Backpointer to the closest parent :PATTERN justification containing
-  // the variable substitutions from the associated pattern control frame.  If this
-  // is a :PATTERN justification, the slot points to the parent pattern.
-  Justification* patternJustification;
-  // List of variable bindings recorded for :PATTERN justifications.
+  // List of variable bindings recorded for this justification.
   KeyValueMap* substitution;
   // True if proposition was derived in reverse polarity.
   boolean reversePolarityP;
@@ -74,6 +70,7 @@ public:
 public:
   virtual Surrogate* primaryType();
   virtual Cons* consify();
+  virtual Justification* shallowCopy();
   virtual Justification* copy();
   virtual Keyword* inferenceStrategy();
   virtual Keyword* inferenceDirection();
@@ -103,6 +100,15 @@ public:
   virtual Keyword* inferenceDirection();
 };
 
+class ClashJustification : public Justification {
+public:
+  // The inference direction for this inference.
+  Keyword* direction;
+public:
+  virtual Surrogate* primaryType();
+  virtual Keyword* inferenceDirection();
+};
+
 
 // Global declarations:
 extern DECLARE_STELLA_SPECIAL(oRECORD_JUSTIFICATIONSpo, boolean );
@@ -113,7 +119,6 @@ Object* accessJustificationSlotValue(Justification* self, Symbol* slotname, Obje
 PrimitiveStrategy* newPrimitiveStrategy();
 Object* accessPrimitiveStrategySlotValue(PrimitiveStrategy* self, Symbol* slotname, Object* value, boolean setvalueP);
 Object* justificationArgumentBoundTo(Object* argument, Justification* justification);
-KeyValueMap* yieldJustificationSubstitution(Justification* justification, KeyValueMap* substitution, Proposition* argument);
 boolean justificationEqlP(Justification* just1, Justification* just2);
 boolean justificationPropositionsEqlP(Proposition* proposition1, Justification* just1, Proposition* proposition2, Justification* just2);
 boolean recordJustificationsP();
@@ -126,6 +131,7 @@ void recordAndIntroductionJustification(ControlFrame* frame, Keyword* lastmove);
 void recordOrIntroductionJustification(ControlFrame* frame, Keyword* lastmove);
 void recordDisproofJustification(ControlFrame* frame, Keyword* lastmove);
 void recordFailJustification(ControlFrame* frame, Keyword* lastmove);
+void recordNegatedFailJustification(ControlFrame* frame, Keyword* lastmove);
 void recordClosedNotJustification(ControlFrame* frame, Keyword* lastmove);
 void recordExistentialIntroductionJustification(ControlFrame* frame, Keyword* lastmove);
 boolean failedGoalJustificationP(Justification* self);
@@ -149,8 +155,12 @@ ForwardJustification* createForwardJustification(Cons* antecedents, Proposition*
 Justification* getForwardAntecedentJustification(Proposition* antecedent);
 void recordForwardJustification(Cons* antecedents, Proposition* forwardrule, Vector* arguments, Proposition* consequentproposition, Justification* bcJustification);
 Justification* createSubsetJustification(Proposition* mainProposition, Proposition* matchingProposition);
+ClashJustification* newClashJustification();
+Object* accessClashJustificationSlotValue(ClashJustification* self, Symbol* slotname, Object* value, boolean setvalueP);
+ClashJustification* createClashJustification(Proposition* prop, Cons* antecedents, Keyword* direction);
 void helpStartupJustifications1();
 void helpStartupJustifications2();
+void helpStartupJustifications3();
 void startupJustifications();
 
 // Auxiliary global declarations:
@@ -159,7 +169,6 @@ extern Keyword* KWD_JUSTIFICATIONS_BACKWARD;
 extern Symbol* SYM_JUSTIFICATIONS_LOGIC_INFERENCE_RULE;
 extern Symbol* SYM_JUSTIFICATIONS_LOGIC_PROPOSITION;
 extern Symbol* SYM_JUSTIFICATIONS_LOGIC_ANTECEDENTS;
-extern Symbol* SYM_JUSTIFICATIONS_LOGIC_PATTERN_JUSTIFICATION;
 extern Symbol* SYM_JUSTIFICATIONS_LOGIC_SUBSTITUTION;
 extern Symbol* SYM_JUSTIFICATIONS_LOGIC_REVERSE_POLARITYp;
 extern Symbol* SYM_JUSTIFICATIONS_LOGIC_TRUTH_VALUE;
@@ -169,7 +178,6 @@ extern Keyword* KWD_JUSTIFICATIONS_PRIMITIVE_STRATEGY;
 extern Surrogate* SGT_JUSTIFICATIONS_LOGIC_PRIMITIVE_STRATEGY;
 extern Symbol* SYM_JUSTIFICATIONS_LOGIC_STRATEGY;
 extern Surrogate* SGT_JUSTIFICATIONS_LOGIC_PATTERN_VARIABLE;
-extern Keyword* KWD_JUSTIFICATIONS_PATTERN;
 extern Surrogate* SGT_JUSTIFICATIONS_LOGIC_PROPOSITION;
 extern Symbol* SYM_JUSTIFICATIONS_LOGIC_JUSTIFICATION;
 extern Keyword* KWD_JUSTIFICATIONS_UP_TRUE;
@@ -186,6 +194,7 @@ extern Keyword* KWD_JUSTIFICATIONS_GOAL_COMPLEMENT;
 extern Keyword* KWD_JUSTIFICATIONS_EQUIVALENCE;
 extern Keyword* KWD_JUSTIFICATIONS_SUBSUMPTION_TEST;
 extern Keyword* KWD_JUSTIFICATIONS_SUBSUMPTION_REASONING;
+extern Keyword* KWD_JUSTIFICATIONS_PATTERN;
 extern Surrogate* SGT_JUSTIFICATIONS_STELLA_KEY_VALUE_LIST;
 extern Keyword* KWD_JUSTIFICATIONS_AND_INTRODUCTION;
 extern Keyword* KWD_JUSTIFICATIONS_MODUS_TOLLENS;
@@ -194,12 +203,12 @@ extern Symbol* SYM_JUSTIFICATIONS_LOGIC_ANTECEDENTS_RULE;
 extern Keyword* KWD_JUSTIFICATIONS_NOT;
 extern Keyword* KWD_JUSTIFICATIONS_AMPLIFICATION;
 extern Symbol* SYM_JUSTIFICATIONS_STELLA_ARGUMENTS;
-extern Keyword* KWD_JUSTIFICATIONS_POPPED;
 extern Keyword* KWD_JUSTIFICATIONS_PARTIAL;
 extern Keyword* KWD_JUSTIFICATIONS_REVERSE;
 extern Keyword* KWD_JUSTIFICATIONS_OR_INTRODUCTION;
 extern Keyword* KWD_JUSTIFICATIONS_DISPROOF;
 extern Keyword* KWD_JUSTIFICATIONS_FAIL_INTRODUCTION;
+extern Keyword* KWD_JUSTIFICATIONS_NEGATED_FAIL;
 extern Keyword* KWD_JUSTIFICATIONS_CLOSED_NOT_INTRODUCTION;
 extern Keyword* KWD_JUSTIFICATIONS_FAIL;
 extern Keyword* KWD_JUSTIFICATIONS_EXISTENTIAL_INTRODUCTION;
@@ -229,6 +238,9 @@ extern Symbol* SYM_JUSTIFICATIONS_LOGIC_IO_VARIABLES;
 extern Keyword* KWD_JUSTIFICATIONS_IMPLIES;
 extern Keyword* KWD_JUSTIFICATIONS_DESCRIPTION;
 extern Symbol* SYM_JUSTIFICATIONS_PL_KERNEL_KB_SUBSET_OF;
+extern Surrogate* SGT_JUSTIFICATIONS_LOGIC_CLASH_JUSTIFICATION;
+extern Symbol* SYM_JUSTIFICATIONS_LOGIC_DIRECTION;
+extern Keyword* KWD_JUSTIFICATIONS_CLASH;
 extern Symbol* SYM_JUSTIFICATIONS_LOGIC_STARTUP_JUSTIFICATIONS;
 extern Symbol* SYM_JUSTIFICATIONS_STELLA_METHOD_STARTUP_CLASSNAME;
 

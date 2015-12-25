@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2002-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2002-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -161,12 +161,13 @@
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-Value|)
     (CL:IF SETVALUE?
-     (CL:SETF (|%PLString.Value| SELF) (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
+     (CL:SETF (|%PLString.Value| SELF)
+      (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%PLString.Value| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -183,12 +184,13 @@
   (CL:COND
    ((CL:EQ SLOTNAME SYM-XML-OBJECTS-LOGIC-ID)
     (CL:IF SETVALUE?
-     (CL:SETF (|%PLSurrogate.ID| SELF) (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
+     (CL:SETF (|%PLSurrogate.ID| SELF)
+      (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%PLSurrogate.ID| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -216,15 +218,17 @@
      (CL:SETQ VALUE (WRAP-STRING (|%ServerException.Message| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
 (CL:DEFUN |new-PLModuleContainer| ()
   (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLModuleContainer|))
-   (CL:SETF (|%PLModuleContainer.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLModuleContainer.textContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%PLModuleContainer.cdataContent| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLModuleContainer.textContent| SELF)
+    STELLA::NULL-STRING)
    (CL:SETF (|%PLModuleContainer.PLModule| SELF) NULL) SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLModuleContainer|))
@@ -233,12 +237,13 @@
 (CL:DEFUN |access-PLModuleContainer-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-PLModule|)
-    (CL:IF SETVALUE? (CL:SETF (|%PLModuleContainer.PLModule| SELF) VALUE)
+    (CL:IF SETVALUE?
+     (CL:SETF (|%PLModuleContainer.PLModule| SELF) VALUE)
      (CL:SETQ VALUE (|%PLModuleContainer.PLModule| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -292,7 +297,8 @@
     (CL:IF SETVALUE?
      (CL:SETF (|%PLModule.JavaCatchallClass| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%PLModule.JavaCatchallClass| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%PLModule.JavaCatchallClass| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-Documentation|)
     (CL:IF SETVALUE?
      (CL:SETF (|%PLModule.Documentation| SELF)
@@ -300,7 +306,8 @@
      (CL:SETQ VALUE (WRAP-STRING (|%PLModule.Documentation| SELF)))))
    ((CL:EQ SLOTNAME SYM-XML-OBJECTS-GUI-SERVER-API)
     (CL:IF SETVALUE?
-     (CL:SETF (|%PLModule.API| SELF) (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
+     (CL:SETF (|%PLModule.API| SELF)
+      (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%PLModule.API| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-CaseSensitive|)
     (CL:IF SETVALUE?
@@ -315,8 +322,8 @@
      (CL:SETQ VALUE (|%PLModule.PLSurrogate| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -358,15 +365,17 @@
      (CL:SETQ VALUE (|%PLConcept.PLSurrogate| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
 (CL:DEFUN |new-PLConceptContainer| ()
   (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLConceptContainer|))
-   (CL:SETF (|%PLConceptContainer.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLConceptContainer.textContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%PLConceptContainer.cdataContent| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLConceptContainer.textContent| SELF)
+    STELLA::NULL-STRING)
    (CL:SETF (|%PLConceptContainer.PLConcept| SELF) NULL) SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLConceptContainer|))
@@ -375,12 +384,13 @@
 (CL:DEFUN |access-PLConceptContainer-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-PLConcept|)
-    (CL:IF SETVALUE? (CL:SETF (|%PLConceptContainer.PLConcept| SELF) VALUE)
+    (CL:IF SETVALUE?
+     (CL:SETF (|%PLConceptContainer.PLConcept| SELF) VALUE)
      (CL:SETQ VALUE (|%PLConceptContainer.PLConcept| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -434,15 +444,17 @@
      (CL:SETQ VALUE (|%PLRelation.PLSurrogate| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
 (CL:DEFUN |new-PLRelationContainer| ()
   (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLRelationContainer|))
-   (CL:SETF (|%PLRelationContainer.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLRelationContainer.textContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%PLRelationContainer.cdataContent| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLRelationContainer.textContent| SELF)
+    STELLA::NULL-STRING)
    (CL:SETF (|%PLRelationContainer.PLRelation| SELF) NULL) SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLRelationContainer|))
@@ -451,12 +463,13 @@
 (CL:DEFUN |access-PLRelationContainer-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-PLRelation|)
-    (CL:IF SETVALUE? (CL:SETF (|%PLRelationContainer.PLRelation| SELF) VALUE)
+    (CL:IF SETVALUE?
+     (CL:SETF (|%PLRelationContainer.PLRelation| SELF) VALUE)
      (CL:SETQ VALUE (|%PLRelationContainer.PLRelation| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -490,15 +503,17 @@
      (CL:SETQ VALUE (WRAP-STRING (|%PLInstance.SourceString| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
 (CL:DEFUN |new-PLInstanceContainer| ()
   (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLInstanceContainer|))
-   (CL:SETF (|%PLInstanceContainer.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLInstanceContainer.textContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%PLInstanceContainer.cdataContent| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLInstanceContainer.textContent| SELF)
+    STELLA::NULL-STRING)
    (CL:SETF (|%PLInstanceContainer.PLInstance| SELF) NULL) SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLInstanceContainer|))
@@ -507,12 +522,13 @@
 (CL:DEFUN |access-PLInstanceContainer-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-PLInstance|)
-    (CL:IF SETVALUE? (CL:SETF (|%PLInstanceContainer.PLInstance| SELF) VALUE)
+    (CL:IF SETVALUE?
+     (CL:SETF (|%PLInstanceContainer.PLInstance| SELF) VALUE)
      (CL:SETQ VALUE (|%PLInstanceContainer.PLInstance| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -523,7 +539,9 @@
    (CL:SETF (|%PLProposition.IsRule| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%PLProposition.IsAsserted| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%PLProposition.IsStrict| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLProposition.PropositionName| SELF) STELLA::NULL-STRING) SELF))
+   (CL:SETF (|%PLProposition.PropositionName| SELF)
+    STELLA::NULL-STRING)
+   SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLProposition|))
   |SGT-XML-OBJECTS-GUI-SERVER-PLProposition|)
@@ -534,7 +552,8 @@
     (CL:IF SETVALUE?
      (CL:SETF (|%PLProposition.PropositionName| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%PLProposition.PropositionName| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%PLProposition.PropositionName| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-IsStrict|)
     (CL:IF SETVALUE?
      (CL:SETF (|%PLProposition.IsStrict| SELF)
@@ -552,15 +571,18 @@
      (CL:SETQ VALUE (WRAP-STRING (|%PLProposition.IsRule| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
 (CL:DEFUN |new-PLPropositionContainer| ()
-  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLPropositionContainer|))
-   (CL:SETF (|%PLPropositionContainer.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLPropositionContainer.textContent| SELF) STELLA::NULL-STRING)
+  (CL:LET* ((SELF NULL))
+   (CL:SETQ SELF (|%MAKE-PLPropositionContainer|))
+   (CL:SETF (|%PLPropositionContainer.cdataContent| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLPropositionContainer.textContent| SELF)
+    STELLA::NULL-STRING)
    (CL:SETF (|%PLPropositionContainer.PLProposition| SELF) NULL) SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLPropositionContainer|))
@@ -574,8 +596,8 @@
      (CL:SETQ VALUE (|%PLPropositionContainer.PLProposition| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -592,12 +614,13 @@
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-RuleName|)
     (CL:IF SETVALUE?
-     (CL:SETF (|%PLRule.RuleName| SELF) (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
+     (CL:SETF (|%PLRule.RuleName| SELF)
+      (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%PLRule.RuleName| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -621,8 +644,8 @@
      (CL:SETQ VALUE (|%PLVariable.VariableType| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -638,18 +661,20 @@
 (CL:DEFUN |access-PLVariableList-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-PLVariable|)
-    (CL:IF SETVALUE? (CL:SETF (|%PLVariableList.PLVariable| SELF) VALUE)
+    (CL:IF SETVALUE?
+     (CL:SETF (|%PLVariableList.PLVariable| SELF) VALUE)
      (CL:SETQ VALUE (|%PLVariableList.PLVariable| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
 (CL:DEFUN |new-PLModuleFileList| ()
   (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLModuleFileList|))
-   (CL:SETF (|%PLModuleFileList.cdataContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%PLModuleFileList.cdataContent| SELF)
+    STELLA::NULL-STRING)
    (CL:SETF (|%PLModuleFileList.textContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%PLModuleFileList.PLModuleFile| SELF) NULL) SELF))
 
@@ -659,12 +684,13 @@
 (CL:DEFUN |access-PLModuleFileList-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-PLModuleFile|)
-    (CL:IF SETVALUE? (CL:SETF (|%PLModuleFileList.PLModuleFile| SELF) VALUE)
+    (CL:IF SETVALUE?
+     (CL:SETF (|%PLModuleFileList.PLModuleFile| SELF) VALUE)
      (CL:SETQ VALUE (|%PLModuleFileList.PLModuleFile| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -696,7 +722,8 @@
     (CL:IF SETVALUE?
      (CL:SETF (|%PLModuleFile.KBDescription| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%PLModuleFile.KBDescription| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%PLModuleFile.KBDescription| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-FileName|)
     (CL:IF SETVALUE?
      (CL:SETF (|%PLModuleFile.FileName| SELF)
@@ -704,8 +731,8 @@
      (CL:SETQ VALUE (WRAP-STRING (|%PLModuleFile.FileName| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -723,22 +750,24 @@
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-FileName|)
     (CL:IF SETVALUE?
-     (CL:SETF (|%PLFile.FileName| SELF) (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
+     (CL:SETF (|%PLFile.FileName| SELF)
+      (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%PLFile.FileName| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-PLFileContent|)
     (CL:IF SETVALUE? (CL:SETF (|%PLFile.PLFileContent| SELF) VALUE)
      (CL:SETQ VALUE (|%PLFile.PLFileContent| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
 (CL:DEFUN |new-PLFileContent| ()
   (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLFileContent|))
    (CL:SETF (|%PLFileContent.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLFileContent.textContent| SELF) STELLA::NULL-STRING) SELF))
+   (CL:SETF (|%PLFileContent.textContent| SELF) STELLA::NULL-STRING)
+   SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLFileContent|))
   |SGT-XML-OBJECTS-GUI-SERVER-PLFileContent|)
@@ -749,11 +778,12 @@
     (CL:IF SETVALUE?
      (CL:SETF (|%PLFileContent.textContent| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%PLFileContent.textContent| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%PLFileContent.textContent| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -761,7 +791,8 @@
   (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLDirectory|))
    (CL:SETF (|%PLDirectory.cdataContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%PLDirectory.textContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLDirectory.DirectoryName| SELF) STELLA::NULL-STRING) SELF))
+   (CL:SETF (|%PLDirectory.DirectoryName| SELF) STELLA::NULL-STRING)
+   SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLDirectory|))
   |SGT-XML-OBJECTS-GUI-SERVER-PLDirectory|)
@@ -772,21 +803,25 @@
     (CL:IF SETVALUE?
      (CL:SETF (|%PLDirectory.DirectoryName| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%PLDirectory.DirectoryName| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%PLDirectory.DirectoryName| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
 (CL:DEFUN |new-PLDirectoryContents| ()
   (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLDirectoryContents|))
-   (CL:SETF (|%PLDirectoryContents.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLDirectoryContents.textContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%PLDirectoryContents.cdataContent| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLDirectoryContents.textContent| SELF)
+    STELLA::NULL-STRING)
    (CL:SETF (|%PLDirectoryContents.PLFile| SELF) NULL)
    (CL:SETF (|%PLDirectoryContents.PLDirectory| SELF) NULL)
-   (CL:SETF (|%PLDirectoryContents.DirectoryName| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%PLDirectoryContents.DirectoryName| SELF)
+    STELLA::NULL-STRING)
    SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLDirectoryContents|))
@@ -801,22 +836,26 @@
      (CL:SETQ VALUE
       (WRAP-STRING (|%PLDirectoryContents.DirectoryName| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-PLDirectory|)
-    (CL:IF SETVALUE? (CL:SETF (|%PLDirectoryContents.PLDirectory| SELF) VALUE)
+    (CL:IF SETVALUE?
+     (CL:SETF (|%PLDirectoryContents.PLDirectory| SELF) VALUE)
      (CL:SETQ VALUE (|%PLDirectoryContents.PLDirectory| SELF))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-PLFile|)
-    (CL:IF SETVALUE? (CL:SETF (|%PLDirectoryContents.PLFile| SELF) VALUE)
+    (CL:IF SETVALUE?
+     (CL:SETF (|%PLDirectoryContents.PLFile| SELF) VALUE)
      (CL:SETQ VALUE (|%PLDirectoryContents.PLFile| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
 (CL:DEFUN |new-PLSurrogateCollection| ()
   (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLSurrogateCollection|))
-   (CL:SETF (|%PLSurrogateCollection.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLSurrogateCollection.textContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%PLSurrogateCollection.cdataContent| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLSurrogateCollection.textContent| SELF)
+    STELLA::NULL-STRING)
    (CL:SETF (|%PLSurrogateCollection.PLSurrogate| SELF) NULL) SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLSurrogateCollection|))
@@ -830,8 +869,8 @@
      (CL:SETQ VALUE (|%PLSurrogateCollection.PLSurrogate| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -854,17 +893,19 @@
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%PLObjectUnion.Type| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-PLSurrogate|)
-    (CL:IF SETVALUE? (CL:SETF (|%PLObjectUnion.PLSurrogate| SELF) VALUE)
+    (CL:IF SETVALUE?
+     (CL:SETF (|%PLObjectUnion.PLSurrogate| SELF) VALUE)
      (CL:SETQ VALUE (|%PLObjectUnion.PLSurrogate| SELF))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-LiteralValue|)
     (CL:IF SETVALUE?
      (CL:SETF (|%PLObjectUnion.LiteralValue| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%PLObjectUnion.LiteralValue| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%PLObjectUnion.LiteralValue| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -884,8 +925,8 @@
      (CL:SETQ VALUE (|%PLTuple.PLObjectUnion| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -914,7 +955,8 @@
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-IsAsk|)
     (CL:IF SETVALUE?
-     (CL:SETF (|%PLQuery.IsAsk| SELF) (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
+     (CL:SETF (|%PLQuery.IsAsk| SELF)
+      (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%PLQuery.IsAsk| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-QueryName|)
     (CL:IF SETVALUE?
@@ -923,11 +965,13 @@
      (CL:SETQ VALUE (WRAP-STRING (|%PLQuery.QueryName| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-Query|)
     (CL:IF SETVALUE?
-     (CL:SETF (|%PLQuery.Query| SELF) (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
+     (CL:SETF (|%PLQuery.Query| SELF)
+      (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%PLQuery.Query| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-Module|)
     (CL:IF SETVALUE?
-     (CL:SETF (|%PLQuery.Module| SELF) (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
+     (CL:SETF (|%PLQuery.Module| SELF)
+      (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%PLQuery.Module| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-InferenceLevel|)
     (CL:IF SETVALUE?
@@ -936,11 +980,13 @@
      (CL:SETQ VALUE (WRAP-STRING (|%PLQuery.InferenceLevel| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-Timeout|)
     (CL:IF SETVALUE?
-     (CL:SETF (|%PLQuery.Timeout| SELF) (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
+     (CL:SETF (|%PLQuery.Timeout| SELF)
+      (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%PLQuery.Timeout| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-Moveout|)
     (CL:IF SETVALUE?
-     (CL:SETF (|%PLQuery.Moveout| SELF) (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
+     (CL:SETF (|%PLQuery.Moveout| SELF)
+      (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%PLQuery.Moveout| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-MatchMode|)
     (CL:IF SETVALUE?
@@ -974,8 +1020,8 @@
      (CL:SETQ VALUE (WRAP-STRING (|%PLQuery.DontOptimize| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -995,21 +1041,29 @@
      (CL:SETQ VALUE (|%PLQueryResult.PLTuple| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
 (CL:DEFUN |new-PLSearchParameter| ()
   (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLSearchParameter|))
-   (CL:SETF (|%PLSearchParameter.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLSearchParameter.textContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLSearchParameter.CaseSensitive| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLSearchParameter.SearchInstance| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLSearchParameter.SearchRelation| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLSearchParameter.SearchConcept| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLSearchParameter.SearchString| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLSearchParameter.ModuleName| SELF) STELLA::NULL-STRING) SELF))
+   (CL:SETF (|%PLSearchParameter.cdataContent| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLSearchParameter.textContent| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLSearchParameter.CaseSensitive| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLSearchParameter.SearchInstance| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLSearchParameter.SearchRelation| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLSearchParameter.SearchConcept| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLSearchParameter.SearchString| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLSearchParameter.ModuleName| SELF) STELLA::NULL-STRING)
+   SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLSearchParameter|))
   |SGT-XML-OBJECTS-GUI-SERVER-PLSearchParameter|)
@@ -1020,17 +1074,20 @@
     (CL:IF SETVALUE?
      (CL:SETF (|%PLSearchParameter.ModuleName| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%PLSearchParameter.ModuleName| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%PLSearchParameter.ModuleName| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-SearchString|)
     (CL:IF SETVALUE?
      (CL:SETF (|%PLSearchParameter.SearchString| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%PLSearchParameter.SearchString| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%PLSearchParameter.SearchString| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-SearchConcept|)
     (CL:IF SETVALUE?
      (CL:SETF (|%PLSearchParameter.SearchConcept| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%PLSearchParameter.SearchConcept| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%PLSearchParameter.SearchConcept| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-SearchRelation|)
     (CL:IF SETVALUE?
      (CL:SETF (|%PLSearchParameter.SearchRelation| SELF)
@@ -1047,11 +1104,12 @@
     (CL:IF SETVALUE?
      (CL:SETF (|%PLSearchParameter.CaseSensitive| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%PLSearchParameter.CaseSensitive| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%PLSearchParameter.CaseSensitive| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -1072,17 +1130,21 @@
      (CL:SETQ VALUE (|%PLSearchResult.PLSearchResultItem| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
 (CL:DEFUN |new-PLSearchResultItem| ()
   (CL:LET* ((SELF NULL)) (CL:SETQ SELF (|%MAKE-PLSearchResultItem|))
-   (CL:SETF (|%PLSearchResultItem.cdataContent| SELF) STELLA::NULL-STRING)
-   (CL:SETF (|%PLSearchResultItem.textContent| SELF) STELLA::NULL-STRING)
+   (CL:SETF (|%PLSearchResultItem.cdataContent| SELF)
+    STELLA::NULL-STRING)
+   (CL:SETF (|%PLSearchResultItem.textContent| SELF)
+    STELLA::NULL-STRING)
    (CL:SETF (|%PLSearchResultItem.PLObjectUnion| SELF) NULL)
-   (CL:SETF (|%PLSearchResultItem.ModuleName| SELF) STELLA::NULL-STRING) SELF))
+   (CL:SETF (|%PLSearchResultItem.ModuleName| SELF)
+    STELLA::NULL-STRING)
+   SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |PLSearchResultItem|))
   |SGT-XML-OBJECTS-GUI-SERVER-PLSearchResultItem|)
@@ -1093,15 +1155,16 @@
     (CL:IF SETVALUE?
      (CL:SETF (|%PLSearchResultItem.ModuleName| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
-     (CL:SETQ VALUE (WRAP-STRING (|%PLSearchResultItem.ModuleName| SELF)))))
+     (CL:SETQ VALUE
+      (WRAP-STRING (|%PLSearchResultItem.ModuleName| SELF)))))
    ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-PLObjectUnion|)
     (CL:IF SETVALUE?
      (CL:SETF (|%PLSearchResultItem.PLObjectUnion| SELF) VALUE)
      (CL:SETQ VALUE (|%PLSearchResultItem.PLObjectUnion| SELF))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -1118,7 +1181,8 @@
 
 (CL:DEFUN |access-PLServerInfo-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
-   ((CL:EQ SLOTNAME |SYM-XML-OBJECTS-GUI-SERVER-AllowRemoteFileBrowsing|)
+   ((CL:EQ SLOTNAME
+     |SYM-XML-OBJECTS-GUI-SERVER-AllowRemoteFileBrowsing|)
     (CL:IF SETVALUE?
      (CL:SETF (|%PLServerInfo.AllowRemoteFileBrowsing| SELF)
       (%STRING-WRAPPER.WRAPPER-VALUE VALUE))
@@ -1126,8 +1190,8 @@
       (WRAP-STRING (|%PLServerInfo.AllowRemoteFileBrowsing| SELF)))))
    (CL:T
     (CL:LET* ((STREAM-000 (NEW-OUTPUT-STRING-STREAM)))
-     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000) "`"
-      SLOTNAME "' is not a valid case option")
+     (%%PRINT-STREAM (%OUTPUT-STRING-STREAM.NATIVE-STREAM STREAM-000)
+      "`" SLOTNAME "' is not a valid case option")
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
@@ -1136,10 +1200,12 @@
 (CL:DEFMETHOD OBJECT-EQL? ((X |PLConcept|) Y)
   "Return TRUE if `x' and `y' represent the same Concept"
   (CL:COND
-   ((SUBTYPE-OF? (SAFE-PRIMARY-TYPE Y) |SGT-XML-OBJECTS-GUI-SERVER-PLConcept|)
+   ((SUBTYPE-OF? (SAFE-PRIMARY-TYPE Y)
+     |SGT-XML-OBJECTS-GUI-SERVER-PLConcept|)
     (CL:PROGN
      (CL:WHEN
-      (STRING-EQL? (|%PLConcept.ConceptName| X) (|%PLConcept.ConceptName| Y))
+      (STRING-EQL? (|%PLConcept.ConceptName| X)
+       (|%PLConcept.ConceptName| Y))
       (CL:RETURN-FROM OBJECT-EQL? CL:T))))
    (CL:T))
   CL:NIL)
@@ -1197,7 +1263,8 @@
 ;;; (DEFUN (|PLModule<| BOOLEAN) ...)
 
 (CL:DEFUN |PLModule<| (INST1 INST2)
-  (STRING< (|%PLModule.ModuleName| INST1) (|%PLModule.ModuleName| INST2)))
+  (STRING< (|%PLModule.ModuleName| INST1)
+   (|%PLModule.ModuleName| INST2)))
 
 ;;; (DEFUN (|PLInstance<| BOOLEAN) ...)
 
@@ -1208,7 +1275,8 @@
 ;;; (DEFUN (|PLConcept<| BOOLEAN) ...)
 
 (CL:DEFUN |PLConcept<| (INST1 INST2)
-  (STRING< (|%PLConcept.ConceptName| INST1) (|%PLConcept.ConceptName| INST2)))
+  (STRING< (|%PLConcept.ConceptName| INST1)
+   (|%PLConcept.ConceptName| INST2)))
 
 ;;; (DEFUN (|PLRelation<| BOOLEAN) ...)
 
@@ -1225,7 +1293,8 @@
    (CL:SETQ |SGT-XML-OBJECTS-GUI-SERVER-PLSurrogate|
     (INTERN-RIGID-SYMBOL-WRT-MODULE "PLSurrogate" NULL 1))
    (CL:SETQ SYM-XML-OBJECTS-LOGIC-ID
-    (INTERN-RIGID-SYMBOL-WRT-MODULE "ID" (GET-STELLA-MODULE "/LOGIC" CL:T) 0))
+    (INTERN-RIGID-SYMBOL-WRT-MODULE "ID"
+     (GET-STELLA-MODULE "/LOGIC" CL:T) 0))
    (CL:SETQ |SGT-XML-OBJECTS-GUI-SERVER-ServerException|
     (INTERN-RIGID-SYMBOL-WRT-MODULE "ServerException" NULL 1))
    (CL:SETQ |SYM-XML-OBJECTS-GUI-SERVER-Type|
@@ -1708,7 +1777,8 @@
      (CL:FUNCTION STARTUP-XML-OBJECTS) NULL)
     (CL:LET*
      ((FUNCTION
-       (LOOKUP-FUNCTION SYM-XML-OBJECTS-GUI-SERVER-STARTUP-XML-OBJECTS)))
+       (LOOKUP-FUNCTION
+        SYM-XML-OBJECTS-GUI-SERVER-STARTUP-XML-OBJECTS)))
      (SET-DYNAMIC-SLOT-VALUE (%METHOD-SLOT.DYNAMIC-SLOTS FUNCTION)
       SYM-XML-OBJECTS-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupXmlObjects") NULL-STRING-WRAPPER)))

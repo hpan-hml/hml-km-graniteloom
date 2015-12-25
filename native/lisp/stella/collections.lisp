@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -741,41 +741,37 @@ Resize the array if necessary."
   "Remove `value' from the sequence `self', and left shift
 the values after it to close the gap."
   (CL:LET*
-   ((ARRAY (%THE-ARRAY SELF)) (FIRSTSHIFTOFFSET -1)
-    (LASTSHIFTOFFSET (CL:1- (%SEQUENCE-LENGTH SELF))))
+   ((ARRAY (%THE-ARRAY SELF)) (LENGTH (%SEQUENCE-LENGTH SELF))
+    (NHITS 0))
    (CL:DECLARE (CL:TYPE CL:SIMPLE-VECTOR ARRAY)
-    (CL:TYPE CL:FIXNUM FIRSTSHIFTOFFSET LASTSHIFTOFFSET))
+    (CL:TYPE CL:FIXNUM LENGTH NHITS))
    (CL:LET*
-    ((I NULL-INTEGER) (ITER-000 0) (UPPER-BOUND-000 LASTSHIFTOFFSET)
-     (UNBOUNDED?-000 (CL:= UPPER-BOUND-000 NULL-INTEGER)))
+    ((I NULL-INTEGER) (ITER-000 0) (UPPER-BOUND-000 (CL:1- LENGTH)))
     (CL:DECLARE (CL:TYPE CL:FIXNUM I ITER-000 UPPER-BOUND-000))
-    (CL:LOOP WHILE
-     (CL:OR UNBOUNDED?-000 (CL:<= ITER-000 UPPER-BOUND-000)) DO
+    (CL:LOOP WHILE (CL:<= ITER-000 UPPER-BOUND-000) DO
      (CL:SETQ I ITER-000)
-     (CL:WHEN (EQL? (CL:AREF ARRAY I) VALUE)
-      (CL:SETQ FIRSTSHIFTOFFSET (CL:1+ I)) (CL:RETURN))
+     (CL:COND
+      ((EQL? (CL:AREF ARRAY I) VALUE) (CL:SETQ NHITS (CL:1+ NHITS)))
+      ((CL:> NHITS 0)
+       (CL:LET
+        ((SELF ARRAY) (VALUE (CL:AREF ARRAY I))
+         (POSITION (CL:- I NHITS)))
+        (CL:DECLARE (CL:TYPE CL:SIMPLE-VECTOR SELF)
+         (CL:TYPE CL:FIXNUM POSITION))
+        (CL:SETF (CL:AREF SELF POSITION) VALUE))))
      (CL:SETQ ITER-000 (CL:1+ ITER-000))))
-   (CL:WHEN (CL:= FIRSTSHIFTOFFSET -1) (CL:RETURN-FROM REMOVE SELF))
-   (CL:WHEN (CL:<= FIRSTSHIFTOFFSET LASTSHIFTOFFSET)
-    (CL:LET*
-     ((J NULL-INTEGER) (ITER-001 FIRSTSHIFTOFFSET)
-      (UPPER-BOUND-001 LASTSHIFTOFFSET)
-      (UNBOUNDED?-001 (CL:= UPPER-BOUND-001 NULL-INTEGER)))
-     (CL:DECLARE (CL:TYPE CL:FIXNUM J ITER-001 UPPER-BOUND-001))
-     (CL:LOOP WHILE
-      (CL:OR UNBOUNDED?-001 (CL:<= ITER-001 UPPER-BOUND-001)) DO
-      (CL:SETQ J ITER-001)
-      (CL:LET
-       ((SELF ARRAY) (VALUE (CL:AREF ARRAY J)) (POSITION (CL:1- J)))
-       (CL:DECLARE (CL:TYPE CL:SIMPLE-VECTOR SELF)
-        (CL:TYPE CL:FIXNUM POSITION))
-       (CL:SETF (CL:AREF SELF POSITION) VALUE))
-      (CL:SETQ ITER-001 (CL:1+ ITER-001)))))
-   (CL:LET ((SELF ARRAY) (VALUE NULL) (POSITION LASTSHIFTOFFSET))
-    (CL:DECLARE (CL:TYPE CL:SIMPLE-VECTOR SELF)
-     (CL:TYPE CL:FIXNUM POSITION))
-    (CL:SETF (CL:AREF SELF POSITION) VALUE))
-   (CL:SETF (%SEQUENCE-LENGTH SELF) LASTSHIFTOFFSET)
+   (CL:SETF (%SEQUENCE-LENGTH SELF) (CL:- LENGTH NHITS))
+   (CL:LET*
+    ((I NULL-INTEGER) (ITER-001 (%SEQUENCE-LENGTH SELF))
+     (UPPER-BOUND-001 (CL:1- LENGTH)))
+    (CL:DECLARE (CL:TYPE CL:FIXNUM I ITER-001 UPPER-BOUND-001))
+    (CL:LOOP WHILE (CL:<= ITER-001 UPPER-BOUND-001) DO
+     (CL:SETQ I ITER-001)
+     (CL:LET ((SELF ARRAY) (VALUE NULL) (POSITION I))
+      (CL:DECLARE (CL:TYPE CL:SIMPLE-VECTOR SELF)
+       (CL:TYPE CL:FIXNUM POSITION))
+      (CL:SETF (CL:AREF SELF POSITION) VALUE))
+     (CL:SETQ ITER-001 (CL:1+ ITER-001))))
    (CL:RETURN-FROM REMOVE SELF)))
 
 ;;; (DEFMETHOD (REVERSE (LIKE SELF)) ...)
@@ -934,6 +930,59 @@ element types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT)."
        (CL:AREF (CL:THE CL:SIMPLE-VECTOR (%THE-ARRAY SELF)) 0)))))
    (HEAP-SORT-NATIVE-VECTOR (%THE-ARRAY SELF) (LENGTH SELF) PREDICATE)
    (CL:RETURN-FROM SORT SELF)))
+
+;;; (DEFMETHOD (SORT-TUPLES (VECTOR OF (LIKE (ANY-VALUE SELF)))) ...)
+
+(CL:DEFMETHOD SORT-TUPLES ((SELF VECTOR) N PREDICATE)
+  "Just like `sort' but assumes each element of `self' is a tuple (a cons)
+whose `n'-th element (0-based) will be used for comparison."
+  (CL:DECLARE (CL:TYPE CL:FIXNUM N))
+  #+MCL
+  (CL:CHECK-TYPE N CL:FIXNUM)
+  (CL:LET* ((LENGTH (LENGTH SELF)))
+   (CL:DECLARE (CL:TYPE CL:FIXNUM LENGTH))
+   (CL:COND ((CL:= LENGTH 0) (CL:RETURN-FROM SORT-TUPLES SELF))
+    ((CL:EQ PREDICATE NULL)
+     (CL:SETQ PREDICATE
+      (CHOOSE-SORT-PREDICATE
+       (NTH (CL:AREF (CL:THE CL:SIMPLE-VECTOR (%THE-ARRAY SELF)) 0)
+        N)))))
+   (CL:LET*
+    ((*SORT-TUPLE-COMPARE-PREDICATE* PREDICATE)
+     (*SORT-TUPLE-COMPARE-INDEX* N))
+    (CL:DECLARE
+     (CL:SPECIAL *SORT-TUPLE-COMPARE-PREDICATE*
+      *SORT-TUPLE-COMPARE-INDEX*))
+    (CL:DECLARE (CL:TYPE CL:FIXNUM *SORT-TUPLE-COMPARE-INDEX*))
+    (HEAP-SORT-NATIVE-VECTOR (%THE-ARRAY SELF) (LENGTH SELF)
+     (CL:FUNCTION SORT-TUPLE-COMPARE?))
+    (CL:RETURN-FROM SORT-TUPLES SELF))))
+
+;;; (DEFMETHOD (SORT-OBJECTS (VECTOR OF (LIKE (ANY-VALUE SELF)))) ...)
+
+(CL:DEFMETHOD SORT-OBJECTS ((SELF VECTOR) SLOT PREDICATE)
+  "Just like `sort' but assumes each element of `self' has a `slot'
+whose value will be used for comparison.  Elements must be descendants of
+STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+it will cause value wrapping everytime `slot' is read."
+  (CL:LET* ((LENGTH (LENGTH SELF)))
+   (CL:DECLARE (CL:TYPE CL:FIXNUM LENGTH))
+   (CL:COND ((CL:= LENGTH 0) (CL:RETURN-FROM SORT-OBJECTS SELF))
+    ((CL:EQ PREDICATE NULL)
+     (CL:SETQ PREDICATE
+      (CHOOSE-SORT-PREDICATE
+       (READ-SLOT-VALUE
+        (CL:AREF (CL:THE CL:SIMPLE-VECTOR (%THE-ARRAY SELF)) 0)
+        SLOT)))))
+   (CL:LET*
+    ((*SORT-TUPLE-COMPARE-PREDICATE* PREDICATE)
+     (*SORT-OBJECTS-COMPARE-SLOT* SLOT))
+    (CL:DECLARE
+     (CL:SPECIAL *SORT-TUPLE-COMPARE-PREDICATE*
+      *SORT-OBJECTS-COMPARE-SLOT*))
+    (HEAP-SORT-NATIVE-VECTOR (%THE-ARRAY SELF) (LENGTH SELF)
+     (CL:FUNCTION SORT-OBJECTS-COMPARE?))
+    (CL:RETURN-FROM SORT-OBJECTS SELF))))
 
 ;;; (DEFUN HEAP-SORT-NATIVE-VECTOR ...)
 
@@ -1186,6 +1235,32 @@ really maintained or accessible until we sort the heap."))
     (CL:ERROR "Safety violation: Trying to create an empty heap")))
   :VOID)
 
+;;; (DEFMETHOD (COPY (HEAP OF (LIKE (ANY-VALUE SELF)))) ...)
+
+(CL:DEFMETHOD COPY ((SELF HEAP))
+  "Return a copy of the heap `self'."
+  (CL:LET* ((LENGTH (%FILL-POINTER SELF)))
+   (CL:DECLARE (CL:TYPE CL:FIXNUM LENGTH))
+   (CL:LET*
+    ((SELF-000 (NEW-HEAP (%PREDICATE SELF) (%ARRAY-SIZE SELF))))
+    (CL:SETF (%FILL-POINTER SELF-000) LENGTH)
+    (CL:LET*
+     ((COPY SELF-000) (SOURCEARRAY (%THE-ARRAY SELF))
+      (COPYARRAY (%THE-ARRAY COPY)))
+     (CL:DECLARE (CL:TYPE CL:SIMPLE-VECTOR SOURCEARRAY COPYARRAY))
+     (CL:LET*
+      ((I NULL-INTEGER) (ITER-000 0) (UPPER-BOUND-000 (CL:1- LENGTH)))
+      (CL:DECLARE (CL:TYPE CL:FIXNUM I ITER-000 UPPER-BOUND-000))
+      (CL:LOOP WHILE (CL:<= ITER-000 UPPER-BOUND-000) DO
+       (CL:SETQ I ITER-000)
+       (CL:LET
+        ((SELF COPYARRAY) (VALUE (CL:AREF SOURCEARRAY I)) (POSITION I))
+        (CL:DECLARE (CL:TYPE CL:SIMPLE-VECTOR SELF)
+         (CL:TYPE CL:FIXNUM POSITION))
+        (CL:SETF (CL:AREF SELF POSITION) VALUE))
+       (CL:SETQ ITER-000 (CL:1+ ITER-000))))
+     (CL:RETURN-FROM COPY COPY)))))
+
 ;;; (DEFMETHOD CLEAR ...)
 
 (CL:DEFMETHOD CLEAR ((SELF HEAP))
@@ -1205,10 +1280,20 @@ really maintained or accessible until we sort the heap."))
   "Return TRUE if `self' is empty."
   (CL:RETURN-FROM EMPTY? (CL:= (%FILL-POINTER SELF) 0)))
 
+;;; (DEFMETHOD (LAST (LIKE (ANY-VALUE SELF))) ...)
+
+(CL:DEFMETHOD LAST ((SELF HEAP))
+  "Return the last item in the heap `self' which will be the
+largest or best item if `self' is a sorted min-heap with a '<' predicate."
+  (CL:RETURN-FROM LAST
+   (CL:AREF (CL:THE CL:SIMPLE-VECTOR (%THE-ARRAY SELF))
+    (CL:THE CL:FIXNUM (CL:1- (LENGTH SELF))))))
+
 ;;; (DEFMETHOD (HEAP-ROOT (LIKE (ANY-VALUE SELF))) ...)
 
 (CL:DEFMETHOD HEAP-ROOT ((SELF HEAP))
-  "Return the root of `self' (NULL if `self' is empty)."
+  "Return the root of `self' (NULL if `self' is empty).
+The root contains the minimum element of a min-heap with '<' predicate."
   (CL:RETURN-FROM HEAP-ROOT
    (CL:IF (EMPTY? SELF) NULL
     (CL:AREF (CL:THE CL:SIMPLE-VECTOR (%THE-ARRAY SELF)) 0))))
@@ -1362,9 +1447,10 @@ a Min-heap if `self's `predicate' has `<' semantics; otherwise as a Max-heap."
 (CL:DEFMETHOD INSERT-IF-BETTER ((SELF HEAP) VALUE)
   "Insert `value' into `self' and restore the heap property.
 If `self' has available room, simply insert `value'.  If the heap is full, only
-insert `value' if it is better than the current root (i.e., the minimum of `self'
-if `self's `predicate' has `<' semantics).  In that case, replace the root of
-`self' and restore the heap property.  This is useful to build and maintain a
+insert `value' if it is better than the current root (i.e., if `value' is
+greater than the minimum of `self' for the case of a min-heap where `self's
+`predicate' has `<' semantics).  In that case, replace the root of `self'
+and restore the heap property.  This is useful to build and maintain a
 heap with some top-N elements (relative to `predicate') where the root (or
 minimum) of `self' is the currently weakest element at the end of the list."
   (CL:LET*
@@ -2720,6 +2806,14 @@ and return the result."
    (CL:SETF (CL:AREF (CL:THE CL:SIMPLE-VECTOR (%THE-ARRAY SELF)) I)
     VALUE)))
 
+(CL:DEFMETHOD 1D-AREF ((SELF 1D-ARRAY) I)
+  "Return the element of `self' at position `[i]'."
+  (CL:DECLARE (CL:TYPE CL:FIXNUM I))
+  #+MCL
+  (CL:CHECK-TYPE I CL:FIXNUM)
+  (CL:RETURN-FROM 1D-AREF
+   (CL:AREF (CL:THE CL:SIMPLE-VECTOR (%THE-ARRAY SELF)) I)))
+
 (CL:DEFMETHOD INITIALIZE-ARRAY ((SELF 1D-ARRAY) INITIALVALUE)
   "Initialize the elements of `self' with `initialValue'."
   (CL:LET* ((ARRAY (%THE-ARRAY SELF)))
@@ -2736,6 +2830,10 @@ and return the result."
 (CL:DEFMETHOD LENGTH ((SELF 1D-ARRAY))
   "Return the total number of elements in `self'."
   (CL:RETURN-FROM LENGTH (%DIM1 SELF)))
+
+(CL:DEFMETHOD INITIALIZE-DIMENSIONAL-ARRAY ((SELF 1D-ARRAY))
+  (CL:SETF (%THE-ARRAY SELF) (CL:MAKE-ARRAY (LENGTH SELF)))
+  :VOID)
 
 ;;; (DEFCLASS 1D-FLOAT-ARRAY ...)
 
@@ -2902,6 +3000,19 @@ and return the result."
   (CL:RETURN-FROM 1D-AREF
    (CL:AREF (CL:THE CL:SIMPLE-VECTOR (%THE-ARRAY SELF)) I)))
 
+(CL:DEFMETHOD INITIALIZE-ARRAY ((SELF 2D-ARRAY) INITIALVALUE)
+  "Initialize the elements of `self' with `initialValue'."
+  (CL:LET* ((ARRAY (%THE-ARRAY SELF)))
+   (CL:DECLARE (CL:TYPE CL:SIMPLE-VECTOR ARRAY))
+   (CL:LET*
+    ((I NULL-INTEGER) (ITER-000 0)
+     (UPPER-BOUND-000 (CL:1- (LENGTH SELF))))
+    (CL:DECLARE (CL:TYPE CL:FIXNUM I ITER-000 UPPER-BOUND-000))
+    (CL:LOOP WHILE (CL:<= ITER-000 UPPER-BOUND-000) DO
+     (CL:SETQ I ITER-000) (CL:SETF (CL:AREF ARRAY I) INITIALVALUE)
+     (CL:SETQ ITER-000 (CL:1+ ITER-000)))))
+  :VOID)
+
 (CL:DEFMETHOD INITIALIZE-DIMENSIONAL-ARRAY ((SELF 2D-ARRAY))
   (CL:SETF (%THE-ARRAY SELF) (CL:MAKE-ARRAY (LENGTH SELF)))
   :VOID)
@@ -2931,16 +3042,6 @@ and return the result."
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF 2D-FLOAT-ARRAY))
   (CL:RETURN-FROM PRIMARY-TYPE SGT-COLLECTIONS-STELLA-2D-FLOAT-ARRAY))
-
-(CL:DEFMETHOD 2D-AREF-ADDRESS ((SELF 2D-FLOAT-ARRAY) I J)
-  "Return the 1D address of the element at position `[i, j]'.
-This is useful for fast element-wise iteration that doesn't need arithmetic."
-  (CL:DECLARE (CL:TYPE CL:FIXNUM I J))
-  #+MCL
-  (CL:CHECK-TYPE I CL:FIXNUM)
-  #+MCL
-  (CL:CHECK-TYPE J CL:FIXNUM)
-  (CL:RETURN-FROM 2D-AREF-ADDRESS (CL:+ (CL:* I (%DIM2 SELF)) J)))
 
 (CL:DEFMETHOD 2D-AREF-SETTER ((SELF 2D-FLOAT-ARRAY) VALUE I J)
   "Set the element of `self' at position `[i, j]' to `value'
@@ -3411,6 +3512,16 @@ suitable '<' predicate is chosen depending on the first element of `self',
 and it is assumed that all elements of `self' have the same type (supported
 element types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT).\")"
     (CL:FUNCTION SORT) NULL)
+   (DEFINE-METHOD-OBJECT
+    "(DEFMETHOD (SORT-TUPLES (VECTOR OF (LIKE (ANY-VALUE SELF)))) ((SELF VECTOR) (N INTEGER) (PREDICATE FUNCTION-CODE)) :PUBLIC? TRUE :DOCUMENTATION \"Just like `sort' but assumes each element of `self' is a tuple (a cons)
+whose `n'-th element (0-based) will be used for comparison.\")"
+    (CL:FUNCTION SORT-TUPLES) NULL)
+   (DEFINE-METHOD-OBJECT
+    "(DEFMETHOD (SORT-OBJECTS (VECTOR OF (LIKE (ANY-VALUE SELF)))) ((SELF VECTOR) (SLOT STORAGE-SLOT) (PREDICATE FUNCTION-CODE)) :DOCUMENTATION \"Just like `sort' but assumes each element of `self' has a `slot'
+whose value will be used for comparison.  Elements must be descendants of
+STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+it will cause value wrapping everytime `slot' is read.\" :PUBLIC? TRUE)"
+    (CL:FUNCTION SORT-OBJECTS) NULL)
    (DEFINE-FUNCTION-OBJECT "HEAP-SORT-NATIVE-VECTOR"
     "(DEFUN HEAP-SORT-NATIVE-VECTOR ((VECTOR NATIVE-VECTOR) (SIZE INTEGER) (PREDICATE FUNCTION-CODE)))"
     (CL:FUNCTION HEAP-SORT-NATIVE-VECTOR) NULL)
@@ -3429,6 +3540,9 @@ element types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT).\")"
    (DEFINE-METHOD-OBJECT "(DEFMETHOD INITIALIZE-HEAP ((SELF HEAP)))"
     (CL:FUNCTION INITIALIZE-HEAP) NULL)
    (DEFINE-METHOD-OBJECT
+    "(DEFMETHOD (COPY (HEAP OF (LIKE (ANY-VALUE SELF)))) ((SELF HEAP)) :DOCUMENTATION \"Return a copy of the heap `self'.\" :PUBLIC? TRUE)"
+    (CL:FUNCTION COPY) NULL)
+   (DEFINE-METHOD-OBJECT
     "(DEFMETHOD CLEAR ((SELF HEAP)) :DOCUMENTATION \"Clear `self' by setting its active length to zero.\" :PUBLIC? TRUE)"
     (CL:FUNCTION CLEAR) NULL)
    (DEFINE-METHOD-OBJECT
@@ -3438,7 +3552,12 @@ element types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT).\")"
     "(DEFMETHOD (EMPTY? BOOLEAN) ((SELF HEAP)) :DOCUMENTATION \"Return TRUE if `self' is empty.\" :PUBLIC? TRUE)"
     (CL:FUNCTION EMPTY?) NULL)
    (DEFINE-METHOD-OBJECT
-    "(DEFMETHOD (HEAP-ROOT (LIKE (ANY-VALUE SELF))) ((SELF HEAP)) :DOCUMENTATION \"Return the root of `self' (NULL if `self' is empty).\" :PUBLIC? TRUE)"
+    "(DEFMETHOD (LAST (LIKE (ANY-VALUE SELF))) ((SELF HEAP)) :DOCUMENTATION \"Return the last item in the heap `self' which will be the
+largest or best item if `self' is a sorted min-heap with a '<' predicate.\" :PUBLIC? TRUE)"
+    (CL:FUNCTION LAST) NULL)
+   (DEFINE-METHOD-OBJECT
+    "(DEFMETHOD (HEAP-ROOT (LIKE (ANY-VALUE SELF))) ((SELF HEAP)) :DOCUMENTATION \"Return the root of `self' (NULL if `self' is empty).
+The root contains the minimum element of a min-heap with '<' predicate.\" :PUBLIC? TRUE)"
     (CL:FUNCTION HEAP-ROOT) NULL)
    (DEFINE-METHOD-OBJECT
     "(DEFMETHOD (FAST-HEAP-ROOT (LIKE (ANY-VALUE SELF))) ((SELF HEAP)) :DOCUMENTATION \"Return the root of `self' which is assumed to be non-empty.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (NTH SELF 0)))"
@@ -3462,9 +3581,10 @@ a Min-heap if `self's `predicate' has `<' semantics; otherwise as a Max-heap.\" 
    (DEFINE-METHOD-OBJECT
     "(DEFMETHOD INSERT-IF-BETTER ((SELF HEAP) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Insert `value' into `self' and restore the heap property.
 If `self' has available room, simply insert `value'.  If the heap is full, only
-insert `value' if it is better than the current root (i.e., the minimum of `self'
-if `self's `predicate' has `<' semantics).  In that case, replace the root of
-`self' and restore the heap property.  This is useful to build and maintain a
+insert `value' if it is better than the current root (i.e., if `value' is
+greater than the minimum of `self' for the case of a min-heap where `self's
+`predicate' has `<' semantics).  In that case, replace the root of `self'
+and restore the heap property.  This is useful to build and maintain a
 heap with some top-N elements (relative to `predicate') where the root (or
 minimum) of `self' is the currently weakest element at the end of the list.\" :PUBLIC? TRUE)"
     (CL:FUNCTION INSERT-IF-BETTER) NULL)
@@ -3610,23 +3730,7 @@ to corruption or undefined results.\" :PUBLIC? TRUE)"
    (DEFINE-METHOD-OBJECT
     "(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF KEY-VALUE-MAP)) :DOCUMENTATION \"Return an `equal?' hash code for `self'.  Note that this
 is O(N) in the number of entries of `self'.\" :PUBLIC? TRUE)"
-    (CL:FUNCTION EQUAL-HASH-CODE) NULL)
-   (DEFINE-FUNCTION-OBJECT "HASH-SET"
-    "(DEFUN (HASH-SET HASH-SET) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return an `eql?' HASH-SET containing `values'.\" :PUBLIC? TRUE)"
-    (CL:FUNCTION HASH-SET) NULL)
-   (DEFINE-FUNCTION-OBJECT "COERCE-TO-HASH-SET"
-    "(DEFUN (COERCE-TO-HASH-SET HASH-SET) ((SELF OBJECT) (EQUALTEST? BOOLEAN)) :DOCUMENTATION \"Coerce the collection `self' into a HASH-SET.  Use an
-equal test if `equalTest?' is TRUE (`equalTest?' will be ignored if `self'
-already is a HASH-SET).\" :PUBLIC? TRUE)"
-    (CL:FUNCTION COERCE-TO-HASH-SET) NULL)
-   (DEFINE-METHOD-OBJECT
-    "(DEFMETHOD (MEMBER? BOOLEAN) ((SELF HASH-SET) (OBJECT OBJECT)) :DOCUMENTATION \"Return TRUE iff `object' is a member of the set `self'.
-Uses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)"
-    (CL:FUNCTION MEMBER?) NULL)
-   (DEFINE-METHOD-OBJECT
-    "(DEFMETHOD INSERT ((SELF HASH-SET) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Add `value' to the set `self' unless it is already a member.
-Uses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)"
-    (CL:FUNCTION INSERT) NULL))
+    (CL:FUNCTION EQUAL-HASH-CODE) NULL))
   :VOID)
 
 (CL:DEFUN STARTUP-COLLECTIONS ()
@@ -3642,6 +3746,22 @@ Uses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\"
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7) (HELP-STARTUP-COLLECTIONS3)
     (HELP-STARTUP-COLLECTIONS4)
+    (DEFINE-FUNCTION-OBJECT "HASH-SET"
+     "(DEFUN (HASH-SET HASH-SET) (|&REST| (VALUES OBJECT)) :DOCUMENTATION \"Return an `eql?' HASH-SET containing `values'.\" :PUBLIC? TRUE)"
+     (CL:FUNCTION HASH-SET) NULL)
+    (DEFINE-FUNCTION-OBJECT "COERCE-TO-HASH-SET"
+     "(DEFUN (COERCE-TO-HASH-SET HASH-SET) ((SELF OBJECT) (EQUALTEST? BOOLEAN)) :DOCUMENTATION \"Coerce the collection `self' into a HASH-SET.  Use an
+equal test if `equalTest?' is TRUE (`equalTest?' will be ignored if `self'
+already is a HASH-SET).\" :PUBLIC? TRUE)"
+     (CL:FUNCTION COERCE-TO-HASH-SET) NULL)
+    (DEFINE-METHOD-OBJECT
+     "(DEFMETHOD (MEMBER? BOOLEAN) ((SELF HASH-SET) (OBJECT OBJECT)) :DOCUMENTATION \"Return TRUE iff `object' is a member of the set `self'.
+Uses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)"
+     (CL:FUNCTION MEMBER?) NULL)
+    (DEFINE-METHOD-OBJECT
+     "(DEFMETHOD INSERT ((SELF HASH-SET) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Add `value' to the set `self' unless it is already a member.
+Uses an `eql?' test by default or `equal?' if `equal-test?' of `self' is TRUE.\" :PUBLIC? TRUE)"
+     (CL:FUNCTION INSERT) NULL)
     (DEFINE-METHOD-OBJECT
      "(DEFMETHOD (REMOVE (LIKE SELF)) ((SELF HASH-SET) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Destructively remove `value' from the set `self' if it is a member and
 return `self'.  Uses an `eql?' test by default or `equal?' if `equal-test?' of

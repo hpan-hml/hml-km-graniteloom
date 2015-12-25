@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: generate.ste,v 1.20 2010/09/09 23:14:42 hans Exp
+;;; Version: generate.ste,v 1.23 2014/04/15 23:07:37 hans Exp
 
 ;;; Routines that generate a source expression for a logic object
 
@@ -64,14 +64,13 @@
   :public-slots
   ((offending-term :type OBJECT :required? TRUE)))
 
-(defun (generate-expression OBJECT) 
-       ((self LOGIC-OBJECT) (canonicalizeVariableNames? BOOLEAN))
-  :public? TRUE
+(defun (generate-expression OBJECT) ((self LOGIC-OBJECT) (canonicalizeVariableNames? BOOLEAN))
   :documentation "Return an s-expression representing the source expression for 'self'."
-  (special
-   ((*canonicalVariableNameMapping* 
-     (only-if canonicalizeVariableNames? (new KEY-VALUE-LIST)))
-    (*canonicalVariableCounter* -1))
+  :public? TRUE
+  (special ((*canonicalVariableNameMapping* 
+             (only-if canonicalizeVariableNames? (new KEY-VALUE-LIST)))
+            (*canonicalVariableCounter* -1)
+            (*printQuantifiedObjectsStack* NIL))
    (return (generate-term self)) ))
   
 (defun (generate-name-of-variable SYMBOL) ((self PATTERN-VARIABLE))
@@ -90,7 +89,7 @@
 
 (defun (generate-one-variable OBJECT) ((self PATTERN-VARIABLE) (typed? BOOLEAN))
   ;; Return either the name of 'self', or if 'typed?' a list of its
-  ;;    name and type.
+  ;;    name and type.  Substitute the variable's value if indicated.
   (let ((value OBJECT NULL))
     (when (printing-justification?)
       (setq value (justification-argument-bound-to self NULL)))
@@ -98,7 +97,8 @@
     (when (null? value)
       (setq value (safe-argument-bound-to self)))
     (if (and (defined? value)
-             (not (eql? value self)))
+             (not (eql? value self))
+             (not (quantified-object-variable? self)))
         ;; substitute the binding instead of printing the variable:
         (return (generate-term value))
       (let ((name (generate-name-of-variable self)))
@@ -107,10 +107,25 @@
             (return (bquote (& name & (symbolize (logical-type self)))))
           (return name))))))
 
+(defun (generate-one-quantified-variable OBJECT) ((self PATTERN-VARIABLE) (typed? BOOLEAN))
+  ;; Return either the name of 'self', or if 'typed?' a list of its
+  ;;    name and type.  Does never substitute a variable value.
+  (let ((name (generate-name-of-variable self)))
+    (if (and typed?
+             (not (eql? (logical-type self) @THING)))
+        (return (bquote (& name & (symbolize (logical-type self)))))
+      (return name))))
+
 (defun (generate-variables CONS) ((vector VECTOR) (typed? BOOLEAN))
   ;; Return a list of typed variables.
   (let ((result NIL))
     (foreach v in vector collect (generate-one-variable v typed?) into result)
+    (return result) ))
+
+(defun (generate-quantified-variables CONS) ((vector VECTOR) (typed? BOOLEAN))
+  ;; Return a list of variables, typed if `typed?' is true.
+  (let ((result NIL))
+    (foreach v in vector collect (generate-one-quantified-variable v typed?) into result)
     (return result) ))
 
 ;; THIS IS PROBABLY WRONG:  -rmm
@@ -149,9 +164,12 @@
       (return (bquote (& operator && members)))))
 |#
    (otherwise
-      (return
-        (bquote (kappa & (generate-variables (io-variables self) TRUE)
-                  & (generate-description-proposition self FALSE)))))))
+    (push-quantified-object self)
+    (let ((result
+           (bquote (kappa & (generate-quantified-variables (io-variables self) TRUE)
+                     & (generate-description-proposition self FALSE)))))
+      (pop-quantified-object)
+      (return result)))))
 
 (defun (generate-arguments CONS) ((arguments VECTOR))
   ;; Generate source for a vector of arguments.
@@ -168,59 +186,81 @@
       (return (quote NULL)))
     (typecase operator
       (SURROGATE
-       (let ((description (get-description operator))
-             (symbol (symbolize operator)))
-         (if (defined? description)
-           (return (internal-stella-operator-to-kif symbol))
-           (return symbol))))
+       (if (eql? operator PL-KERNEL/@EQUIVALENT)
+           (return (quote =))
+         (return (symbolize operator))))
       (SYMBOL
        (return operator))) ))
   
 (defun (generate-proposition OBJECT) ((self PROPOSITION))
   ;; Generate source for a proposition.
-    (case (kind self)
-      ((:PREDICATE :FUNCTION :ISA :AND :OR :NOT)
-       (let ((operator (generate-operator self)))
-         (return (bquote (& operator
-                            && (generate-arguments (arguments self)))))))
-      (:EQUIVALENT
-       (return (bquote (= && (generate-arguments (arguments self))))))
-      (:EXISTS
-       (return (bquote (exists
-                        & (generate-variables (io-variables self) FALSE)
+  (case (kind self)
+    ((:PREDICATE :ISA :EQUIVALENT :AND :OR :NOT)
+     (let ((operator (generate-operator self)))
+       (return (bquote (& operator
+                          && (generate-arguments (arguments self)))))))
+    (:FUNCTION
+     (return (generate-function-proposition self)))
+    (:EXISTS
+      (push-quantified-object self)
+      (let ((result
+             (bquote (exists
+                        & (generate-quantified-variables (io-variables self) FALSE)
                         & (generate-proposition (nth (arguments self) 0))))))
-      (:FORALL
-        (let ((forward? (not (backward-only? self)))
-              (arrow (symbolize (choose-implication-operator self forward?))))
-          (return
-            (bquote
-             (forall & (generate-variables (io-variables self) FALSE)
-               (& arrow
-                  & (generate-proposition
-                     (nth (arguments self) (choose forward? 0 1)))
-                  & (generate-proposition
-                     (nth (arguments self) (choose forward? 1 0)))))))))
-      (:IMPLIES
-       (return (generate-IMPLIES-proposition self)))
-      (:FAIL
-       (return (bquote (FAIL && (generate-arguments (arguments self))))))
-      (:CONSTANT (return (generate-operator self)))) )
+        (pop-quantified-object)
+        (return result)))
+    (:FORALL
+      (push-quantified-object self)
+      (let ((forward? (not (backward-only? self)))
+            (arrow (symbolize (choose-implication-operator self forward?)))
+            (result
+             (bquote
+              (forall & (generate-quantified-variables (io-variables self) FALSE)
+                (& arrow
+                   & (generate-proposition
+                      (nth (arguments self) (choose forward? 0 1)))
+                   & (generate-proposition
+                      (nth (arguments self) (choose forward? 1 0))))))))
+        (pop-quantified-object)
+        (return result)))
+    (:IMPLIES
+     (return (generate-IMPLIES-proposition self)))
+    (:FAIL
+     (return (bquote (FAIL && (generate-arguments (arguments self))))))
+    (:CONSTANT (return (generate-operator self)))) )
 
 (defun (generate-function-as-term CONS) ((self PROPOSITION))
   ;; Return source for 'self' denoting a skolemized function.
-  (let ((arguments NIL))
-    (foreach arg in (but-last (arguments self))
-             collect (generate-term arg) into arguments)
+  (let ((args (arguments self))
+        (arguments NIL))
+    (foreach i in (interval 0 (- (length args) 2))
+        collect (generate-term (nth args i)) into arguments)
     (return (bquote (& (generate-operator self) && arguments))) ))
+
+(defun (generate-function-proposition CONS) ((self PROPOSITION))
+  ;; Return source for 'self'.  This emulates the behavior
+  ;; of `print-kif-function-proposition' and `print-skolem'
+  ;; on the last argument.  That is, this will print the value
+  ;; of the last arg if it is defined, hence, the function prop
+  ;; and the associated equivalence prop will look identical.
+  (let ((result (generate-function-as-term self))
+        (lastArg (last (arguments self)))
+        (lastArgValue (innermost-of lastArg)))
+    (if (and (defined? lastArgValue)
+             (not (eql? lastArgValue lastArg)))
+        (setq lastArg (generate-term lastArgValue))
+      (setq lastArg (generate-term lastArg)))
+    (if *printFunctionsAsRelations?*
+        (return (bquote (&& result & lastArg)))
+      (return (bquote (= & result & lastArg))))))
 
 (defun (generate-skolem OBJECT) ((self SKOLEM))
   ;; Return source for the skolem term 'self'.
   (cond
    ((defined? (native-value-of self))
     (return (generate-term (native-value-of self))))
-   ((and (defined? (defining-proposition self))
-         (null? (variable-value self)))
-       (return (generate-function-as-term (defining-proposition self))))
+   ((defined? (defining-proposition self))
+    (return (generate-function-as-term (defining-proposition self))))
    ((and (defined? (innermost-of self))
          ;; guards against infinite loops with some Cyc function props -
          ;;    there might be a more enlightened fix for this:
@@ -354,7 +394,9 @@ an error unless there is a surrogate-value-inverse link set."
                         (io-variables head)
                         (io-variables tail))
                        NULL)))
-      (setq headProp (generate-description-proposition head reversePolarity?)))
+      (push-quantified-object head)
+      (setq headProp (generate-description-proposition head reversePolarity?))
+      (pop-quantified-object))
     ;; Generate the tail:
     (special ((*skolemNameMappingTable*
                (choose (not mapHeadVariables?)
@@ -362,7 +404,9 @@ an error unless there is a surrogate-value-inverse link set."
                         (io-variables tail)
                         (io-variables head))
                        NULL)))
-      (setq tailProp (generate-description-proposition tail reversePolarity?)))
+      (push-quantified-object tail)
+      (setq tailProp (generate-description-proposition tail reversePolarity?))
+      (pop-quantified-object))
     (return
       (bquote
        (PL-KERNEL/forall & universals

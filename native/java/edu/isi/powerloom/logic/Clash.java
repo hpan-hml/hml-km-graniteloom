@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -50,6 +50,13 @@ import edu.isi.stella.javalib.StellaSpecialVariable;
 import edu.isi.stella.*;
 
 public class Clash extends LogicException {
+    /** The main proposition involved in the clash
+     */
+    public Proposition proposition;
+    /** The context in which the clash occurred
+     */
+    public Context context;
+
   public Clash (String message) {
     super(message);
   }
@@ -58,7 +65,33 @@ public class Clash extends LogicException {
     { Clash self = null;
 
       self = new Clash(message);
+      self.context = null;
+      self.proposition = null;
       return (self);
+    }
+  }
+
+  public static void handleClashException(Clash clashexception) {
+    { Proposition proposition = clashexception.proposition;
+      Context context = Logic.getWorldState(clashexception.context);
+      Proposition incoherentprop = Logic.createProposition(Logic.SYM_STELLA_PREDICATE, 2);
+
+      incoherentprop.operator = Logic.SGT_PL_KERNEL_KB_INCOHERENT;
+      (incoherentprop.arguments.theArray)[0] = context;
+      (incoherentprop.arguments.theArray)[1] = proposition;
+      incoherentprop = Proposition.fastenDownOneProposition(incoherentprop, false);
+      { ExceptionRecord self000 = ExceptionRecord.newExceptionRecord();
+
+        self000.exception = clashexception;
+        self000.context = context;
+        self000.module = context.baseModule;
+        KeyValueList.setDynamicSlotValue(incoherentprop.dynamicSlots, Logic.SYM_LOGIC_CLASH_EXCEPTIONS, Cons.cons(self000, incoherentprop.clashExceptions()), null);
+      }
+      Proposition.updatePropositionTruthValue(incoherentprop, Logic.KWD_ASSERT_TRUE);
+      if (!((Logic.accessBinaryValue(Logic.getDescription(Logic.SGT_PL_KERNEL_KB_INCOHERENT), Logic.SGT_PL_KERNEL_KB_GOES_TRUE_DEMON) != null) ||
+          (Logic.accessBinaryValue(Logic.getDescription(Logic.SGT_PL_KERNEL_KB_INCOHERENT), Logic.SGT_PL_KERNEL_KB_UPDATE_PROPOSITION_DEMON) != null))) {
+        throw ((Clash)(clashexception.fillInStackTrace()));
+      }
     }
   }
 

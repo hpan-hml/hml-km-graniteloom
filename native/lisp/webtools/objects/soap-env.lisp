@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -57,10 +57,10 @@
 (CL:DEFVAR |SYM-SOAP-ENV-SOAP-ENV-faultstring| NULL)
 (CL:DEFVAR |SYM-SOAP-ENV-SOAP-ENV-faultactor| NULL)
 (CL:DEFVAR |SYM-SOAP-ENV-SOAP-ENV-detail| NULL)
-(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-faultcode| NULL)
-(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-faultstring| NULL)
-(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-faultactor| NULL)
-(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-detail| NULL)
+(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-FaultCode| NULL)
+(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-FaultString| NULL)
+(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-FaultActor| NULL)
+(CL:DEFVAR |SGT-SOAP-ENV-SOAP-ENV-Detail| NULL)
 (CL:DEFVAR SYM-SOAP-ENV-SOAP-ENV-STARTUP-SOAP-ENV NULL)
 (CL:DEFVAR SYM-SOAP-ENV-STELLA-METHOD-STARTUP-CLASSNAME NULL)
 
@@ -71,8 +71,9 @@
 ;;; (DEFCLASS Envelope ...)
 
 (CL:DEFCLASS |Envelope| (|XMLObject|)
-  ((|encodingStyle| :TYPE CL:SIMPLE-STRING :INITFORM STELLA::NULL-STRING
-    :ALLOCATION :INSTANCE :ACCESSOR |%encodingStyle|)
+  ((|encodingStyle| :TYPE CL:SIMPLE-STRING :INITFORM
+    STELLA::NULL-STRING :ALLOCATION :INSTANCE :ACCESSOR
+    |%encodingStyle|)
    (|body| :ALLOCATION :INSTANCE :ACCESSOR |%body|)))
 
 (CL:DEFUN |new-Envelope| ()
@@ -91,7 +92,8 @@
 (CL:DEFUN |access-Envelope-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-SOAP-ENV-SOAP-ENV-encodingStyle|)
-    (CL:IF SETVALUE? (CL:SETF (|%encodingStyle| SELF) (%WRAPPER-VALUE VALUE))
+    (CL:IF SETVALUE?
+     (CL:SETF (|%encodingStyle| SELF) (%WRAPPER-VALUE VALUE))
      (CL:SETQ VALUE (WRAP-STRING (|%encodingStyle| SELF)))))
    ((CL:EQ SLOTNAME |SYM-SOAP-ENV-XML-OBJECTS-body|)
     (CL:IF SETVALUE? (CL:SETF (|%body| SELF) VALUE)
@@ -109,7 +111,8 @@
   ((|contents| :ALLOCATION :INSTANCE :ACCESSOR |%contents|)))
 
 (CL:DEFUN |new-Body| ()
-  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |Body|)))
+  (CL:LET* ((SELF NULL))
+   (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |Body|)))
    (CL:SETF (|%cdataContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%textContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%contents| SELF) NULL) SELF))
@@ -138,12 +141,13 @@
    (|detail| :ALLOCATION :INSTANCE :ACCESSOR |%detail|)))
 
 (CL:DEFUN |new-Fault| ()
-  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |Fault|)))
+  (CL:LET* ((SELF NULL))
+   (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |Fault|)))
    (CL:SETF (|%cdataContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%textContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%detail| SELF) NULL) (CL:SETF (|%faultactor| SELF) NULL)
-   (CL:SETF (|%faultstring| SELF) NULL) (CL:SETF (|%faultcode| SELF) NULL)
-   SELF))
+   (CL:SETF (|%faultstring| SELF) NULL)
+   (CL:SETF (|%faultcode| SELF) NULL) SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF |Fault|))
   |SGT-SOAP-ENV-SOAP-ENV-Fault|)
@@ -169,63 +173,64 @@
      (CL:ERROR (NEW-STELLA-EXCEPTION (THE-STRING-READER STREAM-000))))))
   VALUE)
 
-;;; (DEFCLASS faultcode ...)
+;;; (DEFCLASS FaultCode ...)
 
-(CL:DEFCLASS |faultcode| (|XMLObject|)
+(CL:DEFCLASS |FaultCode| (|XMLObject|)
   ())
 
-(CL:DEFUN |new-faultcode| ()
+(CL:DEFUN |new-FaultCode| ()
   (CL:LET* ((SELF NULL))
-   (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |faultcode|)))
+   (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |FaultCode|)))
    (CL:SETF (|%cdataContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%textContent| SELF) STELLA::NULL-STRING) SELF))
 
-(CL:DEFMETHOD PRIMARY-TYPE ((SELF |faultcode|))
-  |SGT-SOAP-ENV-SOAP-ENV-faultcode|)
+(CL:DEFMETHOD PRIMARY-TYPE ((SELF |FaultCode|))
+  |SGT-SOAP-ENV-SOAP-ENV-FaultCode|)
 
-;;; (DEFCLASS faultstring ...)
+;;; (DEFCLASS FaultString ...)
 
-(CL:DEFCLASS |faultstring| (|XMLObject|)
+(CL:DEFCLASS |FaultString| (|XMLObject|)
   ())
 
-(CL:DEFUN |new-faultstring| ()
+(CL:DEFUN |new-FaultString| ()
   (CL:LET* ((SELF NULL))
-   (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |faultstring|)))
+   (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |FaultString|)))
    (CL:SETF (|%cdataContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%textContent| SELF) STELLA::NULL-STRING) SELF))
 
-(CL:DEFMETHOD PRIMARY-TYPE ((SELF |faultstring|))
-  |SGT-SOAP-ENV-SOAP-ENV-faultstring|)
+(CL:DEFMETHOD PRIMARY-TYPE ((SELF |FaultString|))
+  |SGT-SOAP-ENV-SOAP-ENV-FaultString|)
 
-;;; (DEFCLASS faultactor ...)
+;;; (DEFCLASS FaultActor ...)
 
-(CL:DEFCLASS |faultactor| (|XMLObject|)
+(CL:DEFCLASS |FaultActor| (|XMLObject|)
   ())
 
-(CL:DEFUN |new-faultactor| ()
+(CL:DEFUN |new-FaultActor| ()
   (CL:LET* ((SELF NULL))
-   (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |faultactor|)))
+   (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |FaultActor|)))
    (CL:SETF (|%cdataContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%textContent| SELF) STELLA::NULL-STRING) SELF))
 
-(CL:DEFMETHOD PRIMARY-TYPE ((SELF |faultactor|))
-  |SGT-SOAP-ENV-SOAP-ENV-faultactor|)
+(CL:DEFMETHOD PRIMARY-TYPE ((SELF |FaultActor|))
+  |SGT-SOAP-ENV-SOAP-ENV-FaultActor|)
 
-;;; (DEFCLASS detail ...)
+;;; (DEFCLASS Detail ...)
 
-(CL:DEFCLASS |detail| (|XMLObject|)
+(CL:DEFCLASS |Detail| (|XMLObject|)
   ((|contents| :ALLOCATION :INSTANCE :ACCESSOR |%contents|)))
 
-(CL:DEFUN |new-detail| ()
-  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |detail|)))
+(CL:DEFUN |new-Detail| ()
+  (CL:LET* ((SELF NULL))
+   (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE |Detail|)))
    (CL:SETF (|%cdataContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%textContent| SELF) STELLA::NULL-STRING)
    (CL:SETF (|%contents| SELF) NULL) SELF))
 
-(CL:DEFMETHOD PRIMARY-TYPE ((SELF |detail|))
-  |SGT-SOAP-ENV-SOAP-ENV-detail|)
+(CL:DEFMETHOD PRIMARY-TYPE ((SELF |Detail|))
+  |SGT-SOAP-ENV-SOAP-ENV-Detail|)
 
-(CL:DEFUN |access-detail-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
+(CL:DEFUN |access-Detail-Slot-Value| (SELF SLOTNAME VALUE SETVALUE?)
   (CL:COND
    ((CL:EQ SLOTNAME |SYM-SOAP-ENV-SOAP-ENV-contents|)
     (CL:IF SETVALUE? (CL:SETF (|%contents| SELF) VALUE)
@@ -250,7 +255,8 @@
 ;;; (DEFUN (FAULT-MESSAGE? BOOLEAN) ...)
 
 (CL:DEFUN FAULT-MESSAGE? (|envelope|)
-  (ISA? (|%contents| (|%body| |envelope|)) |SGT-SOAP-ENV-SOAP-ENV-Fault|))
+  (ISA? (|%contents| (|%body| |envelope|))
+   |SGT-SOAP-ENV-SOAP-ENV-Fault|))
 
 ;;; (DEFUN (GET-FAULT Fault) ...)
 
@@ -286,14 +292,14 @@
      (INTERN-RIGID-SYMBOL-WRT-MODULE "faultactor" NULL 0))
     (CL:SETQ |SYM-SOAP-ENV-SOAP-ENV-detail|
      (INTERN-RIGID-SYMBOL-WRT-MODULE "detail" NULL 0))
-    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-faultcode|
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "faultcode" NULL 1))
-    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-faultstring|
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "faultstring" NULL 1))
-    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-faultactor|
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "faultactor" NULL 1))
-    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-detail|
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "detail" NULL 1))
+    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-FaultCode|
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "FaultCode" NULL 1))
+    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-FaultString|
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "FaultString" NULL 1))
+    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-FaultActor|
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "FaultActor" NULL 1))
+    (CL:SETQ |SGT-SOAP-ENV-SOAP-ENV-Detail|
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "Detail" NULL 1))
     (CL:SETQ SYM-SOAP-ENV-SOAP-ENV-STARTUP-SOAP-ENV
      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-SOAP-ENV" NULL 0))
     (CL:SETQ SYM-SOAP-ENV-STELLA-METHOD-STARTUP-CLASSNAME
@@ -304,7 +310,8 @@
      ((CLASS
        (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "Envelope"
         "(DEFCLASS Envelope (XMLObject) :PUBLIC-SLOTS ((encodingStyle :TYPE STRING :INITIALLY \"http://schemas.xmlsoap.org/soap/encoding/\") (body :TYPE Body)))")))
-     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS) (CL:FUNCTION |new-Envelope|))
+     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS)
+      (CL:FUNCTION |new-Envelope|))
      (CL:SETF (%CLASS-SLOT-ACCESSOR-CODE CLASS)
       (CL:FUNCTION |access-Envelope-Slot-Value|)))
     (CL:LET*
@@ -317,33 +324,37 @@
     (CL:LET*
      ((CLASS
        (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "Fault"
-        "(DEFCLASS Fault (XMLObject) :PUBLIC-SLOTS ((faultcode :TYPE faultcode) (faultstring :TYPE faultstring) (faultactor :TYPE faultactor) (detail :TYPE detail)))")))
-     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS) (CL:FUNCTION |new-Fault|))
+        "(DEFCLASS Fault (XMLObject) :PUBLIC-SLOTS ((faultcode :TYPE FaultCode) (faultstring :TYPE FaultString) (faultactor :TYPE FaultActor) (detail :TYPE Detail)))")))
+     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS)
+      (CL:FUNCTION |new-Fault|))
      (CL:SETF (%CLASS-SLOT-ACCESSOR-CODE CLASS)
       (CL:FUNCTION |access-Fault-Slot-Value|)))
     (CL:LET*
      ((CLASS
-       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "faultcode"
-        "(DEFCLASS faultcode (XMLObject))")))
-     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS) (CL:FUNCTION |new-faultcode|)))
-    (CL:LET*
-     ((CLASS
-       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "faultstring"
-        "(DEFCLASS faultstring (XMLObject))")))
+       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "FaultCode"
+        "(DEFCLASS FaultCode (XMLObject))")))
      (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS)
-      (CL:FUNCTION |new-faultstring|)))
+      (CL:FUNCTION |new-FaultCode|)))
     (CL:LET*
      ((CLASS
-       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "faultactor"
-        "(DEFCLASS faultactor (XMLObject))")))
-     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS) (CL:FUNCTION |new-faultactor|)))
+       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "FaultString"
+        "(DEFCLASS FaultString (XMLObject))")))
+     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS)
+      (CL:FUNCTION |new-FaultString|)))
     (CL:LET*
      ((CLASS
-       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "detail"
-        "(DEFCLASS detail (XMLObject) :PUBLIC-SLOTS ((contents :TYPE XMLObject)))")))
-     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS) (CL:FUNCTION |new-detail|))
+       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "FaultActor"
+        "(DEFCLASS FaultActor (XMLObject))")))
+     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS)
+      (CL:FUNCTION |new-FaultActor|)))
+    (CL:LET*
+     ((CLASS
+       (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "Detail"
+        "(DEFCLASS Detail (XMLObject) :PUBLIC-SLOTS ((contents :TYPE XMLObject)))")))
+     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS)
+      (CL:FUNCTION |new-Detail|))
      (CL:SETF (%CLASS-SLOT-ACCESSOR-CODE CLASS)
-      (CL:FUNCTION |access-detail-Slot-Value|))))
+      (CL:FUNCTION |access-Detail-Slot-Value|))))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7)
     (DEFINE-FUNCTION-OBJECT "GET-BODY"
@@ -362,7 +373,8 @@
      "(DEFUN STARTUP-SOAP-ENV () :PUBLIC? TRUE)"
      (CL:FUNCTION STARTUP-SOAP-ENV) NULL)
     (CL:LET*
-     ((FUNCTION (LOOKUP-FUNCTION SYM-SOAP-ENV-SOAP-ENV-STARTUP-SOAP-ENV)))
+     ((FUNCTION
+       (LOOKUP-FUNCTION SYM-SOAP-ENV-SOAP-ENV-STARTUP-SOAP-ENV)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
       SYM-SOAP-ENV-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupSoapEnv") NULL-STRING-WRAPPER)))

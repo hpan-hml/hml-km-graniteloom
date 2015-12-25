@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -234,6 +234,7 @@ public class ControlFrame extends StandardObject {
               self001.proposition = proposition;
               subquerydescription = self001;
             }
+            Description.computeInternalVariables(subquerydescription);
             { Description temp000 = Description.findDuplicateDescription(subquerydescription);
 
               subquerydescription = ((temp000 != null) ? temp000 : subquerydescription);
@@ -243,7 +244,6 @@ public class ControlFrame extends StandardObject {
             Logic.$EVALUATIONMODE$.set(old$Evaluationmode$000);
           }
         }
-        Description.computeInternalVariables(subquerydescription);
         iovariablebindings = Vector.newVector(iovariables.length());
         truefalsequeryP = true;
         { Stella_Object var = null;
@@ -461,6 +461,25 @@ public class ControlFrame extends StandardObject {
     }
   }
 
+  public static void recordNegatedFailJustification(ControlFrame frame, Keyword lastmove) {
+    if (lastmove == Logic.KWD_UP_TRUE) {
+      { Justification antecedent = null;
+
+        if (frame.result != null) {
+          antecedent = ((Justification)(KeyValueList.dynamicSlotValue(frame.result.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)));
+        }
+        { Justification self000 = Justification.newJustification();
+
+          self000.inferenceRule = Logic.KWD_NEGATED_FAIL;
+          self000.antecedents = Cons.cons(antecedent, Stella.NIL);
+          ControlFrame.recordGoalJustification(frame, self000);
+        }
+      }
+    }
+    else {
+    }
+  }
+
   public static void recordFailJustification(ControlFrame frame, Keyword lastmove) {
     if (lastmove == Logic.KWD_UP_FAIL) {
       { Justification self000 = Justification.newJustification();
@@ -523,7 +542,7 @@ public class ControlFrame extends StandardObject {
             }
             if (collect000 == null) {
               {
-                collect000 = Cons.cons(((conjunct.state == Logic.KWD_POPPED) ? ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))).copy() : ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)))), Stella.NIL);
+                collect000 = Cons.cons(((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL);
                 if (antecedents == Stella.NIL) {
                   antecedents = collect000;
                 }
@@ -534,7 +553,7 @@ public class ControlFrame extends StandardObject {
             }
             else {
               {
-                collect000.rest = Cons.cons(((conjunct.state == Logic.KWD_POPPED) ? ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))).copy() : ((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null)))), Stella.NIL);
+                collect000.rest = Cons.cons(((Justification)(KeyValueList.dynamicSlotValue(conjunct.dynamicSlots, Logic.SYM_LOGIC_JUSTIFICATION, null))), Stella.NIL);
                 collect000 = collect000.rest;
               }
             }
@@ -758,28 +777,43 @@ public class ControlFrame extends StandardObject {
   }
 
   public static Keyword continueFailProof(ControlFrame frame, Keyword lastmove) {
-    if (frame.reversePolarityP) {
-      throw ((StellaException)(StellaException.newStellaException(":FAIL not implemented for negative polarity.").fillInStackTrace()));
-    }
     if (lastmove == Logic.KWD_DOWN) {
       ControlFrame.createChoicePoint(frame);
       KeyValueList.setDynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_INFERENCE_CUTOFF_REASON, null, null);
       return (Logic.KWD_MOVE_DOWN);
     }
     else if (lastmove == Logic.KWD_UP_TRUE) {
-      ControlFrame.setFrameTruthValue(frame, Logic.FALSE_TRUTH_VALUE);
-      PatternRecord.unbindVariablesBeginningAt(((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord, frame.choicePointUnbindingOffset);
-      if (frame.down != null) {
-        ControlFrame.popFramesUpTo(frame.down);
+      { Keyword result = (frame.reversePolarityP ? Logic.KWD_FINAL_SUCCESS : Logic.KWD_FAILURE);
+
+        if (frame.reversePolarityP) {
+          ControlFrame.setFrameTruthValue(frame, Logic.TRUE_TRUTH_VALUE);
+          if (((Boolean)(Logic.$RECORD_JUSTIFICATIONSp$.get())).booleanValue()) {
+            ControlFrame.recordNegatedFailJustification(frame, lastmove);
+          }
+        }
+        else {
+          ControlFrame.setFrameTruthValue(frame, Logic.FALSE_TRUTH_VALUE);
+        }
+        PatternRecord.unbindVariablesBeginningAt(((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentPatternRecord, frame.choicePointUnbindingOffset);
+        if (frame.down != null) {
+          ControlFrame.popFramesUpTo(frame.down);
+        }
+        return (result);
       }
-      return (Logic.KWD_FAILURE);
     }
     else if (lastmove == Logic.KWD_UP_FAIL) {
-      { Keyword result = Logic.KWD_FINAL_SUCCESS;
+      { Keyword result = (frame.reversePolarityP ? Logic.KWD_FAILURE : Logic.KWD_FINAL_SUCCESS);
 
         if (((Keyword)(KeyValueList.dynamicSlotValue(frame.dynamicSlots, Logic.SYM_LOGIC_INFERENCE_CUTOFF_REASON, null))) != null) {
           ControlFrame.setFrameTruthValue(frame, Logic.UNKNOWN_TRUTH_VALUE);
           result = Logic.KWD_FAILURE;
+        }
+        else if (frame.result.truthValue == Logic.INCONSISTENT_TRUTH_VALUE) {
+          ControlFrame.setFrameTruthValue(frame, Logic.INCONSISTENT_TRUTH_VALUE);
+          result = Logic.KWD_TERMINAL_FAILURE;
+        }
+        else if (frame.reversePolarityP) {
+          ControlFrame.setFrameTruthValue(frame, Logic.FALSE_TRUTH_VALUE);
         }
         else {
           ControlFrame.setFrameTruthValue(frame, Logic.TRUE_TRUTH_VALUE);
@@ -1109,7 +1143,7 @@ public class ControlFrame extends StandardObject {
               for (;index002 < length002; index002 = index002 + 1) {
                 disj = ((Proposition)((vector002.theArray)[index002]));
                 if (!(disj == subgoaldisjunct)) {
-                  assumption = Proposition.recursivelyFastenDownPropositions(((!negatedtruthvalueP) ? Proposition.inheritProposition(disj, KeyValueMap.newKeyValueMap()) : Logic.conjoinPropositions(Proposition.inheritAsTopLevelProposition(disj, KeyValueMap.newKeyValueMap()))), false);
+                  assumption = Proposition.recursivelyFastenDownPropositions((negatedtruthvalueP ? Logic.conjoinPropositions(Proposition.inheritAsTopLevelProposition(disj, KeyValueMap.newKeyValueMap())) : Proposition.inheritProposition(disj, KeyValueMap.newKeyValueMap())), false);
                   if ((Stella.$TRACED_KEYWORDS$ != null) &&
                       Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_GOAL_TREE)) {
                     {
@@ -1582,6 +1616,7 @@ public class ControlFrame extends StandardObject {
 
   public static Keyword tryIsaPropositionProof(ControlFrame frame) {
     { Proposition proposition = frame.proposition;
+      Surrogate surrogate = ((Surrogate)(proposition.operator));
       Vector arguments = proposition.arguments;
       Stella_Object memberarg = (arguments.theArray)[0];
       Stella_Object member = Logic.argumentBoundTo(memberarg);
@@ -1596,9 +1631,10 @@ public class ControlFrame extends StandardObject {
       if (member == null) {
         return (ControlFrame.tryScanCollectionProof(frame));
       }
-      if (Stella_Object.isaP(member, Logic.SGT_STELLA_LITERAL_WRAPPER)) {
-        { Surrogate surrogate = ((Surrogate)(proposition.operator));
-          boolean successP = Logic.logicalSubtypeOfP(Logic.logicalType(member), surrogate);
+      if (Stella_Object.isaP(member, Logic.SGT_STELLA_LITERAL_WRAPPER) ||
+          ((surrogate == Logic.SGT_LOGIC_PROPOSITION) ||
+           Logic.descriptionP(member))) {
+        { boolean successP = Logic.logicalSubtypeOfP(Logic.logicalType(member), surrogate);
 
           if (((Boolean)(Logic.$REVERSEPOLARITYp$.get())).booleanValue()) {
             successP = !successP;
@@ -2787,25 +2823,7 @@ public class ControlFrame extends StandardObject {
                     (truthvalue == Logic.DEFAULT_FALSE_TRUTH_VALUE);
 
                 Logic.printVerticalBars(ControlFrame.computeFrameDepth(frame) + 1);
-                System.out.print("CLSH: truth=");
-                if ((truthvalue == Logic.TRUE_TRUTH_VALUE) ||
-                    (truthvalue == Logic.DEFAULT_TRUE_TRUTH_VALUE)) {
-                  if (defaultP) {
-                    System.out.print("t");
-                  }
-                  else {
-                    System.out.print("T");
-                  }
-                }
-                else {
-                  if (defaultP) {
-                    System.out.print("f");
-                  }
-                  else {
-                    System.out.print("F");
-                  }
-                }
-                System.out.println();
+                System.out.println("CLSH: truth=" + TruthValue.truthValueToString(truthvalue, true));
               }
             }
             ControlFrame.unwindToChoicePoint(frame);
@@ -3556,7 +3574,7 @@ public class ControlFrame extends StandardObject {
             }
           }
           else {
-            System.out.println(frame.proposition);
+            System.out.println(frame.proposition.toString());
           }
 
         } finally {
@@ -3611,7 +3629,7 @@ public class ControlFrame extends StandardObject {
           if (printtimesP) {
             stream.print(" CLOCK: " + ((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentClockTicks + " START: " + self.startingClockTicks + " TICKS: " + self.allottedClockTicks);
           }
-          stream.print(" " + self.proposition + "]");
+          stream.print(((self.reversePolarityP ? " ~" : " ")) + self.proposition + "]");
         }
 
       } finally {
@@ -3665,6 +3683,13 @@ public class ControlFrame extends StandardObject {
         (Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_GOAL_TREE) ||
          Stella.$TRACED_KEYWORDS$.membP(Logic.KWD_GOAL_CACHES))) {
       System.out.println("*** Inference depth cutoff: depth=" + depth);
+    }
+    if (Stella_Object.traceKeywordP(Logic.KWD_GOAL_CUTOFFS) &&
+        (!Stella_Object.traceKeywordP(Logic.KWD_GOAL_TREE))) {
+      ControlFrame.traceGoalStack(frame);
+      if (!(Stella.yesOrNoP("**** Continue tracing? "))) {
+        Stella.dropTrace(Cons.cons(Logic.KWD_GOAL_CUTOFFS, Stella.NIL));
+      }
     }
     ((QueryIterator)(Logic.$QUERYITERATOR$.get())).triggeredDepthCutoffP = true;
     if ((Logic.$CACHE_SUCCEEDED_GOALSp$ ||
@@ -4925,7 +4950,7 @@ public class ControlFrame extends StandardObject {
     else if ((lastmove == Logic.KWD_UP_TRUE) ||
         (lastmove == Logic.KWD_UP_FAIL)) {
       if (Stella_Object.traceKeywordP(Logic.KWD_GOAL_TREE)) {
-        System.out.println(((FloatWrapper)(KeyValueList.dynamicSlotValue(((QueryIterator)(Logic.$QUERYITERATOR$.get())).dynamicSlots, Logic.SYM_LOGIC_LATEST_POSITIVE_SCORE, Stella.NULL_FLOAT_WRAPPER))).wrapperValue);
+        System.out.println("" + ((FloatWrapper)(KeyValueList.dynamicSlotValue(((QueryIterator)(Logic.$QUERYITERATOR$.get())).dynamicSlots, Logic.SYM_LOGIC_LATEST_POSITIVE_SCORE, Stella.NULL_FLOAT_WRAPPER))).wrapperValue);
       }
       if ((frame.currentStrategy == Logic.KWD_FULL_SUBQUERY) ||
           (frame.currentStrategy == Logic.KWD_ANTECEDENTS)) {
@@ -5213,9 +5238,51 @@ public class ControlFrame extends StandardObject {
     return (lastmove);
   }
 
+  public static void traceGoalStack(ControlFrame frame) {
+    if (frame == null) {
+      frame = ((QueryIterator)(Logic.$QUERYITERATOR$.get())).currentControlFrame;
+    }
+    { Cons frames = Cons.cons(frame, Stella.NIL);
+
+      loop000 : for (;;) {
+        frame = frame.up;
+        if (frame == null) {
+          break loop000;
+        }
+        else {
+          frames = Cons.cons(frame, frames);
+        }
+      }
+      { ControlFrame frm = null;
+        Cons iter000 = frames;
+        int i = Stella.NULL_INTEGER;
+        int iter001 = 1;
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest, iter001 = iter001 + 1) {
+          frm = ((ControlFrame)(iter000.value));
+          i = iter001;
+          { Object old$Printinframe$000 = Logic.$PRINTINFRAME$.get();
+
+            try {
+              Native.setSpecial(Logic.$PRINTINFRAME$, frm);
+              ControlFrame.traceGoalTree(frm, i, Logic.KWD_DOWN);
+
+            } finally {
+              Logic.$PRINTINFRAME$.set(old$Printinframe$000);
+            }
+          }
+        }
+      }
+    }
+  }
+
   public static void traceGoalTree(ControlFrame frame, int depth, Keyword lastmove) {
     if (lastmove == Logic.KWD_DOWN) {
       ControlFrame.unwindToChoicePointsBelowFrame(frame);
+    }
+    if (Logic.restrictedGoalTracingP() &&
+        (!ControlFrame.traceThisGoalP(frame, lastmove))) {
+      return;
     }
     if ((frame.state == Logic.KWD_ITERATIVE_FORALL) &&
         (lastmove == Logic.KWD_DOWN)) {
@@ -5349,34 +5416,7 @@ public class ControlFrame extends StandardObject {
         { TruthValue truthvalue = frame.truthValue;
 
           if (truthvalue != null) {
-            System.out.print("truth=");
-            if ((truthvalue == Logic.TRUE_TRUTH_VALUE) ||
-                (truthvalue == Logic.DEFAULT_TRUE_TRUTH_VALUE)) {
-              if ((truthvalue == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
-                  (truthvalue == Logic.DEFAULT_FALSE_TRUTH_VALUE)) {
-                System.out.print("t");
-              }
-              else {
-                System.out.print("T");
-              }
-            }
-            else if ((truthvalue == Logic.FALSE_TRUTH_VALUE) ||
-                (truthvalue == Logic.DEFAULT_FALSE_TRUTH_VALUE)) {
-              if ((truthvalue == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
-                  (truthvalue == Logic.DEFAULT_FALSE_TRUTH_VALUE)) {
-                System.out.print("f");
-              }
-              else {
-                System.out.print("F");
-              }
-            }
-            else if ((truthvalue == Logic.UNKNOWN_TRUTH_VALUE) ||
-                (truthvalue == null)) {
-              System.out.print("U");
-            }
-            else {
-              System.out.print("?");
-            }
+            System.out.print("truth=" + TruthValue.truthValueToString(truthvalue, true));
           }
         }
       }
@@ -5405,34 +5445,7 @@ public class ControlFrame extends StandardObject {
           System.out.print(":");
         }
         if (truthvalue != null) {
-          System.out.print(" truth=");
-          if ((truthvalue == Logic.TRUE_TRUTH_VALUE) ||
-              (truthvalue == Logic.DEFAULT_TRUE_TRUTH_VALUE)) {
-            if ((truthvalue == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
-                (truthvalue == Logic.DEFAULT_FALSE_TRUTH_VALUE)) {
-              System.out.print("t");
-            }
-            else {
-              System.out.print("T");
-            }
-          }
-          else if ((truthvalue == Logic.FALSE_TRUTH_VALUE) ||
-              (truthvalue == Logic.DEFAULT_FALSE_TRUTH_VALUE)) {
-            if ((truthvalue == Logic.DEFAULT_TRUE_TRUTH_VALUE) ||
-                (truthvalue == Logic.DEFAULT_FALSE_TRUTH_VALUE)) {
-              System.out.print("f");
-            }
-            else {
-              System.out.print("F");
-            }
-          }
-          else if ((truthvalue == Logic.UNKNOWN_TRUTH_VALUE) ||
-              (truthvalue == null)) {
-            System.out.print("U");
-          }
-          else {
-            System.out.print("?");
-          }
+          System.out.print(" truth=" + TruthValue.truthValueToString(truthvalue, true));
         }
       }
     }
@@ -5455,6 +5468,16 @@ public class ControlFrame extends StandardObject {
       }
       else {
       }
+    }
+  }
+
+  public static boolean traceThisGoalP(ControlFrame frame, Keyword lastmove) {
+    lastmove = lastmove;
+    if (frame.state == Logic.KWD_ATOMIC_GOAL) {
+      return (Logic.$TRACED_GOALS$.memberP(Logic.getDescription(frame.proposition.operator)));
+    }
+    else {
+      return (false);
     }
   }
 
@@ -5654,7 +5677,7 @@ public class ControlFrame extends StandardObject {
   }
 
   public static void printControlFrameStack(ControlFrame frame) {
-    System.out.println(frame);
+    System.out.println(frame.toString());
     if (frame.down != null) {
       ControlFrame.printControlFrameStack(frame.down);
     }

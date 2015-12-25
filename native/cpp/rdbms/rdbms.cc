@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -439,7 +439,7 @@ Cons* extractRdbmsOptions(Symbol* selfname, Cons* options, Cons*& _Return1) {
                 else {
                   { 
                     BIND_STELLA_SPECIAL(oMODULEo, Module*, rdbmsmodule);
-                    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+                    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
                     axioms = cons(helpDefineKeywordAxioms(selfname, ((Keyword*)(key)), value), axioms);
                   }
                 }
@@ -491,7 +491,7 @@ void assertRdbmsConnectionInfo(char* dbInstanceName, Cons* options) {
     IntegerWrapper* port = ((IntegerWrapper*)(theoptions->lookupWithDefault(KWD_RDBMS_PORT, lookupConfigurationProperty("DBPort", NULL, ((KeyValueList*)(config))))));
     StringWrapper* user = ((StringWrapper*)(theoptions->lookupWithDefault(KWD_RDBMS_USER, lookupConfigurationProperty("DBUser", NULL, ((KeyValueList*)(config))))));
     StringWrapper* password = ((StringWrapper*)(theoptions->lookupWithDefault(KWD_RDBMS_PASSWORD, lookupConfigurationProperty("DBPassword", NULL, ((KeyValueList*)(config))))));
-    Module* module = ((Module*)(theoptions->lookupWithDefault(KWD_RDBMS_MODULE, oMODULEo.get())));
+    Module* module = ((Module*)(theoptions->lookupWithDefault(KWD_RDBMS_MODULE, oMODULEo)));
     char* moduleName = module->moduleFullName;
     Object* dbObject = pli::sGetObject(dbInstanceName, moduleName, NULL);
     char* assertionTemplate = instantiateStringTemplate(stringConcatenate("(AND", ((((boolean)(jdbcConString)) &&
@@ -673,8 +673,8 @@ sdbc::Connection* connectToDatabase(LogicObject* database) {
         connection = sdbc::connect(consList(18, KWD_RDBMS_PROTOCOL, normalizeConnectionArgument(protocol), KWD_RDBMS_SERVER_TYPE, normalizeConnectionArgument(servertype), KWD_RDBMS_DSN, normalizeConnectionArgument(dsn), KWD_RDBMS_DB_NAME, normalizeConnectionArgument(dbname), KWD_RDBMS_USER, normalizeConnectionArgument(user), KWD_RDBMS_PASSWORD, normalizeConnectionArgument(password), KWD_RDBMS_HOST, normalizeConnectionArgument(host), KWD_RDBMS_PORT, normalizeConnectionArgument(port), KWD_RDBMS_CONNECTION_STRING, normalizeConnectionArgument(connectionstring)));
         connectionwrapper->wrapperValue = connection;
         { 
-          BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+          BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
+          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
           { 
             BIND_STELLA_SPECIAL(oINVISIBLEASSERTIONpo, boolean, true);
             pli::assertNaryProposition(cons(getRelation(SGT_RDBMS_RDBMS_DB_CONNECTION), cons(database, cons(connectionwrapper, NIL))), NULL, NULL);
@@ -697,8 +697,8 @@ void disconnectFromDatabase(LogicObject* database) {
           sdbc::disconnect(connection->wrapperValue);
         }
         { 
-          BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo.get()->baseModule);
-          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+          BIND_STELLA_SPECIAL(oMODULEo, Module*, oCONTEXTo->baseModule);
+          BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
           pli::retractNaryProposition(cons(getRelation(SGT_RDBMS_RDBMS_DB_CONNECTION), cons(database, cons(connection, NIL))), NULL, NULL);
         }
       }
@@ -1087,7 +1087,7 @@ RelationTableInfo* createRelationTableInfo(NamedDescription* relation) {
       RelationColumnInfo* columninfo = NULL;
       int arity = relation->ioVariables->length();
       Cons* columns = NIL;
-      Module* defaultmodule = oCONTEXTo.get()->baseModule;
+      Module* defaultmodule = oCONTEXTo->baseModule;
 
       tableinfo->database = accessBinaryValue(relation, SGT_RDBMS_RDBMS_RELATION_DATABASE);
       tableinfo->dbmsName = (((boolean)(tableinfo->database)) ? sdbc::getDbmsName(getConnectionFromDatabase(((LogicObject*)(tableinfo->database)))) : KWD_RDBMS_UNKNOWN);
@@ -1178,7 +1178,7 @@ Module* getModuleUsingReference(RelationColumnInfo* column, Cons* values) {
 
     if (!(((boolean)(module)))) {
       *(STANDARD_WARNING->nativeStream) << "Warning: " << "RDBMS: Column module " << "`" << modulename << "'" << " defined by reference for column " << "`" << column->columnName << "'" << " on relation " << "`" << column->tableInfo->relation << "'" << " is not defined; ignoring it..." << std::endl;
-      module = oCONTEXTo.get()->baseModule;
+      module = oCONTEXTo->baseModule;
     }
     return (module);
   }
@@ -1195,7 +1195,7 @@ RelationTableInfo* getRelationTableInfo(NamedDescription* tablerelation) {
         initializeMemoizationTable(SGT_RDBMS_RDBMS_F_GET_RELATION_TABLE_INFO_MEMO_TABLE_000, "(:MAX-VALUES 100 :TIMESTAMPS (:META-KB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_RDBMS_RDBMS_F_GET_RELATION_TABLE_INFO_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), tablerelation, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, NULL, -1);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), tablerelation, oCONTEXTo, MEMOIZED_NULL_VALUE, NULL, -1);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -1403,7 +1403,7 @@ Iterator* allocateDbtableSpecialistIterator(ControlFrame* frame) {
             initializeMemoizationTable(SGT_RDBMS_RDBMS_F_ALLOCATE_DBTABLE_SPECIALIST_ITERATOR_MEMO_TABLE_000, "(:MAX-VALUES 1000 :TIMESTAMPS (:META-KB-UPDATE :EXTERNAL-DB-UPDATE))");
             memoTable000 = ((MemoizationTable*)(SGT_RDBMS_RDBMS_F_ALLOCATE_DBTABLE_SPECIALIST_ITERATOR_MEMO_TABLE_000->surrogateValue));
           }
-          memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), getQueryPatternMemoizationKey(proposition), oCONTEXTo.get(), (oREVERSEPOLARITYpo.get() ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, 6);
+          memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), getQueryPatternMemoizationKey(proposition), oCONTEXTo, (oREVERSEPOLARITYpo ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, 6);
           memoizedValue000 = memoizedEntry000->value;
         }
         if (((boolean)(memoizedValue000))) {
@@ -1462,7 +1462,8 @@ Keyword* retrieveNextDbQuerySolution(ControlFrame* frame, Keyword* lastmove) {
             if (!((boolean)(col))) {
               nonullsP = false;
             }
-            else if (((boolean)(binding))) {
+            else if (((boolean)(binding)) &&
+                (!skolemP(binding))) {
               col = binding;
             }
             if (!((boolean)(collect000))) {
@@ -1484,8 +1485,8 @@ Keyword* retrieveNextDbQuerySolution(ControlFrame* frame, Keyword* lastmove) {
             }
           }
         }
-        if ((((boolean)(oQUERYITERATORo.get())) &&
-            ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) ||
+        if ((((boolean)(oQUERYITERATORo)) &&
+            ((boolean)(oQUERYITERATORo->partialMatchStrategy))) ||
             nonullsP) {
           if (bindVectorOfArgumentsToValuesP(arguments, result)) {
             break;
@@ -1494,6 +1495,14 @@ Keyword* retrieveNextDbQuerySolution(ControlFrame* frame, Keyword* lastmove) {
         if (!(iterator->nextP())) {
           return (KWD_RDBMS_FAILURE);
         }
+      }
+    }
+    if (oRECORD_JUSTIFICATIONSpo) {
+      { PrimitiveStrategy* self000 = newPrimitiveStrategy();
+
+        self000->strategy = KWD_RDBMS_DB_LOOKUP;
+        self000->antecedents = NIL;
+        recordGoalJustification(frame, self000);
       }
     }
     if (iterator->nextP()) {
@@ -1531,7 +1540,7 @@ Cons* getQueryPatternEvaluators(Surrogate* relationref) {
             initializeMemoizationTable(SGT_RDBMS_RDBMS_F_GET_QUERY_PATTERN_EVALUATORS_MEMO_TABLE_000, "(:MAX-VALUES 100 :TIMESTAMPS (:META-KB-UPDATE))");
             memoTable000 = ((MemoizationTable*)(SGT_RDBMS_RDBMS_F_GET_QUERY_PATTERN_EVALUATORS_MEMO_TABLE_000->surrogateValue));
           }
-          memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relationref, oCONTEXTo.get(), MEMOIZED_NULL_VALUE, NULL, -1);
+          memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), relationref, oCONTEXTo, MEMOIZED_NULL_VALUE, NULL, -1);
           memoizedValue000 = memoizedEntry000->value;
         }
         if (((boolean)(memoizedValue000))) {
@@ -1552,7 +1561,7 @@ Cons* getQueryPatternEvaluators(Surrogate* relationref) {
 
             for (triple, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
               triple = ((Cons*)(iter000->value));
-              { cpp_function_code code = functionCodeFromProcedure(triple->value);
+              { cpp_function_code code = functionCodeFromProcedure(((ComputedProcedure*)(triple->value)));
 
                 if (code != NULL) {
                   evaluatorforms = cons(consList(3, wrapFunctionCode(code), triple->rest->value, triple->rest->rest->value), evaluatorforms);
@@ -1854,7 +1863,7 @@ Iterator* sqlJoin(Proposition* proposition, LogicObject* database, Object* argum
         initializeMemoizationTable(SGT_RDBMS_RDBMS_F_SQL_JOIN_MEMO_TABLE_000, "(:MAX-VALUES 100 :TIMESTAMPS (:META-KB-UPDATE :EXTERNAL-DB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_RDBMS_RDBMS_F_SQL_JOIN_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), getQueryPatternMemoizationKey(proposition), oCONTEXTo.get(), (oREVERSEPOLARITYpo.get() ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, 6);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), getQueryPatternMemoizationKey(proposition), oCONTEXTo, (oREVERSEPOLARITYpo ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, 6);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -2132,7 +2141,7 @@ Iterator* sqlQuery(Proposition* proposition, LogicObject* database, Object* argu
         initializeMemoizationTable(SGT_RDBMS_RDBMS_F_SQL_QUERY_MEMO_TABLE_000, "(:MAX-VALUES 100 :TIMESTAMPS (:META-KB-UPDATE :EXTERNAL-DB-UPDATE))");
         memoTable000 = ((MemoizationTable*)(SGT_RDBMS_RDBMS_F_SQL_QUERY_MEMO_TABLE_000->surrogateValue));
       }
-      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), getQueryPatternMemoizationKey(proposition), oCONTEXTo.get(), (oREVERSEPOLARITYpo.get() ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, 6);
+      memoizedEntry000 = lookupMruMemoizedValue(((MruMemoizationTable*)(memoTable000)), getQueryPatternMemoizationKey(proposition), oCONTEXTo, (oREVERSEPOLARITYpo ? TRUE_WRAPPER : FALSE_WRAPPER), MEMOIZED_NULL_VALUE, 6);
       memoizedValue000 = memoizedEntry000->value;
     }
     if (((boolean)(memoizedValue000))) {
@@ -2220,7 +2229,7 @@ Keyword* bindNextDatabaseTupleToArguments(ControlFrame* frame, int firstargindex
   { Vector* arguments = frame->proposition->arguments;
     int nofoutputs = arguments->length() - firstargindex;
     Iterator* iterator = ((Iterator*)(dynamicSlotValue(frame->dynamicSlots, SYM_RDBMS_STELLA_ITERATOR, NULL)));
-    PatternRecord* patternrecord = oQUERYITERATORo.get()->currentPatternRecord;
+    PatternRecord* patternrecord = oQUERYITERATORo->currentPatternRecord;
     int ubstackoffset = patternrecord->topUnbindingStackOffset;
     boolean checkedunboundoutputsP = false;
 
@@ -2241,7 +2250,7 @@ Keyword* bindNextDatabaseTupleToArguments(ControlFrame* frame, int firstargindex
             output = ((StringWrapper*)(iter000->value));
             i = iter001;
             if (!collectionValuedConstraintP(argumentBoundTo((arguments->theArray)[i]))) {
-              if (!bindArgumentToValueP((arguments->theArray)[i], coerceStringToPowerloomObject(unwrapString(output), getDescription(logicalType((arguments->theArray)[i])), oMODULEo.get(), false), true)) {
+              if (!bindArgumentToValueP((arguments->theArray)[i], coerceStringToPowerloomObject(unwrapString(output), getDescription(logicalType((arguments->theArray)[i])), oMODULEo, false), true)) {
                 alwaysP000 = false;
                 break;
               }
@@ -2432,7 +2441,7 @@ Object* coerceStringToPowerloomObject(char* value, NamedDescription* type, Modul
       result = findOrCreateInstance(value, type, module, localP);
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         assertIsaProposition(result, typesurrogate);
       }
     }
@@ -2507,7 +2516,9 @@ Object* findOrCreateInstance(char* name, NamedDescription* type, Module* module,
       }
     }
     else if (!((boolean)(instanceref))) {
-      instanceref = internSurrogateInModule(name, module, localP);
+      if (!(name[0] == '(')) {
+        instanceref = internSurrogateInModule(name, module, localP);
+      }
     }
     typeref = objectSurrogate(type);
     if (typeref == SGT_RDBMS_STELLA_THING) {
@@ -2515,8 +2526,17 @@ Object* findOrCreateInstance(char* name, NamedDescription* type, Module* module,
     }
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, module);
-      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
-      return (createLogicInstance(instanceref, typeref));
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
+      if (((boolean)(instanceref))) {
+        return (createLogicInstance(instanceref, typeref));
+      }
+      else {
+        { Object* skolem = evaluateTerm(readSExpressionFromString(name));
+
+          assertIsaProposition(skolem, typeref);
+          return (skolem);
+        }
+      }
     }
   }
 }
@@ -2621,7 +2641,7 @@ void dbRelationGoesTrue(Proposition* proposition) {
   { Surrogate* baseRelation = getPropositionBaseOperator(proposition);
     sdbc::Connection* connection = getConnectionFromPredicate(baseRelation);
 
-    if (oCLIPPINGENABLEDpo.get() &&
+    if (oCLIPPINGENABLEDpo &&
         functionP(getDescription(baseRelation))) {
       sdbc::executeSql(connection, wrapString(createSqlAssertionFromProposition(proposition, KWD_RDBMS_CLIP)), NIL);
     }
@@ -2770,8 +2790,11 @@ void helpStartupRdbms2() {
     SGT_RDBMS_RDBMS_DATABASE = ((Surrogate*)(internRigidSymbolWrtModule("DATABASE", NULL, 1)));
     SGT_RDBMS_RDBMS_F_ALLOCATE_DBTABLE_SPECIALIST_ITERATOR_MEMO_TABLE_000 = ((Surrogate*)(internRigidSymbolWrtModule("F-ALLOCATE-DBTABLE-SPECIALIST-ITERATOR-MEMO-TABLE-000", NULL, 1)));
     KWD_RDBMS_FAILURE = ((Keyword*)(internRigidSymbolWrtModule("FAILURE", NULL, 2)));
+    KWD_RDBMS_DB_LOOKUP = ((Keyword*)(internRigidSymbolWrtModule("DB-LOOKUP", NULL, 2)));
     KWD_RDBMS_CONTINUING_SUCCESS = ((Keyword*)(internRigidSymbolWrtModule("CONTINUING-SUCCESS", NULL, 2)));
     KWD_RDBMS_FINAL_SUCCESS = ((Keyword*)(internRigidSymbolWrtModule("FINAL-SUCCESS", NULL, 2)));
+    KWD_RDBMS_TECHNICAL = ((Keyword*)(internRigidSymbolWrtModule("TECHNICAL", NULL, 2)));
+    KWD_RDBMS_LAY = ((Keyword*)(internRigidSymbolWrtModule("LAY", NULL, 2)));
     SYM_RDBMS_RDBMS_pREL = ((Symbol*)(internRigidSymbolWrtModule("?REL", NULL, 0)));
     SYM_RDBMS_RDBMS_pEV = ((Symbol*)(internRigidSymbolWrtModule("?EV", NULL, 0)));
     SYM_RDBMS_RDBMS_pDB = ((Symbol*)(internRigidSymbolWrtModule("?DB", NULL, 0)));
@@ -2799,14 +2822,14 @@ void helpStartupRdbms2() {
     KWD_RDBMS_TERMINAL_FAILURE = ((Keyword*)(internRigidSymbolWrtModule("TERMINAL-FAILURE", NULL, 2)));
     SGT_RDBMS_RDBMS_SQL_DATABASE = ((Surrogate*)(internRigidSymbolWrtModule("SQL-DATABASE", NULL, 1)));
     KWD_RDBMS_EXTERNAL_DB_UPDATE = ((Keyword*)(internRigidSymbolWrtModule("EXTERNAL-DB-UPDATE", NULL, 2)));
-    SGT_RDBMS_LOGIC_NAMED_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("NAMED-DESCRIPTION", getStellaModule("/LOGIC", true), 1)));
-    SGT_RDBMS_STELLA_TRUE = ((Surrogate*)(internRigidSymbolWrtModule("TRUE", getStellaModule("/STELLA", true), 1)));
-    SGT_RDBMS_STELLA_FALSE = ((Surrogate*)(internRigidSymbolWrtModule("FALSE", getStellaModule("/STELLA", true), 1)));
   }
 }
 
 void helpStartupRdbms3() {
   {
+    SGT_RDBMS_LOGIC_NAMED_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("NAMED-DESCRIPTION", getStellaModule("/LOGIC", true), 1)));
+    SGT_RDBMS_STELLA_TRUE = ((Surrogate*)(internRigidSymbolWrtModule("TRUE", getStellaModule("/STELLA", true), 1)));
+    SGT_RDBMS_STELLA_FALSE = ((Surrogate*)(internRigidSymbolWrtModule("FALSE", getStellaModule("/STELLA", true), 1)));
     SGT_RDBMS_STELLA_THING = ((Surrogate*)(internRigidSymbolWrtModule("THING", getStellaModule("/STELLA", true), 1)));
     KWD_RDBMS_CLIP = ((Keyword*)(internRigidSymbolWrtModule("CLIP", NULL, 2)));
     KWD_RDBMS_ASSERT = ((Keyword*)(internRigidSymbolWrtModule("ASSERT", NULL, 2)));
@@ -2891,7 +2914,7 @@ void helpStartupRdbms4() {
 void startupRdbms() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/RDBMS", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupRdbms1();
       helpStartupRdbms2();
@@ -2942,6 +2965,8 @@ void startupRdbms() {
       safeImportSymbol(SYM_RDBMS_RDBMS_DEFTABLE, getStellaModule("PL-KERNEL", true));
       safeImportSymbol(SYM_RDBMS_RDBMS_DEFDB, getStellaModule("PL-KERNEL", true));
       safeImportSymbol(SYM_RDBMS_RDBMS_DEFQUERY, getStellaModule("PL-KERNEL", true));
+      defineExplanationPhrase(KWD_RDBMS_DB_LOOKUP, KWD_RDBMS_TECHNICAL, "by database lookup", 0);
+      defineExplanationPhrase(KWD_RDBMS_DB_LOOKUP, KWD_RDBMS_LAY, "because it is stored in database", 0);
     }
   }
 }
@@ -3122,9 +3147,15 @@ Surrogate* SGT_RDBMS_RDBMS_F_ALLOCATE_DBTABLE_SPECIALIST_ITERATOR_MEMO_TABLE_000
 
 Keyword* KWD_RDBMS_FAILURE = NULL;
 
+Keyword* KWD_RDBMS_DB_LOOKUP = NULL;
+
 Keyword* KWD_RDBMS_CONTINUING_SUCCESS = NULL;
 
 Keyword* KWD_RDBMS_FINAL_SUCCESS = NULL;
+
+Keyword* KWD_RDBMS_TECHNICAL = NULL;
+
+Keyword* KWD_RDBMS_LAY = NULL;
 
 Symbol* SYM_RDBMS_RDBMS_pREL = NULL;
 

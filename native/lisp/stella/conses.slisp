@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -260,7 +260,9 @@ Preserves the original order of the remaining members.  Runs in linear time."
 ;;; (DEFMETHOD (REMOVE-DUPLICATES-EQUAL (LIKE SELF)) ...)
 
 (%%DEFCONSMETHOD REMOVE-DUPLICATES-EQUAL ((SELF CL:CONS))
-  "`remove-duplicates' (which see) using an `equal?' test."
+  "`remove-duplicates' (which see) using an `equal?' test.
+IMPORTANT: since this uses hashing to speed things up, an `equal-hash-code'
+method needs to be defined for this to work."
   (CL:RETURN-FROM REMOVE-DUPLICATES-EQUAL
    (REMOVE-DUPLICATES-FROM-LONG-LIST SELF CL:T)))
 
@@ -281,8 +283,10 @@ Preserves the original order of the remaining members.  Runs in linear time."
      (CL:SETQ ITER-000 (CL:1+ ITER-000))))
    (CL:LOOP WHILE (CL:NOT (CL:EQ CURSOR NIL)) DO
     (CL:SETQ ITEM (%%VALUE CURSOR))
+    (CL:IF EQUALTEST? (CL:SETQ BUCKETINDEX (EQUAL-HASH-CODE ITEM))
+     (CL:SETQ BUCKETINDEX (HASH-CODE ITEM)))
     (CL:SETQ BUCKETINDEX
-     (CL:LET ((CODE (HASH-CODE ITEM)) (SIZE TABLESIZE))
+     (CL:LET ((CODE BUCKETINDEX) (SIZE TABLESIZE))
       (CL:DECLARE (CL:TYPE CL:FIXNUM CODE SIZE))
       (CL:THE CL:FIXNUM
        (CL:REM
@@ -831,6 +835,23 @@ this does not check whether `self' and `otherList' actually are sets."
    (CL:LET* ((VALUE-000 TEST-VALUE-000))
     (CL:RETURN-FROM EQUIVALENT-SETS? VALUE-000))))
 
+;;; (DEFMETHOD (DISJOINT-SETS? BOOLEAN) ...)
+
+(%%DEFCONSMETHOD DISJOINT-SETS? ((SELF CL:CONS) OTHERLIST)
+  "Return true if the intersection of `self' and `otherList' is empty.
+This is always true if at least one of the two sets is the empty set.
+Uses an `eql?' test and a simple quadratic-time algorithm.  Note that
+this does not check whether `self' and `otherList' actually are sets."
+  (CL:LET* ((ALWAYS?-000 CL:T))
+   (CL:LET* ((ITEM NULL) (ITER-000 SELF))
+    (CL:LOOP WHILE (CL:NOT (CL:EQ ITER-000 NIL)) DO
+     (CL:SETQ ITEM (%%VALUE ITER-000))
+     (CL:WHEN (MEMBER? OTHERLIST ITEM) (CL:SETQ ALWAYS?-000 CL:NIL)
+      (CL:RETURN))
+     (CL:SETQ ITER-000 (%%REST ITER-000))))
+   (CL:LET* ((VALUE-000 ALWAYS?-000))
+    (CL:RETURN-FROM DISJOINT-SETS? VALUE-000))))
+
 ;;; (DEFMETHOD (INTERSECTION CONS) ...)
 
 (%%DEFCONSMETHOD INTERSECTION ((SELF CL:CONS) OTHERLIST)
@@ -1194,6 +1215,40 @@ whose `n'-th element (0-based) will be used for comparison."
    (CL:RETURN-FROM SORT-TUPLES
     (HELP-SORT-CONS-LIST SELF (LENGTH SELF)
      (CL:FUNCTION SORT-TUPLE-COMPARE?)))))
+
+;;; (DEFSPECIAL *SORT-OBJECTS-COMPARE-SLOT* ...)
+
+(CL:DEFVAR *SORT-OBJECTS-COMPARE-SLOT* NULL)
+
+;;; (DEFUN (SORT-OBJECTS-COMPARE? BOOLEAN) ...)
+
+(CL:DEFUN SORT-OBJECTS-COMPARE? (X Y)
+  (CL:LET*
+   ((SLOT *SORT-OBJECTS-COMPARE-SLOT*)
+    (PRED *SORT-TUPLE-COMPARE-PREDICATE*))
+   (CL:RETURN-FROM SORT-OBJECTS-COMPARE?
+    (CL:FUNCALL PRED (READ-SLOT-VALUE X SLOT)
+     (READ-SLOT-VALUE Y SLOT)))))
+
+;;; (DEFMETHOD (SORT-OBJECTS (CONS OF (LIKE (ANY-VALUE SELF)))) ...)
+
+(%%DEFCONSMETHOD SORT-OBJECTS ((SELF CL:CONS) SLOT PREDICATE)
+  "Just like `sort' but assumes each element of `self' has a `slot'
+whose value will be used for comparison.  Elements must be descendants of
+STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+it will cause value wrapping everytime `slot' is read."
+  (CL:WHEN (CL:AND (CL:EQ PREDICATE NULL) (CL:NOT (CL:EQ SELF NIL)))
+   (CL:SETQ PREDICATE
+    (CHOOSE-SORT-PREDICATE (READ-SLOT-VALUE (%%VALUE SELF) SLOT))))
+  (CL:LET*
+   ((*SORT-TUPLE-COMPARE-PREDICATE* PREDICATE)
+    (*SORT-OBJECTS-COMPARE-SLOT* SLOT))
+   (CL:DECLARE
+    (CL:SPECIAL *SORT-TUPLE-COMPARE-PREDICATE*
+     *SORT-OBJECTS-COMPARE-SLOT*))
+   (CL:RETURN-FROM SORT-OBJECTS
+    (HELP-SORT-CONS-LIST SELF (LENGTH SELF)
+     (CL:FUNCTION SORT-OBJECTS-COMPARE?)))))
 
 ;;; (DEFUN (SEARCH-CONS-TREE? BOOLEAN) ...)
 
@@ -1711,7 +1766,9 @@ result.  Removes all but the first occurrence of items in the list.
 Preserves the original order of the remaining members.  Runs in linear time.\")"
     (CL:FUNCTION REMOVE-DUPLICATES) NULL)
    (DEFINE-METHOD-OBJECT
-    "(DEFMETHOD (REMOVE-DUPLICATES-EQUAL (LIKE SELF)) ((SELF CONS)) :DOCUMENTATION \"`remove-duplicates' (which see) using an `equal?' test.\" :PUBLIC? TRUE)"
+    "(DEFMETHOD (REMOVE-DUPLICATES-EQUAL (LIKE SELF)) ((SELF CONS)) :DOCUMENTATION \"`remove-duplicates' (which see) using an `equal?' test.
+IMPORTANT: since this uses hashing to speed things up, an `equal-hash-code'
+method needs to be defined for this to work.\" :PUBLIC? TRUE)"
     (CL:FUNCTION REMOVE-DUPLICATES-EQUAL) NULL)
    (DEFINE-FUNCTION-OBJECT "REMOVE-DUPLICATES-FROM-LONG-LIST"
     "(DEFUN (REMOVE-DUPLICATES-FROM-LONG-LIST (LIKE SELF)) ((SELF CONS) (EQUALTEST? BOOLEAN)))"
@@ -1871,15 +1928,16 @@ Uses an `eql?' test and a simple quadratic-time algorithm.  Note that
 this does not check whether `self' and `otherList' actually are sets.\" :PUBLIC? TRUE)"
     (CL:FUNCTION EQUIVALENT-SETS?) NULL)
    (DEFINE-METHOD-OBJECT
+    "(DEFMETHOD (DISJOINT-SETS? BOOLEAN) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return true if the intersection of `self' and `otherList' is empty.
+This is always true if at least one of the two sets is the empty set.
+Uses an `eql?' test and a simple quadratic-time algorithm.  Note that
+this does not check whether `self' and `otherList' actually are sets.\" :PUBLIC? TRUE)"
+    (CL:FUNCTION DISJOINT-SETS?) NULL)
+   (DEFINE-METHOD-OBJECT
     "(DEFMETHOD (INTERSECTION CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set intersection of `self' and `otherList'.  Uses an `eql?'
 test and a simple quadratic-time algorithm.  Note that the result is only
 guaranteed to be a set if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)"
-    (CL:FUNCTION INTERSECTION) NULL)
-   (DEFINE-METHOD-OBJECT
-    "(DEFMETHOD (UNION CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set union of `self' and `otherList'.  Uses an `eql?' test
-and a simple quadratic-time algorithm.  Note that the result is only
-guaranteed to be a set if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)"
-    (CL:FUNCTION UNION) NULL))
+    (CL:FUNCTION INTERSECTION) NULL))
   :VOID)
 
 (CL:DEFUN STARTUP-CONSES ()
@@ -1895,6 +1953,11 @@ guaranteed to be a set if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)
     (CL:SETQ ELIPSIS SYM-CONSES-STELLA-...))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7) (HELP-STARTUP-CONSES2)
+    (DEFINE-METHOD-OBJECT
+     "(DEFMETHOD (UNION CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set union of `self' and `otherList'.  Uses an `eql?' test
+and a simple quadratic-time algorithm.  Note that the result is only
+guaranteed to be a set if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)"
+     (CL:FUNCTION UNION) NULL)
     (DEFINE-METHOD-OBJECT
      "(DEFMETHOD (DIFFERENCE CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set difference of `self' and `otherList' (i.e., all elements
 that are in `self' but not in `otherSet').  Uses an `eql?' test and a simple
@@ -1953,6 +2016,15 @@ element types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT).\")"
      "(DEFMETHOD (SORT-TUPLES (CONS OF (LIKE (ANY-VALUE SELF)))) ((SELF CONS) (N INTEGER) (PREDICATE FUNCTION-CODE)) :PUBLIC? TRUE :DOCUMENTATION \"Just like `sort' but assumes each element of `self' is a tuple (a cons)
 whose `n'-th element (0-based) will be used for comparison.\")"
      (CL:FUNCTION SORT-TUPLES) NULL)
+    (DEFINE-FUNCTION-OBJECT "SORT-OBJECTS-COMPARE?"
+     "(DEFUN (SORT-OBJECTS-COMPARE? BOOLEAN) ((X OBJECT) (Y OBJECT)))"
+     (CL:FUNCTION SORT-OBJECTS-COMPARE?) NULL)
+    (DEFINE-METHOD-OBJECT
+     "(DEFMETHOD (SORT-OBJECTS (CONS OF (LIKE (ANY-VALUE SELF)))) ((SELF CONS) (SLOT STORAGE-SLOT) (PREDICATE FUNCTION-CODE)) :DOCUMENTATION \"Just like `sort' but assumes each element of `self' has a `slot'
+whose value will be used for comparison.  Elements must be descendants of
+STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+it will cause value wrapping everytime `slot' is read.\" :PUBLIC? TRUE)"
+     (CL:FUNCTION SORT-OBJECTS) NULL)
     (DEFINE-FUNCTION-OBJECT "SEARCH-CONS-TREE?"
      "(DEFUN (SEARCH-CONS-TREE? BOOLEAN) ((TREE OBJECT) (VALUE OBJECT)) :DOCUMENTATION \"Return `true' iff the value `value' is embedded within
 the cons tree `tree'.  Uses an `eql?' test.\" :PUBLIC? TRUE)"
@@ -2061,6 +2133,8 @@ an unoptimized Common Lisp, 20 is a good crossover point.\")")
      "(DEFSPECIAL *SORT-TUPLE-COMPARE-PREDICATE* FUNCTION-CODE NULL)")
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
      "(DEFSPECIAL *SORT-TUPLE-COMPARE-INDEX* INTEGER 0)")
+    (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
+     "(DEFSPECIAL *SORT-OBJECTS-COMPARE-SLOT* STORAGE-SLOT NULL)")
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
      "(DEFSPECIAL *PRINTPRETTY?* BOOLEAN TRUE :DOCUMENTATION \"If `true' conses will be pretty printed.\" :PUBLIC? TRUE)")
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE

@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 2000-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 2000-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -56,7 +56,8 @@
 
 (CL:DEFUN STARTUP-HTML-MACROS ()
   (CL:LET*
-   ((*MODULE* (GET-STELLA-MODULE "/ONTOSAURUS" (> *STARTUP-TIME-PHASE* 1)))
+   ((*MODULE*
+     (GET-STELLA-MODULE "/ONTOSAURUS" (> *STARTUP-TIME-PHASE* 1)))
     (*CONTEXT* *MODULE*))
    (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
@@ -72,7 +73,8 @@
      (CL:FUNCTION STARTUP-HTML-MACROS) NULL)
     (CL:LET*
      ((FUNCTION
-       (LOOKUP-FUNCTION SYM-HTML-MACROS-ONTOSAURUS-STARTUP-HTML-MACROS)))
+       (LOOKUP-FUNCTION
+        SYM-HTML-MACROS-ONTOSAURUS-STARTUP-HTML-MACROS)))
      (SET-DYNAMIC-SLOT-VALUE (%METHOD-SLOT.DYNAMIC-SLOTS FUNCTION)
       SYM-HTML-MACROS-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupHtmlMacros") NULL-STRING-WRAPPER)))

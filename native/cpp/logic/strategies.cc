@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -88,25 +88,7 @@ Keyword* continueStrategiesProofs(ControlFrame* frame, Keyword* lastmove) {
                   (truthvalue == DEFAULT_FALSE_TRUTH_VALUE);
 
               printVerticalBars(computeFrameDepth(frame) + 1);
-              std::cout << "CLSH: truth=";
-              if ((truthvalue == TRUE_TRUTH_VALUE) ||
-                  (truthvalue == DEFAULT_TRUE_TRUTH_VALUE)) {
-                if (defaultP) {
-                  std::cout << "t";
-                }
-                else {
-                  std::cout << "T";
-                }
-              }
-              else {
-                if (defaultP) {
-                  std::cout << "f";
-                }
-                else {
-                  std::cout << "F";
-                }
-              }
-              std::cout << std::endl;
+              std::cout << "CLSH: truth=" << truthValueToString(truthvalue, true) << std::endl;
             }
           }
           unwindToChoicePoint(frame);
@@ -138,29 +120,29 @@ Keyword* continueStrategiesProofs(ControlFrame* frame, Keyword* lastmove) {
         if (!((boolean)(frame->truthValue))) {
           setFrameTruthValue(frame, TRUE_TRUTH_VALUE);
         }
-        if ((((boolean)(oQUERYITERATORo.get())) &&
-            ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) &&
+        if ((((boolean)(oQUERYITERATORo)) &&
+            ((boolean)(oQUERYITERATORo->partialMatchStrategy))) &&
             (!(((boolean)(frame->partialMatchFrame)) &&
             ((frame->partialMatchFrame->positiveScore != NULL_FLOAT) ||
              (frame->partialMatchFrame->negativeScore != NULL_FLOAT))))) {
           frame->partialMatchFrame->setFramePartialTruth(TRUE_TRUTH_VALUE, NULL_FLOAT, NULL_FLOAT, false);
         }
-        if (oRECORD_JUSTIFICATIONSpo.get() &&
+        if (oRECORD_JUSTIFICATIONSpo &&
             (!((boolean)(((Justification*)(dynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_LOGIC_JUSTIFICATION, NULL))))))) {
           recordPrimitiveJustification(frame, KWD_STRATEGIES_UP_TRUE);
         }
       }
       else if ((result == KWD_STRATEGIES_FAILURE) ||
           (result == KWD_STRATEGIES_TERMINAL_FAILURE)) {
-        if (((boolean)(oQUERYITERATORo.get())) &&
-            ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+        if (((boolean)(oQUERYITERATORo)) &&
+            ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
           {
             if (!(((boolean)(frame->partialMatchFrame)) &&
                 ((frame->partialMatchFrame->positiveScore != NULL_FLOAT) ||
                  (frame->partialMatchFrame->negativeScore != NULL_FLOAT)))) {
               frame->partialMatchFrame->setFramePartialTruth(frame->truthValue, (((boolean)(frame->truthValue)) ? NULL_FLOAT : 0.0), NULL_FLOAT, ((boolean)(frame->truthValue)));
             }
-            if (oRECORD_JUSTIFICATIONSpo.get() &&
+            if (oRECORD_JUSTIFICATIONSpo &&
                 (!((boolean)(((Justification*)(dynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_LOGIC_JUSTIFICATION, NULL))))))) {
               recordPrimitiveJustification(frame, KWD_STRATEGIES_UP_FAIL);
             }
@@ -173,7 +155,7 @@ Keyword* continueStrategiesProofs(ControlFrame* frame, Keyword* lastmove) {
                (((boolean)(frame->proposition)) &&
                 closedPropositionP(frame->proposition)))) {
             setFrameTruthValue(frame, FALSE_TRUTH_VALUE);
-            if (oRECORD_JUSTIFICATIONSpo.get() &&
+            if (oRECORD_JUSTIFICATIONSpo &&
                 (!((boolean)(((Justification*)(dynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_LOGIC_JUSTIFICATION, NULL))))))) {
               recordClosedNotJustification(frame, KWD_STRATEGIES_UP_FAIL);
             }
@@ -236,9 +218,9 @@ void recordBasePartialMatchTruth(ControlFrame* frame, Keyword* result) {
   { Keyword* pmresult = (((result == KWD_STRATEGIES_FAILURE) ||
         frame->reversePolarityP) ? KWD_STRATEGIES_FAIL : KWD_STRATEGIES_TRUE);
 
-    if (((boolean)(oQUERYITERATORo.get())) &&
-        ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
-      oQUERYITERATORo.get()->partialMatchStrategy->setBasePartialMatchTruth(frame->proposition, pmresult);
+    if (((boolean)(oQUERYITERATORo)) &&
+        ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
+      oQUERYITERATORo->partialMatchStrategy->setBasePartialMatchTruth(frame->proposition, pmresult);
     }
   }
 }
@@ -374,10 +356,10 @@ Keyword* resumeProofStrategyAfterSubgoal(ControlFrame* frame, Keyword* lastmove)
       }
     }
     if (result == KWD_STRATEGIES_CONTINUING_SUCCESS) {
-      if (oGENERATE_ALL_PROOFSpo.get() &&
+      if (oGENERATE_ALL_PROOFSpo &&
           ((frame->state == KWD_STRATEGIES_ATOMIC_GOAL) &&
-           ((!(((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)))) &&
+           ((!(((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy)))) &&
             (!newBindingsSinceLastChoicePointP(frame))))) {
         frame->justifications->push(KWD_STRATEGIES_DUMMY_JUSTIFICATION);
         result = KWD_STRATEGIES_MOVE_DOWN;
@@ -414,8 +396,8 @@ boolean filterOutStrategyP(Keyword* strategy, ControlFrame* frame) {
         (!((oCACHE_SUCCEEDED_GOALSpo ||
         oCACHE_FAILED_GOALSpo) &&
         ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_STRATEGIES_DUPLICATE_GOALS) &&
-         (!(((boolean)(oQUERYITERATORo.get())) &&
-        ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))))))));
+         (!(((boolean)(oQUERYITERATORo)) &&
+        ((boolean)(oQUERYITERATORo->partialMatchStrategy))))))));
   }
   else if (strategy == KWD_STRATEGIES_SPECIALIST) {
     { Proposition* proposition = frame->proposition;
@@ -585,8 +567,8 @@ ParallelThread* createChildThread(ParallelControlFrame* pframe) {
     downframe->state = KWD_STRATEGIES_STRATEGY;
     downframe->currentStrategy = ((Keyword*)(strategies->value));
     pframe->nextStrategies = strategies->rest;
-    if (((boolean)(oQUERYITERATORo.get())) &&
-        ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+    if (((boolean)(oQUERYITERATORo)) &&
+        ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
       createAndLinkPartialMatchFrame(downframe, KWD_STRATEGIES_STRATEGY);
     }
     childthread->topControlFrame = downframe;
@@ -681,8 +663,8 @@ Keyword* lookupCachedProof(ControlFrame* frame) {
       (!((oCACHE_SUCCEEDED_GOALSpo ||
       oCACHE_FAILED_GOALSpo) &&
       ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_STRATEGIES_DUPLICATE_GOALS) &&
-       (!(((boolean)(oQUERYITERATORo.get())) &&
-      ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)))))))) {
+       (!(((boolean)(oQUERYITERATORo)) &&
+      ((boolean)(oQUERYITERATORo->partialMatchStrategy)))))))) {
     return (KWD_STRATEGIES_FAILURE);
   }
   { Keyword* successorfailure = KWD_STRATEGIES_FAILURE;
@@ -693,7 +675,7 @@ Keyword* lookupCachedProof(ControlFrame* frame) {
       cachedgoal = findCachedGoal(frame, successorfailure);
     }
     if (((boolean)(cachedgoal)) &&
-        ((!oDONTUSEDEFAULTKNOWLEDGEpo.get()) ||
+        ((!oDONTUSEDEFAULTKNOWLEDGEpo) ||
          ((cachedgoal->truthValue == TRUE_TRUTH_VALUE) ||
           (cachedgoal->truthValue == FALSE_TRUTH_VALUE)))) {
       return (finishCachedGoalProcessing(cachedgoal, frame, successorfailure, false));
@@ -708,7 +690,7 @@ Keyword* scanCachedGoals(ControlFrame* frame) {
   { Proposition* proposition = frame->proposition;
     Iterator* iterator = ((Iterator*)(dynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_STELLA_ITERATOR, NULL)));
     AtomicGoalCache* cachedgoal = NULL;
-    PatternRecord* patternrecord = oQUERYITERATORo.get()->currentPatternRecord;
+    PatternRecord* patternrecord = oQUERYITERATORo->currentPatternRecord;
     int ubstackoffset = patternrecord->topUnbindingStackOffset;
 
     if (!((BooleanWrapper*)(dynamicSlotValue(surrogateToDescription(((Surrogate*)(proposition->operatoR)))->dynamicSlots, SYM_STRATEGIES_LOGIC_CHECK_FOR_CACHED_GOALSp, FALSE_WRAPPER)))->wrapperValue) {
@@ -752,12 +734,12 @@ Keyword* scanCachedGoals(ControlFrame* frame) {
 }
 
 Keyword* finishCachedGoalProcessing(AtomicGoalCache* cachedgoal, ControlFrame* frame, Keyword* successorfailure, boolean continuingP) {
-  setDynamicSlotValue(oQUERYITERATORo.get()->dynamicSlots, SYM_STRATEGIES_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(cachedgoal->positiveScore), NULL_FLOAT_WRAPPER);
+  setDynamicSlotValue(oQUERYITERATORo->dynamicSlots, SYM_STRATEGIES_LOGIC_LATEST_POSITIVE_SCORE, wrapFloat(cachedgoal->positiveScore), NULL_FLOAT_WRAPPER);
   frame->truthValue = cachedgoal->truthValue;
   if (((boolean)(frame->partialMatchFrame))) {
     frame->partialMatchFrame->setFramePartialTruth(cachedgoal->truthValue, cachedgoal->positiveScore, NULL_FLOAT, true);
   }
-  if (oRECORD_JUSTIFICATIONSpo.get() &&
+  if (oRECORD_JUSTIFICATIONSpo &&
       ((boolean)(cachedgoal->justification))) {
     setDynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_LOGIC_JUSTIFICATION, cachedgoal->justification->copy(), NULL);
   }
@@ -818,8 +800,8 @@ Keyword* tryGoalCachesProof(ControlFrame* frame) {
           ((!((oCACHE_SUCCEEDED_GOALSpo ||
           oCACHE_FAILED_GOALSpo) &&
           ((oDUPLICATE_SUBGOAL_STRATEGYo == KWD_STRATEGIES_DUPLICATE_GOALS) &&
-           (!(((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))))))) ||
+           (!(((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))))))) ||
            (!((boolean)(getGoalCacheList(proposition)))))) {
         return (KWD_STRATEGIES_FAILURE);
       }
@@ -838,7 +820,7 @@ Keyword* tryGoalCachesProof(ControlFrame* frame) {
 
 Keyword* tryLookupGroundAssertionsProof(ControlFrame* frame) {
   if (frame->proposition->kind == KWD_STRATEGIES_ISA) {
-    if (oREVERSEPOLARITYpo.get()) {
+    if (oREVERSEPOLARITYpo) {
       return (tryScanPropositionsProof(frame));
     }
     return (tryIsaPropositionProof(frame));
@@ -864,8 +846,8 @@ Keyword* tryScanPropositionsProof(ControlFrame* frame) {
       else {
         setDynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_STELLA_ITERATOR, iterator, NULL);
       }
-      if ((((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) &&
+      if ((((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) &&
           ((frame->currentStrategy == KWD_STRATEGIES_LOOKUP_ASSERTIONS) &&
            ((proposition->arguments->length() > 1) &&
             nullInstancePropositionsExistP()))) {
@@ -876,10 +858,10 @@ Keyword* tryScanPropositionsProof(ControlFrame* frame) {
       while (iterator->nextP()) {
         if (argumentsUnifyWithArgumentsP(((Proposition*)(iterator->value)), proposition)) {
           if (allkeyargumentsboundP &&
-              ((!oGENERATE_ALL_PROOFSpo.get()) ||
-               ((((boolean)(oQUERYITERATORo.get())) &&
-              ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) &&
-                isaP(oQUERYITERATORo.get()->partialMatchStrategy, SGT_STRATEGIES_LOGIC_WHYNOT_PARTIAL_MATCH)))) {
+              ((!oGENERATE_ALL_PROOFSpo) ||
+               ((((boolean)(oQUERYITERATORo)) &&
+              ((boolean)(oQUERYITERATORo->partialMatchStrategy))) &&
+                isaP(oQUERYITERATORo->partialMatchStrategy, SGT_STRATEGIES_LOGIC_WHYNOT_PARTIAL_MATCH)))) {
             result = KWD_STRATEGIES_FINAL_SUCCESS;
             break;
           }
@@ -916,7 +898,7 @@ Keyword* tryScanPropositionsProof(ControlFrame* frame) {
           }
         }
         frame->truthValue = truthvalue;
-        if (oRECORD_JUSTIFICATIONSpo.get()) {
+        if (oRECORD_JUSTIFICATIONSpo) {
           { Justification* fj = NULL;
             Cons* iter000 = matchingProposition->forwardJustifications_reader()->theConsList;
 
@@ -954,13 +936,13 @@ boolean hasShallowDisproofP(ControlFrame* frame) {
     setDynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_STELLA_ITERATOR, NULL, NULL);
     { 
       BIND_STELLA_SPECIAL(oREVERSEPOLARITYpo, boolean, !frame->reversePolarityP);
-      frame->reversePolarityP = oREVERSEPOLARITYpo.get();
+      frame->reversePolarityP = oREVERSEPOLARITYpo;
       setFrameTruthValue(frame, NULL);
-      if (((((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) &&
-          isaP(oQUERYITERATORo.get()->partialMatchStrategy, SGT_STRATEGIES_LOGIC_WHYNOT_PARTIAL_MATCH)) &&
+      if (((((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) &&
+          isaP(oQUERYITERATORo->partialMatchStrategy, SGT_STRATEGIES_LOGIC_WHYNOT_PARTIAL_MATCH)) &&
           (proposition->kind == KWD_STRATEGIES_ISA)) {
-        if (!oREVERSEPOLARITYpo.get()) {
+        if (!oREVERSEPOLARITYpo) {
           hasdisproofP = tryIsaPropositionProof(frame) == KWD_STRATEGIES_FINAL_SUCCESS;
         }
         else {
@@ -993,7 +975,7 @@ boolean hasShallowDisproofP(ControlFrame* frame) {
         hasdisproofP = tryScanPropositionsProof(frame) == KWD_STRATEGIES_FINAL_SUCCESS;
       }
       if ((!hasdisproofP) &&
-          (oREVERSEPOLARITYpo.get() &&
+          (oREVERSEPOLARITYpo &&
            ((frame->proposition->kind == KWD_STRATEGIES_FUNCTION) ||
             singleValuedPredicateP(frame->proposition)))) {
         hasdisproofP = tryScanForValueClashProof(frame) == KWD_STRATEGIES_FINAL_SUCCESS;
@@ -1031,14 +1013,14 @@ Keyword* tryShallowDisproof(ControlFrame* frame) {
 Keyword* tryScanForValueClashProof(ControlFrame* frame) {
   { 
     BIND_STELLA_SPECIAL(oREVERSEPOLARITYpo, boolean, false);
-    BIND_STELLA_SPECIAL(oDONTUSEDEFAULTKNOWLEDGEpo, boolean, oDONTUSEDEFAULTKNOWLEDGEpo.get());
+    BIND_STELLA_SPECIAL(oDONTUSEDEFAULTKNOWLEDGEpo, boolean, oDONTUSEDEFAULTKNOWLEDGEpo);
     { Proposition* proposition = frame->proposition;
       Iterator* clashiterator = allClashingPropositions(proposition);
       TruthValue* truthvalue = (clashiterator->nextP() ? propositionsIteratorTruthValue(clashiterator) : ((TruthValue*)(NULL)));
 
       if ((truthvalue == DEFAULT_TRUE_TRUTH_VALUE) ||
           (truthvalue == DEFAULT_FALSE_TRUTH_VALUE)) {
-        oDONTUSEDEFAULTKNOWLEDGEpo.set(true);
+        oDONTUSEDEFAULTKNOWLEDGEpo = true;
         clashiterator = allClashingPropositions(proposition);
         if (clashiterator->nextP()) {
           truthvalue = propositionsIteratorTruthValue(clashiterator);
@@ -1288,7 +1270,7 @@ Keyword* continueAntecedentsProof(ControlFrame* frame, Keyword* lastmove) {
 
         frame->truthValue = weakenTruthValue(propagateFrameTruthValue(frame->result, frame), ((TruthValue*)(accessInContext(oldValue000, object000->homeContext, false))));
       }
-      if (oRECORD_JUSTIFICATIONSpo.get()) {
+      if (oRECORD_JUSTIFICATIONSpo) {
         recordModusPonensJustification(frame, lastmove);
       }
       return (KWD_STRATEGIES_CONTINUING_SUCCESS);
@@ -1591,8 +1573,8 @@ Keyword* tryFullSubqueryProof(ControlFrame* frame) {
       return (KWD_STRATEGIES_MOVE_IN_PLACE);
     }
     if ((!((boolean)(frame->partialMatchFrame))) &&
-        (((boolean)(oQUERYITERATORo.get())) &&
-         ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy)))) {
+        (((boolean)(oQUERYITERATORo)) &&
+         ((boolean)(oQUERYITERATORo->partialMatchStrategy)))) {
       createAndLinkPartialMatchFrame(frame, KWD_STRATEGIES_ATOMIC_GOAL);
     }
     return (KWD_STRATEGIES_FAILURE);
@@ -1610,25 +1592,27 @@ Description* extractCollectionArgument(Proposition* proposition) {
 
 Keyword* tryIsaPropositionProof(ControlFrame* frame) {
   { Proposition* proposition = frame->proposition;
+    Surrogate* surrogate = ((Surrogate*)(proposition->operatoR));
     Vector* arguments = proposition->arguments;
     Object* memberarg = (arguments->theArray)[0];
     Object* member = argumentBoundTo(memberarg);
-    boolean scanisapropositionsP = oGENERATE_ALL_PROOFSpo.get() ||
-        oREVERSEPOLARITYpo.get();
+    boolean scanisapropositionsP = oGENERATE_ALL_PROOFSpo ||
+        oREVERSEPOLARITYpo;
 
     if (oCYC_KLUDGES_ENABLEDpo) {
-      if (!(oREVERSEPOLARITYpo.get())) {
+      if (!(oREVERSEPOLARITYpo)) {
         scanisapropositionsP = false;
       }
     }
     if (!((boolean)(member))) {
       return (tryScanCollectionProof(frame));
     }
-    if (isaP(member, SGT_STRATEGIES_STELLA_LITERAL_WRAPPER)) {
-      { Surrogate* surrogate = ((Surrogate*)(proposition->operatoR));
-        boolean successP = logicalSubtypeOfP(logicalType(member), surrogate);
+    if (isaP(member, SGT_STRATEGIES_STELLA_LITERAL_WRAPPER) ||
+        ((surrogate == SGT_STRATEGIES_LOGIC_PROPOSITION) ||
+         descriptionP(member))) {
+      { boolean successP = logicalSubtypeOfP(logicalType(member), surrogate);
 
-        if (oREVERSEPOLARITYpo.get()) {
+        if (oREVERSEPOLARITYpo) {
           successP = !successP;
         }
         if (successP) {
@@ -1695,7 +1679,7 @@ boolean inferableDescriptionP(Object* self) {
     { Object* self000 = self;
       Description* self = ((Description*)(self000));
 
-      if (oREVERSEPOLARITYpo.get() &&
+      if (oREVERSEPOLARITYpo &&
           ((boolean)(getInferableComplementDescription(self)))) {
         self = ((Description*)(dynamicSlotValue(self->dynamicSlots, SYM_STRATEGIES_LOGIC_COMPLEMENT_DESCRIPTION, NULL)));
       }
@@ -1752,7 +1736,7 @@ Keyword* trySimpleContainedByProof(Object* subcollection, Object* supercollectio
     BIND_STELLA_SPECIAL(oREVERSEPOLARITYpo, boolean, false);
     { List* members = assertedCollectionMembers(subcollection, false);
 
-      oREVERSEPOLARITYpo.set(reversepolarityP);
+      oREVERSEPOLARITYpo = reversepolarityP;
       if (((boolean)(members))) {
         if (reversepolarityP) {
           { boolean foundP000 = false;
@@ -2157,8 +2141,8 @@ Keyword* continueClusteredConjunctionProof(ControlFrame* andframe, Keyword* last
     int nofarguments = arguments->length();
     ControlFrame* downframe = NULL;
 
-    if (((boolean)(oQUERYITERATORo.get())) &&
-        ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+    if (((boolean)(oQUERYITERATORo)) &&
+        ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
       andframe->state = KWD_STRATEGIES_AND;
       lastmove = oldInterpretAndScores(andframe, lastmove);
       andframe->state = state;
@@ -2183,7 +2167,7 @@ Keyword* continueClusteredConjunctionProof(ControlFrame* andframe, Keyword* last
     }
     else if (lastmove == KWD_STRATEGIES_UP_TRUE) {
       andframe->truthValue = ((!((boolean)(andframe->truthValue))) ? andframe->result->truthValue : conjoinTruthValues(andframe->truthValue, andframe->result->truthValue));
-      if (oRECORD_JUSTIFICATIONSpo.get()) {
+      if (oRECORD_JUSTIFICATIONSpo) {
         recordAndIntroductionJustification(andframe, lastmove);
       }
       (adjunct->clusterFrames->theArray)[(andframe->argumentCursor)] = (andframe->down);
@@ -2221,8 +2205,8 @@ Keyword* continueClusteredConjunctionProof(ControlFrame* andframe, Keyword* last
       }
     }
     else if (lastmove == KWD_STRATEGIES_UP_FAIL) {
-      if (((boolean)(oQUERYITERATORo.get())) &&
-          ((boolean)(oQUERYITERATORo.get()->partialMatchStrategy))) {
+      if (((boolean)(oQUERYITERATORo)) &&
+          ((boolean)(oQUERYITERATORo->partialMatchStrategy))) {
         andframe->down = NULL;
         setFrameTruthValue(andframe, NULL);
         return (KWD_STRATEGIES_TERMINAL_FAILURE);
@@ -2283,7 +2267,7 @@ World* pushMonotonicWorld() {
 }
 
 Keyword* tryDisjunctiveImplicationProof(ControlFrame* frame) {
-  { ParallelThread* parallelthread = oQUERYITERATORo.get()->currentParallelThread;
+  { ParallelThread* parallelthread = oQUERYITERATORo->currentParallelThread;
     ParallelControlFrame* parallelframe = ((ParallelControlFrame*)(parallelthread->topControlFrame->up));
 
     { Proposition* disjunctiveprop = frame->proposition;
@@ -2344,7 +2328,7 @@ Keyword* tryDisjunctiveImplicationProof(ControlFrame* frame) {
                   index002 = index002 + 1) {
               disj = ((Proposition*)((vector002->theArray)[index002]));
               if (!(disj == subgoaldisjunct)) {
-                assumption = recursivelyFastenDownPropositions(((!negatedtruthvalueP) ? inheritProposition(disj, newKeyValueMap()) : conjoinPropositions(inheritAsTopLevelProposition(disj, newKeyValueMap()))), false);
+                assumption = recursivelyFastenDownPropositions((negatedtruthvalueP ? conjoinPropositions(inheritAsTopLevelProposition(disj, newKeyValueMap())) : inheritProposition(disj, newKeyValueMap())), false);
                 if (((boolean)(oTRACED_KEYWORDSo)) &&
                     oTRACED_KEYWORDSo->membP(KWD_STRATEGIES_GOAL_TREE)) {
                   std::cout << std::endl << "  Assume that " << assumption << " is " << ((negatedtruthvalueP ? (char*)"true" : (char*)"false")) << "." << std::endl << std::endl;
@@ -2427,7 +2411,7 @@ LogicObject* createHypothesizedInstance(char* prefix) {
 }
 
 Keyword* tryUniversalIntroductionProof(ControlFrame* frame) {
-  { ParallelThread* parallelthread = oQUERYITERATORo.get()->currentParallelThread;
+  { ParallelThread* parallelthread = oQUERYITERATORo->currentParallelThread;
     ParallelControlFrame* parallelframe = ((ParallelControlFrame*)(parallelthread->topControlFrame->up));
 
     enterHypotheticalWorld(parallelframe);
@@ -2474,7 +2458,7 @@ Keyword* tryUniversalIntroductionProof(ControlFrame* frame) {
 }
 
 Keyword* tryRefutationProof(ControlFrame* frame) {
-  { ParallelThread* parallelthread = oQUERYITERATORo.get()->currentParallelThread;
+  { ParallelThread* parallelthread = oQUERYITERATORo->currentParallelThread;
     ParallelControlFrame* parallelframe = ((ParallelControlFrame*)(parallelthread->topControlFrame->up));
 
     if (parallelframe->unboundVariablesP) {
@@ -2574,7 +2558,7 @@ Keyword* continueExistsProof(ControlFrame* frame, Keyword* lastmove) {
         result->partialMatchFrame->propagateFramePartialTruth(frame);
       }
       propagateFrameTruthValue(result, frame);
-      if (oRECORD_JUSTIFICATIONSpo.get()) {
+      if (oRECORD_JUSTIFICATIONSpo) {
         recordExistentialIntroductionJustification(frame, lastmove);
       }
       if (!((boolean)(frame->down))) {
@@ -2614,7 +2598,7 @@ Keyword* continueConstantProof(ControlFrame* frame, Keyword* lastmove) {
   { Proposition* proposition = frame->proposition;
 
     frame->truthValue = ((TruthValue*)(accessInContext(proposition->truthValue, proposition->homeContext, false)));
-    if (oRECORD_JUSTIFICATIONSpo.get() &&
+    if (oRECORD_JUSTIFICATIONSpo &&
         (!((boolean)(((Justification*)(dynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_LOGIC_JUSTIFICATION, NULL))))))) {
       { PrimitiveStrategy* self000 = newPrimitiveStrategy();
 
@@ -2652,32 +2636,47 @@ void registerInferenceCutoff(ControlFrame* frame, Keyword* reason) {
 }
 
 Keyword* continueFailProof(ControlFrame* frame, Keyword* lastmove) {
-  if (frame->reversePolarityP) {
-    throw *newStellaException(":FAIL not implemented for negative polarity.");
-  }
   if (lastmove == KWD_STRATEGIES_DOWN) {
     createChoicePoint(frame);
     setDynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_LOGIC_INFERENCE_CUTOFF_REASON, NULL, NULL);
     return (KWD_STRATEGIES_MOVE_DOWN);
   }
   else if (lastmove == KWD_STRATEGIES_UP_TRUE) {
-    setFrameTruthValue(frame, FALSE_TRUTH_VALUE);
-    unbindVariablesBeginningAt(oQUERYITERATORo.get()->currentPatternRecord, frame->choicePointUnbindingOffset);
-    if (((boolean)(frame->down))) {
-      popFramesUpTo(frame->down);
+    { Keyword* result = (frame->reversePolarityP ? KWD_STRATEGIES_FINAL_SUCCESS : KWD_STRATEGIES_FAILURE);
+
+      if (frame->reversePolarityP) {
+        setFrameTruthValue(frame, TRUE_TRUTH_VALUE);
+        if (oRECORD_JUSTIFICATIONSpo) {
+          recordNegatedFailJustification(frame, lastmove);
+        }
+      }
+      else {
+        setFrameTruthValue(frame, FALSE_TRUTH_VALUE);
+      }
+      unbindVariablesBeginningAt(oQUERYITERATORo->currentPatternRecord, frame->choicePointUnbindingOffset);
+      if (((boolean)(frame->down))) {
+        popFramesUpTo(frame->down);
+      }
+      return (result);
     }
-    return (KWD_STRATEGIES_FAILURE);
   }
   else if (lastmove == KWD_STRATEGIES_UP_FAIL) {
-    { Keyword* result = KWD_STRATEGIES_FINAL_SUCCESS;
+    { Keyword* result = (frame->reversePolarityP ? KWD_STRATEGIES_FAILURE : KWD_STRATEGIES_FINAL_SUCCESS);
 
       if (((boolean)(((Keyword*)(dynamicSlotValue(frame->dynamicSlots, SYM_STRATEGIES_LOGIC_INFERENCE_CUTOFF_REASON, NULL)))))) {
         setFrameTruthValue(frame, UNKNOWN_TRUTH_VALUE);
         result = KWD_STRATEGIES_FAILURE;
       }
+      else if (frame->result->truthValue == INCONSISTENT_TRUTH_VALUE) {
+        setFrameTruthValue(frame, INCONSISTENT_TRUTH_VALUE);
+        result = KWD_STRATEGIES_TERMINAL_FAILURE;
+      }
+      else if (frame->reversePolarityP) {
+        setFrameTruthValue(frame, FALSE_TRUTH_VALUE);
+      }
       else {
         setFrameTruthValue(frame, TRUE_TRUTH_VALUE);
-        if (oRECORD_JUSTIFICATIONSpo.get()) {
+        if (oRECORD_JUSTIFICATIONSpo) {
           if (frame->up->proposition->kind == KWD_STRATEGIES_NOT) {
             recordClosedNotJustification(frame, lastmove);
           }
@@ -2686,7 +2685,7 @@ Keyword* continueFailProof(ControlFrame* frame, Keyword* lastmove) {
           }
         }
       }
-      unbindVariablesBeginningAt(oQUERYITERATORo.get()->currentPatternRecord, frame->choicePointUnbindingOffset);
+      unbindVariablesBeginningAt(oQUERYITERATORo->currentPatternRecord, frame->choicePointUnbindingOffset);
       return (result);
     }
   }
@@ -2793,6 +2792,7 @@ void helpStartupStrategies2() {
     SYM_STRATEGIES_STELLA_PHASE = ((Symbol*)(internRigidSymbolWrtModule("PHASE", getStellaModule("/STELLA", true), 0)));
     KWD_STRATEGIES_ORIGINAL_GOAL = ((Keyword*)(internRigidSymbolWrtModule("ORIGINAL-GOAL", NULL, 2)));
     SGT_STRATEGIES_STELLA_LITERAL_WRAPPER = ((Surrogate*)(internRigidSymbolWrtModule("LITERAL-WRAPPER", getStellaModule("/STELLA", true), 1)));
+    SGT_STRATEGIES_LOGIC_PROPOSITION = ((Surrogate*)(internRigidSymbolWrtModule("PROPOSITION", NULL, 1)));
     SYM_STRATEGIES_LOGIC_COMPLEMENT_DESCRIPTION = ((Symbol*)(internRigidSymbolWrtModule("COMPLEMENT-DESCRIPTION", NULL, 0)));
     SYM_STRATEGIES_LOGIC_CONTAINED_BY = ((Symbol*)(internRigidSymbolWrtModule("CONTAINED-BY", NULL, 0)));
     SGT_STRATEGIES_LOGIC_NAMED_DESCRIPTION = ((Surrogate*)(internRigidSymbolWrtModule("NAMED-DESCRIPTION", NULL, 1)));
@@ -2888,7 +2888,7 @@ void helpStartupStrategies3() {
 void startupStrategies() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupStrategies1();
       helpStartupStrategies2();
@@ -3090,6 +3090,8 @@ Symbol* SYM_STRATEGIES_STELLA_PHASE = NULL;
 Keyword* KWD_STRATEGIES_ORIGINAL_GOAL = NULL;
 
 Surrogate* SGT_STRATEGIES_STELLA_LITERAL_WRAPPER = NULL;
+
+Surrogate* SGT_STRATEGIES_LOGIC_PROPOSITION = NULL;
 
 Symbol* SYM_STRATEGIES_LOGIC_COMPLEMENT_DESCRIPTION = NULL;
 

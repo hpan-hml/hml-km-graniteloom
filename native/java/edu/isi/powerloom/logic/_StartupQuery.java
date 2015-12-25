@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -153,12 +153,12 @@ public class _StartupQuery {
       Logic.KWD_SHALLOW_DISJOINT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SHALLOW-DISJOINT", null, 2)));
       Logic.KWD_DISJOINT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DISJOINT", null, 2)));
       Logic.KWD_FLAT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FLAT", null, 2)));
+      Logic.KWD_ATOMIC_GOAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ATOMIC-GOAL", null, 2)));
       Logic.KWD_ITERATIVE_FORALL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ITERATIVE-FORALL", null, 2)));
       Logic.KWD_STATE_MACHINE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("STATE-MACHINE", null, 2)));
       Logic.KWD_PARALLEL_STRATEGIES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PARALLEL-STRATEGIES", null, 2)));
       Logic.KWD_STRATEGY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("STRATEGY", null, 2)));
       Logic.KWD_SPECIALIST = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SPECIALIST", null, 2)));
-      Logic.KWD_ATOMIC_GOAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ATOMIC-GOAL", null, 2)));
       Logic.SYM_LOGIC_ANTECEDENTS_RULE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ANTECEDENTS-RULE", null, 0)));
       Logic.KWD_FULL_SUBQUERY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FULL-SUBQUERY", null, 2)));
       Logic.KWD_ANTECEDENTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ANTECEDENTS", null, 2)));
@@ -207,6 +207,7 @@ public class _StartupQuery {
       Logic.SYM_LOGIC_ALREADY_GENERATED_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ALREADY-GENERATED-TABLE", null, 0)));
       Logic.SYM_LOGIC_REMOVING_DUPLICATESp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("REMOVING-DUPLICATES?", null, 0)));
       Logic.KWD_GOAL_CACHES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL-CACHES", null, 2)));
+      Logic.KWD_GOAL_CUTOFFS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("GOAL-CUTOFFS", null, 2)));
       Logic.KWD_DEPTH_VIOLATION = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEPTH-VIOLATION", null, 2)));
       Logic.KWD_DEPTH_CUTOFF = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEPTH-CUTOFF", null, 2)));
       Logic.KWD_TECHNICAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TECHNICAL", null, 2)));
@@ -223,14 +224,31 @@ public class _StartupQuery {
       Logic.SGT_LOGIC_QUERY_SOLUTION_TABLE_ITERATOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("QUERY-SOLUTION-TABLE-ITERATOR", null, 1)));
       Logic.SYM_STELLA_THE_TABLE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("THE-TABLE", Stella.getStellaModule("/STELLA", true), 0)));
       Logic.SYM_STELLA_CURSOR = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("CURSOR", Stella.getStellaModule("/STELLA", true), 0)));
+      Logic.SYM_LOGIC_DEBUG_ID = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("DEBUG-ID", null, 0)));
+      Logic.KWD_FORMAT = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FORMAT", null, 2)));
+      Logic.KWD_OUTPUT_FILE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("OUTPUT-FILE", null, 2)));
+      Logic.KWD_IF_EXISTS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("IF-EXISTS", null, 2)));
+      Logic.KWD_SUPERSEDE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SUPERSEDE", null, 2)));
+      Logic.KWD_APPEND = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("APPEND", null, 2)));
+      Logic.KWD_VERTICAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("VERTICAL", null, 2)));
+      Logic.KWD_LIST = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("LIST", null, 2)));
+      Logic.KWD_TSV = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TSV", null, 2)));
+      Logic.KWD_HORIZONTAL = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("HORIZONTAL", null, 2)));
       Logic.KWD_TRACE_SOLUTIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("TRACE-SOLUTIONS", null, 2)));
       Logic.SYM_LOGIC_ATOMIC_SINGLETONSp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ATOMIC-SINGLETONS?", null, 0)));
+      Logic.SYM_PL_KERNEL_KB_pMATCH_SCORE = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("?MATCH-SCORE", Stella.getStellaModule("/PL-KERNEL-KB", true), 0)));
       Logic.KWD_DONT_OPTIMIZEp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DONT-OPTIMIZE?", null, 2)));
       Logic.SYM_LOGIC_INITIAL_BINDINGS = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("INITIAL-BINDINGS", null, 0)));
       Logic.KWD_ITERATIVE_DEEPENINGp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ITERATIVE-DEEPENING?", null, 2)));
       Logic.SYM_LOGIC_ITERATIVE_DEEPENINGp = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("ITERATIVE-DEEPENING?", null, 0)));
       Logic.KWD_MATCH_MODE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MATCH-MODE", null, 2)));
+    }
+  }
+
+  static void helpStartupQuery4() {
+    {
       Logic.KWD_DEFERRED_OPTIONS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DEFERRED-OPTIONS", null, 2)));
+      Logic.KWD_FOUR_VALUEDp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FOUR-VALUED?", null, 2)));
       Logic.KWD_HOW_MANY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("HOW-MANY", null, 2)));
       Logic.KWD_SORT_BY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SORT-BY", null, 2)));
       Logic.KWD_SCORE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("SCORE", null, 2)));
@@ -242,16 +260,13 @@ public class _StartupQuery {
       Logic.KWD_ALL_PROOFSp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ALL-PROOFS?", null, 2)));
       Logic.KWD_VALUES = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("VALUES", null, 2)));
       Logic.KWD_VALUES_DESCENDING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("VALUES-DESCENDING", null, 2)));
-    }
-  }
-
-  static void helpStartupQuery4() {
-    {
       Logic.KWD_VALUES_ASCENDING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("VALUES-ASCENDING", null, 2)));
+      Logic.KWD_READABLE_VALUESp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("READABLE-VALUES?", null, 2)));
       Logic.KWD_MINIMUM_SCORE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MINIMUM-SCORE", null, 2)));
       Logic.KWD_MAXIMIZE_SCOREp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MAXIMIZE-SCORE?", null, 2)));
       Logic.KWD_MAXIMUM_UNKNOWNS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MAXIMUM-UNKNOWNS", null, 2)));
       Logic.SGT_STELLA_PROPERTY_LIST = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("PROPERTY-LIST", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.KWD_HIGH = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("HIGH", null, 2)));
       Logic.KWD_DYNAMIC = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DYNAMIC", null, 2)));
       Logic.KWD_DYNAMIC_WITH_CLUSTERING = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("DYNAMIC-WITH-CLUSTERING", null, 2)));
       Logic.SGT_PL_KERNEL_KB_CONCEPT_PROTOTYPE = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("CONCEPT-PROTOTYPE", Stella.getStellaModule("/PL-KERNEL-KB", true), 1)));
@@ -262,7 +277,6 @@ public class _StartupQuery {
       Logic.SGT_STELLA_VECTOR = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("VECTOR", Stella.getStellaModule("/STELLA", true), 1)));
       Logic.KWD_UPDATE_FROM_QUERY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("UPDATE-FROM-QUERY", null, 2)));
       Logic.KWD_ASSERT_FROM_QUERY = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("ASSERT-FROM-QUERY", null, 2)));
-      Logic.KWD_MODULE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("MODULE", null, 2)));
       Logic.KWD_RECORD_JUSTIFICATIONSp = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("RECORD-JUSTIFICATIONS?", null, 2)));
       Logic.SYM_LOGIC_STARTUP_QUERY = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-QUERY", null, 0)));
     }
@@ -270,35 +284,35 @@ public class _StartupQuery {
 
   static void helpStartupQuery5() {
     {
-      { NormalInferenceLevel self030 = NormalInferenceLevel.newNormalInferenceLevel();
+      { NormalInferenceLevel self031 = NormalInferenceLevel.newNormalInferenceLevel();
 
-        self030.keyword = Logic.KWD_NORMAL;
-        Logic.NORMAL_INFERENCE = self030;
+        self031.keyword = Logic.KWD_NORMAL;
+        Logic.NORMAL_INFERENCE = self031;
       }
-      { BacktrackingInferenceLevel self031 = BacktrackingInferenceLevel.newBacktrackingInferenceLevel();
+      { BacktrackingInferenceLevel self032 = BacktrackingInferenceLevel.newBacktrackingInferenceLevel();
 
-        self031.keyword = Logic.KWD_BACKTRACKING;
-        Logic.BACKTRACKING_INFERENCE = self031;
+        self032.keyword = Logic.KWD_BACKTRACKING;
+        Logic.BACKTRACKING_INFERENCE = self032;
       }
-      { SubsumptionInferenceLevel self032 = SubsumptionInferenceLevel.newSubsumptionInferenceLevel();
+      { SubsumptionInferenceLevel self033 = SubsumptionInferenceLevel.newSubsumptionInferenceLevel();
 
-        self032.keyword = Logic.KWD_SUBSUMPTION;
-        Logic.SUBSUMPTION_INFERENCE = self032;
+        self033.keyword = Logic.KWD_SUBSUMPTION;
+        Logic.SUBSUMPTION_INFERENCE = self033;
       }
-      { ShallowInferenceLevel self033 = ShallowInferenceLevel.newShallowInferenceLevel();
+      { ShallowInferenceLevel self034 = ShallowInferenceLevel.newShallowInferenceLevel();
 
-        self033.keyword = Logic.KWD_SHALLOW;
-        Logic.SHALLOW_INFERENCE = self033;
+        self034.keyword = Logic.KWD_SHALLOW;
+        Logic.SHALLOW_INFERENCE = self034;
       }
-      { AssertionInferenceLevel self034 = AssertionInferenceLevel.newAssertionInferenceLevel();
+      { AssertionInferenceLevel self035 = AssertionInferenceLevel.newAssertionInferenceLevel();
 
-        self034.keyword = Logic.KWD_ASSERTION;
-        Logic.ASSERTION_INFERENCE = self034;
+        self035.keyword = Logic.KWD_ASSERTION;
+        Logic.ASSERTION_INFERENCE = self035;
       }
-      { RefutationInferenceLevel self035 = RefutationInferenceLevel.newRefutationInferenceLevel();
+      { RefutationInferenceLevel self036 = RefutationInferenceLevel.newRefutationInferenceLevel();
 
-        self035.keyword = Logic.KWD_REFUTATION;
-        Logic.REFUTATION_INFERENCE = self035;
+        self036.keyword = Logic.KWD_REFUTATION;
+        Logic.REFUTATION_INFERENCE = self036;
       }
       Logic.$INFERENCELEVEL$.setDefaultValue(Logic.NORMAL_INFERENCE);
       Logic.$DONTUSEDEFAULTKNOWLEDGEp$.setDefaultValue(new Boolean(false));
@@ -309,17 +323,18 @@ public class _StartupQuery {
       Logic.$DUPLICATE_RULE_SEARCH_DEPTH$ = Stella.NULL_INTEGER;
       Logic.$GENERATE_ALL_PROOFSp$.setDefaultValue(new Boolean(false));
       Logic.$QUERYITERATOR$.setDefaultValue(null);
-      { PropertyList self036 = PropertyList.newPropertyList();
+      { PropertyList self037 = PropertyList.newPropertyList();
 
-        self036.thePlist = Cons.list$(Cons.cons(Logic.KWD_UPCLASSIFY, Cons.cons(CharacterWrapper.wrapCharacter('u'), Cons.cons(Cons.list$(Cons.cons(Logic.KWD_DOWNCLASSIFY, Cons.cons(CharacterWrapper.wrapCharacter('d'), Cons.cons(Cons.list$(Cons.cons(Logic.KWD_PROPAGATE, Cons.cons(CharacterWrapper.wrapCharacter('f'), Cons.cons(Cons.list$(Cons.cons(Logic.KWD_PARTIAL_MATCH, Cons.cons(CharacterWrapper.wrapCharacter('p'), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Stella.NIL))));
-        Logic.$THINKING_DOT_TABLE$ = self036;
+        self037.thePlist = Cons.list$(Cons.cons(Logic.KWD_UPCLASSIFY, Cons.cons(CharacterWrapper.wrapCharacter('u'), Cons.cons(Cons.list$(Cons.cons(Logic.KWD_DOWNCLASSIFY, Cons.cons(CharacterWrapper.wrapCharacter('d'), Cons.cons(Cons.list$(Cons.cons(Logic.KWD_PROPAGATE, Cons.cons(CharacterWrapper.wrapCharacter('f'), Cons.cons(Cons.list$(Cons.cons(Logic.KWD_PARTIAL_MATCH, Cons.cons(CharacterWrapper.wrapCharacter('p'), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.NIL)))), Stella.NIL)))), Stella.NIL))));
+        Logic.$THINKING_DOT_TABLE$ = self037;
       }
-      { BooleanVectorIndexNode self037 = BooleanVectorIndexNode.newBooleanVectorIndexNode();
+      { BooleanVectorIndexNode self038 = BooleanVectorIndexNode.newBooleanVectorIndexNode();
 
-        self037.theVector = BooleanVector.newBooleanVector(0);
-        Logic.$BOOLEAN_VECTOR_INDEX$ = self037;
+        self038.theVector = BooleanVector.newBooleanVector(0);
+        Logic.$BOOLEAN_VECTOR_INDEX$ = self038;
       }
       Logic.$PRINTINFRAME$.setDefaultValue(null);
+      Logic.$TRACED_GOALS$ = HashSet.newHashSet();
       Logic.$REVERSEPOLARITYp$.setDefaultValue(new Boolean(false));
       Logic.$INLINE_QUERY_CACHE$ = KeyValueMap.newKeyValueMap();
     }
@@ -474,19 +489,25 @@ public class _StartupQuery {
       Stella.defineFunctionObject("COMPUTE-FRAME-DEPTH", "(DEFUN (COMPUTE-FRAME-DEPTH INTEGER) ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "computeFrameDepth", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
       Stella.defineFunctionObject("PRINT-VERTICAL-BARS", "(DEFUN PRINT-VERTICAL-BARS ((DEPTH INTEGER)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "printVerticalBars", new java.lang.Class [] {java.lang.Integer.TYPE}), null);
       Stella.defineFunctionObject("UNWIND-TO-CHOICE-POINTS-BELOW-FRAME", "(DEFUN UNWIND-TO-CHOICE-POINTS-BELOW-FRAME ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "unwindToChoicePointsBelowFrame", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
+      Stella.defineFunctionObject("TRACE-GOAL", "(DEFUN TRACE-GOAL ((NAME NAME)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "traceGoal", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("UNTRACE-GOAL", "(DEFUN UNTRACE-GOAL ((NAME NAME)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "untraceGoal", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("CLEAR-TRACED-GOALS", "(DEFUN CLEAR-TRACED-GOALS () :PUBLIC? TRUE :COMMAND? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "clearTracedGoals", new java.lang.Class [] {}), null);
+      Stella.defineFunctionObject("RESTRICTED-GOAL-TRACING?", "(DEFUN (RESTRICTED-GOAL-TRACING? BOOLEAN) ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "restrictedGoalTracingP", new java.lang.Class [] {}), null);
+      Stella.defineFunctionObject("TRACE-THIS-GOAL?", "(DEFUN (TRACE-THIS-GOAL? BOOLEAN) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "traceThisGoalP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("TRACE-GOAL-TREE", "(DEFUN TRACE-GOAL-TREE ((FRAME CONTROL-FRAME) (DEPTH INTEGER) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "traceGoalTree", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), java.lang.Integer.TYPE, Native.find_java_class("edu.isi.stella.Keyword")}), null);
+      Stella.defineFunctionObject("TRACE-GOAL-STACK", "(DEFUN TRACE-GOAL-STACK ((FRAME CONTROL-FRAME)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "traceGoalStack", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame")}), null);
       Stella.defineFunctionObject("OLD-INTERPRET-AND-SCORES", "(DEFUN (OLD-INTERPRET-AND-SCORES KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "oldInterpretAndScores", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
+    }
+  }
+
+  static void helpStartupQuery8() {
+    {
       Stella.defineMethodObject("(DEFMETHOD (CONTINUE-PARTIAL-AND-PROOF KEYWORD) ((SELF CONTROL-FRAME) (FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continuePartialAndProof", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("INTERPRET-ITERATIVE-FORALL-SCORES", "(DEFUN (INTERPRET-ITERATIVE-FORALL-SCORES KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "interpretIterativeForallScores", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("OLD-INTERPRET-OR-SCORES", "(DEFUN (OLD-INTERPRET-OR-SCORES KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "oldInterpretOrScores", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineMethodObject("(DEFMETHOD (CONTINUE-PARTIAL-OR-PROOF KEYWORD) ((SELF CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continuePartialOrProof", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Keyword")}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("OLD-INTERPRET-FAIL-SCORE", "(DEFUN (OLD-INTERPRET-FAIL-SCORE KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "oldInterpretFailScore", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineMethodObject("(DEFMETHOD (CONTINUE-PARTIAL-NOT-PROOF KEYWORD) ((SELF CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continuePartialNotProof", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Keyword")}), ((java.lang.reflect.Method)(null)));
-    }
-  }
-
-  static void helpStartupQuery8() {
-    {
       Stella.defineFunctionObject("OLD-INTERPRET-GOAL-SCORES", "(DEFUN (OLD-INTERPRET-GOAL-SCORES KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "oldInterpretGoalScores", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineFunctionObject("ATTACH-SUPPORT", "(DEFUN ATTACH-SUPPORT ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "attachSupport", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
       Stella.defineMethodObject("(DEFMETHOD (CONTINUE-PARTIAL-STRATEGIES-PROOFS KEYWORD) ((SELF CONTROL-FRAME) (LASTMOVE KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "continuePartialStrategiesProofs", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Keyword")}), ((java.lang.reflect.Method)(null)));
@@ -541,17 +562,17 @@ public class _StartupQuery {
       Stella.defineFunctionObject("HANDLE-TIMEOUT", "(DEFUN (HANDLE-TIMEOUT CONTROL-FRAME INTEGER) ((FRAME CONTROL-FRAME) (DEPTH INTEGER)))", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "handleTimeout", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), java.lang.Integer.TYPE, Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineMethodObject("(DEFMETHOD (LOOKUP (LIKE (ANY-VALUE SELF))) ((SELF QUERY-SOLUTION-TABLE) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Lookup the solution identified by `key' in `self' and\nreturn its value, or NULL if no such solution exists.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "lookup", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Vector")}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD INSERT-AT ((SELF QUERY-SOLUTION-TABLE) (KEY (LIKE (ANY-KEY SELF))) (VALUE (LIKE (ANY-VALUE SELF)))) :DOCUMENTATION \"Insert `value' identified by `key' into `self'.  If a solution\nwith that key already exists, destructively modify it with the slot values of\n`value'.  This is necessary to preserve the order of solutions in `self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "insertAt", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Vector"), Native.find_java_class("edu.isi.powerloom.logic.QuerySolution")}), ((java.lang.reflect.Method)(null)));
+    }
+  }
+
+  static void helpStartupQuery9() {
+    {
       Stella.defineMethodObject("(DEFMETHOD (DELETED? BOOLEAN) ((SELF QUERY-SOLUTION)))", Native.find_java_method("edu.isi.powerloom.logic.QuerySolution", "deletedP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (DELETED?-SETTER BOOLEAN) ((SELF QUERY-SOLUTION) (VALUE BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.QuerySolution", "deletedPSetter", new java.lang.Class [] {java.lang.Boolean.TYPE}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD REMOVE-AT ((SELF QUERY-SOLUTION-TABLE) (KEY (LIKE (ANY-KEY SELF)))) :DOCUMENTATION \"Remove the solution identified by `key' from `self'.\nTo preserve the solution ordering chain, the solution is marked as deleted\nand will be completely removed upon the next iteration through `self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "removeAt", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Vector")}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (POP (LIKE (ANY-VALUE SELF))) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Remove and return the first solution of `self' or NULL\nif the table is empty.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "pop", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (LENGTH INTEGER) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Return the number of entries in `self'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "length", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (EMPTY? BOOLEAN) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Return TRUE if `self' has zero entries.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "emptyP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-    }
-  }
-
-  static void helpStartupQuery9() {
-    {
       Stella.defineMethodObject("(DEFMETHOD (NON-EMPTY? BOOLEAN) ((SELF QUERY-SOLUTION-TABLE)) :DOCUMENTATION \"Return TRUE if `self' has at least 1 entry.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "nonEmptyP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (NTH (LIKE (ANY-VALUE SELF))) ((SELF QUERY-SOLUTION-TABLE) (POSITION INTEGER)) :DOCUMENTATION \"Return the nth solution in `self', or NULL if it is empty.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "nth", new java.lang.Class [] {java.lang.Integer.TYPE}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD CLEAR ((SELF QUERY-SOLUTION-TABLE)))", Native.find_java_method("edu.isi.powerloom.logic.QuerySolutionTable", "clear", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
@@ -565,11 +586,16 @@ public class _StartupQuery {
       Stella.defineFunctionObject("PRINT-GOAL-STACK", "(DEFUN PRINT-GOAL-STACK ((FRAME CONTROL-FRAME) (VERBOSE? BOOLEAN)) :DOCUMENTATION \"Print stack of goals.  Assumes that query has been interrupted\nwith a full stack of control frames.\")", Native.find_java_method("edu.isi.powerloom.logic.ControlFrame", "printGoalStack", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.ControlFrame"), java.lang.Boolean.TYPE}), null);
       Stella.defineFunctionObject("PGS", "(DEFUN PGS ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "pgs", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("VPGS", "(DEFUN VPGS ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "vpgs", new java.lang.Class [] {}), null);
+      Stella.defineExternalSlotFromStringifiedSource("(DEFSLOT QUERY-ITERATOR DEBUG-ID :TYPE STRING :ALLOCATION :DYNAMIC)");
+      Stella.defineMethodObject("(DEFMETHOD DEBUG-ID-SETTER ((SELF QUERY-ITERATOR) (ID STRING)) :DOCUMENTATION \"Set the debug ID of `self' to `id'.  If `id' is NULL, simply\nuse the current ID counter and increment it appropriately.\")", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "debugIdSetter", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("PRINT-QUERY-ITERATOR", "(DEFUN PRINT-QUERY-ITERATOR ((SELF QUERY-ITERATOR) (STREAM NATIVE-OUTPUT-STREAM)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "printQueryIterator", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("java.io.PrintStream")}), null);
       Stella.defineFunctionObject("PRINT-QUERY-ITERATOR-ORNATELY", "(DEFUN PRINT-QUERY-ITERATOR-ORNATELY ((SELF QUERY-ITERATOR) (STREAM NATIVE-OUTPUT-STREAM)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "printQueryIteratorOrnately", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("java.io.PrintStream")}), null);
       Stella.defineFunctionObject("PRINT-QUERY-ITERATOR-SOLUTION-ORNATELY", "(DEFUN PRINT-QUERY-ITERATOR-SOLUTION-ORNATELY ((SELF QUERY-ITERATOR) (SOLUTION QUERY-SOLUTION) (SOLUTIONNUMBER INTEGER) (STREAM NATIVE-OUTPUT-STREAM)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "printQueryIteratorSolutionOrnately", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("edu.isi.powerloom.logic.QuerySolution"), java.lang.Integer.TYPE, Native.find_java_class("java.io.PrintStream")}), null);
       Stella.defineFunctionObject("TRACE-SOLUTION", "(DEFUN TRACE-SOLUTION ((SELF QUERY-ITERATOR) (SOLUTION QUERY-SOLUTION) (SOLUTIONNUMBER INTEGER)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "traceSolution", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("edu.isi.powerloom.logic.QuerySolution"), java.lang.Integer.TYPE}), null);
       Stella.defineFunctionObject("PRINT-QUERY-ITERATOR-READABLY", "(DEFUN PRINT-QUERY-ITERATOR-READABLY ((SELF QUERY-ITERATOR) (STREAM NATIVE-OUTPUT-STREAM)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "printQueryIteratorReadably", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("java.io.PrintStream")}), null);
+      Stella.defineFunctionObject("PRINT-QUERY-ITERATOR-TAB-SEPARATED", "(DEFUN PRINT-QUERY-ITERATOR-TAB-SEPARATED ((SELF QUERY-ITERATOR) (STREAM NATIVE-OUTPUT-STREAM)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "printQueryIteratorTabSeparated", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("java.io.PrintStream")}), null);
+      Stella.defineFunctionObject("PARSE-QUERY-ITERATOR-STRING-TEMPLATE", "(DEFUN (PARSE-QUERY-ITERATOR-STRING-TEMPLATE CONS) ((SELF QUERY-ITERATOR) (TEMPLATE STRING)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "parseQueryIteratorStringTemplate", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("java.lang.String")}), null);
+      Stella.defineFunctionObject("PRINT-QUERY-ITERATOR-VIA-TEMPLATE", "(DEFUN PRINT-QUERY-ITERATOR-VIA-TEMPLATE ((SELF QUERY-ITERATOR) (STREAM NATIVE-OUTPUT-STREAM)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "printQueryIteratorViaTemplate", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("java.io.PrintStream")}), null);
       Stella.defineFunctionObject("ALLOCATE-QUERY-ITERATOR", "(DEFUN (ALLOCATE-QUERY-ITERATOR QUERY-ITERATOR) ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "allocateQueryIterator", new java.lang.Class [] {}), null);
       Stella.defineMethodObject("(DEFMETHOD FREE ((SELF QUERY-ITERATOR)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "free", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("FREE-QUERY-ITERATOR", "(DEFUN FREE-QUERY-ITERATOR ((SELF QUERY-ITERATOR)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "freeQueryIterator", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator")}), null);
@@ -582,14 +608,16 @@ public class _StartupQuery {
       Stella.defineMethodObject("(DEFMETHOD (QUERY-IS-PARTIAL? BOOLEAN) ((SELF QUERY-ITERATOR)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "queryIsPartialP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (QUERY-SUCCEEDED? BOOLEAN) ((SELF QUERY-ITERATOR)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "querySucceededP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (NEXT? BOOLEAN) ((SELF QUERY-ITERATOR)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "nextP", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
-      Stella.defineFunctionObject("TRY-TO-DEFEAT-LAST-ANSWER?", "(DEFUN (TRY-TO-DEFEAT-LAST-ANSWER? BOOLEAN) ((SELF QUERY-ITERATOR)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "tryToDefeatLastAnswerP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator")}), null);
+      Stella.defineFunctionObject("TRY-TO-DEFEAT-LAST-ANSWER?", "(DEFUN (TRY-TO-DEFEAT-LAST-ANSWER? BOOLEAN JUSTIFICATION) ((SELF QUERY-ITERATOR)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "tryToDefeatLastAnswerP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineMethodObject("(DEFMETHOD RESET ((SELF QUERY-ITERATOR)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "reset", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("STANDARDIZE-QUERY-TREE", "(DEFUN (STANDARDIZE-QUERY-TREE CONS) ((IOVARIABLES OBJECT) (QUERYBODY OBJECT) (EXTERNALVARIABLES CONS)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "standardizeQueryTree", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Cons")}), null);
       Stella.defineFunctionObject("MAKE-QUERY", "(DEFUN (MAKE-QUERY QUERY-ITERATOR) ((IOVARIABLES OBJECT) (QUERYTREE OBJECT) (EXTERNALBINDINGS CONS) (OPTIONS OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "makeQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("PARSE-QUERY-AND-OPTIONS", "(DEFUN (PARSE-QUERY-AND-OPTIONS OBJECT OBJECT PROPERTY-LIST) ((|QUERY&OPTIONS| CONS)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "parseQueryAndOptions", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("PROCESS-QUERY-OPTIONS", "(DEFUN PROCESS-QUERY-OPTIONS ((QUERY QUERY-ITERATOR) (OPTIONS OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "processQueryOptions", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("LOOKUP-QUERY-OPTION", "(DEFUN (LOOKUP-QUERY-OPTION OBJECT) ((QUERYOROPTIONS OBJECT) (KEY KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "lookupQueryOption", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
+      Stella.defineFunctionObject("LOOKUP-QUERY-OPTION-WITH-DEFAULT", "(DEFUN (LOOKUP-QUERY-OPTION-WITH-DEFAULT OBJECT) ((QUERYOROPTIONS OBJECT) (KEY KEYWORD) (DEFAULT OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "lookupQueryOptionWithDefault", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Keyword"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("TEST-QUERY-OPTION?", "(DEFUN (TEST-QUERY-OPTION? BOOLEAN) ((QUERYOROPTIONS OBJECT) (KEY KEYWORD)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "testQueryOptionP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Keyword")}), null);
+      Stella.defineFunctionObject("TEST-QUERY-OPTION-VALUE?", "(DEFUN (TEST-QUERY-OPTION-VALUE? BOOLEAN) ((QUERYOROPTIONS OBJECT) (KEY KEYWORD) (VALUE OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "testQueryOptionValueP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Keyword"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("LOOKUP-DEFERRED-QUERY-OPTION", "(DEFUN (LOOKUP-DEFERRED-QUERY-OPTION OBJECT) ((QUERYOROPTIONS OBJECT) (KEY KEYWORD) (COERCETOTYPE TYPE)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "lookupDeferredQueryOption", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Keyword"), Native.find_java_class("edu.isi.stella.Surrogate")}), null);
       Stella.defineFunctionObject("LOOKUP-HOW-MANY-SOLUTIONS", "(DEFUN (LOOKUP-HOW-MANY-SOLUTIONS INTEGER) ((QUERYOROPTIONS OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "lookupHowManySolutions", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("RUN-YES-OR-NO-QUERY?", "(DEFUN (RUN-YES-OR-NO-QUERY? THREE-VALUED-BOOLEAN) ((QUERY QUERY-ITERATOR)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "runYesOrNoQueryP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator")}), null);
@@ -599,8 +627,13 @@ public class _StartupQuery {
       Stella.defineFunctionObject("ASK", "(DEFUN (ASK TRUTH-VALUE) (|&REST| (|PROPOSITION&OPTIONS| PARSE-TREE)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Perform inference to determine whether the proposition specified in\n`proposition&options' is true.  Return the truth-value found.  `ask'\nwill spend most of its effort to determine whether the proposition\nis true and only a little effort via shallow inference strategies to\ndetermine whether it is false.  To find out whether a proposition is\nfalse with full inference effort `ask' its negation.\n\nKIF example: `(ask (happy Fred))' will return TRUE if Fred was indeed\nfound to be happy.  Note, that for this query to run, the logic\nconstant `Fred' and the relation `happy' must already be defined (see\n`assert').  Use `(set/unset-feature goal-trace)' to en/disable goal\ntracing of the inference engine.\n\nThe `ask' command supports the following options: `:TIMEOUT' is an\ninteger or floating point time limit, specified in seconds.  For\nexample, the command `(ask (nervous Fred) :timeout 2.0)' will cease\ninference after two seconds if a proof has not been found by then.\nIf the `:DONT-OPTIMIZE?' is given as TRUE, it tells PowerLoom to\nnot optimize the order of clauses in the query before evaluating it.\nThis is useful for cases where a specific evaluation order of the\nclauses is required (or the optimizer doesn't do the right thing).\nIf `:THREE-VALUED?' is given as TRUE, PowerLoom will try to prove\nthe negation of the query with full effort in case the given query\nreturned UNKNOWN.  By default, PowerLoom uses full effort to prove\nthe query as stated and only a little opportunistic effort to see\nwhether it is actually false.\")", Native.find_java_method("edu.isi.powerloom.logic.Logic", "ask", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "askEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
       Stella.defineFunctionObject("RETRIEVE-BINDINGS", "(DEFUN (RETRIEVE-BINDINGS QUERY-ITERATOR) ((QUERY OBJECT) (NOFBINDINGS INTEGER)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "retrieveBindings", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), java.lang.Integer.TYPE}), null);
       Stella.defineFunctionObject("CREATE-RETRIEVE-QUERY", "(DEFUN (CREATE-RETRIEVE-QUERY QUERY-ITERATOR) ((QUERY OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "createRetrieveQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+    }
+  }
+
+  static void helpStartupQuery10() {
+    {
       Stella.defineFunctionObject("CALL-RETRIEVE", "(DEFUN (CALL-RETRIEVE QUERY-ITERATOR) ((QUERY OBJECT)) :DOCUMENTATION \"Callable version of `retrieve' (which see).  Accepts queries\nspecified by a query iterator, or specified as a CONS-list of arguments as they\nwould be supplied to `retrieve'.  Raises LOGIC-EXCEPTIONs in case of illegal\nqueries and logical expressions.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "callRetrieve", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("RETRIEVE", "(DEFUN (RETRIEVE QUERY-ITERATOR) (|&REST| (QUERY PARSE-TREE)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Retrieve elements of a relation (tuples) that satisfy a proposition.\nThe accepted syntax is:\n	 \n  (retrieve [<integer> | all]\n            [[{<vardecl> | (<vardecl>+)}]\n            <proposition>])\n	\nThe variables and proposition are similar to an `exists' sentence or\n`kappa' term without the explicit quantifier.  If variables are declared,\nthey must match the free variables referenced by <proposition>.  Otherwise,\nthe free variables referenced in <proposition> will be used as the query\nvariables.  If <proposition> is omitted, the most recently asked query\nwill be continued.\n\nA solution is a set of bindings for the listed variables for which\n<proposition> is true.  The optional first argument controls how many\nsolutions should be generated before control is returned.  The keyword\n`all' indicates that all solutions should be generated.  By default,\n`retrieve' returns after it has found one new solution or if it cannot\nfind any more solutions.\n\n`retrieve' returns an iterator which saves all the necessary state of\na query and stores all generated solutions.  When used interactively,\nthe returned iterator will print out with the set of solutions collected\nso far.  Calling `retrieve' without any arguments (or only with the first\nargument) will generate one (or more) solutions to the most recently\nasked query.\n\nKIF examples:\n	 \n  (retrieve (happy ?x))\n	\nwill try to find one happy entity and store it in the returned \nquery iterator.\n	 \n  (retrieve 10 (happy ?x))\n	\nwill try to find 10 happy entities.\n	 \n  (retrieve 10)\n	\nwill try to find the next 10 happy entities..\n	 \n  (retrieve all (happy ?x))\n	\nwill find all happy entities.\n	 \n  (retrieve all (?x Person) (happy ?x))\n	\nwill to find all happy people.  Here we used the optional retrieve variable\nsyntax to restrict the acceptable solutions.  The above is equivalent to\nthe following query:\n	 \n  (retrieve all (and (Person ?x) (happy ?x)))\n	\nSimilarly,\n	 \n  (retrieve all (?x Person))\n  (retrieve all (Person ?x))\n  (retrieve all ?x (Person ?x))\n	\nwill find all people.  Note that in the first case we only specify a query\nvariable and its type but omit the logic sentence which defaults to TRUE.  This\nsomewhat impoverished looking query can be paraphrased as \\\"retrieve all ?x of\ntype Person such that TRUE.\\\"\n	 \n  (retrieve ?x (or (happy ?x) (parent-of Fred ?x)))\n	\nwill try to find a person that is happy or has Fred as a parent.\n	 \n  (retrieve (?y ?x) (parent-of ?x ?y))\n	\nwill try to find the one pair of parent/child and return it in the order\nof child/parent.\n	 \n  (retrieve all (?x Person)\n            (exists (?y Person) (parent-of ?x ?y)))\n	\nwill generate the set of all parents.  Note, that for these queries to run,\nthe class `Person', the relations `happy' and `parent-of', and the logic\nconstant `Fred' must already be defined (see `assert').\n\nUse `(set/unset-feature trace-subgoals)' to en/disable goal tracing of the\ninference engine.\")", Native.find_java_method("edu.isi.powerloom.logic.Logic", "retrieve", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "retrieveEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
+      Stella.defineFunctionObject("RETRIEVE", "(DEFUN (RETRIEVE QUERY-ITERATOR) (|&REST| (QUERY PARSE-TREE)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Retrieve elements of a relation (tuples) that satisfy a proposition.\nThe accepted syntax is:\n	 \n  (retrieve [<integer> | all]\n            [[{<vardecl> | (<vardecl>+)}]\n             <proposition>\n             [<option-keyword> <option-value>]])\n	\nThe variables and proposition are similar to an `exists' sentence or\n`kappa' term without the explicit quantifier.  If variables are declared,\nthey must match the free variables referenced by <proposition>.  Otherwise,\nthe free variables referenced in <proposition> will be used as the query\nvariables.  If <proposition> is omitted, the most recently asked query\nwill be continued.\n\nA solution is a set of bindings for the listed variables for which\n<proposition> is true.  The optional first argument controls how many\nsolutions should be generated before control is returned.  The keyword\n`all' indicates that all solutions should be generated.  By default,\n`retrieve' returns after it has found one new solution or if it cannot\nfind any more solutions.\n\n`retrieve' returns an iterator which saves all the necessary state of\na query and stores all generated solutions.  When used interactively,\nthe returned iterator will print out with the set of solutions collected\nso far.  Calling `retrieve' without any arguments (or only with the first\nargument) will generate one (or more) solutions to the most recently\nasked query.\n\n`retrieve' supports the following options:\n  :TIMEOUT Time limit on query effort in seconds.\n  :MAXIMUM-DEPTH Inference depth cutoff in goal depth.\n  :INFERENCE-LEVEL Level of inference to use.  The values in order of effort\n     and power are ASSERTION, SHALLOW, SUBSUMPTION, BACKTRACKING, NORMAL\n     and REFUTATION. Default is NORMAL.\n  :FOUR-VALUED? Will attempt to disprove values and find conflicts.\n  :ITERATIVE-DEEPENING? Controls whether the search strategy will use\n     depth-first or breadth-first search.\n  :DONT-OPTIMIZE? Option to disable re-arrangement of clauses by the query\n     optimizer.  If TRUE, then use the order of clauses as given in the query.\n  :SORT-BY one of SCORE, VALUES, VALUES-DESCENDING, VALUES-ASCENDING.  \n     SCORE is only meaningful for partial match mode.  The value sorting\n     is done by values in order in the tuple.  Default is ascending.\n  :MATCH-MODE Allows choice of matching mode.  One of STRICT, INCREMENTAL, \n     NEURAL-NETWORK, or other plug-in partial-match mode.\n     The default is STRICT.\n  :MINIMUM-SCORE The minimum score to return.  Only useful in partial match\n    mode.\n  :MAXIMUM-UNKNOWNS The maximum number of unknown values to allow.  Only useful\n    for whynot matching.\n\nKIF examples:\n	 \n  (retrieve (happy ?x))\n	\nwill try to find one happy entity and store it in the returned \nquery iterator.\n	 \n  (retrieve 10 (happy ?x))\n	\nwill try to find 10 happy entities.\n	 \n  (retrieve 10)\n	\nwill try to find the next 10 happy entities..\n	 \n  (retrieve all (happy ?x))\n	\nwill find all happy entities.\n	 \n  (retrieve all (?x Person) (happy ?x))\n	\nwill to find all happy people.  Here we used the optional retrieve variable\nsyntax to restrict the acceptable solutions.  The above is equivalent to\nthe following query:\n	 \n  (retrieve all (and (Person ?x) (happy ?x)))\n	\nSimilarly,\n	 \n  (retrieve all (?x Person))\n  (retrieve all (Person ?x))\n  (retrieve all ?x (Person ?x))\n	\nwill find all people.  Note that in the first case we only specify a query\nvariable and its type but omit the logic sentence which defaults to TRUE.  This\nsomewhat impoverished looking query can be paraphrased as \\\"retrieve all ?x of\ntype Person such that TRUE.\\\"\n	 \n  (retrieve ?x (or (happy ?x) (parent-of Fred ?x)))\n	\nwill try to find a person that is happy or has Fred as a parent.\n	 \n  (retrieve (?y ?x) (parent-of ?x ?y))\n	\nwill try to find the one pair of parent/child and return it in the order\nof child/parent.\n	 \n  (retrieve all (?x Person)\n         " + "   (exists (?y Person) (parent-of ?x ?y)))\n	\nwill generate the set of all parents.  Note, that for these queries to run,\nthe class `Person', the relations `happy' and `parent-of', and the logic\nconstant `Fred' must already be defined (see `assert').\n\nUse `(set/unset-feature trace-subgoals)' to en/disable goal tracing of the\ninference engine.\")", Native.find_java_method("edu.isi.powerloom.logic.Logic", "retrieve", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "retrieveEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
       Stella.defineMethodObject("(DEFMETHOD (CONSIFY-CURRENT-SOLUTIONS CONS) ((SELF QUERY-ITERATOR)) :DOCUMENTATION \"Collect the current solutions of `self' into a cons list\nof result tuples.  If `:SINGLETONS? TRUE', collect a list of atoms rather than a\nlist of lists for tuples of arity=1.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "consifyCurrentSolutions", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineMethodObject("(DEFMETHOD (CONSIFY CONS) ((SELF QUERY-ITERATOR)) :DOCUMENTATION \"Generate all solutions for the query self, and collect them into a cons list\nof result tuples.  If `:SINGLETONS? TRUE', collect a list of atoms rather than a\nlist of lists for tuples of arity=1.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "consify", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("CONSIFY-QUERY", "(DEFUN (CONSIFY-QUERY CONS) ((SELF QUERY-ITERATOR)) :GLOBALLY-INLINE? TRUE (RETURN (CONSIFY SELF)))", Native.find_java_method("edu.isi.powerloom.logic.QueryIterator", "consifyQuery", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.QueryIterator")}), null);
@@ -612,11 +645,6 @@ public class _StartupQuery {
       Stella.defineFunctionObject("APPLY-CACHED-RETRIEVE", "(DEFUN (APPLY-CACHED-RETRIEVE CONS CONS CONS) ((VARIABLES CONS) (QUERYBODY CONS) (INPUTBINDINGS CONS) (OPTIONS OBJECT) (CACHEID SYMBOL)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "applyCachedRetrieve", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("APPLY-CACHED-ASK", "(DEFUN (APPLY-CACHED-ASK BOOLEAN TRUTH-VALUE) ((INPUTVARIABLES CONS) (QUERYBODY CONS) (INPUTBINDINGS CONS) (OPTIONS OBJECT) (CACHEID SYMBOL)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "applyCachedAsk", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Cons"), Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Symbol"), Native.find_java_class("[Ljava.lang.Object;")}), null);
       Stella.defineFunctionObject("GET-PROTOTYPE", "(DEFUN (GET-PROTOTYPE LOGIC-OBJECT) ((DESCRIPTION DESCRIPTION)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Description", "getPrototype", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
-    }
-  }
-
-  static void helpStartupQuery10() {
-    {
       Stella.defineFunctionObject("UNARY-DESCRIPTION-SPECIALIZES-DESCRIPTION?", "(DEFUN (UNARY-DESCRIPTION-SPECIALIZES-DESCRIPTION? TRUTH-VALUE) ((SUB DESCRIPTION) (SUPER DESCRIPTION)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "unaryDescriptionSpecializesDescriptionP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
       Stella.defineFunctionObject("DESCRIPTION-SPECIALIZES-DESCRIPTION?", "(DEFUN (DESCRIPTION-SPECIALIZES-DESCRIPTION? TRUTH-VALUE) ((SUB DESCRIPTION) (SUPER DESCRIPTION)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Description", "descriptionSpecializesDescriptionP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
       Stella.defineFunctionObject("VECTOR-SATISFIES-DESCRIPTION?", "(DEFUN (VECTOR-SATISFIES-DESCRIPTION? TRUTH-VALUE) ((VECTOR VECTOR) (DESCRIPTION DESCRIPTION)) :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "vectorSatisfiesDescriptionP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Vector"), Native.find_java_class("edu.isi.powerloom.logic.Description")}), null);
@@ -699,6 +727,7 @@ public class _StartupQuery {
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *THINKING-DOT-TABLE* (PROPERTY-LIST OF KEYWORD CHARACTER-WRAPPER) (NEW PROPERTY-LIST :THE-PLIST (BQUOTE (:UPCLASSIFY |&| (WRAP-LITERAL #\\u) :DOWNCLASSIFY |&| (WRAP-LITERAL #\\d) :PROPAGATE |&| (WRAP-LITERAL #\\f) :PARTIAL-MATCH |&| (WRAP-LITERAL #\\p)))) :DOCUMENTATION \"Maps kind of thinking keywords to characters.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *BOOLEAN-VECTOR-INDEX* BOOLEAN-VECTOR-INDEX-NODE (NEW BOOLEAN-VECTOR-INDEX-NODE :THE-VECTOR (NEW BOOLEAN-VECTOR :ARRAY-SIZE 0)) :DOCUMENTATION \"Points to the head of a discrimination tree of containing\nall boolean vectors.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTINFRAME* CONTROL-FRAME NULL :DOCUMENTATION \"If set, controls diagnostic printing by making\nvariable bindings appear relative to the frame '*printInFrame*'.\")");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TRACED-GOALS* (HASH-SET OF NAMED-DESCRIPTION NAMED-DESCRIPTION) (NEW HASH-SET))");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *CONTROL-FRAME-ID-COUNTER* INTEGER -1 :DOCUMENTATION \"Generates unique IDs for control frames.  Used only for debugging.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *REVERSEPOLARITY?* BOOLEAN FALSE :PUBLIC? TRUE :DOCUMENTATION \"Signals atomic proposition provers that polarity is negative.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *TRACE-DISJOINTNESS-SUBGOALS?* BOOLEAN FALSE :DOCUMENTATION \"If true and goal tracing is on, subgoals of disjointness\nqueries will also be traced.\" :PUBLIC? TRUE)");
@@ -707,6 +736,7 @@ public class _StartupQuery {
           Logic.defineExplanationPhrase(Logic.KWD_DEPTH_CUTOFF, Logic.KWD_LAY, "because the maximum inference search depth was exceeded", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_TIMEOUT, Logic.KWD_TECHNICAL, "because of an inference timeout", Stella.NIL);
           Logic.defineExplanationPhrase(Logic.KWD_TIMEOUT, Logic.KWD_LAY, "because the allotted inference CPU time was exceeded", Stella.NIL);
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *QUERY-ITERATOR-DEBUG-ID-COUNTER* INTEGER 0)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MOST-RECENT-QUERY* QUERY-ITERATOR NULL)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *INLINE-QUERY-CACHE* (KEY-VALUE-MAP OF SYMBOL (LIST OF QUERY-ITERATOR)) (NEW KEY-VALUE-MAP) :DOCUMENTATION \"Caches queries used in-line by code, so that they don't have to\nbe reparsed and reoptimized each time they are invoked.\" :THREAD-LOCAL? TRUE)");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *MAX-CACHED-QUERIES-PER-ID* INTEGER 10)");

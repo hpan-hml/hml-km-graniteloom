@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2012      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: print.ste,v 1.43 2006/05/11 07:05:30 hans Exp
+;;; Version: print.ste,v 1.44 2012/05/07 23:44:08 hans Exp
 
 ;;; Routines that print logic objects
 
@@ -81,6 +81,10 @@
   ;;
 ;;;;;; Printing skolems and propositions
   ;;
+
+(defglobal *debug-print-mode?* BOOLEAN FALSE
+  :documentation "If set to TRUE, modify printing so that it
+doesn't break and is more informative during a debugging session.")
 
 (defspecial *printMode* KEYWORD :FLAT
   :documentation "Controls the kind of detail that gets printed about
@@ -255,10 +259,6 @@ their own.")
       (print-stream stream prefix)))
   (print-logical-form self stream))
 
-(defglobal *debug-mode?* BOOLEAN FALSE
-  :documentation "If set to TRUE, simplify printing so that it
-doesn't break during a debugging session.")
-
 (defun print-description
        ((self DESCRIPTION) (stream OUTPUT-STREAM) (topLevel? BOOLEAN))
   ;; Print a description.  Either print the 'proposition' of 'self',
@@ -272,7 +272,7 @@ doesn't break during a debugging session.")
   (cond
    ((or *loadingRegenerableObjects?*
         (bad? self)
-        *debug-mode?*)
+        *debug-print-mode?*)
     (print-stream stream "|d|"))
    ((and topLevel? (not *printreadably?*))
     (cond

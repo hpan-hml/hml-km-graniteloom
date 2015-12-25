@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -122,6 +122,7 @@ Cons* cppTranslateStartupTimeProgn(Cons* tree);
 boolean cppStreamIsStandardOutputP(Object* tree);
 Cons* cppTranslatePrintStream(Cons* tree);
 Cons* cppTranslateSetqTree(Cons* tree);
+Object* cppTranslateSysSetDefault(Cons* tree);
 Cons* cppTranslateNull();
 Cons* cppTranslateLetTree(Cons* tree);
 StringWrapper* cppTranslateTypeSpec(StandardObject* typespec);
@@ -189,6 +190,7 @@ Cons* cppTranslateMethodCodeSignature(Cons* signature);
 Cons* cppTranslateCallFunctionCode(Cons* tree);
 Cons* cppTranslateCallMethodCode(Cons* tree);
 Cons* getLastNElements(Cons* list, int n);
+Cons* cppYieldUnusedDummyArgs(MethodSlot* method, Cons* args);
 Cons* cppTranslateFunctionCall(Cons* tree, MethodSlot* method);
 Cons* cppTranslateOperatorTree(Cons* tree);
 Cons* cppTranslateOperatorCall(Cons* operatornames, Cons* arguments, int arity);
@@ -292,6 +294,7 @@ extern Symbol* SYM_CPP_TRANSLATE_STELLA_VOID_SYS;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_BAD_SYS;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_TYPED_SYS;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_SETQ;
+extern Symbol* SYM_CPP_TRANSLATE_STELLA_SYS_SET_DEFAULT;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_SYS_SLOT_VALUE;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_SYS_REFERENCED_SLOT_VALUE;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_SYS_SLOT_VALUE_SETTER;
@@ -404,11 +407,7 @@ extern Keyword* KWD_CPP_TRANSLATE_CONTINUABLE_ERROR;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_STANDARD_ERROR;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_STANDARD_OUT;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_EOL;
-extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_REFERENCED_METHOD_CALL;
-extern Symbol* SYM_CPP_TRANSLATE_STELLA_NULL;
-extern Symbol* SYM_CPP_TRANSLATE_STELLA_SET;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_SYMBOL;
-extern Symbol* SYM_CPP_TRANSLATE_STELLA_GET;
 extern Keyword* KWD_CPP_TRANSLATE_CPP_STANDALONE;
 extern Surrogate* SGT_CPP_TRANSLATE_STELLA_UNKNOWN;
 extern Keyword* KWD_CPP_TRANSLATE_UPPERCASE;
@@ -423,6 +422,7 @@ extern Keyword* KWD_CPP_TRANSLATE_UPCASE;
 extern Keyword* KWD_CPP_TRANSLATE_TITLECASEX;
 extern Keyword* KWD_CPP_TRANSLATE_TITLECASE;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_MODULE_CPP_PACKAGE;
+extern Symbol* SYM_CPP_TRANSLATE_STELLA_NULL;
 extern Keyword* KWD_CPP_TRANSLATE_FULL;
 extern Keyword* KWD_CPP_TRANSLATE_NEVER;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_FALSE;
@@ -444,6 +444,7 @@ extern Symbol* SYM_CPP_TRANSLATE_STELLA_NTH_SETTER;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_AREF;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_AREF_SETTER;
 extern Surrogate* SGT_CPP_TRANSLATE_STELLA_ARGUMENT_LIST;
+extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_REFERENCED_METHOD_CALL;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_METHOD_CALL;
 extern Surrogate* SGT_CPP_TRANSLATE_STELLA_OBJECT;
 extern Surrogate* SGT_CPP_TRANSLATE_STELLA_BOOLEAN;
@@ -455,10 +456,10 @@ extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_FUNCTION_SIGNATURE;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_METHOD_SIGNATURE;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_FUNCALL;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_METHOD_CODE_CALL;
+extern Symbol* SYM_CPP_TRANSLATE_STELLA_DUMMY;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_GET_SYM;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_GET_KWD;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_GET_SGT;
-extern Symbol* SYM_CPP_TRANSLATE_STELLA_DUMMY;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_CPP_TERNARY_OP;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_STARTUP_CPP_TRANSLATE;
 extern Symbol* SYM_CPP_TRANSLATE_STELLA_METHOD_STARTUP_CLASSNAME;

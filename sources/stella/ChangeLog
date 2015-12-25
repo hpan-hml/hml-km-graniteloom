@@ -17389,3 +17389,926 @@ Log Message:
 Bumped patch level for automatic snapshot build.
 
 
+
+****************************************
+Date:	Thursday December 16, 2010 @ 16:06
+Author:	tar
+
+Update of /home/loom/CVS-Repository/powerloom/sources/stella/javalib
+In directory blackcat.isi.edu:/tmp/cvs-serv17554/sources/stella/javalib
+
+Modified Files:
+	Native.java 
+Log Message:
+Updated ticktock (timing) functions to return CPU time if available, instead
+of elapsed time.  Requires Java 1.5 as a minimum version.
+
+
+
+****************************************
+Date:	Monday December 12, 2011 @ 15:16
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	collections.ste 
+Log Message:
+VECTOR.sort-tuples:
+  Added.
+
+
+
+****************************************
+Date:	Monday December 12, 2011 @ 15:21
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	methods.ste 
+Log Message:
+define-function-object-eagerly?:
+  New support for eager function definition, for cases where we need
+  to have the function object available right away (e.g., for system
+  property demon registration).
+
+yield-define-stella-method-object, define-function-object:
+  Support eager function object creation if necessary.
+
+
+
+****************************************
+Date:	Monday December 12, 2011 @ 15:32
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	primal.ste 
+Log Message:
+log10:
+  Improved CL verbatim statement - not completely sure why, probably
+  because there were problems when inlining took it into different
+  contexts.
+
+stella-integer-to-string-in-base:
+  New function that improves the C++ version which was slow.
+
+string-to-int:
+  New convenience function.
+
+LONG-INTEGER-WRAPPER.hash-code, LONG-INTEGER.hash-code:
+  Improved to use both 32-bit words.
+
+get-temp-directory:
+  New function.
+
+cl-list-directory-files:
+  Fixed: the old directory removal strategy didn't work if the
+  returned filename had a different physical directory than what we
+  supplied (e.g., with links or tilde-syntax).  However, we should
+  rethink the directory removal anyway, because it looks like we always
+  have to reappend it to make use of the files.
+
+
+
+****************************************
+Date:	Monday December 12, 2011 @ 15:35
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	read.ste 
+Log Message:
+*trace-get-next-token?*:
+  New low-level state machine debugging aid.
+
+stream-to-string:
+  Stream-lined via `copy-stream-to-stream'.
+
+file-to-string:
+  New convenience function.
+
+
+
+****************************************
+Date:	Monday December 12, 2011 @ 15:39
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	cpp-translate.ste 
+Log Message:
+cpp-translate-normal-method-call:
+  Support dummy arg generation for methods with multiple return
+  values, just the way we do it for functions.
+
+cpp-yield-unused-dummy-args:
+  Extracted from `cpp-translate-function-call', so we can use it for
+  methods as well.
+
+cpp-translate-function-call:
+  Use new `cpp-yield-unused-dummy-args'.
+
+
+
+****************************************
+Date:	Monday December 12, 2011 @ 15:44
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	systems.ste 
+Log Message:
+collect-defined-modules-from-system-file:
+  New utility for C++ translation, so we can collect forward
+  declarations for all classes, even if they are defined outside the
+  cardinal module of the system.
+
+set-configuration-property, add-configuration-property,
+clear-configuration-property, remove-configuration-property:
+  Now run property demons, which can updated system variables, etc. in
+case a property gets changed.
+
+*registered-property-demons*, register-property-demon,
+unregister-property-demon, lookup-variable-demon-setter,
+run-configuration-property-demon, METHOD-SLOT.demon-property,
+GLOBAL-VARIABLE.demon-property, demon-property-handler,
+test-property-demon:
+  New support for property demons.
+
+
+
+****************************************
+Date:	Monday December 12, 2011 @ 15:46
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	cpp-translate-file.ste 
+Log Message:
+cpp-output-system-header-file:
+  Generalized to output forward declarations for classes in all
+  modules defined by this system, not just from the cardinal module.
+
+cpp-output-system-Makefile:
+  Fix generation of system file list for files that reside in
+  subdirectories (e.g., in the "webtools" system).
+
+
+
+****************************************
+Date:	Monday December 12, 2011 @ 15:48
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	Makefile-default.in 
+Log Message:
+Fix default .cc.o compilation rule, to supply a -o option which fixes
+a problem with files from subdirectories, that otherwise would be
+compiled into the current directory (was a problem with the "webtools"
+system).
+
+
+
+****************************************
+Date:	Friday April 20, 2012 @ 16:30
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	load-stella.lisp 
+Log Message:
+with-compilation-unit:
+  Generalized conditionalization for CMUCL to work for versions other
+  than 19.
+
+
+
+****************************************
+Date:	Friday April 20, 2012 @ 16:43
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-stella-snapshot/version
+
+Modified Files:
+	startup.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Thursday July 12, 2012 @ 14:23
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	conses.ste 
+Log Message:
+remove-duplicates-equal, remove-duplicates-from-long-list:
+  Fixed to use `equal-hash-code' when necessary.
+
+*sort-objects-compare-slot*, sort-objects-compare?, sort-objects:
+  New definitions to support sorting based on some slot value of an object.
+
+
+
+****************************************
+Date:	Thursday July 12, 2012 @ 14:36
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	collections.ste 
+Log Message:
+VECTOR.sort-objects:
+  Added as an analogue of the CONS.sort-objects method.
+
+HEAP.copy, HEAP.last:
+  New definitions.
+
+
+
+****************************************
+Date:	Saturday July 14, 2012 @ 1:26
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-stella-snapshot/version
+
+Modified Files:
+	startup.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Friday October 12, 2012 @ 17:26
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	walk.ste 
+Log Message:
+lookup-command-like-function:
+  New definition.
+
+method-callable-via-apply?:
+  New function extracted from `method-needs-evaluator-wrapper?' that
+  doesn't look at whether the function is a command or not.
+
+method-needs-evaluator-wrapper?:
+  Rewritten with new `method-callable-via-apply?'.
+
+evaluate-cons-tree:
+  Generalized to allow evaluation of non-commands that can be
+  evaluated via `apply'.
+
+make-evaluatable-bquote-tree:
+  Handle `wrap-literal' trees.
+
+
+
+****************************************
+Date:	Friday October 12, 2012 @ 17:57
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	primal.ste 
+Log Message:
+seed-random-number-generator:
+  Implemented for Lisp and Java.
+
+
+
+****************************************
+Date:	Friday October 12, 2012 @ 17:59
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	iterators.ste 
+Log Message:
+CROSS-PRODUCT-ITERATOR, allocate-cross-product-iterator,
+CROSS-PRODUCT-ITERATOR.reset, CROSS-PRODUCT-ITERATOR.next?:
+  New definitions to generate cross products of domains.
+  Moved here from PL-Mediator, since we needed it in various systems.
+
+
+
+****************************************
+Date:	Friday October 12, 2012 @ 18:06
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	xml.ste 
+Log Message:
+*xml-preserve-all-whitespace?*,
+*XML-whitespace-preserving-tokenizer-table*,
+get-xml-whitespace-preserving-tokenizer-table,
+get-xml-tokenizer-table:
+  New definitions to support whitespace-preserving parsing of XML
+  documents.  We basically use the original tokenizer table and modify
+  the :skip-whitespace state.
+
+tokenize-XML-expression:
+  Adapted to preserve whitespace if required.
+
+
+
+****************************************
+Date:	Saturday October 13, 2012 @ 1:27
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-stella-snapshot/version
+
+Modified Files:
+	startup.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Wednesday January 23, 2013 @ 16:33
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella/javalib
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella/javalib
+
+Modified Files:
+	Native.java 
+Log Message:
+formatFloat:
+  Turned off grouping to match what Lisp is doing.  The commas tripped
+  us up when generating float values in CSV files.
+
+
+
+****************************************
+Date:	Monday February 11, 2013 @ 15:06
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	primal.ste 
+Log Message:
+RECIPROCAL-NL2 FLOAT, log2:
+  New definitions to compute log2.
+
+int-to-string:
+  New conversion function for regular integers (in symmerty with
+  `string-to-int').
+
+#include <dirent.h>:
+  Moved to also support new `native-probe-directory?'.
+
+native-probe-directory?, probe-directory?:
+  New definitions to probe whether a file is a directory, since Java's
+  exists() method also returns true for `foo/bar/' even if `bar' is
+  just a regular file.  We also implemented a native test for C++, but
+  there doesn't seem to be anything special for Lisp, so we use the
+  idiom we used before which seems to do the trick.
+
+
+
+****************************************
+Date:	Wednesday February 13, 2013 @ 12:54
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-stella-snapshot/version
+
+Modified Files:
+	startup.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Wednesday February 13, 2013 @ 13:05
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-stella-snapshot/version
+
+Modified Files:
+	startup.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Wednesday February 13, 2013 @ 13:24
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	startup.ste 
+Log Message:
+*stella-patch-level*:
+  Back-patched to 23, since it was bumped by two failed build runs.
+
+
+
+****************************************
+Date:	Wednesday February 13, 2013 @ 18:29
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	walk.ste 
+Log Message:
+yield-evaluator-wrapper-tree:
+  Work around a compiler bug in Allegro CL 8.1, where the
+    (and variableArguments? (eq? index nofParameters))
+  condition gets compiled incorrectly and fails to do the right thing
+  for vararg methods.  Switching the clauses fixes it.  This only
+  surfaced with safety=1, so we changed that to safety=2 globally in
+  load-stella.lisp just to be safe.
+
+
+
+****************************************
+Date:	Wednesday February 13, 2013 @ 18:46
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-stella-snapshot/version
+
+Modified Files:
+	startup.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Monday October 21, 2013 @ 16:46
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	conses.ste 
+Log Message:
+CONS.disjoint-sets?:
+  New method.
+
+
+
+****************************************
+Date:	Monday October 21, 2013 @ 16:50
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	java-translate.ste 
+Log Message:
+java-translate-print-stream:
+  Fixed, to ensure that the first or second argument to the
+  `+'-operator (if used) is known to be of type String.
+
+
+
+****************************************
+Date:	Monday October 21, 2013 @ 16:53
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	primal.ste 
+Log Message:
+list-directory-files-recursively:
+  New function.
+
+stellify:
+  Improved to use a loop instead of recursion to better handle very
+  long lists.
+
+
+
+****************************************
+Date:	Monday October 21, 2013 @ 16:56
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	read.ste 
+Log Message:
+get-next-token:
+  Added masking for Lisp to ensure illegal non-8-bit characters
+  don't slip through.
+
+
+
+****************************************
+Date:	Monday October 21, 2013 @ 17:00
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	systems.ste 
+Log Message:
+coerce-value-to-type:
+  Fixed FLOAT and STRING cases to not let null-wrappers get through
+  which won't be detected with a null? test.
+
+lookup-configuration-property:
+  Fixed type of default value which can be arbitrary objects, just
+  like regular values.
+
+
+
+****************************************
+Date:	Monday October 21, 2013 @ 17:04
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	translate-file.ste 
+Log Message:
+operating-system:
+  Improved: make detection of Windows more robust in Java.
+
+file-name-without-device:
+  New function.
+
+file-name-without-directory, absolute-pathname?:
+  Improved for cases where we have Windows one-character device
+  strings (via new `file-name-without-device').
+
+
+
+****************************************
+Date:	Monday October 21, 2013 @ 17:24
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	walk.ste 
+Log Message:
+*available-stella-features*, set-stella-feature, unset-stella-feature:
+  Handle new :support-unexec feature.
+
+support-unexec?:
+  New function.
+
+walk-global-unit:
+  Adapted to handle different variable and special initialization in
+  case we want to support unexec (in C++).
+
+yield-new-arguments-tree:
+  Generalized to allow non-keyword symbols to specify initial slot
+  values for cases where required class arguments are needed on a
+  class that was defined in a different, non-inherited module.  But we
+  have to rethink this to see whether this is really the appropriate
+  solution here.
+
+
+
+****************************************
+Date:	Monday October 21, 2013 @ 17:32
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella/cpp-lib
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella/cpp-lib
+
+Modified Files:
+	cpp-primal.hh 
+Log Message:
+stella_special, DECLARE_STELLA_SPECIAL, DEFINE_STELLA_SPECIAL:
+  Adapted to new scheme where we don't bind the variable to a special
+  record anymore, but instead only use a special record for
+  unbinding.  The upshot of this is that we don't have to initialize
+  specials with objects created by constructors anymore, which allows us
+  to handle unexec more easily (since we can ensure that those initial
+  values won't be overwriten when we restart a saved image).  As a
+  side-effect, this also makes access to the variables simpler, since we
+  don't need specialized accessors anymore.
+
+
+
+
+****************************************
+Date:	Monday October 21, 2013 @ 17:37
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	cpp-translate.ste 
+Log Message:
+cpp-translate-a-tree:
+  Added new SYS-SET-DEFAULT to handle special variable setting for
+  cases where we want to support unexec.  We use the same operator for
+  Java special initialization already.
+
+cpp-translate-setq-tree, SYMBOL.cpp-translate-atomic-tree:
+  Simplified, since we don't need the special access methods anymore
+  due to the change in special definition and unbinding logic.
+
+cpp-translate-sys-set-default:
+  New function, but now simply calls `cpp-translate-setq-tree'.
+
+
+
+****************************************
+Date:	Monday October 21, 2013 @ 17:39
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	cpp-output.ste 
+Log Message:
+cpp-output-variable-definition:
+  Only declare specials if we want to support unexec, to make sure
+  initial values established in startup code aren't overwritten during
+  the restart of a saved image.
+
+
+
+****************************************
+Date:	Monday October 21, 2013 @ 17:44
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	macros.ste 
+Log Message:
+defmain:
+  Added re-initialization of streams for unexec-support, in case we
+  restart an image; this might need to be improved.
+
+
+
+****************************************
+Date:	Tuesday October 22, 2013 @ 1:27
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-stella-snapshot/version
+
+Modified Files:
+	startup.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Tuesday April 15, 2014 @ 15:07
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	collections.ste 
+Log Message:
+VECTOR-SEQUENCE.remove:
+  FIXED/IMPROVED: now properly handles multiple occurrances of `value'.
+  also streamlined; this always has to run through the whole sequence,
+  whether we find the value or not, so the extra complexity doesn't buy
+  us anything.
+
+
+
+****************************************
+Date:	Tuesday April 15, 2014 @ 15:08
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	collections.ste 
+Log Message:
+Updated copyright year.
+
+
+
+****************************************
+Date:	Tuesday April 15, 2014 @ 15:13
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	primal.ste 
+Log Message:
+string-compare-case-normalized, compare-strings, safe-compare-strings:
+  New functions to start dealing with different collation sequences.
+  The new :case-normalized comparison groups strings that only differ
+  in case together (similar to case-insensitive comparison), but
+  preserves a sort order, that is, "abc" < "ABC" (instead of being
+  equal).  This is needed for stable sorting of PowerLoom query
+  results, which might otherwise randomly fluctuate depending on how the
+  input sequence was generated (surfaced with fluctuating sort orders of
+  "Her" vs. "her", etc.).
+  We also streamlined and extended the commented test function.
+
+
+
+****************************************
+Date:	Tuesday April 15, 2014 @ 15:16
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	read.ste 
+Log Message:
+get-next-token:
+  Patched for Lisp so we map everything outside the 255 range onto 255
+  to avoid unintended state transitions.  Potentially we could fix
+  that in `byte-array-nth' similar to what we do in Java.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 1:27
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-stella-snapshot/version
+
+Modified Files:
+	startup.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 18:31
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	hierarchy.ste 
+Log Message:
+DICTIONARY-ITERATOR:
+  Added abstract value and key setter methods.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 19:42
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	java-output.ste 
+Log Message:
+STRING.java-output-literal:
+  Fixed to break up string literals that are too long for Java (as
+  generated by pl-kernel.ste startup code).
+  Also streamlined to avoid the multiple `replace-substrings' calls.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 19:44
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	startup.ste 
+Log Message:
+Updated copyright years.
+
+
+
+****************************************
+Date:	Wednesday April 16, 2014 @ 22:10
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-stella-snapshot/version
+
+Modified Files:
+	startup.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Thursday April 17, 2014 @ 12:16
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	defclass.ste 
+Log Message:
+slot-has-unknown-type?:
+  Added commented sketch of possibly improved version.
+
+
+
+****************************************
+Date:	Friday April 18, 2014 @ 1:27
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-stella-snapshot/version
+
+Modified Files:
+	startup.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+
+
+****************************************
+Date:	Wednesday April 30, 2014 @ 12:36
+Author:	hans
+
+Update of /nfs/image2/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/home/hans/Documents/powerloom/sources/stella
+
+Modified Files:
+	modules.ste 
+Log Message:
+component-match?:
+  Guard against breakage when we are matching against an unfinalized
+  module that's currently being defined.  Strange that we never ran
+  into that before.  In Lisp we didn't break, since a null-string is an
+  actual string and not a NULL pointer.
+
+
+
+****************************************
+Date:	Thursday May 1, 2014 @ 1:28
+Author:	hans
+
+Update of /nfs/topaz/loom/CVS-Repository/powerloom/sources/stella
+In directory rudemood:/mnt/nfs/isd2/loom/powerloom-development/release/build-stella-snapshot/version
+
+Modified Files:
+	startup.ste 
+Log Message:
+Bumped patch level for automatic snapshot build.
+

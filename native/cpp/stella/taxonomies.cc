@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -427,7 +427,7 @@ DEFINE_STELLA_SPECIAL(oTAXONOMY_POSTORDER_NUMBERo, int , NULL_INTEGER);
 int helpCreateTaxonomyTreeIntervals(TaxonomyNode* self) {
   { int minchildlabel = NULL_INTEGER;
     int mylabel = NULL_INTEGER;
-    int prevpostnumber = oTAXONOMY_POSTORDER_NUMBERo.get();
+    int prevpostnumber = oTAXONOMY_POSTORDER_NUMBERo;
 
     if (!(self->treeChildren == NIL)) {
       minchildlabel = helpCreateTaxonomyTreeIntervals(((TaxonomyNode*)(self->treeChildren->value)));
@@ -440,8 +440,8 @@ int helpCreateTaxonomyTreeIntervals(TaxonomyNode* self) {
         helpCreateTaxonomyTreeIntervals(child);
       }
     }
-    oTAXONOMY_POSTORDER_NUMBERo.set(oTAXONOMY_POSTORDER_NUMBERo.get() + oNUMBERING_INTERVALo);
-    mylabel = oTAXONOMY_POSTORDER_NUMBERo.get();
+    oTAXONOMY_POSTORDER_NUMBERo = oTAXONOMY_POSTORDER_NUMBERo + oNUMBERING_INTERVALo;
+    mylabel = oTAXONOMY_POSTORDER_NUMBERo;
     if (self->treeChildren == NIL) {
       minchildlabel = prevpostnumber + 1;
     }
@@ -462,7 +462,7 @@ void createTaxonomyTreeIntervals(TaxonomyGraph* graph) {
         helpCreateTaxonomyTreeIntervals(root);
       }
     }
-    graph->largestPostorderNumber = oTAXONOMY_POSTORDER_NUMBERo.get();
+    graph->largestPostorderNumber = oTAXONOMY_POSTORDER_NUMBERo;
   }
 }
 
@@ -863,13 +863,13 @@ void printTaxonomySpanningForest(TaxonomyGraph* graph, OutputStream* stream) {
 void startupTaxonomies() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SYM_TAXONOMIES_STELLA_STARTUP_TAXONOMIES = ((Symbol*)(internRigidSymbolWrtModule("STARTUP-TAXONOMIES", NULL, 0)));
       SYM_TAXONOMIES_STELLA_METHOD_STARTUP_CLASSNAME = ((Symbol*)(internRigidSymbolWrtModule("METHOD-STARTUP-CLASSNAME", NULL, 0)));
     }
     if (currentStartupTimePhaseP(4)) {
-      oTAXONOMY_POSTORDER_NUMBERo.set(NULL_INTEGER);
+      oTAXONOMY_POSTORDER_NUMBERo = NULL_INTEGER;
     }
     if (currentStartupTimePhaseP(6)) {
       finalizeClasses();

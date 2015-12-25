@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -61,8 +61,8 @@
 ;;; Forward declarations:
 
 (CL:DECLAIM
- (CL:SPECIAL *STARTUP-TIME-PHASE* *MODULE* STANDARD-ERROR STANDARD-OUTPUT EOL
-  NIL))
+ (CL:SPECIAL *STARTUP-TIME-PHASE* *MODULE* STANDARD-ERROR
+  STANDARD-OUTPUT EOL NIL))
 
 ;;; (DEFGLOBAL *POWERLOOM-MAJOR-VERSION-NUMBER* ...)
 
@@ -81,7 +81,7 @@
 
 ;;; (DEFGLOBAL *POWERLOOM-PATCH-LEVEL* ...)
 
-(CL:DEFVAR *POWERLOOM-PATCH-LEVEL* 0)
+(CL:DEFVAR *POWERLOOM-PATCH-LEVEL* 9)
 (CL:DECLAIM (CL:TYPE CL:FIXNUM *POWERLOOM-PATCH-LEVEL*))
 
 ;;; (DEFGLOBAL *POWERLOOM-VERSION-STRING* ...)
@@ -111,7 +111,8 @@ whether certain internal error and warning messages are surfaced to the user.")
 
 ;;; (DEFUN (POWERLOOM-INFORMATION STRING) ...)
 
-(CL:DECLAIM (CL:FTYPE (CL:FUNCTION () CL:SIMPLE-STRING) POWERLOOM-INFORMATION))
+(CL:DECLAIM
+ (CL:FTYPE (CL:FUNCTION () CL:SIMPLE-STRING) POWERLOOM-INFORMATION))
 (CL:DEFUN POWERLOOM-INFORMATION ()
   "Returns information about the current PowerLoom implementation.
 Useful when reporting problems."
@@ -124,19 +125,20 @@ Useful when reporting problems."
   (CL:SETQ ARGUMENTS ARGUMENTS)
   (CL:LET* ((RESULT (POWERLOOM-INFORMATION)))
    (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING RESULT))
-   (CL:IF (CL:NOT (CL:EQ RESULT STELLA::NULL-STRING)) (WRAP-STRING RESULT)
-    NULL)))
+   (CL:IF (CL:NOT (CL:EQ RESULT STELLA::NULL-STRING))
+    (WRAP-STRING RESULT) NULL)))
 
 ;;; (DEFUN (POWERLOOM-COPYRIGHT-HEADER STRING) ...)
 
 (CL:DECLAIM
- (CL:FTYPE (CL:FUNCTION () CL:SIMPLE-STRING) POWERLOOM-COPYRIGHT-HEADER))
+ (CL:FTYPE (CL:FUNCTION () CL:SIMPLE-STRING)
+  POWERLOOM-COPYRIGHT-HEADER))
 (CL:DEFUN POWERLOOM-COPYRIGHT-HEADER ()
   (CL:LET*
    ((LOGICSYSTEMFILE (MAKE-SYSTEM-DEFINITION-FILE-NAME "logic"))
     (LOGICSYSTEM
-     (CL:IF (PROBE-FILE? LOGICSYSTEMFILE) (GET-SYSTEM-DEFINITION "logic")
-      NULL))
+     (CL:IF (PROBE-FILE? LOGICSYSTEMFILE)
+      (GET-SYSTEM-DEFINITION "logic") NULL))
     (SUBSTITUTION-LIST (NEW-KEY-VALUE-LIST)))
    (FILL-IN-DATE-SUBSTITUTION SUBSTITUTION-LIST)
    (CL:IF (CL:NOT (CL:EQ LOGICSYSTEM NULL))
@@ -190,7 +192,8 @@ Useful when reporting problems."
 
 ;;; (DEFUN (COPYRIGHT-YEARS STRING) ...)
 
-(CL:DECLAIM (CL:FTYPE (CL:FUNCTION () CL:SIMPLE-STRING) COPYRIGHT-YEARS))
+(CL:DECLAIM
+ (CL:FTYPE (CL:FUNCTION () CL:SIMPLE-STRING) COPYRIGHT-YEARS))
 (CL:DEFUN COPYRIGHT-YEARS ()
   (CL:LET*
    ((COPYRIGHT (POWERLOOM-COPYRIGHT-HEADER))
@@ -211,10 +214,11 @@ Useful when reporting problems."
   "Run the PowerLoom listener.  Read logic commands from the
 standard input, evaluate them, and print their results.  Exit if the user
 entered `bye', `exit', `halt', `quit', or `stop'."
-  (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT) EOL "    Welcome to "
-   *POWERLOOM-VERSION-STRING* EOL EOL
-   "Copyright (C) USC Information Sciences Institute, " (COPYRIGHT-YEARS) "."
-   EOL "PowerLoom is a trademark of the University of Southern California."
+  (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-OUTPUT) EOL
+   "    Welcome to " *POWERLOOM-VERSION-STRING* EOL EOL
+   "Copyright (C) USC Information Sciences Institute, "
+   (COPYRIGHT-YEARS) "." EOL
+   "PowerLoom is a trademark of the University of Southern California."
    EOL "PowerLoom comes with ABSOLUTELY NO WARRANTY!" EOL
    "Type `(copyright)' for detailed copyright information." EOL
    "Type `(help)' for a list of available commands." EOL
@@ -227,8 +231,8 @@ entered `bye', `exit', `halt', `quit', or `stop'."
     (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-ERROR)
      "Caught native non-STELLA exception " E " at top level." EOL)
     (PRINT-EXCEPTION-CONTEXT E STANDARD-ERROR)
-    (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-ERROR) "Exiting PowerLoom." EOL
-     EOL))))
+    (%%PRINT-STREAM (%NATIVE-STREAM STANDARD-ERROR)
+     "Exiting PowerLoom." EOL EOL))))
 
 (CL:DEFUN STARTUP-POWERLOOM ()
   (CL:LET*
@@ -246,7 +250,8 @@ entered `bye', `exit', `halt', `quit', or `stop'."
      (INTERN-RIGID-SYMBOL-WRT-MODULE "DEVELOPMENT" NULL 2))
     (CL:SETQ KWD-POWERLOOM-MEDIUM
      (INTERN-RIGID-SYMBOL-WRT-MODULE "MEDIUM" NULL 2))
-    (CL:SETQ KWD-POWERLOOM-LOW (INTERN-RIGID-SYMBOL-WRT-MODULE "LOW" NULL 2))
+    (CL:SETQ KWD-POWERLOOM-LOW
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "LOW" NULL 2))
     (CL:SETQ KWD-POWERLOOM-PREFIX
      (INTERN-RIGID-SYMBOL-WRT-MODULE "PREFIX" NULL 2))
     (CL:SETQ KWD-POWERLOOM-MAX-WIDTH
@@ -259,9 +264,12 @@ entered `bye', `exit', `halt', `quit', or `stop'."
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 4)
     (CL:SETQ *POWERLOOM-VERSION-STRING*
      (CONCATENATE "PowerLoom "
-      (INTEGER-TO-STRING (CL:TRUNCATE *POWERLOOM-MAJOR-VERSION-NUMBER*)) "."
-      (INTEGER-TO-STRING (CL:TRUNCATE *POWERLOOM-MINOR-VERSION-NUMBER*)) "."
-      (INTEGER-TO-STRING (CL:TRUNCATE *POWERLOOM-PATCH-LEVEL*))
+      (INTEGER-TO-STRING
+       (CL:TRUNCATE *POWERLOOM-MAJOR-VERSION-NUMBER*))
+      "."
+      (INTEGER-TO-STRING
+       (CL:TRUNCATE *POWERLOOM-MINOR-VERSION-NUMBER*))
+      "." (INTEGER-TO-STRING (CL:TRUNCATE *POWERLOOM-PATCH-LEVEL*))
       *POWERLOOM-RELEASE-STATE*))
     (CL:SETQ *POWERLOOM-EXECUTION-MODE* KWD-POWERLOOM-RELEASE)
     (CL:SETQ *POWERLOOM-LOCK* (MAKE-PROCESS-LOCK)))
@@ -282,7 +290,8 @@ Useful when reporting problems.\" :PUBLIC? TRUE :COMMAND? TRUE)"
      "(DEFUN COPYRIGHT () :COMMAND? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Print detailed PowerLoom copyright information.\")"
      (CL:FUNCTION COPYRIGHT) NULL)
     (DEFINE-FUNCTION-OBJECT "COPYRIGHT-YEARS"
-     "(DEFUN (COPYRIGHT-YEARS STRING) ())" (CL:FUNCTION COPYRIGHT-YEARS) NULL)
+     "(DEFUN (COPYRIGHT-YEARS STRING) ())"
+     (CL:FUNCTION COPYRIGHT-YEARS) NULL)
     (DEFINE-FUNCTION-OBJECT "POWERLOOM"
      "(DEFUN POWERLOOM () :DOCUMENTATION \"Run the PowerLoom listener.  Read logic commands from the
 standard input, evaluate them, and print their results.  Exit if the user
@@ -292,7 +301,8 @@ entered `bye', `exit', `halt', `quit', or `stop'.\" :PUBLIC? TRUE)"
      "(DEFUN STARTUP-POWERLOOM () :PUBLIC? TRUE)"
      (CL:FUNCTION STARTUP-POWERLOOM) NULL)
     (CL:LET*
-     ((FUNCTION (LOOKUP-FUNCTION SYM-POWERLOOM-LOGIC-STARTUP-POWERLOOM)))
+     ((FUNCTION
+       (LOOKUP-FUNCTION SYM-POWERLOOM-LOGIC-STARTUP-POWERLOOM)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
       SYM-POWERLOOM-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupPowerloom") NULL-STRING-WRAPPER)))
@@ -307,7 +317,7 @@ entered `bye', `exit', `halt', `quit', or `stop'.\" :PUBLIC? TRUE)"
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
      "(DEFGLOBAL *POWERLOOM-RELEASE-STATE* STRING \".beta\")")
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
-     "(DEFGLOBAL *POWERLOOM-PATCH-LEVEL* INTEGER 0)")
+     "(DEFGLOBAL *POWERLOOM-PATCH-LEVEL* INTEGER 9)")
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
      "(DEFGLOBAL *POWERLOOM-VERSION-STRING* STRING (CONCATENATE \"PowerLoom \" (INTEGER-TO-STRING *POWERLOOM-MAJOR-VERSION-NUMBER*) \".\" (INTEGER-TO-STRING *POWERLOOM-MINOR-VERSION-NUMBER*) \".\" (INTEGER-TO-STRING *POWERLOOM-PATCH-LEVEL*) *POWERLOOM-RELEASE-STATE*))")
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
@@ -315,9 +325,11 @@ entered `bye', `exit', `halt', `quit', or `stop'.\" :PUBLIC? TRUE)"
 whether certain internal error and warning messages are surfaced to the user.\")")
     (%SET-LOGGING-PARAMETERS "PowerLoom"
      (CONS-LIST KWD-POWERLOOM-LOG-LEVELS
-      (GET-QUOTED-TREE "((:NONE :LOW :MEDIUM :HIGH) \"/LOGIC\")" "/LOGIC")
+      (GET-QUOTED-TREE "((:NONE :LOW :MEDIUM :HIGH) \"/LOGIC\")"
+       "/LOGIC")
       KWD-POWERLOOM-LEVEL
-      (CL:IF (CL:EQ *POWERLOOM-EXECUTION-MODE* KWD-POWERLOOM-DEVELOPMENT)
+      (CL:IF
+       (CL:EQ *POWERLOOM-EXECUTION-MODE* KWD-POWERLOOM-DEVELOPMENT)
        KWD-POWERLOOM-MEDIUM KWD-POWERLOOM-LOW)
       KWD-POWERLOOM-PREFIX (WRAP-STRING "PL") KWD-POWERLOOM-MAX-WIDTH
       (WRAP-INTEGER 250)))

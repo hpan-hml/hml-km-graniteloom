@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2012      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: iterators.ste,v 1.42 2006/05/11 07:06:07 hans Exp
+;;; Version: iterators.ste,v 1.43 2012/10/13 00:59:20 hans Exp
 
 ;;; Default and General purpose iterator routines.
 
@@ -856,3 +856,75 @@ If 'module' is null, return all methods interned everywhere."
 (eval (foreach m in (all-methods NULL FALSE) do (print m EOL)))
 (eval (foreach m in (all-public-methods NULL FALSE) do (print m EOL)))
 |#
+
+
+  ;;
+;;;;;; Cross-product iterator
+  ;;
+
+(defclass CROSS-PRODUCT-ITERATOR (ITERATOR)
+  :documentation "Iterator class that generates the cross product of a list of domains.
+Each value tuple is represented as a CONS.  CAUTION: the value tuple will be modified
+destructively, hence, it needs to be copied in case it needs to persist beyond a single
+iteration."
+  :public? TRUE
+  :parameters ((any-value :type CONS))
+  :slots ((domains :type (CONS OF CONS) :initially NIL)
+          (cursors :type (CONS OF CONS) :initially NIL)))
+
+(defun (allocate-cross-product-iterator CROSS-PRODUCT-ITERATOR) ((domains (CONS OF CONS)))
+  :documentation "Allocate a cross product iterator for a list of `domains'."
+  :public? TRUE
+  (let ((iterator (new CROSS-PRODUCT-ITERATOR :domains domains))
+        (cursors NIL)
+        (values NIL))
+    (foreach domain in domains
+        as i in (interval 0 NULL)
+        do (when (or (null? domain)
+                     (nil? domain))
+             (return iterator))
+           (pushq cursors (choose (= i 0) domain (rest domain)))
+           (pushq values (first domain)))
+    (setf (cursors iterator) (reverse cursors))
+    (setf (value iterator) (reverse values))
+    (return iterator)))
+
+(defmethod reset ((self CROSS-PRODUCT-ITERATOR))
+  :documentation "Reset `self' to its initially allocated state.  Note, that
+this is somewhat expensive, costing almost as much as allocating the iterator."
+  :public? TRUE
+  (let ((domains (domains self))
+        (cursors NIL)
+        (values NIL))
+    (foreach domain in domains
+        as i in (interval 0 NULL)
+        do (when (or (null? domain)
+                     (nil? domain))
+             (return))
+           (pushq cursors (choose (= i 0) domain (rest domain)))
+           (pushq values (first domain)))
+    (setf (cursors self) (reverse cursors))
+    (setf (value self) (reverse values))))
+
+(defmethod (next? BOOLEAN) ((self CROSS-PRODUCT-ITERATOR))
+  (let ((domains (domains self))
+        (cursors (cursors self))
+        (cursor NIL)
+        (values (value self)))
+    (when (null? values)
+      (return FALSE))
+    (while (non-empty? cursors)
+      (setq cursor (first cursors))
+      (cond ((non-empty? cursor)
+             (setf (first values) (first cursor))
+             (setf (first cursors) (rest cursor))
+             (return TRUE))
+            (otherwise
+             (setq cursor (first domains))
+             (setf (first values) (first cursor))
+             (setf (first cursors) (rest cursor))))
+      (setq cursors (rest cursors))
+      (setq domains (rest domains))
+      (setq values (rest values)))
+    (setf (value self) NULL)
+    (return FALSE)))

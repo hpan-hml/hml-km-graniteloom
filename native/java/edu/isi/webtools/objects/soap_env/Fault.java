@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -51,10 +51,10 @@ import edu.isi.webtools.objects.xml_objects.*;
 import edu.isi.stella.*;
 
 public class Fault extends XMLObject {
-    public faultcode faultcode;
-    public faultstring faultstring;
-    public faultactor faultactor;
-    public detail detail;
+    public FaultCode faultcode;
+    public FaultString faultstring;
+    public FaultActor faultactor;
+    public Detail detail;
 
   public static Fault new_Fault() {
     { Fault self = null;
@@ -73,7 +73,7 @@ public class Fault extends XMLObject {
   public static Stella_Object access_Fault_Slot_Value(Fault self, Symbol slotname, Stella_Object value, boolean setvalueP) {
     if (slotname == SoapEnv.SYM_SOAP_ENV_faultcode) {
       if (setvalueP) {
-        self.faultcode = ((faultcode)(value));
+        self.faultcode = ((FaultCode)(value));
       }
       else {
         value = self.faultcode;
@@ -81,7 +81,7 @@ public class Fault extends XMLObject {
     }
     else if (slotname == SoapEnv.SYM_SOAP_ENV_faultstring) {
       if (setvalueP) {
-        self.faultstring = ((faultstring)(value));
+        self.faultstring = ((FaultString)(value));
       }
       else {
         value = self.faultstring;
@@ -89,7 +89,7 @@ public class Fault extends XMLObject {
     }
     else if (slotname == SoapEnv.SYM_SOAP_ENV_faultactor) {
       if (setvalueP) {
-        self.faultactor = ((faultactor)(value));
+        self.faultactor = ((FaultActor)(value));
       }
       else {
         value = self.faultactor;
@@ -97,7 +97,7 @@ public class Fault extends XMLObject {
     }
     else if (slotname == SoapEnv.SYM_SOAP_ENV_detail) {
       if (setvalueP) {
-        self.detail = ((detail)(value));
+        self.detail = ((Detail)(value));
       }
       else {
         value = self.detail;

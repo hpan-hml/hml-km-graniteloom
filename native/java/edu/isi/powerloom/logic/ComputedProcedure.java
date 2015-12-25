@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -51,15 +51,19 @@ import edu.isi.stella.*;
 
 /** Each instance denotes a programming language 
  * function that computes some procedure.  The slot 'procedure-name'
- * provides the name of the procedure.  The slot 'procedure-code'
- * points directly to the procedure itself.  Both slots are optional;
- * if neither is supplied, the procedure will be invoked by extracting
- * its name from the name of the instance.
+ * provides the name of the procedure.  The slot 'procedure-function'
+ * points to the STELLA function object carrying out the computation.
+ * If neither is supplied, the procedure will be looked up by extracting
+ * its name from the name of the instance.  Pointing to a function object
+ * instead of just the code gives us access to argument type information.
+ * Note that we support external non-STELLA functions by creating a dummy
+ * STELLA function object during registration of the computation (see
+ * <code>registerComputationFunction</code> and friends).
  * @author Stella Java Translator
  */
 public class ComputedProcedure extends Thing {
     public Symbol procedureName;
-    public java.lang.reflect.Method procedureCode;
+    public MethodSlot procedureFunction;
 
   public static ComputedProcedure newComputedProcedure() {
     { ComputedProcedure self = null;
@@ -67,9 +71,63 @@ public class ComputedProcedure extends Thing {
       self = new ComputedProcedure();
       self.dynamicSlots = KeyValueList.newKeyValueList();
       self.surrogateValueInverse = null;
-      self.procedureCode = null;
+      self.procedureFunction = null;
       self.procedureName = null;
       return (self);
+    }
+  }
+
+  public static java.lang.reflect.Method functionCodeFromProcedure(ComputedProcedure procedure) {
+    { MethodSlot stellafunction = procedure.procedureFunction;
+
+      if (stellafunction == null) {
+        stellafunction = ComputedProcedure.stellaFunctionFromProcedure(procedure);
+      }
+      return (stellafunction.functionCode);
+    }
+  }
+
+  public static MethodSlot stellaFunctionFromProcedure(ComputedProcedure procedure) {
+    if (procedure.procedureFunction != null) {
+      return (procedure.procedureFunction);
+    }
+    { Symbol procedurename = procedure.procedureName;
+      MethodSlot stellafunction = null;
+
+      if (procedurename == null) {
+        procedurename = Symbol.internSymbolInModule(procedure.surrogateValueInverse.symbolName, ((Module)(procedure.surrogateValueInverse.homeContext)), true);
+        procedure.procedureName = procedurename;
+      }
+      stellafunction = Symbol.lookupFunction(procedurename);
+      if (stellafunction == null) {
+        { Symbol kernelname = Symbol.lookupSymbolInModule(procedurename.symbolName, Logic.$PL_KERNEL_MODULE$, false);
+
+          if (kernelname != null) {
+            stellafunction = Symbol.lookupFunction(kernelname);
+          }
+        }
+      }
+      if (stellafunction == null) {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+
+            try {
+              Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+              stream000.nativeStream.println("ERROR: Missing specialist, no STELLA function is named `" + procedurename + "'.");
+              Logic.helpSignalPropositionError(stream000, Logic.KWD_ERROR);
+
+            } finally {
+              Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+            }
+          }
+          throw ((PropositionError)(PropositionError.newPropositionError(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+      if (Logic.$POWERLOOM_EXECUTION_MODE$ == Logic.KWD_RELEASE) {
+        procedure.procedureFunction = stellafunction;
+      }
+      return (stellafunction);
     }
   }
 
@@ -82,12 +140,12 @@ public class ComputedProcedure extends Thing {
         value = self.procedureName;
       }
     }
-    else if (slotname == Logic.SYM_LOGIC_PROCEDURE_CODE) {
+    else if (slotname == Logic.SYM_LOGIC_PROCEDURE_FUNCTION) {
       if (setvalueP) {
-        self.procedureCode = ((FunctionCodeWrapper)(value)).wrapperValue;
+        self.procedureFunction = ((MethodSlot)(value));
       }
       else {
-        value = FunctionCodeWrapper.wrapFunctionCode(self.procedureCode);
+        value = self.procedureFunction;
       }
     }
     else {

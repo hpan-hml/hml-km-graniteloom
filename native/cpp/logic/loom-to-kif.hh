@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -137,7 +137,7 @@ extern Symbol* SYM_LOOM_TO_KIF_LOGIC_ONE_OF;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_THE_ORDERED_SET;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_SATISFIES;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_DOMAIN;
-extern Symbol* SYM_LOOM_TO_KIF_LOGIC_DOMAINS;
+extern Symbol* SYM_LOOM_TO_KIF_STELLA_DOMAINS;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_RANGE;
 extern Symbol* SYM_LOOM_TO_KIF_LOGIC_COMPOSE;
 extern Symbol* SYM_LOOM_TO_KIF_PL_KERNEL_KB_MEMBER_OF;

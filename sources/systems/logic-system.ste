@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: logic-system.ste,v 1.40 2009/06/03 16:45:42 tar Exp
+;;; Version: logic-system.ste,v 1.41 2014/04/17 00:55:14 hans Exp
 
 (in-package "STELLA")
 
@@ -160,7 +160,8 @@
   :java-package "edu.isi.powerloom.pl_kernel_kb"
   :uses ("LOGIC" "STELLA")
   :shadow (COLLECTION SET RELATION FUNCTION CLASS LIST VALUE
-                      ARITY INVERSE NAME QUANTITY)
+                      ARITY INVERSE NAME QUANTITY FLOOR CEILING
+                      LOG LOG10 EXP EXPT)
   :nickname "PL-KERNEL"
   :protect-surrogates? TRUE)
 

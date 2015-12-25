@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: justifications.ste,v 1.39 2010/09/09 23:27:01 hans Exp
+;;; Version: justifications.ste,v 1.42 2014/04/16 00:01:48 hans Exp
 
 ;;; Support for recording justifications in backward and forward reasoning
 
@@ -90,16 +90,10 @@ proposition of this justification.")
            :initially NIL
            :documentation
            "Antecedents justifications of this justification.")
-          (pattern-justification
-           :type JUSTIFICATION
-           :documentation
-           "Backpointer to the closest parent :PATTERN justification containing
-the variable substitutions from the associated pattern control frame.  If this
-is a :PATTERN justification, the slot points to the parent pattern.")
           (substitution
            :type (ENTITY-MAPPING OF PATTERN-VARIABLE OBJECT)
            :documentation
-           "List of variable bindings recorded for :PATTERN justifications.")
+           "List of variable bindings recorded for this justification.")
           (reverse-polarity?
            :type BOOLEAN
            :documentation
@@ -142,59 +136,12 @@ is a :PATTERN justification, the slot points to the parent pattern.")
     (PATTERN-VARIABLE
      (when (null? justification)
        (setq justification *currentJustification*))
-     (when (defined? justification)
-       ;; Simply run up the pattern justification chain until we find a
-       ;;    matching binding:
-       (let ((pattern
-              (choose (eql? (inference-rule justification) :PATTERN)
-                      justification
-                      (pattern-justification justification)))
-             (substitution
-              (choose (defined? pattern)
-                      (substitution pattern)
-                      NULL))
-             (value OBJECT NULL))
-         (when (defined? substitution)
-           (setq value (lookup substitution argument)))
-         (when (and (null? value)
-                    (defined? pattern))
-           (setq pattern (pattern-justification pattern))
-           (when (defined? pattern)
-             (setq value (justification-argument-bound-to argument pattern))))
-         (return value))))
+     (when (and (defined? justification)
+                (defined? (substitution justification)))
+       (return (lookup (substitution justification) argument))))
     (otherwise
      (return argument)))
   (return NULL))
-
-(defun (yield-justification-substitution ENTITY-MAPPING)
-    ((justification JUSTIFICATION)
-     (substitution ENTITY-MAPPING)
-     (argument PROPOSITION))
-  ;; Find free variables in `justification's proposition and record their
-  ;;    bindings relative to `justification' in `substitution'.
-  ;; Return the generated substitution (which will remain NULL if no
-  ;;    free variables were found).
-  ;; `argument' is used for compound propositions and can be NULL for
-  ;;    top-level calls.
-  ;; Not (yet) used anywhere, since most cases can be handled directly
-  ;;    via `justification-argument-bound-to'.
-  (let ((top (proposition justification))
-        (proposition (choose (null? argument) top argument)))
-    (foreach arg in (arguments proposition)
-        do (typecase arg
-             (PATTERN-VARIABLE
-              (when (free-variable? arg top)
-                (when (null? substitution)
-                  (setq substitution (new ENTITY-MAPPING)))
-                (insert-at substitution arg
-                           (justification-argument-bound-to
-                            arg justification))))
-             (PROPOSITION
-              (setq substitution
-                (yield-justification-substitution
-                 justification substitution arg)))
-             (otherwise NULL)))
-    (return substitution)))
 
 (defun (justification-eql? BOOLEAN) ((just1 JUSTIFICATION) (just2 JUSTIFICATION))
   ;; Return TRUE if `just1' and `just2' are equivalent justifications
@@ -282,9 +229,28 @@ as propositions and substitutions."
     (foreach antecedent in (antecedents self)
         collect (copy antecedent) into antecedents)
     (setf (antecedents copy) antecedents)
-    (when (eql? (inference-rule self) :PATTERN)
-      (foreach antecedent in (antecedents copy)
-          do (backlink-to-pattern-justification antecedent copy)))
+    (return copy)))
+
+(defmethod (shallow-copy (LIKE self)) ((self JUSTIFICATION))
+  :documentation "Similar to `copy' but does not copy antecedent justifications."
+  :public? TRUE
+  (let ((copy JUSTIFICATION NULL)
+        (antecedents NIL))
+    (typecase self
+      (PRIMITIVE-STRATEGY
+       (setq copy (new PRIMITIVE-STRATEGY :strategy (strategy self))))
+      (otherwise
+       (setq copy (new JUSTIFICATION))))
+    (setf (inference-rule copy) (inference-rule self))
+    (setf (proposition copy) (proposition self))
+    (setf (substitution copy) (substitution self))
+    (setf (reverse-polarity? copy) (reverse-polarity? self))
+    (setf (truth-value copy) (truth-value self))
+    (setf (positive-score copy) (positive-score self))
+    (setf (negative-score copy) (negative-score self))
+    (foreach antecedent in (antecedents self)
+        collect antecedent into antecedents)
+    (setf (antecedents copy) antecedents)
     (return copy)))
 
 
@@ -466,10 +432,14 @@ the explanation of concluded results."
 
 (defun backlink-to-pattern-justification ((justification JUSTIFICATION)
                                           (pattern JUSTIFICATION))
-  ;; Backlink `justification' and all its antecedents that don't yet point
-  ;;    to a pattern justification to `pattern'.
-  (when (null? (pattern-justification justification))
-    (setf (pattern-justification justification) pattern)
+  ;; Point `justification' and all its antecedents that don't yet have
+  ;;    a substitution to `pattern's substitution.
+  ;; This used to create backlinks from justifications to pattern
+  ;;    justifications, hence the name (but that was a bad idea).
+  ;;    Since we are structure-sharing the substitution, we are
+  ;;    actually saving a slot (the one for the backlink).
+  (when (null? (substitution justification))
+    (setf (substitution justification) (substitution pattern))
     (foreach antecedent in (antecedents justification)
         do (backlink-to-pattern-justification antecedent pattern))))
 
@@ -542,15 +512,8 @@ the explanation of concluded results."
            do (progn ;; work around STELLA bug - I thought we had fixed that
                 (safety 3 (defined? (justification conjunct))
                         "INTERNAL ERROR: Missing subgoal justification"))
-           collect (choose
-                    ;; if we backtracked into a later conjunct, we have to
-                    ;; copy earlier conjunct justifications, since they won't
-                    ;; get regenerated by a subsequent down move and, hence,
-                    ;; would otherwise be structure-shared with the next proof
-                    ;; which causes problems with variable substitutions, etc.:
-                    (eql? (state conjunct) :POPPED)
-                    (copy (justification conjunct))
-                    (justification conjunct))
+           ;; no need to copy conjuncts anymore, we can simply share them:
+           collect (justification conjunct)
            into antecedents)
        (record-goal-justification
         frame
@@ -647,6 +610,36 @@ the explanation of concluded results."
            :inference-rule :FAIL-INTRODUCTION)))
     (otherwise NULL)))
 
+(defun record-negated-FAIL-justification ((frame CONTROL-FRAME)
+                                          (lastMove KEYWORD))
+  ;; Record a justification for a succeeded :FAIL `frame'.
+  ;; IMPORTANT: must be called after `frame's truth value has been computed.
+  ;; Needs to get the antecedent for the justification.  This should come
+  ;;    from the down frame if it exists.
+  (case lastMove
+    (:UP-TRUE
+     (let ((antecedent JUSTIFICATION NULL))
+       (when (defined? (result frame))
+         (setq antecedent (justification (result frame))))
+       (record-goal-justification
+        frame
+        (new JUSTIFICATION 
+             :inference-rule :NEGATED-FAIL
+             :antecedents (cons antecedent NIL)))))
+    (otherwise NULL)))
+
+
+(startup-time-progn
+  (define-explanation-phrase :fail-introduction :technical
+    "because the argument proposition was not derivable")
+  (define-explanation-phrase :fail-introduction :lay
+    "because the argument proposition could not be proven")
+  (define-explanation-phrase :negated-fail :technical
+    "because the argument proposition was derived and the fail is has negative polarity")
+  (define-explanation-phrase :negated-fail :lay
+    "because the argument proposition could be proven and we are trying to disprove the fail")
+  )
+
 (startup-time-progn
   (define-explanation-phrase :closed-not-introduction :technical
     "because the argument proposition was not derivable and it uses closed-world semantics")
@@ -671,12 +664,6 @@ the explanation of concluded results."
                                 (proposition (up frame))
                                 (proposition frame)))))
     (otherwise NULL)))
-
-(startup-time-progn
-  (define-explanation-phrase :fail-introduction :technical
-    "because the argument proposition was not derivable")
-  (define-explanation-phrase :fail-introduction :lay
-    "because the argument proposition could not be proven"))
 
 (defun record-EXISTENTIAL-INTRODUCTION-justification ((frame CONTROL-FRAME)
                                                       (lastMove KEYWORD))
@@ -1199,4 +1186,27 @@ pattern nodes, and :BRIEF additionally suppresses AND-introduction nodes."
               :antecedents subset-justifications))))
       )
       (return NULL)))
+
+;----------------------------------------------------------------------------------
+
+(defclass CLASH-JUSTIFICATION (JUSTIFICATION)
+  ;; TODO: Will this work as a sub of JUSTIFICATION?
+  ;; For now, let's try it and interpret the antecedents as the set of
+  ;;   items that collectively are the proximate cause of the clash.
+  :slots ((direction :type KEYWORD :initially :forward
+                     :documentation "The inference direction for this inference."))
+  :methods ((inference-direction ((self CLASH-JUSTIFICATION)) :type KEYWORD
+	      (return (direction self)))))
+
+(defun (create-clash-justification CLASH-JUSTIFICATION) ((prop PROPOSITION)
+                                                         (antecedents (CONS OF JUSTIFICATION))
+                                                         (direction KEYWORD))
+  (return 
+   (new CLASH-JUSTIFICATION
+        :inference-rule :clash ;; ??
+        :direction direction
+        :proposition prop
+        :truth-value INCONSISTENT-TRUTH-VALUE
+        :antecedents antecedents)))
+
 

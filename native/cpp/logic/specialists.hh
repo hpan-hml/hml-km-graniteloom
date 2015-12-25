@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -51,13 +51,17 @@ namespace logic {
 class ComputedProcedure : public Thing {
 // Each instance denotes a programming language 
 // function that computes some procedure.  The slot 'procedure-name'
-// provides the name of the procedure.  The slot 'procedure-code'
-// points directly to the procedure itself.  Both slots are optional;
-// if neither is supplied, the procedure will be invoked by extracting
-// its name from the name of the instance.
+// provides the name of the procedure.  The slot 'procedure-function'
+// points to the STELLA function object carrying out the computation.
+// If neither is supplied, the procedure will be looked up by extracting
+// its name from the name of the instance.  Pointing to a function object
+// instead of just the code gives us access to argument type information.
+// Note that we support external non-STELLA functions by creating a dummy
+// STELLA function object during registration of the computation (see
+// `register-computation-function' and friends).
 public:
   Symbol* procedureName;
-  cpp_function_code procedureCode;
+  MethodSlot* procedureFunction;
 public:
   virtual Surrogate* primaryType();
 };
@@ -107,10 +111,14 @@ extern boolean oACCELERATE_FRAME_COMPUTATIONSpo;
 // Function signatures:
 ComputedProcedure* newComputedProcedure();
 Object* accessComputedProcedureSlotValue(ComputedProcedure* self, Symbol* slotname, Object* value, boolean setvalueP);
-cpp_function_code functionCodeFromProcedure(Object* p);
+MethodSlot* stellaFunctionFromProcedure(ComputedProcedure* procedure);
+cpp_function_code functionCodeFromProcedure(ComputedProcedure* procedure);
 cpp_function_code lookupSpecialist(NamedDescription* description);
+MethodSlot* lookupConstraintFunction(NamedDescription* description);
 cpp_function_code lookupConstraint(NamedDescription* description);
+MethodSlot* lookupComputationFunction(NamedDescription* description);
 cpp_function_code lookupComputation(NamedDescription* description);
+MethodSlot* lookupEvaluatorFunction(NamedDescription* description);
 cpp_function_code lookupEvaluator(NamedDescription* description);
 Keyword* selectTestResult(boolean successP, boolean terminalP, ControlFrame* frame);
 Keyword* selectProofResult(boolean successP, boolean continuingP, boolean terminalP);
@@ -118,8 +126,9 @@ boolean nullWrapperP(Object* self);
 Keyword* nativeSlotReaderSpecialist(ControlFrame* frame, Keyword* lastmove);
 SubstringPositionIterator* newSubstringPositionIterator(char* superString, char* subString);
 Object* accessSubstringPositionIteratorSlotValue(SubstringPositionIterator* self, Symbol* slotname, Object* value, boolean setvalueP);
-boolean computationInputBoundP(Object* value);
-Object* computeRelationValue(Proposition* proposition, cpp_function_code code, boolean errorP);
+boolean boundComputationInputSkolemP(Skolem* skolem);
+Surrogate* argumentTargetType(List* parametertypes, int ninputtypes, int argindex);
+Object* computeRelationValue(Proposition* proposition, MethodSlot* computation, boolean errorP);
 
 } // end of namespace logic
 
@@ -136,7 +145,7 @@ Keyword* computationSpecialist(ControlFrame* frame, Keyword* lastmove);
 namespace logic {
   using namespace stella;
 
-Object* computeSimpleRelationConstraint(Proposition* proposition, cpp_function_code code, boolean errorP, int& _Return1);
+Object* computeSimpleRelationConstraint(Proposition* proposition, MethodSlot* computation, boolean errorP, int& _Return1);
 
 } // end of namespace logic
 
@@ -167,6 +176,7 @@ namespace pl_kernel_kb {
 Keyword* memberOfSpecialist(ControlFrame* frame, Keyword* lastmove);
 void memberOfEvaluator(Proposition* self);
 Keyword* instanceOfSpecialist(ControlFrame* frame, Keyword* lastmove);
+Keyword* directInstanceOfSpecialist(ControlFrame* frame, Keyword* lastmove);
 
 } // end of namespace pl_kernel_kb
 
@@ -185,10 +195,11 @@ namespace pl_kernel_kb {
 
 Keyword* subsetOfSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* holdsSpecialist(ControlFrame* frame, Keyword* lastmove);
-Object* propositionRelationComputation(Proposition* p);
-Object* propositionArgumentComputation(Proposition* p, IntegerWrapper* i);
-Skolem* propositionArgumentsComputation(Proposition* p);
-IntegerWrapper* propositionArityComputation(Proposition* p);
+Keyword* totalValueSpecialist(ControlFrame* frame, Keyword* lastmove);
+Object* propositionRelationComputation(Object* p);
+Object* propositionArgumentComputation(Object* p, IntegerWrapper* i);
+Skolem* propositionArgumentsComputation(Object* p);
+IntegerWrapper* propositionArityComputation(Object* p);
 Keyword* cutSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* boundVariablesSpecialist(ControlFrame* frame, Keyword* lastmove);
 
@@ -309,7 +320,6 @@ namespace pl_kernel_kb {
   using namespace logic;
 
 Keyword* collectMembersSpecialist(ControlFrame* frame, Keyword* lastmove);
-Keyword* lengthOfListSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* nthElementSpecialist(ControlFrame* frame, Keyword* lastmove);
 Skolem* nthHeadComputation(Skolem* list, IntegerWrapper* narg);
 Skolem* nthRestComputation(Skolem* list, IntegerWrapper* narg);
@@ -450,7 +460,9 @@ Keyword* rangeTypeSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* reflexiveRelationSpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* irreflexiveRelationSpecialist(ControlFrame* frame, Keyword* lastmove);
 StringWrapper* objectNameComputation(Object* objectarg);
+StringWrapper* objectPrintNameComputation(Object* objectarg);
 Object* nameToObjectComputation(Object* namearg);
+Object* printNameToObjectComputation(Object* namearg);
 IntegerWrapper* arityComputation(Object* descriptionarg);
 Keyword* aritySpecialist(ControlFrame* frame, Keyword* lastmove);
 Keyword* relationHierarchySpecialist(ControlFrame* frame, Keyword* lastmove);
@@ -517,7 +529,9 @@ void startupSpecialists();
 // Auxiliary global declarations:
 extern Surrogate* SGT_SPECIALISTS_LOGIC_COMPUTED_PROCEDURE;
 extern Symbol* SYM_SPECIALISTS_LOGIC_PROCEDURE_NAME;
-extern Symbol* SYM_SPECIALISTS_LOGIC_PROCEDURE_CODE;
+extern Symbol* SYM_SPECIALISTS_LOGIC_PROCEDURE_FUNCTION;
+extern Keyword* KWD_SPECIALISTS_ERROR;
+extern Keyword* KWD_SPECIALISTS_RELEASE;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_RELATION_SPECIALIST;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_HANDLES_REVERSE_POLARITY;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_RELATION_CONSTRAINT;
@@ -537,9 +551,9 @@ extern Symbol* SYM_SPECIALISTS_LOGIC_SUPER_STRING;
 extern Symbol* SYM_SPECIALISTS_LOGIC_SUB_STRING;
 extern Symbol* SYM_SPECIALISTS_STELLA_START;
 extern Symbol* SYM_SPECIALISTS_LOGIC_SUB_LENGTH;
-extern Surrogate* SGT_SPECIALISTS_LOGIC_SKOLEM;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_TOTAL;
-extern Keyword* KWD_SPECIALISTS_ERROR;
+extern Surrogate* SGT_SPECIALISTS_STELLA_CONS;
+extern Surrogate* SGT_SPECIALISTS_STELLA_OBJECT;
 extern Symbol* SYM_SPECIALISTS_STELLA_ITERATOR;
 extern Surrogate* SGT_SPECIALISTS_STELLA_NUMBER_WRAPPER;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_COLLECTIONOF;
@@ -553,6 +567,7 @@ extern Symbol* SYM_SPECIALISTS_LOGIC_EXTERNAL_VARIABLES;
 extern Surrogate* SGT_SPECIALISTS_STELLA_COLLECTION;
 extern Surrogate* SGT_SPECIALISTS_LOGIC_LOGIC_OBJECT;
 extern Keyword* KWD_SPECIALISTS_SCAN_COLLECTION;
+extern Surrogate* SGT_SPECIALISTS_LOGIC_PROPOSITION;
 extern Keyword* KWD_SPECIALISTS_DOWN;
 extern Symbol* SYM_SPECIALISTS_STELLA_PREDICATE;
 extern Symbol* SYM_SPECIALISTS_STELLA_FUNCTION;
@@ -562,6 +577,7 @@ extern Symbol* SYM_SPECIALISTS_LOGIC_DESCRIPTION;
 extern Keyword* KWD_SPECIALISTS_FUNCTION;
 extern Keyword* KWD_SPECIALISTS_PREDICATE;
 extern Keyword* KWD_SPECIALISTS_ISA;
+extern Surrogate* SGT_SPECIALISTS_LOGIC_SKOLEM;
 extern Keyword* KWD_SPECIALISTS_AND;
 extern Symbol* SYM_SPECIALISTS_STELLA_ARGUMENTS;
 extern Surrogate* SGT_SPECIALISTS_LOGIC_FORK_PROOF_ADJUNCT;
@@ -574,7 +590,6 @@ extern Keyword* KWD_SPECIALISTS_FORK_THEN;
 extern Symbol* SYM_SPECIALISTS_LOGIC_JUSTIFICATION;
 extern Keyword* KWD_SPECIALISTS_TECHNICAL;
 extern Keyword* KWD_SPECIALISTS_LAY;
-extern Surrogate* SGT_SPECIALISTS_LOGIC_PROPOSITION;
 extern Keyword* KWD_SPECIALISTS_HOW_MANY;
 extern Keyword* KWD_SPECIALISTS_INHERIT;
 extern Keyword* KWD_SPECIALISTS_ALL;
@@ -645,7 +660,6 @@ extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_SUPERRELATION;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_PROPER_SUBRELATION;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_PROPER_SUPERRELATION;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_EQUIVALENT_RELATION;
-extern Surrogate* SGT_SPECIALISTS_STELLA_CONS;
 extern Surrogate* SGT_SPECIALISTS_STELLA_LIST;
 extern Surrogate* SGT_SPECIALISTS_PL_KERNEL_KB_SYNONYM;
 extern Surrogate* SGT_SPECIALISTS_STELLA_CS_VALUE;

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -169,12 +169,12 @@ public class Soap {
   public static Fault createSoapFault(String fcode, String fstring, String factor, edu.isi.webtools.objects.xml_objects.XMLObject fdetail) {
     { Fault self000 = Fault.new_Fault();
 
-      { faultcode self001 = faultcode.new_faultcode();
+      { FaultCode self001 = FaultCode.new_FaultCode();
 
         self001.textContent = fcode;
         self000.faultcode = self001;
       }
-      { faultstring self002 = faultstring.new_faultstring();
+      { FaultString self002 = FaultString.new_FaultString();
 
         self002.textContent = fstring;
         self000.faultstring = self002;
@@ -182,14 +182,14 @@ public class Soap {
       { Fault fault = self000;
 
         if (factor != null) {
-          { faultactor self003 = faultactor.new_faultactor();
+          { FaultActor self003 = FaultActor.new_FaultActor();
 
             self003.textContent = factor;
             fault.faultactor = self003;
           }
         }
         if (fdetail != null) {
-          { detail self004 = detail.new_detail();
+          { Detail self004 = Detail.new_Detail();
 
             self004.contents = fdetail;
             fault.detail = self004;

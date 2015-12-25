@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -1048,6 +1048,11 @@ public class Stella {
 
   public static double LEAST_NEGATIVE_FLOAT = Stella.NULL_FLOAT;
 
+  /** 1 / (log 2) Reciprocal of the Log base e of 2.
+   * Used for log 2 conversions.
+   */
+  public static double RECIPROCAL_NL2 = Stella.NULL_FLOAT;
+
   /** 1 / (log 10) Reciprocal of the Log base e of 10.
    * Used for log 10 conversions.
    */
@@ -1092,6 +1097,12 @@ public class Stella {
   public final static StellaSpecialVariable $TRANSIENTOBJECTSp$ = new StellaSpecialVariable();
 
   public static Keyword KWD_WHITE_SPACE = null;
+
+  public static Keyword KWD_ASCII_CASE_SENSITIVE = null;
+
+  public static Keyword KWD_ASCII_CASE_INSENSITIVE = null;
+
+  public static Keyword KWD_ASCII_CASE_NORMALIZED = null;
 
   public static Keyword KWD_UPCASE = null;
 
@@ -1144,6 +1155,12 @@ public class Stella {
    */
   public static Vector $HASH_TABLE_SIZE_PRIMES$ = null;
 
+  public static Keyword KWD_UNIX = null;
+
+  public static Keyword KWD_MAC = null;
+
+  public static Keyword KWD_WINDOWS = null;
+
   /** The number of bits in a long integer.
    */
   public static int LONG_INTEGER_BIT_WIDTH = Stella.NULL_INTEGER;
@@ -1179,6 +1196,8 @@ public class Stella {
   public final static StellaSpecialVariable $SORT_TUPLE_COMPARE_PREDICATE$ = new StellaSpecialVariable();
 
   public final static StellaSpecialVariable $SORT_TUPLE_COMPARE_INDEX$ = new StellaSpecialVariable();
+
+  public final static StellaSpecialVariable $SORT_OBJECTS_COMPARE_SLOT$ = new StellaSpecialVariable();
 
   public static Symbol SYM_STELLA_p = null;
 
@@ -1272,6 +1291,12 @@ public class Stella {
   public static Surrogate SGT_STELLA_2D_FLOAT_ARRAY = null;
 
   public static Symbol SYM_STELLA_STARTUP_COLLECTIONS = null;
+
+  public static Surrogate SGT_STELLA_CROSS_PRODUCT_ITERATOR = null;
+
+  public static Symbol SYM_STELLA_DOMAINS = null;
+
+  public static Symbol SYM_STELLA_CURSORS = null;
 
   public static Symbol SYM_STELLA_STARTUP_ITERATORS = null;
 
@@ -2243,6 +2268,8 @@ public class Stella {
 
   public static Keyword KWD_TRANSLATE_WITH_COPYRIGHT_HEADER = null;
 
+  public static Keyword KWD_SUPPORT_UNEXEC = null;
+
   /** List of currently enabled STELLA features.
    */
   public final static StellaSpecialVariable $CURRENT_STELLA_FEATURES$ = new StellaSpecialVariable();
@@ -3157,17 +3184,21 @@ public class Stella {
 
   public static Symbol SYM_STELLA_GET_TOKEN_TYPE = null;
 
+  public static boolean $TRACE_GET_NEXT_TOKENp$ = false;
+
   public static Symbol SYM_STELLA_GET_NEXT_TOKEN = null;
 
   public static Symbol SYM_STELLA_SAVE_TOKENIZER_STREAM_STATE = null;
 
   public static Symbol SYM_STELLA_CHARACTER_CODE = null;
 
+  public static Symbol SYM_STELLA_BYTE_ARRAY_NTH = null;
+
+  public static Symbol SYM_STELLA_IF_OUTPUT_LANGUAGE = null;
+
   public static Symbol SYM_STELLA_LOGOR = null;
 
   public static Symbol SYM_STELLA_SHIFT_LEFT = null;
-
-  public static Symbol SYM_STELLA_BYTE_ARRAY_NTH = null;
 
   public static Symbol SYM_STELLA_LOGAND = null;
 
@@ -3543,6 +3574,14 @@ public class Stella {
 
   public static TokenizerTable $XML_TOKENIZER_TABLE$ = null;
 
+  /** If true, all whitespace between tags (newlines, trailing WP, etc.)
+   * will be preserved.  This is a kludge to allow us to read certain <code>illegal</code> XML files
+   * where this whitespace is significant but not appropriately encoded.
+   */
+  public final static StellaSpecialVariable $XML_PRESERVE_ALL_WHITESPACEp$ = new StellaSpecialVariable();
+
+  public static TokenizerTable $XML_WHITESPACE_PRESERVING_TOKENIZER_TABLE$ = null;
+
   public static Keyword KWD_ATTRIBUTE_VALUE = null;
 
   public static Surrogate SGT_STELLA_XML_EXPRESSION_ITERATOR = null;
@@ -3588,6 +3627,8 @@ public class Stella {
   public static Symbol SYM_STELLA_WARN = null;
 
   public static Keyword KWD_STARTUP_SYSTEMp = null;
+
+  public static Symbol SYM_STELLA_IF_STELLA_FEATURE = null;
 
   public static Symbol SYM_STELLA_INTEGER = null;
 
@@ -3851,12 +3892,6 @@ public class Stella {
    */
   public static Keyword $OS$ = null;
 
-  public static Keyword KWD_WINDOWS = null;
-
-  public static Keyword KWD_UNIX = null;
-
-  public static Keyword KWD_MAC = null;
-
   public final static char TYPE_SEPARATOR = '.';
 
   public final static char LOGICAL_DIRECTORY_SEPARATOR = ';';
@@ -3993,6 +4028,12 @@ public class Stella {
   public static Symbol SYM_STELLA_CONFIGURATION_TABLE = null;
 
   public static KeyValueList $SYSTEM_CONFIGURATION_TABLE$ = null;
+
+  public static Keyword KWD_REMOVE = null;
+
+  public static KeyValueMap $REGISTERED_PROPERTY_DEMONS$ = null;
+
+  public static Symbol SYM_STELLA_TEST_PROPERTY_DEMON = null;
 
   public static Surrogate SGT_STELLA_CMD_LINE_OPTION = null;
 
@@ -4354,13 +4395,7 @@ public class Stella {
 
   public static Symbol SYM_STELLA_CPP_STANDARD_OUT = null;
 
-  public static Symbol SYM_STELLA_CPP_REFERENCED_METHOD_CALL = null;
-
-  public static Symbol SYM_STELLA_SET = null;
-
   public static Symbol SYM_STELLA_CPP_SYMBOL = null;
-
-  public static Symbol SYM_STELLA_GET = null;
 
   public static String $CPP_CHARACTER_SUBSTITUTION_TABLE$ = null;
 
@@ -4385,6 +4420,8 @@ public class Stella {
   public static Symbol SYM_STELLA_CPP_METHOD = null;
 
   public static Symbol SYM_STELLA_CPP_METHOD_SETTER_CALL = null;
+
+  public static Symbol SYM_STELLA_CPP_REFERENCED_METHOD_CALL = null;
 
   public static Symbol SYM_STELLA_CPP_METHOD_CALL = null;
 
@@ -4632,11 +4669,11 @@ public class Stella {
 
   public static Symbol SYM_STELLA_JAVA_STANDARD_OUT = null;
 
+  public static Symbol SYM_STELLA_JAVA_LITERAL = null;
+
   public static Symbol SYM_STELLA_JAVA_PRINT_NATIVE_STREAM = null;
 
   public static Symbol SYM_STELLA_JAVA_EOL = null;
-
-  public static Symbol SYM_STELLA_JAVA_LITERAL = null;
 
   public static Symbol SYM_STELLA_JAVA_SYMBOL = null;
 
@@ -4734,7 +4771,7 @@ public class Stella {
 
   public static String $STELLA_RELEASE_STATE$ = "";
 
-  public static int $STELLA_PATCH_LEVEL$ = 20;
+  public static int $STELLA_PATCH_LEVEL$ = 29;
 
   public static String $STELLA_VERSION_STRING$ = null;
 
@@ -5741,6 +5778,9 @@ public class Stella {
   }
 
   /** Generate a random integer in the interval [0..n-1].
+   * The random number generator is seeded based on the current time every
+   * time STELLA starts up; however, your mileage may vary depending on
+   * the native language implementation.
    * @param n
    * @return int
    */
@@ -5751,9 +5791,11 @@ public class Stella {
     }
   }
 
-  /** Seeds the random number generator with the current time.
+  /** Seeds the random number generator based on the current time.
    */
-  public static void seedRandomNumberGenerator() {}
+  public static void seedRandomNumberGenerator() {
+    Native.RNG = new java.util.Random(System.currentTimeMillis() ^ System.nanoTime());
+  }
 
   /** Return the square root of <code>n</code>.
    * @param n
@@ -5826,6 +5868,14 @@ public class Stella {
    */
   public static double log(double n) {
     return (Math.log(n));
+  }
+
+  /** Return the logarithm (base 2) of <code>n</code>.
+   * @param n
+   * @return double
+   */
+  public static double log2(double n) {
+    return (Math.log(n) * Stella.RECIPROCAL_NL2);
   }
 
   /** Return the logarithm (base 10) of <code>n</code>.
@@ -6155,6 +6205,119 @@ public class Stella {
    */
   public static boolean stringGreaterP(String x, String y) {
     return (Stella.stringCompare(x, y, false) > 0);
+  }
+
+  /** Compare <code>x</code> and <code>y</code> and return -1, 0, or 1, depending on whether
+   * <code>x</code> is less than, equal, or greater than <code>y</code> relative to the :ascii-case-normalized
+   * collation.  In this collation <code>a_L_A_L_b</code> which gives strings that only differ in case a
+   * definite order while otherwise behaving identically to :ascii-case-insensitive.  This is
+   * similar to using a Java Collator for Locale.US with strength set to TERTIARY (which see).
+   * @param x
+   * @param y
+   * @return int
+   */
+  public static int stringCompareCaseNormalized(String x, String y) {
+    { int xlength = x.length();
+      int ylength = y.length();
+      char xch = Stella.NULL_CHARACTER;
+      char ych = Stella.NULL_CHARACTER;
+
+      { int i = Stella.NULL_INTEGER;
+        int iter000 = 0;
+        int upperBound000 = Stella.integer_min(xlength, ylength) - 1;
+
+        for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
+          i = iter000;
+          xch = x.charAt(i);
+          ych = y.charAt(i);
+          if (!(xch == ych)) {
+            { char xchdown = Stella.$CHARACTER_DOWNCASE_TABLE$.charAt(((int) xch));
+              char ychdown = Stella.$CHARACTER_DOWNCASE_TABLE$.charAt(((int) ych));
+
+              if (xchdown == ychdown) {
+                if ((int) xch < (int) ych) {
+                  return (1);
+                }
+                else {
+                  return (-1);
+                }
+              }
+              else {
+                if ((int) xchdown < (int) ychdown) {
+                  return (-1);
+                }
+                else {
+                  return (1);
+                }
+              }
+            }
+          }
+        }
+      }
+      if (xlength == ylength) {
+        return (0);
+      }
+      else if (xlength < ylength) {
+        return (-1);
+      }
+      else {
+        return (1);
+      }
+    }
+  }
+
+  /** Compare <code>x</code> and <code>y</code> and return -1, 0, or 1, depending on whether
+   * <code>x</code> is less than, equal, or greater than <code>y</code> relative to <code>collation</code>.  Currently
+   * supported values for <code>collation</code> are :ascii-case-sensitive, :ascii-case-insensitive
+   * :ascii-case-normalized.  The first two correspond to <code>stringCompare</code> called with
+   * the appropriate third argument.  :ascii-case-normalized calls the function
+   * <code>stringCompareCaseNormalized</code> (which see).
+   * @param x
+   * @param y
+   * @param collation
+   * @return int
+   */
+  public static int compareStrings(String x, String y, Keyword collation) {
+    if (collation == Stella.KWD_ASCII_CASE_SENSITIVE) {
+      return (Stella.stringCompare(x, y, true));
+    }
+    else if (collation == Stella.KWD_ASCII_CASE_INSENSITIVE) {
+      return (Stella.stringCompare(x, y, false));
+    }
+    else if (collation == Stella.KWD_ASCII_CASE_NORMALIZED) {
+      return (Stella.stringCompareCaseNormalized(x, y));
+    }
+    else {
+      { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+        stream000.nativeStream.print("compare-strings: unsupported collation: `" + collation + "'");
+        throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+      }
+    }
+  }
+
+  /** Variant of <code>compareStrings</code> that also tolerates NULL values.
+   * NULL sorts after everything else in any collation.
+   * @param x
+   * @param y
+   * @param collation
+   * @return int
+   */
+  public static int safeCompareStrings(String x, String y, Keyword collation) {
+    if (x == null) {
+      if (y == null) {
+        return (0);
+      }
+      else {
+        return (1);
+      }
+    }
+    else if (y == null) {
+      return (-1);
+    }
+    else {
+      return (Stella.compareStrings(x, y, collation));
+    }
   }
 
   /** Return a new mutable string filled with <code>size</code> <code>initchar</code>s.
@@ -6502,12 +6665,93 @@ public class Stella {
     }
   }
 
+  /** Convert <code>i</code> to its string representation and return the result.
+   * This is a convenience function that expects regular integers as opposed to longs
+   * which is useful in contexts where we do automatic unwrapping based on the target.
+   * @param i
+   * @return String
+   */
+  public static String intToString(int i) {
+    return (Native.integerToString(((long)(i))));
+  }
+
   /** Convert <code>c</code> into a one-element string and return the result.
    * @param c
    * @return String
    */
   public static String characterToString(char c) {
     return (Native.makeString(1, c));
+  }
+
+  /** STELLA version of <code>integerToStringInBase</code> which is faster than
+   * the C++ version we have but slower than the native Java version.
+   * @param integer
+   * @param base
+   * @return String
+   */
+  public static String stellaIntegerToStringInBase(long integer, int base) {
+    if (!((base >= 2) &&
+        (base <= 36))) {
+      System.err.print("Safety violation: integer-to-string-in-base: illegal base: `" + base + "'");
+    }
+    if (integer == 0) {
+      return ("0");
+    }
+    { int offset = ((integer < 0) ? 1 : 0);
+
+      if (offset == 1) {
+        integer = 0 - integer;
+      }
+      { int integerbits = Stella.integerLength(integer);
+        int basebits = Stella.integerLength(((long)(base)));
+        int bufferlength = offset + (integerbits / (basebits - 1)) + 1;
+        StringBuffer buffer = Stella.makeRawMutableString(bufferlength);
+        int index = bufferlength;
+        String table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        long remainder = 0l;
+        int digit = 0;
+        int base1 = base - 1;
+
+        if ((base & base1) == 0) {
+          basebits = basebits - 1;
+          while (integer > 0) {
+            index = index - 1;
+            digit = ((int)((integer & (((long)(base1))))));
+            integer = (integer >> basebits);
+            edu.isi.stella.javalib.Native.mutableString_nthSetter(buffer, (table.charAt(digit)), index);
+          }
+        }
+        else {
+          while (integer > 0) {
+            index = index - 1;
+            remainder = (integer / (((long)(base))));
+            digit = ((int)(integer - (remainder * base)));
+            integer = remainder;
+            edu.isi.stella.javalib.Native.mutableString_nthSetter(buffer, (table.charAt(digit)), index);
+          }
+        }
+        if (offset == 1) {
+          index = index - 1;
+          edu.isi.stella.javalib.Native.mutableString_nthSetter(buffer, '-', index);
+        }
+        if (index == 0) {
+          return (buffer.toString());
+        }
+        else {
+          return (Native.mutableString_subsequence(buffer, index, bufferlength));
+        }
+      }
+    }
+  }
+
+  /** Convert a <code>string</code> representation of an integer into an integer.
+   * This is a convenience function that ensures a regular integer return value.  If
+   * <code>string</code> represents a long integer, the behavior is undefined.
+   * @param string
+   * @return int
+   */
+  public static int stringToInt(String string) {
+    return (((int)(Native.stringToInteger(string))));
   }
 
   /** Formats <code>input</code> to be (at least) <code>length</code> long, using <code>padchar</code> to
@@ -7137,7 +7381,7 @@ public class Stella {
   }
 
   public static int longInteger_hashCode_(long self) {
-    return (((int)(self)));
+    return (((int)((((self ^ ((self >> 32)))) & (((long)(Stella.MOST_POSITIVE_INTEGER)))))));
   }
 
   public static int float_hashCode_(double self) {
@@ -7221,13 +7465,40 @@ public class Stella {
     return (self[position] = value);
   }
 
+  /** Return true if file <code>filename</code> exists and is a directory.
+   * Note that this does not necessarily mean that the directory can also be read.
+   * This does not handle any necessary pathname translations or error conditions.
+   * @param filename
+   * @return boolean
+   */
+  public static boolean nativeProbeDirectoryP(String filename) {
+    { boolean result = false;
+
+      result = (new java.io.File(filename)).isDirectory();
+      return (result);
+    }
+  }
+
   /** Return true if file <code>filename</code> exists.  Note that this does
    * not necessarily mean that the file can also be read.
+   * IMPORTANT Java idiosyncrasy: if file <code>fooSbar</code> exists and is not a directory,
+   * Java will also say <code>fooSbarS</code> exists, which is different behavior than in Lisp
+   * and C++.  For this reason, make sure to always use <code>probeDirectoryP</code> to test
+   * whether a directory exists.
    * @param filename
    * @return boolean
    */
   public static boolean probeFileP(String filename) {
     return (Native.nativeProbeFileP(Stella.translateLogicalPathname(filename)));
+  }
+
+  /** Return true if file <code>filename</code> exists and is a directory.
+   * Note that this does not necessarily mean that the directory can also be read.
+   * @param filename
+   * @return boolean
+   */
+  public static boolean probeDirectoryP(String filename) {
+    return (Stella.nativeProbeDirectoryP(Stella.translateLogicalPathname(filename)));
   }
 
   /** Return the time at which file <code>filename</code> was last modified or
@@ -7323,6 +7594,38 @@ public class Stella {
     }
   }
 
+  /** Return a suitable directory for temporary files.
+   * Uses the value of <code>stellaDtempDirectory</code> if defined; otherwise, it
+   * will use a suitable OS-specific default.  The returned directory will
+   * end in a separator for immediate concatenation with a physical filename.
+   * @return String
+   */
+  public static String getTempDirectory() {
+    { Stella_Object dir = Stella_Object.getProperty(StringWrapper.wrapString("stella.tempDirectory"), Stella.NIL);
+
+      if (dir == null) {
+        { Keyword testValue000 = Stella.operatingSystem();
+
+          if ((testValue000 == Stella.KWD_UNIX) ||
+              (testValue000 == Stella.KWD_MAC)) {
+            dir = StringWrapper.wrapString("/tmp/");
+          }
+          else if (testValue000 == Stella.KWD_WINDOWS) {
+            dir = StringWrapper.wrapString("C:\\WINDOWS\\TEMP\\");
+          }
+          else {
+            { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+              stream000.nativeStream.print("`" + testValue000 + "' is not a valid case option");
+              throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+            }
+          }
+        }
+      }
+      return (((StringWrapper)(dir)).wrapperValue);
+    }
+  }
+
   /** Return a file name of the form <code>LprefixGNNNNNNLsuffixG</code>
    * which is guaranteed to not refer to any existing file.  A null <code>prefix</code>
    * defaults to <code>tmpfile</code>, a null <code>suffix</code> defaults to the empty string.
@@ -7363,7 +7666,6 @@ public class Stella {
 
   public static Cons clListDirectoryFiles(String directory) {
     { Cons files = null;
-      int dirnamelength = directory.length();
       String dirsep = Stella.directorySeparatorString();
       boolean checkduplicatesP = false;
       String normfile = null;
@@ -7383,12 +7685,10 @@ public class Stella {
         loop000 : for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
           file = ((StringWrapper)(iter000.value));
           normfile = file.wrapperValue;
-          if (Stella.startsWithP(normfile, directory, 0)) {
-            normfile = Native.string_subsequence(normfile, dirnamelength, Stella.NULL_INTEGER);
-          }
           if (Stella.endsWithP(normfile, dirsep, Stella.NULL_INTEGER)) {
             normfile = Native.string_subsequence(normfile, 0, normfile.length() - dirsep.length());
           }
+          normfile = Stella.fileNameWithoutDirectory(normfile);
           if (Stella.stringEqlP(normfile, ".") ||
               Stella.stringEqlP(normfile, "..")) {
             continue loop000;
@@ -7461,6 +7761,44 @@ public class Stella {
     { Cons files = Stella.javaListDirectoryFiles(directory);
 
       return (files.sort(null));
+    }
+  }
+
+  /** Just like <code>listDirectoryFiles</code> (which see) but also recurses into
+   * subdirectories.  Files at the top level of <code>directory</code> will be bare file names without
+   * a <code>directory</code> component.  Files in subdirectories will be prefixed with the relative
+   * subdirectory path starting right below <code>directory</code>.  The sort order is lexicographic
+   * within directories which results in a depth-first presentation order of files.
+   * @param directory
+   * @return Cons
+   */
+  public static Cons listDirectoryFilesRecursively(String directory) {
+    directory = Stella.translateLogicalPathname(Stella.fileNameAsDirectory(directory));
+    Stella.ensureFileExists(directory, "list-directory-files");
+    { Cons files = Stella.NIL;
+
+      { StringWrapper file = null;
+        Cons iter000 = Stella.listDirectoryFiles(directory);
+
+        for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
+          file = ((StringWrapper)(iter000.value));
+          if (Stella.probeDirectoryP(directory + file.wrapperValue)) {
+            file = StringWrapper.wrapString(Stella.fileNameAsDirectory(file.wrapperValue));
+            { StringWrapper subfile = null;
+              Cons iter001 = Stella.listDirectoryFilesRecursively(directory + file.wrapperValue);
+
+              for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+                subfile = ((StringWrapper)(iter001.value));
+                files = Cons.cons(StringWrapper.wrapString(StringWrapper.unwrapString(file) + subfile.wrapperValue), files);
+              }
+            }
+          }
+          else {
+            files = Cons.cons(file, files);
+          }
+        }
+      }
+      return (files.reverse());
     }
   }
 
@@ -8616,7 +8954,8 @@ public class Stella {
                           }
                           break loop001;
                         }
-                        tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | ((int) (((char) (0x00ff & tok_buffer_[tok_cursor_]))))))));
+                        tok_nextstate_ = (int) (((char) (0x00ff & tok_buffer_[tok_cursor_])));
+                        tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | tok_nextstate_))));
                         if ((tok_nextstate_ & 128) == 0) {
                           tok_state_ = tok_nextstate_;
                           tok_cursor_ = tok_cursor_ + 1;
@@ -9393,7 +9732,7 @@ public class Stella {
 
         while (iter000.nextP()) {
           surrogate = ((Surrogate)(iter000.value));
-          System.out.println(surrogate);
+          System.out.println(surrogate.toString());
         }
       }
     }
@@ -9747,24 +10086,40 @@ public class Stella {
   }
 
   public static void defineFunctionObject(String name, String definition, java.lang.reflect.Method code, java.lang.reflect.Method wrappercode) {
-    { Stella_Object namesymbol = ((name.charAt(0) == ' ') ? Stella.readSExpressionFromString(name) : Symbol.internSymbolInModule(name, null, false));
-      StandardObject oldfunction = ((StandardObject)(Stella.$FUNCTION_LOOKUP_TABLE$.lookup(((Symbol)(namesymbol)))));
-      Vector record = Vector.newVector(((wrappercode != null) ? 5 : 4));
+    if (name == null) {
+      { MethodSlot function = Stella.defineMethodFromStringifiedSource(null, null, definition);
 
-      if ((oldfunction != null) &&
-          (oldfunction.primaryType() == Stella.SGT_STELLA_VECTOR)) {
-        oldfunction = null;
+        if (function != null) {
+          if (code != null) {
+            function.functionCode = code;
+          }
+          if (wrappercode != null) {
+            KeyValueList.setDynamicSlotValue(function.dynamicSlots, Stella.SYM_STELLA_EVALUATOR_WRAPPER_CODE, FunctionCodeWrapper.wrapFunctionCode(wrappercode), Stella.NULL_FUNCTION_CODE_WRAPPER);
+          }
+          Stella.$FUNCTION_LOOKUP_TABLE$.insertAt(function.slotName, function);
+        }
       }
-      (record.theArray)[0] = (StringWrapper.wrapString(definition));
-      (record.theArray)[1] = oldfunction;
-      (record.theArray)[2] = (StringWrapper.wrapString(((Module)(Stella.$MODULE$.get())).moduleFullName));
-      if (code != null) {
-        (record.theArray)[3] = (FunctionCodeWrapper.wrapFunctionCode(code));
+    }
+    else {
+      { Stella_Object namesymbol = ((name.charAt(0) == ' ') ? Stella.readSExpressionFromString(name) : Symbol.internSymbolInModule(name, null, false));
+        StandardObject oldfunction = ((StandardObject)(Stella.$FUNCTION_LOOKUP_TABLE$.lookup(((Symbol)(namesymbol)))));
+        Vector record = Vector.newVector(((wrappercode != null) ? 5 : 4));
+
+        if ((oldfunction != null) &&
+            (oldfunction.primaryType() == Stella.SGT_STELLA_VECTOR)) {
+          oldfunction = null;
+        }
+        (record.theArray)[0] = (StringWrapper.wrapString(definition));
+        (record.theArray)[1] = oldfunction;
+        (record.theArray)[2] = (StringWrapper.wrapString(((Module)(Stella.$MODULE$.get())).moduleFullName));
+        if (code != null) {
+          (record.theArray)[3] = (FunctionCodeWrapper.wrapFunctionCode(code));
+        }
+        if (wrappercode != null) {
+          (record.theArray)[4] = (FunctionCodeWrapper.wrapFunctionCode(wrappercode));
+        }
+        Stella.$FUNCTION_LOOKUP_TABLE$.insertAt(((Symbol)(namesymbol)), record);
       }
-      if (wrappercode != null) {
-        (record.theArray)[4] = (FunctionCodeWrapper.wrapFunctionCode(wrappercode));
-      }
-      Stella.$FUNCTION_LOOKUP_TABLE$.insertAt(((Symbol)(namesymbol)), record);
     }
   }
 
@@ -9815,7 +10170,7 @@ public class Stella {
 
       for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
         list = ((RecycleList)(iter000.value));
-        System.out.println(list);
+        System.out.println(list.toString());
       }
     }
   }
@@ -10729,6 +11084,8 @@ public class Stella {
         }
         else if (f == Stella.KWD_TRANSLATE_WITH_COPYRIGHT_HEADER) {
         }
+        else if (f == Stella.KWD_SUPPORT_UNEXEC) {
+        }
         else {
           if (Stella.$AVAILABLE_STELLA_FEATURES$.memberP(f)) {
             { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
@@ -10773,6 +11130,8 @@ public class Stella {
         else if (f == Stella.KWD_MINIMIZE_JAVA_PREFIXES) {
         }
         else if (f == Stella.KWD_TRANSLATE_WITH_COPYRIGHT_HEADER) {
+        }
+        else if (f == Stella.KWD_SUPPORT_UNEXEC) {
         }
         else {
           if (Stella.$AVAILABLE_STELLA_FEATURES$.memberP(f)) {
@@ -10916,6 +11275,11 @@ public class Stella {
     return ((((Integer)(Stella.$SAFETY$.get())).intValue() >= 3) &&
         ((!(((Keyword)(Stella.$TRANSLATOROUTPUTLANGUAGE$.get())) == Stella.KWD_JAVA)) &&
          (!Stella.preserveTailMergeOptimizabilityP())));
+  }
+
+  public static boolean supportUnexecP() {
+    return (((List)(Stella.$CURRENT_STELLA_FEATURES$.get())).membP(Stella.KWD_SUPPORT_UNEXEC) &&
+        Stella.translateToCppP());
   }
 
   /** Return the quoted tree with name <code>treeName</code>.
@@ -12173,27 +12537,30 @@ public class Stella {
   public static boolean componentMatchP(String component, String string, int start, int end) {
     { boolean testValue000 = false;
 
-      testValue000 = component.length() == (end - start);
+      testValue000 = component != null;
       if (testValue000) {
-        { boolean alwaysP000 = true;
+        testValue000 = component.length() == (end - start);
+        if (testValue000) {
+          { boolean alwaysP000 = true;
 
-          { char renamed_Char = Stella.NULL_CHARACTER;
-            String vector000 = component;
-            int index000 = 0;
-            int length000 = vector000.length();
-            int i = Stella.NULL_INTEGER;
-            int iter000 = start;
+            { char renamed_Char = Stella.NULL_CHARACTER;
+              String vector000 = component;
+              int index000 = 0;
+              int length000 = vector000.length();
+              int i = Stella.NULL_INTEGER;
+              int iter000 = start;
 
-            loop000 : for (;index000 < length000; index000 = index000 + 1, iter000 = iter000 + 1) {
-              renamed_Char = vector000.charAt(index000);
-              i = iter000;
-              if (!(renamed_Char == string.charAt(i))) {
-                alwaysP000 = false;
-                break loop000;
+              loop000 : for (;index000 < length000; index000 = index000 + 1, iter000 = iter000 + 1) {
+                renamed_Char = vector000.charAt(index000);
+                i = iter000;
+                if (!(renamed_Char == string.charAt(i))) {
+                  alwaysP000 = false;
+                  break loop000;
+                }
               }
             }
+            testValue000 = alwaysP000;
           }
-          testValue000 = alwaysP000;
         }
       }
       { boolean value000 = testValue000;
@@ -13496,7 +13863,8 @@ public class Stella {
                   }
                   break loop000;
                 }
-                tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | ((int) (((char) (0x00ff & tok_buffer_[tok_cursor_]))))))));
+                tok_nextstate_ = (int) (((char) (0x00ff & tok_buffer_[tok_cursor_])));
+                tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | tok_nextstate_))));
                 if ((tok_nextstate_ & 128) == 0) {
                   tok_state_ = tok_nextstate_;
                   tok_cursor_ = tok_cursor_ + 1;
@@ -13678,7 +14046,8 @@ public class Stella {
                   }
                   break loop001;
                 }
-                tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | ((int) (((char) (0x00ff & tok_buffer_[tok_cursor_]))))))));
+                tok_nextstate_ = (int) (((char) (0x00ff & tok_buffer_[tok_cursor_])));
+                tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | tok_nextstate_))));
                 if ((tok_nextstate_ & 128) == 0) {
                   tok_state_ = tok_nextstate_;
                   tok_cursor_ = tok_cursor_ + 1;
@@ -13767,7 +14136,8 @@ public class Stella {
                 }
                 break loop000;
               }
-              tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | ((int) (((char) (0x00ff & tok_buffer_[tok_cursor_]))))))));
+              tok_nextstate_ = (int) (((char) (0x00ff & tok_buffer_[tok_cursor_])));
+              tok_nextstate_ = (int) (tok_transitions_.charAt(((((tok_state_ << 8)) | tok_nextstate_))));
               if ((tok_nextstate_ & 128) == 0) {
                 tok_state_ = tok_nextstate_;
                 tok_cursor_ = tok_cursor_ + 1;
@@ -14282,6 +14652,25 @@ public class Stella {
     }
   }
 
+  /** Read the content of <code>file</code> and return it as a string.
+   * @param file
+   * @return String
+   */
+  public static String fileToString(String file) {
+    { InputFileStream in = null;
+
+      try {
+        in = Stella.openInputFile(file, Stella.NIL);
+        return (in.streamToString());
+
+      } finally {
+        if (in != null) {
+          in.free();
+        }
+      }
+    }
+  }
+
   /** Resets Hashtables used for interning XML elements and global
    * attribute objects.  This will allow garbage collection of no-longer used
    * objects, but will also mean that newly parsed xml elements and global attributes
@@ -14601,6 +14990,26 @@ public class Stella {
       }
     }
     return (Stella.NULL_INTEGER);
+  }
+
+  public static TokenizerTable getXmlWhitespacePreservingTokenizerTable() {
+    if (Stella.$XML_WHITESPACE_PRESERVING_TOKENIZER_TABLE$ == null) {
+      { Cons tokenizerdefinition = ((Cons)(Stella_Object.copyConsTree(Stella.$XML_TOKENIZER_TABLE_DEFINITION$)));
+
+        tokenizerdefinition.secondSetter(Cons.list$(Cons.cons(Stella.KWD_SKIP_WHITESPACE, Cons.cons(Stella.SYM_STELLA_x, Cons.cons(StringWrapper.wrapString("<"), Cons.cons(Stella.KWD_OPEN_TAG, Cons.cons(Stella.KWD_EOF, Cons.cons(Stella.KWD_EOF, Cons.cons(Stella.SYM_STELLA_$, Cons.cons(Stella.KWD_OTHERWISE, Cons.cons(Stella.KWD_CONTENT, Cons.cons(Stella.NIL, Stella.NIL))))))))))));
+        Stella.$XML_WHITESPACE_PRESERVING_TOKENIZER_TABLE$ = Cons.parseTokenizerDefinition(tokenizerdefinition);
+      }
+    }
+    return (Stella.$XML_WHITESPACE_PRESERVING_TOKENIZER_TABLE$);
+  }
+
+  public static TokenizerTable getXmlTokenizerTable() {
+    if (((Boolean)(Stella.$XML_PRESERVE_ALL_WHITESPACEp$.get())).booleanValue()) {
+      return (Stella.getXmlWhitespacePreservingTokenizerTable());
+    }
+    else {
+      return (Stella.$XML_TOKENIZER_TABLE$);
+    }
   }
 
   /** Read all of the top-level XML expressions from <code>filename</code> and
@@ -15552,7 +15961,8 @@ public class Stella {
   public static Keyword operatingSystem() {
     if (Stella.probeFileP("C:\\AUTOEXEC.BAT") ||
         (Stella.probeFileP("C:\\IO.SYS") ||
-         Stella.probeFileP("C:\\BOOT.INI"))) {
+         (Stella.probeFileP("C:\\BOOT.INI") ||
+          Stella.startsWithP(System.getProperty("os.name").toLowerCase(), "win", 0)))) {
       return (Stella.KWD_WINDOWS);
     }
     else if (Stella.probeFileP("/usr") ||
@@ -15672,6 +16082,26 @@ public class Stella {
   }
 
   /** Return the file name portion of <code>file</code> by removing any
+   * physical device components.  This is just like <code>logicalPathnameWithoutHost</code>
+   * but only looks for one-character device strings as used in Windows.
+   * @param file
+   * @return String
+   */
+  public static String fileNameWithoutDevice(String file) {
+    { char separator = ':';
+
+      if ((file.length() >= 2) &&
+          ((file.charAt(1) == separator) &&
+           (Stella.$CHARACTER_TYPE_TABLE$[(int) (file.charAt(0))] == Stella.KWD_LETTER))) {
+        return (Native.string_subsequence(file, 2, Stella.NULL_INTEGER));
+      }
+      else {
+        return (file);
+      }
+    }
+  }
+
+  /** Return the file name portion of <code>file</code> by removing any
    * directory and logical host components.
    * @param file
    * @return String
@@ -15680,7 +16110,12 @@ public class Stella {
     { int start = 0;
       char separator = Stella.directorySeparatorForFile(file);
 
-      file = Stella.logicalPathnameWithoutHost(file);
+      if (separator == Stella.LOGICAL_HOST_SEPARATOR) {
+        file = Stella.logicalPathnameWithoutHost(file);
+      }
+      else {
+        file = Stella.fileNameWithoutDevice(file);
+      }
       while (Native.string_position(file, separator, start) != Stella.NULL_INTEGER) {
         start = Native.string_position(file, separator, start) + 1;
       }
@@ -15808,8 +16243,11 @@ public class Stella {
 
       if (Stella.logicalPathnameP(pathname)) {
         separator = Stella.LOGICAL_DIRECTORY_SEPARATOR;
+        pathname = Stella.logicalPathnameWithoutHost(pathname);
       }
-      pathname = Stella.logicalPathnameWithoutHost(pathname);
+      else {
+        pathname = Stella.fileNameWithoutDevice(pathname);
+      }
       return ((pathname.length() > 0) &&
           (pathname.charAt(0) == separator));
     }
@@ -17456,7 +17894,7 @@ public class Stella {
    * @param configuration
    * @return Stella_Object
    */
-  public static Stella_Object lookupConfigurationProperty(String property, Wrapper defaultvalue, KeyValueList configuration) {
+  public static Stella_Object lookupConfigurationProperty(String property, Stella_Object defaultvalue, KeyValueList configuration) {
     if (configuration == null) {
       configuration = Stella.$SYSTEM_CONFIGURATION_TABLE$;
     }
@@ -17510,6 +17948,7 @@ public class Stella {
       configuration = Stella.$SYSTEM_CONFIGURATION_TABLE$;
     }
     configuration.insertAt(StringWrapper.wrapString(property), value);
+    Keyword.runConfigurationPropertyDemon(Stella.KWD_SET, property, value, configuration);
     return (value);
   }
 
@@ -17530,6 +17969,7 @@ public class Stella {
 
       configuration.insertAt(StringWrapper.wrapString(property), (((temp000 != null) ? temp000 : Stella.NIL)).consify().concatenate(Cons.cons(value, Stella.NIL), Stella.NIL));
     }
+    Keyword.runConfigurationPropertyDemon(Stella.KWD_ADD, property, value, configuration);
     return (value);
   }
 
@@ -17547,6 +17987,7 @@ public class Stella {
     { Stella_Object currentValue = configuration.lookup(StringWrapper.wrapString(property));
 
       configuration.removeAt(StringWrapper.wrapString(property));
+      Keyword.runConfigurationPropertyDemon(Stella.KWD_CLEAR, property, currentValue, configuration);
       return (currentValue);
     }
   }
@@ -17567,6 +18008,7 @@ public class Stella {
       if (currentValue != null) {
         configuration.insertAt(StringWrapper.wrapString(property), currentValue.remove(value));
       }
+      Keyword.runConfigurationPropertyDemon(Stella.KWD_REMOVE, property, value, configuration);
       return (value);
     }
   }
@@ -17594,6 +18036,38 @@ public class Stella {
 ;
     KeyValueList.printConfigurationProperties(Stella.$SYSTEM_CONFIGURATION_TABLE$, Stella.STANDARD_OUTPUT);
     System.out.println("------------------------------------------------------------");
+  }
+
+  /** Register the function named <code>demonname</code> as the demon for <code>property</code>.
+   * Demons will be run as after demons on every configuration table update.  Set the
+   * property <code>stellaDtestDpropertyDemon</code> to see a test demon in action.
+   * @param property
+   * @param demonname
+   */
+  public static void registerPropertyDemon(String property, Symbol demonname) {
+    { MappableObject demon = Symbol.lookupFunction(demonname);
+
+      if (demon == null) {
+        demon = demonname.lookupGlobalVariable();
+      }
+      if (demon != null) {
+        Stella.$REGISTERED_PROPERTY_DEMONS$.insertAt(StringWrapper.wrapString(property), demon);
+      }
+      else {
+        { OutputStringStream stream000 = OutputStringStream.newOutputStringStream();
+
+          stream000.nativeStream.print("register-property-demon: cannot find a function or variable with this name: `" + demonname + "'");
+          throw ((StellaException)(StellaException.newStellaException(stream000.theStringReader()).fillInStackTrace()));
+        }
+      }
+    }
+  }
+
+  /** Unregister any demon for <code>property</code>.
+   * @param property
+   */
+  public static void unregisterPropertyDemon(String property) {
+    Stella.$REGISTERED_PROPERTY_DEMONS$.removeAt(StringWrapper.wrapString(property));
   }
 
   /** Register a command line option.  :key identifies the name of the option which
@@ -18504,7 +18978,7 @@ public class Stella {
                   Module.cppOutputNamespaceFooter(currentnamespacemodule);
                   if (main != null) {
                     {
-                      ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println();
+                      ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println("");
                       ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println();
                     }
 ;
@@ -18600,40 +19074,46 @@ public class Stella {
                 }
               }
               ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println("// System-wide forward declarations:");
-              { Module currentnamespacemodule = null;
+              { Stella_Object module = null;
+                Cons iter001 = Cons.cons(((Module)(Stella.$MODULE$.get())), SystemDefinition.collectDefinedModulesFromSystemFile(system).remove(((Module)(Stella.$MODULE$.get()))));
 
-                { Stella_Class renamed_Class = null;
-                  Iterator iter001 = Module.allClasses(((Module)(Stella.$MODULE$.get())), true);
+                for (;!(iter001 == Stella.NIL); iter001 = iter001.rest) {
+                  module = iter001.value;
+                  { Module currentnamespacemodule = null;
 
-                  while (iter001.nextP()) {
-                    renamed_Class = ((Stella_Class)(iter001.value));
-                    if (Stella_Class.createNativeClassP(renamed_Class)) {
-                      Native.setSpecial(Stella.$CPP_CURRENT_UNIT_MODULE$, renamed_Class.homeModule());
-                      Module.cppOutputNamespaceChange(currentnamespacemodule, ((Module)(Stella.$CPP_CURRENT_UNIT_MODULE$.get())));
-                      currentnamespacemodule = ((Module)(Stella.$CPP_CURRENT_UNIT_MODULE$.get()));
-                      ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println("class " + GeneralizedSymbol.cppTranslateClassName(renamed_Class.classType).wrapperValue + ";");
+                    { Stella_Class renamed_Class = null;
+                      Iterator iter002 = Module.allClasses(((Module)(module)), true);
+
+                      while (iter002.nextP()) {
+                        renamed_Class = ((Stella_Class)(iter002.value));
+                        if (Stella_Class.createNativeClassP(renamed_Class)) {
+                          Native.setSpecial(Stella.$CPP_CURRENT_UNIT_MODULE$, renamed_Class.homeModule());
+                          if (currentnamespacemodule == null) {
+                            ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println();
+                          }
+                          Module.cppOutputNamespaceChange(currentnamespacemodule, ((Module)(Stella.$CPP_CURRENT_UNIT_MODULE$.get())));
+                          currentnamespacemodule = ((Module)(Stella.$CPP_CURRENT_UNIT_MODULE$.get()));
+                          ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println("class " + GeneralizedSymbol.cppTranslateClassName(renamed_Class.classType).wrapperValue + ";");
+                        }
+                      }
+                    }
+                    if (currentnamespacemodule != null) {
+                      ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println();
+                      Module.cppOutputNamespaceFooter(((Module)(Stella.$CPP_CURRENT_UNIT_MODULE$.get())));
                     }
                   }
                 }
-                ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println();
-                if (currentnamespacemodule != null) {
-                  Module.cppOutputNamespaceFooter(((Module)(Stella.$CPP_CURRENT_UNIT_MODULE$.get())));
-                }
-                {
-                  ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println();
-                  ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println();
-                }
-;
               }
+              ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println();
               ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.println("// System components:");
               if (Stella.stringEqlP(systemname, "stella")) {
                 Stella.cppOutputIncludeDirective(Stella.cppRelativizeHeaderFile(Stella_Object.makeFileNameFromRelativePath(Cons.list$(Cons.cons(StringWrapper.wrapString("cpp-lib"), Cons.cons(StringWrapper.wrapString("cpp-primal"), Cons.cons(Stella.NIL, Stella.NIL)))), Stella.KWD_CPP_HEADER), systemname), false);
               }
               { StringWrapper file = null;
-                Cons iter002 = Cons.filesPlusSystemStartup(SystemDefinition.systemDefinitionSourceFiles(system));
+                Cons iter003 = Cons.filesPlusSystemStartup(SystemDefinition.systemDefinitionSourceFiles(system));
 
-                for (;!(iter002 == Stella.NIL); iter002 = iter002.rest) {
-                  file = ((StringWrapper)(iter002.value));
+                for (;!(iter003 == Stella.NIL); iter003 = iter003.rest) {
+                  file = ((StringWrapper)(iter003.value));
                   Stella.cppOutputIncludeDirective(Stella.cppRelativizeHeaderFile(Stella.makeFileName(file.wrapperValue, Stella.KWD_CPP_HEADER, true), systemname), false);
                 }
               }
@@ -18744,6 +19224,7 @@ public class Stella {
         OutputStringStream requiredsystems = OutputStringStream.newOutputStringStream();
         OutputStringStream requiredsystemdirs = OutputStringStream.newOutputStringStream();
         OutputStringStream allrequiredsystems = OutputStringStream.newOutputStringStream();
+        String nativesystemroot = Stella.fileNameDirectory(Stella.makeFileName("foo", Stella.KWD_CPP_CODE, true));
 
         variables.insertAt(StringWrapper.wrapString("SYSTEM-NAME"), StringWrapper.wrapString(system.name));
         variables.insertAt(StringWrapper.wrapString("PROGRAM-NAME"), StringWrapper.wrapString(system.name));
@@ -18755,7 +19236,7 @@ public class Stella {
 
           for (;!(iter000 == Stella.NIL); iter000 = iter000.rest) {
             file = ((StringWrapper)(iter000.value));
-            systemfiles.nativeStream.print(Stella.fileNameWithoutDirectory(Stella.makeFileName(file.wrapperValue, Stella.KWD_CPP_CODE, true)) + " ");
+            systemfiles.nativeStream.print(Stella.relativizeFileName(Stella.makeFileName(file.wrapperValue, Stella.KWD_CPP_CODE, true), nativesystemroot) + " ");
           }
         }
         variables.insertAt(StringWrapper.wrapString("SYSTEM-FILES"), StringWrapper.wrapString(systemfiles.theStringReader()));
@@ -19930,7 +20411,74 @@ public class Stella {
   }
 
   public static void string_javaOutputLiteral(String string) {
-    ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.print("\"" + Stella.replaceSubstrings(Stella.replaceSubstrings(Stella.replaceSubstrings(Stella.replaceSubstrings(string, "\\\\", "\\"), "\\\"", Native.makeString(1, '"')), "\\n", Native.makeString(1, '\n')), "\\r", Native.makeString(1, '\r')) + "\"");
+    { int maxsize = 65535 - 1;
+      int length = string.length();
+      boolean toolongP = length > maxsize;
+      int chunksize = 0;
+
+      if (toolongP) {
+        { Object old$PrintreadablyP$000 = Stella.$PRINTREADABLYp$.get();
+
+          try {
+            Native.setBooleanSpecial(Stella.$PRINTREADABLYp$, true);
+            Stella.signalTranslationWarning();
+            if (!(Stella.suppressWarningsP())) {
+              Stella.printErrorContext(">> WARNING: ", Stella.STANDARD_WARNING);
+              {
+                Stella.STANDARD_WARNING.nativeStream.println();
+                Stella.STANDARD_WARNING.nativeStream.println(" Encountered too long string constant (`" + Native.string_subsequence(string, 0, 80) + "'...), breaking it up which is INEFFICIENT.");
+              }
+;
+            }
+
+          } finally {
+            Stella.$PRINTREADABLYp$.set(old$PrintreadablyP$000);
+          }
+        }
+        ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.print("new String().concat(");
+      }
+      ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.print("\"");
+      { char ch = Stella.NULL_CHARACTER;
+        String vector000 = string;
+        int index000 = 0;
+        int length000 = vector000.length();
+
+        for (;index000 < length000; index000 = index000 + 1) {
+          ch = vector000.charAt(index000);
+          chunksize = chunksize + 1;
+          switch (ch) {
+            case '\n': 
+              ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.print("\\n");
+              chunksize = chunksize + 1;
+            break;
+            case '\r': 
+              ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.print("\\r");
+              chunksize = chunksize + 1;
+            break;
+            case '"': 
+              ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.print("\\\"");
+              chunksize = chunksize + 1;
+            break;
+            case '\\': 
+              ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.print("\\\\");
+              chunksize = chunksize + 1;
+            break;
+            default:
+              ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.print(ch);
+            break;
+          }
+          if ((chunksize >= maxsize) &&
+              toolongP) {
+            ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.print("\").concat(\"");
+            chunksize = 0;
+          }
+        }
+      }
+      ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.print("\"");
+      if (toolongP) {
+        ((OutputStream)(Stella.$CURRENT_STREAM$.get())).nativeStream.print(")");
+      }
+    }
   }
 
   public static void javaOutputExceptionConstructor(String exceptionname) {

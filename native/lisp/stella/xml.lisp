@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -1238,6 +1238,41 @@ a DOCTYPE object."
 
 (CL:DEFVAR *XML-TOKENIZER-TABLE* NULL)
 
+;;; (DEFSPECIAL *XML-PRESERVE-ALL-WHITESPACE?* ...)
+
+(CL:DEFVAR *XML-PRESERVE-ALL-WHITESPACE?* CL:NIL
+  "If true, all whitespace between tags (newlines, trailing WP, etc.)
+will be preserved.  This is a kludge to allow us to read certain `illegal' XML files
+where this whitespace is significant but not appropriately encoded.")
+
+;;; (DEFGLOBAL *XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE* ...)
+
+(CL:DEFVAR *XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE* NULL)
+
+;;; (DEFUN (GET-XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE TOKENIZER-TABLE) ...)
+
+(CL:DEFUN GET-XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE ()
+  (CL:WHEN (CL:EQ *XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE* NULL)
+   (CL:LET*
+    ((TOKENIZERDEFINITION
+      (COPY-CONS-TREE *XML-TOKENIZER-TABLE-DEFINITION*)))
+    (SECOND-SETTER TOKENIZERDEFINITION
+     (LIST* KWD-XML-SKIP-WHITESPACE SYM-XML-STELLA-! (WRAP-STRING "<")
+      KWD-XML-OPEN-TAG KWD-XML-EOF KWD-XML-EOF SYM-XML-STELLA-*
+      KWD-XML-OTHERWISE KWD-XML-CONTENT NIL))
+    (CL:SETQ *XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE*
+     (PARSE-TOKENIZER-DEFINITION TOKENIZERDEFINITION))))
+  (CL:RETURN-FROM GET-XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE
+   *XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE*))
+
+;;; (DEFUN (GET-XML-TOKENIZER-TABLE TOKENIZER-TABLE) ...)
+
+(CL:DEFUN GET-XML-TOKENIZER-TABLE ()
+  (CL:IF *XML-PRESERVE-ALL-WHITESPACE?*
+   (CL:RETURN-FROM GET-XML-TOKENIZER-TABLE
+    (GET-XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE))
+   (CL:RETURN-FROM GET-XML-TOKENIZER-TABLE *XML-TOKENIZER-TABLE*)))
+
 ;;; (DEFUN (TOKENIZE-XML-EXPRESSION TOKENIZER-TOKEN BOOLEAN) ...)
 
 (CL:DEFUN TOKENIZE-XML-EXPRESSION (STREAM TOKENLIST REGIONTAGNAME SKIPTOREGION?)
@@ -1258,7 +1293,7 @@ a DOCTYPE object."
     (CL:SETQ TOKENLIST (NEW-TOKENIZER-TOKEN))
     (CL:SETQ TOKENCURSOR TOKENLIST))
    (CL:LET*
-    ((TOK_TABLE_ *XML-TOKENIZER-TABLE*)
+    ((TOK_TABLE_ (GET-XML-TOKENIZER-TABLE))
      (TOK_TRANSITIONS_ (%TRANSITIONS TOK_TABLE_))
      (TOK_STATENAMES_ (%THE-ARRAY (%STATE-NAMES TOK_TABLE_)))
      (TOK_TOKENSTART_ -1) (TOK_ENDOFTOKENS?_ CL:NIL)
@@ -1321,17 +1356,21 @@ a DOCTYPE object."
         (CL:SETQ TOK_NEXTSTATE_
          (CL:THE CL:FIXNUM
           (CL:CHAR-CODE
+           (CL:LET ((BUFFER TOK_BUFFER_) (POSITION TOK_CURSOR_))
+            (CL:DECLARE (CL:TYPE CL:FIXNUM POSITION))
+            (CL:SCHAR (CL:THE CL:SIMPLE-STRING BUFFER)
+             (CL:THE CL:FIXNUM POSITION))))))
+        (CL:WHEN (CL:> TOK_NEXTSTATE_ 255)
+         (CL:SETQ TOK_NEXTSTATE_ 255))
+        (CL:SETQ TOK_NEXTSTATE_
+         (CL:THE CL:FIXNUM
+          (CL:CHAR-CODE
            (CL:LET
             ((SELF TOK_TRANSITIONS_)
              (POSITION
               (CL:THE CL:FIXNUM
                (CL:LOGIOR (CL:THE CL:FIXNUM (CL:ASH TOK_STATE_ 8))
-                (CL:THE CL:FIXNUM
-                 (CL:CHAR-CODE
-                  (CL:LET ((BUFFER TOK_BUFFER_) (POSITION TOK_CURSOR_))
-                   (CL:DECLARE (CL:TYPE CL:FIXNUM POSITION))
-                   (CL:SCHAR (CL:THE CL:SIMPLE-STRING BUFFER)
-                    (CL:THE CL:FIXNUM POSITION)))))))))
+                TOK_NEXTSTATE_))))
             (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
              (CL:TYPE CL:FIXNUM POSITION))
             (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
@@ -1441,33 +1480,35 @@ a DOCTYPE object."
         (CL:SETQ TOKENCONTENT
          (GET-TOKEN-TEXT-INTERNAL TOK_BUFFER_ TOK_TOKENSTART_
           TOK_CURSOR_ TOK_SIZE_ CL:NIL))
-        (CL:LET* ((CURSOR (CL:THE CL:FIXNUM (CL:LENGTH TOKENCONTENT))))
-         (CL:DECLARE (CL:TYPE CL:FIXNUM CURSOR))
-         (CL:LET* ((I NULL-INTEGER) (ITER-000 0))
-          (CL:DECLARE (CL:TYPE CL:FIXNUM I ITER-000))
-          (CL:LOOP WHILE CL:T DO (CL:SETQ I ITER-000)
-           (CL:WHEN
-            (CL:NOT
-             (CL:EQ
-              (CL:AREF *CHARACTER-TYPE-TABLE*
-               (CL:THE CL:FIXNUM
-                (CL:CHAR-CODE
-                 (CL:LET
-                  ((SELF TOKENCONTENT)
-                   (POSITION (CL:SETQ CURSOR (CL:1- CURSOR))))
-                  (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
-                   (CL:TYPE CL:FIXNUM POSITION))
-                  (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
-                   (CL:THE CL:FIXNUM POSITION))))))
-              KWD-XML-WHITE-SPACE))
-            (CL:WHEN (CL:> I 0) (CL:SETQ I (CL:- 0 I))
-             (CL:SETQ TOKENCONTENT
-              (GET-TOKEN-TEXT-INTERNAL TOK_BUFFER_ TOK_TOKENSTART_
-               (CL:IF (CL:< I 0) (CL:+ TOK_CURSOR_ I)
-                (CL:+ TOK_TOKENSTART_ I))
-               TOK_SIZE_ CL:NIL)))
-            (CL:RETURN))
-           (CL:SETQ ITER-000 (CL:1+ ITER-000))))))
+        (CL:WHEN (CL:NOT *XML-PRESERVE-ALL-WHITESPACE?*)
+         (CL:LET*
+          ((CURSOR (CL:THE CL:FIXNUM (CL:LENGTH TOKENCONTENT))))
+          (CL:DECLARE (CL:TYPE CL:FIXNUM CURSOR))
+          (CL:LET* ((I NULL-INTEGER) (ITER-000 0))
+           (CL:DECLARE (CL:TYPE CL:FIXNUM I ITER-000))
+           (CL:LOOP WHILE CL:T DO (CL:SETQ I ITER-000)
+            (CL:WHEN
+             (CL:NOT
+              (CL:EQ
+               (CL:AREF *CHARACTER-TYPE-TABLE*
+                (CL:THE CL:FIXNUM
+                 (CL:CHAR-CODE
+                  (CL:LET
+                   ((SELF TOKENCONTENT)
+                    (POSITION (CL:SETQ CURSOR (CL:1- CURSOR))))
+                   (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING SELF)
+                    (CL:TYPE CL:FIXNUM POSITION))
+                   (CL:SCHAR (CL:THE CL:SIMPLE-STRING SELF)
+                    (CL:THE CL:FIXNUM POSITION))))))
+               KWD-XML-WHITE-SPACE))
+             (CL:WHEN (CL:> I 0) (CL:SETQ I (CL:- 0 I))
+              (CL:SETQ TOKENCONTENT
+               (GET-TOKEN-TEXT-INTERNAL TOK_BUFFER_ TOK_TOKENSTART_
+                (CL:IF (CL:< I 0) (CL:+ TOK_CURSOR_ I)
+                 (CL:+ TOK_TOKENSTART_ I))
+                TOK_SIZE_ CL:NIL)))
+             (CL:RETURN))
+            (CL:SETQ ITER-000 (CL:1+ ITER-000)))))))
        ((CL:EQ TOKENTYPE KWD-XML-ERROR)
         (CL:WHEN (CL:NOT (CL:EQ TOK_STREAMSTATE_ NULL))
          (CL:SETF (%CURSOR TOK_STREAMSTATE_) TOK_CURSOR_)
@@ -3101,6 +3142,13 @@ a PUBLIC or SYSTEM literal for an XML Elternal ID.  (See 4.2.2)\")"
    (DEFINE-FUNCTION-OBJECT "PROCESS-DOCTYPE"
     "(DEFUN (PROCESS-DOCTYPE XML-DOCTYPE) ((DOCTYPE-DECLARATION CONS)) :PUBLIC? TRUE :DOCUMENTATION \"Takes an S-Expression representing a doctype and processes into
 a DOCTYPE object.\")" (CL:FUNCTION PROCESS-DOCTYPE) NULL)
+   (DEFINE-FUNCTION-OBJECT
+    "GET-XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE"
+    "(DEFUN (GET-XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE TOKENIZER-TABLE) ())"
+    (CL:FUNCTION GET-XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE) NULL)
+   (DEFINE-FUNCTION-OBJECT "GET-XML-TOKENIZER-TABLE"
+    "(DEFUN (GET-XML-TOKENIZER-TABLE TOKENIZER-TABLE) ())"
+    (CL:FUNCTION GET-XML-TOKENIZER-TABLE) NULL)
    (DEFINE-FUNCTION-OBJECT "TOKENIZE-XML-EXPRESSION"
     "(DEFUN (TOKENIZE-XML-EXPRESSION TOKENIZER-TOKEN BOOLEAN) ((STREAM INPUT-STREAM) (TOKENLIST TOKENIZER-TOKEN) (REGIONTAGNAME STRING) (SKIPTOREGION? BOOLEAN)))"
     (CL:FUNCTION TOKENIZE-XML-EXPRESSION) NULL)
@@ -3239,18 +3287,6 @@ associated with it.\" (RETURN (AND (EQL? (NAME TAG) NAME) (EQL? (NAMESPACE-URI T
 in namespace `namespace'.  Note that `namespace' is the full URI, not an
 abbreviation.  Also, `namespace' may be `null', in which case `attribute'
 must not have a namespace associated with it.\")"
-    (CL:FUNCTION XML-ATTRIBUTE-MATCH?) NULL)
-   (DEFINE-METHOD-OBJECT
-    "(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-GLOBAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is a global  XML attribute with name `name'
-in namespace `namespace'.  Note that `namespace' is the full URI, not an
-abbreviation.  Also, `namespace' may be `null', in which case `attribute'
-must not have a namespace associated with it.\")"
-    (CL:FUNCTION XML-ATTRIBUTE-MATCH?) NULL)
-   (DEFINE-METHOD-OBJECT
-    "(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-LOCAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is a local XML attribute with name `name'.
-Note that `namespace' must be `null' and that the `attribute's parent element
-element is not considered by the match.  To take the parent element into
-account use `xml-local-attribute-match?'.\")"
     (CL:FUNCTION XML-ATTRIBUTE-MATCH?) NULL))
   :VOID)
 
@@ -3437,6 +3473,18 @@ account use `xml-local-attribute-match?'.\")"
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 5) (HELP-STARTUP-XML3))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7) (HELP-STARTUP-XML4)
+    (DEFINE-METHOD-OBJECT
+     "(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-GLOBAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is a global  XML attribute with name `name'
+in namespace `namespace'.  Note that `namespace' is the full URI, not an
+abbreviation.  Also, `namespace' may be `null', in which case `attribute'
+must not have a namespace associated with it.\")"
+     (CL:FUNCTION XML-ATTRIBUTE-MATCH?) NULL)
+    (DEFINE-METHOD-OBJECT
+     "(DEFMETHOD (XML-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-LOCAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if `attribute' is a local XML attribute with name `name'.
+Note that `namespace' must be `null' and that the `attribute's parent element
+element is not considered by the match.  To take the parent element into
+account use `xml-local-attribute-match?'.\")"
+     (CL:FUNCTION XML-ATTRIBUTE-MATCH?) NULL)
     (DEFINE-FUNCTION-OBJECT "XML-GLOBAL-ATTRIBUTE-MATCH?"
      "(DEFUN (XML-GLOBAL-ATTRIBUTE-MATCH? BOOLEAN) ((ATTRIBUTE XML-GLOBAL-ATTRIBUTE) (NAME STRING) (NAMESPACE STRING)) :GLOBALLY-INLINE? TRUE (RETURN (AND (STRING-EQL? (NAME ATTRIBUTE) NAME) (EQL? (NAMESPACE-URI ATTRIBUTE) NAMESPACE))))"
      (CL:FUNCTION XML-GLOBAL-ATTRIBUTE-MATCH?) NULL)
@@ -3515,5 +3563,11 @@ for interning XML global attributes.\")")
     (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
      "(DEFGLOBAL *XML-TOKENIZER-TABLE* TOKENIZER-TABLE NULL)")
     (CL:SETQ *XML-TOKENIZER-TABLE*
-     (PARSE-TOKENIZER-DEFINITION *XML-TOKENIZER-TABLE-DEFINITION*))))
+     (PARSE-TOKENIZER-DEFINITION *XML-TOKENIZER-TABLE-DEFINITION*))
+    (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
+     "(DEFSPECIAL *XML-PRESERVE-ALL-WHITESPACE?* BOOLEAN FALSE :DOCUMENTATION \"If true, all whitespace between tags (newlines, trailing WP, etc.)
+will be preserved.  This is a kludge to allow us to read certain `illegal' XML files
+where this whitespace is significant but not appropriately encoded.\")")
+    (DEFINE-STELLA-GLOBAL-VARIABLE-FROM-STRINGIFIED-SOURCE
+     "(DEFGLOBAL *XML-WHITESPACE-PRESERVING-TOKENIZER-TABLE* TOKENIZER-TABLE NULL)")))
   :VOID)

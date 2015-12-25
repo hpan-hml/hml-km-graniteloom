@@ -12,7 +12,7 @@ preserved on all copies.
 PowerLoom is a registered trademark of the University of Southern California.
 
  -->
-<!-- Created on October 16, 2010 by texi2html 1.82
+<!-- Created on May 1, 2014 by texi2html 1.82
 texi2html was written by: 
             Lionel Cons <Lionel.Cons@cern.ch> (original author)
             Karl Berry  <karl@freefriends.org>
@@ -195,6 +195,13 @@ inconsistent propositions conceived locally in <var>module</var>.
 <dd><p>Iterate over all instances (or individuals) visible from <var>module</var>.
 Only instances that haven&rsquo;t been deleted will be considered.  If <var>local?</var>,
 only return instances created locally in <var>module</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-all_002dlocally_002dmodified_002dpropositions"></a><u>Function:</u> <b>all-locally-modified-propositions</b><i> ((module <small>MODULE</small>)) : <small>(ITERATOR OF PROPOSITION)</small></i></dt>
+<dd><p>Iterate over all conceived propositions visible from <var>module</var> that had their
+truth value locally modified (initialized, asserted, retracted).  Note, that this
+will always include all locally conceived propositions.
 </p></dd></dl>
 
 <dl>
@@ -458,6 +465,12 @@ Coerce each element of <var>self</var> to be a logic object or literal.
 </p></dd></dl>
 
 <dl>
+<dt><a name="index-conceive_002dinverted_002dproposition"></a><u>Function:</u> <b>conceive-inverted-proposition</b><i> ((prop <small>PROPOSITION</small>)) : <small>PROPOSITION</small></i></dt>
+<dd><p>Return the simplest inversion of <var>prop</var>, trying to reuse existing
+negations or negated arguments of <var>prop</var> if possible.
+</p></dd></dl>
+
+<dl>
 <dt><a name="index-conceive_002dterm"></a><u>Command:</u> <b>conceive-term</b><i> ((tree <small>OBJECT</small>)) : <small>OBJECT</small></i></dt>
 <dd><p><var>tree</var> is a term expression (a string or an s-expression),
 or is a class reference (a symbol or surrogate).  Return a (possibly 
@@ -508,6 +521,11 @@ where each &lt;antecedent&gt; is a CONS tree representing a subproof.
 :RAW preserves the original structure literally, :VERBOSE keeps AND-
 introductions but suppresses all auxiliary (non-logical) nodes such as
 pattern nodes, and :BRIEF additionally suppresses AND-introduction nodes.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-constant_002dproposition_003f"></a><u>Function:</u> <b>constant-proposition?</b><i> ((self <small>PROPOSITION</small>)) : <small>BOOLEAN</small></i></dt>
+<dd><p>Return true if <var>self</var> is a constant such as TRUE or FALSE.
 </p></dd></dl>
 
 <dl>
@@ -564,6 +582,12 @@ on the new marker storage object.
 <dt><a name="index-current_002dinference_002dlevel"></a><u>Command:</u> <b>current-inference-level</b><i> () : <small>NORMAL-INFERENCE-LEVEL</small></i></dt>
 <dd><p>Return the current inference level that is active in the
 current query, the current module, or, otherwise, globally.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-debug_002did_002dsetter-on-QUERY_002dITERATOR"></a><u>Method on <small>QUERY-ITERATOR</small>:</u> <b>debug-id-setter</b><i> (self (id <small>STRING</small>)) :</i></dt>
+<dd><p>Set the debug ID of <var>self</var> to <var>id</var>.  If <var>id</var> is NULL, simply
+use the current ID counter and increment it appropriately.
 </p></dd></dl>
 
 <dl>
@@ -646,6 +670,11 @@ can be :terse, :verbose, or :source.  Used by <code>describe</code>.
 <dl>
 <dt><a name="index-description_002dname-on-DESCRIPTION"></a><u>Method on <small>DESCRIPTION</small>:</u> <b>description-name</b><i> (self) : <small>SYMBOL</small></i></dt>
 <dd><p>Return the name of the description <var>self</var>, if it has one.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-description_003f"></a><u>Function:</u> <b>description?</b><i> ((self <small>OBJECT</small>)) : <small>BOOLEAN</small></i></dt>
+<dd><p>Return TRUE if <var>self</var> is a description.
 </p></dd></dl>
 
 <dl>
@@ -746,6 +775,12 @@ for *context*, :EVALUATED if has been evaluated, or NULL if it has never been ev
 </p></dd></dl>
 
 <dl>
+<dt><a name="index-explain_002dproposition"></a><u>Function:</u> <b>explain-proposition</b><i> ((prop <small>PROPOSITION</small>) (style <small>KEYWORD</small>) (maxdepth <small>INTEGER</small>) (stream <small>OUTPUT-STREAM</small>)) :</i></dt>
+<dd><p>Print an explanation for <var>prop</var> if there is one.  This will only happen
+for forward-chained propositions.
+</p></dd></dl>
+
+<dl>
 <dt><a name="index-explain_002dwhy"></a><u>Function:</u> <b>explain-why</b><i> ((label <small>STRING</small>) (style <small>KEYWORD</small>) (maxdepth <small>INTEGER</small>) (stream <small>OUTPUT-STREAM</small>)) :</i></dt>
 <dd><p>Programmer&rsquo;s interface to WHY function.
 </p></dd></dl>
@@ -764,6 +799,13 @@ for *context*, :EVALUATED if has been evaluated, or NULL if it has never been ev
 <dt><a name="index-false_003f"></a><u>Function:</u> <b>false?</b><i> ((self <small>PROPOSITION</small>)) : <small>BOOLEAN</small></i></dt>
 <dd><p>Return true if <var>self</var> is false (or default-false if we are
 considering default assertions).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fetch_002dduplicate_002dproposition-on-OBJECT_002dSTORE"></a><u>Method on <small>OBJECT-STORE</small>:</u> <b>fetch-duplicate-proposition</b><i> (store (prop <small>PROPOSITION</small>)) : <small>PROPOSITION</small></i></dt>
+<dd><p>Fetch a duplicate of <var>prop</var> if defined by <var>store</var>.  EXPERIMENTAL!
+The exact semantics of this still needs to be worked out.  This needs to be appropriately
+specialized on actual OBJECT-STORE implementations.
 </p></dd></dl>
 
 <dl>
@@ -913,6 +955,12 @@ applied to <var>self</var> (an object).
 </p></dd></dl>
 
 <dl>
+<dt><a name="index-get_002dvisible_002dclash_002dexceptions"></a><u>Function:</u> <b>get-visible-clash-exceptions</b><i> ((incoherentProp <small>PROPOSITION</small>)) : <small>(CONS OF EXCEPTION-RECORD)</small></i></dt>
+<dd><p>Return the set of clash exceptions for <var>incoherentProp</var> that are visible from the
+current context.  These are recorded most-recent first in order of occurrance.
+</p></dd></dl>
+
+<dl>
 <dt><a name="index-get_002dwhy_002djustification"></a><u>Function:</u> <b>get-why-justification</b><i> ((label <small>STRING</small>)) : <small>JUSTIFICATION</small></i></dt>
 <dd><p>Returns the current WHY justification.  May also throw one of the
 following subtypes of EXPLAIN-EXCEPTION:
@@ -934,6 +982,12 @@ lookup its justification relative to <var>mapping</var> and return the result.
 <dl>
 <dt><a name="index-has_002dforward_002djustifications_003f"></a><u>Function:</u> <b>has-forward-justifications?</b><i> ((proposition <small>PROPOSITION</small>)) : <small>BOOLEAN</small></i></dt>
 <dd><p>Return TRUE if <var>proposition</var> has any forward justifications.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-have_002dactive_002dobject_002dstores_003f"></a><u>Function:</u> <b>have-active-object-stores?</b><i> () : <small>BOOLEAN</small></i></dt>
+<dd><p>Return TRUE if we have at least one object store opened/linked into
+PowerLoom, which changes some index access routines to be considerate of that.
 </p></dd></dl>
 
 <dl>
@@ -994,29 +1048,6 @@ features, and a list of all available PowerLoom features.
 </p></dd></dl>
 
 <dl>
-<dt><a name="index-list_002dunclassified_002dinstances"></a><u>N-Command:</u> <b>list-unclassified-instances</b><i> ((module <small>NAME</small>) (local? <small>BOOLEAN</small>)) : <small>(CONS OF LOGIC-OBJECT)</small></i></dt>
-<dd><p>Collect all instances in <var>module</var> (or in any module if <var>module</var>
-is NULL) that were not (or will not be) classified due to their lack of
-non-inferable/primitive type assertions.
-</p></dd></dl>
-
-<dl>
-<dt><a name="index-list_002dunclassified_002drelations"></a><u>N-Command:</u> <b>list-unclassified-relations</b><i> ((module <small>NAME</small>) (local? <small>BOOLEAN</small>)) : <small>(CONS OF NAMED-DESCRIPTION)</small></i></dt>
-<dd><p>Collect all named description in <var>module</var> (or in any module if <var>module</var>
-is NULL) that were not (or will not be) classified due to their lack of
-non-inferable/primitive ancestor relations.
-</p></dd></dl>
-
-<dl>
-<dt><a name="index-list_002dundefined_002drelations"></a><u>N-Command:</u> <b>list-undefined-relations</b><i> ((module <small>NAME</small>) (local? <small>BOOLEAN</small>)) : <small>(CONS OF NAMED-DESCRIPTION)</small></i></dt>
-<dd><p>Return a list of as yet undefined concepts and relations in <var>module</var>.
-These relations were defined by the system, since they were referenced
-but have not yet been defined by the user.  If <var>module</var> is NULL look in
-the current module.  If <var>local?</var> only look in <var>module</var> but not in any
-modules it inherits.
-</p></dd></dl>
-
-<dl>
 <dt><a name="index-listify-on-QUERY_002dITERATOR"></a><u>Method on <small>QUERY-ITERATOR</small>:</u> <b>listify</b><i> (self) : <small>LIST</small></i></dt>
 <dd><p>Just like <code>QUERY-ITERATOR.consify</code> but return a LIST instead.
 </p></dd></dl>
@@ -1047,6 +1078,13 @@ is not <code>null</code>, then any commands will be read into that module unless
 an <code>in-module</code> declaration is encountered which will over-ride the default
 value.  If noe <var>default-module</var> is specified, and the input stream does
 not have an <code>in-module</code> form, an error is signaled.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-locally_002dmodified_002dproposition_003f"></a><u>Function:</u> <b>locally-modified-proposition?</b><i> ((proposition <small>PROPOSITION</small>) (module <small>MODULE</small>)) : <small>BOOLEAN</small></i></dt>
+<dd><p>Return true if proposition&rsquo;s truth-value has been locally modified in
+<var>module</var> (initialized, asserted, retracted).  This will always succeed for locally conceived
+propositions regardless of whether their truth value is defined or not.
 </p></dd></dl>
 
 <dl>
@@ -1089,6 +1127,17 @@ using the signature of a computation function supported by the computation speci
 <dd><p>Returns the native funtion code for <var>native-name</var> if it exists
 and the underlying programming languages supports such lookups.  Uses the signature
 of a specialist function.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-merge_002dtruth_002dvalues"></a><u>Function:</u> <b>merge-truth-values</b><i> ((tv1 <small>TRUTH-VALUE</small>) (tv2 <small>TRUTH-VALUE</small>)) : <small>TRUTH-VALUE</small></i></dt>
+<dd><p>Merge two truth values that are describing the &quot;same&quot; logical
+proposition.  This handles subordination of default to strict values, 
+known over unknown and potential inconsistent values.
+</p>
+<p>In particular, this can be used to check for negated values by asking for
+the truth of a proposition and its negation, inverting the negation and then
+using merge to come up with an answer.
 </p></dd></dl>
 
 <dl>
@@ -1193,8 +1242,8 @@ with size less than <var>sizeCutoff</var> (default is 10).
 
 <dl>
 <dt><a name="index-print_002dfacts"></a><u>N-Command:</u> <b>print-facts</b><i> ((instanceref <small>OBJECT</small>)) :</i></dt>
-<dd><p>Like ALL-FACTS-OF, but prints each fact on a separate 
-line on the standard output stream.
+<dd><p>Like <code>all-facts-of</code>, but sorts and prints each fact
+on a separate line on the standard output stream.
 </p></dd></dl>
 
 <dl>
@@ -1274,6 +1323,11 @@ Any return values will be ignored.
 </p></dd></dl>
 
 <dl>
+<dt><a name="index-register_002dobject_002dstore"></a><u>Function:</u> <b>register-object-store</b><i> ((store <small>OBJECT-STORE</small>)) :</i></dt>
+<dd><p>Register <var>store</var> as an active object store.
+</p></dd></dl>
+
+<dl>
 <dt><a name="index-register_002dspecialist_002dfunction"></a><u>Function:</u> <b>register-specialist-function</b><i> ((name <small>STRING</small>) (code <small>FUNCTION-CODE</small>)) :</i></dt>
 <dd><p>Creates a registration entry for <var>name</var> as a specialist which
 executes <var>code</var>.  Essentially just builds the Stella meta-information
@@ -1313,6 +1367,11 @@ and will be completely removed upon the next iteration through <var>self</var>.
 </p></dd></dl>
 
 <dl>
+<dt><a name="index-reset_002dclash_002dexceptions"></a><u>Function:</u> <b>reset-clash-exceptions</b><i> () :</i></dt>
+<dd><p>Resets the collection of clash exceptions
+</p></dd></dl>
+
+<dl>
 <dt><a name="index-reset_002dquery_002dcaches"></a><u>Function:</u> <b>reset-query-caches</b><i> () :</i></dt>
 <dd><p>Zero out all caches managed by the query optimizer,
 so that it will reoptimize subgoal queries upon next invocation.
@@ -1340,19 +1399,19 @@ solutions by hand).
 </p></dd></dl>
 
 <dl>
-<dt><a name="index-run_002dforward_002drules-1"></a><u>N-Command:</u> <b>run-forward-rules</b><i> ((moduleRef <small>NAME</small>) &amp;rest (force <small>KEYWORD</small>)) :</i></dt>
-<dd><p>Run forward inference rules in module <var>moduleRef</var>. If <var>moduleRef</var> is NULL, the
-current module will be used.  If forward inferencing is already up-to-date
-in the designated module, no additional inferencing will occur, unless the
-optional keyword <code>:force</code> is included, in which case all
-forward rules are run or rerun.
+<dt><a name="index-run_002dforward_002drules-1"></a><u>N-Command:</u> <b>run-forward-rules</b><i> (&amp;rest (options <small>OBJECT</small>)) :</i></dt>
+<dd><p>Run forward inference rules in the module defined by the :module option (which
+defaults to the current module).  If forward inferencing is already up-to-date
+in the designated module, no additional inferencing will occur, unless the :force?
+option is specified as TRUE, in which case all forward rules are run or rerun.
+For backwards compatibility, this command also supports the old &lt;module&gt; :force
+arguments specified with a non-standard keyword notation.
 </p>
 <p>Calling <code>run-forward-rules</code> temporarily puts the module into a mode where
 future assertional (monotonic) updates will trigger additional forward
 inference.  Once a non-monotonic update is performed, i.e., a retraction
 or clipping of relation value, all cached forward inferences will be discarded
-and forward inferencing will be disabled until this function is
-called again.
+and forward inferencing will be disabled until this function is called again.
 </p></dd></dl>
 
 <dl>
@@ -1436,6 +1495,11 @@ or a NULL number turns off periodic saving.
 </p></dd></dl>
 
 <dl>
+<dt><a name="index-shallow_002dcopy-on-JUSTIFICATION"></a><u>Method on <small>JUSTIFICATION</small>:</u> <b>shallow-copy</b><i> (self) : <small>(LIKE SELF)</small></i></dt>
+<dd><p>Similar to <code>copy</code> but does not copy antecedent justifications.
+</p></dd></dl>
+
+<dl>
 <dt><a name="index-sort-on-QUERY_002dSOLUTION_002dTABLE"></a><u>Method on <small>QUERY-SOLUTION-TABLE</small>:</u> <b>sort</b><i> (self (predicate <small>FUNCTION-CODE</small>)) : <small>(LIKE SELF)</small></i></dt>
 <dd><p>Perform a stable, destructive sort of <var>self</var> according to
 <var>predicate</var>, and return the result.  If <var>predicate</var> has a <code>&lt;</code> semantics, the
@@ -1500,6 +1564,14 @@ its value!) and return the result.  Otherwise, return <var>tv1</var> unmodified.
 <dl>
 <dt><a name="index-strict_002dtruth_002dvalue_003f"></a><u>Function:</u> <b>strict-truth-value?</b><i> ((self <small>TRUTH-VALUE</small>)) : <small>BOOLEAN</small></i></dt>
 <dd><p>Return TRUE if <var>self</var> is a strict truth value.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stronger_002dtruth_002dvalue_003f"></a><u>Function:</u> <b>stronger-truth-value?</b><i> ((tv1 <small>TRUTH-VALUE</small>) (tv2 <small>TRUTH-VALUE</small>)) : <small>BOOLEAN</small></i></dt>
+<dd><p>Compare the two truth values and return <code>true</code> if <var>tv1</var> is strictly
+stronger than <var>tv2</var>.  Stronger uses the following partial order:
+  INCONSISTENT &gt; STRICT &gt; DEFAULT &gt; UNKNOWN.
+Truth values at the same level are equal in strength.
 </p></dd></dl>
 
 <dl>
@@ -1601,6 +1673,16 @@ already be defined.
 </p></dd></dl>
 
 <dl>
+<dt><a name="index-unnamed_002ddescription_003f"></a><u>Function:</u> <b>unnamed-description?</b><i> ((self <small>OBJECT</small>)) : <small>BOOLEAN</small></i></dt>
+<dd><p>Return TRUE if <var>self</var> is an unnamed description.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-unregister_002dobject_002dstore"></a><u>Function:</u> <b>unregister-object-store</b><i> ((store <small>OBJECT-STORE</small>)) :</i></dt>
+<dd><p>Remove <var>store</var> from the list of active object stores.
+</p></dd></dl>
+
+<dl>
 <dt><a name="index-unset_002dpowerloom_002dfeature"></a><u>Function:</u> <b>unset-powerloom-feature</b><i> ((feature <small>KEYWORD</small>)) :</i></dt>
 <dd><p>Disable the PowerLoom environment feature <var>feature</var>.
 </p></dd></dl>
@@ -1682,6 +1764,11 @@ necessary to do.
 </p></dd></dl>
 
 <dl>
+<dt><a name="index-get_002dinconsistent_002dpropositions"></a><u>Function:</u> <b>get-inconsistent-propositions</b><i> ((module <small>MODULE</small>) (environment <small>ENVIRONMENT</small>)) : <small>(PL-ITERATOR OF PROPOSITION)</small></i></dt>
+<dd><p>Return inconsistent propositions visible in <var>module</var>.
+</p></dd></dl>
+
+<dl>
 <dt><a name="index-get_002dkeyword"></a><u>Function:</u> <b>get-keyword</b><i> ((name <small>STRING</small>)) : <small>KEYWORD</small></i></dt>
 <dd><p>Returns the Stella KEYWORD <var>name</var> if it exists.  Case sensitive.
 </p></dd></dl>
@@ -1701,6 +1788,11 @@ necessary to do.
 <dt><a name="index-get_002dsymbol"></a><u>Function:</u> <b>get-symbol</b><i> ((name <small>STRING</small>) (module <small>MODULE</small>) (environment <small>ENVIRONMENT</small>)) : <small>SYMBOL</small></i></dt>
 <dd><p>Returns the Stella SYMBOL <var>name</var> visible in <var>module</var> if it
 exists.  <var>name</var> is ALWAYS treated case sensitively.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-get_002dundefined_002drelations"></a><u>Function:</u> <b>get-undefined-relations</b><i> ((module <small>MODULE</small>) (environment <small>ENVIRONMENT</small>)) : <small>(PL-ITERATOR OF LOGIC-OBJECT)</small></i></dt>
+<dd><p>Return relations that have been referenced but not defined in <var>module</var>.
 </p></dd></dl>
 
 <dl>
@@ -1747,11 +1839,6 @@ loaded in the <var>module</var> specified.  If no <var>module</var> is specified
 does not supply an <code>in-module</code> declaration, an error will be signaled.
 The remaining commands are evaluated one-by-one, applying the function
 <code>evaluate</code> to each of them.
-</p></dd></dl>
-
-<dl>
-<dt><a name="index-main"></a><u>Function:</u> <b>main</b><i> () :</i></dt>
-<dd><p>Main PowerLoom entry point for your code in C++ and Java.
 </p></dd></dl>
 
 <dl>
@@ -1859,7 +1946,7 @@ The function found must conform to the signature for specialist functions.
 </tr></table>
 <p>
  <font size="-1">
-  This document was generated by <em>Hans Chalupsky</em> on <em>October 16, 2010</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>Hans Chalupsky</em> on <em>May 1, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
  </font>
  <br>
 

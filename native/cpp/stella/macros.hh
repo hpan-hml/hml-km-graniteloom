@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -122,10 +122,14 @@ extern Symbol* SYM_MACROS_STELLA_PROGN;
 extern Symbol* SYM_MACROS_STELLA_WARN;
 extern Symbol* SYM_MACROS_STELLA_EOL;
 extern Keyword* KWD_MACROS_STARTUP_SYSTEMp;
+extern Symbol* SYM_MACROS_STELLA_IF_STELLA_FEATURE;
+extern Keyword* KWD_MACROS_SUPPORT_UNEXEC;
+extern Symbol* SYM_MACROS_STELLA_VERBATIM;
+extern Keyword* KWD_MACROS_CPP;
+extern Keyword* KWD_MACROS_OTHERWISE;
 extern Keyword* KWD_MACROS_PUBLICp;
 extern Keyword* KWD_MACROS_COMMON_LISP;
 extern Symbol* SYM_MACROS_STELLA_DEFUN;
-extern Keyword* KWD_MACROS_CPP;
 extern Keyword* KWD_MACROS_CPP_STANDALONE;
 extern Keyword* KWD_MACROS_IDL;
 extern Symbol* SYM_MACROS_STELLA_INTEGER;
@@ -136,7 +140,6 @@ extern Symbol* SYM_MACROS_STELLA_STRING;
 extern Symbol* SYM_MACROS_STELLA_aREST;
 extern Symbol* SYM_MACROS_STELLA_rrARGS;
 extern Symbol* SYM_MACROS_STELLA_LET;
-extern Symbol* SYM_MACROS_STELLA_VERBATIM;
 extern Keyword* KWD_MACROS_INITIAL_CONTENTS;
 extern Symbol* SYM_MACROS_STELLA_STARTUP_MACROS;
 extern Symbol* SYM_MACROS_STELLA_METHOD_STARTUP_CLASSNAME;

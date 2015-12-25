@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -414,12 +414,12 @@ GeneralizedSymbol* lookupRigidSymbolWrtModule(char* name, Module* module, int ki
 GeneralizedSymbol* lookupRigidSymbol(char* name, int kindofsym) {
   // Return the permanent symbol with name 'name' and type
   // `kindOfSym' visible from the current module (case-sensitive).
-  return (lookupRigidSymbolWrtModule(name, oMODULEo.get(), kindofsym));
+  return (lookupRigidSymbolWrtModule(name, oMODULEo, kindofsym));
 }
 
 Symbol* lookupSymbol(char* name) {
   // Return the first symbol with `name' visible from the current module.
-  return (((Symbol*)(lookupRigidSymbolWrtModule(name, oMODULEo.get(), SYMBOL_SYM))));
+  return (((Symbol*)(lookupRigidSymbolWrtModule(name, oMODULEo, SYMBOL_SYM))));
 }
 
 Symbol* lookupSymbolInModule(char* name, Module* module, boolean localP) {
@@ -427,7 +427,7 @@ Symbol* lookupSymbolInModule(char* name, Module* module, boolean localP) {
   // If `local?' only consider symbols directly interned in `module'.
   // If `module' is `null', use `*MODULE*' instead.
   if (!((boolean)(module))) {
-    module = oMODULEo.get();
+    module = oMODULEo;
   }
   if (localP) {
     return (((Symbol*)(lookupRigidSymbolLocally(name, module, SYMBOL_SYM))));
@@ -457,7 +457,7 @@ Cons* lookupVisibleSymbolsInModule(char* name, Module* module, boolean enforcesh
 
 Surrogate* lookupSurrogate(char* name) {
   // Return the first surrogate with `name' visible from the current module.
-  return (((Surrogate*)(lookupRigidSymbolWrtModule(name, oMODULEo.get(), SURROGATE_SYM))));
+  return (((Surrogate*)(lookupRigidSymbolWrtModule(name, oMODULEo, SURROGATE_SYM))));
 }
 
 Surrogate* lookupSurrogateInModule(char* name, Module* module, boolean localP) {
@@ -465,7 +465,7 @@ Surrogate* lookupSurrogateInModule(char* name, Module* module, boolean localP) {
   // If `local?' only consider surrogates directly interned in `module'.
   // If `module' is `null', use `*MODULE*' instead.
   if (!((boolean)(module))) {
-    module = oMODULEo.get();
+    module = oMODULEo;
   }
   if (localP) {
     return (((Surrogate*)(lookupRigidSymbolLocally(name, module, SURROGATE_SYM))));
@@ -535,7 +535,7 @@ GeneralizedSymbol* internRigidSymbolWrtModule(char* name, Module* module, int ki
   // Return a newly-created or existing rigid symbol with
   // name `name'.
   if (!((boolean)(module))) {
-    module = oMODULEo.get();
+    module = oMODULEo;
   }
   { int offset = lookupRigidSymbolOffsetWrtModule(name, module, kindofsym);
 
@@ -568,7 +568,7 @@ GeneralizedSymbol* internRigidSymbolLocally(char* name, Module* module, int kind
   // Return a newly-created or existing rigid symbol
   // interned into the module `module' with name `name'.
   if (!((boolean)(module))) {
-    module = oMODULEo.get();
+    module = oMODULEo;
   }
   { GeneralizedSymbol* symbol = lookupRigidSymbolLocally(name, module, kindofsym);
 
@@ -589,7 +589,7 @@ GeneralizedSymbol* internRigidSymbolCaseSensitively(char* name, int kindofsym, b
     if (((boolean)(symbol))) {
       return (symbol);
     }
-    if (oTRANSIENTOBJECTSpo.get() &&
+    if (oTRANSIENTOBJECTSpo &&
         (kindofsym == SYMBOL_SYM)) {
       symbol = lookupTransientSymbol(name);
       if (((boolean)(symbol))) {
@@ -604,7 +604,7 @@ GeneralizedSymbol* internRigidSymbolCaseSensitively(char* name, int kindofsym, b
     }
     switch (kindofsym) {
       case 0: 
-        if (oTRANSIENTOBJECTSpo.get()) {
+        if (oTRANSIENTOBJECTSpo) {
           return (internTransientSymbol(name));
         }
         else {
@@ -612,7 +612,7 @@ GeneralizedSymbol* internRigidSymbolCaseSensitively(char* name, int kindofsym, b
         }
       break;
       case 1: 
-        return (internRigidSymbolWrtModule(name, oMODULEo.get(), SURROGATE_SYM));
+        return (internRigidSymbolWrtModule(name, oMODULEo, SURROGATE_SYM));
       default:
         { OutputStringStream* stream000 = newOutputStringStream();
 
@@ -627,16 +627,16 @@ GeneralizedSymbol* internRigidSymbolCaseSensitively(char* name, int kindofsym, b
 Symbol* internPermanentSymbol(char* name) {
   // Return a newly-created or existing permanent symbol with
   // name `name'.
-  return (((Symbol*)(internRigidSymbolWrtModule(name, oMODULEo.get(), SYMBOL_SYM))));
+  return (((Symbol*)(internRigidSymbolWrtModule(name, oMODULEo, SYMBOL_SYM))));
 }
 
 Symbol* internSymbol(char* name) {
   // Return a newly-created or existing symbol with name `name'.
-  if (oMODULEo.get()->caseSensitiveP) {
+  if (oMODULEo->caseSensitiveP) {
     return (((Symbol*)(internRigidSymbolCaseSensitively(name, SYMBOL_SYM, false))));
   }
   else {
-    if (oTRANSIENTOBJECTSpo.get()) {
+    if (oTRANSIENTOBJECTSpo) {
       return (internTransientSymbol(stringUpcase(name)));
     }
     else {
@@ -650,7 +650,7 @@ Symbol* internSymbolInModule(char* name, Module* module, boolean localP) {
   // not consider inherited modules).  If none exists, intern it locally in
   // `module'.  Return the existing or newly-created symbol.
   if (!((boolean)(module))) {
-    module = oMODULEo.get();
+    module = oMODULEo;
   }
   if (localP) {
     return (((Symbol*)(internRigidSymbolLocally(name, module, SYMBOL_SYM))));
@@ -663,14 +663,14 @@ Symbol* internSymbolInModule(char* name, Module* module, boolean localP) {
 Symbol* internDerivedSymbol(GeneralizedSymbol* basesymbol, char* newname) {
   // Return a newly-created or existing symbol with name
   // `newName' which is interned in the same module as `baseSymbol'.
-  { Module* currentmodule = oMODULEo.get();
+  { Module* currentmodule = oMODULEo;
 
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, ((Module*)(basesymbol->homeContext)));
-      if (((boolean)(oMODULEo.get()))) {
-        return (((Symbol*)(internRigidSymbolLocally(newname, oMODULEo.get(), SYMBOL_SYM))));
+      if (((boolean)(oMODULEo))) {
+        return (((Symbol*)(internRigidSymbolLocally(newname, oMODULEo, SYMBOL_SYM))));
       }
-      oMODULEo.set(currentmodule);
+      oMODULEo = currentmodule;
       return (((Symbol*)(internRigidSymbolCaseSensitively(newname, SYMBOL_SYM, false))));
     }
   }
@@ -678,11 +678,11 @@ Symbol* internDerivedSymbol(GeneralizedSymbol* basesymbol, char* newname) {
 
 Surrogate* internSurrogate(char* name) {
   // Return a newly-created or existing surrogate with name `name'.
-  if (oMODULEo.get()->caseSensitiveP) {
+  if (oMODULEo->caseSensitiveP) {
     return (((Surrogate*)(internRigidSymbolCaseSensitively(name, SURROGATE_SYM, false))));
   }
   else {
-    return (((Surrogate*)(internRigidSymbolWrtModule(stringUpcase(name), oMODULEo.get(), SURROGATE_SYM))));
+    return (((Surrogate*)(internRigidSymbolWrtModule(stringUpcase(name), oMODULEo, SURROGATE_SYM))));
   }
 }
 
@@ -691,7 +691,7 @@ Surrogate* internSurrogateInModule(char* name, Module* module, boolean localP) {
   // not consider inherited modules).  If none exists, intern it locally in
   // `module'.  Return the existing or newly-created symbol.
   if (!((boolean)(module))) {
-    module = oMODULEo.get();
+    module = oMODULEo;
   }
   if (localP) {
     return (((Surrogate*)(internRigidSymbolLocally(name, module, SURROGATE_SYM))));
@@ -704,14 +704,14 @@ Surrogate* internSurrogateInModule(char* name, Module* module, boolean localP) {
 Surrogate* internDerivedSurrogate(GeneralizedSymbol* basesymbol, char* newname) {
   // Return a newly-created or existing surrogate with name
   // `newName' which is interned in the same module as `baseSymbol'.
-  { Module* currentmodule = oMODULEo.get();
+  { Module* currentmodule = oMODULEo;
 
     { 
       BIND_STELLA_SPECIAL(oMODULEo, Module*, ((Module*)(basesymbol->homeContext)));
-      if (((boolean)(oMODULEo.get()))) {
-        return (((Surrogate*)(internRigidSymbolLocally((oMODULEo.get()->caseSensitiveP ? newname : stringUpcase(newname)), oMODULEo.get(), SURROGATE_SYM))));
+      if (((boolean)(oMODULEo))) {
+        return (((Surrogate*)(internRigidSymbolLocally((oMODULEo->caseSensitiveP ? newname : stringUpcase(newname)), oMODULEo, SURROGATE_SYM))));
       }
-      oMODULEo.set(currentmodule);
+      oMODULEo = currentmodule;
       return (internSurrogate(newname));
     }
   }
@@ -720,7 +720,7 @@ Surrogate* internDerivedSurrogate(GeneralizedSymbol* basesymbol, char* newname) 
 Keyword* internKeyword(char* name) {
   // Return a newly-created or existing keyword with name
   // `name'.  Storage note: a COPY of `name' is stored in the keyword
-  return (((Keyword*)(internRigidSymbolWrtModule(stringUpcase(name), oMODULEo.get(), KEYWORD_SYM))));
+  return (((Keyword*)(internRigidSymbolWrtModule(stringUpcase(name), oMODULEo, KEYWORD_SYM))));
 }
 
 Symbol* importSymbol(Symbol* symbol, Module* module) {
@@ -900,7 +900,7 @@ GeneralizedSymbol* internBootstrapSymbolAt(char* name, int offset, int kindofsym
     }
     { ExtensibleSymbolArray* array = selectSymbolArray(kindofsym);
 
-      return (helpInternGeneralizedSymbol(name, kindofsym, array, offset, oMODULEo.get()));
+      return (helpInternGeneralizedSymbol(name, kindofsym, array, offset, oMODULEo));
     }
   }
 }
@@ -946,8 +946,8 @@ void initializeKernelModules() {
   initializeKernelModule(oCOMMON_LISP_MODULEo, "COMMON-LISP", "/COMMON-LISP", oROOT_MODULEo);
   setDynamicSlotValue(oCOMMON_LISP_MODULEo->dynamicSlots, SYM_SYMBOLS_STELLA_MODULE_LISP_PACKAGE, wrapString("CL"), NULL_STRING_WRAPPER);
   oROOT_MODULEo->cardinalModule = oSTELLA_MODULEo;
-  oMODULEo.set(oSTELLA_MODULEo);
-  oCONTEXTo.set(oMODULEo.get());
+  oMODULEo = oSTELLA_MODULEo;
+  oCONTEXTo = oMODULEo;
 }
 
 void initializeSymbolsAndKernelModules() {
@@ -974,7 +974,7 @@ Symbol* lookupTransientSymbol(char* name) {
 }
 
 Symbol* internTransientSymbol(char* name) {
-  { Symbol* symbol = lookupSymbolInModule(name, oMODULEo.get(), false);
+  { Symbol* symbol = lookupSymbolInModule(name, oMODULEo, false);
 
     if (((boolean)(symbol))) {
       return (symbol);
@@ -1057,11 +1057,11 @@ char* yieldUniqueGensymName(char* prefix, Module* module) {
 Symbol* gensym(char* prefix) {
   // Return a transient symbol with a name beginning with
   // `prefix' and ending with a globally gensym'd integer.
-  return (internTransientSymbol(yieldUniqueGensymName(prefix, oMODULEo.get())));
+  return (internTransientSymbol(yieldUniqueGensymName(prefix, oMODULEo)));
 }
 
 Symbol* surrogateToSymbol(Surrogate* self) {
-  return (internSymbolInModule(self->symbolName, oMODULEo.get(), false));
+  return (internSymbolInModule(self->symbolName, oMODULEo, false));
 }
 
 Symbol* typeToSymbol(Surrogate* type) {
@@ -1084,13 +1084,13 @@ Surrogate* stringToSurrogate(char* self) {
   // in the current module.  Very tricky: The logic is designed to avoid
   // returning an inherited surrogate that has no value.  In that case,
   // a new local surrogate is created that shadows the inherited surrogate.
-  { Surrogate* surrogate = internSurrogateInModule(self, oMODULEo.get(), false);
+  { Surrogate* surrogate = internSurrogateInModule(self, oMODULEo, false);
 
-    if ((surrogate->homeContext == oMODULEo.get()) ||
+    if ((surrogate->homeContext == oMODULEo) ||
         ((boolean)(surrogate->surrogateValue))) {
       return (surrogate);
     }
-    return (internSurrogateInModule(self, oMODULEo.get(), true));
+    return (internSurrogateInModule(self, oMODULEo, true));
   }
 }
 
@@ -1211,7 +1211,7 @@ GeneralizedSymbol* internStellaName(char* name) {
   // it into the current or specified module and return the result.
   // This is identical to calling `unstringify' on `name' but 10-15
   // times faster.
-  { Module* module = oMODULEo.get();
+  { Module* module = oMODULEo;
 
     { char* barename = NULL;
       char* modulename = NULL;
@@ -1222,7 +1222,7 @@ GeneralizedSymbol* internStellaName(char* name) {
         module = getStellaModule(modulename, true);
       }
       if (kind == KWD_SYMBOLS_SYMBOL) {
-        if (oTRANSIENTOBJECTSpo.get() &&
+        if (oTRANSIENTOBJECTSpo &&
             (modulename == NULL)) {
           return (internTransientSymbol(barename));
         }
@@ -1276,7 +1276,7 @@ char* GeneralizedSymbol::localPrintName(boolean readableP) {
   { GeneralizedSymbol* self = this;
 
     if (readableP) {
-      return (readableSymbolName(self->symbolName, oMODULEo.get()->caseSensitiveP));
+      return (readableSymbolName(self->symbolName, oMODULEo->caseSensitiveP));
     }
     else {
       return (self->symbolName);
@@ -1287,7 +1287,7 @@ char* GeneralizedSymbol::localPrintName(boolean readableP) {
 char* Surrogate::localPrintName(boolean readableP) {
   { Surrogate* self = this;
 
-    { char* localName = (readableP ? readableSymbolName(self->symbolName, oMODULEo.get()->caseSensitiveP) : self->symbolName);
+    { char* localName = (readableP ? readableSymbolName(self->symbolName, oMODULEo->caseSensitiveP) : self->symbolName);
 
       return (stringConcatenate("@", localName, 0));
     }
@@ -1299,7 +1299,7 @@ char* GeneralizedSymbol::relativeName(boolean readableP) {
 
     { char* string = NULL;
 
-      if (((Module*)(self->homeContext)) == oMODULEo.get()) {
+      if (((Module*)(self->homeContext)) == oMODULEo) {
         string = self->localPrintName(readableP);
       }
       else {
@@ -1315,12 +1315,12 @@ char* GeneralizedSymbol::relativeName(boolean readableP) {
 
 boolean visibleSymbolP(Symbol* self) {
   // Return `true' if `self' is visible from the current module.
-  return (self == lookupSymbolInModule(self->symbolName, oMODULEo.get(), false));
+  return (self == lookupSymbolInModule(self->symbolName, oMODULEo, false));
 }
 
 boolean visibleSurrogateP(Surrogate* self) {
   // Return `true' if `self' is visible from the current module.
-  return (self == lookupSurrogateInModule(self->symbolName, oMODULEo.get(), false));
+  return (self == lookupSurrogateInModule(self->symbolName, oMODULEo, false));
 }
 
 char* GeneralizedSymbol::visibleName(boolean readableP) {
@@ -1334,14 +1334,14 @@ char* GeneralizedSymbol::visibleName(boolean readableP) {
           { GeneralizedSymbol* self000 = self;
             Symbol* self = ((Symbol*)(self000));
 
-            visibleP = self == lookupSymbolInModule(self->symbolName, oMODULEo.get(), false);
+            visibleP = self == lookupSymbolInModule(self->symbolName, oMODULEo, false);
           }
         }
         else if (subtypeOfSurrogateP(testValue000)) {
           { GeneralizedSymbol* self001 = self;
             Surrogate* self = ((Surrogate*)(self001));
 
-            visibleP = self == lookupSurrogateInModule(self->symbolName, oMODULEo.get(), false);
+            visibleP = self == lookupSurrogateInModule(self->symbolName, oMODULEo, false);
           }
         }
         else {
@@ -1607,7 +1607,8 @@ Keyword* computeSymbolEscapeCode(char* name, boolean casesensitiveP) {
                         }
                         break;
                       }
-                      tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | ((int)(unsigned char) (tok_buffer_[tok_cursor_]))))]);
+                      tok_nextstate_ = (int)(unsigned char) (tok_buffer_[tok_cursor_]);
+                      tok_nextstate_ = (int)(unsigned char) (tok_transitions_[((((tok_state_ << 8)) | tok_nextstate_))]);
                       if ((tok_nextstate_ & 128) == 0) {
                         tok_state_ = tok_nextstate_;
                         tok_cursor_ = tok_cursor_ + 1;
@@ -1733,7 +1734,7 @@ char* readableSymbolName(char* name, boolean casesensitiveP) {
 }
 
 void printSymbol(Symbol* self, std::ostream* stream) {
-  { boolean visibleP = self == lookupSymbolInModule(self->symbolName, oMODULEo.get(), false);
+  { boolean visibleP = self == lookupSymbolInModule(self->symbolName, oMODULEo, false);
     Module* module = ((Module*)(self->homeContext));
 
     if (!visibleP) {
@@ -1742,7 +1743,7 @@ void printSymbol(Symbol* self, std::ostream* stream) {
       }
       else {
         if (((boolean)(module))) {
-          if (oPRINTREADABLYpo.get() &&
+          if (oPRINTREADABLYpo &&
               (module == oCOMMON_LISP_MODULEo)) {
             {
               *(stream) << "CL:" << self->symbolName;
@@ -1755,8 +1756,8 @@ void printSymbol(Symbol* self, std::ostream* stream) {
         }
       }
     }
-    if (oPRINTREADABLYpo.get()) {
-      printSymbolNameReadably(self->symbolName, stream, oMODULEo.get()->caseSensitiveP);
+    if (oPRINTREADABLYpo) {
+      printSymbolNameReadably(self->symbolName, stream, oMODULEo->caseSensitiveP);
     }
     else {
       *(stream) << self->symbolName;
@@ -1765,7 +1766,7 @@ void printSymbol(Symbol* self, std::ostream* stream) {
 }
 
 void printSurrogate(Surrogate* self, std::ostream* stream) {
-  { boolean visibleP = self == lookupSurrogateInModule(self->symbolName, oMODULEo.get(), false);
+  { boolean visibleP = self == lookupSurrogateInModule(self->symbolName, oMODULEo, false);
     Module* module = ((Module*)(self->homeContext));
 
     if (!visibleP) {
@@ -1778,8 +1779,8 @@ void printSurrogate(Surrogate* self, std::ostream* stream) {
       }
     }
     *(stream) << "@";
-    if (oPRINTREADABLYpo.get()) {
-      printSymbolNameReadably(self->symbolName, stream, oMODULEo.get()->caseSensitiveP);
+    if (oPRINTREADABLYpo) {
+      printSymbolNameReadably(self->symbolName, stream, oMODULEo->caseSensitiveP);
     }
     else {
       *(stream) << self->symbolName;
@@ -1789,7 +1790,7 @@ void printSurrogate(Surrogate* self, std::ostream* stream) {
 
 void printKeyword(Keyword* self, std::ostream* stream) {
   *(stream) << ":";
-  if (oPRINTREADABLYpo.get()) {
+  if (oPRINTREADABLYpo) {
     printSymbolNameReadably(self->symbolName, stream, false);
   }
   else {
@@ -1946,7 +1947,7 @@ void startupSymbols() {
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupSymbols1();
     }

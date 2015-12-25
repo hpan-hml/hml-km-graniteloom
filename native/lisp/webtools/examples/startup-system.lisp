@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -66,9 +66,10 @@
      (*CONTEXT* *MODULE*))
     (CL:DECLARE (CL:SPECIAL *MODULE* *CONTEXT*))
     (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 2)
-     (CL:SETQ SYM-STARTUP-SYSTEM-SAMPLE-STARTUP-WEBTOOLS-EXAMPLES-SYSTEM
-      (INTERN-RIGID-SYMBOL-WRT-MODULE "STARTUP-WEBTOOLS-EXAMPLES-SYSTEM" NULL
-       0))
+     (CL:SETQ
+      SYM-STARTUP-SYSTEM-SAMPLE-STARTUP-WEBTOOLS-EXAMPLES-SYSTEM
+      (INTERN-RIGID-SYMBOL-WRT-MODULE
+       "STARTUP-WEBTOOLS-EXAMPLES-SYSTEM" NULL 0))
      (CL:SETQ SYM-STARTUP-SYSTEM-STELLA-METHOD-STARTUP-CLASSNAME
       (INTERN-RIGID-SYMBOL-WRT-MODULE "METHOD-STARTUP-CLASSNAME"
        (GET-STELLA-MODULE "/STELLA" CL:T) 0)))
@@ -83,11 +84,13 @@
          SYM-STARTUP-SYSTEM-SAMPLE-STARTUP-WEBTOOLS-EXAMPLES-SYSTEM)))
       (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
        SYM-STARTUP-SYSTEM-STELLA-METHOD-STARTUP-CLASSNAME
-       (WRAP-STRING "StartupWebtoolsExamplesSystem") NULL-STRING-WRAPPER)))
+       (WRAP-STRING "StartupWebtoolsExamplesSystem")
+       NULL-STRING-WRAPPER)))
     (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 8) (FINALIZE-SLOTS)
      (CLEANUP-UNFINALIZED-CLASSES))
     (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 9)
-     (%IN-MODULE (COPY-CONS-TREE (WRAP-STRING "/STELLA/XML-OBJECTS/SAMPLE")))
+     (%IN-MODULE
+      (COPY-CONS-TREE (WRAP-STRING "/STELLA/XML-OBJECTS/SAMPLE")))
      (CL:LET* ((PHASE NULL-INTEGER) (ITER-000 0) (UPPER-BOUND-001 9))
       (CL:DECLARE (CL:TYPE CL:FIXNUM PHASE ITER-000 UPPER-BOUND-001))
       (CL:LOOP WHILE (CL:<= ITER-000 UPPER-BOUND-001) DO

@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2013      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: load-stella.lisp,v 1.17 2008/08/01 00:13:24 hans Exp
+;;; Version: load-stella.lisp,v 1.18 2013/02/14 02:25:06 hans Exp
 
 ;;; Load Stella.
 
@@ -63,6 +63,11 @@
        (setq *compile-verbose* nil
              *compile-print* nil
              *gc-verbose* nil))
+
+;; Work around a compiler bug that surfaces with safety=1 in ACL 8.1:
+#+allegro-v8.1
+(setq *stella-compiler-optimization*
+  '(optimize (speed 3) (safety 2) (space 0) (debug 1)))
 
 (load (merge-pathnames "translations" *load-pathname*))
 (load "PL:native;lisp;stella;load-stella.lisp")

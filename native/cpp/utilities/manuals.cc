@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2001-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2001-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -832,7 +832,7 @@ Object* lookupObjectFromSpecification(Object* specification) {
 
             { 
               BIND_STELLA_SPECIAL(oMODULEo, Module*, ((Module*)(classsymbol->homeContext)));
-              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+              BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
               clasS = ((Symbol*)(specification->rest->value))->getStellaClass(false);
             }
             if (!((boolean)(clasS))) {
@@ -991,7 +991,7 @@ void manualDescribeObject(Object* object, Object* specification, OutputStream* s
   if (!((boolean)(object))) {
     object = lookupObjectFromSpecification(specification);
   }
-  if (oMANUAL_OUTPUT_LANGUAGEo.get() == KWD_MANUALS_TEXINFO) {
+  if (oMANUAL_OUTPUT_LANGUAGEo == KWD_MANUALS_TEXINFO) {
     if (!((boolean)(object))) {
       if (((boolean)(specification))) {
         texinfoDescribeUnimplementedObject(specification, stream);
@@ -1044,7 +1044,7 @@ void manualDescribeObject(Object* object, Object* specification, OutputStream* s
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oMANUAL_OUTPUT_LANGUAGEo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oMANUAL_OUTPUT_LANGUAGEo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -1107,7 +1107,7 @@ void generateManualFromTemplate(char* templatefile, char* outputfile) {
 
               for (line, iter000; iter000->nextP(); ) {
                 line = iter000->value;
-                *(oMANUAL_OUTPUT_STREAMo.get()->nativeStream) << manualExpandTemplateCommands(line) << std::endl;
+                *(oMANUAL_OUTPUT_STREAMo->nativeStream) << manualExpandTemplateCommands(line) << std::endl;
               }
             }
           }
@@ -1155,7 +1155,7 @@ char* manualExpandTemplateCommands(char* line) {
             if (line == NULL) {
               line = "";
             }
-            return (stringConcatenate(prefix, ((OutputStringStream*)(oMANUAL_OUTPUT_STREAMo.get()))->theStringReader(), 1, manualExpandTemplateCommands(line)));
+            return (stringConcatenate(prefix, ((OutputStringStream*)(oMANUAL_OUTPUT_STREAMo))->theStringReader(), 1, manualExpandTemplateCommands(line)));
           }
         }
       }
@@ -1172,14 +1172,14 @@ char* manualExpandTemplateCommands(char* line) {
 void texinfoInsertDoc(Object* spec) {
   { 
     BIND_STELLA_SPECIAL(oMANUAL_OUTPUT_LANGUAGEo, Keyword*, KWD_MANUALS_TEXINFO);
-    manualDescribeObject(NULL, spec, oMANUAL_OUTPUT_STREAMo.get());
+    manualDescribeObject(NULL, spec, oMANUAL_OUTPUT_STREAMo);
   }
 }
 
 void texinfoInsertPreamble() {
   { 
     BIND_STELLA_SPECIAL(oMANUAL_OUTPUT_LANGUAGEo, Keyword*, KWD_MANUALS_TEXINFO);
-    *(oMANUAL_OUTPUT_STREAMo.get()->nativeStream) << "@c DO NOT MODIFY THIS FILE, " << "IT WAS GENERATED AUTOMATICALLY FROM A TEMPLATE!";
+    *(oMANUAL_OUTPUT_STREAMo->nativeStream) << "@c DO NOT MODIFY THIS FILE, " << "IT WAS GENERATED AUTOMATICALLY FROM A TEMPLATE!";
   }
 }
 
@@ -1210,14 +1210,14 @@ void helpStartupManuals1() {
 void startupManuals() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/UTILITIES", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupManuals1();
     }
     if (currentStartupTimePhaseP(4)) {
       oTEXINFO_STYLE_FEATURESo = list(0);
       oTEXINFO_WORD_DELIMITERSo = NULL;
-      oMANUAL_OUTPUT_LANGUAGEo.set(KWD_MANUALS_TEXINFO);
+      oMANUAL_OUTPUT_LANGUAGEo = KWD_MANUALS_TEXINFO;
       oDOCUMENTED_OBJECTS_REGISTRYo = newHashTable();
     }
     if (currentStartupTimePhaseP(6)) {

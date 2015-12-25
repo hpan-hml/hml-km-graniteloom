@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -65,9 +65,11 @@ public:
   virtual void insert(Object* value);
   virtual Object* fastHeapRoot();
   virtual Object* heapRoot();
+  virtual Object* last();
   virtual boolean emptyP();
   virtual int length();
   virtual void clear();
+  virtual Vector* copy();
   virtual void initializeHeap();
   virtual Surrogate* primaryType();
 };

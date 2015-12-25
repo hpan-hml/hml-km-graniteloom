@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2013      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: translations.lisp,v 1.33 2010/10/16 17:18:23 hans Exp
+;;; Version: translations.lisp,v 1.34 2013/02/13 22:51:26 hans Exp
 
 ;;; Pathname translations for PowerLoom and related systems.
 
@@ -55,7 +55,12 @@
 
 
 (defparameter *powerloom-binary-subdirectory*
-  (first (list #+:ALLEGRO-V8.0   "acl8.0"
+  (first (list #+:ALLEGRO-V9.2   "acl9.2"
+               #+:ALLEGRO-V9.1   "acl9.1"
+               #+:ALLEGRO-V9.0   "acl9.0"
+               #+:ALLEGRO-V8.2   "acl8.2"
+               #+:ALLEGRO-V8.1   "acl8.1"
+               #+:ALLEGRO-V8.0   "acl8.0"
                #+:ALLEGRO-V7.0   "acl7.0"
                #+:ALLEGRO-V6.2   "acl6.2"
                #+(:AND :ALLEGRO-V6.2 :SUN)    "acl6.2-sun"

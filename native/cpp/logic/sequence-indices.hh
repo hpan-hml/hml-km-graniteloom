@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -120,6 +120,7 @@ public:
   virtual void storeRelation(NamedDescription* relation);
   virtual void storeNativeRelation(Relation* relation);
   virtual void updatePropositionInStore(Proposition* proposition, Keyword* updateMode);
+  virtual Proposition* fetchDuplicateProposition(Proposition* prop);
   virtual Object* fetchInstance(Object* name);
   virtual NamedDescription* fetchRelation(Object* name);
   virtual SequenceIndex* objectStoreDcreateSequenceIndex(Cons* pattern);
@@ -129,6 +130,7 @@ public:
 // Global declarations:
 extern NonPagingIndex* NIL_NON_PAGING_INDEX;
 extern PagingIndex* NIL_PAGING_INDEX;
+extern List* oALL_OBJECT_STORESo;
 extern DECLARE_STELLA_SPECIAL(oLOADINGREGENERABLEOBJECTSpo, boolean );
 
 // Function signatures:
@@ -143,10 +145,14 @@ Object* accessSequenceIndexIteratorSlotValue(SequenceIndexIterator* self, Symbol
 void printPagingIndex(PagingIndex* self, std::ostream* stream);
 PagingIndexIterator* newPagingIndexIterator();
 Object* accessObjectStoreSlotValue(ObjectStore* self, Symbol* slotname, Object* value, boolean setvalueP);
+void registerObjectStore(ObjectStore* store);
+void unregisterObjectStore(ObjectStore* store);
+boolean haveActiveObjectStoresP();
 ObjectStore* homeObjectStore(Object* self);
 SequenceIndex* createSequenceIndex(Object* self, Cons* pattern);
 SequenceIndex* keywordDcreateSequenceIndex(Keyword* kind, Cons* pattern);
 SequenceIndex* moduleDcreateSequenceIndex(Module* module, Cons* pattern);
+SequenceIndex* maybeWrapSequenceIndex(SequenceIndex* index, Cons* pattern, Keyword* kind, Object* arg1, Object* arg2);
 void helpStartupSequenceIndices1();
 void startupSequenceIndices();
 

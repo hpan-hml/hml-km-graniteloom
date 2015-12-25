@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -72,26 +72,28 @@ globally unique session name.")
 ;;; (DEFCLASS SESSION ...)
 
 (CL:DEFCLASS SESSION (DICTIONARY)
-  ((NAME :TYPE CL:SIMPLE-STRING :INITFORM STELLA::NULL-STRING :DOCUMENTATION
-    "UUID uniquely identifying this session." :ALLOCATION :INSTANCE :ACCESSOR
-    %NAME)
+  ((NAME :TYPE CL:SIMPLE-STRING :INITFORM STELLA::NULL-STRING
+    :DOCUMENTATION "UUID uniquely identifying this session."
+    :ALLOCATION :INSTANCE :ACCESSOR %NAME)
    (TIMEOUT :DOCUMENTATION
     "Timeout duration of session; NULL means no timeout." :ALLOCATION
     :INSTANCE :ACCESSOR %TIMEOUT)
-   (TIMESTAMP :DOCUMENTATION "Time this object was last accessed." :ALLOCATION
-    :INSTANCE :ACCESSOR %TIMESTAMP)
+   (TIMESTAMP :DOCUMENTATION "Time this object was last accessed."
+    :ALLOCATION :INSTANCE :ACCESSOR %TIMESTAMP)
    (OBJECTS :DOCUMENTATION
-    "Table of session-related objects indexed on string keys." :ALLOCATION
-    :INSTANCE :ACCESSOR %OBJECTS))
-  (:DOCUMENTATION "Object storing the state associated with a single session.
+    "Table of session-related objects indexed on string keys."
+    :ALLOCATION :INSTANCE :ACCESSOR %OBJECTS))
+  (:DOCUMENTATION
+   "Object storing the state associated with a single session.
 All session-related information is stored in a table indexed on string keys."))
 
 (CL:DEFUN NEW-SESSION ()
-  (CL:LET* ((SELF NULL)) (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE SESSION)))
+  (CL:LET* ((SELF NULL))
+   (CL:SETQ SELF (CL:MAKE-INSTANCE (CL:QUOTE SESSION)))
    (CL:SETF (%OBJECTS SELF) (NEW-KEY-VALUE-MAP))
    (CL:SETF (%TIMESTAMP SELF) (MAKE-CURRENT-DATE-TIME))
-   (CL:SETF (%TIMEOUT SELF) NULL) (CL:SETF (%NAME SELF) STELLA::NULL-STRING)
-   SELF))
+   (CL:SETF (%TIMEOUT SELF) NULL)
+   (CL:SETF (%NAME SELF) STELLA::NULL-STRING) SELF))
 
 (CL:DEFMETHOD PRIMARY-TYPE ((SELF SESSION))
   SGT-SESSIONS-HTTP-SESSION)
@@ -134,7 +136,8 @@ All session-related information is stored in a table indexed on string keys."))
       (ITER-000 (ALLOCATE-ITERATOR *SESSION-TABLE*)))
      (CL:LOOP WHILE (NEXT? ITER-000) DO (CL:SETQ NAME (%KEY ITER-000))
       (CL:SETQ SESSION (%VALUE ITER-000))
-      (CL:WHEN (TIMED-OUT? SESSION) (REMOVE-AT *SESSION-TABLE* NAME)))))))
+      (CL:WHEN (TIMED-OUT? SESSION)
+       (REMOVE-AT *SESSION-TABLE* NAME)))))))
 
 ;;; (DEFUN (LOOKUP-SESSION SESSION) ...)
 
@@ -162,7 +165,8 @@ haven't yet timed out."
   "Create a new session object with `name' (replacing any existing
 sessions with the same name).  If `name' is NULL, generate a random UUID for it.
 Timeout after `timeout' seconds or never in case the value is <= 0 or undefined."
-  (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING NAME) (CL:TYPE CL:FIXNUM TIMEOUT))
+  (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING NAME)
+   (CL:TYPE CL:FIXNUM TIMEOUT))
   #+MCL
   (CL:CHECK-TYPE NAME CL:SIMPLE-STRING)
   #+MCL
@@ -172,7 +176,8 @@ Timeout after `timeout' seconds or never in case the value is <= 0 or undefined.
     (CL:SETQ NAME (GENERATE-RANDOM-UUID)))
    (CL:SETF (%NAME SESSION) NAME)
    (CL:WHEN (CL:> TIMEOUT 0)
-    (CL:SETF (%TIMEOUT SESSION) (MAKE-TIME-DURATION 0 (CL:* TIMEOUT 1000))))
+    (CL:SETF (%TIMEOUT SESSION)
+     (MAKE-TIME-DURATION 0 (CL:* TIMEOUT 1000))))
    (WITH-PROCESS-LOCK *SESSIONS-LOCK*
     (INSERT-AT *SESSION-TABLE* (WRAP-STRING NAME) SESSION))
    (CLEANUP-SESSION-TABLE) SESSION))
@@ -184,7 +189,8 @@ Timeout after `timeout' seconds or never in case the value is <= 0 or undefined.
 If `name' is NULL, generate a random UUID for it.  If an existing object was found but has timed
 out, raise an error if `errorIfTimeout?' is true.  If a new object is created, initialize its
 timeout field with `timeout' seconds (0 or undefined means no timeout)."
-  (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING NAME) (CL:TYPE CL:FIXNUM TIMEOUT))
+  (CL:DECLARE (CL:TYPE CL:SIMPLE-STRING NAME)
+   (CL:TYPE CL:FIXNUM TIMEOUT))
   #+MCL
   (CL:CHECK-TYPE NAME CL:SIMPLE-STRING)
   #+MCL
@@ -200,9 +206,11 @@ timeout field with `timeout' seconds (0 or undefined means no timeout)."
 
 (CL:DEFMETHOD TIMED-OUT? ((SESSION SESSION))
   "Return TRUE if `session' has timed out."
-  (CL:LET* ((TIMEOUT (%TIMEOUT SESSION)) (TIMESTAMP (%TIMESTAMP SESSION)))
+  (CL:LET*
+   ((TIMEOUT (%TIMEOUT SESSION)) (TIMESTAMP (%TIMESTAMP SESSION)))
    (CL:IF (CL:EQ TIMEOUT NULL) CL:NIL
-    (GREATER? (TIME-SUBTRACT (MAKE-CURRENT-DATE-TIME) TIMESTAMP) TIMEOUT))))
+    (GREATER? (TIME-SUBTRACT (MAKE-CURRENT-DATE-TIME) TIMESTAMP)
+     TIMEOUT))))
 
 ;;; (DEFMETHOD REFRESH ...)
 
@@ -233,8 +241,8 @@ timeout field with `timeout' seconds (0 or undefined means no timeout)."
     (CL:SETQ SGT-SESSIONS-HTTP-SESSION
      (INTERN-RIGID-SYMBOL-WRT-MODULE "SESSION" NULL 1))
     (CL:SETQ SYM-SESSIONS-STELLA-NAME
-     (INTERN-RIGID-SYMBOL-WRT-MODULE "NAME" (GET-STELLA-MODULE "/STELLA" CL:T)
-      0))
+     (INTERN-RIGID-SYMBOL-WRT-MODULE "NAME"
+      (GET-STELLA-MODULE "/STELLA" CL:T) 0))
     (CL:SETQ SYM-SESSIONS-HTTP-TIMEOUT
      (INTERN-RIGID-SYMBOL-WRT-MODULE "TIMEOUT" NULL 0))
     (CL:SETQ SYM-SESSIONS-HTTP-TIMESTAMP
@@ -255,19 +263,21 @@ timeout field with `timeout' seconds (0 or undefined means no timeout)."
        (DEFINE-CLASS-FROM-STRINGIFIED-SOURCE "SESSION"
         "(DEFCLASS SESSION (DICTIONARY) :DOCUMENTATION \"Object storing the state associated with a single session.
 All session-related information is stored in a table indexed on string keys.\" :PARAMETERS ((ANY-KEY :TYPE STRING-WRAPPER) (ANY-VALUE :TYPE OBJECT)) :SLOTS ((NAME :TYPE STRING :INITIALLY NULL :PUBLIC? TRUE :DOCUMENTATION \"UUID uniquely identifying this session.\") (TIMEOUT :TYPE TIME-DURATION :INITIALLY NULL :DOCUMENTATION \"Timeout duration of session; NULL means no timeout.\") (TIMESTAMP :TYPE CALENDAR-DATE :INITIALLY (MAKE-CURRENT-DATE-TIME) :DOCUMENTATION \"Time this object was last accessed.\") (OBJECTS :TYPE (KEY-VALUE-MAP OF STRING-WRAPPER OBJECT) :DOCUMENTATION \"Table of session-related objects indexed on string keys.\" :INITIALLY (NEW KEY-VALUE-MAP))))")))
-     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS) (CL:FUNCTION NEW-SESSION))
+     (CL:SETF (%CLASS-CONSTRUCTOR-CODE CLASS)
+      (CL:FUNCTION NEW-SESSION))
      (CL:SETF (%CLASS-SLOT-ACCESSOR-CODE CLASS)
       (CL:FUNCTION ACCESS-SESSION-SLOT-VALUE))))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 6) (FINALIZE-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 7)
     (DEFINE-FUNCTION-OBJECT "CLEANUP-SESSION-TABLE"
-     "(DEFUN CLEANUP-SESSION-TABLE ())" (CL:FUNCTION CLEANUP-SESSION-TABLE)
-     NULL)
+     "(DEFUN CLEANUP-SESSION-TABLE ())"
+     (CL:FUNCTION CLEANUP-SESSION-TABLE) NULL)
     (DEFINE-FUNCTION-OBJECT "LOOKUP-SESSION"
      "(DEFUN (LOOKUP-SESSION SESSION) ((NAME STRING) (ERRORIFTIMEOUT? BOOLEAN)) :DOCUMENTATION \"Retrieve an existing session object with `name' if it exists, NULL otherwise.
 If a session was found but has timed out, raise an error if `errorIfTimeout?' is true,
 otherwise, return the timed-out session.  Bumps the timestamp on existing sessions that
-haven't yet timed out.\" :PUBLIC? TRUE)" (CL:FUNCTION LOOKUP-SESSION) NULL)
+haven't yet timed out.\" :PUBLIC? TRUE)" (CL:FUNCTION LOOKUP-SESSION)
+     NULL)
     (DEFINE-FUNCTION-OBJECT "CREATE-SESSION"
      "(DEFUN (CREATE-SESSION SESSION) ((NAME STRING) (TIMEOUT INTEGER)) :DOCUMENTATION \"Create a new session object with `name' (replacing any existing
 sessions with the same name).  If `name' is NULL, generate a random UUID for it.
@@ -294,7 +304,8 @@ timeout field with `timeout' seconds (0 or undefined means no timeout).\" :PUBLI
     (DEFINE-FUNCTION-OBJECT "STARTUP-SESSIONS"
      "(DEFUN STARTUP-SESSIONS () :PUBLIC? TRUE)"
      (CL:FUNCTION STARTUP-SESSIONS) NULL)
-    (CL:LET* ((FUNCTION (LOOKUP-FUNCTION SYM-SESSIONS-HTTP-STARTUP-SESSIONS)))
+    (CL:LET*
+     ((FUNCTION (LOOKUP-FUNCTION SYM-SESSIONS-HTTP-STARTUP-SESSIONS)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
       SYM-SESSIONS-STELLA-METHOD-STARTUP-CLASSNAME
       (WRAP-STRING "_StartupSessions") NULL-STRING-WRAPPER)))

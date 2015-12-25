@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: rules.ste,v 1.49 2008/08/29 01:20:53 hans Exp
+;;; Version: rules.ste,v 1.50 2014/04/16 22:06:07 hans Exp
 
 ;;; Routines that manipulate implication rules.
 
@@ -1026,6 +1026,7 @@ are actually needed."
 (defun (get-rules (CONS OF PROPOSITION)) ((relation NAME))
   :documentation "Return the list of rules associated with `relation'."
   :public? TRUE :command? TRUE :evaluate-arguments? FALSE
+  (process-definitions)
   (return (call-get-rules relation)))
 
 (defun delete-rules ((relation NAME))
@@ -1033,6 +1034,7 @@ are actually needed."
 This function is included mainly for debugging purposes, when
 a user wants to verify the behavior of different sets of rules."
   :public? TRUE :command? TRUE :evaluate-arguments? FALSE
+  (process-definitions)
   (foreach r in (call-get-rules relation)
       do (destroy-proposition r)))
 
@@ -1042,6 +1044,7 @@ a user wants to verify the behavior of different sets of rules."
   ;; TO DO:
   ;; - :true-only? could become an option that is false by default;
   ;;   in that case we should probably annotate truth.
+  (process-definitions)
   (within-context (get-query-context)
     (foreach rule in (call-get-rules relation)
         where (true-proposition? rule)

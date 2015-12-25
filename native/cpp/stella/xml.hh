@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -167,6 +167,8 @@ extern StringHashTable* oXML_GLOBAL_ATTRIBUTE_HASH_TABLEo;
 extern KeyValueList* oXML_BASE_ENTITY_TABLEo;
 extern Cons* oXML_TOKENIZER_TABLE_DEFINITIONo;
 extern TokenizerTable* oXML_TOKENIZER_TABLEo;
+extern DECLARE_STELLA_SPECIAL(oXML_PRESERVE_ALL_WHITESPACEpo, boolean );
+extern TokenizerTable* oXML_WHITESPACE_PRESERVING_TOKENIZER_TABLEo;
 
 // Function signatures:
 XmlObject* newXmlObject();
@@ -216,6 +218,8 @@ int findReferenceStart(char* input, int start, int end);
 char* decodeXmlString(XmlDoctype* doctype, char* input, boolean peReferenceAllowedP);
 char* normalizeAttributeValue(XmlDoctype* doctype, char* input, boolean peReferenceAllowedP);
 XmlDoctype* processDoctype(Cons* doctypeDeclaration);
+TokenizerTable* getXmlWhitespacePreservingTokenizerTable();
+TokenizerTable* getXmlTokenizerTable();
 TokenizerToken* tokenizeXmlExpression(InputStream* stream, TokenizerToken* tokenlist, char* regiontagname, boolean skiptoregionP, boolean& _Return1);
 Cons* processAttributeList(Cons* reverseattributelist, XmlElement* element, KvCons* namespaceTable);
 Object* xmlTokenListToSExpression(TokenizerToken* tokenlist, XmlDoctype* doctype, boolean doctypeDefinitionP);

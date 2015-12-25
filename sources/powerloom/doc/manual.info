@@ -15,7 +15,7 @@ California.
 
 Indirect:
 manual.info-1: 534
-manual.info-2: 289478
+manual.info-2: 294527
 
 Tag Table:
 (Indirect)
@@ -66,85 +66,85 @@ Node: Command Interpreter68657
 Ref: Command Interpreter-Footnote-170886
 Node: Persistent Knowledge Bases71092
 Node: Commands71821
-Ref: Commands-Footnote-1109608
-Node: PowerLoom API109727
-Node: API Functions110285
-Node: Language Specific Interface164914
-Node: Lisp API165375
-Node: Initialization166282
-Node: Type Declarations166738
-Node: NULL Values167704
-Node: Wrapped Literal Values168191
-Node: Special Variables168620
-Node: CLOS Objects versus Structs168927
-Node: C++ API169610
-Node: Java API169761
-Node: Initializing PowerLoom170446
-Node: PowerLoom Java Conventions171019
-Node: Using the PLI Class176530
-Node: Using Stella Objects177643
-Node: PowerLoom and Threads179496
-Node: Setting and Restoring Global Variable Values180339
-Node: Java Character Mapping183304
-Node: Stella Exceptions in Java184887
-Node: Iteration in Java185712
-Node: Utility Classes for Java188221
-Node: Built-In Relations189274
-Node: PowerLoom GUI229054
-Node: Invoking the GUI230598
-Node: Starting a PowerLoom Server233649
-Node: GUI Design Goals234885
-Ref: fig:context-menu238472
-Node: GUI Overview240153
-Ref: fig:gui240455
-Node: GUI Features245302
-Node: Connect to Server245857
-Node: Edit Preferences246473
-Node: KB Load/Save247105
-Node: Browsing247791
-Ref: fig:browser248204
-Node: Editing256030
-Ref: fig:instedit257222
-Ref: fig:propedit259576
-Node: Choosers260472
-Ref: fig:extedit261261
-Node: Extension Editor261377
-Node: Ask and Retrieve Queries262366
-Ref: fig:query262542
-Node: Search265216
-Ref: fig:search266428
-Node: Console267037
-Ref: fig:console267587
-Node: Cut/Copy/Paste/Delete267695
-Node: Future Work269289
-Node: Large KBs269608
-Node: Undo270313
-Node: Drag and Drop270690
-Node: Scrapbook271147
-Node: Instance Cloning271527
-Node: Security272144
-Node: Multiple Users272904
-Node: Ontosaurus273477
-Node: Installation275339
-Node: System Requirements275651
-Node: Unpacking the Sources279165
-Node: Lisp Installation279806
-Node: C++ Installation282161
-Node: Java Installation284056
-Node: Removing Unneeded Files285615
-Node: Installing PowerLoom Patches286524
-Node: Miscellaneous289478
-Node: Glossary356626
-Ref: Glossary-Footnote-1366030
-Node: PowerLoom Grammar366064
-Node: Alphabet366349
-Node: Grammar367658
-Node: Constants and Typed Variables368012
-Node: Terms369388
-Node: Sentences370213
-Node: Definitions371281
-Node: Function Index373682
-Node: Variable Index416864
-Node: Concept Index418622
+Ref: Commands-Footnote-1114604
+Node: PowerLoom API114723
+Node: API Functions115281
+Node: Language Specific Interface169910
+Node: Lisp API170371
+Node: Initialization171278
+Node: Type Declarations171734
+Node: NULL Values172700
+Node: Wrapped Literal Values173187
+Node: Special Variables173616
+Node: CLOS Objects versus Structs173923
+Node: C++ API174606
+Node: Java API174757
+Node: Initializing PowerLoom175442
+Node: PowerLoom Java Conventions176015
+Node: Using the PLI Class181526
+Node: Using Stella Objects182639
+Node: PowerLoom and Threads184492
+Node: Setting and Restoring Global Variable Values185335
+Node: Java Character Mapping188300
+Node: Stella Exceptions in Java189883
+Node: Iteration in Java190708
+Node: Utility Classes for Java193217
+Node: Built-In Relations194270
+Node: PowerLoom GUI234038
+Node: Invoking the GUI235582
+Node: Starting a PowerLoom Server238633
+Node: GUI Design Goals239869
+Ref: fig:context-menu243456
+Node: GUI Overview245137
+Ref: fig:gui245439
+Node: GUI Features250286
+Node: Connect to Server250841
+Node: Edit Preferences251457
+Node: KB Load/Save252089
+Node: Browsing252775
+Ref: fig:browser253188
+Node: Editing261014
+Ref: fig:instedit262206
+Ref: fig:propedit264560
+Node: Choosers265456
+Ref: fig:extedit266245
+Node: Extension Editor266361
+Node: Ask and Retrieve Queries267350
+Ref: fig:query267526
+Node: Search270200
+Ref: fig:search271412
+Node: Console272021
+Ref: fig:console272571
+Node: Cut/Copy/Paste/Delete272679
+Node: Future Work274273
+Node: Large KBs274592
+Node: Undo275297
+Node: Drag and Drop275674
+Node: Scrapbook276131
+Node: Instance Cloning276511
+Node: Security277128
+Node: Multiple Users277888
+Node: Ontosaurus278461
+Node: Installation280323
+Node: System Requirements280635
+Node: Unpacking the Sources284214
+Node: Lisp Installation284855
+Node: C++ Installation287210
+Node: Java Installation289105
+Node: Removing Unneeded Files290664
+Node: Installing PowerLoom Patches291573
+Node: Miscellaneous294527
+Node: Glossary364899
+Ref: Glossary-Footnote-1374303
+Node: PowerLoom Grammar374337
+Node: Alphabet374622
+Node: Grammar375931
+Node: Constants and Typed Variables376285
+Node: Terms377668
+Node: Sentences378493
+Node: Definitions379581
+Node: Function Index381982
+Node: Variable Index426540
+Node: Concept Index428298
 
 End Tag Table

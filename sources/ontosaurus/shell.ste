@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 2009-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 2009-2013      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: shell.ste,v 1.1 2010/02/12 20:32:13 hans Exp
+;;; Version: shell.ste,v 1.2 2013/02/27 03:49:53 hans Exp
 
 ;;; Routines to support execution of OS shell commands (plus simple threading)
 ;;; Currently, only Lisp (Allegro) and Java are supported.
@@ -312,7 +312,8 @@ completion.  Conceivably, we could execute a `kill' command to achieve that."
   :public? TRUE
   (let ((process (native-process self)))
     (verbatim :common-lisp "#+allegro (sys:reap-os-subprocess :pid process :wait CL:t)"
-              :java "process.destroy()")
+              :java "process.destroy()"
+              :otherwise (error "destroy-process: threads not yet supported"))
     ;; NOTE: input/output/error streams are user-supplied and are not closed here
     (when (defined? (native-stdin self))
       (terminate-output-stream? (native-stdin self)))
@@ -378,7 +379,8 @@ for security purposes.")
 (defun (shell-command STRING-WRAPPER) ((command OBJECT) &rest (options OBJECT))
   :documentation "User-level command interface to `execute-shell-command' (which see).
 Runs `command' and returns its output (if any) as a string.  If the shell created
-a non-zero exit status or generated any error output, an exception will be raised.
+a non-zero exit status or generated any error output, an exception will be raised
+- unless :ignore-errors? is true (which is the default).
 If `command' was a string, split it at spaces to determine its arguments (this is
 not sophisticated and does not handle quoting correctly).  For more complex commands,
 supply them as a list of strings representing the program and its arguments.  If any
@@ -392,7 +394,8 @@ If :directory is given, execute `command' in that directory."
          (parse-logic-command-options
           (coerce-&rest-to-cons options)
           (bquote (:directory @STRING
-                   :input @STRING))
+                   :input @STRING
+                   :ignore-errors? @BOOLEAN))
           TRUE FALSE))
         (directory (unwrap-string (lookup theOptions :directory)))
         (inputString (unwrap-string (lookup theOptions :input)))
@@ -403,14 +406,18 @@ If :directory is given, execute `command' in that directory."
         (errorStream (new STRING-OUTPUT-STREAM))
         (exit (execute-shell-command command directory inputStream outputStream errorStream))
         (output (the-string outputStream))
-        (error (the-string errorStream)))
+        (error (the-string errorStream))
+        (ignoreErrors? (lookup-with-default theOptions :ignore-errors? TRUE)))
     (when (defined? inputStream)
       (close-stream inputStream))
     (close-stream outputStream)
     (close-stream errorStream)
     (when (not (blank-string? error))
-      (error "shell-command: " error))
-    (when (not (= exit 0))
+      (if ignoreErrors?
+          (print error)
+        (error "shell-command: " error)))
+    (when (and (not (= exit 0))
+               (not ignoreErrors?))
       (error "shell-command: non-zero exit status=" exit))
     (if (blank-string? output)
         (return NULL)

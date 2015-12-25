@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: propositions.ste,v 1.206 2010/09/11 02:23:21 hans Exp
+;;; Version: propositions.ste,v 1.214 2014/04/17 00:41:08 hans Exp
 
 ;;; Parsing and constructing propositions.
 
@@ -103,6 +103,9 @@ the PowerLoom LOGIC module."
             (isa? self @PATTERN-VARIABLE))
     (return))
   ;; this is not valid anymore, given that we now allocate objects in modules:
+  ;; TO DO: rethink this allocation strategy, since locally conceived objects
+  ;;    get (and should get) destroyed when the context gets destroyed, allocating
+  ;;    them in the current module doesn't really seem to buy us anything...
   ;(safety 3 (eql? (home-context self) *context*) "CXT INITIALIZE BUG")
   (when (not *loadingRegenerableObjects?*)
     (push (locally-conceived-instances *context*) self)) )
@@ -436,7 +439,55 @@ heavy-weight) would be the better option.")
     (return (relationRef prop)))
 
 
-;;; Logic slots on Stella classes:
+  ;;
+;;;;;;  Error classes
+  ;;
+
+(defclass LOGIC-EXCEPTION (STELLA-EXCEPTION))
+(defclass PROPOSITION-ERROR (LOGIC-EXCEPTION))
+(defclass PARSING-ERROR (LOGIC-EXCEPTION))
+(defclass CLASH (LOGIC-EXCEPTION)
+  :public-slots ((proposition :type PROPOSITION :documentation "The main proposition involved in the clash")
+		 (context :type CONTEXT :documentation "The context in which the clash occurred")))
+(defclass TRUTH-VALUE-CLASH (CLASH))
+
+#| ;; I'd like to do this one, but it can't find the type /PL-KERNEL-KB/INTERVAL-CACHE
+   ;; and so it doesn't generate the slot properly.  So instead we expand the information
+   ;; from the interval cache.  - tar 11/30/2010
+(defclass INTERVAL-CLASH (CLASH)
+  :public-slots ((interval-cache :type /PL-KERNEL-KB/INTERVAL-CACHE :documentation "The interval cache that is unsatisfiable.")))
+|#
+
+(defclass INTERVAL-CLASH (CLASH)
+  :public-slots ((interval-member :type LOGIC-OBJECT :documentation "The owner of the interval cache that is unsatisfiable.")
+		 (lower-bound :type OBJECT)
+		 (upper-bound :type OBJECT)
+		 (strict-lower-bound? :type BOOLEAN)
+		 (strict-upper-bound? :type BOOLEAN)))
+
+(defclass VARIABLE-VALUE-CLASH (CLASH)
+  :public-slots ((skolem :type SKOLEM :documentation "Skolem which is getting multiple values.")
+		 (value1 :type OBJECT :documentation "First value in value clash")
+		 (value2 :type OBJECT :documentation "Second value in value clash")))
+(defclass UNIFICATION-CLASH (CLASH)
+  :public-slots ((value1 :type OBJECT :documentation "First value in unification clash")
+                 (value2 :type OBJECT :documentation "Second value in unification clash")))
+(defclass FAIL-EXCEPTION (LOGIC-EXCEPTION))
+(defclass QUERY-THREAD-LIMIT-VIOLATION (LOGIC-EXCEPTION))
+
+;;; Used for those cases where we want to collect exceptions instead of
+;;; handling them immediately or throwing them.
+;;; Initially this is just used during instance elaboration.
+
+(defclass EXCEPTION-RECORD (STANDARD-OBJECT)
+  :slots ((exception :type STELLA-EXCEPTION)
+          (context :type CONTEXT)
+          (module :type MODULE)) )
+
+
+  ;;
+;;;;;; Logic slots on Stella classes:
+  ;;
 
 ;; world properties:
 
@@ -630,6 +681,10 @@ an individual in whatever slot it occupies.")
   (return (or (eql? self @BOOLEAN)
               (eql? self @BOOLEAN-WRAPPER))) )
 
+(defun (proposition-type? BOOLEAN) ((self TYPE))
+  :public? TRUE :globally-inline? TRUE
+  (return (eql? self @PROPOSITION)))
+
 (defun (class-description? BOOLEAN) ((self NAMED-DESCRIPTION))
   :public? TRUE
   ;; Return TRUE if 'self' is a class.
@@ -812,7 +867,8 @@ the overhead of the context mechanism." )
                          (world-state? *context*))
                     (deassign-truth-value p :RETRACT-TRUE))
                    (otherwise
-                    (equate-values (value-of (last-argument p))
+                    (equate-values proposition
+                                   (value-of (last-argument p))
                                    (value-of (last arguments)))))))))
 
 (defun run-update-equivalence-proposition-demon 
@@ -1150,6 +1206,25 @@ the overhead of the context mechanism." )
     (update-property instance PL-KERNEL/@HIDDEN-RELATION :RETRACT-TRUE)
     (return *context*) ))
 
+(defun (list-inconsistent-propositions (CONS OF PROPOSITION)) (&rest (options OBJECT))
+  :documentation
+  "Return a list of all currently known inconsistent proposition in the module defined
+by the :module option (which defaults to the current module).  If `:local?' is specified
+as TRUE only look in the specified module but not any modules it inherits.  Note, that
+this simply reports propositions that have been assigned an inconsistent truth value so
+far (e.g., in clash exceptions), it will not try to detect any new or all inconsistencies
+in a module."
+  :public? TRUE :command? TRUE :evaluate-arguments? FALSE
+  (let ((theOptions
+         (parse-options
+          (coerce-&rest-to-cons options)
+          (bquote (:module @MODULE
+                   :local? @BOOLEAN))
+          TRUE FALSE))
+        (theModule MODULE (lookup-with-default theOptions :module *module*))
+        (local? BOOLEAN (lookup-with-default theOptions :local? FALSE)))
+    (return (consify (all-inconsistent-propositions theModule local?)))))
+
 
   ;;
 ;;;;;; Slot demons
@@ -1170,7 +1245,7 @@ the overhead of the context mechanism." )
       (let ((slot (native-relation (get-description (relationRef proposition))))
             (nativeFirstArgValue (value-of (first (arguments proposition)))))
         (if (defined? newValue)
-          (assign-native-slot-value nativeFirstArgValue slot newValue)
+          (assign-native-slot-value proposition nativeFirstArgValue slot newValue)
           (drop-native-slot-value nativeFirstArgValue slot oldValue))))
     (when (not (eql? oldValue newValue))
       ;; Bump memoization time stamps similar to `react-to-kb-update':
@@ -1220,7 +1295,7 @@ the overhead of the context mechanism." )
       (:ASSERT-TRUE
        (when *clippingEnabled?*
          (clear-native-slot-value object slot))
-       (assign-native-slot-value object slot value))
+       (assign-native-slot-value proposition object slot value))
       (:RETRACT-TRUE
        (drop-native-slot-value object slot value))
       (otherwise
@@ -1228,7 +1303,7 @@ the overhead of the context mechanism." )
               "   Proposition:  " proposition EOL)))
     (return NIL) ))
 
-(defun assign-native-slot-value ((self THING) (slot STORAGE-SLOT) (value OBJECT))
+(defun assign-native-slot-value ((prop PROPOSITION) (self THING) (slot STORAGE-SLOT) (value OBJECT))
   ;; Assign the value 'value' for the slot 'slot' on 'self'.
   (when (skolem? value)
     (return))
@@ -1237,7 +1312,7 @@ the overhead of the context mechanism." )
       (return))
     ;; 'oldValue' /= 'value':
     (when (defined? oldValue)           ; check for pre-existing value
-      (signal-unification-clash oldValue value))
+      (signal-unification-clash prop oldValue value))
     ;; assign 'value' to non-logical slot representation:
     (put-slot-value self slot value)))
 
@@ -1753,6 +1828,7 @@ considering default assertions)."
   :public? TRUE
   (cond
    ;; Note: we treat `INCONSISTENT-TRUTH-VALUE' just like FALSE:
+    ;; Perhaps this should return INCONSISTENT if both are inconsistent.
    ((or (eql? tv1 TRUE-TRUTH-VALUE)
         (eql? tv2 TRUE-TRUTH-VALUE))
     (return TRUE-TRUTH-VALUE))
@@ -1788,6 +1864,89 @@ considering default assertions)."
     ;;; Allow UNKNOWN, similar to other truth-value combinators:
     ;(warn "Don't know how to invert truth value: " self EOL)
     (return UNKNOWN-TRUTH-VALUE))) )
+
+(defun (stronger-truth-value? BOOLEAN) ((tv1 TRUTH-VALUE) (tv2 TRUTH-VALUE))
+  :documentation "Compare the two truth values and return `true' if `tv1' is strictly
+stronger than `tv2'.  Stronger uses the following partial order:
+  INCONSISTENT > STRICT > DEFAULT > UNKNOWN.
+Truth values at the same level are equal in strength."
+  :public? TRUE
+  (cond ((eql? tv1 tv2)
+         (return FALSE))
+        ;; Now we know the truth values are different, so we pick which
+        ;; one will win.
+        ;; First any inconsistent is stronger than not inconsistent.
+        ((inconsistent-truth-value? tv1)
+         (return (not (inconsistent-truth-value? tv2))))
+        ((inconsistent-truth-value? tv2)
+         (return FALSE))
+        ;; Second have strict override default.
+        ((strict-truth-value? tv1)
+         (return (not (strict-truth-value? tv2))))
+        ((strict-truth-value? tv2)
+         (return FALSE))
+        ;; Third have default override unknown.
+        ((default-truth-value? tv1)
+         (return (not (default-truth-value? tv2))))
+        ((default-truth-value? tv2)
+         (return FALSE))
+        ;; Fourth if we get here both are unknown.
+        ((and (unknown-truth-value? tv1) (unknown-truth-value? tv2))
+         (return FALSE))
+        ;; If we get here, then we have a conflict, either among default
+        ;; or among strict values.  If both are default, then we go with
+        ;; unknown, otherwise if strict, we have an inconsistency.
+        (otherwise
+         (signal LOGIC-EXCEPTION "Internal Error: STRONGER-TRUTH-VALUE?: Shouldn't get here. tv1=" tv1 
+                 " tv2=" tv2))))
+
+
+(defun (merge-truth-values TRUTH-VALUE) ((tv1 TRUTH-VALUE) (tv2 TRUTH-VALUE))
+  :documentation "Merge two truth values that are describing the \"same\" logical
+proposition.  This handles subordination of default to strict values, 
+known over unknown and potential inconsistent values.
+
+In particular, this can be used to check for negated values by asking for
+the truth of a proposition and its negation, inverting the negation and then
+using merge to come up with an answer."
+  :public? TRUE
+  (cond ((eql? tv1 tv2)
+         (return tv1))
+        ;; Now we know the truth values are different, so we pick which
+        ;; one will win.
+        ;; First any inconsistent result wins.
+        ((or (inconsistent-truth-value? tv1) (inconsistent-truth-value? tv2))
+         (return INCONSISTENT-TRUTH-VALUE))
+        ;; Second have strict override default.
+        ((and (strict-truth-value? tv1) (default-truth-value? tv2))
+         (return tv1))
+        ((and (default-truth-value? tv1) (strict-truth-value? tv2))
+         (return tv2))
+        ;; Third have known override unknown.
+        ((and (known-truth-value? tv1) (unknown-truth-value? tv2))
+         (return tv1))
+        ((and (unknown-truth-value? tv1) (known-truth-value? tv2))
+         (return tv2))
+        ;; If we get here, then we have a conflict, either among default
+        ;; or among strict values.  If both are default, then we go with
+        ;; unknown, otherwise if strict, we have an inconsistency.
+        ((and (default-truth-value? tv1) (default-truth-value? tv2))
+         (return UNKNOWN-TRUTH-VALUE))
+        ((and (strict-truth-value? tv1) (strict-truth-value? tv2))
+         (return INCONSISTENT-TRUTH-VALUE))
+        (otherwise
+         (signal LOGIC-EXCEPTION "Internal Error: MERGE-TRUTH-VALUES: Shouldn't get here. tv1=" tv1 
+                 " tv2=" tv2))))
+
+#|
+;; Test merge truth-values:
+(let ((tvs (LIST OF TRUTH-VALUE) (list TRUE-TRUTH-VALUE FALSE-TRUTH-VALUE DEFAULT-TRUE-TRUTH-VALUE
+                                       DEFAULT-FALSE-TRUTH-VALUE UNKNOWN-TRUTH-VALUE INCONSISTENT-TRUTH-VALUE)))
+  (foreach i in tvs
+      do (foreach j in tvs
+             do (print i "  &  " j "  =>  " (merge-truth-values i j) EOL))))
+
+|#
 
 (defun (weaken-truth-value TRUTH-VALUE) ((tv1 TRUTH-VALUE) (tv2 TRUTH-VALUE))
   :documentation
@@ -1857,78 +2016,183 @@ either TRUE or FALSE, but not UNKNOWN, INCONSISTENT, etc."
   :public? TRUE :globally-inline? TRUE
   (return (eql? self INCONSISTENT-TRUTH-VALUE)))
 
-(defun print-truth-value ((self TRUTH-VALUE) (stream OUTPUT-STREAM))
-  ;; Print `self' onto `stream'.
+(defun (truth-value-to-string STRING) ((self TRUTH-VALUE) (abbreviate? BOOLEAN))
+  ;; Return a string value for `truth-value', using a single character
+  ;; abbreviation if `abbreviate?' is `true'.  Return `null' if this is
+  ;; not a recognized truth-value.  (That shouldn't happen, though).
   (cond
    ((eql? self TRUE-TRUTH-VALUE)
-    (print-stream stream "TRUE"))
+    (return (choose abbreviate? "T" "TRUE")))
    ((eql? self FALSE-TRUTH-VALUE)
-    (print-stream stream "FALSE"))
+    (return (choose abbreviate?  "F" "FALSE")))
    ((eql? self DEFAULT-TRUE-TRUTH-VALUE)
-    (print-stream stream "DEFAULT-TRUE"))
+    (return (choose abbreviate?  "t" "DEFAULT-TRUE")))
    ((eql? self DEFAULT-FALSE-TRUTH-VALUE)
-    (print-stream stream "DEFAULT-FALSE"))
+    (return (choose abbreviate?  "f" "DEFAULT-FALSE")))
    ((eql? self UNKNOWN-TRUTH-VALUE)
-    (print-stream stream "UNKNOWN"))
+    (return (choose abbreviate?  "U" "UNKNOWN"))) ; Or maybe "?"
    ((eql? self INCONSISTENT-TRUTH-VALUE)
-    (print-stream stream "INCONSISTENT"))
+    (return (choose abbreviate?  "#" "INCONSISTENT")))
    (otherwise
-    (print-stream stream "|i|" (primary-type self)))))
+    (return NULL))))
+
+(defun print-truth-value ((self TRUTH-VALUE) (stream OUTPUT-STREAM))
+  ;; Print `self' onto `stream'.
+  (let ((tv-string (truth-value-to-string self FALSE)))
+    (if (null? tv-string)
+      (print-stream stream "|i|" (primary-type self))
+      (print-stream stream tv-string))))
 
 
   ;;
 ;;;;;; Skolem unification
   ;;
 
-(defun signal-unification-clash ((term1 OBJECT) (term2 OBJECT))
+(defun signal-unification-clash ((prop PROPOSITION) (term1 OBJECT) (term2 OBJECT))
   ;; Signal a clash, and jump out of the current context.
   ;; TO DO: UPGRADE SIMILAR TO `signal-truth-value-clash' TO MARK
   ;;    (ONE OF) THE CULPRITS AS INCONSISTENT.  REQUIRES THAT THE
   ;;    RESPONSIBLE PROPOSITION IS SUPPLIED AS AN ARGUMENT.
-  (if (and (defined? term1)
-	   (defined? term2))
-    (signal CLASH term1 " clashes with " term2)
-    (signal CLASH "Unification clash.")) )
+  (let ((message "Unification clash.")
+        (clash-object UNIFICATION-CLASH NULL))
+    (if (defined? prop) 
+      (assign-truth-value prop INCONSISTENT-TRUTH-VALUE)
+      (warn "Internal: SIGNAL-UNIFICATION-CLASH doesn't have responsible proposition available."))
+    (when (record-justifications?)
+      
+      (warn "SIGNAL-UNIFICATION-CLASH doesn't yet have justification support")
+      )
+    (when (and (defined? term1) (defined? term2))
+      (setq message (message-to-string term1 " clashes with " term2)))
+    (setq clash-object (new UNIFICATION-CLASH :message message))
+    (setf (proposition clash-object) prop)
+    (setf (context clash-object) *context*)
+    (setf (value1 clash-object) term1)
+    (setf (value2 clash-object) term2)
+    (handle-clash-exception clash-object)))
 
 ;; Not called anywhere:
 (defun signal-variable-value-clash 
-       ((skolem SKOLEM) (value1 OBJECT) (value2 OBJECT))
+       ((prop PROPOSITION) (skolem SKOLEM) (value1 OBJECT) (value2 OBJECT))
   ;; Signal a clash between values equated with 'skolem' and jump
   ;;    out of the current context.
-  ;; TO DO: FIGURE OUT HOW TO ASSERT THE CLASHING PROPOSITION.
-  (if (and (defined? value1)
-             (defined? value2))
-    (signal CLASH
-	    "Skolem " skolem " is equated with multiple values:" EOL
-	    "   " value1 " and " value2 ".")
-    (signal CLASH "Variable value clash.")) )
+  (assign-truth-value prop INCONSISTENT-TRUTH-VALUE)
+  (let ((message "Variable value clash.")
+	(exception VARIABLE-VALUE-CLASH NULL))
+    (when (and (defined? value1) (defined? value2))
+	(setq message
+	      (message-to-string "Skolem " skolem " is equated with multiple values:" EOL
+				 "   " value1 " and " value2 ".")))
+
+    (setq exception (new VARIABLE-VALUE-CLASH :message message))
+    (setf (proposition exception) prop)
+    (setf (context exception) *context*)
+    (setf (skolem exception) skolem)
+    (setf (value1 exception) value1)
+    (setf (value2 exception) value2)
+    (handle-clash-exception exception)))
 
 (defun signal-truth-value-clash ((proposition PROPOSITION))
   ;; Mark `proposition' as inconsistent and signal a clash.
   (unless (or (eql? proposition TRUE-PROPOSITION)
               (eql? proposition FALSE-PROPOSITION))
     ;; avoid modifying global proposition constants:
-    (assign-truth-value proposition INCONSISTENT-TRUTH-VALUE))
-  (cond
-   ((eql? *context* (meta-inference-cache *module*))
-    (signal CLASH
-	    "Derived both TRUE and FALSE for the proposition " proposition "." EOL
-	    "   Clash occurred in the meta inference cache for module "
-            *module* "."))
-   ((eql? *context* (truth-maintained-inference-cache *module*))
-    (signal CLASH
-	    "Derived both TRUE and FALSE for the proposition " proposition "." EOL
-	    "   Clash occurred in the default inference cache for module "
-            *module* "."))
-   ((eql? *context* *module*)
-    (signal CLASH
-	    "Derived both TRUE and FALSE for the proposition " proposition "." EOL
-	    "   Clash occurred in module " *module* "."))
-   (otherwise
-    (signal CLASH
-	    "Derived both TRUE and FALSE for the proposition " proposition "." EOL
-	    "   Clash occurred in the world " *context* 
-            " in module " *module* "."))) )
+    (assign-truth-value proposition INCONSISTENT-TRUTH-VALUE)
+    (when (record-justifications?)
+      (let ((negated-proposition
+             ;; important: check for duplicates here via new conceive
+             ;; function that also properly handles argument duplicates:
+             (conceive-inverted-proposition proposition))
+	    (antecedents (CONS OF JUSTIFICATION) NIL))
+	(if (and (defined? (forward-justifications negated-proposition))
+		 (not (empty? (forward-justifications negated-proposition))))
+	    (setq antecedents (the-cons-list (forward-justifications negated-proposition)))
+	    ;; Assume asserted.
+	    (pushq antecedents (new PRIMITIVE-STRATEGY 
+				    :proposition negated-proposition
+				    :strategy :LOOKUP-ASSERTIONS)))
+	(if (and (defined? (forward-justifications proposition))
+		 (not (empty? (forward-justifications proposition))))
+	    (setq antecedents (append (the-cons-list (forward-justifications proposition)) antecedents))
+	    (pushq antecedents (new PRIMITIVE-STRATEGY 
+				    :proposition proposition
+				    :strategy :LOOKUP-ASSERTIONS)))
+	(add-forward-justifications 
+	 proposition
+	 (create-clash-justification proposition antecedents :forward))
+        ;; TODO: Figure out if we really want to put the explanation on both
+        ;;       propositions, or if instead we want to drop the negated form
+        ;;       from what will be returned. ?? -tar
+        (add-forward-justifications
+         negated-proposition
+         (create-clash-justification negated-proposition (reverse (copy-cons-list antecedents)) :forward)))))
+  (let ((message STRING NULL)
+	(exception-context CONTEXT *context*)
+	(exception TRUTH-VALUE-CLASH NULL))
+    (cond
+      ((eql? *context* (meta-inference-cache *module*))
+       (setq message
+	     (message-to-string "Derived both TRUE and FALSE for the proposition "
+				proposition "." EOL
+				"   Clash occurred in the meta inference cache for module "
+				*module* ".")))
+      ((eql? *context* (truth-maintained-inference-cache *module*))
+       (setq message
+	     (message-to-string "Derived both TRUE and FALSE for the proposition "
+				proposition "." EOL
+				"   Clash occurred in the default inference cache for module "
+				*module* ".")))
+      ((eql? *context* *module*)
+       (setq message
+	     (message-to-string "Derived both TRUE and FALSE for the proposition "
+				proposition "." EOL "   Clash occurred in module " *module* ".")))
+      (otherwise
+       (setq message
+	     (message-to-string "Derived both TRUE and FALSE for the proposition "
+				proposition "." EOL
+				"   Clash occurred in the world " *context* 
+				" in module " *module* "."))))
+    (setq exception (new TRUTH-VALUE-CLASH :message message))
+    (setf (proposition exception) proposition)
+    (setf (context exception) exception-context)
+    (handle-clash-exception exception)))
+
+;;; New (experimental) interface to allow user-defined handlers to deal with clash exceptions:
+
+(defslot PROPOSITION clash-exceptions :type (CONS OF EXCEPTION-RECORD) :default NIL
+         :documentation "Stores a set of clash exception records that occurred for a
+particular 'inchoherent' proposition.")
+
+(defun (get-visible-clash-exceptions (CONS OF EXCEPTION-RECORD)) ((incoherentProp PROPOSITION))
+  :documentation "Return the set of clash exceptions for 'incoherentProp' that are visible from the
+current context.  These are recorded most-recent first in order of occurrance."
+  :public? TRUE
+  (return (collect record in (clash-exceptions incoherentProp)
+                   where (subcontext? *context* (context record)))))
+
+(defun handle-clash-exception ((clashException CLASH))
+  ;; Builds an 'incoherent' proposition marking a proposition that was somehow involved
+  ;; or related to a clash.  If there is a user-defined handler (goes-true-demon or friends),
+  ;; it will invoke that, otherwise, it will simply raise the exception.
+  (let ((proposition (proposition clashException))
+        (context (get-world-state (context clashException))) ;; dereference inference caches
+        (incoherentProp
+         (create-proposition (quote PREDICATE) 2)))
+    (setf (relationRef incoherentProp) PL-KERNEL/@INCOHERENT)
+    (setf (nth (arguments incoherentProp) 0) context)
+    (setf (nth (arguments incoherentProp) 1) proposition)
+    (setq incoherentProp (fasten-down-one-proposition incoherentProp FALSE))
+    ;; we need to do this before the truth-value is assigned, so a goes-true-demon can access the exception if needed:
+    (pushf (clash-exceptions incoherentProp)
+           (new EXCEPTION-RECORD
+                :exception clashException
+                :context context
+                :module (base-module context)))
+    (update-proposition-truth-value incoherentProp :ASSERT-TRUE)
+    ;; when a demon is defined, assume it will do what needs to be done, otherwise, just signal the clash:
+    (unless (or (defined? (access-binary-value (get-description PL-KERNEL/@INCOHERENT) PL-KERNEL/@GOES-TRUE-DEMON))
+                (defined? (access-binary-value (get-description PL-KERNEL/@INCOHERENT) PL-KERNEL-KB/@UPDATE-PROPOSITION-DEMON)))
+      (signal-exception clashException))))
 
 (defun (logical-type TYPE) ((self OBJECT))
   ;; Return the base type for 'self'.
@@ -1964,6 +2228,8 @@ either TRUE or FALSE, but not UNKNOWN, INCONSISTENT, etc."
        (return @THING)))
     (LOGIC-OBJECT
      (return @THING))
+    (PROPOSITION
+     (return @PROPOSITION))
     (LITERAL-WRAPPER (return (wrapper-value-type self)))
     (SURROGATE
      (if (and (defined? (surrogate-value self))
@@ -1993,7 +2259,8 @@ without signalling an error if none exists.")
           "INTERNAL ERROR: Must have forgotten to unwrap a wrapper type")
   (return (class-type self)) )
 
-(defun unify-types ((term1 SKOLEM) (term2 OBJECT))
+;; Not called anywhere
+(defun unify-types ((prop PROPOSITION) (term1 SKOLEM) (term2 OBJECT))
   ;; Unification of the types of 'term1' and 'term2'.
   ;; Check for clash, and infer type of typeless skolem.
   ;; Also signal a clash if '(not-bottom? term1)' and '(bottom term2)'.
@@ -2015,7 +2282,7 @@ without signalling an error if none exists.")
       ;; not a clash if 'term2' is BOTTOM and 'term1' allows the binding:
       (when (bottom? term2)
         (return))
-      (signal-unification-clash term1 term2))) ))
+      (signal-unification-clash prop term1 term2))) ))
 
 ;(defun unify-attribute-propositions
 ;       ((attributes1 (LIST OF PROPOSITION))
@@ -2039,7 +2306,7 @@ without signalling an error if none exists.")
 ;          (when (eql? slotRef1 slotRef2)
 ;            (let ((p1 PROPOSITION (value cursor1))
 ;                  (p2 PROPOSITION (value cursor2)))                  
-;              (equate-values (function-value p1) (function-value p2))))
+;              (equate-values p1 (function-value p1) (function-value p2))))
 ;          (setq cursor1 (rest cursor1))
 ;          (when (null? cursor1)
 ;            (return))
@@ -2171,9 +2438,11 @@ without signalling an error if none exists.")
       (react-to-skolem-value-update
        skolem oldValue NULL topLevelUpdate?))))
 
-(defun constrain-as-subset ((set1 COLLECTION)
+(defun constrain-as-subset ((prop PROPOSITION)
+                            (set1 COLLECTION)
                             (set2 COLLECTION))
   ;; Signal clash if 'set1' cannot logically represent a subset of 'set2'.
+  ;; 'prop' is the proposition triggering this equation.
   ;; Assumes that 'set1' and 'set2' have no duplicates.
   ;; Assumes that skolem members are necessarily distinct from sibling set members.
   ;; TO DO: THE UNIFICATION IS NOT COMPLETE FOR SOME CASES WHEN SKOLEMS
@@ -2182,7 +2451,9 @@ without signalling an error if none exists.")
   ;;   (subset-of {1,sk1} {2,sk2}) IMPLIES THAT sk1 = 2 and sk2 = 1.
   ;;   WE DON'T MAKE THAT INFERENCE (YET).
   (when (> (length set1) (length set2))
-    (signal-unification-clash set1 set2))
+    ;; BUG?  Is this test correct when there are multiple skolems in the set?
+    ;; Couldn't that then be resolved by having multiple skolems unify with values?
+    (signal-unification-clash prop set1 set2))
   (let ((copy1 NIL)
         (copy2 NIL))
     ;; make copy of set2:
@@ -2200,7 +2471,7 @@ without signalling an error if none exists.")
       ;; both sets have a single member remaining. Equate them:
       (let ((item1 (first copy1))
             (item2 (first copy2)))
-        (equate-values item1 item2)
+        (equate-values prop item1 item2)
         (return)))
     ;; 'copy2' has two or more members; 'copy1' has at least one:
     (let ((skolemCount1 0)
@@ -2210,29 +2481,31 @@ without signalling an error if none exists.")
       (foreach i2 in copy2 where (skolem? i2)
                do (++ skolemCount2))
       (when (eql? (+ skolemCount1 skolemCount2) 0)
-        (signal-unification-clash set1 set2))) ))
+        (signal-unification-clash prop set1 set2))) ))
 
-(defun equate-collections ((col1 COLLECTION) (col2 COLLECTION))
+(defun equate-collections ((prop PROPOSITION) (col1 COLLECTION) (col2 COLLECTION))
   ;; If 'col1' and 'col2' are logically incompatible signal
   ;;    a clash.
+  ;; 'prop' is the proposition triggering the equation of collections
   ;; If a correspondence can be established between members of 'col1' and
   ;;    members of 'col2', then unify the corresponding members.
   (when (and (ordered? col1) (ordered? col2))
     (foreach i1 in col1
              as i2 in col2
-             do (equate-values i1 i2))
+             do (equate-values prop i1 i2))
     (return))
   (when (and (no-duplicates? col1) (no-duplicates? col2))
-    (constrain-as-subset col1 col2)
-    (constrain-as-subset col2 col1)))
+    (constrain-as-subset prop col1 col2)
+    (constrain-as-subset prop col2 col1)))
 
 (defun (logic-collection? BOOLEAN) ((term OBJECT))
   ;; Returns TRUE if `term' is a subtype of logic collection.
   (return (test-type-on-instance? term LOGIC/@COLLECTION)))
 
 ;; TO DO: INVENT A DEFAULT VERSION OF 'equate-values':
-(defun equate-values ((term1 OBJECT) (term2 OBJECT))
+(defun equate-values ((prop PROPOSITION) (term1 OBJECT) (term2 OBJECT))
   ;; Equate the terms 'term1' and 'term2'.
+  ;; 'prop' is the proposition responsible for forcing the equation
   ;; If one or the other is a skolem, point its value at the other.
   ;; Otherwise, if they are unequal, signal a clash.
   ;; CAUTION: Assumes that 'term1' and 'term2' represent the end-point of
@@ -2247,14 +2520,14 @@ without signalling an error if none exists.")
    ;; TO DO: GENERALIZE THIS TO INCLUDE INTERVALS:
    ((and (stella-collection? term1)
          (stella-collection? term2))
-    (equate-collections term1 term2))
+    (equate-collections prop term1 term2))
    ((and (isa? term1 PL-KERNEL/@INTERVAL-CACHE)
          (isa? term2 PL-KERNEL/@INTERVAL-CACHE))
     ;; should we have an `equate-intervals' function?
     (pl-kernel/unify-interval-caches term1 term2 PL-KERNEL/@>=)
     (pl-kernel/unify-interval-caches term2 term1 PL-KERNEL/@>=))
    (otherwise ;; 'term1' and 'term2' are non-`eql?' constants:
-    (signal-unification-clash term1 term2))))
+    (signal-unification-clash prop term1 term2))))
 
 ;;; EXPERIMENT:
 ;;; IF WE KEEP THIS, IT HAS TO GO INTO THE DEFINITION OF `SKOLEM' TO MAKE IT
@@ -2559,6 +2832,11 @@ without signalling an error if none exists.")
  (find-duplicate-proposition TRUE-PROPOSITION)
  (find-duplicate-proposition FALSE-PROPOSITION))
 
+(defun (constant-proposition? BOOLEAN) ((self PROPOSITION))
+  :documentation "Return true if `self' is a constant such as TRUE or FALSE."
+  :public? TRUE
+  (return (eql? (kind self) :CONSTANT)))
+
 
   ;;
 ;;;;;; 'evaluate-term' (called by the parser)
@@ -2589,7 +2867,9 @@ without signalling an error if none exists.")
     (otherwise (error "Can't evaluate the term " self))) )
 
 (defun (evaluate-LITERAL-WRAPPER-term OBJECT) ((self LITERAL-WRAPPER))
-  (return (permanentify self)))
+  (if *backlink-all-proposition-arguments?*
+      (return (rewrap-argument self))
+    (return self)))
 
 ;;; TO DO: FIGURE OUT HOW TO ADD TYPES TO SURROGATES.  IDEA: IF SUBSTITUTING
 ;;;    A VALUE, THE PRIMARY TYPE OF THE NEW VALUE MUST SPECIALIZE THE PRIMARY
@@ -2688,9 +2968,9 @@ without signalling an error if none exists.")
   ;;    THEY SHOULD EVALUATE TO (SEE ALSO `inherit-proposition-argument').
   (typecase self
     (PATTERN-VARIABLE
-     (when (defined? (lookup-logic-variable-binding (skolem-name self)))
-       ;; we must be re-evaluating a variable that was stuck into a parse tree:
-       (return self)))
+     ;; we must be re-evaluating a variable that was stuck into a parse tree - do
+     ;; this unconditionally, since it might be an implicit function term var:
+     (return self))
     (SKOLEM
      ;; Always return this, since they are legal and can arise in queries.
      ;; Was previously allowed except in (description-mode?).
@@ -3119,7 +3399,7 @@ with size less than `sizeCutoff' (default is 10)."
             (cond
              ((clip-value? skolemOutput value) NULL)
              (otherwise
-              (equate-values (value-of skolemOutput) (value-of value)))))
+              (equate-values proposition (value-of skolemOutput) (value-of value)))))
            (:RETRACT-TRUE
             (unequate-values? skolemOutput value)))
          (return proposition)))
@@ -3329,9 +3609,14 @@ structure hash code which might be shared by different objects.")
 ;;;   hashing without preventing detection of different looking
 ;;;   duplicates (e.g., if order of quantified variables differs).
 
-(defun (proposition-hash-index INTEGER) ((self PROPOSITION) (mapping ENTITY-MAPPING))
+(defun (proposition-hash-index INTEGER) ((self PROPOSITION)
+                                         (mapping ENTITY-MAPPING)
+                                         (derefSurrogates? BOOLEAN))
   ;; Compute a hash code that can be used to index `self' for
   ;;    the purpose of duplicate detection.
+  ;; If `mapping' is non-NULL, substitute values from before hashing.
+  ;; If `derefSurrogates?', dereference surrogates to their values
+  ;;    before hashing which is useful for descriptive propositions.
   ;; This purposely ignores variable names and positions and skolems
   ;;    and does the right thing for commutative propositions.  It
   ;;    is assumed that true equivalence is checked via
@@ -3345,13 +3630,13 @@ structure hash code which might be shared by different objects.")
                       (eql? (kind self) :FUNCTION))
                  (last arguments)
                  NULL))
+        (priorArg OBJECT NULL)
         (argCode 0)
         (commutative? FALSE))
     (case (kind self)
       ((:AND :OR :EQUIVALENT)
        (setq commutative? TRUE))
       (otherwise NULL))
-    (setq code (rotate-hash-code code))
     (foreach arg in arguments
         do (when mapped?
              (if (eql? arg functionOutput)
@@ -3372,13 +3657,13 @@ structure hash code which might be shared by different objects.")
                (setq argCode (object-hash-code @SKOLEM))
              (typecase arg
                (PROPOSITION
-                (setq argCode (proposition-hash-index arg mapping)))
+                (setq argCode (proposition-hash-index arg mapping derefSurrogates?)))
                (NAMED-DESCRIPTION
                 (setq argCode (object-hash-code arg)))
                (DESCRIPTION
                 ;; we ignore the fact that this is a description, but it's
                 ;; unlikely that we would often clash because of that:
-                (setq argCode (proposition-hash-index (proposition arg) mapping)))
+                (setq argCode (proposition-hash-index (proposition arg) mapping derefSurrogates?)))
                (PATTERN-VARIABLE
                 (setq argCode (object-hash-code @PATTERN-VARIABLE)))
                (SKOLEM
@@ -3386,60 +3671,76 @@ structure hash code which might be shared by different objects.")
                   (if (and (defined? definingProp)
                            (not (eql? definingProp self)))
                       ;; we have a function term as an argument, hash it:
-                      (setq argCode (proposition-hash-index definingProp mapping))
+                      (setq argCode (proposition-hash-index definingProp mapping derefSurrogates?))
                     (setq argCode (object-hash-code @SKOLEM)))))
+               (SURROGATE
+                (when derefSurrogates?
+                  (setq arg (surrogate-value arg)))
+                (setq argCode (hash-code arg)))
                (WRAPPER
                 (setq argCode (hash-code arg)))
                (otherwise
                 (setq argCode (object-hash-code arg)))))
-           (setq code (logxor code argCode))
-           (unless commutative?
+           (when (or (null? priorArg)     ;; first arg, rotate for operator
+                     (not commutative?)
+                     ;; if we have a commutative prop with equal arguments such as (= a a),
+                     ;; we need to rotate, otherwise all of these will have equal codes:
+                     (eql? arg priorArg))
              ;; rotate right to take argument order into account:
-             (setq code (rotate-hash-code code))))
+             (setq code (rotate-hash-code code)))
+           (setq code (logxor code argCode))
+           (setq priorArg arg))
     (return code)))
+
+(defun (lookup-matching-proposition-in-bucket PROPOSITION) ((bucket LIST)
+                                                            (self PROPOSITION)
+                                                            (mapping ENTITY-MAPPING))
+  ;; Helper for `find-duplicate-complex-proposition'.
+  ;; Return a duplicate (or equivalent) of 'self' if there is one in `bucket'.
+  (let ((homeModule (base-module (home-context self)))
+        (function? (eql? (kind self) :FUNCTION))
+        (operator (operator self))
+        (arguments (arguments self))
+        (arity (length arguments))
+        (rewrapped? FALSE))
+    (remove-deleted-members bucket)
+    (foreach p in bucket
+        do (typecase p
+             (PROPOSITION
+              (when (and (eql? operator (operator p))
+                         (= arity (length (arguments p))))
+                (loop ;; since we might have to try again after rewrapping - kludge
+                  (when (or (and function?
+                                 (equivalent-function-propositions? self p mapping))
+                            (and (not function?)
+                                 (equivalent-propositions? self p mapping)))
+                    (if (subcontext? homeModule (base-module (home-context p)))
+                        (return p)
+                      (break)))
+                  ;; we failed due to an argument mismatch, see whether we need to rewrap:
+                  (cond (rewrapped?
+                         (break))
+                        (otherwise
+                         (rewrap-proposition-arguments self)
+                         (setq rewrapped? TRUE)
+                         (continue))))))
+             (otherwise NULL)))
+    (return NULL) ))
 
 (defun (find-duplicate-complex-proposition PROPOSITION) ((self PROPOSITION))
   ;; Return a duplicate (or equivalent) of 'self' if there is one.
   ;; If not, add 'self' to `*structured-objects-index*'.
   ;; Also finds duplicate function propositions that are identical to
   ;;    `self' except for the last argument.
-  (let ((index (wrap-integer (proposition-hash-index self NULL)))
+  (let ((index (wrap-integer (proposition-hash-index self NULL FALSE)))
         (bucket (lookup *structured-objects-index* index))
-        (homeModule (base-module (home-context self)))
-        (function? (eql? (kind self) :FUNCTION)))
+        (duplicate PROPOSITION NULL))
     (when (null? bucket)
       (insert-at *structured-objects-index* index (list self))
       (return NULL))
-    (remove-deleted-members bucket)
-    (let ((operator (operator self))
-          (arguments (arguments self))
-          (arity (length arguments))
-          (rewrapped? FALSE))
-      (foreach p in bucket
-          do (typecase p
-               (PROPOSITION
-                (when (and (eql? operator (operator p))
-                           (= arity (length (arguments p))))
-                  (loop ;; since we might have to try again after rewrapping - kludge
-                    (when (or (and function?
-                                   ;; special equality test that ignores the last argument:
-                                   (forall arg1 in arguments
-                                       as arg2 in (arguments p)
-                                       as i in (interval 2 arity) ;; only compare n-1 args
-                                       always (eql? (value-of arg1) (value-of arg2))))
-                              (and (not function?)
-                                   (equivalent-propositions? self p NULL)))
-                      (if (subcontext? homeModule (base-module (home-context p)))
-                          (return p)
-                        (break)))
-                    ;; we failed due to an argument mismatch, see whether we need to rewrap:
-                    (cond (rewrapped?
-                           (break))
-                          (otherwise
-                           (rewrap-proposition-arguments self)
-                           (setq rewrapped? TRUE)
-                           (continue))))))
-             (otherwise NULL))))
+    (setq duplicate (lookup-matching-proposition-in-bucket bucket self NULL))
+    (when (defined? duplicate)
+      (return duplicate))
     (push bucket self)
     (return NULL) ))
 
@@ -3465,7 +3766,23 @@ structure hash code which might be shared by different objects.")
                                    (base-module (home-context p)))))))
     ;; NOTE: if the above gets enabled again, :FUNCTIONs need to be handled here:
     (otherwise
-     (return (find-duplicate-complex-proposition self)))))
+     (let ((store (home-object-store self)))
+       (if (defined? store)
+           (return (fetch-duplicate-proposition store self))
+         (return (find-duplicate-complex-proposition self)))))))
+
+(defun (find-matching-non-descriptive-proposition PROPOSITION) ((self PROPOSITION)
+                                                                (mapping ENTITY-MAPPING))
+  ;; If `self' is descriptive, try to find a matching non-descriptive proposition
+  ;; relative to `mapping' and the current *structured-objects-index*.
+  ;; Otherwise, return `self'.
+  (when (not (descriptive? self))
+    (return self))
+  (let ((index (wrap-integer (proposition-hash-index self mapping TRUE)))
+        (bucket (lookup *structured-objects-index* index)))
+    (if (defined? bucket)
+        (return (lookup-matching-proposition-in-bucket bucket self mapping))
+      (return NULL))))
 
 (defspecial *dont-check-for-duplicate-propositions?* BOOLEAN FALSE
   :documentation "If TRUE never check for the existence of duplicate
@@ -3488,8 +3805,10 @@ propositions when building a new proposition.")
     (surrogatify-discouraged-arguments self))
   (let ((duplicate PROPOSITION NULL))
     (unless (or dontCheckForDuplicates?
-                *dont-check-for-duplicate-propositions?*
-                *loadingRegenerableObjects?*)
+                (and *dont-check-for-duplicate-propositions?*
+                     ;; we always check for function terms, since they are
+                     ;; commonly referenced multiple times:
+                     (not (eql? (kind self) :FUNCTION))))
       (setq duplicate (find-duplicate-proposition self)))
     (if (defined? duplicate)
         (progn
@@ -3522,6 +3841,9 @@ propositions when building a new proposition.")
           (rewrap-proposition-arguments self))
         ;; insert back links from arguments:
         (when (not *loadingRegenerableObjects?*)
+          ;; KLUDGE: in order to avoid adding a proposition more than once for the
+          ;; case of repeated arguments, `add-dependent-proposition-link' does a
+          ;; cheap duplicate check for the most recently added link for `arg':
           (foreach arg in (arguments self)
               do (add-dependent-proposition-link arg self)))
         (update-description-extension self)
@@ -3654,6 +3976,9 @@ propositions when building a new proposition.")
     (CONS (return (CONS.build-proposition tree)))
     (SURROGATE (return (SURROGATE.build-proposition tree)))
     (SYMBOL (return (SYMBOL.build-proposition tree)))
+    ((PATTERN-VARIABLE PROPOSITION)
+     ;; already evaluated:
+     (return tree))
     (otherwise
      (signal-proposition-error "Illegal logical sentence: " tree))))
  
@@ -4053,6 +4378,25 @@ propositions when building a new proposition.")
              do (setf (nth argumentsVector i) arg))
     (return proposition) ))
 
+(defun (conceive-inverted-proposition PROPOSITION) ((prop PROPOSITION))
+  :documentation "Return the simplest inversion of `prop', trying to reuse existing
+negations or negated arguments of `prop' if possible."
+  :public? TRUE
+  (safety 1 (not (eql? (kind prop) :FUNCTION))
+          "INTERNAL ERROR: conceive-inverted-proposition: can't invert function terms: " prop)
+  (when (not (unfastened? prop))
+    (when (eql? (kind prop) :NOT)
+      (return (first (arguments prop))))
+    (foreach parent in (dependent-propositions prop)
+        where (and (eql? (kind parent) :NOT)
+                   (eql? (first (arguments parent)) prop))
+        do (return parent)))
+  ;; we have to create a new proposition:
+  (setq prop (safely-invert-proposition prop))
+  ;; make sure we don't inherit a truth value:
+  (setf (truth-value prop) NULL)
+  (return (recursively-fasten-down-propositions prop FALSE)))
+
 (defun (functional-term? BOOLEAN) ((term OBJECT))
   ;; Return TRUE if 'term' is a functional term of the form
   ;;   '(<slotName> <arg1> ... <argN>)' where <slotName> is not
@@ -4192,10 +4536,13 @@ propositions when building a new proposition.")
     (when explicitHolds?
       (foreach arg in (rest tree)
           as i in (interval 0 NULL)
-          do (setf (nth (arguments proposition) i)
-               (choose (= i 0)
-                       (evaluate-first-argument arg (quote PL-KERNEL/HOLDS))
-                       (evaluate-term arg))))
+          do (cond ((= i 0)
+                    (setq arg (evaluate-first-argument arg (quote PL-KERNEL/HOLDS))))
+                   ((propositional-argument? arg)
+                    (setq arg (evaluate-proposition-term arg)))
+                   (otherwise
+                    (setq arg (evaluate-term arg))))
+             (setf (nth (arguments proposition) i) arg))
       (return proposition))
     ;; This part might be obsolete, since now the KIF translator always
     ;;    generates explicit HOLDS and VALUE propositions:
@@ -4283,7 +4630,13 @@ propositions when building a new proposition.")
   :documentation "If TRUE, automatically coerce propositional arguments of a
 proposition, even if the corresponding argument type of the hosting relation
 doesn't indicate that."
+  :demon-property "powerloom.autoCoercePropositionalArguments"
   :public? TRUE)
+
+(defun (*auto-coerce-propositional-arguments?*-setter BOOLEAN) ((value BOOLEAN))
+  ;; Setter method needed by the property demon.
+  (return (setq *auto-coerce-propositional-arguments?* value)))
+
 
 (defun (propositional-argument? BOOLEAN) ((argument OBJECT))
   ;; Return TRUE if `argument' can be determined to be a tree that represents
@@ -4322,6 +4675,8 @@ doesn't indicate that."
   ;; If 'type' is @PROPOSITION, create a proposition instead of a term.
   (cond
    ((or (eql? type @PROPOSITION)
+        ;; TO DO: improve this for subtypes of @PROPOSITION (e.g., Fluent)
+        ;;    but need to make sure we don't pay the extra cost for everything:
         (and *auto-coerce-propositional-arguments?*
              (propositional-argument? argument)))
     (return (evaluate-proposition-term argument)))
@@ -4393,6 +4748,9 @@ doesn't indicate that."
   (let ((predicateValue  (evaluate-predicate relationName NULL))
         (type SURROGATE NULL)
         (firstArgument OBJECT NULL))
+    (when (null? argument)
+      ;; allow 0-arity terms such as `(listof)':
+      (return NULL))
     (when (and (defined? predicateValue)
                (isa? predicateValue @NAMED-DESCRIPTION))
       (setq type (first (io-variable-types 
@@ -5107,8 +5465,7 @@ the processing and validation."
   ;; Look for an existing function proposition whose input arguments
   ;;    match those in 'proposition'.
   ;; This is now mostly obsolete and handled by `find-duplicate-proposition'.
-  (if (or *loadingRegenerableObjects?*
-          (not (isa? (operator proposition) @SURROGATE))) ; undefined reference?
+  (if (not (isa? (operator proposition) @SURROGATE)) ; undefined reference?
       (return NULL)
     (return (find-duplicate-proposition proposition))))
 
@@ -5146,7 +5503,7 @@ the processing and validation."
         (skolem SKOLEM NULL))
     (when (defined? description)
       (setq type (unwrap-wrapped-type (last (io-variable-types description)))))
-    ;; make sure that the output skolem is in the same context as 'proposition':
+    ;; make sure that the skolem (and its type prop) are in the same context as 'proposition':
     (within-context (home-context proposition)
       (setq skolem (create-variable-or-skolem type NULL)))
     (setf (nth (arguments proposition) (1- argCount)) skolem)
@@ -5232,11 +5589,12 @@ the processing and validation."
       (signal-proposition-error
        "Relation " (description-name (cast predicateValue NAMED-DESCRIPTION))
        " found in function position."))
-    (pushq inputArguments firstArgument)
+    (when (defined? firstArgument) ;; allow 0-arity terms such as `(listof)'
+      (pushq inputArguments firstArgument))
     (when (and (defined? predicateValue)
                (eql? (object-surrogate predicateValue) PL-KERNEL/@SETOF))
       ;; normalize argument order of sets to pick up duplicates:
-      (setq inputArguments (sort inputArguments (the-code :function logic-form-less?))))
+      (setq inputArguments (normalize-setof-arguments inputArguments)))
     (let ((functionProposition
            (find-or-create-function-proposition
             (choose (defined? predicateValue ) 
@@ -5303,15 +5661,19 @@ the processing and validation."
         (otherwise NULL)))
     (return result?) ))
 
+(defun (normalize-setof-arguments CONS) ((args CONS))
+  ;; Sort and uniquify `args' to a SETOF term.
+  (return
+    (sort (remove-duplicates (copy-cons-list args))
+          (the-code :function logic-form-less?))))
+
 (defun (create-enumerated-set SKOLEM) ((set LIST))
   ;; Create a proposition representing 'set' and return its output skolem.
   ;; We don't run this through the complete function-proposition machinery
   ;;    to avoid generating backlinks from all the set elements.
-  (let ((setProp (begin-creating-function-proposition
-                  PL-KERNEL/@SETOF
-                  ;; sort arguments to normalize set terms:
-                  (sort (copy-cons-list (the-cons-list set))
-                        (the-code :function logic-form-less?))))
+  (let ((setElements (normalize-setof-arguments (the-cons-list set)))
+        (setProp
+         (begin-creating-function-proposition PL-KERNEL/@SETOF setElements))
         (duplicate
          (only-if (not (description-mode?))
            ;; this will either find a duplicate or insert
@@ -5320,8 +5682,10 @@ the processing and validation."
         (skolem SKOLEM NULL))
     (when (defined? duplicate)
       (return (last-argument duplicate)))
-    (setq skolem (create-skolem PL-KERNEL/@SET NULL))
-    (setf (nth (arguments setProp) (length set)) skolem)
+    ;; ensure the skolem (and its type prop) are allocated in same context as setProp:
+    (within-context (home-context setProp)
+      (setq skolem (create-skolem PL-KERNEL/@SET NULL)))
+    (setf (nth (arguments setProp) (1- (length (arguments setProp)))) skolem)
     (setf (defining-proposition skolem) setProp)
     (add-dependent-proposition-link skolem setProp)
     (setf (unfastened? setProp) NULL)
@@ -5342,7 +5706,9 @@ the processing and validation."
         (skolem SKOLEM NULL))
     (when (defined? duplicate)
       (return (last-argument duplicate)))
-    (setq skolem (create-skolem PL-KERNEL/@LIST NULL))
+    ;; ensure the skolem (and its type prop) are allocated in same context as listProp:
+    (within-context (home-context listProp)
+      (setq skolem (create-skolem PL-KERNEL/@LIST NULL)))
     (setf (nth (arguments listProp) (length list)) skolem)
     (setf (defining-proposition skolem) listProp)
     (add-dependent-proposition-link skolem listProp)
@@ -5446,7 +5812,7 @@ the processing and validation."
         ((clip-value? term1 term2) NULL)
         ((clip-value? term2 term1) NULL)
         (otherwise
-         (equate-values (value-of term1) (value-of term2)))))
+         (equate-values proposition (value-of term1) (value-of term2)))))
       (:RETRACT-TRUE
        (cond
         ((unequate-values? term1 term2) NULL)
@@ -5859,6 +6225,8 @@ already be defined."
   |#
   (return FALSE))
 
+(defspecial *deferred-terms-to-unlink* HASH-SET NULL)
+
 (defun (destroy-proposition PROPOSITION) ((proposition PROPOSITION))
   :documentation "Retract and destroy the proposition 'proposition'.
 Recursively destroy all propositions that reference 'proposition'.
@@ -5872,15 +6240,20 @@ Also, destroy all satellite propositions of 'proposition'."
     (setf (surrogate-value (surrogate-value-inverse proposition)) NULL))
   ;; remove backlinks from arguments:
   (foreach arg in (arguments proposition)
-           where (and (defined? arg)
-                      (not (deleted? arg)))
-           do
-           ;; if 'proposition' is a defining proposition for a skolem,
-           ;;    eliminate the skolem:
-           (when (and (skolem? arg)
-                      (eql? (defining-proposition (cast arg SKOLEM)) proposition))
-             (destroy-term arg))
-           (remove-dependent-proposition-link arg proposition))
+      where (and (defined? arg)
+                 (not (deleted? arg)))
+      do ;; if 'proposition' is a defining proposition for a skolem,
+         ;;    eliminate the skolem:
+        (when (and (skolem? arg)
+                   (eql? (defining-proposition (cast arg SKOLEM)) proposition))
+          (destroy-term arg))
+        ;; avoid quadratic run-time for terms that are linked to lots of propositions
+        ;; (such as certain numbers, etc.): instead of deleting each proposition with
+        ;; a separate remove call, we simply clear all deleted elements at the end
+        ;; for all deferred terms in `clear-logic-module-hook' below:
+        (if (defined? *deferred-terms-to-unlink*)
+            (insert *deferred-terms-to-unlink* arg)
+          (remove-dependent-proposition-link arg proposition)))
   ;; recursively destroy dependent propositions:
   (foreach dep in (copy (dependent-propositions proposition))
            do (destroy-proposition dep)) 
@@ -6053,21 +6426,33 @@ NULL if no matching object was found."
   ;; Destroy all propositions and terms associated with 'module'
   ;;    and any of its children.
   (within-module module
-    (destroy-inference-caches module)
-    (clear-inline-query-caches)
-    (foreach term in (listify (all-terms module TRUE))
-             do (destroy-instance term))
-    (foreach proposition in (all-propositions module TRUE)
-        do (destroy-proposition proposition))
-    (cleanup-structured-objects-index module)
-    (remove-deleted-members (locally-conceived-propositions module))
-    (remove-deleted-members (locally-conceived-instances module))
-    (cleanup-all-description-extensions)
-    (cleanup-unfinalized-objects)
-    ;; Clear memoization tables so we won't hold on to deleted objects
-    ;;    (unfortunately, this will also cost us some still valid values):
-    (clear-memoization-tables :KB-UPDATE)
-    (clear-memoization-tables :META-KB-UPDATE)))
+    (special ((*deferred-terms-to-unlink* (new HASH-SET)))
+      (destroy-inference-caches module)
+      (clear-inline-query-caches)
+      (foreach term in (listify (all-terms module TRUE))
+          do (destroy-instance term))
+      (foreach proposition in (all-propositions module TRUE)
+          do (destroy-proposition proposition))
+      (foreach term in *deferred-terms-to-unlink*
+          where (not (deleted? term))
+          do (let ((index (get-backlinks-index term)))
+               (when (defined? index)
+                 (remove-deleted-members index))))
+      (cleanup-structured-objects-index module)
+      (remove-deleted-members (locally-conceived-propositions module))
+      (remove-deleted-members (locally-conceived-instances module))
+      (cleanup-all-description-extensions)
+      (cleanup-unfinalized-objects)
+      ;; Clear locally retracted propositions:
+      (foreach proposition in (all-locally-modified-propositions module)
+          do (let ((truthValue (slot-value proposition truth-value :context-sensitive? FALSE)))
+               (when (and (defined? truthValue)
+                          (isa? truthValue @KEY-VALUE-LIST))
+                 (remove-at (cast truthValue KEY-VALUE-LIST) module))))
+      ;; Clear memoization tables so we won't hold on to deleted objects
+      ;;    (unfortunately, this will also cost us some still valid values):
+      (clear-memoization-tables :KB-UPDATE)
+      (clear-memoization-tables :META-KB-UPDATE))))
 
 (startup-time-progn
   (add-hook *clear-module-hooks* (quote clear-logic-module-hook)))
@@ -6176,10 +6561,21 @@ loaded STELLA systems if they do reference PowerLoom symbols in their code."
 	   (return false)))
   (return (< (length o1) (length o2))))
 
-(defun (safe-string-less? BOOLEAN) ((s1 string) (s2 string))
-  ;; Compares the strings `s1' and `s2', correctly handling `null' values.
+(defun (string-term-less? BOOLEAN) ((s1 string) (s2 string))
+  ;; Compares the strings `s1' and `s2' using :ascii-case-normalized collation.
+  ;; All string comparisons below go through these two entry points which allows
+  ;; us to change our mind later on which collation to pick.  Using case-normalized
+  ;; comparison improves things over case-insensitive, since it gives us a definite
+  ;; sort order for strings that are identical except for case.  Without that, we
+  ;; might get randomly fluctuating result orders for such cases depending on the
+  ;; input order before sorting.
+  (return (< (string-compare-case-normalized s1 s2) 0)))
+
+(defun (safe-string-term-less? BOOLEAN) ((s1 string) (s2 string))
+  ;; Compares the strings `s1' and `s2' using :ascii-case-normalized collation
+  ;; also correctly handling `null' values.
   (cond ((and (defined? s1) (defined? s2))
-         (return (string-less? s1 s2)))
+         (return (< (string-compare-case-normalized s1 s2) 0)))
         ((defined? s2)
          (return FALSE))
         (otherwise
@@ -6210,10 +6606,10 @@ loaded STELLA systems if they do reference PowerLoom symbols in their code."
          (return TRUE))))
 
 (defun (object-name-less-than? BOOLEAN) ((o1 LOGIC-OBJECT) (o2 LOGIC-OBJECT))
-  (return (safe-string-less? (object-name o1) (object-name o2))))
+  (return (safe-string-term-less? (object-name o1) (object-name o2))))
 
 (defun (module-name-less-than? BOOLEAN) ((m1 CONTEXT) (m2 CONTEXT))
-  (return (safe-string-less? (context-name m1) (context-name m2))))
+  (return (safe-string-term-less? (context-name m1) (context-name m2))))
 
 (defun (proposition-less-than? BOOLEAN)  ((p1 PROPOSITION) (p2 PROPOSITION))
   ;; Compares two propositions, place by place.  Shorter propositions will
@@ -6226,9 +6622,9 @@ loaded STELLA systems if they do reference PowerLoom symbols in their code."
         (end2 (1- (length arguments2)))
         (a1 OBJECT NULL)
         (a2 OBJECT NULL))
-    (when (string-less? operator1 operator2)
+    (when (string-term-less? operator1 operator2)
       (return true))
-    (when (string-less? operator2 operator1)
+    (when (string-term-less? operator2 operator1)
       (return false))
     (foreach i1 in (interval 0 end1)
         as i2 in (interval 0 end2)
@@ -6379,43 +6775,43 @@ for lists, collections and propositions.  Numbers precede all other values,
        (PROPOSITION 
 	(return (proposition-less-than? o1 o2)))
        (NAMED-DESCRIPTION 
-	(return (string-less? (proposition-head-sort-string o1)
-			      (object-sort-string o2))))
+	(return (string-term-less? (proposition-head-sort-string o1)
+                                   (object-sort-string o2))))
        (DESCRIPTION
 	(return (proposition-less-than? o1 (proposition o2))))
        (otherwise
-	(return (string-less? (proposition-head-sort-string o1)
-			      (object-sort-string o2))))))
+	(return (string-term-less? (proposition-head-sort-string o1)
+                                   (object-sort-string o2))))))
     (NAMED-DESCRIPTION
      (typecase o2
        (PROPOSITION 
-	(return (string-less? (object-sort-string o1)
-			      (proposition-head-sort-string o2))))
+	(return (string-term-less? (object-sort-string o1)
+                                   (proposition-head-sort-string o2))))
        (NAMED-DESCRIPTION 
-	(return (string-less? (object-sort-string o1)
-			      (object-sort-string o2))))
+	(return (string-term-less? (object-sort-string o1)
+                                   (object-sort-string o2))))
        (DESCRIPTION
-	(return (string-less? (object-sort-string o1)
-			      (proposition-head-sort-string (proposition o2)))))
+	(return (string-term-less? (object-sort-string o1)
+                                   (proposition-head-sort-string (proposition o2)))))
        (otherwise
-	(return (string-less? (object-sort-string o1)
-			      (object-sort-string o2))))))
+	(return (string-term-less? (object-sort-string o1)
+                                   (object-sort-string o2))))))
     (DESCRIPTION
      (return (logic-form-less? (proposition o1) o2)))
     (otherwise
      (typecase o2
        (PROPOSITION 
-	(return (not (string-less? (object-sort-string o1)
-				   (proposition-head-sort-string o2)))))
+	(return (not (string-term-less? (object-sort-string o1)
+                                        (proposition-head-sort-string o2)))))
        (NAMED-DESCRIPTION 
-	(return (string-less? (object-sort-string o1)
-			      (object-sort-string o2))))
+	(return (string-term-less? (object-sort-string o1)
+                                   (object-sort-string o2))))
        (DESCRIPTION
-	(return (string-less? (object-sort-string o1)
-			      (proposition-head-sort-string (proposition o2)))))
+	(return (string-term-less? (object-sort-string o1)
+                                   (proposition-head-sort-string (proposition o2)))))
        (otherwise
-	(return (string-less? (object-sort-string o1)
-			      (object-sort-string o2))))))))
+	(return (string-term-less? (object-sort-string o1)
+                                   (object-sort-string o2))))))))
 
 
 

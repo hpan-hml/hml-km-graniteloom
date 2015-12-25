@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2008      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: rdbms.ste,v 1.38 2008/10/24 01:11:35 hans Exp
+;;; Version: rdbms.ste,v 1.39 2014/04/17 22:05:51 hans Exp
 
 ;;; Interface to legacy RDBMS's.
 
@@ -1100,6 +1100,7 @@ a database table or query with various information about its columns, value coer
   ;;    by position to the arguments of `frame's proposition.
   ;; Retrieves the next set of bindings and returns the appropriate
   ;;    result/success keyword.
+  ;; TO DO: finish explanation machinery.
   (let ((arguments (arguments (proposition frame)))
         (iterator (ITERATOR OF CONS) (iterator frame)))
     (ignore lastMove)
@@ -1119,7 +1120,11 @@ a database table or query with various information about its columns, value coer
             do (setq binding (argument-bound-to arg))
                (cond ((null? col)
                       (setq noNulls? FALSE))
-                     ((defined? binding)
+                     ((and (defined? binding)
+                           ;; in `create-sql-from-proposition' we treat skolem args as unbound, hence
+                           ;; we need to check whether the returned value is bindable to them - hmm,
+                           ;; not sure I understand anymore what prompted this:
+                           (not (skolem? binding)))
                       ;; set the corresponding result column to the binding, since we don't
                       ;; really need to check and for arbitrary SQL-query's we don't
                       ;; know whether the returned column value will match the input arg:
@@ -1137,12 +1142,25 @@ a database table or query with various information about its columns, value coer
           ;;    and haven't found anything:
 	  (return :FAILURE))))
     ;; We've made it this far, we must have found a match:
+
+    ;; TO DO: finish this, need to set the truth value here to make the explanation
+    ;; generate correction; also, explanation string isn't quite correct yet:
+    (when (record-justifications?)
+      (record-goal-justification
+       frame
+       (new PRIMITIVE-STRATEGY :strategy :DB-lookup :antecedents NIL)))
     ;; hc: tricky, he advances at the end but only advances twice the
     ;;     very first time around:
     (if (next? iterator)
 	(return :CONTINUING-SUCCESS)
       (progn (set-frame-truth-value frame TRUE-TRUTH-VALUE)
 	     (return :FINAL-SUCCESS)))))
+
+(startup-time-progn
+  (define-explanation-phrase :DB-lookup :technical
+    "by database lookup")
+  (define-explanation-phrase :DB-lookup :lay
+    "because it is stored in database"))
 
 (defun (DBTABLE-specialist KEYWORD) ((frame CONTROL-FRAME) (lastMove KEYWORD))
   ;; Specialist to handle predicates which are defined to map to RDBMS tables.
@@ -1421,10 +1439,10 @@ a database table or query with various information about its columns, value coer
   ;;    selection constraints according to a simplified/easier syntax
   ;;    (compared to the more general #$ template syntax).
   ;; The following constraint idioms are supported:
-  ;;    <ws><column>=<?var><ws>
-  ;;    <ws><column>='<?var>'
-  ;;    <ws><column>="<?var>"
-  ;;    <ws><column>=`<?var>`
+  ;;    <ws><column>[><]=<?var><ws>
+  ;;    <ws><column>[><]='<?var>'
+  ;;    <ws><column>[><]="<?var>"
+  ;;    <ws><column>[><]=`<?var>`
   ;;    <ws><column> {in|IN} <?var><ws>
   ;;    <ws><column> {in|IN} '<?var>'
   ;;    <ws><column> {in|IN} "<?var>"
@@ -1961,12 +1979,18 @@ if it does not yet exist.  If `local?' do not look into any inherited modules."
 	       (return (class.get-description value))
 	       (return value)))
           ((null? instanceRef)
-           (setq instanceRef (intern-surrogate-in-module name module local?))))
+           (unless (eql? (nth name 0) #\() ;; function term?
+             (setq instanceRef (intern-surrogate-in-module name module local?)))))
     (setq typeRef (object-surrogate type))
     (when (eql? typeRef @THING)
       (setq typeRef NULL))
     (within-module module
-      (return (create-logic-instance instanceRef typeRef)))))
+      (if (defined? instanceRef)
+          (return (create-logic-instance instanceRef typeRef))
+        ;; we had a function term:
+        (let ((skolem (evaluate-term (unstringify name))))
+          (assert-isa-proposition skolem typeRef)
+          (return skolem))))))
 
 
 ;;; Query examples:

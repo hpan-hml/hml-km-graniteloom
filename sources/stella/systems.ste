@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2013      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: systems.ste,v 1.52 2010/09/20 21:23:46 hans Exp
+;;; Version: systems.ste,v 1.54 2013/10/22 00:00:06 hans Exp
 
 ;;; Command Interpreter and System Definition 'defsystem'
 
@@ -255,14 +255,20 @@ or raise an error if `error?' is TRUE."
           (return value)))
        (otherwise NULL)))
     (@FLOAT
-     (return (coerce-value-to-float value error?)))
+     (let ((val (coerce-value-to-float value error?)))
+       (if (defined? val)
+           (return val)
+         (return NULL))))
     (@NUMBER
      (typecase value
        ((INTEGER LONG-INTEGER FLOAT)
         (return value))
        (otherwise NULL)))
     (@STRING
-     (return (coerce-value-to-string value error?)))
+     (let ((val (coerce-value-to-string value error?)))
+       (if (defined? val)
+           (return val)
+         (return NULL))))
     (@KEYWORD
      (typecase value
        ((GENERALIZED-SYMBOL STRING-WRAPPER)
@@ -1234,6 +1240,21 @@ be called once all files have been loaded."
 	  collect startupForm into startupForms))
     (return startupForms))))
 
+(defun (collect-defined-modules-from-system-file (CONS OF MODULE)) ((system SYSTEM-DEFINITION))
+  ;; Collect the list of modules defined by `system's definition file.
+  (let ((startupForms (collect-startup-forms-from-system-file system))
+        (module MODULE NULL)
+        (modules (CONS OF MODULE) NIL))
+    (foreach form in startupForms
+        where (eql? (second form) :modules)
+        do (foreach def in (rest (rest form))
+               where (and (cons? def)
+                          (eql? (first (cast def CONS)) (quote DEFINE-MODULE-FROM-STRINGIFIED-SOURCE)))
+               do (setq module (get-stella-module (second (cast def CONS)) FALSE))
+                  (when (defined? module)
+                    (pushq modules module))))
+    (return (reverse modules))))
+
 (defun create-system-startup-file ((system SYSTEM-DEFINITION))
   ;; Create a system startup file whose startup function calls all relevant
   ;;    system startup code.
@@ -1534,8 +1555,9 @@ value."
               (save-configuration-value out value)
               (print-stream out EOL)))))))
 
-(defun (lookup-configuration-property OBJECT)
-    ((property STRING) (defaultValue WRAPPER) (configuration CONFIGURATION-TABLE))
+(defun (lookup-configuration-property OBJECT) ((property STRING)
+                                               (defaultValue OBJECT)
+                                               (configuration CONFIGURATION-TABLE))
   :documentation "Lookup `property' in `configuration' and return its value.
 Use the global system configuration table if `configuration' is NULL.  Return
 `defaultValue' if `property' is not defined."
@@ -1572,6 +1594,7 @@ Use the global system configuration table if `configuration' is NULL."
   (when (null? configuration)
     (setq configuration *system-configuration-table*))
   (insert-at configuration property value)
+  (run-configuration-property-demon :SET property value configuration)
   (return value))
 
 (defun (add-configuration-property OBJECT)
@@ -1588,6 +1611,7 @@ Use the global system configuration table if `configuration' is NULL."
              (concatenate
                (consify (first-defined (lookup configuration property) NIL))
                (cons value NIL)))
+  (run-configuration-property-demon :ADD property value configuration)
   (return value))
 
 (defun (clear-configuration-property OBJECT)
@@ -1600,6 +1624,7 @@ Use the global system configuration table if `configuration' is NULL."
     (setq configuration *system-configuration-table*))
   (let ((current-value (lookup configuration property)))
     (remove-at configuration property)
+    (run-configuration-property-demon :CLEAR property current-value configuration)
     (return current-value)))
 
 (defun (remove-configuration-property OBJECT)
@@ -1614,6 +1639,7 @@ Use the global system configuration table if `configuration' is NULL."
       (insert-at configuration
                  property
                  (remove current-value value)))
+    (run-configuration-property-demon :REMOVE property value configuration)
     (return value)))
 
 (defun print-configuration-properties ((configuration CONFIGURATION-TABLE) (stream OUTPUT-STREAM))
@@ -1679,6 +1705,108 @@ standard output."
          "# Loaded System Configuration" EOL)
   (print-configuration-properties *system-configuration-table* STANDARD-OUTPUT)
   (print "------------------------------------------------------------" EOL))
+
+
+;;; Property Demons
+
+;;; Property demons allow property changes to trigger function calls, for example,
+;;; to change associated system variables, etc.
+
+(defglobal *registered-property-demons* (KEY-VALUE-MAP OF STRING-WRAPPER MAPPABLE-OBJECT)
+           (new KEY-VALUE-MAP))
+
+(defun register-property-demon ((property STRING) (demonName SYMBOL))
+  :documentation "Register the function named `demonName' as the demon for `property'.
+Demons will be run as after demons on every configuration table update.  Set the
+property `stella.test.propertyDemon' to see a test demon in action."
+  :public? TRUE
+  (let ((demon MAPPABLE-OBJECT (lookup-function demonName)))
+    (when (null? demon)
+      (setq demon (lookup-global-variable demonName)))
+    (if (defined? demon)
+        (insert-at *registered-property-demons* property demon)
+      (error "register-property-demon: cannot find a function or variable with this name: "
+             demonName))))
+
+(defun unregister-property-demon ((property STRING))
+  :documentation "Unregister any demon for `property'."
+  :public? TRUE
+  (remove-at *registered-property-demons* property))
+
+(defun (lookup-variable-demon-setter METHOD-SLOT) ((demon GLOBAL-VARIABLE))
+  ;; Since we currently don't create getter/setter methods for global variables, we simply
+  ;; look for a function whose name is <variable-name>-setter.
+  (let ((variableName (variable-name demon))
+        (postfix (choose (case-sensitive? (home-module demon)) "-setter" "-SETTER"))
+        (setterName (intern-derived-symbol variableName (concatenate (symbol-name variableName) postfix))))
+    (return (lookup-function setterName))))
+
+(defun run-configuration-property-demon ((action KEYWORD) (property STRING) (value OBJECT) (table CONFIGURATION-TABLE))
+  ;; If a demon is registered for `property', run it on the four arguments.
+  (let ((demon (lookup *registered-property-demons* property)))
+    (typecase demon
+      (METHOD-SLOT
+       (funcall (function-code demon) action property value table))
+      (GLOBAL-VARIABLE
+       ;; for global variable we require a setter method and need some smart value coercion:
+       (let ((setter (lookup-variable-demon-setter demon)))
+         (cond ((defined? setter)
+                ;; the setter method doesn't know how to handle `action', so simply use the current value:
+                (setq value (lookup-configuration-property property NULL table))
+                (let ((variableType
+                       (type-spec-to-base-type (global-variable-type-spec demon)))
+                      (coercedValue
+                       (choose (defined? value)
+                               (coerce-value-to-type value variableType FALSE)
+                               NULL)))
+                  (when (and (defined? value)
+                             (null? coercedValue))
+                    (warn "run-configuration-property-demon: cannot coerce " value " to type " variableType)
+                    (return))
+                  ;(print "Setting " (variable-name demon) " to " coercedValue " via " (slot-name setter) EOL)
+                  (case variableType
+                    (@INTEGER (funcall (function-code setter) (unwrap-integer coercedValue)))
+                    (@LONG-INTEGER (funcall (function-code setter) (unwrap-integer coercedValue)))
+                    (@FLOAT (funcall (function-code setter) (unwrap-float coercedValue)))
+                    (@STRING (funcall (function-code setter) (unwrap-integer coercedValue)))
+                    (@BOOLEAN (funcall (function-code setter) (unwrap-integer coercedValue)))
+                    (otherwise (funcall (function-code setter) coercedValue)))))
+               (otherwise
+                (warn "run-configuration-property-demon: cannot find setter function for "
+                      (variable-name demon))))))
+      (otherwise NULL))))
+
+(defslot METHOD-SLOT demon-property :type STRING
+         :option-keyword :demon-property :option-handler demon-property-handler
+         :documentation "Holds the property monitored by a demon function.  This slot is primarily used
+to allow us the use of the :demon-property option handler for demon registration.")
+
+(defslot GLOBAL-VARIABLE demon-property :type STRING
+         :option-keyword :demon-property :option-handler demon-property-handler
+         :documentation "Holds the property monitored by a demon for this variable.  This slot is
+primarily used to allow us the use of the :demon-property option handler for demon registration.")
+
+(defun demon-property-handler ((demon MAPPABLE-OBJECT) (slot STORAGE-SLOT) (property OBJECT))
+  ;; Handler for the :demon-property option which registers `demon' for `property' as a side-effect.
+  (default-option-handler demon slot property)
+  (insert-at *registered-property-demons* (coerce-to-string property) demon))
+
+
+(defun test-property-demon ((action KEYWORD) (property STRING) (value OBJECT) (table CONFIGURATION-TABLE))
+  :documentation "A test demon for the property demon machinery which simply prints arguments."
+  :public? TRUE ;:demon-property "stella.test.propertyDemon"
+  (ignore table)
+  (print "test-property-demon: action=" action
+         ", property=" property
+         ", value-arg=" value
+         ", prop-value=" (lookup-configuration-property property NULL table)
+         EOL))
+
+(startup-time-progn
+  ;; Since we can't define this with the :demon-property option syntax yet (we are too early in the
+  ;; bootstrap for the METHOD-SLOT.demon-property slot option handler to be defined), we do it
+  ;; explicitly with a startup-time-progn:
+  (register-property-demon "stella.test.propertyDemon" (quote test-property-demon)))
 
 
   ;;

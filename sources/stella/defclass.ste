@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: defclass.ste,v 1.89 2008/08/04 21:27:58 hans Exp
+;;; Version: defclass.ste,v 1.90 2014/04/17 19:16:30 hans Exp
 
 ;;; Support for defining STELLA classes.
 
@@ -272,6 +272,28 @@ a Stella class object."
     (unknown-type?
      (type-spec-to-base-type
       (compute-return-type-spec slot (class-type class))))))
+
+#|
+;;; Improved but still not fully general, since we have to recurse to the
+;;; full depth of a parametric or anchored type specifier; we really need
+;;; a `unknown-type-specifier?' function and also generalize
+;;; `native-storage-slot-home' to handle cases where a class has a slot
+;;; of type (array () of (like (any-value self))) where the parameter
+;;; type is unknown.
+
+(defun (slot-has-unknown-type? BOOLEAN) ((slot STORAGE-SLOT) (class CLASS))
+  ;; Return TRUE if the type of 'class.slot' is unknown.
+  (let ((returnType (compute-return-type-spec slot (class-type class))))
+    (typecase returnType
+      (TYPE
+       (return (unknown-type? returnType)))
+      (PARAMETRIC-TYPE-SPECIFIER
+       (return (or (unknown-type? (specifier-base-type returnType))
+                   (exists pType in (specifier-parameter-types returnType)
+                     where (unknown-type? (type-spec-to-base-type pType))))))
+      (otherwise
+       (return (unknown-type? (type-spec-to-base-type returnType)))))))
+|#
 
 (defun (native-storage-slot-home CLASS) ((slot STORAGE-SLOT) (class CLASS))
   ;; Assume 'slot' is a native storage slot defined on 'class'.

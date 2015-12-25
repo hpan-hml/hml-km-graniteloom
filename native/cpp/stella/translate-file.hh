@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -91,6 +91,7 @@ char* fileNameDirectory(char* file);
 char* directoryFileName(char* directory);
 char* fileNameAsDirectory(char* file);
 char* directoryParentDirectory(char* directory, int level);
+char* fileNameWithoutDevice(char* file);
 char* fileNameWithoutDirectory(char* file);
 char* fileNameWithoutExtension(char* file);
 char* fileExtension(char* file);
@@ -151,6 +152,7 @@ extern Keyword* KWD_TRANSLATE_FILE_TRANSLATE_WITH_COPYRIGHT_HEADER;
 extern Keyword* KWD_TRANSLATE_FILE_WINDOWS;
 extern Keyword* KWD_TRANSLATE_FILE_UNIX;
 extern Keyword* KWD_TRANSLATE_FILE_MAC;
+extern Keyword* KWD_TRANSLATE_FILE_LETTER;
 extern Keyword* KWD_TRANSLATE_FILE_ROOT_DIRECTORY;
 extern Keyword* KWD_TRANSLATE_FILE_LISP_TRANSLATIONS;
 extern Keyword* KWD_TRANSLATE_FILE_STELLA;

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -842,7 +842,7 @@ void prettyPrintClassOptions(Class* clasS, OutputStream* stream) {
   { Object* optionvalue = NULL;
 
     { StorageSlot* optionslot = NULL;
-      Cons* iter000 = oCLASSOPTIONSLOTSo.get();
+      Cons* iter000 = oCLASSOPTIONSLOTSo;
 
       for (optionslot, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         optionslot = ((StorageSlot*)(iter000->value));
@@ -907,7 +907,7 @@ void prettyPrintClassOptions(Class* clasS, OutputStream* stream) {
                   BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
                   BIND_STELLA_SPECIAL(oPRINTPRETTYpo, boolean, true);
                   *(stream->nativeStream) << std::endl << "  :" << stringDowncase(((Keyword*)(dynamicSlotValue(optionslot->dynamicSlots, SYM_DESCRIBE_STELLA_SLOT_OPTION_KEYWORD, NULL)))->symbolName) << " ";
-                  *(stream->nativeStream) << oCLASSUNSTRINGIFIEDOPTIONSo.get()->lookup(((Keyword*)(dynamicSlotValue(optionslot->dynamicSlots, SYM_DESCRIBE_STELLA_SLOT_OPTION_KEYWORD, NULL))));
+                  *(stream->nativeStream) << oCLASSUNSTRINGIFIEDOPTIONSo->lookup(((Keyword*)(dynamicSlotValue(optionslot->dynamicSlots, SYM_DESCRIBE_STELLA_SLOT_OPTION_KEYWORD, NULL))));
                 }
               }
             }
@@ -940,7 +940,7 @@ void prettyPrintSlotOptions(StorageSlot* slot, OutputStream* stream) {
   { Object* slotvalue = NULL;
 
     { StorageSlot* optionslot = NULL;
-      Cons* iter000 = oSLOTOPTIONSLOTSo.get();
+      Cons* iter000 = oSLOTOPTIONSLOTSo;
 
       for (optionslot, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
         optionslot = ((StorageSlot*)(iter000->value));
@@ -1344,7 +1344,7 @@ void helpStartupDescribe2() {
 void startupDescribe() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupDescribe1();
     }

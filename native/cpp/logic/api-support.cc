@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -88,7 +88,7 @@ Iterator* allPropositions(Module* module, boolean localP) {
   // If `local?', only return propositions conceived locally in `module'.
   { AllPurposeIterator* self000 = newAllPurposeIterator();
 
-    self000->iteratorObject = (localP ? list(0) : visibleModules(module)->rest->listify()->reverse());
+    self000->iteratorObject = (localP ? list(0) : copyConsList(visibleModules(module)->rest)->reverse()->listify());
     self000->iteratorNestedIterator = locallyConceivedPropositions(module)->allocateIterator();
     self000->iteratorNextCode = ((cpp_function_code)(&allPropositionsNextP));
     { AllPurposeIterator* value000 = self000;
@@ -99,8 +99,19 @@ Iterator* allPropositions(Module* module, boolean localP) {
 }
 
 boolean filterInconsistentPropositionP(Object* self, AllPurposeIterator* iterator) {
-  iterator = iterator;
-  return (inconsistentP(((Proposition*)(self))));
+  { Module* module = ((Module*)(iterator->iteratorObject));
+
+    { 
+      BIND_STELLA_SPECIAL(oCONTEXTo, Context*, NULL);
+      BIND_STELLA_SPECIAL(oMODULEo, Module*, NULL);
+      { World* temp000 = bestInferenceCache(module);
+
+        oCONTEXTo = (((boolean)(temp000)) ? ((Context*)(temp000)) : ((Context*)(module)));
+      }
+      oMODULEo = oCONTEXTo->baseModule;
+      return (inconsistentP(((Proposition*)(self))));
+    }
+  }
 }
 
 Iterator* allInconsistentPropositions(Module* module, boolean localP) {
@@ -110,10 +121,62 @@ Iterator* allInconsistentPropositions(Module* module, boolean localP) {
   { Iterator* propositionsIterator = allPropositions(module, localP);
     AllPurposeIterator* iterator = newAllPurposeIterator();
 
+    iterator->iteratorObject = module;
     iterator->firstIterationP = true;
     iterator->iteratorNestedIterator = propositionsIterator;
     iterator->iteratorNextCode = ((cpp_function_code)(&filteredNestedIteratorNextP));
     iterator->iteratorFilterCode = ((cpp_function_code)(&filterInconsistentPropositionP));
+    return (iterator);
+  }
+}
+
+boolean locallyModifiedPropositionP(Proposition* proposition, Module* module) {
+  // Return true if proposition's truth-value has been locally modified in
+  // `module' (initialized, asserted, retracted).  This will always succeed for locally conceived
+  // propositions regardless of whether their truth value is defined or not.
+  { Object* truthvalue = proposition->truthValue;
+
+    if ((!((boolean)(truthvalue))) ||
+        isaP(truthvalue, SGT_API_SUPPORT_LOGIC_TRUTH_VALUE)) {
+      return (proposition->homeModule() == module);
+    }
+    else {
+      { Object* ctxt = NULL;
+        Object* tv = NULL;
+        KvCons* iter000 = ((KeyValueList*)(truthvalue))->theKvList;
+
+        for  (ctxt, tv, iter000; 
+              ((boolean)(iter000)); 
+              iter000 = iter000->rest) {
+          ctxt = iter000->key;
+          tv = iter000->value;
+          tv = tv;
+          if (ctxt == module) {
+            return (true);
+          }
+        }
+      }
+    }
+    return (false);
+  }
+}
+
+boolean filterLocallyModifiedPropositionP(Object* self, AllPurposeIterator* iterator) {
+  return (locallyModifiedPropositionP(((Proposition*)(self)), ((Module*)(iterator->iteratorObject))));
+}
+
+Iterator* allLocallyModifiedPropositions(Module* module) {
+  // Iterate over all conceived propositions visible from `module' that had their
+  // truth value locally modified (initialized, asserted, retracted).  Note, that this
+  // will always include all locally conceived propositions.
+  { Iterator* propositionsIterator = allPropositions(module, false);
+    AllPurposeIterator* iterator = newAllPurposeIterator();
+
+    iterator->iteratorObject = module;
+    iterator->firstIterationP = true;
+    iterator->iteratorNestedIterator = propositionsIterator;
+    iterator->iteratorNextCode = ((cpp_function_code)(&filteredNestedIteratorNextP));
+    iterator->iteratorFilterCode = ((cpp_function_code)(&filterLocallyModifiedPropositionP));
     return (iterator);
   }
 }
@@ -184,14 +247,7 @@ Iterator* allUnnamedTerms(Module* module, boolean localP) {
         }
       }
     }
-    { List* self000 = newList();
-
-      self000->theConsList = termswithduplicates->removeDuplicates();
-      { Iterator* value000 = self000->allocateDestructiveListIterator();
-
-        return (value000);
-      }
-    }
+    return (terms->concatenate(termswithduplicates->removeDuplicates(), 0)->allocateIterator());
   }
 }
 
@@ -386,8 +442,9 @@ LogicObject* stringToLogicObject(char* string) {
 void startupApiSupport() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
+      SGT_API_SUPPORT_LOGIC_TRUTH_VALUE = ((Surrogate*)(internRigidSymbolWrtModule("TRUTH-VALUE", NULL, 1)));
       SGT_API_SUPPORT_LOGIC_LOGIC_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("LOGIC-OBJECT", NULL, 1)));
       SGT_API_SUPPORT_LOGIC_PATTERN_VARIABLE = ((Surrogate*)(internRigidSymbolWrtModule("PATTERN-VARIABLE", NULL, 1)));
       SGT_API_SUPPORT_LOGIC_SKOLEM = ((Surrogate*)(internRigidSymbolWrtModule("SKOLEM", NULL, 1)));
@@ -406,6 +463,9 @@ void startupApiSupport() {
       defineFunctionObject("ALL-PROPOSITIONS", "(DEFUN (ALL-PROPOSITIONS (ITERATOR OF PROPOSITION)) ((MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Iterate over all conceived propositions visible from `module'.\nOnly propositions that haven't been deleted will be considered.\nIf `local?', only return propositions conceived locally in `module'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allPropositions)), NULL);
       defineFunctionObject("FILTER-INCONSISTENT-PROPOSITION?", "(DEFUN (FILTER-INCONSISTENT-PROPOSITION? BOOLEAN) ((SELF OBJECT) (ITERATOR ALL-PURPOSE-ITERATOR)))", ((cpp_function_code)(&filterInconsistentPropositionP)), NULL);
       defineFunctionObject("ALL-INCONSISTENT-PROPOSITIONS", "(DEFUN (ALL-INCONSISTENT-PROPOSITIONS (ITERATOR OF PROPOSITION)) ((MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Iterate over all conceived propositions visible from `module'\nthat have an inconsistent truth value.  If `local?', only return\ninconsistent propositions conceived locally in `module'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allInconsistentPropositions)), NULL);
+      defineFunctionObject("LOCALLY-MODIFIED-PROPOSITION?", "(DEFUN (LOCALLY-MODIFIED-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION) (MODULE MODULE)) :DOCUMENTATION \"Return true if proposition's truth-value has been locally modified in\n`module' (initialized, asserted, retracted).  This will always succeed for locally conceived\npropositions regardless of whether their truth value is defined or not.\" :PUBLIC? TRUE)", ((cpp_function_code)(&locallyModifiedPropositionP)), NULL);
+      defineFunctionObject("FILTER-LOCALLY-MODIFIED-PROPOSITION?", "(DEFUN (FILTER-LOCALLY-MODIFIED-PROPOSITION? BOOLEAN) ((SELF OBJECT) (ITERATOR ALL-PURPOSE-ITERATOR)))", ((cpp_function_code)(&filterLocallyModifiedPropositionP)), NULL);
+      defineFunctionObject("ALL-LOCALLY-MODIFIED-PROPOSITIONS", "(DEFUN (ALL-LOCALLY-MODIFIED-PROPOSITIONS (ITERATOR OF PROPOSITION)) ((MODULE MODULE)) :DOCUMENTATION \"Iterate over all conceived propositions visible from `module' that had their\ntruth value locally modified (initialized, asserted, retracted).  Note, that this\nwill always include all locally conceived propositions.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allLocallyModifiedPropositions)), NULL);
       defineFunctionObject("VISIBLE-TERM?", "(DEFUN (VISIBLE-TERM? BOOLEAN) ((TERM LOGIC-OBJECT) (CONTEXT CONTEXT) (LOCAL? BOOLEAN)))", ((cpp_function_code)(&visibleTermP)), NULL);
       defineFunctionObject("ALL-UNNAMED-TERMS", "(DEFUN (ALL-UNNAMED-TERMS ITERATOR) ((MODULE MODULE) (LOCAL? BOOLEAN)) :DOCUMENTATION \"Iterate over all unnamed terms visible from `module'.  A term can be\nan instance (or individual) as well as a description.  Only terms that\nhaven't been deleted will be considered.  If `local?', only return\nterms created locally in `module'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&allUnnamedTerms)), NULL);
       defineFunctionObject("NAMED-TERM?", "(DEFUN (NAMED-TERM? BOOLEAN) ((TERM OBJECT) (ITER ALL-PURPOSE-ITERATOR)))", ((cpp_function_code)(&namedTermP)), NULL);
@@ -431,6 +491,8 @@ void startupApiSupport() {
     }
   }
 }
+
+Surrogate* SGT_API_SUPPORT_LOGIC_TRUTH_VALUE = NULL;
 
 Surrogate* SGT_API_SUPPORT_LOGIC_LOGIC_OBJECT = NULL;
 

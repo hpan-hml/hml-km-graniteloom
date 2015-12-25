@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -427,6 +427,9 @@ double base60ToFloat(Cons* l) {
 
 int random(int n) {
   // Generate a random integer in the interval [0..n-1].
+  // The random number generator is seeded based on the current time every
+  // time STELLA starts up; however, your mileage may vary depending on
+  // the native language implementation.
   { int rnum = ::random() % n;
 
     return (rnum);
@@ -434,7 +437,7 @@ int random(int n) {
 }
 
 void seedRandomNumberGenerator() {
-  // Seeds the random number generator with the current time.
+  // Seeds the random number generator based on the current time.
   ::srandom(time(NULL));;
 }
 
@@ -478,6 +481,10 @@ double atan2(double x, double y) {
   return (::atan2(x,y));
 }
 
+// 1 / (log 2) Reciprocal of the Log base e of 2.
+// Used for log 2 conversions.
+double RECIPROCAL_NL2 = NULL_FLOAT;
+
 // 1 / (log 10) Reciprocal of the Log base e of 10.
 // Used for log 10 conversions.
 double RECIPROCAL_NL10 = NULL_FLOAT;
@@ -485,6 +492,11 @@ double RECIPROCAL_NL10 = NULL_FLOAT;
 double log(double n) {
   // Return the natural logarithm (base e) of `n'.
   return (::log(n));
+}
+
+double log2(double n) {
+  // Return the logarithm (base 2) of `n'.
+  return (::log(n) * RECIPROCAL_NL2);
 }
 
 double log10(double n) {
@@ -1064,6 +1076,107 @@ boolean stringGreaterP(char* x, char* y) {
   return (stringCompare(x, y, false) > 0);
 }
 
+int stringCompareCaseNormalized(char* x, char* y) {
+  // Compare `x' and `y' and return -1, 0, or 1, depending on whether
+  // `x' is less than, equal, or greater than `y' relative to the :ascii-case-normalized
+  // collation.  In this collation `a < A < b' which gives strings that only differ in case a
+  // definite order while otherwise behaving identically to :ascii-case-insensitive.  This is
+  // similar to using a Java Collator for Locale.US with strength set to TERTIARY (which see).
+  { int xlength = strlen(x);
+    int ylength = strlen(y);
+    char xch = NULL_CHARACTER;
+    char ych = NULL_CHARACTER;
+
+    { int i = NULL_INTEGER;
+      int iter000 = 0;
+      int upperBound000 = stella::integerMin(xlength, ylength) - 1;
+
+      for  (i, iter000, upperBound000; 
+            iter000 <= upperBound000; 
+            iter000 = iter000 + 1) {
+        i = iter000;
+        xch = x[i];
+        ych = y[i];
+        if (!(xch == ych)) {
+          { char xchdown = oCHARACTER_DOWNCASE_TABLEo[((int)(unsigned char) xch)];
+            char ychdown = oCHARACTER_DOWNCASE_TABLEo[((int)(unsigned char) ych)];
+
+            if (xchdown == ychdown) {
+              if ((int)(unsigned char) xch < (int)(unsigned char) ych) {
+                return (1);
+              }
+              else {
+                return (-1);
+              }
+            }
+            else {
+              if ((int)(unsigned char) xchdown < (int)(unsigned char) ychdown) {
+                return (-1);
+              }
+              else {
+                return (1);
+              }
+            }
+          }
+        }
+      }
+    }
+    if (xlength == ylength) {
+      return (0);
+    }
+    else if (xlength < ylength) {
+      return (-1);
+    }
+    else {
+      return (1);
+    }
+  }
+}
+
+int compareStrings(char* x, char* y, Keyword* collation) {
+  // Compare `x' and `y' and return -1, 0, or 1, depending on whether
+  // `x' is less than, equal, or greater than `y' relative to `collation'.  Currently
+  // supported values for `collation' are :ascii-case-sensitive, :ascii-case-insensitive
+  // :ascii-case-normalized.  The first two correspond to `string-compare' called with
+  // the appropriate third argument.  :ascii-case-normalized calls the function
+  // `string-compare-case-normalized' (which see).
+  if (collation == KWD_PRIMAL_ASCII_CASE_SENSITIVE) {
+    return (stringCompare(x, y, true));
+  }
+  else if (collation == KWD_PRIMAL_ASCII_CASE_INSENSITIVE) {
+    return (stringCompare(x, y, false));
+  }
+  else if (collation == KWD_PRIMAL_ASCII_CASE_NORMALIZED) {
+    return (stringCompareCaseNormalized(x, y));
+  }
+  else {
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "compare-strings: unsupported collation: " << "`" << collation << "'";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
+}
+
+int safeCompareStrings(char* x, char* y, Keyword* collation) {
+  // Variant of `compare-strings' that also tolerates NULL values.
+  // NULL sorts after everything else in any collation.
+  if (x == NULL) {
+    if (y == NULL) {
+      return (0);
+    }
+    else {
+      return (1);
+    }
+  }
+  else if (y == NULL) {
+    return (-1);
+  }
+  else {
+    return (compareStrings(x, y, collation));
+  }
+}
+
 char* makeMutableString(int size, char initchar) {
   // Return a new mutable string filled with `size' `initchar's.
   return (makeString(size, initchar));
@@ -1401,9 +1514,80 @@ char* stringTrim(char* string) {
   }
 }
 
+char* intToString(int i) {
+  // Convert `i' to its string representation and return the result.
+  // This is a convenience function that expects regular integers as opposed to longs
+  // which is useful in contexts where we do automatic unwrapping based on the target.
+  return (integerToString(((long long int)(i))));
+}
+
 char* characterToString(char c) {
   // Convert `c' into a one-element string and return the result.
   return (makeString(1, c));
+}
+
+char* stellaIntegerToStringInBase(long long int integer, int base) {
+  // STELLA version of `integer-to-string-in-base' which is faster than
+  // the C++ version we have but slower than the native Java version.
+  if (!((base >= 2) &&
+      (base <= 36))) {
+    std::cerr << "Safety violation: " << "integer-to-string-in-base: illegal base: " << "`" << base << "'";
+  }
+  if (integer == 0) {
+    return ("0");
+  }
+  { int offset = ((integer < 0) ? 1 : 0);
+
+    if (offset == 1) {
+      integer = 0 - integer;
+    }
+    { int integerbits = integerLength(integer);
+      int basebits = integerLength(((long long int)(base)));
+      int bufferlength = offset + (integerbits / (basebits - 1)) + 1;
+      char* buffer = makeRawMutableString(bufferlength);
+      int index = bufferlength;
+      char* table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      long long int remainder = 0l;
+      int digit = 0;
+      int base1 = base - 1;
+
+      if ((base & base1) == 0) {
+        basebits = basebits - 1;
+        while (integer > 0) {
+          index = index - 1;
+          digit = ((int)((integer & (((long long int)(base1))))));
+          integer = (integer >> basebits);
+          buffer[index] = (table[digit]);
+        }
+      }
+      else {
+        while (integer > 0) {
+          index = index - 1;
+          remainder = (integer / (((long long int)(base))));
+          digit = ((int)(integer - (remainder * base)));
+          integer = remainder;
+          buffer[index] = (table[digit]);
+        }
+      }
+      if (offset == 1) {
+        index = index - 1;
+        buffer[index] = '-';
+      }
+      if (index == 0) {
+        return (buffer);
+      }
+      else {
+        return (mutableStringSubsequence(buffer, index, bufferlength));
+      }
+    }
+  }
+}
+
+int stringToInt(char* string) {
+  // Convert a `string' representation of an integer into an integer.
+  // This is a convenience function that ensures a regular integer return value.  If
+  // `string' represents a long integer, the behavior is undefined.
+  return (((int)(stringToInteger(string))));
 }
 
 char* formatWithPadding(char* input, int length, char padchar, Keyword* align, boolean truncateP) {
@@ -2231,7 +2415,7 @@ int IntegerWrapper::hashCode() {
 int LongIntegerWrapper::hashCode() {
   { LongIntegerWrapper* self = this;
 
-    return (((int)(self->wrapperValue)));
+    return (((int)(((((self->wrapperValue) ^ (((self->wrapperValue) >> 32)))) & (((long long int)(MOST_POSITIVE_INTEGER)))))));
   }
 }
 
@@ -2265,7 +2449,7 @@ int integerHashCode(int self) {
 }
 
 int longIntegerHashCode(long long int self) {
-  return (((int)(self)));
+  return (((int)((((self ^ ((self >> 32)))) & (((long long int)(MOST_POSITIVE_INTEGER)))))));
 }
 
 int floatHashCode(double self) {
@@ -2433,10 +2617,37 @@ void unmake(Object* self) {
   self = self;
 }
 
+# include <dirent.h>
+boolean nativeProbeDirectoryP(char* filename) {
+  // Return true if file `fileName' exists and is a directory.
+  // Note that this does not necessarily mean that the directory can also be read.
+  // This does not handle any necessary pathname translations or error conditions.
+  { boolean result = false;
+
+    DIR *dirptr;
+         dirptr = opendir(filename);
+         if (dirptr != NULL) {
+            result=true;
+            closedir(dirptr);
+         };
+    return (result);
+  }
+}
+
 boolean probeFileP(char* filename) {
   // Return true if file `fileName' exists.  Note that this does
   // not necessarily mean that the file can also be read.
+  // IMPORTANT Java idiosyncrasy: if file `foo/bar' exists and is not a directory,
+  // Java will also say `foo/bar/' exists, which is different behavior than in Lisp
+  // and C++.  For this reason, make sure to always use `probe-directory?' to test
+  // whether a directory exists.
   return (nativeProbeFileP(translateLogicalPathname(filename)));
+}
+
+boolean probeDirectoryP(char* filename) {
+  // Return true if file `fileName' exists and is a directory.
+  // Note that this does not necessarily mean that the directory can also be read.
+  return (nativeProbeDirectoryP(translateLogicalPathname(filename)));
 }
 
 CalendarDate* fileWriteDate(char* filename) {
@@ -2544,6 +2755,36 @@ catch (...) {
   }
 }
 
+char* getTempDirectory() {
+  // Return a suitable directory for temporary files.
+  // Uses the value of `stella.tempDirectory' if defined; otherwise, it
+  // will use a suitable OS-specific default.  The returned directory will
+  // end in a separator for immediate concatenation with a physical filename.
+  { Object* dir = getProperty(wrapString("stella.tempDirectory"), NIL);
+
+    if (!((boolean)(dir))) {
+      { Keyword* testValue000 = operatingSystem();
+
+        if ((testValue000 == KWD_PRIMAL_UNIX) ||
+            (testValue000 == KWD_PRIMAL_MAC)) {
+          dir = wrapString("/tmp/");
+        }
+        else if (testValue000 == KWD_PRIMAL_WINDOWS) {
+          dir = wrapString("C:\\WINDOWS\\TEMP\\");
+        }
+        else {
+          { OutputStringStream* stream000 = newOutputStringStream();
+
+            *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+            throw *newStellaException(stream000->theStringReader());
+          }
+        }
+      }
+    }
+    return (((StringWrapper*)(dir))->wrapperValue);
+  }
+}
+
 char* makeTemporaryFileName(char* prefix, char* suffix) {
   // Return a file name of the form `<prefix>NNNNNN<suffix>'
   // which is guaranteed to not refer to any existing file.  A null `prefix'
@@ -2582,7 +2823,6 @@ char* makeTemporaryFileName(char* prefix, char* suffix) {
 
 Cons* clListDirectoryFiles(char* directory) {
   { Cons* files = NULL;
-    int dirnamelength = strlen(directory);
     char* dirsep = directorySeparatorString();
     boolean checkduplicatesP = false;
     char* normfile = NULL;
@@ -2604,12 +2844,10 @@ Cons* clListDirectoryFiles(char* directory) {
             iter000 = iter000->rest) {
         file = ((StringWrapper*)(iter000->value));
         normfile = file->wrapperValue;
-        if (startsWithP(normfile, directory, 0)) {
-          normfile = stringSubsequence(normfile, dirnamelength, NULL_INTEGER);
-        }
         if (endsWithP(normfile, dirsep, NULL_INTEGER)) {
           normfile = stringSubsequence(normfile, 0, strlen(normfile) - strlen(dirsep));
         }
+        normfile = fileNameWithoutDirectory(normfile);
         if (stringEqlP(normfile, ".") ||
             stringEqlP(normfile, "..")) {
           continue;
@@ -2694,6 +2932,45 @@ Cons* listDirectoryFiles(char* directory) {
 
 Cons* listDirectoryFilesEvaluatorWrapper(Cons* arguments) {
   return (listDirectoryFiles(((StringWrapper*)(arguments->value))->wrapperValue));
+}
+
+Cons* listDirectoryFilesRecursively(char* directory) {
+  // Just like `list-directory-files' (which see) but also recurses into
+  // subdirectories.  Files at the top level of `directory' will be bare file names without
+  // a `directory' component.  Files in subdirectories will be prefixed with the relative
+  // subdirectory path starting right below `directory'.  The sort order is lexicographic
+  // within directories which results in a depth-first presentation order of files.
+  directory = translateLogicalPathname(fileNameAsDirectory(directory));
+  ensureFileExists(directory, "list-directory-files");
+  { Cons* files = NIL;
+
+    { StringWrapper* file = NULL;
+      Cons* iter000 = listDirectoryFiles(directory);
+
+      for (file, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+        file = ((StringWrapper*)(iter000->value));
+        if (probeDirectoryP(stringConcatenate(directory, file->wrapperValue, 0))) {
+          file = wrapString(fileNameAsDirectory(file->wrapperValue));
+          { StringWrapper* subfile = NULL;
+            Cons* iter001 = listDirectoryFilesRecursively(stringConcatenate(directory, file->wrapperValue, 0));
+
+            for (subfile, iter001; !(iter001 == NIL); iter001 = iter001->rest) {
+              subfile = ((StringWrapper*)(iter001->value));
+              files = cons(wrapString(stringConcatenate(unwrapString(file), subfile->wrapperValue, 0)), files);
+            }
+          }
+        }
+        else {
+          files = cons(file, files);
+        }
+      }
+    }
+    return (files->reverse());
+  }
+}
+
+Cons* listDirectoryFilesRecursivelyEvaluatorWrapper(Cons* arguments) {
+  return (listDirectoryFilesRecursively(((StringWrapper*)(arguments->value))->wrapperValue));
 }
 
 int integerLognot(int arg) {
@@ -2923,6 +3200,9 @@ void helpStartupPrimal1() {
     SYM_PRIMAL_STELLA_MIN = ((Symbol*)(internRigidSymbolWrtModule("MIN", NULL, 0)));
     SYM_PRIMAL_STELLA_MAX = ((Symbol*)(internRigidSymbolWrtModule("MAX", NULL, 0)));
     KWD_PRIMAL_WHITE_SPACE = ((Keyword*)(internRigidSymbolWrtModule("WHITE-SPACE", NULL, 2)));
+    KWD_PRIMAL_ASCII_CASE_SENSITIVE = ((Keyword*)(internRigidSymbolWrtModule("ASCII-CASE-SENSITIVE", NULL, 2)));
+    KWD_PRIMAL_ASCII_CASE_INSENSITIVE = ((Keyword*)(internRigidSymbolWrtModule("ASCII-CASE-INSENSITIVE", NULL, 2)));
+    KWD_PRIMAL_ASCII_CASE_NORMALIZED = ((Keyword*)(internRigidSymbolWrtModule("ASCII-CASE-NORMALIZED", NULL, 2)));
     KWD_PRIMAL_UPCASE = ((Keyword*)(internRigidSymbolWrtModule("UPCASE", NULL, 2)));
     KWD_PRIMAL_DOWNCASE = ((Keyword*)(internRigidSymbolWrtModule("DOWNCASE", NULL, 2)));
     KWD_PRIMAL_CAPITALIZE = ((Keyword*)(internRigidSymbolWrtModule("CAPITALIZE", NULL, 2)));
@@ -2932,6 +3212,9 @@ void helpStartupPrimal1() {
     KWD_PRIMAL_CENTER = ((Keyword*)(internRigidSymbolWrtModule("CENTER", NULL, 2)));
     SYM_PRIMAL_STELLA_HASH_CODE = ((Symbol*)(internRigidSymbolWrtModule("HASH-CODE", NULL, 0)));
     KWD_PRIMAL_JAVA = ((Keyword*)(internRigidSymbolWrtModule("JAVA", NULL, 2)));
+    KWD_PRIMAL_UNIX = ((Keyword*)(internRigidSymbolWrtModule("UNIX", NULL, 2)));
+    KWD_PRIMAL_MAC = ((Keyword*)(internRigidSymbolWrtModule("MAC", NULL, 2)));
+    KWD_PRIMAL_WINDOWS = ((Keyword*)(internRigidSymbolWrtModule("WINDOWS", NULL, 2)));
     KWD_PRIMAL_TYPE_4 = ((Keyword*)(internRigidSymbolWrtModule("TYPE-4", NULL, 2)));
     KWD_PRIMAL_RANDOM = ((Keyword*)(internRigidSymbolWrtModule("RANDOM", NULL, 2)));
     SYM_PRIMAL_STELLA_SLEEP = ((Symbol*)(internRigidSymbolWrtModule("SLEEP", NULL, 0)));
@@ -3012,8 +3295,8 @@ void helpStartupPrimal3() {
     defineFunctionObject("INTEGER-VALUED?", "(DEFUN (INTEGER-VALUED? BOOLEAN) ((X FLOAT)) :DOCUMENTATION \"Returns `true' if `x' is the floating point representation of an integer.\" :PUBLIC? TRUE)", ((cpp_function_code)(&integerValuedP)), NULL);
     defineFunctionObject("FLOAT-TO-BASE60", "(DEFUN (FLOAT-TO-BASE60 (CONS OF NUMBER-WRAPPER)) ((X FLOAT) (ALL-INTEGERS? BOOLEAN)) :DOCUMENTATION \"Returns a cons of `x' in a base-60 form.  That means\nthe first value will be the integer part of `x', the next value\nthe iteger value of the fraction part of `x' times 60 and the\nthird value the fraction part of `x' time 3600.  If `all-integers?'\nis `true', then the last value will be rounded to an integer.\nThis can be used to convert from decimal degree values to Degree-Minute-Second\nor from decimal hours to Hour-Minute-Second format.\" :PUBLIC? TRUE)", ((cpp_function_code)(&floatToBase60)), NULL);
     defineFunctionObject("BASE60-TO-FLOAT", "(DEFUN (BASE60-TO-FLOAT FLOAT) ((L (CONS OF NUMBER-WRAPPER))) :DOCUMENTATION \"Converts (x y z) into a float.  The return value\nis x + y/60 + z/3600.\nThis can be used to convert from Degree-Minute-Second to decimal degrees\nor from Hour-Minute-Second format to decimal hours.\")", ((cpp_function_code)(&base60ToFloat)), NULL);
-    defineFunctionObject("RANDOM", "(DEFUN (RANDOM INTEGER) ((N INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Generate a random integer in the interval [0..n-1].\")", ((cpp_function_code)(&stella::random)), NULL);
-    defineFunctionObject("SEED-RANDOM-NUMBER-GENERATOR", "(DEFUN SEED-RANDOM-NUMBER-GENERATOR () :PUBLIC? TRUE :DOCUMENTATION \"Seeds the random number generator with the current time.\")", ((cpp_function_code)(&seedRandomNumberGenerator)), NULL);
+    defineFunctionObject("RANDOM", "(DEFUN (RANDOM INTEGER) ((N INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Generate a random integer in the interval [0..n-1].\nThe random number generator is seeded based on the current time every\ntime STELLA starts up; however, your mileage may vary depending on\nthe native language implementation.\")", ((cpp_function_code)(&stella::random)), NULL);
+    defineFunctionObject("SEED-RANDOM-NUMBER-GENERATOR", "(DEFUN SEED-RANDOM-NUMBER-GENERATOR () :DOCUMENTATION \"Seeds the random number generator based on the current time.\" :PUBLIC? TRUE)", ((cpp_function_code)(&seedRandomNumberGenerator)), NULL);
     defineFunctionObject("SQRT", "(DEFUN (SQRT FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the square root of `n'.\" (RETURN (VERBATIM :COMMON-LISP (CL:SQRT N) :CPP \"::sqrt(n)\" :JAVA \"Math.sqrt(n)\")))", ((cpp_function_code)(&stella::sqrt)), NULL);
     defineFunctionObject("COS", "(DEFUN (COS FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the cosine of `n' radians.\" (RETURN (VERBATIM :COMMON-LISP (CL:COS N) :CPP \"::cos(n)\" :JAVA \"Math.cos(n)\")))", ((cpp_function_code)(&stella::cos)), NULL);
     defineFunctionObject("SIN", "(DEFUN (SIN FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the sine of `n' radians.\" (RETURN (VERBATIM :COMMON-LISP (CL:SIN N) :CPP \"::sin(n)\" :JAVA \"Math.sin(n)\")))", ((cpp_function_code)(&stella::sin)), NULL);
@@ -3023,7 +3306,8 @@ void helpStartupPrimal3() {
     defineFunctionObject("ATAN", "(DEFUN (ATAN FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the arc tangent of `n' in radians.\" (RETURN (VERBATIM :COMMON-LISP (CL:ATAN N) :CPP \"::atan(n)\" :JAVA \"Math.atan(n)\")))", ((cpp_function_code)(&stella::atan)), NULL);
     defineFunctionObject("ATAN2", "(DEFUN (ATAN2 FLOAT) ((X FLOAT) (Y FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the arc tangent of `x' / `y' in radians.\" (RETURN (VERBATIM :COMMON-LISP (CL:ATAN X Y) :CPP \"::atan2(x,y)\" :JAVA \"Math.atan2(x,y)\")))", ((cpp_function_code)(&stella::atan2)), NULL);
     defineFunctionObject("LOG", "(DEFUN (LOG FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the natural logarithm (base e) of `n'.\" (RETURN (VERBATIM :COMMON-LISP (CL:LOG N) :CPP \"::log(n)\" :JAVA \"Math.log(n)\")))", ((cpp_function_code)(&stella::log)), NULL);
-    defineFunctionObject("LOG10", "(DEFUN (LOG10 FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the logarithm (base 10) of `n'.\" (RETURN (VERBATIM :COMMON-LISP (CL:LOG N 10.0D0) :OTHERWISE (* (LOG N) RECIPROCAL-NL10))))", ((cpp_function_code)(&log10)), NULL);
+    defineFunctionObject("LOG2", "(DEFUN (LOG2 FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the logarithm (base 2) of `n'.\" (RETURN (VERBATIM :COMMON-LISP \"(CL:LOG n 2.0d0)\" :OTHERWISE (* (LOG N) RECIPROCAL-NL2))))", ((cpp_function_code)(&log2)), NULL);
+    defineFunctionObject("LOG10", "(DEFUN (LOG10 FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the logarithm (base 10) of `n'.\" (RETURN (VERBATIM :COMMON-LISP \"(CL:LOG n 10.0d0)\" :OTHERWISE (* (LOG N) RECIPROCAL-NL10))))", ((cpp_function_code)(&log10)), NULL);
     defineFunctionObject("EXP", "(DEFUN (EXP FLOAT) ((N FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return the e to the power `n'.\" (RETURN (VERBATIM :COMMON-LISP (CL:EXP N) :CPP \"::exp(n)\" :JAVA \"Math.exp(n)\")))", ((cpp_function_code)(&stella::exp)), NULL);
     defineFunctionObject("EXPT", "(DEFUN (EXPT FLOAT) ((X FLOAT) (Y FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Return `x' ^ `y'.\" (RETURN (VERBATIM :COMMON-LISP (CL:EXPT X Y) :CPP \"::pow(x,y)\" :JAVA \"Math.pow(x,y)\")))", ((cpp_function_code)(&expt)), NULL);
     defineMethodObject("(DEFMETHOD (MIN INTEGER) ((X INTEGER) (Y INTEGER)) :DOCUMENTATION \"Return the minimum of `x' and `y'.  If either is NULL, return the other.\" :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
@@ -3058,20 +3342,23 @@ void helpStartupPrimal3() {
     defineFunctionObject("STRING-LESS-EQUAL?", "(DEFUN (STRING-LESS-EQUAL? BOOLEAN) ((X STRING) (Y STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return true if `x' is lexicographically <= `y', ignoring case.\")", ((cpp_function_code)(&stringLessEqualP)), NULL);
     defineFunctionObject("STRING-GREATER-EQUAL?", "(DEFUN (STRING-GREATER-EQUAL? BOOLEAN) ((X STRING) (Y STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return true if `x' is lexicographically >= `y', ignoring case.\")", ((cpp_function_code)(&stringGreaterEqualP)), NULL);
     defineFunctionObject("STRING-GREATER?", "(DEFUN (STRING-GREATER? BOOLEAN) ((X STRING) (Y STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return true if `x' is lexicographically > `y', ignoring case.\")", ((cpp_function_code)(&stringGreaterP)), NULL);
+    defineFunctionObject("STRING-COMPARE-CASE-NORMALIZED", "(DEFUN (STRING-COMPARE-CASE-NORMALIZED INTEGER) ((X STRING) (Y STRING)) :DOCUMENTATION \"Compare `x' and `y' and return -1, 0, or 1, depending on whether\n`x' is less than, equal, or greater than `y' relative to the :ascii-case-normalized\ncollation.  In this collation `a < A < b' which gives strings that only differ in case a\ndefinite order while otherwise behaving identically to :ascii-case-insensitive.  This is\nsimilar to using a Java Collator for Locale.US with strength set to TERTIARY (which see).\" :PUBLIC? TRUE)", ((cpp_function_code)(&stringCompareCaseNormalized)), NULL);
+    defineFunctionObject("COMPARE-STRINGS", "(DEFUN (COMPARE-STRINGS INTEGER) ((X STRING) (Y STRING) (COLLATION KEYWORD)) :DOCUMENTATION \"Compare `x' and `y' and return -1, 0, or 1, depending on whether\n`x' is less than, equal, or greater than `y' relative to `collation'.  Currently\nsupported values for `collation' are :ascii-case-sensitive, :ascii-case-insensitive\n:ascii-case-normalized.  The first two correspond to `string-compare' called with\nthe appropriate third argument.  :ascii-case-normalized calls the function\n`string-compare-case-normalized' (which see).\" :PUBLIC? TRUE)", ((cpp_function_code)(&compareStrings)), NULL);
+    defineFunctionObject("SAFE-COMPARE-STRINGS", "(DEFUN (SAFE-COMPARE-STRINGS INTEGER) ((X STRING) (Y STRING) (COLLATION KEYWORD)) :DOCUMENTATION \"Variant of `compare-strings' that also tolerates NULL values.\nNULL sorts after everything else in any collation.\" :PUBLIC? TRUE)", ((cpp_function_code)(&safeCompareStrings)), NULL);
     defineFunctionObject("MAKE-STRING", "(DEFUN (MAKE-STRING STRING) ((SIZE INTEGER) (INITCHAR CHARACTER)) :DOCUMENTATION \"Return a new string filled with `size' `initchar's.\" :PUBLIC? TRUE :NATIVE? TRUE)", NULL, NULL);
     defineFunctionObject("MAKE-MUTABLE-STRING", "(DEFUN (MAKE-MUTABLE-STRING MUTABLE-STRING) ((SIZE INTEGER) (INITCHAR CHARACTER)) :DOCUMENTATION \"Return a new mutable string filled with `size' `initchar's.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:MAKE-STRING SIZE :INITIAL-ELEMENT INITCHAR) :CPP \"makeString(size, initchar)\" :JAVA \"#$(STELLAROOT).javalib.Native.makeMutableString(size, initchar)\")))", ((cpp_function_code)(&makeMutableString)), NULL);
     defineFunctionObject("MAKE-RAW-MUTABLE-STRING", "(DEFUN (MAKE-RAW-MUTABLE-STRING MUTABLE-STRING) ((SIZE INTEGER)) :DOCUMENTATION \"Return a new uninitialized mutable string of `size'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (LET ((S MUTABLE-STRING NULL)) (VERBATIM :COMMON-LISP (SETQ S (CL:MAKE-STRING SIZE)) :CPP \"s = new (PointerFreeGC) char[size+1]; s[size]='\\\\0'\" :JAVA \"s = new StringBuffer(size); s.setLength(size)\") (RETURN S)))", ((cpp_function_code)(&makeRawMutableString)), NULL);
     defineFunctionObject("STRING-CONCATENATE", "(DEFUN (STRING-CONCATENATE STRING) ((STRING1 STRING) (STRING2 STRING)) :DOCUMENTATION \"Return a new string representing the concatenation of\n`string1' and `string2'.\" :NATIVE? TRUE)", NULL, NULL);
     defineMethodObject("(DEFMETHOD (CONCATENATE STRING) ((STRING1 STRING) (STRING2 STRING) |&REST| (OTHERSTRINGS STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return a new string representing the concatenation\nof `string1', `string2', and `otherStrings'.  The two mandatory parameters\nallow us to optimize the common binary case by not relying on the somewhat\nless efficient variable arguments mechanism.\")", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
-    defineFunctionObject("STRING-UPCASE", "(DEFUN (STRING-UPCASE STRING) ((STRING STRING)) :DOCUMENTATION \"Return an upper-case copy of `string'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
-    defineFunctionObject("STRING-DOWNCASE", "(DEFUN (STRING-DOWNCASE STRING) ((STRING STRING)) :DOCUMENTATION \"Return a lower-case copy of `string'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
-    defineFunctionObject("STRING-CAPITALIZE", "(DEFUN (STRING-CAPITALIZE STRING) ((STRING STRING)) :DOCUMENTATION \"Return a capitalized version of `string'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
-    defineMethodObject("(DEFMETHOD (COPY STRING) ((STRING STRING)) :DOCUMENTATION \"Return a copy of `string'.\" :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
   }
 }
 
 void helpStartupPrimal4() {
   {
+    defineFunctionObject("STRING-UPCASE", "(DEFUN (STRING-UPCASE STRING) ((STRING STRING)) :DOCUMENTATION \"Return an upper-case copy of `string'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("STRING-DOWNCASE", "(DEFUN (STRING-DOWNCASE STRING) ((STRING STRING)) :DOCUMENTATION \"Return a lower-case copy of `string'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("STRING-CAPITALIZE", "(DEFUN (STRING-CAPITALIZE STRING) ((STRING STRING)) :DOCUMENTATION \"Return a capitalized version of `string'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineMethodObject("(DEFMETHOD (COPY STRING) ((STRING STRING)) :DOCUMENTATION \"Return a copy of `string'.\" :NATIVE? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (SUBSTITUTE STRING) ((SELF STRING) (NEW-CHAR CHARACTER) (OLD-CHAR CHARACTER)) :DOCUMENTATION \"Substitute all occurences of `old-char' with `new-char'\nin the string `self'.\" :NATIVE? TRUE :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (SUBSTITUTE MUTABLE-STRING) ((SELF MUTABLE-STRING) (NEW-CHAR CHARACTER) (OLD-CHAR CHARACTER)) :DOCUMENTATION \"Substitute all occurences of `old-char' with `new-char'\nin the string `self'.\" :NATIVE? TRUE :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineFunctionObject("HELP-SUBSTITUTE-CHARACTERS", "(DEFUN (HELP-SUBSTITUTE-CHARACTERS MUTABLE-STRING) ((SELF MUTABLE-STRING) (NEW-CHARS STRING) (OLD-CHARS STRING)) :PUBLIC? FALSE :GLOBALLY-INLINE? TRUE (LET ((POS INTEGER NULL)) (FOREACH I IN (INTERVAL 0 (1- (LENGTH SELF))) DO (SETQ POS (POSITION OLD-CHARS (NTH SELF I) 0)) (WHEN (DEFINED? POS) (SETF (NTH SELF I) (NTH NEW-CHARS POS)))) (RETURN SELF)))", ((cpp_function_code)(&helpSubstituteCharacters)), NULL);
@@ -3082,11 +3369,14 @@ void helpStartupPrimal4() {
     defineFunctionObject("INSERT-STRING", "(DEFUN (INSERT-STRING INTEGER) ((SOURCE STRING) (START INTEGER) (END INTEGER) (TARGET MUTABLE-STRING) (TARGET-INDEX INTEGER) (CASE-CONVERSION KEYWORD)) :DOCUMENTATION \"Inserts characters from `source' begining at `start' and\nending at `end' into `target' starting at `target-index'.  If `end' is `null',\nthen the entire length of the string is used. The copy of characters is affected\nby the `case-conversion' keyword which should be one of\n   :UPCASE :DOWNCASE :CAPITALIZE :PRESERVE.\n\nThe final value of target-index is returned.\")", ((cpp_function_code)(&insertString)), NULL);
     defineFunctionObject("STRING-TRIM", "(DEFUN (STRING-TRIM STRING) ((STRING STRING)) :DOCUMENTATION \"Remove any leading and trailing white space from `string'\nand return a copy of the trimmed substring (which might be empty if we had\nall white space).  If no white space was removed, `string' is returned\nunmodified and uncopied.\" :PUBLIC? TRUE)", ((cpp_function_code)(&stringTrim)), NULL);
     defineFunctionObject("INTEGER-TO-STRING", "(DEFUN (INTEGER-TO-STRING STRING) ((I LONG-INTEGER)) :DOCUMENTATION \"Convert `i' to its string representation and return the result.\n This is more efficient than using a string stream.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("INT-TO-STRING", "(DEFUN (INT-TO-STRING STRING) ((I INTEGER)) :DOCUMENTATION \"Convert `i' to its string representation and return the result.\nThis is a convenience function that expects regular integers as opposed to longs\nwhich is useful in contexts where we do automatic unwrapping based on the target.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (INTEGER-TO-STRING I)))", ((cpp_function_code)(&intToString)), NULL);
     defineFunctionObject("INTEGER-TO-HEX-STRING", "(DEFUN (INTEGER-TO-HEX-STRING STRING) ((I LONG-INTEGER)) :DOCUMENTATION \"Convert `i' to a string representation in hexadecimal notation and return the result.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("INTEGER-TO-STRING-IN-BASE", "(DEFUN (INTEGER-TO-STRING-IN-BASE STRING) ((I LONG-INTEGER) (BASE INTEGER)) :DOCUMENTATION \"Convert `i' to a string representation in `base' and return the\nresult.  `base' must be positive and not more than 36.\n\nNote that in the C++ version, only 8, 10 and 16 will work as `base' arguments,\nsince that is all the underlying implementation supports.  Other argument\nvalues will be treated as `10'.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("FLOAT-TO-STRING", "(DEFUN (FLOAT-TO-STRING STRING) ((F FLOAT)) :DOCUMENTATION \"Convert `f' to its string representation and return the result.  This is more\nefficient than using a string stream.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("CHARACTER-TO-STRING", "(DEFUN (CHARACTER-TO-STRING STRING) ((C CHARACTER)) :DOCUMENTATION \"Convert `c' into a one-element string and return the result.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (MAKE-STRING 1 C)))", ((cpp_function_code)(&characterToString)), NULL);
+    defineFunctionObject("STELLA-INTEGER-TO-STRING-IN-BASE", "(DEFUN (STELLA-INTEGER-TO-STRING-IN-BASE STRING) ((INTEGER LONG-INTEGER) (BASE INTEGER)) :DOCUMENTATION \"STELLA version of `integer-to-string-in-base' which is faster than\nthe C++ version we have but slower than the native Java version.\" :PUBLIC? TRUE)", ((cpp_function_code)(&stellaIntegerToStringInBase)), NULL);
     defineFunctionObject("STRING-TO-INTEGER", "(DEFUN (STRING-TO-INTEGER LONG-INTEGER) ((STRING STRING)) :DOCUMENTATION \"Convert a `string' representation of an integer into an integer.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
+    defineFunctionObject("STRING-TO-INT", "(DEFUN (STRING-TO-INT INTEGER) ((STRING STRING)) :DOCUMENTATION \"Convert a `string' representation of an integer into an integer.\nThis is a convenience function that ensures a regular integer return value.  If\n`string' represents a long integer, the behavior is undefined.\" :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (STRING-TO-INTEGER STRING)))", ((cpp_function_code)(&stringToInt)), NULL);
     defineFunctionObject("STRING-TO-FLOAT", "(DEFUN (STRING-TO-FLOAT FLOAT) ((STRING STRING)) :DOCUMENTATION \"Convert a `string' representation of a float into a float.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("FORMAT-FLOAT", "(DEFUN (FORMAT-FLOAT STRING) ((F FLOAT) (NDECIMALS INTEGER)) :DOCUMENTATION \"Print `f' in fixed-point format with `nDecimals' behind the decimal point\nand return the result as a string.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("FORMAT-WITH-PADDING", "(DEFUN (FORMAT-WITH-PADDING STRING) ((INPUT STRING) (LENGTH INTEGER) (PADCHAR CHARACTER) (ALIGN KEYWORD) (TRUNCATE? BOOLEAN)) :PUBLIC? TRUE :DOCUMENTATION \"Formats `input' to be (at least) `length' long, using `padchar' to\nfill if necessary.  `align' must be one of :LEFT, :RIGHT, :CENTER and will control\nhow `input' will be justified in the resulting string.  If `truncate?' is true, then\nthen an overlength string will be truncated, using the opposite of `align' to pick\nthe truncation direction.\")", ((cpp_function_code)(&formatWithPadding)), NULL);
@@ -3125,6 +3415,11 @@ void helpStartupPrimal4() {
     defineFunctionObject("FIND-MISMATCH", "(DEFUN (FIND-MISMATCH INTEGER INTEGER) ((STRING1 STRING) (START1 INTEGER) (END1 INTEGER) (STRING2 STRING) (START2 INTEGER) (END2 INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Finds the first position in each of `string1' and `string2' where\nthey mismatch, starting at position `start1' and `start2' respectively.\nThe search will end when `end1' or `end2' is reached.  If either `end1'\nor `end2' is null, then they will be set to the length of their respective\nstrings.  If there is no mismatch, then `null' values are returned.\")", ((cpp_function_code)(&findMismatch)), NULL);
     defineFunctionObject("NON-MATCHING-POSITION-HELPER", "(DEFUN (NON-MATCHING-POSITION-HELPER INTEGER) ((SOURCE STRING) (START INTEGER) (END INTEGER) (MATCH STRING)) :PUBLIC? FALSE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Helper for `non-matching-position' that requires `end' to not be `null'.\" (WHILE (AND (< START END) (MEMBER? MATCH (NTH SOURCE START))) (++ START)) (RETURN START))", ((cpp_function_code)(&nonMatchingPositionHelper)), NULL);
     defineFunctionObject("NON-MATCHING-POSITION", "(DEFUN (NON-MATCHING-POSITION INTEGER) ((SOURCE STRING) (START INTEGER) (MATCH STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Returns the index into `source', starting from `start', of the first\ncharacter that is not included in `match'.\")", ((cpp_function_code)(&nonMatchingPosition)), NULL);
+  }
+}
+
+void helpStartupPrimal5() {
+  {
     defineFunctionObject("HELP-ADVANCE-PAST-WHITESPACE", "(DEFUN (HELP-ADVANCE-PAST-WHITESPACE INTEGER) ((SOURCE STRING) (START INTEGER) (END INTEGER)) :PUBLIC? FALSE :GLOBALLY-INLINE? TRUE :DOCUMENTATION \"Helper for `advance-past-whitespace' that requires `end' to be properly set.\" (WHILE (AND (< START END) (WHITE-SPACE-CHARACTER? (NTH SOURCE START))) (++ START)) (RETURN START))", ((cpp_function_code)(&helpAdvancePastWhitespace)), NULL);
     defineFunctionObject("ADVANCE-PAST-WHITESPACE", "(DEFUN (ADVANCE-PAST-WHITESPACE INTEGER) ((SOURCE STRING) (START INTEGER)) :PUBLIC? TRUE :DOCUMENTATION \"Returns the first index into `source', starting from `start', of\nthe first character that is not white space.\")", ((cpp_function_code)(&advancePastWhitespace)), NULL);
     defineFunctionObject("EQL-EXCEPT-IN-WHITESPACE?", "(DEFUN (EQL-EXCEPT-IN-WHITESPACE? BOOLEAN) ((S1 STRING) (S2 STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Return `true' if the strings `s1' and `s2' are the same\nexcept for the amounts of whitespace separating words.  Leading or\ntrailing whitespace is also not considered.\")", ((cpp_function_code)(&eqlExceptInWhitespaceP)), NULL);
@@ -3132,11 +3427,6 @@ void helpStartupPrimal4() {
     defineMethodObject("(DEFMETHOD (SUBSEQUENCE STRING) ((STRING MUTABLE-STRING) (START INTEGER) (END INTEGER)) :DOCUMENTATION \"Return a substring of `string' beginning at position `start'\nand ending up to but not including position `end', counting from zero.  An\n`end' value of NULL stands for the rest of the string.\" :NATIVE? TRUE :PUBLIC? TRUE)", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineFunctionObject("SPLIT-STRING", "(DEFUN (SPLIT-STRING (CONS OF STRING-WRAPPER)) ((INPUT STRING) (SEPARATOR CHARACTER)) :DOCUMENTATION \"Split `input' into separate strings based on the `separator' character.\" :PUBLIC? TRUE)", ((cpp_function_code)(&splitString)), NULL);
     defineFunctionObject("STRINGIFY", "(DEFUN (STRINGIFY STRING) ((EXPRESSION OBJECT)) :DOCUMENTATION \"Print `expression' onto a string and return the result.\nPrinting is done with `*printReadably?*' set to true and with `*printPretty?*'\nset to false.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
-  }
-}
-
-void helpStartupPrimal5() {
-  {
     defineFunctionObject("UNSTRINGIFY", "(DEFUN (UNSTRINGIFY OBJECT) ((STRING STRING)) :DOCUMENTATION \"Read a STELLA expression from `string' and return the result.\nThis is identical to `read-s-expression-from-string'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (READ-S-EXPRESSION-FROM-STRING STRING)))", ((cpp_function_code)(&unstringify)), NULL);
     defineMethodObject("(DEFMETHOD FREE-HASH-TABLE-VALUES ((SELF ABSTRACT-HASH-TABLE)) :DOCUMENTATION \"Call free on each value in the hash table `self'.\")", ((cpp_method_code)(&AbstractHashTable::freeHashTableValues)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD INITIALIZE-HASH-TABLE ((SELF ABSTRACT-HASH-TABLE)) :DOCUMENTATION \"Insert a newly-created native hash table into `self'.\")", ((cpp_method_code)(&AbstractHashTable::initializeHashTable)), ((cpp_method_code)(NULL)));
@@ -3168,13 +3458,13 @@ void helpStartupPrimal5() {
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF WRAPPER)) :PUBLIC? TRUE)", ((cpp_method_code)(&Wrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF STRING-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))", ((cpp_method_code)(&StringWrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF INTEGER-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))", ((cpp_method_code)(&IntegerWrapper::hashCode)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF LONG-INTEGER-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (CAST (WRAPPER-VALUE SELF) INTEGER))))", ((cpp_method_code)(&LongIntegerWrapper::hashCode)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF LONG-INTEGER-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))", ((cpp_method_code)(&LongIntegerWrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF FLOAT-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))", ((cpp_method_code)(&FloatWrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF CHARACTER-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (HASH-CODE (WRAPPER-VALUE SELF))))", ((cpp_method_code)(&CharacterWrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF BOOLEAN-WRAPPER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (CHOOSE (WRAPPER-VALUE SELF) 7333705 1891526)))", ((cpp_method_code)(&BooleanWrapper::hashCode)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF STRING)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:SXHASH SELF) :JAVA \"self.hashCode()\" :CPP \"native_hash_string(self)\" :OTHERWISE (HASH-STRING SELF 0))))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN SELF))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF LONG-INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (CAST SELF INTEGER)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF LONG-INTEGER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (CAST (LOGAND (LOGXOR SELF (SHIFT-RIGHT SELF 32)) MOST-POSITIVE-INTEGER) INTEGER)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF FLOAT)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:SXHASH SELF) :CPP \"(size_t)self\" :JAVA \"(int)(Double.doubleToLongBits(self)^(Double.doubleToLongBits(self)>>>32))\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (HASH-CODE INTEGER) ((SELF CHARACTER)) :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (LOGXOR (AREF *HASH-BYTE-RANDOM-TABLE* (CHARACTER-CODE SELF)) 15119378)))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (EQUAL-HASH-CODE INTEGER) ((SELF OBJECT)) :DOCUMENTATION \"Return a hash code for `self' (can be negative).  Two objects that are `equal?'\nare guaranteed to generate the same hash code (provided, that writers of\n`object-equal?' methods also implemented the appropriate `equal-hash-code'\nmethod).  Two objects that are not `equal?'do not necessarily generate different\nhash codes.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Object::equalHashCode)), ((cpp_method_code)(NULL)));
@@ -3187,7 +3477,14 @@ void helpStartupPrimal5() {
     defineMethodObject("(DEFMETHOD (NTH-SETTER (LIKE (ANY-VALUE SELF))) ((SELF NATIVE-VECTOR) (VALUE (LIKE (ANY-VALUE SELF))) (POSITION INTEGER)) :DOCUMENTATION \"Set the element in `self' at `position' to `value'.\" :PUBLIC? TRUE :GLOBALLY-INLINE? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:SETF (CL:AREF SELF POSITION) VALUE) :CPP \"self[position] = value\" :JAVA \"self[position] = value\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineFunctionObject("UNMAKE", "(DEFUN UNMAKE ((SELF OBJECT)))", ((cpp_function_code)(&unmake)), NULL);
     defineFunctionObject("NATIVE-PROBE-FILE?", "(DEFUN (NATIVE-PROBE-FILE? BOOLEAN) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return true if file `fileName' exists.  Note that this does\nnot necessarily mean that the file can also be read.  This does not handle any\nnecessary pathname translations or error conditions.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
-    defineFunctionObject("PROBE-FILE?", "(DEFUN (PROBE-FILE? BOOLEAN) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return true if file `fileName' exists.  Note that this does\nnot necessarily mean that the file can also be read.\")", ((cpp_function_code)(&probeFileP)), NULL);
+    defineFunctionObject("NATIVE-PROBE-DIRECTORY?", "(DEFUN (NATIVE-PROBE-DIRECTORY? BOOLEAN) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return true if file `fileName' exists and is a directory.\nNote that this does not necessarily mean that the directory can also be read.\nThis does not handle any necessary pathname translations or error conditions.\" :PUBLIC? TRUE)", ((cpp_function_code)(&nativeProbeDirectoryP)), NULL);
+    defineFunctionObject("PROBE-FILE?", "(DEFUN (PROBE-FILE? BOOLEAN) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return true if file `fileName' exists.  Note that this does\nnot necessarily mean that the file can also be read.\nIMPORTANT Java idiosyncrasy: if file `foo/bar' exists and is not a directory,\nJava will also say `foo/bar/' exists, which is different behavior than in Lisp\nand C++.  For this reason, make sure to always use `probe-directory?' to test\nwhether a directory exists.\" :PUBLIC? TRUE)", ((cpp_function_code)(&probeFileP)), NULL);
+    defineFunctionObject("PROBE-DIRECTORY?", "(DEFUN (PROBE-DIRECTORY? BOOLEAN) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return true if file `fileName' exists and is a directory.\nNote that this does not necessarily mean that the directory can also be read.\" :PUBLIC? TRUE)", ((cpp_function_code)(&probeDirectoryP)), NULL);
+  }
+}
+
+void helpStartupPrimal6() {
+  {
     defineFunctionObject("NATIVE-FILE-WRITE-DATE", "(DEFUN (NATIVE-FILE-WRITE-DATE CALENDAR-DATE) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return the time at which file `fileName' was last modified or\nNULL if that cannot be determined.  This does not handle any necessary pathname\ntranslations or error conditions.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("FILE-WRITE-DATE", "(DEFUN (FILE-WRITE-DATE CALENDAR-DATE) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return the time at which file `fileName' was last modified or\nNULL if that cannot be determined.\" :PUBLIC? TRUE)", ((cpp_function_code)(&fileWriteDate)), NULL);
     defineFunctionObject("NATIVE-FILE-LENGTH", "(DEFUN (NATIVE-FILE-LENGTH LONG-INTEGER) ((FILENAME FILE-NAME)) :DOCUMENTATION \"Return the length of file `fileName' in bytes or NULL if that\ncannot be determined.  This does not handle any necessary pathname translations\nor error conditions.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
@@ -3197,17 +3494,14 @@ void helpStartupPrimal5() {
     defineFunctionObject("NATIVE-RENAME-FILE", "(DEFUN NATIVE-RENAME-FILE ((FROMFILE FILE-NAME) (TOFILE FILE-NAME)) :DOCUMENTATION \"Rename the file `fromFile' to `toFile'.  This does not handle\nany necessary pathname translations or error conditions.\" :NATIVE? TRUE :PUBLIC? TRUE)", NULL, NULL);
     defineFunctionObject("RENAME-FILE", "(DEFUN RENAME-FILE ((FROMFILE FILE-NAME) (TOFILE FILE-NAME)) :DOCUMENTATION \"Rename the file `fromFile' to `toFile'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&renameFile)), NULL);
     defineFunctionObject("COPY-STREAM-TO-STREAM", "(DEFUN COPY-STREAM-TO-STREAM ((IN INPUT-STREAM) (OUT OUTPUT-STREAM)) :DOCUMENTATION \"Copy `in' verbatimely to `out'.  Does the right thing for binary data.\" :PUBLIC? TRUE)", ((cpp_function_code)(&copyStreamToStream)), NULL);
-  }
-}
-
-void helpStartupPrimal6() {
-  {
     defineFunctionObject("COPY-FILE", "(DEFUN COPY-FILE ((FROMFILE FILE-NAME) (TOFILE FILE-NAME)) :DOCUMENTATION \"Copy file `fromFile' to file `toFile', clobbering\nany data already in `toFile'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&copyFile)), NULL);
+    defineFunctionObject("GET-TEMP-DIRECTORY", "(DEFUN (GET-TEMP-DIRECTORY STRING) () :DOCUMENTATION \"Return a suitable directory for temporary files.\nUses the value of `stella.tempDirectory' if defined; otherwise, it\nwill use a suitable OS-specific default.  The returned directory will\nend in a separator for immediate concatenation with a physical filename.\" :PUBLIC? TRUE)", ((cpp_function_code)(&getTempDirectory)), NULL);
     defineFunctionObject("MAKE-TEMPORARY-FILE-NAME", "(DEFUN (MAKE-TEMPORARY-FILE-NAME STRING) ((PREFIX STRING) (SUFFIX STRING)) :DOCUMENTATION \"Return a file name of the form `<prefix>NNNNNN<suffix>'\nwhich is guaranteed to not refer to any existing file.  A null `prefix'\ndefaults to `tmpfile', a null `suffix' defaults to the empty string.\nThe number portion NNNNNN will correpond to a random number between 0\nand 999999.  If no qualifying filename can be found after 100 attempts,\nNULL will be returned.  Note that it is possible due to multi-threading\nor processing that the generated filename becomes used by another thread\nor OS process.  If necessary, this case can be handled by the caller.\" :PUBLIC? TRUE)", ((cpp_function_code)(&makeTemporaryFileName)), NULL);
     defineFunctionObject("CL-LIST-DIRECTORY-FILES", "(DEFUN (CL-LIST-DIRECTORY-FILES (CONS OF STRING-WRAPPER)) ((DIRECTORY STRING)))", ((cpp_function_code)(&clListDirectoryFiles)), NULL);
     defineFunctionObject("CPP-LIST-DIRECTORY-FILES", "(DEFUN (CPP-LIST-DIRECTORY-FILES (CONS OF STRING-WRAPPER)) ((DIRECTORY STRING)))", ((cpp_function_code)(&cppListDirectoryFiles)), NULL);
     defineFunctionObject("JAVA-LIST-DIRECTORY-FILES", "(DEFUN (JAVA-LIST-DIRECTORY-FILES (CONS OF STRING-WRAPPER)) ((DIRECTORY STRING)))", ((cpp_function_code)(&javaListDirectoryFiles)), NULL);
     defineFunctionObject("LIST-DIRECTORY-FILES", "(DEFUN (LIST-DIRECTORY-FILES (CONS OF STRING-WRAPPER)) ((DIRECTORY STRING)) :DOCUMENTATION \"Return all the files and sub-directories in `directory' sorted by name.\nEach returned file is a bare file name without a `directory' component.  If a file is\na directory, it will look just like a plain file.  This means consumers might have to\nexplicitly test whether a file is a directory depending on what they do. Excludes . and ..\ndirectories.  Handles logical pathnames but resulting files will always use physical pathname\nsyntax.  This is mostly consistent across native languages, but some differences still exist -\ne.g., Lisp will convert . or .. into absolute pathnames.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&listDirectoryFiles)), ((cpp_function_code)(&listDirectoryFilesEvaluatorWrapper)));
+    defineFunctionObject("LIST-DIRECTORY-FILES-RECURSIVELY", "(DEFUN (LIST-DIRECTORY-FILES-RECURSIVELY (CONS OF STRING-WRAPPER)) ((DIRECTORY STRING)) :DOCUMENTATION \"Just like `list-directory-files' (which see) but also recurses into\nsubdirectories.  Files at the top level of `directory' will be bare file names without\na `directory' component.  Files in subdirectories will be prefixed with the relative\nsubdirectory path starting right below `directory'.  The sort order is lexicographic\nwithin directories which results in a depth-first presentation order of files.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&listDirectoryFilesRecursively)), ((cpp_function_code)(&listDirectoryFilesRecursivelyEvaluatorWrapper)));
     defineMethodObject("(DEFMETHOD (LOGNOT INTEGER) ((ARG INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGNOT ARG) :CPP \"(~ arg)\" :JAVA \"(~ arg)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (LOGNOT LONG-INTEGER) ((ARG LONG-INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGNOT ARG) :CPP \"(~ arg)\" :JAVA \"(~ arg)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (LOGAND INTEGER) ((ARG1 INTEGER) (ARG2 INTEGER)) :GLOBALLY-INLINE? TRUE :PUBLIC? TRUE (RETURN (VERBATIM :COMMON-LISP (CL:LOGAND ARG1 ARG2) :CPP \"(arg1 & arg2)\" :JAVA \"(arg1 & arg2)\")))", ((cpp_method_code)(NULL)), ((cpp_method_code)(NULL)));
@@ -3301,7 +3595,7 @@ void startupPrimal() {
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupPrimal1();
     }
@@ -3309,6 +3603,7 @@ void startupPrimal() {
       MOST_NEGATIVE_INTEGER = NULL_INTEGER + 1;
       MOST_NEGATIVE_LONG_INTEGER = NULL_LONG_INTEGER + 1;
       LEAST_NEGATIVE_FLOAT = 0 - LEAST_POSITIVE_FLOAT;
+      RECIPROCAL_NL2 = 1.0 / ::log(2.0);
       RECIPROCAL_NL10 = 1.0 / ::log(10.0);
       LONG_INTEGER_BIT_WIDTH = stella::round(::log((MOST_POSITIVE_LONG_INTEGER * 2.0)) / ::log((2.0)));
     }
@@ -3350,6 +3645,7 @@ void startupPrimal() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT LEAST-POSITIVE-FLOAT FLOAT (VERBATIM :COMMON-LISP CL:LEAST-POSITIVE-DOUBLE-FLOAT :CPP \"std::numeric_limits<double>::min()\" :JAVA \"Double.MIN_VALUE\") :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT LEAST-NEGATIVE-FLOAT FLOAT (- LEAST-POSITIVE-FLOAT) :PUBLIC? TRUE)");
       seedRandomNumberGenerator();
+      defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT RECIPROCAL-NL2 FLOAT (/ 1.0 (LOG 2.0)) :DOCUMENTATION \"1 / (log 2) Reciprocal of the Log base e of 2.\nUsed for log 2 conversions.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFCONSTANT RECIPROCAL-NL10 FLOAT (/ 1.0 (LOG 10.0)) :DOCUMENTATION \"1 / (log 10) Reciprocal of the Log base e of 10.\nUsed for log 10 conversions.\")");
       registerNativeName(SYM_PRIMAL_STELLA_FLOOR, KWD_PRIMAL_CPP, KWD_PRIMAL_FUNCTION);
       registerNativeName(SYM_PRIMAL_STELLA_ROUND, KWD_PRIMAL_CPP, KWD_PRIMAL_FUNCTION);
@@ -3421,6 +3717,12 @@ Symbol* SYM_PRIMAL_STELLA_MAX = NULL;
 
 Keyword* KWD_PRIMAL_WHITE_SPACE = NULL;
 
+Keyword* KWD_PRIMAL_ASCII_CASE_SENSITIVE = NULL;
+
+Keyword* KWD_PRIMAL_ASCII_CASE_INSENSITIVE = NULL;
+
+Keyword* KWD_PRIMAL_ASCII_CASE_NORMALIZED = NULL;
+
 Keyword* KWD_PRIMAL_UPCASE = NULL;
 
 Keyword* KWD_PRIMAL_DOWNCASE = NULL;
@@ -3438,6 +3740,12 @@ Keyword* KWD_PRIMAL_CENTER = NULL;
 Symbol* SYM_PRIMAL_STELLA_HASH_CODE = NULL;
 
 Keyword* KWD_PRIMAL_JAVA = NULL;
+
+Keyword* KWD_PRIMAL_UNIX = NULL;
+
+Keyword* KWD_PRIMAL_MAC = NULL;
+
+Keyword* KWD_PRIMAL_WINDOWS = NULL;
 
 Keyword* KWD_PRIMAL_TYPE_4 = NULL;
 

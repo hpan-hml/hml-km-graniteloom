@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -73,8 +73,10 @@ public class _StartupKifOut {
       Logic.KWD_METHODS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("METHODS", null, 2)));
       Logic.KWD_PUBLIC_METHODS = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("PUBLIC-METHODS", null, 2)));
       Logic.SYM_LOGIC_PRESUME = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("PRESUME", null, 0)));
+      Logic.SYM_STELLA_RETRACT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("RETRACT", Stella.getStellaModule("/STELLA", true), 0)));
       Logic.SYM_LOGIC_IN_DIALECT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("IN-DIALECT", null, 0)));
       Logic.SGT_STELLA_OUTPUT_STREAM = ((Surrogate)(GeneralizedSymbol.internRigidSymbolWrtModule("OUTPUT-STREAM", Stella.getStellaModule("/STELLA", true), 1)));
+      Logic.KWD_FILE = ((Keyword)(GeneralizedSymbol.internRigidSymbolWrtModule("FILE", null, 2)));
       Logic.SYM_LOGIC_STARTUP_KIF_OUT = ((Symbol)(GeneralizedSymbol.internRigidSymbolWrtModule("STARTUP-KIF-OUT", null, 0)));
     }
   }
@@ -86,6 +88,7 @@ public class _StartupKifOut {
       Logic.$PRINTLOGICALFORMSTREAM$.setDefaultValue(null);
       Logic.$DOWNCASEOPERATORSp$.setDefaultValue(new Boolean(false));
       Logic.$LOGIC_DIALECT_PRINT_FUNCTIONS$ = KeyValueList.newKeyValueList();
+      Logic.$PRINTQUANTIFIEDOBJECTSSTACK$.setDefaultValue(null);
       Logic.$INDENTCOUNTER$.setDefaultValue(new Integer(0));
       Logic.$TOPLEVELPRINTKIFPROPOSITIONp$.setDefaultValue(new Boolean(true));
       Logic.$EXCLUDEDPROPOSITIONS$.setDefaultValue(null);
@@ -96,6 +99,9 @@ public class _StartupKifOut {
   static void helpStartupKifOut3() {
     {
       Stella.defineFunctionObject("REGISTER-LOGIC-DIALECT-PRINT-FUNCTION", "(DEFUN REGISTER-LOGIC-DIALECT-PRINT-FUNCTION ((DIALECT KEYWORD) (FN FUNCTION-CODE-WRAPPER)) :DOCUMENTATION \"Register `fn' as a logic-object print function for `dialect'.\nEach function should have the signature `((self OBJECT) (stream OUTPUT-STREAM))'.\nAny return values will be ignored.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "registerLogicDialectPrintFunction", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Keyword"), Native.find_java_class("edu.isi.stella.FunctionCodeWrapper")}), null);
+      Stella.defineFunctionObject("PUSH-QUANTIFIED-OBJECT", "(DEFUN PUSH-QUANTIFIED-OBJECT ((OBJECT OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "pushQuantifiedObject", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
+      Stella.defineFunctionObject("POP-QUANTIFIED-OBJECT", "(DEFUN POP-QUANTIFIED-OBJECT ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "popQuantifiedObject", new java.lang.Class [] {}), null);
+      Stella.defineFunctionObject("QUANTIFIED-OBJECT-VARIABLE?", "(DEFUN (QUANTIFIED-OBJECT-VARIABLE? BOOLEAN) ((VAR SKOLEM)))", Native.find_java_method("edu.isi.powerloom.logic.Skolem", "quantifiedObjectVariableP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Skolem")}), null);
       Stella.defineFunctionObject("MAYBE-DOWNCASE", "(DEFUN (MAYBE-DOWNCASE STRING) ((STRING STRING)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "maybeDowncase", new java.lang.Class [] {Native.find_java_class("java.lang.String")}), null);
       Stella.defineFunctionObject("INCREASE-INDENT", "(DEFUN INCREASE-INDENT ((INDENT INTEGER)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "increaseIndent", new java.lang.Class [] {java.lang.Integer.TYPE}), null);
       Stella.defineFunctionObject("DECREASE-INDENT", "(DEFUN DECREASE-INDENT ((INDENT INTEGER)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "decreaseIndent", new java.lang.Class [] {java.lang.Integer.TYPE}), null);
@@ -133,7 +139,7 @@ public class _StartupKifOut {
       Stella.defineFunctionObject("PRINT-DESCRIPTIONS-AS-KIF-RULE", "(DEFUN PRINT-DESCRIPTIONS-AS-KIF-RULE ((HEAD DESCRIPTION) (TAIL DESCRIPTION) (RULE PROPOSITION) (REVERSEPOLARITY? BOOLEAN)))", Native.find_java_method("edu.isi.powerloom.logic.Description", "printDescriptionsAsKifRule", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.powerloom.logic.Description"), Native.find_java_class("edu.isi.powerloom.logic.Proposition"), java.lang.Boolean.TYPE}), null);
       Stella.defineFunctionObject("EXCLUDE-ORIGINATED-PROPOSITIONS", "(DEFUN EXCLUDE-ORIGINATED-PROPOSITIONS ())", Native.find_java_method("edu.isi.powerloom.logic.Logic", "excludeOriginatedPropositions", new java.lang.Class [] {}), null);
       Stella.defineFunctionObject("HIDDEN-RELATION?", "(DEFUN (HIDDEN-RELATION? BOOLEAN) ((RELATION-REF SURROGATE)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "hiddenRelationP", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Surrogate")}), null);
-      Stella.defineFunctionObject("EXCLUDED-PROPOSITION?", "(DEFUN (EXCLUDED-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "excludedPropositionP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition")}), null);
+      Stella.defineFunctionObject("EXCLUDED-PROPOSITION?", "(DEFUN (EXCLUDED-PROPOSITION? BOOLEAN) ((PROPOSITION PROPOSITION) (MODULE MODULE)))", Native.find_java_method("edu.isi.powerloom.logic.Proposition", "excludedPropositionP", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.Proposition"), Native.find_java_class("edu.isi.stella.Module")}), null);
       Stella.defineFunctionObject("PRETTY-PRINT-NAMED-DESCRIPTION", "(DEFUN PRETTY-PRINT-NAMED-DESCRIPTION ((SELF NAMED-DESCRIPTION) (STREAM OUTPUT-STREAM)))", Native.find_java_method("edu.isi.powerloom.logic.NamedDescription", "prettyPrintNamedDescription", new java.lang.Class [] {Native.find_java_class("edu.isi.powerloom.logic.NamedDescription"), Native.find_java_class("edu.isi.stella.OutputStream")}), null);
       Stella.defineMethodObject("(DEFMETHOD DESCRIBE-OBJECT ((SELF NAMED-DESCRIPTION) (STREAM OUTPUT-STREAM) (MODE KEYWORD)) :DOCUMENTATION \"Prints a description of 'self' to stream 'stream'.  'mode'\ncan be :terse, :verbose, or :source.  Used by `describe'.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.NamedDescription", "describeObject", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.OutputStream"), Native.find_java_class("edu.isi.stella.Keyword")}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("STELLA-RELATION-STRINGIFIED-SOURCE", "(DEFUN (STELLA-RELATION-STRINGIFIED-SOURCE STRING) ((SELF RELATION)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "stellaRelationStringifiedSource", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Relation")}), null);
@@ -152,12 +158,6 @@ public class _StartupKifOut {
       Stella.defineMethodObject("(DEFMETHOD CLEAR-OBJECT-STORE ((STORE OBJECT-STORE)))", Native.find_java_method("edu.isi.powerloom.logic.ObjectStore", "clearObjectStore", new java.lang.Class [] {}), ((java.lang.reflect.Method)(null)));
       Stella.defineFunctionObject("SAVE-OBJECT", "(DEFUN SAVE-OBJECT ((OBJECT OBJECT) (STORE OBJECT)))", Native.find_java_method("edu.isi.powerloom.logic.Logic", "saveObject", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
       Stella.defineFunctionObject("DO-SAVE-MODULE", "(DEFUN DO-SAVE-MODULE ((MODULE MODULE) (STORE OBJECT)) :DOCUMENTATION \"Save `module' to the persistent store `store' which can\neither be an output stream or a persistent OBJECT-STORE.\" :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "doSaveModule", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Module"), Native.find_java_class("edu.isi.stella.Stella_Object")}), null);
-      Stella.defineFunctionObject("SAVE-MODULE", "(DEFUN SAVE-MODULE ((NAME NAME) (FILE STRING)) :COMMAND? TRUE :PUBLIC? TRUE :DOCUMENTATION \"Save all definitions and assertions of module `name' to `file'.\")", Native.find_java_method("edu.isi.powerloom.logic.Logic", "saveModule", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Stella_Object"), Native.find_java_class("java.lang.String")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "saveModuleEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
-      Stella.defineFunctionObject("STARTUP-KIF-OUT", "(DEFUN STARTUP-KIF-OUT () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic._StartupKifOut", "startupKifOut", new java.lang.Class [] {}), null);
-      { MethodSlot function = Symbol.lookupFunction(Logic.SYM_LOGIC_STARTUP_KIF_OUT);
-
-        KeyValueList.setDynamicSlotValue(function.dynamicSlots, Logic.SYM_STELLA_METHOD_STARTUP_CLASSNAME, StringWrapper.wrapString("_StartupKifOut"), Stella.NULL_STRING_WRAPPER);
-      }
     }
   }
 
@@ -179,6 +179,12 @@ public class _StartupKifOut {
         }
         if (Stella.currentStartupTimePhaseP(7)) {
           _StartupKifOut.helpStartupKifOut3();
+          Stella.defineFunctionObject("SAVE-MODULE", "(DEFUN SAVE-MODULE (|&REST| (OPTIONS OBJECT)) :DOCUMENTATION \"Save all definitions and assertions of the specified :module (which\ndefaults to the current module) to a file or persistent store.  If :file is specified,\nthe KB is saved to that file.  If no :file is specified but the specified :module is\nassociated with a persistent store, the KB will saved to that store, otherwise, an\nerror will be signalled.  The specifics on how a save operation will proceed for a\npersistent store depends on the particular type of store (see respective documentation).\nFor backwards compatibility, this command also supports the old <module> <file> arguments\nspecified without keywords.\" :COMMAND? TRUE :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic.Logic", "saveModule", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}), Native.find_java_method("edu.isi.powerloom.logic.Logic", "saveModuleEvaluatorWrapper", new java.lang.Class [] {Native.find_java_class("edu.isi.stella.Cons")}));
+          Stella.defineFunctionObject("STARTUP-KIF-OUT", "(DEFUN STARTUP-KIF-OUT () :PUBLIC? TRUE)", Native.find_java_method("edu.isi.powerloom.logic._StartupKifOut", "startupKifOut", new java.lang.Class [] {}), null);
+          { MethodSlot function = Symbol.lookupFunction(Logic.SYM_LOGIC_STARTUP_KIF_OUT);
+
+            KeyValueList.setDynamicSlotValue(function.dynamicSlots, Logic.SYM_STELLA_METHOD_STARTUP_CLASSNAME, StringWrapper.wrapString("_StartupKifOut"), Stella.NULL_STRING_WRAPPER);
+          }
         }
         if (Stella.currentStartupTimePhaseP(8)) {
           Stella.finalizeSlots();
@@ -191,6 +197,7 @@ public class _StartupKifOut {
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTLOGICALFORMSTREAM* OUTPUT-STREAM NULL :PUBLIC? TRUE :DOCUMENTATION \"Eliminates necessity of passing stream argument\nthroughout 'print-logical-form' functions.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *DOWNCASEOPERATORS?* BOOLEAN FALSE :PUBLIC? TRUE :DOCUMENTATION \"Controls whether down-casing happens during logical\nform printing (leading to lots more string garbage).\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *LOGIC-DIALECT-PRINT-FUNCTIONS* (KEY-VALUE-LIST OF KEYWORD FUNCTION-CODE-WRAPPER) (NEW (KEY-VALUE-LIST OF KEYWORD FUNCTION-CODE-WRAPPER)) :DOCUMENTATION \"Table to allow extension of the logical form printing code\nby associating keywords with print functions.  Should have values added only\nvia the associated function REGISTER-LOGIC-DIALECT-PRINT-FUNCTION.\")");
+          Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTQUANTIFIEDOBJECTSSTACK* CONS NULL :DOCUMENTATION \"Used to register objects that quantify variables, so we\ncan decide in certain contexts whether to print a variable or its value.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *INDENTCOUNTER* INTEGER 0 :PUBLIC? TRUE :DOCUMENTATION \"The number of spaces prepended during printing a logical form.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *INDENT-QUANTUM* INTEGER 3 :PUBLIC? TRUE :DOCUMENTATION \"The number of spaces added by a call to 'increase-indent'.\")");
           Stella.defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *TOPLEVELPRINTKIFPROPOSITION?* BOOLEAN TRUE)");

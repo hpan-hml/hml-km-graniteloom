@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -331,6 +331,8 @@ Cons* Cons::removeDuplicates() {
 
 Cons* Cons::removeDuplicatesEqual() {
   // `remove-duplicates' (which see) using an `equal?' test.
+  // IMPORTANT: since this uses hashing to speed things up, an `equal-hash-code'
+  // method needs to be defined for this to work.
   { Cons* self = this;
 
     return (removeDuplicatesFromLongList(self, true));
@@ -358,7 +360,13 @@ Cons* removeDuplicatesFromLongList(Cons* self, boolean equaltestP) {
     }
     while (!(cursor == NIL)) {
       item = cursor->value;
-      bucketindex = (((unsigned int) (item->hashCode())) % tablesize);
+      if (equaltestP) {
+        bucketindex = item->equalHashCode();
+      }
+      else {
+        bucketindex = item->hashCode();
+      }
+      bucketindex = (((unsigned int) bucketindex) % tablesize);
       bucket = table[bucketindex];
       { boolean foundP000 = false;
 
@@ -1160,6 +1168,34 @@ boolean Cons::equivalentSetsP(Cons* otherlist) {
   }
 }
 
+boolean Cons::disjointSetsP(Cons* otherlist) {
+  // Return true if the intersection of `self' and `otherList' is empty.
+  // This is always true if at least one of the two sets is the empty set.
+  // Uses an `eql?' test and a simple quadratic-time algorithm.  Note that
+  // this does not check whether `self' and `otherList' actually are sets.
+  { Cons* self = this;
+
+    { boolean alwaysP000 = true;
+
+      { Object* item = NULL;
+        Cons* iter000 = self;
+
+        for (item, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+          item = iter000->value;
+          if (!(!otherlist->memberP(item))) {
+            alwaysP000 = false;
+            break;
+          }
+        }
+      }
+      { boolean value000 = alwaysP000;
+
+        return (value000);
+      }
+    }
+  }
+}
+
 Cons* Cons::intersection(Cons* otherlist) {
   // Return the set intersection of `self' and `otherList'.  Uses an `eql?'
   // test and a simple quadratic-time algorithm.  Note that the result is only
@@ -1622,8 +1658,8 @@ DEFINE_STELLA_SPECIAL(oSORT_TUPLE_COMPARE_PREDICATEo, cpp_function_code , NULL);
 DEFINE_STELLA_SPECIAL(oSORT_TUPLE_COMPARE_INDEXo, int , 0);
 
 boolean sortTupleCompareP(Cons* x, Cons* y) {
-  { int n = oSORT_TUPLE_COMPARE_INDEXo.get();
-    cpp_function_code pred = oSORT_TUPLE_COMPARE_PREDICATEo.get();
+  { int n = oSORT_TUPLE_COMPARE_INDEXo;
+    cpp_function_code pred = oSORT_TUPLE_COMPARE_PREDICATEo;
 
     return (((boolean  (*) (Object*, Object*))pred)(x->nth(n), y->nth(n)));
   }
@@ -1642,6 +1678,35 @@ Cons* Cons::sortTuples(int n, cpp_function_code predicate) {
       BIND_STELLA_SPECIAL(oSORT_TUPLE_COMPARE_PREDICATEo, cpp_function_code, predicate);
       BIND_STELLA_SPECIAL(oSORT_TUPLE_COMPARE_INDEXo, int, n);
       return (helpSortConsList(self, self->length(), ((cpp_function_code)(&sortTupleCompareP))));
+    }
+  }
+}
+
+DEFINE_STELLA_SPECIAL(oSORT_OBJECTS_COMPARE_SLOTo, StorageSlot* , NULL);
+
+boolean sortObjectsCompareP(Object* x, Object* y) {
+  { StorageSlot* slot = oSORT_OBJECTS_COMPARE_SLOTo;
+    cpp_function_code pred = oSORT_TUPLE_COMPARE_PREDICATEo;
+
+    return (((boolean  (*) (Object*, Object*))pred)(readSlotValue(((StandardObject*)(x)), slot), readSlotValue(((StandardObject*)(y)), slot)));
+  }
+}
+
+Cons* Cons::sortObjects(StorageSlot* slot, cpp_function_code predicate) {
+  // Just like `sort' but assumes each element of `self' has a `slot'
+  // whose value will be used for comparison.  Elements must be descendants of
+  // STANDARD OBJECT.  Note that while this will work with literal-valued slots,
+  // it will cause value wrapping everytime `slot' is read.
+  { Cons* self = this;
+
+    if ((predicate == NULL) &&
+        (!(self == NIL))) {
+      predicate = chooseSortPredicate(readSlotValue(((StandardObject*)(self->value)), slot));
+    }
+    { 
+      BIND_STELLA_SPECIAL(oSORT_TUPLE_COMPARE_PREDICATEo, cpp_function_code, predicate);
+      BIND_STELLA_SPECIAL(oSORT_OBJECTS_COMPARE_SLOTo, StorageSlot*, slot);
+      return (helpSortConsList(self, self->length(), ((cpp_function_code)(&sortObjectsCompareP))));
     }
   }
 }
@@ -2029,11 +2094,11 @@ DEFINE_STELLA_SPECIAL(oPRINTLENGTHo, int , NULL_INTEGER);
 Symbol* ELIPSIS = NULL;
 
 void printCons(Cons* tree, std::ostream* stream, char* lparen, char* rparen) {
-  if (oPRINTREADABLYpo.get()) {
+  if (oPRINTREADABLYpo) {
     lparen = "(";
     rparen = ")";
   }
-  if (oPRINTPRETTYpo.get()) {
+  if (oPRINTPRETTYpo) {
     pprintCons(tree, stream, lparen, rparen);
     return;
   }
@@ -2041,7 +2106,7 @@ void printCons(Cons* tree, std::ostream* stream, char* lparen, char* rparen) {
   if (!(tree == NIL)) {
     *(stream) << tree->value;
     tree = tree->rest;
-    if (oPRINTLENGTHo.get() != NULL_INTEGER) {
+    if (oPRINTLENGTHo != NULL_INTEGER) {
       { int i = 1;
 
         { Object* element = NULL;
@@ -2052,7 +2117,7 @@ void printCons(Cons* tree, std::ostream* stream, char* lparen, char* rparen) {
             *(stream) << " " << element;
             tree = tree->rest;
             i = i + 1;
-            if (i >= oPRINTLENGTHo.get()) {
+            if (i >= oPRINTLENGTHo) {
               break;
             }
           }
@@ -2090,7 +2155,7 @@ DEFINE_STELLA_SPECIAL(oPRINTPRETTYCODEpo, boolean , true);
 
 void printStellaCode(Object* tree, std::ostream* stream) {
   { 
-    BIND_STELLA_SPECIAL(oPRINTPRETTYpo, boolean, oPRINTPRETTYCODEpo.get());
+    BIND_STELLA_SPECIAL(oPRINTPRETTYpo, boolean, oPRINTPRETTYCODEpo);
     BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
     *(stream) << tree << std::endl;
   }
@@ -2098,16 +2163,16 @@ void printStellaCode(Object* tree, std::ostream* stream) {
 
 void printStellaDefinition(Object* tree, std::ostream* stream) {
   { 
-    BIND_STELLA_SPECIAL(oPRINTPRETTYpo, boolean, oPRINTPRETTYCODEpo.get());
+    BIND_STELLA_SPECIAL(oPRINTPRETTYpo, boolean, oPRINTPRETTYCODEpo);
     BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
     if (safePrimaryType(tree) == SGT_CONSES_STELLA_CONS) {
       { Object* tree000 = tree;
         Cons* tree = ((Cons*)(tree000));
 
         if (tree->length() >= 3) {
-          oPRINTPRETTYpo.set(false);
+          oPRINTPRETTYpo = false;
           *(stream) << "(" << tree->value << " " << tree->rest->value << " " << tree->rest->rest->value;
-          oPRINTPRETTYpo.set(oPRINTPRETTYCODEpo.get());
+          oPRINTPRETTYpo = oPRINTPRETTYCODEpo;
           { Object* form = NULL;
             Cons* iter000 = tree->nthRest(3);
 
@@ -2157,7 +2222,7 @@ int safelyComputeTreeSize(Cons* tree, int depthcount, int cutoff) {
     Object* value = NULL;
 
     if (depthcount > oDEPTHCUTOFFo) {
-      oDEPTHEXCEEDEDpo.set(true);
+      oDEPTHEXCEEDEDpo = true;
       return (1);
     }
     for (;;) {
@@ -2183,7 +2248,7 @@ int safeTreeSize(Cons* tree, char*& _Return1) {
 
       { int _Return0 = size;
 
-        _Return1 = ((oDEPTHEXCEEDEDpo.get() ||
+        _Return1 = ((oDEPTHEXCEEDEDpo ||
             (size >= cutoff)) ? (char*)"CIRCULAR" : (char*)"OK");
         return (_Return0);
       }
@@ -2217,7 +2282,7 @@ void helpStartupConses2() {
     defineMethodObject("(DEFMETHOD (REMOVE (LIKE SELF)) ((SELF CONS) (VALUE OBJECT)) :PUBLIC? TRUE :DOCUMENTATION \"Destructively remove all entries in the cons list `self' that\nmatch `value'.  Unless the remaining list is `nil', insure that the cons that\nheads the list is unchanged.\")", ((cpp_method_code)(&Cons::remove)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (REMOVE-IF (LIKE SELF)) ((SELF CONS) (TEST? FUNCTION-CODE)) :PUBLIC? TRUE :DOCUMENTATION \"Destructively removes all members of the cons list\n`self' for which `test?' evaluates to `true'.  `test' takes a single \nargument of type OBJECT and returns `true' or `false'.  Returns a cons list.\nIn case the first element is removed, the return result should be\nassigned to a variable.\")", ((cpp_method_code)(&Cons::removeIf)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (REMOVE-DUPLICATES (LIKE SELF)) ((SELF CONS)) :PUBLIC? TRUE :DOCUMENTATION \"Destructively remove duplicates from `self' and return the\nresult.  Removes all but the first occurrence of items in the list.\nPreserves the original order of the remaining members.  Runs in linear time.\")", ((cpp_method_code)(&Cons::removeDuplicates)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (REMOVE-DUPLICATES-EQUAL (LIKE SELF)) ((SELF CONS)) :DOCUMENTATION \"`remove-duplicates' (which see) using an `equal?' test.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::removeDuplicatesEqual)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (REMOVE-DUPLICATES-EQUAL (LIKE SELF)) ((SELF CONS)) :DOCUMENTATION \"`remove-duplicates' (which see) using an `equal?' test.\nIMPORTANT: since this uses hashing to speed things up, an `equal-hash-code'\nmethod needs to be defined for this to work.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::removeDuplicatesEqual)), ((cpp_method_code)(NULL)));
     defineFunctionObject("REMOVE-DUPLICATES-FROM-LONG-LIST", "(DEFUN (REMOVE-DUPLICATES-FROM-LONG-LIST (LIKE SELF)) ((SELF CONS) (EQUALTEST? BOOLEAN)))", ((cpp_function_code)(&removeDuplicatesFromLongList)), NULL);
     defineMethodObject("(DEFMETHOD (CONCATENATE CONS) ((LIST1 CONS) (LIST2 CONS) |&REST| (OTHERLISTS CONS)) :PUBLIC? TRUE :DOCUMENTATION \"Return a cons list consisting of the concatenation of \n`list1', `list2', and `otherLists'.  The operation is destructive wrt all\nbut the last list argument which is left intact.  The two mandatory\nparameters allow us to optimize the common binary case by not relying on\nthe somewhat less efficient variable arguments mechanism.\")", ((cpp_method_code)(&Cons::concatenate)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (PREPEND CONS) ((SELF CONS) (LIST1 CONS)) :DOCUMENTATION \"Return a cons list consisting of the concatenation of\n`list1' and `self'.  A copy of `list1' is prepended to `self'.  This\noperation results in structure sharing of `self'; to avoid this, `self'\nshould not be pointed to by anything other than the tail of the prepended\ncopy.\")", ((cpp_method_code)(&Cons::prepend)), ((cpp_method_code)(NULL)));
@@ -2263,8 +2328,8 @@ void helpStartupConses2() {
     defineFunctionObject("APPEND", "(DEFUN (APPEND CONS) ((CONSLIST1 CONS) (CONSLIST2 CONS)) :DOCUMENTATION \"Return a cons list representing the concatenation\nof `consList1' and `consList2'.  The concatenation is NOT destructive.\" :PUBLIC? TRUE)", ((cpp_function_code)(&append)), NULL);
     defineMethodObject("(DEFMETHOD (SUBSET? BOOLEAN) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return true if every element of `self' also occurs in `otherList'.\nUses an `eql?' test and a simple quadratic-time algorithm.  Note that\nthis does not check whether `self' and `otherList' actually are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::subsetP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (EQUIVALENT-SETS? BOOLEAN) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return true if every element of `self' occurs in `otherList' and vice versa.\nUses an `eql?' test and a simple quadratic-time algorithm.  Note that\nthis does not check whether `self' and `otherList' actually are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::equivalentSetsP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (DISJOINT-SETS? BOOLEAN) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return true if the intersection of `self' and `otherList' is empty.\nThis is always true if at least one of the two sets is the empty set.\nUses an `eql?' test and a simple quadratic-time algorithm.  Note that\nthis does not check whether `self' and `otherList' actually are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::disjointSetsP)), ((cpp_method_code)(NULL)));
     defineMethodObject("(DEFMETHOD (INTERSECTION CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set intersection of `self' and `otherList'.  Uses an `eql?'\ntest and a simple quadratic-time algorithm.  Note that the result is only\nguaranteed to be a set if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::intersection)), ((cpp_method_code)(NULL)));
-    defineMethodObject("(DEFMETHOD (UNION CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set union of `self' and `otherList'.  Uses an `eql?' test\nand a simple quadratic-time algorithm.  Note that the result is only\nguaranteed to be a set if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::unioN)), ((cpp_method_code)(NULL)));
   }
 }
 
@@ -2278,12 +2343,12 @@ void startupConses() {
   }
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupConses1();
     }
     if (currentStartupTimePhaseP(4)) {
-      oPRINTLENGTHo.set(NULL_INTEGER);
+      oPRINTLENGTHo = NULL_INTEGER;
       ELIPSIS = SYM_CONSES_STELLA_ddd;
     }
     if (currentStartupTimePhaseP(6)) {
@@ -2291,6 +2356,7 @@ void startupConses() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupConses2();
+      defineMethodObject("(DEFMETHOD (UNION CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set union of `self' and `otherList'.  Uses an `eql?' test\nand a simple quadratic-time algorithm.  Note that the result is only\nguaranteed to be a set if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::unioN)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (DIFFERENCE CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set difference of `self' and `otherList' (i.e., all elements\nthat are in `self' but not in `otherSet').  Uses an `eql?' test and a simple\nquadratic-time algorithm.  Note that the result is only guaranteed to be a\nset if both `self' and `otherList' are sets.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::difference)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (SUBTRACT CONS) ((SELF CONS) (OTHERLIST CONS)) :DOCUMENTATION \"Return the set difference of `self' and `otherList' by destructively\nremoving elements from `self' that also occur in `otherList'.  Uses an `eql?'\ntest and a simple quadratic-time algorithm.  Note that the result is only\nguaranteed to be a set if `self' is a set.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::subtract)), ((cpp_method_code)(NULL)));
       defineMethodObject("(DEFMETHOD (SORT (CONS OF (LIKE (ANY-VALUE SELF)))) ((SELF CONS) (PREDICATE FUNCTION-CODE)) :PUBLIC? TRUE :DOCUMENTATION \"Perform a stable, destructive sort of `self' according to\n`predicate', and return the result.  If `predicate' has a '<' semantics, the\nresult will be in ascending order.  It is not guaranteed that `self' will\npoint to the beginning of the sorted result.  If `predicate' is `null', a\nsuitable '<' predicate is chosen depending on the first element of `self',\nand it is assumed that all elements of `self' have the same type (supported\nelement types are GENERALIZED-SYMBOL, STRING, INTEGER, and FLOAT).\")", ((cpp_method_code)(&Cons::sort)), ((cpp_method_code)(NULL)));
@@ -2306,6 +2372,8 @@ void startupConses() {
       defineFunctionObject("CHOOSE-SORT-PREDICATE", "(DEFUN (CHOOSE-SORT-PREDICATE FUNCTION-CODE) ((FIRSTELEMENT OBJECT)))", ((cpp_function_code)(&chooseSortPredicate)), NULL);
       defineFunctionObject("SORT-TUPLE-COMPARE?", "(DEFUN (SORT-TUPLE-COMPARE? BOOLEAN) ((X CONS) (Y CONS)))", ((cpp_function_code)(&sortTupleCompareP)), NULL);
       defineMethodObject("(DEFMETHOD (SORT-TUPLES (CONS OF (LIKE (ANY-VALUE SELF)))) ((SELF CONS) (N INTEGER) (PREDICATE FUNCTION-CODE)) :PUBLIC? TRUE :DOCUMENTATION \"Just like `sort' but assumes each element of `self' is a tuple (a cons)\nwhose `n'-th element (0-based) will be used for comparison.\")", ((cpp_method_code)(&Cons::sortTuples)), ((cpp_method_code)(NULL)));
+      defineFunctionObject("SORT-OBJECTS-COMPARE?", "(DEFUN (SORT-OBJECTS-COMPARE? BOOLEAN) ((X OBJECT) (Y OBJECT)))", ((cpp_function_code)(&sortObjectsCompareP)), NULL);
+      defineMethodObject("(DEFMETHOD (SORT-OBJECTS (CONS OF (LIKE (ANY-VALUE SELF)))) ((SELF CONS) (SLOT STORAGE-SLOT) (PREDICATE FUNCTION-CODE)) :DOCUMENTATION \"Just like `sort' but assumes each element of `self' has a `slot'\nwhose value will be used for comparison.  Elements must be descendants of\nSTANDARD OBJECT.  Note that while this will work with literal-valued slots,\nit will cause value wrapping everytime `slot' is read.\" :PUBLIC? TRUE)", ((cpp_method_code)(&Cons::sortObjects)), ((cpp_method_code)(NULL)));
       defineFunctionObject("SEARCH-CONS-TREE?", "(DEFUN (SEARCH-CONS-TREE? BOOLEAN) ((TREE OBJECT) (VALUE OBJECT)) :DOCUMENTATION \"Return `true' iff the value `value' is embedded within\nthe cons tree `tree'.  Uses an `eql?' test.\" :PUBLIC? TRUE)", ((cpp_function_code)(&searchConsTreeP)), NULL);
       defineFunctionObject("SEARCH-CONS-TREE-WITH-FILTER?", "(DEFUN (SEARCH-CONS-TREE-WITH-FILTER? BOOLEAN) ((TREE OBJECT) (VALUE OBJECT) (FILTER CONS)) :DOCUMENTATION \"Return `true' iff the value `value' is embedded within\nthe cons tree `tree'.  Uses an `eql?' test.  Does not descend into any\ncons whose first element matches an element of `filter'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&searchConsTreeWithFilterP)), NULL);
       defineFunctionObject("COPY-CONS-TREE", "(DEFUN (COPY-CONS-TREE (LIKE SELF)) ((SELF OBJECT)) :DOCUMENTATION \"Return a copy of the cons tree `self'.\" :PUBLIC? TRUE)", ((cpp_function_code)(&copyConsTree)), NULL);
@@ -2340,6 +2408,7 @@ void startupConses() {
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *REMOVE-DUPLICATES-CROSSOVER-POINT* INTEGER 20 :DOCUMENTATION \"Point where we switch from using a quadratic remove\nduplicates algorithm to a linear one using a hash table.  For\nan unoptimized Common Lisp, 20 is a good crossover point.\")");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SORT-TUPLE-COMPARE-PREDICATE* FUNCTION-CODE NULL)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SORT-TUPLE-COMPARE-INDEX* INTEGER 0)");
+      defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SORT-OBJECTS-COMPARE-SLOT* STORAGE-SLOT NULL)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTPRETTY?* BOOLEAN TRUE :DOCUMENTATION \"If `true' conses will be pretty printed.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTREADABLY?* BOOLEAN FALSE :DOCUMENTATION \"If `true' conses will be printed as readable Stella code.\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *PRINTLENGTH* INTEGER NULL :DOCUMENTATION \"If non-NULL list-like data structures will print at most\nthat many elements.\" :PUBLIC? TRUE)");

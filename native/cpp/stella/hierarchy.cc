@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -564,6 +564,28 @@ Object* accessTypesToClassesIteratorSlotValue(TypesToClassesIterator* self, Symb
     }
   }
   return (value);
+}
+
+Object* DictionaryIterator::valueSetter(Object* value) {
+  { DictionaryIterator* self = this;
+
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "DICTIONARY-ITERATOR.value-setter not implemented on " << "`" << self << "'";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
+}
+
+Object* DictionaryIterator::keySetter(Object* key) {
+  { DictionaryIterator* self = this;
+
+    { OutputStringStream* stream000 = newOutputStringStream();
+
+      *(stream000->nativeStream) << "DICTIONARY-ITERATOR.key-setter not implemented on " << "`" << self << "'";
+      throw *newStellaException(stream000->theStringReader());
+    }
+  }
 }
 
 PropertyListIterator* newPropertyListIterator() {
@@ -1843,7 +1865,7 @@ Symbol* newSymbol(char* symbolName) {
 
     self = new Symbol();
     self->symbolName = symbolName;
-    self->homeContext = oCONTEXTo.get();
+    self->homeContext = oCONTEXTo;
     self->symbolId = NULL_INTEGER;
     self->symbolValueAndPlist = NIL;
     self->symbolSlotOffset = NULL_INTEGER;
@@ -1897,7 +1919,7 @@ Surrogate* newSurrogate(char* symbolName) {
 
     self = new Surrogate();
     self->symbolName = symbolName;
-    self->homeContext = oCONTEXTo.get();
+    self->homeContext = oCONTEXTo;
     self->symbolId = NULL_INTEGER;
     self->surrogateValue = NULL;
     return (self);
@@ -1974,7 +1996,7 @@ Keyword* newKeyword(char* symbolName) {
 
     self = new Keyword();
     self->symbolName = symbolName;
-    self->homeContext = oCONTEXTo.get();
+    self->homeContext = oCONTEXTo;
     self->symbolId = NULL_INTEGER;
     return (self);
   }
@@ -2018,7 +2040,7 @@ TransientSymbol* newTransientSymbol(char* symbolName) {
 
     self = new TransientSymbol();
     self->symbolName = symbolName;
-    self->homeContext = oCONTEXTo.get();
+    self->homeContext = oCONTEXTo;
     self->symbolId = NULL_INTEGER;
     self->symbolValueAndPlist = NIL;
     self->symbolSlotOffset = NULL_INTEGER;
@@ -5196,7 +5218,7 @@ void IntegerWrapper::printObject(std::ostream* stream) {
     { int value = self->wrapperValue;
 
       if (value == NULL_INTEGER) {
-        if (oPRINTREADABLYpo.get()) {
+        if (oPRINTREADABLYpo) {
           *(stream) << SYM_HIERARCHY_STELLA_NULL_INTEGER;
         }
         else {
@@ -5204,7 +5226,7 @@ void IntegerWrapper::printObject(std::ostream* stream) {
         }
       }
       else {
-        if (oPRINTREADABLYpo.get()) {
+        if (oPRINTREADABLYpo) {
           *(stream) << value;
         }
         else {
@@ -5256,7 +5278,7 @@ void LongIntegerWrapper::printObject(std::ostream* stream) {
     { long long int value = self->wrapperValue;
 
       if (value == NULL_LONG_INTEGER) {
-        if (oPRINTREADABLYpo.get()) {
+        if (oPRINTREADABLYpo) {
           *(stream) << SYM_HIERARCHY_STELLA_NULL_LONG_INTEGER;
         }
         else {
@@ -5264,7 +5286,7 @@ void LongIntegerWrapper::printObject(std::ostream* stream) {
         }
       }
       else {
-        if (oPRINTREADABLYpo.get()) {
+        if (oPRINTREADABLYpo) {
           *(stream) << value;
         }
         else {
@@ -5316,7 +5338,7 @@ void FloatWrapper::printObject(std::ostream* stream) {
     { double value = self->wrapperValue;
 
       if (value == NULL_FLOAT) {
-        if (oPRINTREADABLYpo.get()) {
+        if (oPRINTREADABLYpo) {
           *(stream) << SYM_HIERARCHY_STELLA_NULL_FLOAT;
         }
         else {
@@ -5324,7 +5346,7 @@ void FloatWrapper::printObject(std::ostream* stream) {
         }
       }
       else {
-        if (oPRINTREADABLYpo.get()) {
+        if (oPRINTREADABLYpo) {
           *(stream) << value;
         }
         else {
@@ -5376,7 +5398,7 @@ void StringWrapper::printObject(std::ostream* stream) {
     { char* value = self->wrapperValue;
 
       if (value == NULL) {
-        if (oPRINTREADABLYpo.get()) {
+        if (oPRINTREADABLYpo) {
           *(stream) << SYM_HIERARCHY_STELLA_NULL_STRING;
         }
         else {
@@ -5384,7 +5406,7 @@ void StringWrapper::printObject(std::ostream* stream) {
         }
       }
       else {
-        if (oPRINTREADABLYpo.get()) {
+        if (oPRINTREADABLYpo) {
           printStringReadably(value, stream);
         }
         else {
@@ -5417,7 +5439,7 @@ void MutableStringWrapper::printObject(std::ostream* stream) {
     { char* value = self->wrapperValue;
 
       if (value == NULL) {
-        if (oPRINTREADABLYpo.get()) {
+        if (oPRINTREADABLYpo) {
           *(stream) << SYM_HIERARCHY_STELLA_NULL_MUTABLE_STRING;
         }
         else {
@@ -5425,7 +5447,7 @@ void MutableStringWrapper::printObject(std::ostream* stream) {
         }
       }
       else {
-        if (oPRINTREADABLYpo.get()) {
+        if (oPRINTREADABLYpo) {
           printStringReadably(value, stream);
         }
         else {
@@ -5477,7 +5499,7 @@ void CharacterWrapper::printObject(std::ostream* stream) {
     { char value = self->wrapperValue;
 
       if (value == NULL_CHARACTER) {
-        if (oPRINTREADABLYpo.get()) {
+        if (oPRINTREADABLYpo) {
           *(stream) << SYM_HIERARCHY_STELLA_NULL_CHARACTER;
         }
         else {
@@ -5486,7 +5508,7 @@ void CharacterWrapper::printObject(std::ostream* stream) {
       }
       else {
         {
-          if (!(oPRINTREADABLYpo.get())) {
+          if (!(oPRINTREADABLYpo)) {
             *(stream) << "|L|";
           }
           printCharacter(value, stream);
@@ -5535,7 +5557,7 @@ void BooleanWrapper::printObject(std::ostream* stream) {
   { BooleanWrapper* self = this;
 
     {
-      if (!(oPRINTREADABLYpo.get())) {
+      if (!(oPRINTREADABLYpo)) {
         *(stream) << "|L|";
       }
       if (self->wrapperValue) {
@@ -5637,7 +5659,7 @@ Surrogate* VerbatimStringWrapper::primaryType() {
 void VerbatimStringWrapper::printObject(std::ostream* stream) {
   { VerbatimStringWrapper* self = this;
 
-    *(stream) << ((oPRINTREADABLYpo.get() ? (char*)"" : (char*)"|V|")) << self->wrapperValue;
+    *(stream) << ((oPRINTREADABLYpo ? (char*)"" : (char*)"|V|")) << self->wrapperValue;
   }
 }
 
@@ -6650,7 +6672,7 @@ void helpStartupHierarchy7() {
       clasS->classSlotAccessorCode = ((cpp_function_code)(&accessTypesToClassesIteratorSlotValue));
     }
     defineClassFromStringifiedSource("ABSTRACT-DICTIONARY-ITERATOR", "(DEFCLASS ABSTRACT-DICTIONARY-ITERATOR (ABSTRACT-ITERATOR) :ABSTRACT? TRUE :DOCUMENTATION \"Instances of ABSTRACT-DICTIONARY-ITERATOR support iteration\nover dictionaries.\" :PARAMETERS ((ANY-KEY :TYPE UNKNOWN) (ANY-VALUE :TYPE UNKNOWN)) :PUBLIC-SLOTS ((KEY :TYPE (LIKE (ANY-KEY SELF)))) :PUBLIC-METHODS ((VALUE-SETTER ((SELF ABSTRACT-DICTIONARY-ITERATOR) (VALUE (LIKE (ANY-VALUE SELF)))) :TYPE (LIKE (ANY-VALUE SELF)) :DOCUMENTATION \"Abstract method needed to allow application of this\nmethod on abstract iterator classes that do not implement it.  By having\nthis here all `next?' methods of dictionary iterators MUST use the `slot-value'\nparadigm to set the iterator value.\") (KEY-SETTER ((SELF ABSTRACT-DICTIONARY-ITERATOR) (KEY (LIKE (ANY-KEY SELF)))) :TYPE (LIKE (ANY-KEY SELF)))))");
-    defineClassFromStringifiedSource("DICTIONARY-ITERATOR", "(DEFCLASS DICTIONARY-ITERATOR (ABSTRACT-DICTIONARY-ITERATOR) :ABSTRACT? TRUE :DOCUMENTATION \"Instances of DICTIONARY-ITERATOR support iteration\nover dictionaries with keys and values of type OBJECT.\" :PARAMETERS ((ANY-KEY :TYPE OBJECT) (ANY-VALUE :TYPE OBJECT)) :SYNONYMS (OBJECT-DICTIONARY-ITERATOR))");
+    defineClassFromStringifiedSource("DICTIONARY-ITERATOR", "(DEFCLASS DICTIONARY-ITERATOR (ABSTRACT-DICTIONARY-ITERATOR) :ABSTRACT? TRUE :DOCUMENTATION \"Instances of DICTIONARY-ITERATOR support iteration\nover dictionaries with keys and values of type OBJECT.\" :PARAMETERS ((ANY-KEY :TYPE OBJECT) (ANY-VALUE :TYPE OBJECT)) :SYNONYMS (OBJECT-DICTIONARY-ITERATOR) :PUBLIC-METHODS ((VALUE-SETTER ((SELF DICTIONARY-ITERATOR) (VALUE (LIKE (ANY-VALUE SELF)))) :TYPE (LIKE (ANY-VALUE SELF)) (ERROR \"DICTIONARY-ITERATOR.value-setter not implemented on \" SELF)) (KEY-SETTER ((SELF DICTIONARY-ITERATOR) (KEY (LIKE (ANY-KEY SELF)))) :TYPE (LIKE (ANY-KEY SELF)) (ERROR \"DICTIONARY-ITERATOR.key-setter not implemented on \" SELF))))");
     { Class* clasS = defineClassFromStringifiedSource("PROPERTY-LIST-ITERATOR", "(DEFCLASS PROPERTY-LIST-ITERATOR (DICTIONARY-ITERATOR) :DOCUMENTATION \"Iterator class for the collection PROPERTY-LIST.\" :PUBLIC-SLOTS ((PLIST-ITERATOR-CURSOR :TYPE CONS) (PLIST-ITERATOR-COLLECTION :TYPE PROPERTY-LIST)))");
 
       clasS->classConstructorCode = ((cpp_function_code)(&newPropertyListIterator));
@@ -7007,7 +7029,7 @@ void helpStartupHierarchy8() {
 void startupHierarchy() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupHierarchy1();
       helpStartupHierarchy2();

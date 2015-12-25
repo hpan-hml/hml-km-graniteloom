@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -97,7 +97,6 @@ void startPowerloomGuiOptionHandler(CmdLineOption* option, Object* value) {
 }
 
 int main(int count, char** arguments) {
-  // Main PowerLoom entry point.
   std::cout << "Initializing STELLA..." << std::endl;
   startupStellaSystem();
   std::cout << "Initializing PowerLoom..." << std::endl;
@@ -117,7 +116,7 @@ int main(int count, char** arguments) {
 void startupPowerloom() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/POWERLOOM-CODE", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       KWD_POWERLOOM_KEY = ((Keyword*)(internRigidSymbolWrtModule("KEY", NULL, 2)));
       KWD_POWERLOOM_DOCUMENTATION = ((Keyword*)(internRigidSymbolWrtModule("DOCUMENTATION", NULL, 2)));
@@ -148,7 +147,7 @@ void startupPowerloom() {
       defineFunctionObject("LOAD-ALL-EXTENSION-SYSTEMS", "(DEFUN LOAD-ALL-EXTENSION-SYSTEMS () :DOCUMENTATION \"Load and initialize all installed extension systems.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&loadAllExtensionSystems)), NULL);
       defineFunctionObject("LOAD-ALL-EXTENSIONS-OPTION-HANDLER", "(DEFUN LOAD-ALL-EXTENSIONS-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Load and initialize all installed extension systems.\" :PUBLIC? TRUE)", ((cpp_function_code)(&loadAllExtensionsOptionHandler)), NULL);
       defineFunctionObject("START-POWERLOOM-GUI-OPTION-HANDLER", "(DEFUN START-POWERLOOM-GUI-OPTION-HANDLER ((OPTION CMD-LINE-OPTION) (VALUE OBJECT)) :DOCUMENTATION \"Start the PowerLoom GUI.\" :PUBLIC? TRUE)", ((cpp_function_code)(&startPowerloomGuiOptionHandler)), NULL);
-      defineFunctionObject("MAIN", "(DEFUN (MAIN INTEGER) ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :PUBLIC? TRUE :DOCUMENTATION \"Main PowerLoom entry point.\")", ((cpp_function_code)(&main)), NULL);
+      defineFunctionObject("MAIN", "(DEFUN (MAIN INTEGER) ((COUNT INTEGER) (ARGUMENTS (ARRAY () OF STRING))) :PUBLIC? TRUE)", ((cpp_function_code)(&main)), NULL);
       defineFunctionObject("STARTUP-POWERLOOM", "(DEFUN STARTUP-POWERLOOM () :PUBLIC? TRUE)", ((cpp_function_code)(&startupPowerloom)), NULL);
       { MethodSlot* function = lookupFunction(SYM_POWERLOOM_POWERLOOM_CODE_STARTUP_POWERLOOM);
 

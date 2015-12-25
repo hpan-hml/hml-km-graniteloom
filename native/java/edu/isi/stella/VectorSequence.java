@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -182,41 +182,33 @@ public class VectorSequence extends Vector {
     { VectorSequence self = this;
 
       { edu.isi.stella.Stella_Object[] array = self.theArray;
-        int firstshiftoffset = -1;
-        int lastshiftoffset = self.sequenceLength - 1;
+        int length = self.sequenceLength;
+        int nhits = 0;
 
         { int i = Stella.NULL_INTEGER;
           int iter000 = 0;
-          int upperBound000 = lastshiftoffset;
-          boolean unboundedP000 = upperBound000 == Stella.NULL_INTEGER;
+          int upperBound000 = length - 1;
 
-          loop000 : for (;unboundedP000 ||
-                    (iter000 <= upperBound000); iter000 = iter000 + 1) {
+          for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
             i = iter000;
             if (Stella_Object.eqlP(array[i], value)) {
-              firstshiftoffset = i + 1;
-              break loop000;
+              nhits = nhits + 1;
+            }
+            else if (nhits > 0) {
+              array[(i - nhits)] = (array[i]);
             }
           }
         }
-        if (firstshiftoffset == -1) {
-          return (self);
-        }
-        if (firstshiftoffset <= lastshiftoffset) {
-          { int j = Stella.NULL_INTEGER;
-            int iter001 = firstshiftoffset;
-            int upperBound001 = lastshiftoffset;
-            boolean unboundedP001 = upperBound001 == Stella.NULL_INTEGER;
+        self.sequenceLength = length - nhits;
+        { int i = Stella.NULL_INTEGER;
+          int iter001 = self.sequenceLength;
+          int upperBound001 = length - 1;
 
-            for (;unboundedP001 ||
-                      (iter001 <= upperBound001); iter001 = iter001 + 1) {
-              j = iter001;
-              array[(j - 1)] = (array[j]);
-            }
+          for (;iter001 <= upperBound001; iter001 = iter001 + 1) {
+            i = iter001;
+            array[i] = null;
           }
         }
-        array[lastshiftoffset] = null;
-        self.sequenceLength = lastshiftoffset;
         return (self);
       }
     }

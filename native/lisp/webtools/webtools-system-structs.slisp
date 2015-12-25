@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 2003-2010      |
+| Portions created by the Initial Developer are Copyright (C) 2003-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -72,19 +72,19 @@
 
 (CL:IN-PACKAGE "STELLA")
 
-(CL:DEFSTRUCT (|detail| (:CONC-NAME |%detail.|) (:INCLUDE |XMLObject|) (:CONSTRUCTOR |%MAKE-detail| ()) (:COPIER ()) (:PREDICATE ())) (|contents| NULL))
+(CL:DEFSTRUCT (|Detail| (:CONC-NAME |%Detail.|) (:INCLUDE |XMLObject|) (:CONSTRUCTOR |%MAKE-Detail| ()) (:COPIER ()) (:PREDICATE ())) (|contents| NULL))
 
 (CL:DEFSTRUCT
- (|faultactor| (:CONC-NAME |%faultactor.|) (:INCLUDE |XMLObject|)
-  (:CONSTRUCTOR |%MAKE-faultactor| ()) (:COPIER ()) (:PREDICATE ())))
+ (|FaultActor| (:CONC-NAME |%FaultActor.|) (:INCLUDE |XMLObject|)
+  (:CONSTRUCTOR |%MAKE-FaultActor| ()) (:COPIER ()) (:PREDICATE ())))
 
 (CL:DEFSTRUCT
- (|faultstring| (:CONC-NAME |%faultstring.|) (:INCLUDE |XMLObject|)
-  (:CONSTRUCTOR |%MAKE-faultstring| ()) (:COPIER ()) (:PREDICATE ())))
+ (|FaultString| (:CONC-NAME |%FaultString.|) (:INCLUDE |XMLObject|)
+  (:CONSTRUCTOR |%MAKE-FaultString| ()) (:COPIER ()) (:PREDICATE ())))
 
 (CL:DEFSTRUCT
- (|faultcode| (:CONC-NAME |%faultcode.|) (:INCLUDE |XMLObject|)
-  (:CONSTRUCTOR |%MAKE-faultcode| ()) (:COPIER ()) (:PREDICATE ())))
+ (|FaultCode| (:CONC-NAME |%FaultCode.|) (:INCLUDE |XMLObject|)
+  (:CONSTRUCTOR |%MAKE-FaultCode| ()) (:COPIER ()) (:PREDICATE ())))
 
 (CL:DEFSTRUCT (|Fault| (:CONC-NAME |%Fault.|) (:INCLUDE |XMLObject|) (:CONSTRUCTOR |%MAKE-Fault| ()) (:COPIER ()) (:PREDICATE ())) (|faultcode| NULL)
   (|faultstring| NULL)
@@ -99,8 +99,8 @@
 (CL:IN-PACKAGE "STELLA")
 
 (CL:DEFINE-CONDITION HTTP-EXCEPTION (READ-EXCEPTION)
-  ((ERROR-CODE :TYPE CL:FIXNUM :INITFORM NULL-INTEGER :ALLOCATION :INSTANCE
-    :ACCESSOR %ERROR-CODE)))
+  ((ERROR-CODE :TYPE CL:FIXNUM :INITFORM NULL-INTEGER :ALLOCATION
+    :INSTANCE :ACCESSOR %ERROR-CODE)))
 
 (CL:DEFSTRUCT (HTTP-SERVER (:CONC-NAME %HTTP-SERVER.) (:INCLUDE STANDARD-OBJECT) (:CONSTRUCTOR %MAKE-HTTP-SERVER ()) (:COPIER ()) (:PREDICATE ())) "Abstract class that will be implemented by specific server implementations
 and instantiated with a single instance used to dispatch all API methods.")

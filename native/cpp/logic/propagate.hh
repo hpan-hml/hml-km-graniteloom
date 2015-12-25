@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -71,10 +71,12 @@ extern DECLARE_STELLA_SPECIAL(oDEFERINGDEFAULTFORWARDINFERENCESpo, boolean );
 extern DECLARE_STELLA_SPECIAL(oCOLLECTFORWARDPROPOSITIONSo, Cons* );
 extern int oMAX_SKOLEM_GENERATION_COUNTo;
 extern boolean oJUST_IN_TIME_FORWARD_INFERENCEpo;
+extern List* oCLASH_EXCEPTIONSo;
 
 // Function signatures:
 PropagationEnvironment* newPropagationEnvironment();
 Object* accessPropagationEnvironmentSlotValue(PropagationEnvironment* self, Symbol* slotname, Object* value, boolean setvalueP);
+void printPropagationEnvironmentStats(PropagationEnvironment* self);
 PropagationEnvironment* getPropagationEnvironment(Context* self);
 void unlinkPropagationEnvironment(Context* self);
 Keyword* evaluationState(Proposition* proposition);
@@ -99,12 +101,16 @@ void equateEquivalentFunctionPropositions(Proposition* self);
 void evaluateFunctionProposition(Proposition* self);
 void evaluatePredicateProposition(Proposition* self);
 void evaluateProposition(Proposition* self);
+void resetClashExceptions();
+boolean exceptionRecordMatchesContextP(ExceptionRecord* record);
+void cullClashExceptions(Context* self);
 void recursivelyReactToInferenceUpdate(Proposition* self);
 void elaborateMetaInstance(Object* self);
 void elaborateInstance(Object* self);
 void evaluateReachableInequalities(LogicObject* self, List* visitedlist);
 void elaborateSurrogatesInProposition(Proposition* proposition);
 boolean followDependentPropositionArgumentP(Proposition* proposition, Object* argument);
+boolean doNotElaborateP(Object* self, PropagationEnvironment* environment);
 void postRelatedFacts(Object* self, PropagationEnvironment* environment);
 void helpCollectFacts(Object* self, List* facts, HashSet* beenthere, boolean includeunknownP);
 List* allFactsOfInstance(Object* self, boolean includeunknownfactsP, boolean elaborateP);
@@ -165,6 +171,7 @@ extern Keyword* KWD_PROPAGATE_AND;
 extern Keyword* KWD_PROPAGATE_OR;
 extern Keyword* KWD_PROPAGATE_NOT;
 extern Keyword* KWD_PROPAGATE_EQUIVALENT;
+extern Symbol* SYM_PROPAGATE_LOGIC_CULL_CLASH_EXCEPTIONS;
 extern Keyword* KWD_PROPAGATE_ELABORATE;
 extern Keyword* KWD_PROPAGATE_EXTENSIONAL_ASSERTION;
 extern Surrogate* SGT_PROPAGATE_PL_KERNEL_KB_INEQUALITY;

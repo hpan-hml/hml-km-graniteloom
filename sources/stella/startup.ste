@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: startup.ste,v 1.118 2010/10/16 21:38:03 hans Exp
+;;; Version: startup.ste,v 1.131 2014/05/01 08:28:09 hans Exp
 
 ;;; Support for executing startup-time code.
 
@@ -60,7 +60,7 @@
 (defglobal *stella-major-version-number* INTEGER 3  :public? TRUE)
 (defglobal *stella-minor-version-number* INTEGER 5  :public? TRUE)
 (defglobal *stella-release-state* STRING ""  :public? TRUE)
-(defglobal *stella-patch-level* INTEGER 20 :public? TRUE)
+(defglobal *stella-patch-level* INTEGER 29 :public? TRUE)
 
 (defglobal *stella-version-string* STRING (stella-version-string)
   :public? TRUE)

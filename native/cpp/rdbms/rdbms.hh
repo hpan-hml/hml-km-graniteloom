@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -267,8 +267,11 @@ extern Symbol* SYM_RDBMS_STELLA_ITERATOR;
 extern Surrogate* SGT_RDBMS_RDBMS_DATABASE;
 extern Surrogate* SGT_RDBMS_RDBMS_F_ALLOCATE_DBTABLE_SPECIALIST_ITERATOR_MEMO_TABLE_000;
 extern Keyword* KWD_RDBMS_FAILURE;
+extern Keyword* KWD_RDBMS_DB_LOOKUP;
 extern Keyword* KWD_RDBMS_CONTINUING_SUCCESS;
 extern Keyword* KWD_RDBMS_FINAL_SUCCESS;
+extern Keyword* KWD_RDBMS_TECHNICAL;
+extern Keyword* KWD_RDBMS_LAY;
 extern Symbol* SYM_RDBMS_RDBMS_pREL;
 extern Symbol* SYM_RDBMS_RDBMS_pEV;
 extern Symbol* SYM_RDBMS_RDBMS_pDB;

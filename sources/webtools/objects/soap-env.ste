@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 2003-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 2003-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: soap-env.ste,v 1.6 2010/02/11 00:07:57 hans Exp
+;;; Version: soap-env.ste,v 1.7 2014/04/17 22:41:14 hans Exp
 
 ;;; XML Objects for soap envelopes.
 
@@ -62,15 +62,15 @@
 
 (DEFCLASS Fault (XMLObject)
   :PUBLIC-SLOTS
-  ((faultcode :type faultcode)
-   (faultstring :type faultstring)
-   (faultactor :type faultactor)
-   (detail :type detail)))
+  ((faultcode :type FaultCode)
+   (faultstring :type FaultString)
+   (faultactor :type FaultActor)
+   (detail :type Detail)))
 
-(DEFCLASS faultcode (XMLObject))
-(DEFCLASS faultstring (XMLObject))
-(DEFCLASS faultactor (XMLObject))
-(DEFCLASS detail (XMLObject)
+(DEFCLASS FaultCode (XMLObject))
+(DEFCLASS FaultString (XMLObject))
+(DEFCLASS FaultActor (XMLObject))
+(DEFCLASS Detail (XMLObject)
   :PUBLIC-SLOTS
   ((contents :type XMLObject)))
 

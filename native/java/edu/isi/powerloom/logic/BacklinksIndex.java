@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -68,6 +68,36 @@ public class BacklinksIndex extends StandardObject {
     }
   }
 
+  public BacklinksIndex removeDeletedMembers() {
+    { BacklinksIndex self = this;
+
+      if (self.dependentPropositionsList != null) {
+        self.dependentPropositionsList.removeDeletedMembers();
+      }
+      if (self.dependentIsaPropositionsList != null) {
+        self.dependentIsaPropositionsList.removeDeletedMembers();
+      }
+      { HashTable table = self.predicatePropositionsTable;
+        StellaHashTable hashtable = ((StellaHashTable)(((table != null) ? table.theStellaHashTable : ((StellaHashTable)(null)))));
+
+        if (hashtable != null) {
+          { Stella_Object key = null;
+            SequenceIndex index = null;
+            StellaHashTableIterator iter000 = ((StellaHashTableIterator)(hashtable.allocateIterator()));
+
+            while (iter000.nextP()) {
+              key = iter000.key;
+              index = ((SequenceIndex)(iter000.value));
+              key = key;
+              index.removeDeletedMembers();
+            }
+          }
+        }
+        return (self);
+      }
+    }
+  }
+
   public static void helpRemoveDependentProposition(BacklinksIndex index, Proposition proposition) {
     { SequenceIndex list = index.dependentPropositionsList;
       HashTable table = index.predicatePropositionsTable;
@@ -96,6 +126,9 @@ public class BacklinksIndex extends StandardObject {
     { SequenceIndex alldependentpropositions = index.dependentPropositionsList;
       HashTable table = index.predicatePropositionsTable;
 
+      if (alldependentpropositions.first() == proposition) {
+        return;
+      }
       if (table == null) {
         if (SequenceIndex.sequenceIndexDestimatedLength(alldependentpropositions) < Logic.$SPECIALIZED_BACKLINKS_CROSSOVER_POINT$) {
           alldependentpropositions.insert(proposition);

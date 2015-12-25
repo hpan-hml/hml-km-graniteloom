@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -148,7 +148,7 @@ char* explanationTruthMarker(Justification* justification) {
     else {
       holdsby = KWD_EXPLANATIONS_INFERENCE;
     }
-    if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+    if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
       { char* label = "Fact:";
         char* green = "#00ff00";
         char* yellow = "#ffd70";
@@ -273,7 +273,7 @@ void defineExplanationPhrase(Keyword* phrasekey, Keyword* audience, char* phrase
 }
 
 char* lookupExplanationPhrase(Keyword* phrasekey, Cons* modifiers, Keyword* audience) {
-  { HashTable* vocabulary = ((HashTable*)(oEXPLANATION_VOCABULARIESo->lookup((((boolean)(audience)) ? audience : oEXPLANATION_AUDIENCEo.get()))));
+  { HashTable* vocabulary = ((HashTable*)(oEXPLANATION_VOCABULARIESo->lookup((((boolean)(audience)) ? audience : oEXPLANATION_AUDIENCEo))));
     Cons* entry = NIL;
     char* bestphrase = NULL;
     int bestscore = -1;
@@ -478,7 +478,7 @@ KeyValueList* printExplanation(Justification* self, OutputStream* stream, KeyVal
         printOneExplanation(self, stream, mapping, maxdepth, unexplained);
       }
     }
-    oMOST_RECENT_EXPLANATION_MAPPINGo.set(mapping);
+    oMOST_RECENT_EXPLANATION_MAPPINGo = mapping;
     return (mapping);
   }
 }
@@ -490,12 +490,12 @@ void printExplanationSupport(Justification* self, OutputStream* stream, KeyValue
 }
 
 void printOneExplanation(Justification* self, OutputStream* stream, KeyValueList* mapping, int maxdepth, List* unexplained) {
-  if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII) {
+  if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII) {
     printExplanationHeader(self, stream, mapping);
     printExplanationSupport(self, stream, mapping, maxdepth, unexplained);
     *(stream->nativeStream) << std::endl;
   }
-  else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_XML) {
+  else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_XML) {
     {
       *(stream->nativeStream) << "<inference>";
       *(stream->nativeStream) << std::endl;
@@ -509,7 +509,7 @@ void printOneExplanation(Justification* self, OutputStream* stream, KeyValueList
       *(stream->nativeStream) << "</inference>" << std::endl;
     }
   }
-  else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+  else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
     {
       *(stream->nativeStream) << "<TABLE>";
       {
@@ -526,7 +526,7 @@ void printOneExplanation(Justification* self, OutputStream* stream, KeyValueList
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -535,25 +535,25 @@ void printOneExplanation(Justification* self, OutputStream* stream, KeyValueList
 DEFINE_STELLA_SPECIAL(oCURRENTJUSTIFICATIONo, Justification* , NULL);
 
 boolean printingJustificationP() {
-  return (((boolean)(oCURRENTJUSTIFICATIONo.get())));
+  return (((boolean)(oCURRENTJUSTIFICATIONo)));
 }
 
 void printJustificationPropositionForFormat(Justification* self, OutputStream* stream, int indent) {
-  if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII) {
+  if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII) {
     printJustificationProposition(self, stream, indent);
   }
-  else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+  else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
     { OutputStringStream* stringStream = newOutputStringStream();
       boolean quotehtmlP = true;
 
       printJustificationProposition(self, stringStream, indent);
       if (oCYC_KLUDGES_ENABLEDpo) {
-        if (oLOGIC_DIALECTo.get() == KWD_EXPLANATIONS_CYC_NL) {
+        if (oLOGIC_DIALECTo == KWD_EXPLANATIONS_CYC_NL) {
           quotehtmlP = false;
         }
       }
-      if ((oLOGIC_DIALECTo.get() == KWD_EXPLANATIONS_KIF_ONTOSAURUS) ||
-          (oLOGIC_DIALECTo.get() == KWD_EXPLANATIONS_JAVA_GUI_HTML)) {
+      if ((oLOGIC_DIALECTo == KWD_EXPLANATIONS_KIF_ONTOSAURUS) ||
+          (oLOGIC_DIALECTo == KWD_EXPLANATIONS_JAVA_GUI_HTML)) {
         quotehtmlP = false;
       }
       if (quotehtmlP) {
@@ -564,7 +564,7 @@ void printJustificationPropositionForFormat(Justification* self, OutputStream* s
       }
     }
   }
-  else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_XML) {
+  else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_XML) {
     { Proposition* proposition = self->proposition;
       OutputStringStream* stringStream = newOutputStringStream();
 
@@ -585,7 +585,7 @@ void printJustificationPropositionForFormat(Justification* self, OutputStream* s
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -611,17 +611,17 @@ void printJustificationProposition(Justification* self, OutputStream* stream, in
 
 void printExplanationLabel(OutputStream* stream, char* label, boolean headP) {
   headP = headP;
-  if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII) {
+  if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII) {
     *(stream->nativeStream) << label;
   }
-  else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_XML) {
+  else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_XML) {
     {
       *(stream->nativeStream) << "<label>";
       *(stream->nativeStream) << label;
       *(stream->nativeStream) << "</label>" << std::endl;
     }
   }
-  else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+  else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
     {
       *(stream->nativeStream) << "<STRONG>";
       *(stream->nativeStream) << label << "&nbsp;";
@@ -631,7 +631,7 @@ void printExplanationLabel(OutputStream* stream, char* label, boolean headP) {
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -642,11 +642,11 @@ void printExplanationHeader(Justification* self, OutputStream* stream, KeyValueL
     char* label = info->label;
     int indent = strlen(label) + 1;
 
-    if ((oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_XML) ||
-        (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII)) {
+    if ((oEXPLANATION_FORMATo == KWD_EXPLANATIONS_XML) ||
+        (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII)) {
       printExplanationLabel(stream, label, true);
     }
-    else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+    else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
       {
         *(stream->nativeStream) << "<TD align=left valign=top>";
         printExplanationLabel(stream, label, true);
@@ -656,7 +656,7 @@ void printExplanationHeader(Justification* self, OutputStream* stream, KeyValueL
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
 
-        *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo.get() << "'" << " is not a valid case option";
+        *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo << "'" << " is not a valid case option";
         throw *newStellaException(stream000->theStringReader());
       }
     }
@@ -667,16 +667,16 @@ void printExplanationHeader(Justification* self, OutputStream* stream, KeyValueL
     else {
       *(stream->nativeStream) << " ";
     }
-    if ((oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_XML) ||
-        (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII)) {
+    if ((oEXPLANATION_FORMATo == KWD_EXPLANATIONS_XML) ||
+        (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII)) {
     }
-    else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+    else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
       *(stream->nativeStream) << "<TD align=left valign=top>";
     }
     else {
       { OutputStringStream* stream001 = newOutputStringStream();
 
-        *(stream001->nativeStream) << "`" << oEXPLANATION_FORMATo.get() << "'" << " is not a valid case option";
+        *(stream001->nativeStream) << "`" << oEXPLANATION_FORMATo << "'" << " is not a valid case option";
         throw *newStellaException(stream001->theStringReader());
       }
     }
@@ -704,6 +704,9 @@ void printExplanationText(Justification* self, OutputStream* stream, KeyValueLis
     if (failedGoalJustificationP(self)) {
       introduction = lookupExplanationPhrase(KWD_EXPLANATIONS_FAILED, modifiers, NULL);
     }
+    else if (isaP(self, SGT_EXPLANATIONS_LOGIC_CLASH_JUSTIFICATION)) {
+      introduction = lookupExplanationPhrase(KWD_EXPLANATIONS_INCONSISTENT, modifiers, NULL);
+    }
     else {
       introduction = lookupExplanationPhrase(KWD_EXPLANATIONS_FOLLOWS, modifiers, NULL);
     }
@@ -724,7 +727,7 @@ void printExplanationText(Justification* self, OutputStream* stream, KeyValueLis
       inference = lookupExplanationPhrase(self->inferenceRule, modifiers, NULL);
       amplification = lookupExplanationPhrase(self->inferenceRule, modifiersI, NULL);
     }
-    if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII) {
+    if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII) {
       *(stream->nativeStream) << oEXPLANATION_TAB_STRINGo;
       *(stream->nativeStream) << introduction << " " << inference;
       if ((strlen(amplification) > 0) &&
@@ -736,7 +739,7 @@ void printExplanationText(Justification* self, OutputStream* stream, KeyValueLis
       }
       *(stream->nativeStream) << std::endl;
     }
-    else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+    else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
       *(stream->nativeStream) << "<BR>" << std::endl;
       *(stream->nativeStream) << introduction << " " << inference;
       if ((strlen(amplification) > 0) &&
@@ -748,7 +751,7 @@ void printExplanationText(Justification* self, OutputStream* stream, KeyValueLis
       }
       *(stream->nativeStream) << std::endl;
     }
-    else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_XML) {
+    else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_XML) {
       *(stream->nativeStream) << "<method";
       if (self->inferenceDirection() == KWD_EXPLANATIONS_FORWARD) {
         *(stream->nativeStream) << " direction='forward'";
@@ -758,7 +761,7 @@ void printExplanationText(Justification* self, OutputStream* stream, KeyValueLis
     else {
       { OutputStringStream* stream000 = newOutputStringStream();
 
-        *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo.get() << "'" << " is not a valid case option";
+        *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo << "'" << " is not a valid case option";
         throw *newStellaException(stream000->theStringReader());
       }
     }
@@ -766,7 +769,7 @@ void printExplanationText(Justification* self, OutputStream* stream, KeyValueLis
 }
 
 boolean markAsExplicitAssertionP(Justification* self) {
-  if (oEXPLANATION_STYLEo.get() == KWD_EXPLANATIONS_BRIEF) {
+  if (oEXPLANATION_STYLEo == KWD_EXPLANATIONS_BRIEF) {
     if (self->inferenceRule == KWD_EXPLANATIONS_PRIMITIVE_STRATEGY) {
       { Keyword* testValue000 = ((PrimitiveStrategy*)(self))->strategy;
 
@@ -787,7 +790,7 @@ boolean markAsExplicitAssertionP(Justification* self) {
 }
 
 boolean markAsFailedGoalP(Justification* self) {
-  return ((oEXPLANATION_STYLEo.get() == KWD_EXPLANATIONS_BRIEF) &&
+  return ((oEXPLANATION_STYLEo == KWD_EXPLANATIONS_BRIEF) &&
       ((self->inferenceRule == KWD_EXPLANATIONS_PRIMITIVE_STRATEGY) &&
        failedGoalJustificationP(self)));
 }
@@ -870,7 +873,7 @@ KeyValueMap* getExplanationSubstitution(Justification* self) {
 }
 
 void printOneVariableSubstitution(OutputStream* stream, Object* var, Object* value) {
-  if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII) {
+  if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII) {
     prettyPrintLogicalForm(var, stream);
     if (eqlP(valueOf(var), var)) {
       *(stream->nativeStream) << "/";
@@ -893,17 +896,17 @@ void printOneVariableSubstitution(OutputStream* stream, Object* var, Object* val
       }
     }
   }
-  else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+  else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
     { OutputStringStream* stringStream = newOutputStringStream();
       boolean quotehtmlP = true;
 
       if (oCYC_KLUDGES_ENABLEDpo) {
-        if (oLOGIC_DIALECTo.get() == KWD_EXPLANATIONS_CYC_NL) {
+        if (oLOGIC_DIALECTo == KWD_EXPLANATIONS_CYC_NL) {
           quotehtmlP = false;
         }
       }
-      if ((oLOGIC_DIALECTo.get() == KWD_EXPLANATIONS_KIF_ONTOSAURUS) ||
-          (oLOGIC_DIALECTo.get() == KWD_EXPLANATIONS_JAVA_GUI_HTML)) {
+      if ((oLOGIC_DIALECTo == KWD_EXPLANATIONS_KIF_ONTOSAURUS) ||
+          (oLOGIC_DIALECTo == KWD_EXPLANATIONS_JAVA_GUI_HTML)) {
         quotehtmlP = false;
       }
       prettyPrintLogicalForm(var, stringStream);
@@ -935,7 +938,7 @@ void printOneVariableSubstitution(OutputStream* stream, Object* var, Object* val
       }
     }
   }
-  else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_XML) {
+  else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_XML) {
     { OutputStringStream* stringStream = newOutputStringStream();
 
       {
@@ -962,7 +965,7 @@ void printOneVariableSubstitution(OutputStream* stream, Object* var, Object* val
   else {
     { OutputStringStream* stream000 = newOutputStringStream();
 
-      *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo.get() << "'" << " is not a valid case option";
+      *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo << "'" << " is not a valid case option";
       throw *newStellaException(stream000->theStringReader());
     }
   }
@@ -977,10 +980,10 @@ void printExplanationSubstitution(Justification* self, OutputStream* stream, Key
 
       if (((boolean)(substitution))) {
         nofvars = substitution->length();
-        if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII) {
+        if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII) {
           *(stream->nativeStream) << oEXPLANATION_TAB_STRINGo << "with substitution {";
         }
-        else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+        else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
           *(stream->nativeStream) << "<BR><TABLE><TR>" << std::endl;
           {
             *(stream->nativeStream) << "<TD align=left valign=top>";
@@ -989,13 +992,13 @@ void printExplanationSubstitution(Justification* self, OutputStream* stream, Key
           }
           *(stream->nativeStream) << "<TD>{";
         }
-        else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_XML) {
+        else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_XML) {
           *(stream->nativeStream) << "<variables>";
         }
         else {
           { OutputStringStream* stream000 = newOutputStringStream();
 
-            *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo.get() << "'" << " is not a valid case option";
+            *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo << "'" << " is not a valid case option";
             throw *newStellaException(stream000->theStringReader());
           }
         }
@@ -1017,31 +1020,31 @@ void printExplanationSubstitution(Justification* self, OutputStream* stream, Key
             i = iter001;
             printOneVariableSubstitution(stream, var, value);
             if ((i < nofvars) &&
-                ((oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII) ||
-                 (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML))) {
+                ((oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII) ||
+                 (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML))) {
               *(stream->nativeStream) << ", ";
               if (oCYC_KLUDGES_ENABLEDpo) {
-                if ((oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII) ||
-                    (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML)) {
+                if ((oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII) ||
+                    (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML)) {
                   *(stream->nativeStream) << std::endl << oEXPLANATION_TAB_STRINGo << "                   ";
                 }
               }
             }
           }
         }
-        if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII) {
+        if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII) {
           *(stream->nativeStream) << "}" << std::endl;
         }
-        else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+        else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
           *(stream->nativeStream) << "}</TD></TR></TABLE>" << std::endl;
         }
-        else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_XML) {
+        else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_XML) {
           *(stream->nativeStream) << "</variables>" << std::endl;
         }
         else {
           { OutputStringStream* stream001 = newOutputStringStream();
 
-            *(stream001->nativeStream) << "`" << oEXPLANATION_FORMATo.get() << "'" << " is not a valid case option";
+            *(stream001->nativeStream) << "`" << oEXPLANATION_FORMATo << "'" << " is not a valid case option";
             throw *newStellaException(stream001->theStringReader());
           }
         }
@@ -1087,7 +1090,7 @@ void printExplanationAntecedents(Justification* self, OutputStream* stream, KeyV
     else {
       propositionstartposition = labelstartposition + maxlabellength + 1;
     }
-    if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+    if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
       *(stream->nativeStream) << "<TABLE>" << std::endl;
     }
     else {
@@ -1112,7 +1115,7 @@ void printExplanationAntecedents(Justification* self, OutputStream* stream, KeyV
                (info->depth > maxdepth)))))) {
           newantecedents = cons(antecedent, newantecedents);
         }
-        if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_ASCII) {
+        if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_ASCII) {
           *(stream->nativeStream) << oEXPLANATION_TAB_STRINGo << (((i == 1) ? (char*)"since " : (char*)"and   "));
           printExplanationLabel(stream, label, false);
           *(stream->nativeStream) << " ";
@@ -1141,7 +1144,7 @@ void printExplanationAntecedents(Justification* self, OutputStream* stream, KeyV
             *(stream->nativeStream) << explanationTruthMarker(antecedent) << " ";
           }
         }
-        else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+        else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
           *(stream->nativeStream) << "<TR>" << std::endl;
           {
             *(stream->nativeStream) << "<TD align=right valign=top>";
@@ -1157,31 +1160,31 @@ void printExplanationAntecedents(Justification* self, OutputStream* stream, KeyV
             *(stream->nativeStream) << "</TD>" << std::endl;
           }
         }
-        else if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_XML) {
+        else if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_XML) {
           printExplanationLabel(stream, label, false);
         }
         else {
           { OutputStringStream* stream000 = newOutputStringStream();
 
-            *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo.get() << "'" << " is not a valid case option";
+            *(stream000->nativeStream) << "`" << oEXPLANATION_FORMATo << "'" << " is not a valid case option";
             throw *newStellaException(stream000->theStringReader());
           }
         }
-        if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+        if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
           *(stream->nativeStream) << "<TD>" << std::endl;
         }
         else {
         }
         printJustificationPropositionForFormat(antecedent, stream, (havemarkedantecedentP ? (propositionstartposition + strlen((explanationTruthMarker(antecedent))) + 1) : propositionstartposition));
         *(stream->nativeStream) << std::endl;
-        if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+        if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
           *(stream->nativeStream) << "</TD></TR>" << std::endl;
         }
         else {
         }
       }
     }
-    if (oEXPLANATION_FORMATo.get() == KWD_EXPLANATIONS_HTML) {
+    if (oEXPLANATION_FORMATo == KWD_EXPLANATIONS_HTML) {
       *(stream->nativeStream) << "</TABLE>" << std::endl;
     }
     else {
@@ -1232,7 +1235,7 @@ void collectVisibleAntecedents(Justification* self, List* visibleantecedents) {
         { Keyword* testValue000 = antecedent->inferenceRule;
 
           if (testValue000 == KWD_EXPLANATIONS_AND_INTRODUCTION) {
-            if (oEXPLANATION_STYLEo.get() == KWD_EXPLANATIONS_BRIEF) {
+            if (oEXPLANATION_STYLEo == KWD_EXPLANATIONS_BRIEF) {
               { Justification* subantecedent = NULL;
                 Cons* iter001 = visibleAntecedents(antecedent)->theConsList;
 
@@ -1308,7 +1311,37 @@ void explainWhy(char* label, Keyword* style, int maxdepth, OutputStream* stream)
 
       { 
         BIND_STELLA_SPECIAL(oEXPLANATION_STYLEo, Keyword*, (((boolean)(style)) ? style : KWD_EXPLANATIONS_BRIEF));
-        printExplanation(justification, stream, oMOST_RECENT_EXPLANATION_MAPPINGo.get(), maxdepth, oEXPLANATION_AUDIENCEo.get());
+        printExplanation(justification, stream, oMOST_RECENT_EXPLANATION_MAPPINGo, maxdepth, oEXPLANATION_AUDIENCEo);
+      }
+    }
+  }
+  catch (ExplainException& _ee) {
+    ExplainException* ee = &_ee;
+
+    std::cout << exceptionMessage(ee);
+  }
+}
+
+void explainProposition(Proposition* prop, Keyword* style, int maxdepth, OutputStream* stream) {
+  // Print an explanation for `prop' if there is one.  This will only happen
+  // for forward-chained propositions.
+  try {
+    { List* justifications = prop->forwardJustifications_reader();
+
+      if (((boolean)(justifications))) {
+        { 
+          BIND_STELLA_SPECIAL(oEXPLANATION_STYLEo, Keyword*, (((boolean)(style)) ? style : KWD_EXPLANATIONS_BRIEF));
+          BIND_STELLA_SPECIAL(oMOST_RECENT_EXPLANATION_MAPPINGo, KeyValueList*, NULL);
+          { Justification* justification = NULL;
+            Cons* iter000 = justifications->theConsList;
+
+            for (justification, iter000; !(iter000 == NIL); iter000 = iter000->rest) {
+              justification = ((Justification*)(iter000->value));
+              oMOST_RECENT_EXPLANATION_MAPPINGo = NULL;
+              printExplanation(justification, stream, oMOST_RECENT_EXPLANATION_MAPPINGo, maxdepth, oEXPLANATION_AUDIENCEo);
+            }
+          }
+        }
       }
     }
   }
@@ -1367,8 +1400,8 @@ Justification* getWhyJustification(char* label) {
     }
     else {
       if (label != NULL) {
-        if (((boolean)(oMOST_RECENT_EXPLANATION_MAPPINGo.get()))) {
-          justification = lookupJustification(oMOST_RECENT_EXPLANATION_MAPPINGo.get(), label);
+        if (((boolean)(oMOST_RECENT_EXPLANATION_MAPPINGo))) {
+          justification = lookupJustification(oMOST_RECENT_EXPLANATION_MAPPINGo, label);
         }
         if (!((boolean)(justification))) {
           { OutputStringStream* stream002 = newOutputStringStream();
@@ -1379,7 +1412,7 @@ Justification* getWhyJustification(char* label) {
         }
       }
       else {
-        oMOST_RECENT_EXPLANATION_MAPPINGo.set(NULL);
+        oMOST_RECENT_EXPLANATION_MAPPINGo = NULL;
       }
       return (justification);
     }
@@ -1518,6 +1551,8 @@ void helpStartupExplanations1() {
     KWD_EXPLANATIONS_HOLDS = ((Keyword*)(internRigidSymbolWrtModule("HOLDS", NULL, 2)));
     KWD_EXPLANATIONS_DEFINITION = ((Keyword*)(internRigidSymbolWrtModule("DEFINITION", NULL, 2)));
     KWD_EXPLANATIONS_FAILED = ((Keyword*)(internRigidSymbolWrtModule("FAILED", NULL, 2)));
+    KWD_EXPLANATIONS_INCONSISTENT = ((Keyword*)(internRigidSymbolWrtModule("INCONSISTENT", NULL, 2)));
+    KWD_EXPLANATIONS_CLASH = ((Keyword*)(internRigidSymbolWrtModule("CLASH", NULL, 2)));
     KWD_EXPLANATIONS_NOT_ASSERTED = ((Keyword*)(internRigidSymbolWrtModule("NOT-ASSERTED", NULL, 2)));
     KWD_EXPLANATIONS_NO_RULES = ((Keyword*)(internRigidSymbolWrtModule("NO-RULES", NULL, 2)));
     SGT_EXPLANATIONS_LOGIC_EXPLANATION_INFO = ((Surrogate*)(internRigidSymbolWrtModule("EXPLANATION-INFO", NULL, 1)));
@@ -1533,6 +1568,7 @@ void helpStartupExplanations1() {
     SYM_EXPLANATIONS_STELLA_NOT = ((Symbol*)(internRigidSymbolWrtModule("NOT", getStellaModule("/STELLA", true), 0)));
     KWD_EXPLANATIONS_AMPLIFICATION = ((Keyword*)(internRigidSymbolWrtModule("AMPLIFICATION", NULL, 2)));
     KWD_EXPLANATIONS_REVERSE = ((Keyword*)(internRigidSymbolWrtModule("REVERSE", NULL, 2)));
+    SGT_EXPLANATIONS_LOGIC_CLASH_JUSTIFICATION = ((Surrogate*)(internRigidSymbolWrtModule("CLASH-JUSTIFICATION", NULL, 1)));
     KWD_EXPLANATIONS_PRIMITIVE_STRATEGY = ((Keyword*)(internRigidSymbolWrtModule("PRIMITIVE-STRATEGY", NULL, 2)));
     KWD_EXPLANATIONS_SCAN_PROPOSITIONS = ((Keyword*)(internRigidSymbolWrtModule("SCAN-PROPOSITIONS", NULL, 2)));
     SYM_EXPLANATIONS_LOGIC_MASTER_PROPOSITION = ((Symbol*)(internRigidSymbolWrtModule("MASTER-PROPOSITION", NULL, 0)));
@@ -1600,17 +1636,62 @@ void helpStartupExplanations2() {
   }
 }
 
+void helpStartupExplanations3() {
+  {
+    defineFunctionObject("EXPLANATION-TRUTH-MARKER", "(DEFUN (EXPLANATION-TRUTH-MARKER STRING) ((JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&explanationTruthMarker)), NULL);
+    defineFunctionObject("DEFINE-EXPLANATION-PHRASE", "(DEFUN DEFINE-EXPLANATION-PHRASE ((PHRASEKEY KEYWORD) (AUDIENCE KEYWORD) (PHRASE STRING) |&REST| (MODIFIERS KEYWORD)))", ((cpp_function_code)(&defineExplanationPhrase)), NULL);
+    defineFunctionObject("LOOKUP-EXPLANATION-PHRASE", "(DEFUN (LOOKUP-EXPLANATION-PHRASE STRING) ((PHRASEKEY KEYWORD) (MODIFIERS (CONS OF KEYWORD)) (AUDIENCE KEYWORD)))", ((cpp_function_code)(&lookupExplanationPhrase)), NULL);
+    defineFunctionObject("REGISTER-JUSTIFICATION", "(DEFUN (REGISTER-JUSTIFICATION EXPLANATION-INFO) ((SELF JUSTIFICATION) (MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&registerJustification)), NULL);
+    defineFunctionObject("GET-EXPLANATION-INFO", "(DEFUN (GET-EXPLANATION-INFO EXPLANATION-INFO) ((SELF JUSTIFICATION) (MAPPING EXPLANATION-MAPPING) (CREATE? BOOLEAN)))", ((cpp_function_code)(&getExplanationInfo)), NULL);
+    defineFunctionObject("EXPLANATION-INFO", "(DEFUN (EXPLANATION-INFO EXPLANATION-INFO) ((SELF JUSTIFICATION) (MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&explanationInfo)), NULL);
+    defineFunctionObject("LOOKUP-JUSTIFICATION", "(DEFUN (LOOKUP-JUSTIFICATION JUSTIFICATION) ((MAPPING EXPLANATION-MAPPING) (LABEL STRING)))", ((cpp_function_code)(&lookupJustification)), NULL);
+    defineFunctionObject("RESET-MAPPING-FOR-SUBEXPLANATION", "(DEFUN RESET-MAPPING-FOR-SUBEXPLANATION ((MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&resetMappingForSubexplanation)), NULL);
+    defineFunctionObject("PRINT-EXPLANATION", "(DEFUN (PRINT-EXPLANATION EXPLANATION-MAPPING) ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING) (MAXDEPTH INTEGER) (AUDIENCE KEYWORD)))", ((cpp_function_code)(&printExplanation)), NULL);
+    defineFunctionObject("PRINT-EXPLANATION-SUPPORT", "(DEFUN PRINT-EXPLANATION-SUPPORT ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING) (MAXDEPTH INTEGER) (UNEXPLAINED (LIST OF JUSTIFICATION))))", ((cpp_function_code)(&printExplanationSupport)), NULL);
+    defineFunctionObject("PRINT-ONE-EXPLANATION", "(DEFUN PRINT-ONE-EXPLANATION ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING) (MAXDEPTH INTEGER) (UNEXPLAINED (LIST OF JUSTIFICATION))))", ((cpp_function_code)(&printOneExplanation)), NULL);
+    defineFunctionObject("PRINTING-JUSTIFICATION?", "(DEFUN (PRINTING-JUSTIFICATION? BOOLEAN) () :GLOBALLY-INLINE? TRUE (RETURN (DEFINED? *CURRENTJUSTIFICATION*)))", ((cpp_function_code)(&printingJustificationP)), NULL);
+    defineFunctionObject("PRINT-JUSTIFICATION-PROPOSITION-FOR-FORMAT", "(DEFUN PRINT-JUSTIFICATION-PROPOSITION-FOR-FORMAT ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (INDENT INTEGER)))", ((cpp_function_code)(&printJustificationPropositionForFormat)), NULL);
+    defineFunctionObject("PRINT-JUSTIFICATION-PROPOSITION", "(DEFUN PRINT-JUSTIFICATION-PROPOSITION ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (INDENT INTEGER)))", ((cpp_function_code)(&printJustificationProposition)), NULL);
+    defineFunctionObject("PRINT-EXPLANATION-LABEL", "(DEFUN PRINT-EXPLANATION-LABEL ((STREAM OUTPUT-STREAM) (LABEL STRING) (HEAD? BOOLEAN)))", ((cpp_function_code)(&printExplanationLabel)), NULL);
+    defineFunctionObject("PRINT-EXPLANATION-HEADER", "(DEFUN PRINT-EXPLANATION-HEADER ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&printExplanationHeader)), NULL);
+    defineFunctionObject("PRINT-EXPLANATION-TEXT", "(DEFUN PRINT-EXPLANATION-TEXT ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&printExplanationText)), NULL);
+    defineFunctionObject("MARK-AS-EXPLICIT-ASSERTION?", "(DEFUN (MARK-AS-EXPLICIT-ASSERTION? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&markAsExplicitAssertionP)), NULL);
+    defineFunctionObject("MARK-AS-FAILED-GOAL?", "(DEFUN (MARK-AS-FAILED-GOAL? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&markAsFailedGoalP)), NULL);
+    defineFunctionObject("MARK-AS-CUTOFF-GOAL?", "(DEFUN (MARK-AS-CUTOFF-GOAL? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&markAsCutoffGoalP)), NULL);
+    defineFunctionObject("PARTIALLY-FOLLOWS?", "(DEFUN (PARTIALLY-FOLLOWS? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&partiallyFollowsP)), NULL);
+    defineFunctionObject("MAKE-RULE-ORIGIN-EXPLANATION-PHRASE", "(DEFUN (MAKE-RULE-ORIGIN-EXPLANATION-PHRASE STRING) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&makeRuleOriginExplanationPhrase)), NULL);
+    defineFunctionObject("GET-EXPLANATION-SUBSTITUTION", "(DEFUN (GET-EXPLANATION-SUBSTITUTION ENTITY-MAPPING) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&getExplanationSubstitution)), NULL);
+    defineFunctionObject("PRINT-ONE-VARIABLE-SUBSTITUTION", "(DEFUN PRINT-ONE-VARIABLE-SUBSTITUTION ((STREAM OUTPUT-STREAM) (VAR OBJECT) (VALUE OBJECT)))", ((cpp_function_code)(&printOneVariableSubstitution)), NULL);
+    defineFunctionObject("PRINT-EXPLANATION-SUBSTITUTION", "(DEFUN PRINT-EXPLANATION-SUBSTITUTION ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&printExplanationSubstitution)), NULL);
+    defineFunctionObject("PRINT-EXPLANATION-ANTECEDENTS", "(DEFUN PRINT-EXPLANATION-ANTECEDENTS ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING) (MAXDEPTH INTEGER) (UNEXPLAINED (LIST OF JUSTIFICATION))))", ((cpp_function_code)(&printExplanationAntecedents)), NULL);
+    defineFunctionObject("VISIBLE-JUSTIFICATION", "(DEFUN (VISIBLE-JUSTIFICATION JUSTIFICATION) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&visibleJustification)), NULL);
+    defineFunctionObject("VISIBLE-ANTECEDENTS", "(DEFUN (VISIBLE-ANTECEDENTS (LIST OF JUSTIFICATION)) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&visibleAntecedents)), NULL);
+    defineFunctionObject("COLLECT-VISIBLE-ANTECEDENTS", "(DEFUN COLLECT-VISIBLE-ANTECEDENTS ((SELF JUSTIFICATION) (VISIBLEANTECEDENTS (LIST OF JUSTIFICATION))))", ((cpp_function_code)(&collectVisibleAntecedents)), NULL);
+    defineFunctionObject("WHY", "(DEFUN WHY (|&REST| (ARGS OBJECT)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Print an explanation for the result of the most recent query.\nWithout any arguments, `why' prints an explanation of the top level\nquery proposition down to a maximum depth of 3.  `(why all)' prints\nan explanation to unlimited depth.  Alternatively, a particular depth\ncan be specified, for example, `(why 5)' explains down to a depth of 5.\nA proof step that was not explained explicitly (e.g., due to a depth\ncutoff) can be explained by supplying the label of the step as the\nfirst argument to `why', for example, `(why 1.2.3 5)' prints an explanation\nstarting at 1.2.3 down to a depth of 5 (which is counted relative to the\ndepth of the starting point).  The keywords `brief' and `verbose' can be\nused to select a particular explanation style.  In brief mode, explicitly\nasserted propositions are not further explained and indicated with a\n`!' assertion marker.  Additionally, relatively uninteresting " "proof steps\nsuch as AND-introductions are skipped.  This explanation style option is\nsticky and will affect future calls to `why' until it gets changed again.\nThe various options can be combined in any way, for example,\n`(why 1.2.3 brief 3)' explains starting from step 1.2.3 down to a depth\nof 3 in brief explanation mode.\")", ((cpp_function_code)(&why)), ((cpp_function_code)(&whyEvaluatorWrapper)));
+    defineFunctionObject("EXPLAIN-WHY", "(DEFUN EXPLAIN-WHY ((LABEL STRING) (STYLE KEYWORD) (MAXDEPTH INTEGER) (STREAM OUTPUT-STREAM)) :PUBLIC? TRUE :DOCUMENTATION \"Programmer's interface to WHY function.\")", ((cpp_function_code)(&explainWhy)), NULL);
+    defineFunctionObject("EXPLAIN-PROPOSITION", "(DEFUN EXPLAIN-PROPOSITION ((PROP PROPOSITION) (STYLE KEYWORD) (MAXDEPTH INTEGER) (STREAM OUTPUT-STREAM)) :PUBLIC? TRUE :DOCUMENTATION \"Print an explanation for `prop' if there is one.  This will only happen\nfor forward-chained propositions.\")", ((cpp_function_code)(&explainProposition)), NULL);
+    defineFunctionObject("GET-WHY-JUSTIFICATION", "(DEFUN (GET-WHY-JUSTIFICATION JUSTIFICATION) ((LABEL STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Returns the current WHY justification.  May also throw one of the\nfollowing subtypes of EXPLAIN-EXCEPTION:\n   EXPLAIN-NO-QUERY-EXCEPTION\n   EXPLAIN-NO-SOLUTION-EXCEPTION\n   EXPLAIN-NO-MORE-SOLUTIONS-EXCEPTION\n   EXPLAIN-NOT-ENABLED-EXCEPTION\n   EXPLAIN-NO-SUCH-LABEL-EXCEPTION\n   EXPLAIN-QUERY-TRUE-EXCEPTION\")", ((cpp_function_code)(&getWhyJustification)), NULL);
+    defineFunctionObject("COMMAND-OPTION-EQL?", "(DEFUN (COMMAND-OPTION-EQL? BOOLEAN) ((ARG OBJECT) (OPTION STRING)))", ((cpp_function_code)(&commandOptionEqlP)), NULL);
+    defineFunctionObject("PARSE-WHY-ARGUMENTS", "(DEFUN (PARSE-WHY-ARGUMENTS STRING KEYWORD INTEGER BOOLEAN) ((ARGS (CONS OF OBJECT))))", ((cpp_function_code)(&parseWhyArguments)), NULL);
+    defineFunctionObject("STARTUP-EXPLANATIONS", "(DEFUN STARTUP-EXPLANATIONS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupExplanations)), NULL);
+    { MethodSlot* function = lookupFunction(SYM_EXPLANATIONS_LOGIC_STARTUP_EXPLANATIONS);
+
+      setDynamicSlotValue(function->dynamicSlots, SYM_EXPLANATIONS_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupExplanations"), NULL_STRING_WRAPPER);
+    }
+  }
+}
+
 void startupExplanations() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/LOGIC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupExplanations1();
     }
     if (currentStartupTimePhaseP(4)) {
-      oEXPLANATION_FORMATo.set(KWD_EXPLANATIONS_ASCII);
-      oEXPLANATION_STYLEo.set(KWD_EXPLANATIONS_BRIEF);
-      oEXPLANATION_AUDIENCEo.set(KWD_EXPLANATIONS_TECHNICAL);
+      oEXPLANATION_FORMATo = KWD_EXPLANATIONS_ASCII;
+      oEXPLANATION_STYLEo = KWD_EXPLANATIONS_BRIEF;
+      oEXPLANATION_AUDIENCEo = KWD_EXPLANATIONS_TECHNICAL;
       oEXPLANATION_VOCABULARIESo = newKeyValueList();
     }
     if (currentStartupTimePhaseP(5)) {
@@ -1620,45 +1701,7 @@ void startupExplanations() {
       finalizeClasses();
     }
     if (currentStartupTimePhaseP(7)) {
-      defineFunctionObject("EXPLANATION-TRUTH-MARKER", "(DEFUN (EXPLANATION-TRUTH-MARKER STRING) ((JUSTIFICATION JUSTIFICATION)))", ((cpp_function_code)(&explanationTruthMarker)), NULL);
-      defineFunctionObject("DEFINE-EXPLANATION-PHRASE", "(DEFUN DEFINE-EXPLANATION-PHRASE ((PHRASEKEY KEYWORD) (AUDIENCE KEYWORD) (PHRASE STRING) |&REST| (MODIFIERS KEYWORD)))", ((cpp_function_code)(&defineExplanationPhrase)), NULL);
-      defineFunctionObject("LOOKUP-EXPLANATION-PHRASE", "(DEFUN (LOOKUP-EXPLANATION-PHRASE STRING) ((PHRASEKEY KEYWORD) (MODIFIERS (CONS OF KEYWORD)) (AUDIENCE KEYWORD)))", ((cpp_function_code)(&lookupExplanationPhrase)), NULL);
-      defineFunctionObject("REGISTER-JUSTIFICATION", "(DEFUN (REGISTER-JUSTIFICATION EXPLANATION-INFO) ((SELF JUSTIFICATION) (MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&registerJustification)), NULL);
-      defineFunctionObject("GET-EXPLANATION-INFO", "(DEFUN (GET-EXPLANATION-INFO EXPLANATION-INFO) ((SELF JUSTIFICATION) (MAPPING EXPLANATION-MAPPING) (CREATE? BOOLEAN)))", ((cpp_function_code)(&getExplanationInfo)), NULL);
-      defineFunctionObject("EXPLANATION-INFO", "(DEFUN (EXPLANATION-INFO EXPLANATION-INFO) ((SELF JUSTIFICATION) (MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&explanationInfo)), NULL);
-      defineFunctionObject("LOOKUP-JUSTIFICATION", "(DEFUN (LOOKUP-JUSTIFICATION JUSTIFICATION) ((MAPPING EXPLANATION-MAPPING) (LABEL STRING)))", ((cpp_function_code)(&lookupJustification)), NULL);
-      defineFunctionObject("RESET-MAPPING-FOR-SUBEXPLANATION", "(DEFUN RESET-MAPPING-FOR-SUBEXPLANATION ((MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&resetMappingForSubexplanation)), NULL);
-      defineFunctionObject("PRINT-EXPLANATION", "(DEFUN (PRINT-EXPLANATION EXPLANATION-MAPPING) ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING) (MAXDEPTH INTEGER) (AUDIENCE KEYWORD)))", ((cpp_function_code)(&printExplanation)), NULL);
-      defineFunctionObject("PRINT-EXPLANATION-SUPPORT", "(DEFUN PRINT-EXPLANATION-SUPPORT ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING) (MAXDEPTH INTEGER) (UNEXPLAINED (LIST OF JUSTIFICATION))))", ((cpp_function_code)(&printExplanationSupport)), NULL);
-      defineFunctionObject("PRINT-ONE-EXPLANATION", "(DEFUN PRINT-ONE-EXPLANATION ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING) (MAXDEPTH INTEGER) (UNEXPLAINED (LIST OF JUSTIFICATION))))", ((cpp_function_code)(&printOneExplanation)), NULL);
-      defineFunctionObject("PRINTING-JUSTIFICATION?", "(DEFUN (PRINTING-JUSTIFICATION? BOOLEAN) () :GLOBALLY-INLINE? TRUE (RETURN (DEFINED? *CURRENTJUSTIFICATION*)))", ((cpp_function_code)(&printingJustificationP)), NULL);
-      defineFunctionObject("PRINT-JUSTIFICATION-PROPOSITION-FOR-FORMAT", "(DEFUN PRINT-JUSTIFICATION-PROPOSITION-FOR-FORMAT ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (INDENT INTEGER)))", ((cpp_function_code)(&printJustificationPropositionForFormat)), NULL);
-      defineFunctionObject("PRINT-JUSTIFICATION-PROPOSITION", "(DEFUN PRINT-JUSTIFICATION-PROPOSITION ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (INDENT INTEGER)))", ((cpp_function_code)(&printJustificationProposition)), NULL);
-      defineFunctionObject("PRINT-EXPLANATION-LABEL", "(DEFUN PRINT-EXPLANATION-LABEL ((STREAM OUTPUT-STREAM) (LABEL STRING) (HEAD? BOOLEAN)))", ((cpp_function_code)(&printExplanationLabel)), NULL);
-      defineFunctionObject("PRINT-EXPLANATION-HEADER", "(DEFUN PRINT-EXPLANATION-HEADER ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&printExplanationHeader)), NULL);
-      defineFunctionObject("PRINT-EXPLANATION-TEXT", "(DEFUN PRINT-EXPLANATION-TEXT ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&printExplanationText)), NULL);
-      defineFunctionObject("MARK-AS-EXPLICIT-ASSERTION?", "(DEFUN (MARK-AS-EXPLICIT-ASSERTION? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&markAsExplicitAssertionP)), NULL);
-      defineFunctionObject("MARK-AS-FAILED-GOAL?", "(DEFUN (MARK-AS-FAILED-GOAL? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&markAsFailedGoalP)), NULL);
-      defineFunctionObject("MARK-AS-CUTOFF-GOAL?", "(DEFUN (MARK-AS-CUTOFF-GOAL? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&markAsCutoffGoalP)), NULL);
-      defineFunctionObject("PARTIALLY-FOLLOWS?", "(DEFUN (PARTIALLY-FOLLOWS? BOOLEAN) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&partiallyFollowsP)), NULL);
-      defineFunctionObject("MAKE-RULE-ORIGIN-EXPLANATION-PHRASE", "(DEFUN (MAKE-RULE-ORIGIN-EXPLANATION-PHRASE STRING) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&makeRuleOriginExplanationPhrase)), NULL);
-      defineFunctionObject("GET-EXPLANATION-SUBSTITUTION", "(DEFUN (GET-EXPLANATION-SUBSTITUTION ENTITY-MAPPING) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&getExplanationSubstitution)), NULL);
-      defineFunctionObject("PRINT-ONE-VARIABLE-SUBSTITUTION", "(DEFUN PRINT-ONE-VARIABLE-SUBSTITUTION ((STREAM OUTPUT-STREAM) (VAR OBJECT) (VALUE OBJECT)))", ((cpp_function_code)(&printOneVariableSubstitution)), NULL);
-      defineFunctionObject("PRINT-EXPLANATION-SUBSTITUTION", "(DEFUN PRINT-EXPLANATION-SUBSTITUTION ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING)))", ((cpp_function_code)(&printExplanationSubstitution)), NULL);
-      defineFunctionObject("PRINT-EXPLANATION-ANTECEDENTS", "(DEFUN PRINT-EXPLANATION-ANTECEDENTS ((SELF JUSTIFICATION) (STREAM OUTPUT-STREAM) (MAPPING EXPLANATION-MAPPING) (MAXDEPTH INTEGER) (UNEXPLAINED (LIST OF JUSTIFICATION))))", ((cpp_function_code)(&printExplanationAntecedents)), NULL);
-      defineFunctionObject("VISIBLE-JUSTIFICATION", "(DEFUN (VISIBLE-JUSTIFICATION JUSTIFICATION) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&visibleJustification)), NULL);
-      defineFunctionObject("VISIBLE-ANTECEDENTS", "(DEFUN (VISIBLE-ANTECEDENTS (LIST OF JUSTIFICATION)) ((SELF JUSTIFICATION)))", ((cpp_function_code)(&visibleAntecedents)), NULL);
-      defineFunctionObject("COLLECT-VISIBLE-ANTECEDENTS", "(DEFUN COLLECT-VISIBLE-ANTECEDENTS ((SELF JUSTIFICATION) (VISIBLEANTECEDENTS (LIST OF JUSTIFICATION))))", ((cpp_function_code)(&collectVisibleAntecedents)), NULL);
-      defineFunctionObject("WHY", "(DEFUN WHY (|&REST| (ARGS OBJECT)) :PUBLIC? TRUE :COMMAND? TRUE :EVALUATE-ARGUMENTS? FALSE :DOCUMENTATION \"Print an explanation for the result of the most recent query.\nWithout any arguments, `why' prints an explanation of the top level\nquery proposition down to a maximum depth of 3.  `(why all)' prints\nan explanation to unlimited depth.  Alternatively, a particular depth\ncan be specified, for example, `(why 5)' explains down to a depth of 5.\nA proof step that was not explained explicitly (e.g., due to a depth\ncutoff) can be explained by supplying the label of the step as the\nfirst argument to `why', for example, `(why 1.2.3 5)' prints an explanation\nstarting at 1.2.3 down to a depth of 5 (which is counted relative to the\ndepth of the starting point).  The keywords `brief' and `verbose' can be\nused to select a particular explanation style.  In brief mode, explicitly\nasserted propositions are not further explained and indicated with a\n`!' assertion marker.  Additionally, relatively uninteresting " "proof steps\nsuch as AND-introductions are skipped.  This explanation style option is\nsticky and will affect future calls to `why' until it gets changed again.\nThe various options can be combined in any way, for example,\n`(why 1.2.3 brief 3)' explains starting from step 1.2.3 down to a depth\nof 3 in brief explanation mode.\")", ((cpp_function_code)(&why)), ((cpp_function_code)(&whyEvaluatorWrapper)));
-      defineFunctionObject("EXPLAIN-WHY", "(DEFUN EXPLAIN-WHY ((LABEL STRING) (STYLE KEYWORD) (MAXDEPTH INTEGER) (STREAM OUTPUT-STREAM)) :PUBLIC? TRUE :DOCUMENTATION \"Programmer's interface to WHY function.\")", ((cpp_function_code)(&explainWhy)), NULL);
-      defineFunctionObject("GET-WHY-JUSTIFICATION", "(DEFUN (GET-WHY-JUSTIFICATION JUSTIFICATION) ((LABEL STRING)) :PUBLIC? TRUE :DOCUMENTATION \"Returns the current WHY justification.  May also throw one of the\nfollowing subtypes of EXPLAIN-EXCEPTION:\n   EXPLAIN-NO-QUERY-EXCEPTION\n   EXPLAIN-NO-SOLUTION-EXCEPTION\n   EXPLAIN-NO-MORE-SOLUTIONS-EXCEPTION\n   EXPLAIN-NOT-ENABLED-EXCEPTION\n   EXPLAIN-NO-SUCH-LABEL-EXCEPTION\n   EXPLAIN-QUERY-TRUE-EXCEPTION\")", ((cpp_function_code)(&getWhyJustification)), NULL);
-      defineFunctionObject("COMMAND-OPTION-EQL?", "(DEFUN (COMMAND-OPTION-EQL? BOOLEAN) ((ARG OBJECT) (OPTION STRING)))", ((cpp_function_code)(&commandOptionEqlP)), NULL);
-      defineFunctionObject("PARSE-WHY-ARGUMENTS", "(DEFUN (PARSE-WHY-ARGUMENTS STRING KEYWORD INTEGER BOOLEAN) ((ARGS (CONS OF OBJECT))))", ((cpp_function_code)(&parseWhyArguments)), NULL);
-      defineFunctionObject("STARTUP-EXPLANATIONS", "(DEFUN STARTUP-EXPLANATIONS () :PUBLIC? TRUE)", ((cpp_function_code)(&startupExplanations)), NULL);
-      { MethodSlot* function = lookupFunction(SYM_EXPLANATIONS_LOGIC_STARTUP_EXPLANATIONS);
-
-        setDynamicSlotValue(function->dynamicSlots, SYM_EXPLANATIONS_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupExplanations"), NULL_STRING_WRAPPER);
-      }
+      helpStartupExplanations3();
     }
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
@@ -1689,6 +1732,10 @@ void startupExplanations() {
       defineExplanationPhrase(KWD_EXPLANATIONS_DEFINITION, KWD_EXPLANATIONS_LAY, "by the definition of", 0);
       defineExplanationPhrase(KWD_EXPLANATIONS_FAILED, KWD_EXPLANATIONS_TECHNICAL, "failed", 0);
       defineExplanationPhrase(KWD_EXPLANATIONS_FAILED, KWD_EXPLANATIONS_LAY, "could not be proven", 0);
+      defineExplanationPhrase(KWD_EXPLANATIONS_INCONSISTENT, KWD_EXPLANATIONS_TECHNICAL, "is inconsistent", 0);
+      defineExplanationPhrase(KWD_EXPLANATIONS_INCONSISTENT, KWD_EXPLANATIONS_LAY, "has a contradiction", 0);
+      defineExplanationPhrase(KWD_EXPLANATIONS_CLASH, KWD_EXPLANATIONS_TECHNICAL, "because it and its negation were inferred", 0);
+      defineExplanationPhrase(KWD_EXPLANATIONS_CLASH, KWD_EXPLANATIONS_LAY, "because opposite conclusions were reached", 0);
       defineExplanationPhrase(KWD_EXPLANATIONS_NOT_ASSERTED, KWD_EXPLANATIONS_TECHNICAL, "is not asserted", 0);
       defineExplanationPhrase(KWD_EXPLANATIONS_NOT_ASSERTED, KWD_EXPLANATIONS_LAY, "is not asserted to be true", 0);
       defineExplanationPhrase(KWD_EXPLANATIONS_NO_RULES, KWD_EXPLANATIONS_TECHNICAL, "no potential inference leading to the proposition could be found", 0);
@@ -1733,6 +1780,10 @@ Keyword* KWD_EXPLANATIONS_DEFINITION = NULL;
 
 Keyword* KWD_EXPLANATIONS_FAILED = NULL;
 
+Keyword* KWD_EXPLANATIONS_INCONSISTENT = NULL;
+
+Keyword* KWD_EXPLANATIONS_CLASH = NULL;
+
 Keyword* KWD_EXPLANATIONS_NOT_ASSERTED = NULL;
 
 Keyword* KWD_EXPLANATIONS_NO_RULES = NULL;
@@ -1762,6 +1813,8 @@ Symbol* SYM_EXPLANATIONS_STELLA_NOT = NULL;
 Keyword* KWD_EXPLANATIONS_AMPLIFICATION = NULL;
 
 Keyword* KWD_EXPLANATIONS_REVERSE = NULL;
+
+Surrogate* SGT_EXPLANATIONS_LOGIC_CLASH_JUSTIFICATION = NULL;
 
 Keyword* KWD_EXPLANATIONS_PRIMITIVE_STRATEGY = NULL;
 

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -118,12 +118,12 @@ Cons* cppYieldStaticMemberAllocationTree(StorageSlot* slot, Class* clasS) {
 }
 
 Cons* cppYieldMemberFuncSignatureTree(MethodSlot* method) {
-  oMETHODBEINGWALKEDo.set(method);
+  oMETHODBEINGWALKEDo = method;
   return (cons((method->methodFunctionP ? NULL : cppTranslateClassName(internSymbolInModule(method->slotOwner->symbolName, ((Module*)(method->slotOwner->homeContext)), false))), listO(3, cons(wrapString("virtual"), cons(cppTranslateAndPointerizeTypeSpec(computeMostGeneralReturnType(method, method->computeReturnTypeSpec(method->slotOwner))), NIL)), cppTranslateFunctionName(method, false), cons(cppTranslateFunctionParameters(method), NIL))));
 }
 
 Cons* cppYieldConstructorSignatureTree(MethodSlot* method) {
-  oMETHODBEINGWALKEDo.set(method);
+  oMETHODBEINGWALKEDo = method;
   return (cons(cppTranslateClassName(internSymbolInModule(method->slotOwner->symbolName, ((Module*)(method->slotOwner->homeContext)), false)), listO(3, NIL, cppTranslateConstructorName(method), cons(cppTranslateFunctionParameters(method), NIL))));
 }
 
@@ -436,7 +436,7 @@ Cons* cppTranslateDefineNativeClassUnit(TranslationUnit* unit) {
     if (((baseclasses == NIL) ||
         cppClassHasOnlyNativeParentsP(clasS)) &&
         ((!clasS->mixinP) &&
-         ((oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_CPP_CLASS_OUT_CPP) &&
+         ((oTRANSLATOROUTPUTLANGUAGEo == KWD_CPP_CLASS_OUT_CPP) &&
           cppUseGarbageCollectorP()))) {
       baseclasses = cons(cppTranslateName(SYM_CPP_CLASS_OUT_STELLA_GC), baseclasses);
     }
@@ -468,7 +468,7 @@ Cons* cppTranslateDefineNativeClassUnit(TranslationUnit* unit) {
       }
     }
     markRenamingSlots(clasS);
-    if (oTRANSLATOROUTPUTLANGUAGEo.get() == KWD_CPP_CLASS_OUT_CPP_STANDALONE) {
+    if (oTRANSLATOROUTPUTLANGUAGEo == KWD_CPP_CLASS_OUT_CPP_STANDALONE) {
       constructordefs = cppGetConstructorDefinitions(clasS);
     }
     if (cppOutputTemplateClassesP()) {
@@ -484,7 +484,7 @@ Cons* cppTranslateDefineNativeClassUnit(TranslationUnit* unit) {
 void startupCppClassOut() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, oSTELLA_MODULEo);
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SGT_CPP_CLASS_OUT_STELLA_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("OBJECT", NULL, 1)));
       SYM_CPP_CLASS_OUT_STELLA_DOCUMENTATION = ((Symbol*)(internRigidSymbolWrtModule("DOCUMENTATION", NULL, 0)));

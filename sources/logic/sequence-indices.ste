@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1997-2006      ;
+; Portions created by the Initial Developer are Copyright (C) 1997-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: sequence-indices.ste,v 1.14 2006/05/11 07:05:36 hans Exp
+;;; Version: sequence-indices.ste,v 1.15 2014/04/16 22:09:40 hans Exp
 
 ;;; Support for paging indices from secondary storage
 
@@ -317,6 +317,32 @@ which could be too large if some of the members have been deleted."
 
 (defslot MODULE object-store :type OBJECT-STORE)
 
+(defglobal *all-object-stores* (LIST OF OBJECT-STORE) NIL-LIST
+  :documentation "The list of all currently active object stores.  To signal
+that no object stores are active, this has to be NIL-LIST as opposed to the
+empty list."
+  :public? TRUE)
+
+(defun register-object-store ((store OBJECT-STORE))
+  :documentation "Register `store' as an active object store."
+  (when (null-list? *all-object-stores*)
+    (setq *all-object-stores* (new LIST)))
+  (insert-new *all-object-stores* store))
+
+(defun unregister-object-store ((store OBJECT-STORE))
+  :documentation "Remove `store' from the list of active object stores."
+  (unless (null-list? *all-object-stores*)
+    (remove *all-object-stores* store)
+    (when (empty? *all-object-stores*)
+      (setq *all-object-stores* NIL-LIST))))
+
+(defun (have-active-object-stores? BOOLEAN) ()
+  :documentation "Return TRUE if we have at least one object store opened/linked into
+PowerLoom, which changes some index access routines to be considerate of that."
+  :public? TRUE :globally-inline? TRUE
+  (return (not (eql? *all-object-stores* NIL-LIST))))
+  
+
 (defspecial *loadingRegenerableObjects?* BOOLEAN FALSE
   :documentation "If TRUE, objects being created are regenerable,
 and should not be indexed using the backlinks procedures.")
@@ -377,6 +403,52 @@ and should not be indexed using the backlinks procedures.")
                :store store
                :selection-pattern pattern)))
 
+(defun (maybe-wrap-sequence-index SEQUENCE-INDEX) ((index SEQUENCE-INDEX)
+                                                   (pattern SELECTION-PATTERN)
+                                                   (kind KEYWORD)
+                                                   (arg1 OBJECT)
+                                                   (arg2 OBJECT))
+  ;; Helper function that deals with cases where an object defined higher up in
+  ;; the module hierarchy has assertions relevant to it in a lower-level object store.
+  ;; In that case, the object's associated indices will not be of the object-store
+  ;; kind, since the home module of the object is not associated with an object store.
+  ;; For these cases, this function will wrap `index' with an appropriate paging
+  ;; index, if the current module is associated with an object store.  If `pattern'
+  ;; is supplied, it will be used as the selection pattern, otherwise, a pattern
+  ;; will be constructed from `kind', `arg1' and `arg2' if necessary.
+  ;; TO DO: in light of the new direction where multiple persistent object stores
+  ;;    might be defined throughout the module hierarchy, freely mixing in-memory
+  ;;    and paging persistent access, the old policy of associating objects with
+  ;;    paging indices based on whether their home module is persistent, needs
+  ;;    to be rethought and possibly eliminated (see `create-backlinks-index').
+  ;;    Instead, appropriate paging indices need to be constructed dynamically
+  ;;    based on a module's associated object store (which might be inherited
+  ;;    from higher up), and the particular object store iterators then have to
+  ;;    take care of finding all the relevant information which might come from
+  ;;    a local store as well as other object stores located higher up.
+  (let ((store (object-store *module*))
+        (baseIndex index))
+    (when (and (defined? store)
+               (not (description-mode?))
+               (not (variable? arg1)))
+      (typecase index
+        (PAGING-INDEX
+         (when (eql? (store index) store)
+           (return index))
+         (when (null? pattern)
+           (setq pattern (selection-pattern index))))
+        (otherwise NULL))
+      ;; otherwise, we have to wrap:
+      (when (null? pattern)
+        (setq pattern
+          (make-selection-pattern
+           kind NULL (cons arg1 (choose (null? arg2) NIL (cons arg2 NIL))))))
+      (setq index (OBJECT-STORE.create-sequence-index store pattern))
+      (setf (the-sequence index) (the-sequence baseIndex))
+      (setf (the-sequence-length index) (the-sequence-length baseIndex)))
+    (return index)))
+
+
 (defmethod (fetch-relation NAMED-DESCRIPTION) ((store OBJECT-STORE) (name OBJECT))
   :documentation
   "Fetch the relation identified by `name' (a string or symbol) from `store'
@@ -392,6 +464,13 @@ and return it as an appropriate logic object.  This needs to be appropriately
 specialized on actual OBJECT-STORE implementations."
   :public? TRUE
   (error "Don't know how to fetch instance " name " from " store))
+
+(defmethod (fetch-duplicate-proposition PROPOSITION) ((store OBJECT-STORE) (prop PROPOSITION))
+  :documentation "Fetch a duplicate of `prop' if defined by `store'.  EXPERIMENTAL!
+The exact semantics of this still needs to be worked out.  This needs to be appropriately
+specialized on actual OBJECT-STORE implementations."
+  :public? TRUE
+  (error "Don't know how to fetch a duplicate of " prop " from " store))
 
 (defmethod update-proposition-in-store ((store OBJECT-STORE)
 					(proposition PROPOSITION)

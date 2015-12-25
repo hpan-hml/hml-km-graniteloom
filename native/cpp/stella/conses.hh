@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -52,6 +52,7 @@ extern Cons* NIL;
 extern int oREMOVE_DUPLICATES_CROSSOVER_POINTo;
 extern DECLARE_STELLA_SPECIAL(oSORT_TUPLE_COMPARE_PREDICATEo, cpp_function_code );
 extern DECLARE_STELLA_SPECIAL(oSORT_TUPLE_COMPARE_INDEXo, int );
+extern DECLARE_STELLA_SPECIAL(oSORT_OBJECTS_COMPARE_SLOTo, StorageSlot* );
 extern DECLARE_STELLA_SPECIAL(oPRINTPRETTYpo, boolean );
 extern DECLARE_STELLA_SPECIAL(oPRINTREADABLYpo, boolean );
 extern DECLARE_STELLA_SPECIAL(oPRINTLENGTHo, int );
@@ -84,6 +85,7 @@ boolean wrappedMutableStringLessThanP(MutableStringWrapper* x, MutableStringWrap
 boolean numberLessThanP(NumberWrapper* x, NumberWrapper* y);
 cpp_function_code chooseSortPredicate(Object* firstelement);
 boolean sortTupleCompareP(Cons* x, Cons* y);
+boolean sortObjectsCompareP(Object* x, Object* y);
 boolean searchConsTreeP(Object* tree, Object* value);
 boolean searchConsTreeWithFilterP(Object* tree, Object* value, Cons* filter);
 Object* copyConsTree(Object* self);

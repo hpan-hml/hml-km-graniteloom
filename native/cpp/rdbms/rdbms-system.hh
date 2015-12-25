@@ -13,6 +13,7 @@
 #include "sdbc/sdbc-system.hh"
 
 // System-wide forward declarations:
+
 namespace rdbms {
   using namespace stella;
   using namespace logic;
@@ -22,7 +23,6 @@ class RelationTableInfo;
 class RelationColumnInfo;
 
 } // end of namespace rdbms
-
 
 // System components:
 #include "rdbms/ontology.hh"

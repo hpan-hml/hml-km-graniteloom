@@ -14,8 +14,8 @@ Images are from the US Air Force, US Navy and other on-line sources.
 
 Note that this information is rather dated, from around 1995.
 
-PowerLoom KB version: aircraft.plm,v 1.6 2010/02/13 20:26:04 hans Exp"
-  :shadow (length height width))
+PowerLoom KB version: aircraft.plm,v 1.7 2014/04/17 00:48:55 hans Exp"
+  :shadow (length height width ceiling))
 
 (in-module "AIRCRAFT-KB")
 

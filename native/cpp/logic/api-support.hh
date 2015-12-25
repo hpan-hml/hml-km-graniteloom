@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -55,6 +55,9 @@ boolean allPropositionsNextP(AllPurposeIterator* self);
 Iterator* allPropositions(Module* module, boolean localP);
 boolean filterInconsistentPropositionP(Object* self, AllPurposeIterator* iterator);
 Iterator* allInconsistentPropositions(Module* module, boolean localP);
+boolean locallyModifiedPropositionP(Proposition* proposition, Module* module);
+boolean filterLocallyModifiedPropositionP(Object* self, AllPurposeIterator* iterator);
+Iterator* allLocallyModifiedPropositions(Module* module);
 boolean visibleTermP(LogicObject* term, Context* context, boolean localP);
 Iterator* allUnnamedTerms(Module* module, boolean localP);
 boolean namedTermP(Object* term, AllPurposeIterator* iter);
@@ -67,6 +70,7 @@ LogicObject* stringToLogicObject(char* string);
 void startupApiSupport();
 
 // Auxiliary global declarations:
+extern Surrogate* SGT_API_SUPPORT_LOGIC_TRUTH_VALUE;
 extern Surrogate* SGT_API_SUPPORT_LOGIC_LOGIC_OBJECT;
 extern Surrogate* SGT_API_SUPPORT_LOGIC_PATTERN_VARIABLE;
 extern Surrogate* SGT_API_SUPPORT_LOGIC_SKOLEM;

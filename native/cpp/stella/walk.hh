@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -128,6 +128,7 @@ boolean preserveTailMergeOptimizabilityP();
 boolean methodCallInliningEnabledP();
 boolean optimizeBooleanTestsP();
 boolean checkForIllegalReturnP();
+boolean supportUnexecP();
 char* nameQuotedTree(Cons* tree);
 Cons* getQuotedTree(char* treeName, char* modulename);
 TranslationUnit* newTranslationUnit();
@@ -437,7 +438,9 @@ Cons* yieldLispMacroTrees(Symbol* name, MethodSlot* method, Cons*& _Return1);
 void createLispMacroUnits(Symbol* name, MethodSlot* method);
 boolean commandP(MethodSlot* method);
 MethodSlot* lookupCommand(Symbol* name);
+MethodSlot* lookupCommandLikeFunction(Symbol* name);
 boolean methodMustBeEvaluableP(MethodSlot* method);
+boolean methodCallableViaApplyP(MethodSlot* method);
 boolean methodNeedsEvaluatorWrapperP(MethodSlot* method);
 Symbol* yieldEvaluatorWrapperName(Symbol* methodname);
 Object* yieldArgumentAccessTree(Symbol* argumentsvariable, int index, boolean restargumentP);
@@ -478,6 +481,7 @@ extern Keyword* KWD_WALK_USE_COMMON_LISP_CONSES;
 extern Keyword* KWD_WALK_USE_CPP_GARBAGE_COLLECTOR;
 extern Keyword* KWD_WALK_MINIMIZE_JAVA_PREFIXES;
 extern Keyword* KWD_WALK_TRANSLATE_WITH_COPYRIGHT_HEADER;
+extern Keyword* KWD_WALK_SUPPORT_UNEXEC;
 extern Keyword* KWD_WALK_USE_COMMON_LISP_VECTOR_STRUCTS;
 extern Surrogate* SGT_WALK_STELLA_CONS;
 extern Symbol* SYM_WALK_STELLA_MEMBp;

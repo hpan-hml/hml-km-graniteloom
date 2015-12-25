@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -114,12 +114,13 @@
      "(DEFMETHOD HELP-PRINT-OUTLINE ((TOP NAMED-DESCRIPTION) (STREAM OUTPUT-STREAM) (CURRENT-DEPTH INTEGER) (DEPTH INTEGER) (NAMED? BOOLEAN)) :PUBLIC? FALSE :DOCUMENTATION \"Helper function for `print-concept-outline'\")"
      (CL:FUNCTION HELP-PRINT-OUTLINE) NULL)
     (DEFINE-FUNCTION-OBJECT "STARTUP-TOOLS"
-     "(DEFUN STARTUP-TOOLS () :PUBLIC? TRUE)" (CL:FUNCTION STARTUP-TOOLS)
-     NULL)
-    (CL:LET* ((FUNCTION (LOOKUP-FUNCTION SYM-TOOLS-LOGIC-STARTUP-TOOLS)))
+     "(DEFUN STARTUP-TOOLS () :PUBLIC? TRUE)"
+     (CL:FUNCTION STARTUP-TOOLS) NULL)
+    (CL:LET*
+     ((FUNCTION (LOOKUP-FUNCTION SYM-TOOLS-LOGIC-STARTUP-TOOLS)))
      (SET-DYNAMIC-SLOT-VALUE (%DYNAMIC-SLOTS FUNCTION)
-      SYM-TOOLS-STELLA-METHOD-STARTUP-CLASSNAME (WRAP-STRING "_StartupTools")
-      NULL-STRING-WRAPPER)))
+      SYM-TOOLS-STELLA-METHOD-STARTUP-CLASSNAME
+      (WRAP-STRING "_StartupTools") NULL-STRING-WRAPPER)))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 8) (FINALIZE-SLOTS)
     (CLEANUP-UNFINALIZED-CLASSES))
    (CL:WHEN (CURRENT-STARTUP-TIME-PHASE? 9)

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -44,9 +44,24 @@
 */
 
 
-
-
 namespace stella {
+
+// Class definitions:
+class CrossProductIterator : public Iterator {
+// Iterator class that generates the cross product of a list of domains.
+// Each value tuple is represented as a CONS.  CAUTION: the value tuple will be modified
+// destructively, hence, it needs to be copied in case it needs to persist beyond a single
+// iteration.
+public:
+  Cons* domains;
+  Cons* cursors;
+public:
+  virtual boolean nextP();
+  virtual void reset();
+  virtual Surrogate* primaryType();
+};
+
+
 
 // Function signatures:
 boolean terminateDestructiveListIteratorP(DestructiveListIterator* self);
@@ -93,12 +108,19 @@ boolean classTablesNextP(AllPurposeIterator* self);
 Iterator* classTables(Class* clasS, Cons* filters);
 Iterator* publicClassStorageSlots(Class* clasS);
 Iterator* privateClassStorageSlots(Class* clasS);
+CrossProductIterator* newCrossProductIterator();
+Object* accessCrossProductIteratorSlotValue(CrossProductIterator* self, Symbol* slotname, Object* value, boolean setvalueP);
+CrossProductIterator* allocateCrossProductIterator(Cons* domains);
 void helpStartupIterators1();
+void helpStartupIterators2();
 void startupIterators();
 
 // Auxiliary global declarations:
 extern Symbol* SYM_ITERATORS_STELLA_SLOT_AUXILIARYp;
 extern Surrogate* SGT_ITERATORS_STELLA_TABLE;
+extern Surrogate* SGT_ITERATORS_STELLA_CROSS_PRODUCT_ITERATOR;
+extern Symbol* SYM_ITERATORS_STELLA_DOMAINS;
+extern Symbol* SYM_ITERATORS_STELLA_CURSORS;
 extern Symbol* SYM_ITERATORS_STELLA_STARTUP_ITERATORS;
 extern Symbol* SYM_ITERATORS_STELLA_METHOD_STARTUP_CLASSNAME;
 

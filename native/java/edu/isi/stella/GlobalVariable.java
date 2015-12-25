@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -77,6 +77,15 @@ public class GlobalVariable extends MappableObject {
       self.variableType = null;
       self.variableName = null;
       return (self);
+    }
+  }
+
+  public static MethodSlot lookupVariableDemonSetter(GlobalVariable demon) {
+    { Symbol variablename = demon.variableName;
+      String postfix = (demon.homeModule().caseSensitiveP ? "-setter" : "-SETTER");
+      Symbol settername = Symbol.internDerivedSymbol(variablename, variablename.symbolName + postfix);
+
+      return (Symbol.lookupFunction(settername));
     }
   }
 

@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 2003-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 2003-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: soap.ste,v 1.10 2010/03/05 23:08:24 hans Exp
+;;; Version: soap.ste,v 1.11 2014/04/17 22:38:21 hans Exp
 
 ;;; Support for rpc-style messaging with SOAP.
 
@@ -119,17 +119,17 @@ RPC request.  This functions writes a SOAP envelope containing a service respons
   ;; TO DO: fix Java class qualification bug when we call these parameters by
   ;;        the same name as the classes, e.g., `faultcode'.
   (let ((fault (new SOAP-ENV/|Fault|
-                    :|faultcode| (new SOAP-ENV/|faultcode| 
+                    :|faultcode| (new SOAP-ENV/|FaultCode| 
                                       :|textContent| fcode)
-                    :|faultstring| (new SOAP-ENV/|faultstring| 
+                    :|faultstring| (new SOAP-ENV/|FaultString| 
                                         :|textContent| fstring))))
     (when (defined? factor)
       (setf (SOAP-ENV/|faultactor| fault)
-        (new SOAP-ENV/|faultactor| 
+        (new SOAP-ENV/|FaultActor| 
              :|textContent| factor)))
     (when (defined? fdetail)
       (setf (SOAP-ENV/|detail| fault)
-        (new SOAP-ENV/|detail| 
+        (new SOAP-ENV/|Detail| 
              :|contents| fdetail)))
     (return fault)))
 

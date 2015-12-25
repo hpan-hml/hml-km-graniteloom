@@ -1,6 +1,6 @@
 ;;; -*- Mode: Lisp; Package: STELLA; Syntax: COMMON-LISP; Base: 10 -*-
 
-;;; Version: test-suite.plm,v 1.44 2010/09/11 02:24:36 hans Exp
+;;; Version: test-suite.plm,v 1.49 2012/04/30 23:20:10 hans Exp
 
 ;;; Various PowerLoom tests
 ;;; =======================
@@ -2511,6 +2511,120 @@
 (retrieve all (minimum-element relation (kappa (?r ?v) (- (arity ?r) 10 ?v)) ?e))
 (retrieve all (maximum-element relation (kappa (?r ?v) (- 10 (arity ?r) ?v)) ?e))
 (retrieve all (maximum-element relation (kappa (?r ?v) (- (arity ?r) 10 ?v)) ?e))
+
+;;; CLASHES ON INEQUALITIES
+
+(clear-module "TEST")
+
+(assert (< 9 6))
+
+;;; THIS NEEDS TO REPORT A CLASH:
+(run-forward-rules :force? true)
+(list-inconsistent-propositions)
+
+(clear-module "TEST")
+
+(deffunction start (?x (?s INTEGER)))
+(deffunction end (?x (?e INTEGER)))
+
+(assert
+  (=>> (and (start ?x ?s)
+            (end ?x ?e))
+       (=< ?s ?e)))
+
+(assert (start myint 10))
+(assert (end myint 6))
+
+;;; THIS NEEDS TO REPORT A CLASH:
+(run-forward-rules :force? true)
+(list-inconsistent-propositions)
+
+
+;;; IMPROVED SUBSTRING SPECIALIST
+
+(clear-module "TEST")
+
+(ask (substring "shoobedoobedoo" 2 6 "oobe"))
+(retrieve all (substring "shoobedoobedoo" 2 6 ?sub))
+(retrieve all (substring "shoobedoobedoo" 2 -1 ?sub))
+(retrieve all (substring "shoobedoobedoo" ?s 6 "oobe"))
+(retrieve all (substring "shoobedoobedoo" 2 ?e "oobe"))
+(retrieve all (substring "shoobedoobedoo" ?s ?e "oobe"))
+;; like 'starts-with?':
+(retrieve all (substring "shoobedoobedoo" 0 ?e "shoo"))
+;; like 'ends-with?':
+(retrieve all (substring "shoobedoobedoo" ?s -1 "doo"))
+;; computes length:
+(retrieve all (substring "shoobedoobedoo" ?s -1 ""))
+;; argument coercion:
+(retrieve all (substring 121314 ?s ?e 1))
+
+;; failure cases:
+(ask (substring "shoobedoobedoo" 2 6 "uube"))
+(retrieve all (substring "shoobedoobedoo" -2 6 ?sub))
+(retrieve all (substring "shoobedoobedoo" 2 16 ?sub))
+(retrieve all (substring "shoobedoobedoo" 4 2 ?sub))
+(retrieve all (substring "shoobedoobedoo" "2" 6 ?sub))
+(retrieve all (substring "shoobedoobedoo" 2 "6" ?sub))
+(retrieve all (substring ?any 0 3 "shoo"))
+(retrieve all (substring "shoobedoobedoo" ?s 6 ?sub))
+(retrieve all (substring "shoobedoobedoo" 2 ?e ?sub))
+
+
+;;; CONSOLIDATED LENGTH FOR LISTS, IMPROVED SET NORMALIZATION
+
+(clear-module "TEST")
+
+(retrieve all (length (listof 3 2 1 2 3 4) ?l))
+(retrieve all (length-of-list (listof 3 2 1 2 3 4) ?l))
+(retrieve all (length (setof 3 2 1 2 3 4) ?l))
+
+
+;;; FIXED IRR/REFLEXIVE SPECIALISTS
+
+(clear-module "TEST")
+
+(defrelation reflexive-r (?x ?y) :reflexive true)
+(defrelation irreflexive-r (?x ?y) :irreflexive true)
+
+(assert (reflexive-r c d))
+(assert (irreflexive-r c d))
+
+(ask (reflexive-r a a))
+(ask (reflexive-r a b))
+(retrieve all (reflexive-r a ?x))
+(retrieve all (reflexive-r ?x a))
+(retrieve all (reflexive-r ?x ?y))
+
+(ask (irreflexive-r a a))
+(ask (irreflexive-r a b))
+(retrieve all (irreflexive-r a ?x))
+(retrieve all (irreflexive-r ?x a))
+(retrieve all (irreflexive-r ?x ?y))
+
+
+;;; GENERALIZED COMPUTATIONS TO ALLOW SKOLEM ARGUMENTS IF SUPPORTED
+
+(clear-module "TEST")
+
+(deffunction boss (?x ?y))
+
+(assert (= (boss fred) (boss joe)))
+
+(retrieve all (insert-element (listof 1 2 3) -1 (boss fred) ?list))
+
+
+;;; LIST/SET SKOLEM AND TYPE-PROP IN WRONG CONTEXT BUG
+
+(defmodule "TEST/TEST2")
+(clear-module "TEST")
+
+(retrieve (length (nth-rest (listof 1 2 3) 2) ?l))
+
+(cc TEST2)
+(retrieve (length (nth-rest (listof 1 2 3) 2) ?l))
+(cc TEST)
+
 
 ;;;;
 ;;;; EOF

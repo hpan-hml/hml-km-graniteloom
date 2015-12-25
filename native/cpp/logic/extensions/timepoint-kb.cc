@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -53,7 +53,7 @@ namespace timepoint {
 void startupTimepointKb() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/TIMEPOINT-SUPPORT", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       SYM_TIMEPOINT_KB_TIMEPOINT_KB_TIMEPOINT = ((Symbol*)(internRigidSymbolWrtModule("TIMEPOINT", getStellaModule("/TIMEPOINT-KB", true), 0)));
       SYM_TIMEPOINT_KB_TIMEPOINT_KB_DAY_OF_WEEK = ((Symbol*)(internRigidSymbolWrtModule("DAY-OF-WEEK", getStellaModule("/TIMEPOINT-KB", true), 0)));
@@ -120,7 +120,7 @@ void startupTimepointKb() {
       inModule(((StringWrapper*)(copyConsTree(wrapString("TIMEPOINT-SUPPORT")))));
       { 
         BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("PL-KERNEL-KB", true));
-        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+        BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
         defconcept(consList(1, ((Symbol*)(copyConsTree(SYM_TIMEPOINT_KB_TIMEPOINT_KB_TIMEPOINT)))));
         defconcept(consList(6, ((Symbol*)(copyConsTree(SYM_TIMEPOINT_KB_TIMEPOINT_KB_DAY_OF_WEEK))), ((Cons*)(copyConsTree(NIL))), KWD_TIMEPOINT_KB_CLOSED, ((Symbol*)(copyConsTree(SYM_TIMEPOINT_KB_STELLA_TRUE))), KWD_TIMEPOINT_KB_AXIOMS, ((Cons*)(copyConsTree(getQuotedTree("((AND (/TIMEPOINT-KB/DAY-OF-WEEK /TIMEPOINT-KB/SUNDAY) (/TIMEPOINT-KB/DAY-OF-WEEK /TIMEPOINT-KB/SATURDAY) (/TIMEPOINT-KB/DAY-OF-WEEK /TIMEPOINT-KB/FRIDAY) (/TIMEPOINT-KB/DAY-OF-WEEK /TIMEPOINT-KB/THURSDAY) (/TIMEPOINT-KB/DAY-OF-WEEK /TIMEPOINT-KB/WEDNESDAY) (/TIMEPOINT-KB/DAY-OF-WEEK /TIMEPOINT-KB/TUESDAY) (/TIMEPOINT-KB/DAY-OF-WEEK /TIMEPOINT-KB/MONDAY)) \"/TIMEPOINT-SUPPORT\")", "/TIMEPOINT-SUPPORT"))))));
         deffunction(consList(12, ((Symbol*)(copyConsTree(SYM_TIMEPOINT_KB_TIMEPOINT_KB_TIMEPOINT_OF))), ((Cons*)(copyConsTree(getQuotedTree("(((?X STRING)) \"/TIMEPOINT-SUPPORT\")", "/TIMEPOINT-SUPPORT")))), KWD_TIMEPOINT_KB__g, ((Symbol*)(copyConsTree(SYM_TIMEPOINT_KB_TIMEPOINT_SUPPORT_pTP))), KWD_TIMEPOINT_KB_DOCUMENTATION, ((StringWrapper*)(copyConsTree(wrapString("Connects a STRING representation ?x of a time point to the actual\ninternal representation which is a date/time quantity wrapper representing a time\npoint.  Dates and times can be specified in a large number of different formats\nspecified by the STELLA variable `*date-time-patterns*' (defined in\nstella/date-time.ste) which see.  Examples can also be found in the demo file\ntimepoints.ste.")))), KWD_TIMEPOINT_KB_COMPUTED, ((Symbol*)(copyConsTree(SYM_TIMEPOINT_KB_STELLA_TRUE))), KWD_TIMEPOINT_KB_RELATION_CONSTRAINT, ((Symbol*)(copyConsTree(SYM_TIMEPOINT_KB_TIMEPOINT_SUPPORT_TIMEPOINT_OF_CONSTRAINT))), KWD_TIMEPOINT_KB_RELATION_SPECIALIST, ((Symbol*)(copyConsTree(SYM_TIMEPOINT_KB_PL_KERNEL_KB_CONSTRAINT_SPECIALIST)))));

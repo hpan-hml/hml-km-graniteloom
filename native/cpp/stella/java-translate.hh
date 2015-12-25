@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -422,10 +422,11 @@ extern Keyword* KWD_JAVA_TRANSLATE_ERROR;
 extern Keyword* KWD_JAVA_TRANSLATE_CONTINUABLE_ERROR;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_STANDARD_ERROR;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_STANDARD_OUT;
+extern Surrogate* SGT_JAVA_TRANSLATE_STELLA_OBJECT;
+extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_LITERAL;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_PRINT_NATIVE_STREAM;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_EOL;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_EOL;
-extern Symbol* SYM_JAVA_TRANSLATE_STELLA_JAVA_LITERAL;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_TRUE;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_FALSE;
 extern Symbol* SYM_JAVA_TRANSLATE_STELLA_NULL;

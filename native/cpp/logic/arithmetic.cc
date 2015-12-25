@@ -23,7 +23,7 @@
  | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
  | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
  |                                                                            |
- | Portions created by the Initial Developer are Copyright (C) 1997-2010      |
+ | Portions created by the Initial Developer are Copyright (C) 1997-2014      |
  | the Initial Developer. All Rights Reserved.                                |
  |                                                                            |
  | Contributor(s):                                                            |
@@ -689,6 +689,60 @@ NumberWrapper* absComputation(NumberWrapper* x) {
   }
 }
 
+IntegerWrapper* floorComputation(NumberWrapper* x) {
+  { Surrogate* testValue000 = safePrimaryType(x);
+
+    if (subtypeOfIntegerP(testValue000)) {
+      { NumberWrapper* x000 = x;
+        IntegerWrapper* x = ((IntegerWrapper*)(x000));
+
+        return (wrapInteger(stella::floor(x->wrapperValue)));
+      }
+    }
+    else if (subtypeOfFloatP(testValue000)) {
+      { NumberWrapper* x001 = x;
+        FloatWrapper* x = ((FloatWrapper*)(x001));
+
+        return (wrapInteger(stella::floor(x->wrapperValue)));
+      }
+    }
+    else {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+        throw *newStellaException(stream000->theStringReader());
+      }
+    }
+  }
+}
+
+IntegerWrapper* ceilingComputation(NumberWrapper* x) {
+  { Surrogate* testValue000 = safePrimaryType(x);
+
+    if (subtypeOfIntegerP(testValue000)) {
+      { NumberWrapper* x000 = x;
+        IntegerWrapper* x = ((IntegerWrapper*)(x000));
+
+        return (wrapInteger(stella::ceiling(x->wrapperValue)));
+      }
+    }
+    else if (subtypeOfFloatP(testValue000)) {
+      { NumberWrapper* x001 = x;
+        FloatWrapper* x = ((FloatWrapper*)(x001));
+
+        return (wrapInteger(stella::ceiling(x->wrapperValue)));
+      }
+    }
+    else {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+        throw *newStellaException(stream000->theStringReader());
+      }
+    }
+  }
+}
+
 Object* plusConstraint(IntegerWrapper* missingArgument, NumberWrapper* x1, NumberWrapper* x2, NumberWrapper* x3) {
   { Object* value = NULL;
 
@@ -834,6 +888,205 @@ Object* sqrtConstraint(IntegerWrapper* missingArgument, NumberWrapper* x1, Numbe
   }
 }
 
+FloatWrapper* logComputation(NumberWrapper* x) {
+  { Surrogate* testValue000 = safePrimaryType(x);
+
+    if (subtypeOfFloatP(testValue000)) {
+      { NumberWrapper* x000 = x;
+        FloatWrapper* x = ((FloatWrapper*)(x000));
+
+        return (((x->wrapperValue > 0) ? wrapFloat(::log((x->wrapperValue))) : NULL));
+      }
+    }
+    else if (subtypeOfIntegerP(testValue000)) {
+      { NumberWrapper* x001 = x;
+        IntegerWrapper* x = ((IntegerWrapper*)(x001));
+
+        return (((x->wrapperValue > 0) ? wrapFloat(::log((x->numberWrapperToFloat()))) : NULL));
+      }
+    }
+    else if (subtypeOfLongIntegerP(testValue000)) {
+      { NumberWrapper* x002 = x;
+        LongIntegerWrapper* x = ((LongIntegerWrapper*)(x002));
+
+        return (((x->wrapperValue > 0) ? wrapFloat(::log((x->numberWrapperToFloat()))) : NULL));
+      }
+    }
+    else {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+        throw *newStellaException(stream000->theStringReader());
+      }
+    }
+  }
+}
+
+FloatWrapper* log10Computation(NumberWrapper* x) {
+  { Surrogate* testValue000 = safePrimaryType(x);
+
+    if (subtypeOfFloatP(testValue000)) {
+      { NumberWrapper* x000 = x;
+        FloatWrapper* x = ((FloatWrapper*)(x000));
+
+        return (((x->wrapperValue > 0) ? wrapFloat(::log((x->wrapperValue)) * RECIPROCAL_NL10) : NULL));
+      }
+    }
+    else if (subtypeOfIntegerP(testValue000)) {
+      { NumberWrapper* x001 = x;
+        IntegerWrapper* x = ((IntegerWrapper*)(x001));
+
+        return (((x->wrapperValue > 0) ? wrapFloat(::log((x->numberWrapperToFloat())) * RECIPROCAL_NL10) : NULL));
+      }
+    }
+    else if (subtypeOfLongIntegerP(testValue000)) {
+      { NumberWrapper* x002 = x;
+        LongIntegerWrapper* x = ((LongIntegerWrapper*)(x002));
+
+        return (((x->wrapperValue > 0) ? wrapFloat(::log((x->numberWrapperToFloat())) * RECIPROCAL_NL10) : NULL));
+      }
+    }
+    else {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+        throw *newStellaException(stream000->theStringReader());
+      }
+    }
+  }
+}
+
+FloatWrapper* expComputation(NumberWrapper* x) {
+  { Surrogate* testValue000 = safePrimaryType(x);
+
+    if (subtypeOfFloatP(testValue000)) {
+      { NumberWrapper* x000 = x;
+        FloatWrapper* x = ((FloatWrapper*)(x000));
+
+        return (wrapFloat(::exp((x->wrapperValue))));
+      }
+    }
+    else if (subtypeOfIntegerP(testValue000)) {
+      { NumberWrapper* x001 = x;
+        IntegerWrapper* x = ((IntegerWrapper*)(x001));
+
+        return (wrapFloat(::exp((x->numberWrapperToFloat()))));
+      }
+    }
+    else if (subtypeOfLongIntegerP(testValue000)) {
+      { NumberWrapper* x002 = x;
+        LongIntegerWrapper* x = ((LongIntegerWrapper*)(x002));
+
+        return (wrapFloat(::exp((x->numberWrapperToFloat()))));
+      }
+    }
+    else {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+        throw *newStellaException(stream000->theStringReader());
+      }
+    }
+  }
+}
+
+FloatWrapper* exptComputation(NumberWrapper* x, NumberWrapper* n) {
+  { Surrogate* testValue000 = safePrimaryType(x);
+
+    if (subtypeOfFloatP(testValue000)) {
+      { NumberWrapper* x000 = x;
+        FloatWrapper* x = ((FloatWrapper*)(x000));
+
+        return (wrapFloat(::pow((x->wrapperValue),(coerceToFloat(n)))));
+      }
+    }
+    else if (subtypeOfIntegerP(testValue000)) {
+      { NumberWrapper* x001 = x;
+        IntegerWrapper* x = ((IntegerWrapper*)(x001));
+
+        return (wrapFloat(::pow((x->numberWrapperToFloat()),(coerceToFloat(n)))));
+      }
+    }
+    else if (subtypeOfLongIntegerP(testValue000)) {
+      { NumberWrapper* x002 = x;
+        LongIntegerWrapper* x = ((LongIntegerWrapper*)(x002));
+
+        return (wrapFloat(::pow((x->numberWrapperToFloat()),(coerceToFloat(n)))));
+      }
+    }
+    else {
+      { OutputStringStream* stream000 = newOutputStringStream();
+
+        *(stream000->nativeStream) << "`" << testValue000 << "'" << " is not a valid case option";
+        throw *newStellaException(stream000->theStringReader());
+      }
+    }
+  }
+}
+
+Object* logConstraint(IntegerWrapper* missingArgument, NumberWrapper* x, NumberWrapper* log) {
+  { Object* value = NULL;
+
+    switch (missingArgument->wrapperValue) {
+      case -1: 
+        value = ((arithmeticEqualTest(logComputation(x), log) ||
+            arithmeticEqualTest(x, expComputation(log))) ? TRUE_WRAPPER : FALSE_WRAPPER);
+      break;
+      case 0: 
+        value = expComputation(log);
+      break;
+      case 1: 
+        value = logComputation(x);
+      break;
+      default:
+      break;
+    }
+    return (value);
+  }
+}
+
+Object* log10Constraint(IntegerWrapper* missingArgument, NumberWrapper* x, NumberWrapper* log) {
+  { Object* value = NULL;
+
+    switch (missingArgument->wrapperValue) {
+      case -1: 
+        value = ((arithmeticEqualTest(log10Computation(x), log) ||
+            arithmeticEqualTest(x, exptComputation(wrapFloat(10.0), log))) ? TRUE_WRAPPER : FALSE_WRAPPER);
+      break;
+      case 0: 
+        value = exptComputation(wrapFloat(10.0), log);
+      break;
+      case 1: 
+        value = log10Computation(x);
+      break;
+      default:
+      break;
+    }
+    return (value);
+  }
+}
+
+Object* expConstraint(IntegerWrapper* missingArgument, NumberWrapper* x, NumberWrapper* y) {
+  { Object* value = NULL;
+
+    switch (missingArgument->wrapperValue) {
+      case -1: 
+        value = ((arithmeticEqualTest(expComputation(x), y) ||
+            arithmeticEqualTest(x, logComputation(y))) ? TRUE_WRAPPER : FALSE_WRAPPER);
+      break;
+      case 0: 
+        value = logComputation(y);
+      break;
+      case 1: 
+        value = expComputation(x);
+      break;
+      default:
+      break;
+    }
+    return (value);
+  }
+}
+
 IntegerInterval* newIntegerInterval() {
   { IntegerInterval* self = NULL;
 
@@ -913,7 +1166,7 @@ Object* accessIntervalCacheSlotValue(IntervalCache* self, Symbol* slotname, Obje
       value = self->homeContext;
     }
   }
-  else if (slotname == SYM_ARITHMETIC_PL_KERNEL_KB_INTERVAL_MEMBER) {
+  else if (slotname == SYM_ARITHMETIC_LOGIC_INTERVAL_MEMBER) {
     if (setvalueP) {
       self->intervalMember = ((LogicObject*)(value));
     }
@@ -937,7 +1190,7 @@ Object* accessIntervalCacheSlotValue(IntervalCache* self, Symbol* slotname, Obje
       value = self->upperBound;
     }
   }
-  else if (slotname == SYM_ARITHMETIC_PL_KERNEL_KB_STRICT_LOWER_BOUNDp) {
+  else if (slotname == SYM_ARITHMETIC_LOGIC_STRICT_LOWER_BOUNDp) {
     if (setvalueP) {
       self->strictLowerBoundP = coerceWrappedBooleanToBoolean(((BooleanWrapper*)(value)));
     }
@@ -945,7 +1198,7 @@ Object* accessIntervalCacheSlotValue(IntervalCache* self, Symbol* slotname, Obje
       value = (self->strictLowerBoundP ? TRUE_WRAPPER : FALSE_WRAPPER);
     }
   }
-  else if (slotname == SYM_ARITHMETIC_PL_KERNEL_KB_STRICT_UPPER_BOUNDp) {
+  else if (slotname == SYM_ARITHMETIC_LOGIC_STRICT_UPPER_BOUNDp) {
     if (setvalueP) {
       self->strictUpperBoundP = coerceWrappedBooleanToBoolean(((BooleanWrapper*)(value)));
     }
@@ -1007,7 +1260,7 @@ IntervalCache* createIntervalCache(LogicObject* intervalmember) {
   { IntervalCache* intervalcache = newIntervalCache();
 
     intervalcache->intervalMember = intervalmember;
-    intervalcache->homeContext = oCONTEXTo.get();
+    intervalcache->homeContext = oCONTEXTo;
     assertBinaryValue(SGT_ARITHMETIC_PL_KERNEL_KB_INTERVAL_CACHE_OF, intervalmember, intervalcache);
     return (intervalcache);
   }
@@ -1022,12 +1275,12 @@ IntervalCache* getIntervalCache(LogicObject* self) {
         IntervalCache* copycache = NULL;
         Proposition* proposition = NULL;
 
-        if (thiscache->homeContext == oCONTEXTo.get()) {
+        if (thiscache->homeContext == oCONTEXTo) {
           return (thiscache);
         }
         { IntervalCache* self000 = newIntervalCache();
 
-          self000->homeContext = oCONTEXTo.get();
+          self000->homeContext = oCONTEXTo;
           self000->intervalMember = self;
           self000->lowerBound = thiscache->lowerBound;
           self000->upperBound = thiscache->upperBound;
@@ -1050,7 +1303,7 @@ IntervalCache* getIntervalCache(LogicObject* self) {
           }
           proposition = value000;
         }
-        equateValues(valueOf((proposition->arguments->theArray)[(proposition->arguments->length() - 1)]), copycache);
+        equateValues(proposition, valueOf((proposition->arguments->theArray)[(proposition->arguments->length() - 1)]), copycache);
         return (copycache);
       }
     }
@@ -1062,10 +1315,23 @@ IntervalCache* getIntervalCache(LogicObject* self) {
 
 void signalIntervalClash(IntervalCache* interval) {
   interval->intervalMember->markAsIncoherent();
-  { OutputStringStream* stream000 = newOutputStringStream();
+  { char* message000 = NULL;
 
-    *(stream000->nativeStream) << "Clash in interval values " << "`" << interval << "'" << std::endl;
-    throw *newClash(stream000->theStringReader());
+    { 
+      BIND_STELLA_SPECIAL(oPRINTREADABLYpo, boolean, true);
+      message000 = stringConcatenate("Clash in interval values ", "`", 3, stringify(interval), "'", "\n");
+    }
+    { char* message = message000;
+      IntervalClash* clash = newIntervalClash(message);
+
+      clash->context = oCONTEXTo;
+      clash->intervalMember = interval->intervalMember;
+      clash->lowerBound = interval->lowerBound;
+      clash->upperBound = interval->upperBound;
+      clash->strictLowerBoundP = interval->strictLowerBoundP;
+      clash->strictUpperBoundP = interval->strictUpperBoundP;
+      throw *clash;
+    }
   }
 }
 
@@ -1094,7 +1360,7 @@ void evaluateAdjacentInequalities(LogicObject* self) {
           }
         }
         if (alwaysP000) {
-          postForEvaluation(dep, oCONTEXTo.get());
+          postForEvaluation(dep, oCONTEXTo);
         }
       }
     }
@@ -1141,11 +1407,11 @@ IntegerWrapper* IntervalCache::integerLowerBound() {
                   return (wrapInteger(stella::floor(unwrapFloat(lb)) + 1));
                 }
                 else {
-                  return (wrapInteger(ceiling(unwrapFloat(lb))));
+                  return (wrapInteger(stella::ceiling(unwrapFloat(lb))));
                 }
               }
               else {
-                return (wrapInteger(ceiling(unwrapFloat(lb))));
+                return (wrapInteger(stella::ceiling(unwrapFloat(lb))));
               }
             }
           }
@@ -1215,7 +1481,7 @@ void IntervalCache::evaluateTighterIntegerInterval() {
       if (((boolean)(lb)) &&
           (((boolean)(ub)) &&
            eqlP(lb, ub))) {
-        equateValues(interval->intervalMember, lb);
+        equateValues(NULL, interval->intervalMember, lb);
       }
     }
   }
@@ -1232,7 +1498,7 @@ void IntervalCache::evaluateTighterInterval() {
           signalIntervalClash(interval);
         }
         else {
-          equateValues(interval->intervalMember, interval->lowerBound);
+          equateValues(NULL, interval->intervalMember, interval->lowerBound);
         }
       }
       else {
@@ -1806,7 +2072,7 @@ Keyword* inequalitySpecialist(ControlFrame* frame, Keyword* lastmove) {
   { Proposition* proposition = frame->proposition;
     Surrogate* relation = ((Surrogate*)(proposition->operatoR));
 
-    if (oREVERSEPOLARITYpo.get()) {
+    if (oREVERSEPOLARITYpo) {
       { 
         BIND_STELLA_SPECIAL(oREVERSEPOLARITYpo, boolean, false);
         if (relation == SGT_ARITHMETIC_PL_KERNEL_KB_l) {
@@ -1909,7 +2175,15 @@ void inequalityEvaluator(Proposition* self) {
         getIntervalCache(((LogicObject*)(value2)))->propagateInequalityToIntervalCache(value1, inverseInequalityOperator(operatoR));
       }
       else {
-        evaluatePredicateProposition(self);
+        if (compareIntervalBoundsP(operatoR, value1, value2)) {
+          assignTruthValue(self, TRUE_WRAPPER);
+        }
+        else if (trueP(self)) {
+          signalTruthValueClash(self);
+        }
+        else {
+          assignTruthValue(self, FALSE_WRAPPER);
+        }
       }
     }
   }
@@ -1935,102 +2209,104 @@ StringWrapper* stringConcatenateComputation(Object* x, Cons* yargs) {
 }
 
 Keyword* subsequenceSpecialist(ControlFrame* frame, Keyword* lastmove) {
-  { Proposition* proposition = frame->proposition;
-    Object* superarg = (proposition->arguments->theArray)[0];
-    Object* superargvalue = argumentBoundTo(superarg);
-    Object* p1Arg = (proposition->arguments->theArray)[1];
-    Object* p1Argvalue = argumentBoundTo(p1Arg);
-    Object* p2Arg = (proposition->arguments->theArray)[2];
-    Object* p2Argvalue = argumentBoundTo(p2Arg);
-    Object* subarg = (proposition->arguments->theArray)[3];
-    Object* subargvalue = argumentBoundTo(subarg);
+  lastmove = lastmove;
+  { Vector* arguments = frame->proposition->arguments;
+    Object* superarg = (arguments->theArray)[0];
+    Object* p1Arg = (arguments->theArray)[1];
+    Object* p2Arg = (arguments->theArray)[2];
+    Object* subarg = (arguments->theArray)[3];
     Iterator* iterator = ((Iterator*)(dynamicSlotValue(frame->dynamicSlots, SYM_ARITHMETIC_STELLA_ITERATOR, NULL)));
 
-    lastmove = lastmove;
     if (!((boolean)(iterator))) {
-      if (!((boolean)(superargvalue))) {
-        return (KWD_ARITHMETIC_FAILURE);
-      }
-      else if (!((boolean)(subargvalue))) {
-        { int p1 = NULL_INTEGER;
-          int p2 = NULL_INTEGER;
-          char* super = NULL;
+      { Object* superargvalue = argumentBoundTo(superarg);
+        char* super = (stringP(superargvalue) ? unwrapString(((StringWrapper*)(superargvalue))) : pli::objectToString(superargvalue));
+        int superlength = NULL_INTEGER;
+        Object* p1Argvalue = argumentBoundTo(p1Arg);
+        int p1 = NULL_INTEGER;
+        Object* p2Argvalue = argumentBoundTo(p2Arg);
+        int p2 = NULL_INTEGER;
+        Object* subargvalue = argumentBoundTo(subarg);
+        char* sub = (stringP(subargvalue) ? unwrapString(((StringWrapper*)(subargvalue))) : pli::objectToString(subargvalue));
+        int sublength = ((sub != NULL) ? strlen(sub) : ((int)(NULL_INTEGER)));
 
-          if ((!((boolean)(p1Argvalue))) ||
-              (!((boolean)(p2Argvalue)))) {
-            return (KWD_ARITHMETIC_FAILURE);
+        if (super == NULL) {
+          return (KWD_ARITHMETIC_FAILURE);
+        }
+        superlength = strlen(super);
+        if (((boolean)(p1Argvalue))) {
+          if (integerP(p1Argvalue)) {
+            p1 = ((IntegerWrapper*)(p1Argvalue))->wrapperValue;
           }
           else {
-            {
-              p1 = ((IntegerWrapper*)(p1Argvalue))->wrapperValue;
-              p2 = ((IntegerWrapper*)(p2Argvalue))->wrapperValue;
-              super = unwrapString(((StringWrapper*)(superargvalue)));
-              if ((p1 < 0) ||
-                  (p2 > strlen(super))) {
-                return (KWD_ARITHMETIC_TERMINAL_FAILURE);
-              }
-              else {
-                return (selectProofResult(bindArgumentToValueP(subarg, wrapString(stringSubsequence(super, p1, p2)), true), false, true));
-              }
-            }
+            return (KWD_ARITHMETIC_TERMINAL_FAILURE);
+          }
+          if ((p1 < 0) ||
+              (p1 > superlength)) {
+            return (KWD_ARITHMETIC_TERMINAL_FAILURE);
           }
         }
-      }
-      else if (!((boolean)(p1Argvalue))) {
-        if (!((boolean)(p2Argvalue))) {
-          {
-            iterator = newSubstringPositionIterator(unwrapString(((StringWrapper*)(superargvalue))), unwrapString(((StringWrapper*)(subargvalue))));
-            setDynamicSlotValue(frame->dynamicSlots, SYM_ARITHMETIC_STELLA_ITERATOR, iterator, NULL);
+        if (((boolean)(p2Argvalue))) {
+          if (integerP(p2Argvalue)) {
+            p2 = ((IntegerWrapper*)(p2Argvalue))->wrapperValue;
+          }
+          else {
+            return (KWD_ARITHMETIC_TERMINAL_FAILURE);
+          }
+          if (p2 < 0) {
+            p2 = superlength + p2 + 1;
+          }
+          if ((p2 > superlength) ||
+              ((p1 != NULL_INTEGER) &&
+               (p1 > p2))) {
+            return (KWD_ARITHMETIC_TERMINAL_FAILURE);
           }
         }
-        else {
-          { int p2 = ((IntegerWrapper*)(p2Argvalue))->wrapperValue;
-            char* sub = unwrapString(((StringWrapper*)(subargvalue)));
-            int lsub = strlen(sub);
-
-            if (lsub > p2) {
+        if (sub == NULL) {
+          if ((p1 != NULL_INTEGER) &&
+              (p2 != NULL_INTEGER)) {
+            return (selectProofResult(bindArgumentToValueP(subarg, wrapString(stringSubsequence(super, p1, p2)), true), false, true));
+          }
+          else {
+            return (KWD_ARITHMETIC_FAILURE);
+          }
+        }
+        else if (p1 == NULL_INTEGER) {
+          if (p2 == NULL_INTEGER) {
+            setDynamicSlotValue(frame->dynamicSlots, SYM_ARITHMETIC_STELLA_ITERATOR, newSubstringPositionIterator(super, sub), NULL);
+          }
+          else {
+            if (sublength > p2) {
               return (KWD_ARITHMETIC_TERMINAL_FAILURE);
             }
-            else if (stringEqlP(stringSubsequence(unwrapString(((StringWrapper*)(superargvalue))), p2 - lsub, p2), sub)) {
-              return (selectProofResult(bindArgumentToValueP(p1Arg, wrapInteger(p2 - lsub), true), false, true));
+            else if (stringEqlP(stringSubsequence(super, p2 - sublength, p2), sub)) {
+              return (selectProofResult(bindArgumentToValueP(p1Arg, wrapInteger(p2 - sublength), true), false, true));
             }
             else {
               return (KWD_ARITHMETIC_TERMINAL_FAILURE);
             }
           }
         }
-      }
-      else if (!((boolean)(p2Argvalue))) {
-        { int p1 = ((IntegerWrapper*)(p1Argvalue))->wrapperValue;
-          char* sub = unwrapString(((StringWrapper*)(subargvalue)));
-          int lsub = strlen(sub);
-          char* super = unwrapString(((StringWrapper*)(superargvalue)));
-          int lsuper = strlen(super);
-
-          if ((p1 < 0) ||
-              ((p1 + lsub) > lsuper)) {
+        else if (p2 == NULL_INTEGER) {
+          if ((p1 + sublength) > superlength) {
             return (KWD_ARITHMETIC_TERMINAL_FAILURE);
           }
-          else if (stringEqlP(sub, stringSubsequence(super, p1, p1 + lsub))) {
-            return (selectProofResult(bindArgumentToValueP(p2Arg, wrapInteger(p1 + lsub), true), false, true));
+          else if (stringEqlP(sub, stringSubsequence(super, p1, p1 + sublength))) {
+            return (selectProofResult(bindArgumentToValueP(p2Arg, wrapInteger(p1 + sublength), true), false, true));
           }
           else {
             return (KWD_ARITHMETIC_TERMINAL_FAILURE);
           }
         }
-      }
-      else {
-        { char* superString = unwrapString(((StringWrapper*)(superargvalue)));
-          int beginIndex = unwrapInteger(((IntegerWrapper*)(p1Argvalue)));
-          int endIndex = unwrapInteger(((IntegerWrapper*)(p2Argvalue)));
-          boolean matchP = (endIndex <= strlen(superString)) &&
-              bindArgumentToValueP(subarg, wrapString(stringSubsequence(superString, beginIndex, endIndex)), true);
+        else {
+          { boolean matchP = bindArgumentToValueP(subarg, wrapString(stringSubsequence(super, p1, p2)), true);
 
-          setFrameTruthValue(frame, (matchP ? TRUE_TRUTH_VALUE : FALSE_TRUTH_VALUE));
-          return (selectProofResult(matchP, false, true));
+            setFrameTruthValue(frame, (matchP ? TRUE_TRUTH_VALUE : FALSE_TRUTH_VALUE));
+            return (selectProofResult(matchP, false, true));
+          }
         }
       }
     }
+    iterator = ((Iterator*)(dynamicSlotValue(frame->dynamicSlots, SYM_ARITHMETIC_STELLA_ITERATOR, NULL)));
     if (iterator->nextP() &&
         (bindArgumentToValueP(p1Arg, ((Cons*)(iterator->value))->value, true) &&
          bindArgumentToValueP(p2Arg, ((Cons*)(iterator->value))->rest->value, true))) {
@@ -2042,44 +2318,93 @@ Keyword* subsequenceSpecialist(ControlFrame* frame, Keyword* lastmove) {
   }
 }
 
-IntegerWrapper* stringMatchComputationHelper(Object* pattern, Object* x, Object* start, Object* end, boolean ignoreCaseP) {
-  if (!(stringP(pattern) &&
-      (integerP(start) &&
-       integerP(end)))) {
-    return (NULL);
+char* normalizeStringComputationArgs(Object* x, Object* start, Object* end, boolean coerceP, int& _Return1, int& _Return2) {
+  if (!(integerP(start) &&
+      integerP(end))) {
+    { char* _Return0 = NULL;
+
+      _Return1 = NULL_INTEGER;
+      _Return2 = NULL_INTEGER;
+      return (_Return0);
+    }
   }
-  { char* thepattern = ((StringWrapper*)(pattern))->wrapperValue;
-    int thestart = ((IntegerWrapper*)(start))->wrapperValue;
+  { int thestart = ((IntegerWrapper*)(start))->wrapperValue;
     int theend = ((IntegerWrapper*)(end))->wrapperValue;
     char* name = (stringP(x) ? ((StringWrapper*)(x))->wrapperValue : objectNameString(x));
-    int namelength = strlen(name);
-    int matchposition = NULL_INTEGER;
+    int namelength = 0;
 
+    if ((name == NULL) &&
+        coerceP) {
+      name = pli::objectToString(x);
+    }
+    if (!(name != NULL)) {
+      { char* _Return0 = NULL;
+
+        _Return1 = NULL_INTEGER;
+        _Return2 = NULL_INTEGER;
+        return (_Return0);
+      }
+    }
+    namelength = strlen(name);
     if (thestart < 0) {
       thestart = namelength + thestart + 1;
     }
     if (thestart < 0) {
-      return (NULL);
+      { char* _Return0 = NULL;
+
+        _Return1 = NULL_INTEGER;
+        _Return2 = NULL_INTEGER;
+        return (_Return0);
+      }
     }
     if (theend < 0) {
       theend = namelength + theend + 1;
     }
     if ((theend < 0) ||
         (theend > namelength)) {
-      return (NULL);
-    }
-    if (ignoreCaseP) {
-      matchposition = stringSearchIgnoreCase(name, thepattern, thestart);
-    }
-    else {
-      matchposition = stringSearch(name, thepattern, thestart);
-    }
-    if ((matchposition != NULL_INTEGER) &&
-        (matchposition < theend)) {
-      return (wrapInteger(matchposition));
+      { char* _Return0 = NULL;
+
+        _Return1 = NULL_INTEGER;
+        _Return2 = NULL_INTEGER;
+        return (_Return0);
+      }
     }
     else {
-      return (NULL);
+      _Return1 = thestart;
+      _Return2 = theend;
+      return (name);
+    }
+  }
+}
+
+IntegerWrapper* stringMatchComputationHelper(Object* pattern, Object* x, Object* start, Object* end, boolean ignoreCaseP) {
+  if (!(stringP(pattern))) {
+    return (NULL);
+  }
+  { char* thepattern = ((StringWrapper*)(pattern))->wrapperValue;
+    int matchposition = NULL_INTEGER;
+
+    { char* name = NULL;
+      int thestart = NULL_INTEGER;
+      int theend = NULL_INTEGER;
+
+      name = normalizeStringComputationArgs(x, start, end, false, thestart, theend);
+      if (name == NULL) {
+        return (NULL);
+      }
+      if (ignoreCaseP) {
+        matchposition = stringSearchIgnoreCase(name, thepattern, thestart);
+      }
+      else {
+        matchposition = stringSearch(name, thepattern, thestart);
+      }
+      if ((matchposition != NULL_INTEGER) &&
+          ((matchposition + strlen(thepattern)) <= theend)) {
+        return (wrapInteger(matchposition));
+      }
+      else {
+        return (NULL);
+      }
     }
   }
 }
@@ -2092,18 +2417,181 @@ IntegerWrapper* stringMatchIgnoreCaseComputation(Object* pattern, Object* x, Obj
   return (stringMatchComputationHelper(pattern, x, start, end, true));
 }
 
-IntegerWrapper* lengthComputation(Object* x) {
-  if (subtypeOfStringP(safePrimaryType(x))) {
-    { Object* x000 = x;
-      StringWrapper* x = ((StringWrapper*)(x000));
+StringWrapper* stringUpcaseComputation(Object* x, Object* start, Object* end) {
+  { char* name = NULL;
+    int thestart = NULL_INTEGER;
+    int theend = NULL_INTEGER;
 
-      return (wrapInteger(strlen((x->wrapperValue))));
+    name = normalizeStringComputationArgs(x, start, end, false, thestart, theend);
+    if (name == NULL) {
+      return (NULL);
+    }
+    if ((thestart == 0) &&
+        (theend == strlen(name))) {
+      return (wrapString(stella::stringUpcase(name)));
+    }
+    else {
+      return (wrapString(stringConcatenate(stringSubsequence(name, 0, thestart), stella::stringUpcase(stringSubsequence(name, thestart, theend)), 1, stringSubsequence(name, theend, NULL_INTEGER))));
     }
   }
-  else {
-    std::cout << "Length computation not yet implemented for Lists";
-    return (wrapInteger(NULL_INTEGER));
+}
+
+StringWrapper* stringDowncaseComputation(Object* x, Object* start, Object* end) {
+  { char* name = NULL;
+    int thestart = NULL_INTEGER;
+    int theend = NULL_INTEGER;
+
+    name = normalizeStringComputationArgs(x, start, end, false, thestart, theend);
+    if (name == NULL) {
+      return (NULL);
+    }
+    if ((thestart == 0) &&
+        (theend == strlen(name))) {
+      return (wrapString(stella::stringDowncase(name)));
+    }
+    else {
+      return (wrapString(stringConcatenate(stringSubsequence(name, 0, thestart), stella::stringDowncase(stringSubsequence(name, thestart, theend)), 1, stringSubsequence(name, theend, NULL_INTEGER))));
+    }
   }
+}
+
+StringWrapper* stringCapitalizeComputation(Object* x, Object* start, Object* end) {
+  { char* name = NULL;
+    int thestart = NULL_INTEGER;
+    int theend = NULL_INTEGER;
+
+    name = normalizeStringComputationArgs(x, start, end, false, thestart, theend);
+    if (name == NULL) {
+      return (NULL);
+    }
+    if ((thestart == 0) &&
+        (theend == strlen(name))) {
+      return (wrapString(stella::stringCapitalize(name)));
+    }
+    else {
+      return (wrapString(stringConcatenate(stringSubsequence(name, 0, thestart), stella::stringCapitalize(stringSubsequence(name, thestart, theend)), 1, stringSubsequence(name, theend, NULL_INTEGER))));
+    }
+  }
+}
+
+StringWrapper* stringReplaceComputation(Object* x, Object* from, Object* to, Object* start, Object* end) {
+  { char* name = NULL;
+    int thestart = NULL_INTEGER;
+    int theend = NULL_INTEGER;
+
+    name = normalizeStringComputationArgs(x, start, end, false, thestart, theend);
+    if ((name == NULL) ||
+        ((!stringP(from)) ||
+         (!stringP(to)))) {
+      return (NULL);
+    }
+    if ((thestart == 0) &&
+        (theend == strlen(name))) {
+      return (wrapString(replaceSubstrings(name, ((StringWrapper*)(to))->wrapperValue, ((StringWrapper*)(from))->wrapperValue)));
+    }
+    else {
+      return (wrapString(stringConcatenate(stringSubsequence(name, 0, thestart), replaceSubstrings(stringSubsequence(name, thestart, theend), ((StringWrapper*)(to))->wrapperValue, ((StringWrapper*)(from))->wrapperValue), 1, stringSubsequence(name, theend, NULL_INTEGER))));
+    }
+  }
+}
+
+IntegerWrapper* stringCompareComputationHelper(Object* o1, Object* o2, Object* start1, Object* end1, Object* start2, Object* end2, boolean ignorecaseP) {
+  { char* name1 = NULL;
+    int thestart1 = NULL_INTEGER;
+    int theend1 = NULL_INTEGER;
+
+    name1 = normalizeStringComputationArgs(o1, start1, end1, false, thestart1, theend1);
+    if (name1 == NULL) {
+      return (NULL);
+    }
+    { char* name2 = NULL;
+      int thestart2 = NULL_INTEGER;
+      int theend2 = NULL_INTEGER;
+
+      name2 = normalizeStringComputationArgs(o2, start2, end2, false, thestart2, theend2);
+      if (name2 == NULL) {
+        return (NULL);
+      }
+      if ((thestart1 > 0) ||
+          (theend1 < strlen(name1))) {
+        name1 = stringSubsequence(name1, thestart1, theend1);
+      }
+      if ((thestart2 > 0) ||
+          (theend2 < strlen(name2))) {
+        name2 = stringSubsequence(name2, thestart2, theend2);
+      }
+      return (wrapInteger(stella::stringCompare(name1, name2, !ignorecaseP)));
+    }
+  }
+}
+
+IntegerWrapper* stringCompareComputation(Object* o1, Object* o2, Object* start1, Object* end1, Object* start2, Object* end2) {
+  return (stringCompareComputationHelper(o1, o2, start1, end1, start2, end2, false));
+}
+
+IntegerWrapper* stringCompareIgnoreCaseComputation(Object* o1, Object* o2, Object* start1, Object* end1, Object* start2, Object* end2) {
+  return (stringCompareComputationHelper(o1, o2, start1, end1, start2, end2, true));
+}
+
+NumberWrapper* stringToNumberComputation(Object* x, Object* start, Object* end) {
+  { char* name = NULL;
+    int thestart = NULL_INTEGER;
+    int theend = NULL_INTEGER;
+
+    name = normalizeStringComputationArgs(x, start, end, false, thestart, theend);
+    if (name == NULL) {
+      return (NULL);
+    }
+    if ((thestart > 0) ||
+        (theend < strlen(name))) {
+      name = stringSubsequence(name, thestart, theend);
+    }
+    try {
+      return (wrapIntegerValue(stringToInteger(name)));
+    }
+    catch (std::exception ) {
+    }
+    try {
+      return (wrapFloat(stringToFloat(name)));
+    }
+    catch (std::exception ) {
+    }
+    return (NULL);
+  }
+}
+
+IntegerWrapper* lengthComputation(Object* x) {
+  { Surrogate* testValue000 = safePrimaryType(x);
+
+    if (subtypeOfStringP(testValue000)) {
+      { Object* x000 = x;
+        StringWrapper* x = ((StringWrapper*)(x000));
+
+        return (wrapInteger(strlen((x->wrapperValue))));
+      }
+    }
+    else if (subtypeOfP(testValue000, SGT_ARITHMETIC_LOGIC_SKOLEM)) {
+      { Object* x001 = x;
+        Skolem* x = ((Skolem*)(x001));
+
+        if (enumeratedListP(x) ||
+            enumeratedSetP(x)) {
+          return (wrapInteger(x->definingProposition->arguments->length() - 1));
+        }
+        else if (logicalCollectionP(x)) {
+          { stella::List* listvalue = assertedCollectionMembers(x, true);
+
+            if (((boolean)(listvalue))) {
+              return (wrapInteger(listvalue->length()));
+            }
+          }
+        }
+      }
+    }
+    else {
+    }
+  }
+  return (NULL);
 }
 
 void helpStartupArithmetic1() {
@@ -2113,11 +2601,11 @@ void helpStartupArithmetic1() {
     SYM_ARITHMETIC_PL_KERNEL_KB_INTERVAL_UPPER_BOUND = ((Symbol*)(internRigidSymbolWrtModule("INTERVAL-UPPER-BOUND", NULL, 0)));
     SGT_ARITHMETIC_PL_KERNEL_KB_INTERVAL_CACHE = ((Surrogate*)(internRigidSymbolWrtModule("INTERVAL-CACHE", NULL, 1)));
     SYM_ARITHMETIC_STELLA_HOME_CONTEXT = ((Symbol*)(internRigidSymbolWrtModule("HOME-CONTEXT", getStellaModule("/STELLA", true), 0)));
-    SYM_ARITHMETIC_PL_KERNEL_KB_INTERVAL_MEMBER = ((Symbol*)(internRigidSymbolWrtModule("INTERVAL-MEMBER", NULL, 0)));
+    SYM_ARITHMETIC_LOGIC_INTERVAL_MEMBER = ((Symbol*)(internRigidSymbolWrtModule("INTERVAL-MEMBER", getStellaModule("/LOGIC", true), 0)));
     SYM_ARITHMETIC_STELLA_LOWER_BOUND = ((Symbol*)(internRigidSymbolWrtModule("LOWER-BOUND", getStellaModule("/STELLA", true), 0)));
     SYM_ARITHMETIC_STELLA_UPPER_BOUND = ((Symbol*)(internRigidSymbolWrtModule("UPPER-BOUND", getStellaModule("/STELLA", true), 0)));
-    SYM_ARITHMETIC_PL_KERNEL_KB_STRICT_LOWER_BOUNDp = ((Symbol*)(internRigidSymbolWrtModule("STRICT-LOWER-BOUND?", NULL, 0)));
-    SYM_ARITHMETIC_PL_KERNEL_KB_STRICT_UPPER_BOUNDp = ((Symbol*)(internRigidSymbolWrtModule("STRICT-UPPER-BOUND?", NULL, 0)));
+    SYM_ARITHMETIC_LOGIC_STRICT_LOWER_BOUNDp = ((Symbol*)(internRigidSymbolWrtModule("STRICT-LOWER-BOUND?", getStellaModule("/LOGIC", true), 0)));
+    SYM_ARITHMETIC_LOGIC_STRICT_UPPER_BOUNDp = ((Symbol*)(internRigidSymbolWrtModule("STRICT-UPPER-BOUND?", getStellaModule("/LOGIC", true), 0)));
     SGT_ARITHMETIC_PL_KERNEL_KB_INTERVAL_CACHE_OF = ((Surrogate*)(internRigidSymbolWrtModule("INTERVAL-CACHE-OF", NULL, 1)));
     SGT_ARITHMETIC_PL_KERNEL_KB_INEQUALITY = ((Surrogate*)(internRigidSymbolWrtModule("INEQUALITY", NULL, 1)));
     SGT_ARITHMETIC_LOGIC_LOGIC_OBJECT = ((Surrogate*)(internRigidSymbolWrtModule("LOGIC-OBJECT", getStellaModule("/LOGIC", true), 1)));
@@ -2144,10 +2632,75 @@ void helpStartupArithmetic1() {
   }
 }
 
+void helpStartupArithmetic2() {
+  {
+    defineFunctionObject("ARITHMETIC-EQUAL-TEST", "(DEFUN (ARITHMETIC-EQUAL-TEST BOOLEAN) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&arithmeticEqualTest)), NULL);
+    defineFunctionObject("ARITHMETIC-LESS-TEST", "(DEFUN (ARITHMETIC-LESS-TEST BOOLEAN) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&arithmeticLessTest)), NULL);
+    defineFunctionObject("ARITHMETIC-GREATER-TEST", "(DEFUN (ARITHMETIC-GREATER-TEST BOOLEAN) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&arithmeticGreaterTest)), NULL);
+    defineFunctionObject("PLUS-COMPUTATION", "(DEFUN (PLUS-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&plusComputation)), NULL);
+    defineFunctionObject("MINUS-COMPUTATION", "(DEFUN (MINUS-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&minusComputation)), NULL);
+    defineFunctionObject("TIMES-COMPUTATION", "(DEFUN (TIMES-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&timesComputation)), NULL);
+    defineFunctionObject("DIVIDE-COMPUTATION", "(DEFUN (DIVIDE-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&divideComputation)), NULL);
+    defineFunctionObject("SQRT-COMPUTATION", "(DEFUN (SQRT-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&sqrtComputation)), NULL);
+    defineFunctionObject("NEGATE-COMPUTATION", "(DEFUN (NEGATE-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&negateComputation)), NULL);
+    defineFunctionObject("ABS-COMPUTATION", "(DEFUN (ABS-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&absComputation)), NULL);
+    defineFunctionObject("FLOOR-COMPUTATION", "(DEFUN (FLOOR-COMPUTATION INTEGER-WRAPPER) ((X NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&floorComputation)), NULL);
+    defineFunctionObject("CEILING-COMPUTATION", "(DEFUN (CEILING-COMPUTATION INTEGER-WRAPPER) ((X NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&ceilingComputation)), NULL);
+    defineFunctionObject("PLUS-CONSTRAINT", "(DEFUN (PLUS-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER) (X3 NUMBER-WRAPPER)))", ((cpp_function_code)(&plusConstraint)), NULL);
+    defineFunctionObject("MINUS-CONSTRAINT", "(DEFUN (MINUS-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER) (X3 NUMBER-WRAPPER)))", ((cpp_function_code)(&minusConstraint)), NULL);
+    defineFunctionObject("TIMES-CONSTRAINT", "(DEFUN (TIMES-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER) (X3 NUMBER-WRAPPER)))", ((cpp_function_code)(&timesConstraint)), NULL);
+    defineFunctionObject("DIVIDE-CONSTRAINT", "(DEFUN (DIVIDE-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER) (X3 NUMBER-WRAPPER)))", ((cpp_function_code)(&divideConstraint)), NULL);
+    defineFunctionObject("NEGATE-CONSTRAINT", "(DEFUN (NEGATE-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER)))", ((cpp_function_code)(&negateConstraint)), NULL);
+    defineFunctionObject("SQRT-CONSTRAINT", "(DEFUN (SQRT-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER)))", ((cpp_function_code)(&sqrtConstraint)), NULL);
+    defineFunctionObject("LOG-COMPUTATION", "(DEFUN (LOG-COMPUTATION FLOAT-WRAPPER) ((X NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&logComputation)), NULL);
+    defineFunctionObject("LOG10-COMPUTATION", "(DEFUN (LOG10-COMPUTATION FLOAT-WRAPPER) ((X NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&log10Computation)), NULL);
+    defineFunctionObject("EXP-COMPUTATION", "(DEFUN (EXP-COMPUTATION FLOAT-WRAPPER) ((X NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&expComputation)), NULL);
+    defineFunctionObject("EXPT-COMPUTATION", "(DEFUN (EXPT-COMPUTATION FLOAT-WRAPPER) ((X NUMBER-WRAPPER) (N NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&exptComputation)), NULL);
+    defineFunctionObject("LOG-CONSTRAINT", "(DEFUN (LOG-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X NUMBER-WRAPPER) (LOG NUMBER-WRAPPER)))", ((cpp_function_code)(&logConstraint)), NULL);
+    defineFunctionObject("LOG10-CONSTRAINT", "(DEFUN (LOG10-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X NUMBER-WRAPPER) (LOG NUMBER-WRAPPER)))", ((cpp_function_code)(&log10Constraint)), NULL);
+    defineFunctionObject("EXP-CONSTRAINT", "(DEFUN (EXP-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)))", ((cpp_function_code)(&expConstraint)), NULL);
+    defineFunctionObject("PRINT-INTERVAL", "(DEFUN PRINT-INTERVAL ((STREAM NATIVE-OUTPUT-STREAM) (LOWER OBJECT) (STRICT-LOWER? BOOLEAN) (UPPER OBJECT) (STRICT-UPPER? BOOLEAN)))", ((cpp_function_code)(&printInterval)), NULL);
+    defineFunctionObject("CREATE-INTERVAL-CACHE", "(DEFUN (CREATE-INTERVAL-CACHE INTERVAL-CACHE) ((INTERVALMEMBER LOGIC-OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&createIntervalCache)), NULL);
+    defineFunctionObject("GET-INTERVAL-CACHE", "(DEFUN (GET-INTERVAL-CACHE INTERVAL-CACHE) ((SELF LOGIC-OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&getIntervalCache)), NULL);
+    defineFunctionObject("SIGNAL-INTERVAL-CLASH", "(DEFUN SIGNAL-INTERVAL-CLASH ((INTERVAL INTERVAL-CACHE)))", ((cpp_function_code)(&signalIntervalClash)), NULL);
+    defineFunctionObject("EVALUATE-ADJACENT-INEQUALITIES", "(DEFUN EVALUATE-ADJACENT-INEQUALITIES ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&evaluateAdjacentInequalities)), NULL);
+    defineMethodObject("(DEFMETHOD (INTEGER-VALUED-MEMBER? BOOLEAN) ((INTERVAL INTERVAL-CACHE)))", ((cpp_method_code)(&IntervalCache::integerValuedMemberP)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (INTEGER-LOWER-BOUND INTEGER-WRAPPER) ((INTERVAL INTERVAL-CACHE)))", ((cpp_method_code)(&IntervalCache::integerLowerBound)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD (INTEGER-UPPER-BOUND INTEGER-WRAPPER) ((INTERVAL INTERVAL-CACHE)))", ((cpp_method_code)(&IntervalCache::integerUpperBound)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD EVALUATE-TIGHTER-INTEGER-INTERVAL ((INTERVAL INTERVAL-CACHE)))", ((cpp_method_code)(&IntervalCache::evaluateTighterIntegerInterval)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD EVALUATE-TIGHTER-INTERVAL ((INTERVAL INTERVAL-CACHE)))", ((cpp_method_code)(&IntervalCache::evaluateTighterInterval)), ((cpp_method_code)(NULL)));
+    defineMethodObject("(DEFMETHOD PROPAGATE-INEQUALITY-TO-INTERVAL-CACHE ((SELF INTERVAL-CACHE) (VALUE OBJECT) (OPERATOR SURROGATE)))", ((cpp_method_code)(&IntervalCache::propagateInequalityToIntervalCache)), ((cpp_method_code)(NULL)));
+    defineFunctionObject("INVERSE-INEQUALITY-OPERATOR", "(DEFUN (INVERSE-INEQUALITY-OPERATOR SURROGATE) ((OPERATOR SURROGATE)))", ((cpp_function_code)(&inverseInequalityOperator)), NULL);
+    defineFunctionObject("UNIFY-INTERVAL-CACHES", "(DEFUN UNIFY-INTERVAL-CACHES ((CACHE1 INTERVAL-CACHE) (CACHE2 INTERVAL-CACHE) (OPERATOR SURROGATE)))", ((cpp_function_code)(&unifyIntervalCaches)), NULL);
+    defineFunctionObject("ACCESS-INTERVAL-BOUNDS", "(DEFUN (ACCESS-INTERVAL-BOUNDS OBJECT BOOLEAN) ((X OBJECT) (LOWERORUPPER KEYWORD)))", ((cpp_function_code)(&accessIntervalBounds)), NULL);
+    defineFunctionObject("ACCESS-INTERVAL-CACHE-BOUNDS", "(DEFUN (ACCESS-INTERVAL-CACHE-BOUNDS OBJECT BOOLEAN) ((INTERVALCACHE INTERVAL-CACHE) (LOWERORUPPER KEYWORD)))", ((cpp_function_code)(&accessIntervalCacheBounds)), NULL);
+    defineFunctionObject("COMPARE-INTERVAL-BOUNDS?", "(DEFUN (COMPARE-INTERVAL-BOUNDS? BOOLEAN) ((RELATION SURROGATE) (X OBJECT) (Y OBJECT)))", ((cpp_function_code)(&compareIntervalBoundsP)), NULL);
+    defineFunctionObject("NULL-NUMBER?", "(DEFUN (NULL-NUMBER? BOOLEAN) ((SELF NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&nullNumberP)), NULL);
+    defineFunctionObject("NULL-LITERAL-WRAPPER?", "(DEFUN (NULL-LITERAL-WRAPPER? BOOLEAN) ((SELF OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&nullLiteralWrapperP)), NULL);
+    defineFunctionObject("SATISFIES-INTERVAL-BOUNDS?", "(DEFUN (SATISFIES-INTERVAL-BOUNDS? BOOLEAN) ((OBJECT OBJECT) (VALUE OBJECT)))", ((cpp_function_code)(&satisfiesIntervalBoundsP)), NULL);
+    defineFunctionObject("LESS-SPECIALIST-HELPER", "(DEFUN (LESS-SPECIALIST-HELPER KEYWORD) ((FRAME CONTROL-FRAME) (RELATION SURROGATE) (XARG OBJECT) (YARG OBJECT)))", ((cpp_function_code)(&lessSpecialistHelper)), NULL);
+    defineFunctionObject("INEQUALITY-SPECIALIST", "(DEFUN (INEQUALITY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&inequalitySpecialist)), NULL);
+    defineFunctionObject("INEQUALITY-EVALUATOR", "(DEFUN INEQUALITY-EVALUATOR ((SELF PROPOSITION)))", ((cpp_function_code)(&inequalityEvaluator)), NULL);
+    defineFunctionObject("STRING-CONCATENATE-COMPUTATION", "(DEFUN (STRING-CONCATENATE-COMPUTATION STRING-WRAPPER) ((X OBJECT) (YARGS CONS)))", ((cpp_function_code)(&stringConcatenateComputation)), NULL);
+    defineFunctionObject("SUBSEQUENCE-SPECIALIST", "(DEFUN (SUBSEQUENCE-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&subsequenceSpecialist)), NULL);
+    defineFunctionObject("NORMALIZE-STRING-COMPUTATION-ARGS", "(DEFUN (NORMALIZE-STRING-COMPUTATION-ARGS STRING INTEGER INTEGER) ((X OBJECT) (START OBJECT) (END OBJECT) (COERCE? BOOLEAN)))", ((cpp_function_code)(&normalizeStringComputationArgs)), NULL);
+    defineFunctionObject("STRING-MATCH-COMPUTATION-HELPER", "(DEFUN (STRING-MATCH-COMPUTATION-HELPER INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT) (IGNORE-CASE? BOOLEAN)))", ((cpp_function_code)(&stringMatchComputationHelper)), NULL);
+    defineFunctionObject("STRING-MATCH-COMPUTATION", "(DEFUN (STRING-MATCH-COMPUTATION INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT)))", ((cpp_function_code)(&stringMatchComputation)), NULL);
+    defineFunctionObject("STRING-MATCH-IGNORE-CASE-COMPUTATION", "(DEFUN (STRING-MATCH-IGNORE-CASE-COMPUTATION INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT)))", ((cpp_function_code)(&stringMatchIgnoreCaseComputation)), NULL);
+    defineFunctionObject("STRING-UPCASE-COMPUTATION", "(DEFUN (STRING-UPCASE-COMPUTATION STRING-WRAPPER) ((X OBJECT) (START OBJECT) (END OBJECT)))", ((cpp_function_code)(&stringUpcaseComputation)), NULL);
+    defineFunctionObject("STRING-DOWNCASE-COMPUTATION", "(DEFUN (STRING-DOWNCASE-COMPUTATION STRING-WRAPPER) ((X OBJECT) (START OBJECT) (END OBJECT)))", ((cpp_function_code)(&stringDowncaseComputation)), NULL);
+    defineFunctionObject("STRING-CAPITALIZE-COMPUTATION", "(DEFUN (STRING-CAPITALIZE-COMPUTATION STRING-WRAPPER) ((X OBJECT) (START OBJECT) (END OBJECT)))", ((cpp_function_code)(&stringCapitalizeComputation)), NULL);
+    defineFunctionObject("STRING-REPLACE-COMPUTATION", "(DEFUN (STRING-REPLACE-COMPUTATION STRING-WRAPPER) ((X OBJECT) (FROM OBJECT) (TO OBJECT) (START OBJECT) (END OBJECT)))", ((cpp_function_code)(&stringReplaceComputation)), NULL);
+    defineFunctionObject("STRING-COMPARE-COMPUTATION-HELPER", "(DEFUN (STRING-COMPARE-COMPUTATION-HELPER INTEGER-WRAPPER) ((O1 OBJECT) (O2 OBJECT) (START1 OBJECT) (END1 OBJECT) (START2 OBJECT) (END2 OBJECT) (IGNORECASE? BOOLEAN)))", ((cpp_function_code)(&stringCompareComputationHelper)), NULL);
+    defineFunctionObject("STRING-COMPARE-COMPUTATION", "(DEFUN (STRING-COMPARE-COMPUTATION INTEGER-WRAPPER) ((O1 OBJECT) (O2 OBJECT) (START1 OBJECT) (END1 OBJECT) (START2 OBJECT) (END2 OBJECT)))", ((cpp_function_code)(&stringCompareComputation)), NULL);
+    defineFunctionObject("STRING-COMPARE-IGNORE-CASE-COMPUTATION", "(DEFUN (STRING-COMPARE-IGNORE-CASE-COMPUTATION INTEGER-WRAPPER) ((O1 OBJECT) (O2 OBJECT) (START1 OBJECT) (END1 OBJECT) (START2 OBJECT) (END2 OBJECT)))", ((cpp_function_code)(&stringCompareIgnoreCaseComputation)), NULL);
+  }
+}
+
 void startupArithmetic() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/PL-KERNEL-KB", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupArithmetic1();
     }
@@ -2167,49 +2720,8 @@ void startupArithmetic() {
       finalizeClasses();
     }
     if (currentStartupTimePhaseP(7)) {
-      defineFunctionObject("ARITHMETIC-EQUAL-TEST", "(DEFUN (ARITHMETIC-EQUAL-TEST BOOLEAN) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&arithmeticEqualTest)), NULL);
-      defineFunctionObject("ARITHMETIC-LESS-TEST", "(DEFUN (ARITHMETIC-LESS-TEST BOOLEAN) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&arithmeticLessTest)), NULL);
-      defineFunctionObject("ARITHMETIC-GREATER-TEST", "(DEFUN (ARITHMETIC-GREATER-TEST BOOLEAN) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&arithmeticGreaterTest)), NULL);
-      defineFunctionObject("PLUS-COMPUTATION", "(DEFUN (PLUS-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&plusComputation)), NULL);
-      defineFunctionObject("MINUS-COMPUTATION", "(DEFUN (MINUS-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&minusComputation)), NULL);
-      defineFunctionObject("TIMES-COMPUTATION", "(DEFUN (TIMES-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&timesComputation)), NULL);
-      defineFunctionObject("DIVIDE-COMPUTATION", "(DEFUN (DIVIDE-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER) (Y NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&divideComputation)), NULL);
-      defineFunctionObject("SQRT-COMPUTATION", "(DEFUN (SQRT-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&sqrtComputation)), NULL);
-      defineFunctionObject("NEGATE-COMPUTATION", "(DEFUN (NEGATE-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&negateComputation)), NULL);
-      defineFunctionObject("ABS-COMPUTATION", "(DEFUN (ABS-COMPUTATION NUMBER-WRAPPER) ((X NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&absComputation)), NULL);
-      defineFunctionObject("PLUS-CONSTRAINT", "(DEFUN (PLUS-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER) (X3 NUMBER-WRAPPER)))", ((cpp_function_code)(&plusConstraint)), NULL);
-      defineFunctionObject("MINUS-CONSTRAINT", "(DEFUN (MINUS-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER) (X3 NUMBER-WRAPPER)))", ((cpp_function_code)(&minusConstraint)), NULL);
-      defineFunctionObject("TIMES-CONSTRAINT", "(DEFUN (TIMES-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER) (X3 NUMBER-WRAPPER)))", ((cpp_function_code)(&timesConstraint)), NULL);
-      defineFunctionObject("DIVIDE-CONSTRAINT", "(DEFUN (DIVIDE-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER) (X3 NUMBER-WRAPPER)))", ((cpp_function_code)(&divideConstraint)), NULL);
-      defineFunctionObject("NEGATE-CONSTRAINT", "(DEFUN (NEGATE-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER)))", ((cpp_function_code)(&negateConstraint)), NULL);
-      defineFunctionObject("SQRT-CONSTRAINT", "(DEFUN (SQRT-CONSTRAINT OBJECT) ((MISSING-ARGUMENT INTEGER-WRAPPER) (X1 NUMBER-WRAPPER) (X2 NUMBER-WRAPPER)))", ((cpp_function_code)(&sqrtConstraint)), NULL);
-      defineFunctionObject("PRINT-INTERVAL", "(DEFUN PRINT-INTERVAL ((STREAM NATIVE-OUTPUT-STREAM) (LOWER OBJECT) (STRICT-LOWER? BOOLEAN) (UPPER OBJECT) (STRICT-UPPER? BOOLEAN)))", ((cpp_function_code)(&printInterval)), NULL);
-      defineFunctionObject("CREATE-INTERVAL-CACHE", "(DEFUN (CREATE-INTERVAL-CACHE INTERVAL-CACHE) ((INTERVALMEMBER LOGIC-OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&createIntervalCache)), NULL);
-      defineFunctionObject("GET-INTERVAL-CACHE", "(DEFUN (GET-INTERVAL-CACHE INTERVAL-CACHE) ((SELF LOGIC-OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&getIntervalCache)), NULL);
-      defineFunctionObject("SIGNAL-INTERVAL-CLASH", "(DEFUN SIGNAL-INTERVAL-CLASH ((INTERVAL INTERVAL-CACHE)))", ((cpp_function_code)(&signalIntervalClash)), NULL);
-      defineFunctionObject("EVALUATE-ADJACENT-INEQUALITIES", "(DEFUN EVALUATE-ADJACENT-INEQUALITIES ((SELF LOGIC-OBJECT)))", ((cpp_function_code)(&evaluateAdjacentInequalities)), NULL);
-      defineMethodObject("(DEFMETHOD (INTEGER-VALUED-MEMBER? BOOLEAN) ((INTERVAL INTERVAL-CACHE)))", ((cpp_method_code)(&IntervalCache::integerValuedMemberP)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (INTEGER-LOWER-BOUND INTEGER-WRAPPER) ((INTERVAL INTERVAL-CACHE)))", ((cpp_method_code)(&IntervalCache::integerLowerBound)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD (INTEGER-UPPER-BOUND INTEGER-WRAPPER) ((INTERVAL INTERVAL-CACHE)))", ((cpp_method_code)(&IntervalCache::integerUpperBound)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD EVALUATE-TIGHTER-INTEGER-INTERVAL ((INTERVAL INTERVAL-CACHE)))", ((cpp_method_code)(&IntervalCache::evaluateTighterIntegerInterval)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD EVALUATE-TIGHTER-INTERVAL ((INTERVAL INTERVAL-CACHE)))", ((cpp_method_code)(&IntervalCache::evaluateTighterInterval)), ((cpp_method_code)(NULL)));
-      defineMethodObject("(DEFMETHOD PROPAGATE-INEQUALITY-TO-INTERVAL-CACHE ((SELF INTERVAL-CACHE) (VALUE OBJECT) (OPERATOR SURROGATE)))", ((cpp_method_code)(&IntervalCache::propagateInequalityToIntervalCache)), ((cpp_method_code)(NULL)));
-      defineFunctionObject("INVERSE-INEQUALITY-OPERATOR", "(DEFUN (INVERSE-INEQUALITY-OPERATOR SURROGATE) ((OPERATOR SURROGATE)))", ((cpp_function_code)(&inverseInequalityOperator)), NULL);
-      defineFunctionObject("UNIFY-INTERVAL-CACHES", "(DEFUN UNIFY-INTERVAL-CACHES ((CACHE1 INTERVAL-CACHE) (CACHE2 INTERVAL-CACHE) (OPERATOR SURROGATE)))", ((cpp_function_code)(&unifyIntervalCaches)), NULL);
-      defineFunctionObject("ACCESS-INTERVAL-BOUNDS", "(DEFUN (ACCESS-INTERVAL-BOUNDS OBJECT BOOLEAN) ((X OBJECT) (LOWERORUPPER KEYWORD)))", ((cpp_function_code)(&accessIntervalBounds)), NULL);
-      defineFunctionObject("ACCESS-INTERVAL-CACHE-BOUNDS", "(DEFUN (ACCESS-INTERVAL-CACHE-BOUNDS OBJECT BOOLEAN) ((INTERVALCACHE INTERVAL-CACHE) (LOWERORUPPER KEYWORD)))", ((cpp_function_code)(&accessIntervalCacheBounds)), NULL);
-      defineFunctionObject("COMPARE-INTERVAL-BOUNDS?", "(DEFUN (COMPARE-INTERVAL-BOUNDS? BOOLEAN) ((RELATION SURROGATE) (X OBJECT) (Y OBJECT)))", ((cpp_function_code)(&compareIntervalBoundsP)), NULL);
-      defineFunctionObject("NULL-NUMBER?", "(DEFUN (NULL-NUMBER? BOOLEAN) ((SELF NUMBER-WRAPPER)) :PUBLIC? TRUE)", ((cpp_function_code)(&nullNumberP)), NULL);
-      defineFunctionObject("NULL-LITERAL-WRAPPER?", "(DEFUN (NULL-LITERAL-WRAPPER? BOOLEAN) ((SELF OBJECT)) :PUBLIC? TRUE)", ((cpp_function_code)(&nullLiteralWrapperP)), NULL);
-      defineFunctionObject("SATISFIES-INTERVAL-BOUNDS?", "(DEFUN (SATISFIES-INTERVAL-BOUNDS? BOOLEAN) ((OBJECT OBJECT) (VALUE OBJECT)))", ((cpp_function_code)(&satisfiesIntervalBoundsP)), NULL);
-      defineFunctionObject("LESS-SPECIALIST-HELPER", "(DEFUN (LESS-SPECIALIST-HELPER KEYWORD) ((FRAME CONTROL-FRAME) (RELATION SURROGATE) (XARG OBJECT) (YARG OBJECT)))", ((cpp_function_code)(&lessSpecialistHelper)), NULL);
-      defineFunctionObject("INEQUALITY-SPECIALIST", "(DEFUN (INEQUALITY-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&inequalitySpecialist)), NULL);
-      defineFunctionObject("INEQUALITY-EVALUATOR", "(DEFUN INEQUALITY-EVALUATOR ((SELF PROPOSITION)))", ((cpp_function_code)(&inequalityEvaluator)), NULL);
-      defineFunctionObject("STRING-CONCATENATE-COMPUTATION", "(DEFUN (STRING-CONCATENATE-COMPUTATION STRING-WRAPPER) ((X OBJECT) (YARGS CONS)))", ((cpp_function_code)(&stringConcatenateComputation)), NULL);
-      defineFunctionObject("SUBSEQUENCE-SPECIALIST", "(DEFUN (SUBSEQUENCE-SPECIALIST KEYWORD) ((FRAME CONTROL-FRAME) (LASTMOVE KEYWORD)))", ((cpp_function_code)(&subsequenceSpecialist)), NULL);
-      defineFunctionObject("STRING-MATCH-COMPUTATION-HELPER", "(DEFUN (STRING-MATCH-COMPUTATION-HELPER INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT) (IGNORE-CASE? BOOLEAN)) :PUBLIC? FALSE)", ((cpp_function_code)(&stringMatchComputationHelper)), NULL);
-      defineFunctionObject("STRING-MATCH-COMPUTATION", "(DEFUN (STRING-MATCH-COMPUTATION INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT)))", ((cpp_function_code)(&stringMatchComputation)), NULL);
-      defineFunctionObject("STRING-MATCH-IGNORE-CASE-COMPUTATION", "(DEFUN (STRING-MATCH-IGNORE-CASE-COMPUTATION INTEGER-WRAPPER) ((PATTERN OBJECT) (X OBJECT) (START OBJECT) (END OBJECT)))", ((cpp_function_code)(&stringMatchIgnoreCaseComputation)), NULL);
+      helpStartupArithmetic2();
+      defineFunctionObject("STRING-TO-NUMBER-COMPUTATION", "(DEFUN (STRING-TO-NUMBER-COMPUTATION NUMBER-WRAPPER) ((X OBJECT) (START OBJECT) (END OBJECT)))", ((cpp_function_code)(&stringToNumberComputation)), NULL);
       defineFunctionObject("LENGTH-COMPUTATION", "(DEFUN (LENGTH-COMPUTATION INTEGER-WRAPPER) ((X OBJECT)))", ((cpp_function_code)(&lengthComputation)), NULL);
       defineFunctionObject("STARTUP-ARITHMETIC", "(DEFUN STARTUP-ARITHMETIC () :PUBLIC? TRUE)", ((cpp_function_code)(&startupArithmetic)), NULL);
       { MethodSlot* function = lookupFunction(SYM_ARITHMETIC_PL_KERNEL_KB_STARTUP_ARITHMETIC);
@@ -2237,15 +2749,15 @@ Surrogate* SGT_ARITHMETIC_PL_KERNEL_KB_INTERVAL_CACHE = NULL;
 
 Symbol* SYM_ARITHMETIC_STELLA_HOME_CONTEXT = NULL;
 
-Symbol* SYM_ARITHMETIC_PL_KERNEL_KB_INTERVAL_MEMBER = NULL;
+Symbol* SYM_ARITHMETIC_LOGIC_INTERVAL_MEMBER = NULL;
 
 Symbol* SYM_ARITHMETIC_STELLA_LOWER_BOUND = NULL;
 
 Symbol* SYM_ARITHMETIC_STELLA_UPPER_BOUND = NULL;
 
-Symbol* SYM_ARITHMETIC_PL_KERNEL_KB_STRICT_LOWER_BOUNDp = NULL;
+Symbol* SYM_ARITHMETIC_LOGIC_STRICT_LOWER_BOUNDp = NULL;
 
-Symbol* SYM_ARITHMETIC_PL_KERNEL_KB_STRICT_UPPER_BOUNDp = NULL;
+Symbol* SYM_ARITHMETIC_LOGIC_STRICT_UPPER_BOUNDp = NULL;
 
 Surrogate* SGT_ARITHMETIC_PL_KERNEL_KB_INTERVAL_CACHE_OF = NULL;
 

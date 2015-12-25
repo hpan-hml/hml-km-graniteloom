@@ -7,6 +7,7 @@
 #include "stella/stella-system.hh"
 
 // System-wide forward declarations:
+
 namespace sdbc {
   using namespace stella;
 
@@ -19,7 +20,6 @@ class TableInfo;
 class ColumnInfo;
 
 } // end of namespace sdbc
-
 
 // System components:
 #include "sdbc/sdbc.hh"

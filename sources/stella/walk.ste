@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 1996-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 1996-2013      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: walk.ste,v 1.300 2010/09/20 21:27:34 hans Exp
+;;; Version: walk.ste,v 1.303 2013/10/22 00:24:37 hans Exp
 
 ;;; Stella code walker.
 
@@ -63,7 +63,8 @@
         :use-common-lisp-conses
         :use-cpp-garbage-collector
 	:minimize-java-prefixes
-        :translate-with-copyright-header)
+        :translate-with-copyright-header
+        :support-unexec)
   :documentation "List of available STELLA features."
   :public? TRUE)
 
@@ -112,6 +113,7 @@ with `reset-stella-features'."
            (:use-cpp-garbage-collector NULL)
 	   (:minimize-java-prefixes NULL)
            (:translate-with-copyright-header NULL)
+           (:support-unexec NULL)
            (otherwise
             (if (member? *available-stella-features* f)
                 (error "STELLA feature " f " is valid but not yet implemented")
@@ -136,6 +138,7 @@ with `reset-stella-features'."
            (:use-cpp-garbage-collector NULL)
 	   (:minimize-java-prefixes NULL)
            (:translate-with-copyright-header NULL)
+           (:support-unexec NULL)
            (otherwise
             (if (member? *available-stella-features* f)
                 (error "STELLA feature " f
@@ -317,6 +320,14 @@ less code size and memory consumption.")
   (return (and (>= *safety* 3)
 	       (not (eq? (translator-output-language) :java))
                (not (preserve-tail-merge-optimizability?)))))
+
+(defun (support-unexec? BOOLEAN) ()
+  ;; Return `true' if we are in C++ and want to support image dumps via `unexec'.
+  ;; In that case we have to handle variable initialization a bit differently so
+  ;;    current values won't be overwritten during a saved image restart.
+  (return (and (enabled-stella-feature? :support-unexec)
+               (translate-to-cpp?))))
+
 
   ;;
 ;;;;;; Quote
@@ -7261,18 +7272,24 @@ holding its expander function."
     (push *translationUnits* unit)
     (unless (eq? initialValueTree :UNBOUND-SPECIAL-VARIABLE)
       (cond ((and (variable-special? global)
-		  (translate-to-java?))
+		  (or (translate-to-java?)
+                      (support-unexec?)))
 	     ;; In Java, all special variable initializations need to be run as
 	     ;; startup code, using a special setter to handle sibling-thread
 	     ;; issues.  This is particularly important for running PowerLoom
 	     ;; inside web servers such as Tomcat.
+             ;; If we support unexec, we also have to ensure specials aren't reset
+             ;; to NULL overwriting an initial value established in startup code:
 	     (setf (variable-constant? global) FALSE) ; can't be native constant
              (walk-auxiliary-tree
               (bquote
                (startup-time-progn :globals
                  (sys-set-default & (variable-name global) & initialValueTree))))
              (setq initialValueTree :UNBOUND-SPECIAL-VARIABLE))
-	    ((or (wrapper? initialValueTree)
+	    (;; TO DO: there are some possible value-overwrite scenarios for the value types
+             ;; handled below if we support unexec; figure out how to best address those;
+             ;; they might affect STELLA bootstrap, so we need to be careful:
+             (or (wrapper? initialValueTree)
                  ;; NOTE: we only directly initialize variables that have native-language
                  ;; constants as their initializers (NULL, TRUE & FALSE); all others are
                  ;; initialized via startup code to insure proper sequencing:
@@ -7301,11 +7318,15 @@ holding its expander function."
               (bquote
                (startup-time-progn :globals
                  (setq & (variable-name global) & initialValueTree))))
-	     ;; cl-array-null
-             (setq initialValueTree
-               (type-to-walked-null-value-tree
-		(global-variable-type-spec global)
-                (type-spec-to-base-type (variable-type global)))))))
+             (if (support-unexec?)
+                 ;; trigger a variable declaration instead of a definition which will avoid the
+                 ;; running of C++ initializer code which might overwrite saved values in a restart:
+                 (setq initialValueTree :UNBOUND-SPECIAL-VARIABLE)
+               ;; cl-array-null
+               (setq initialValueTree
+                 (type-to-walked-null-value-tree
+                  (global-variable-type-spec global)
+                  (type-spec-to-base-type (variable-type global))))))))
     (setf (code-register unit) initialValueTree)
     ;; Don't create variable objects for system-defined variables,
     ;; e.g., recycle lists (or should we???):
@@ -7836,6 +7857,12 @@ functions that would cause too much stress for some wimpy compilers).")
 
 (defun (walk-unwind-protect-tree CONS TYPE) ((tree CONS))
   ;; Walk an (unwind-protect <protected-form> <cleanup-forms>*) `tree'.
+  ;; SERIOUS BUG: In C++ the try/catch solution we translate into does
+  ;; not catch local exits via `return' or `break'.  There is really
+  ;; no simple/elegant way to deal with that apart from defining a local
+  ;; class that has the cleanup code folded into its destructor (which
+  ;; gets messy when we want to access local variables during the cleanup).
+  ;; See for example ScopeGuard for a possible solution: http://drdobbs.com/cpp/184403758
   (when (eql? (first tree) (quote SYS-UNWIND-PROTECT))
     (return tree @VOID))
   (return
@@ -8085,7 +8112,6 @@ functions that would cause too much stress for some wimpy compilers).")
   ;; Helping function for 'walk-new-tree'.
   ;; Return two cons lists of required arguments and other slot assignments 
   ;;    extracted from 'keywordsAndValues'.
-  ;; GC Side effect: Reuse or deallocate conses in 'keywordsAndValues'.
   (when (odd? (length keywordsAndValues))
     (walk-error "Odd number of arguments in 'new' expression: " keywordsAndValues)
     (return NIL NIL))
@@ -8097,13 +8123,21 @@ functions that would cause too much stress for some wimpy compilers).")
         (slot SLOT NULL))
     ;; convert slot keywords to slots:
     (foreach it on pList
-        do (when (not (keyword? (key it)))
-             (walk-error "Illegal slot keyword " (key it) " in NEW expression")
-             (return NIL NIL))
-           (setq slotName (intern-symbol-in-module
-                           (symbol-name (cast (key it) KEYWORD))
-                           (home-module class)
-                           FALSE))
+        do (typecase (key it)
+             (KEYWORD
+              (setq slotName (intern-symbol-in-module
+                              (symbol-name (cast (key it) KEYWORD))
+                              (home-module class)
+                              FALSE)))
+             ;; GENERALIZED: allow non-keyword symbols as slot names, otherwise we cannot supply
+             ;; required arguments to a class that was defined in a different, non-inherited module.
+             ;; BUT RETHINK: slot and method names should not be module sensitive, since there is
+             ;; no way to namespace-qualify them in Java - see TO-DO/BUGS for more info
+             (SYMBOL
+              (setq slotName (key it)))
+             (otherwise
+              (walk-error "Illegal slot keyword " (key it) " in NEW expression")
+              (return NIL NIL)))
            (setq slot (safe-lookup-slot class slotName))
            (when (null? slot)
              (walk-error "No such slot " slotName " on the class "
@@ -8582,28 +8616,92 @@ polymorphic, i.e., they can only be implemented by functions."
         (return function)
       (return NULL))))
 
+(defun (lookup-command-like-function METHOD-SLOT) ((name SYMBOL))
+  :documentation "Look up a function with `name' that can be evaluated via `apply'
+just like a command, regardless of whether it was marked as such."
+  :public? TRUE
+  (let ((function (lookup-function name)))
+    (if (and (defined? function)
+             (method-callable-via-apply? function))
+        (return function)
+      (return NULL))))
+
 (defun (method-must-be-evaluable? BOOLEAN) ((method METHOD-SLOT))
   ;; Return `true' if 'method' needs to be evaluable by the interpreter.
   (return (and (command? method)
                ;; Exclude commands such as 'defclass':
                (not (method-native? method)))))
 
+(defun (method-callable-via-apply? BOOLEAN) ((method METHOD-SLOT))
+  ;; Return `true' if 'method' can be called via `apply'.
+  ;; That is, none of `method's input/output parameters are bare
+  ;; literals, and it takes a fixed number of arguments of at most 10.
+  (return
+    (not (or (method-variable-arguments? method)
+             (> (length (method-parameter-names method)) 10) ;; 'apply' limit
+             (> (length (method-return-type-specifiers method)) 1)
+             ;; we could relax this test by calling one of the literal variants of `apply':
+             (subtype-of? (type method) @LITERAL)
+             (exists tSpec in (method-parameter-type-specifiers method)
+                 where (subtype-of? (type-spec-to-base-type tSpec)
+                                    @LITERAL))))))
+
+#|
+(defun (count-eval-wrapper-patterns KEY-VALUE-MAP INTEGER INTEGER) (&rest (modRef OBJECT))
+  ;; Test code to determine how many different evaluator wrappers we need if we want to
+  ;; be able to evaluate everything.  It turns out, if we look at STELLA and LOGIC together,
+  ;; we have 225 distinct argument patterns (5%) which are used by 1668 functions (35%).
+  ;; There are a total of 4724 functions in these two modules.  So, defining pattern-
+  ;; specific wrappers instead of function specific wrappers might be the way to go.
+  ;; We currently have 113 wrappers defined for these two modules, so, going for everything
+  ;; would only increase the number of wrappers by about 50%.  Moreover, if we are clever
+  ;; we only have to do this for C++.
+  (let ((refs (coerce-&rest-to-cons modRef))
+        (modules (collect (coerce-to-module ref TRUE) foreach ref in refs))
+        (argPatterns
+         (new (KEY-VALUE-MAP OF CONS INTEGER-WRAPPER) :equal-test? TRUE))
+        (argPattern NIL)
+        (count INTEGER-WRAPPER NULL)
+        (totalCount 0))
+    (when (empty? modules)
+      (setq modules (consify (all-modules))))
+    (foreach module in modules
+        do (foreach fun in (all-functions module true)
+               where (and (not (method-native? fun))
+                          (not (method-callable-via-apply? fun))
+                          (= (length (method-return-type-specifiers fun)) 1))
+               do (setq argPattern NIL)
+                  (if (subtype-of? (type fun) @LITERAL)
+                      (pushq argPattern (type fun))
+                    (pushq argPattern @OBJECT))
+                  (foreach tSpec in (method-parameter-type-specifiers fun)
+                      do (cond ((eql? (type-spec-to-base-type tSpec) @ARGUMENT-LIST)
+                                (pushq argPattern (quote &rest))
+                                (setq tSpec (canonical-type (extract-parameter-type tSpec (quote ANY-VALUE)))))
+                               (otherwise
+                                (setq tSpec (canonical-type (type-spec-to-base-type tSpec)))))
+                         (if (subtype-of? tSpec @LITERAL)
+                             (pushq argPattern tSpec)
+                           (pushq argPattern @OBJECT)))
+                  (setq argPattern (reverse argPattern))
+                  (setq count (lookup argPatterns argPattern))
+                  (when (null? count)
+                    (setq count (new INTEGER-WRAPPER :wrapper-value 0))
+                    (insert-at argPatterns argPattern count))
+                  (++ (wrapper-value count))
+                  (++ totalCount)))
+    (return argPatterns (length argPatterns) totalCount)))
+|#
+
 (defun (method-needs-evaluator-wrapper? BOOLEAN) ((method METHOD-SLOT))
   ;; Return `true' if an evaluator wrapper needs to be created for 'method'.
   ;; A wrapper is necessary if 'method' needs to be evaluable (e.g., by
-  ;;    the command interpreter), and if some of its input/output parameters
-  ;;    are bare literals, or if 'method' takes a variable number of arguments.
+  ;;    the command interpreter), and it can't be evaluated via `apply'.
   ;; In that case the interpreter calls the wrapper function instead of
   ;;    calling the code of 'method' directly.
   (return
     (and (method-must-be-evaluable? method)
-         (or (method-variable-arguments? method)
-             (> (length (method-parameter-names method)) 5) ;; 'apply' limit
-             (> (length (method-return-type-specifiers method)) 1)
-             (subtype-of? (type method) @LITERAL)
-             (exists tSpec in (method-parameter-type-specifiers method)
-                     where (subtype-of? (type-spec-to-base-type tSpec)
-                                        @LITERAL))))))
+         (not (method-callable-via-apply? method)))))
 
 (defun (yield-evaluator-wrapper-name SYMBOL) ((methodName SYMBOL))
   ;; Return the name of the evaluator wrapper for method 'methodName'.
@@ -8644,8 +8742,8 @@ polymorphic, i.e., they can only be implemented by functions."
     (foreach index in (interval 1 nofParameters)
         collect (yield-argument-access-tree
                  (quote arguments) index
-                 (and variableArguments?
-                      (eq? index nofParameters)))
+                 (and (eq? index nofParameters)
+                      variableArguments?))
         into callTree)
     (foreach pType in parameterTypeSpecs
         as it on (rest callTree)
@@ -8843,7 +8941,10 @@ evaluation strategies."
                  do (evaluate arg))
              (return NULL @VOID))
            (otherwise
-            (when (not (setq? operator (lookup-command operatorName)))
+            (setq operator (lookup-command operatorName))
+            (when (null? operator)
+              (setq operator (lookup-command-like-function operatorName)))
+            (when (null? operator)
               (evaluation-error "Undefined operator: " operatorName)))))
         (otherwise
          (evaluation-error "Illegal operator: " operatorName)))
@@ -8974,6 +9075,9 @@ evaluation strategies."
             (CONCATENATE
              ;; map `concatenate' onto `append', since it is a function: 
              (return (bquote (append & (first args) & (second args)))))
+            (WRAP-LITERAL
+             ;; already wrapped, simply extract the argument:
+             (return (first args)))
             (otherwise
              (return (cons (first tree) args))))))))
     (otherwise

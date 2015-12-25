@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -325,9 +325,18 @@ Connection* callConnect(Cons* keysAndValues) {
   }
 }
 
+// The maximum lifetime of a database connection (in seconds) after which
+// it gets automatically renewed.  Auto-renewals avoid connection timeout errors which are
+// otherwise tricky to catch, e.g., we might just see a `bad handle passed' error.
+int oDB_CONNECTION_RENEWAL_INTERVALo = 60;
+
+int ODbConnectionRenewalIntervalOSetter(int value) {
+  return (oDB_CONNECTION_RENEWAL_INTERVALo = value);
+}
+
 int getMaxConnectionLifetime(Connection* con) {
   con = con;
-  return (60);
+  return (oDB_CONNECTION_RENEWAL_INTERVALo);
 }
 
 void maybeRenewConnection(Connection* con) {
@@ -1814,7 +1823,7 @@ void insertSqlCommandTemplate(PropertyList* templatE) {
 
       { Cons* datasources = ((((boolean)(temp000)) ? temp000 : KWD_SDBC_DEFAULT))->consify();
         Object* sql = templatE->lookup(KWD_SDBC_SQL);
-        KeyValueList* templates = ((KeyValueList*)(oSQL_COMMAND_TEMPLATESo.get()->lookup(commandname)));
+        KeyValueList* templates = ((KeyValueList*)(oSQL_COMMAND_TEMPLATESo->lookup(commandname)));
 
         if (!((boolean)(commandname))) {
           { OutputStringStream* stream000 = newOutputStringStream();
@@ -1832,7 +1841,7 @@ void insertSqlCommandTemplate(PropertyList* templatE) {
         }
         if (!((boolean)(templates))) {
           templates = newKeyValueList();
-          oSQL_COMMAND_TEMPLATESo.get()->insertAt(commandname, templates);
+          oSQL_COMMAND_TEMPLATESo->insertAt(commandname, templates);
         }
         { Object* datasource = NULL;
           Cons* iter000 = datasources;
@@ -1851,7 +1860,7 @@ void insertSqlCommandTemplate(PropertyList* templatE) {
 }
 
 PropertyList* lookupSqlCmdTemplate(Object* commandname, Object* datasource) {
-  { KeyValueList* templates = ((KeyValueList*)(oSQL_COMMAND_TEMPLATESo.get()->lookup(commandname)));
+  { KeyValueList* templates = ((KeyValueList*)(oSQL_COMMAND_TEMPLATESo->lookup(commandname)));
     PropertyList* templatE = NULL;
 
     if (!((boolean)(templates))) {
@@ -2581,6 +2590,7 @@ void helpStartupSdbc4() {
   {
     defineFunctionObject("CONNECT", "(DEFUN (CONNECT CONNECTION) (|&REST| (KEYS-AND-VALUES OBJECT)) :DOCUMENTATION \"Create a connection to a database.  Currently-supported parameters\nare (values need to be strings):\n  :PROTOCOL          - \\\"ODBC\\\", \\\"JDBC\\\", \\\"CLSQL\\\" or \\\"MYSQL\\\" (defaults to \\\"ODBC\\\")\n  :SERVER-TYPE       - Type of database server (for JDBC strings)\n  :DSN               - Name of ODBC Datasource\n  :DB-NAME           - Name of physical database\n  :USER              - Database user id.\n  :PASSWORD          - Database password\n  :HOST              - Host database server runs on\n  :PORT              - Port to use to connect to the server\n  :CONNECTION-STRING - Connection string to be used by ODBC or JDBC drivers\n                       instead of DSN, USER, PASSWORD, etc.\nA DATABASE-EXCEPTION is thrown if the connection is unsuccessful.\" :PUBLIC? TRUE :COMMAND? TRUE)", ((cpp_function_code)(&connect)), ((cpp_function_code)(&connectEvaluatorWrapper)));
     defineFunctionObject("CALL-CONNECT", "(DEFUN (CALL-CONNECT CONNECTION) ((KEYS-AND-VALUES CONS)) :PUBLIC? TRUE :DOCUMENTATION \"Functional interface to `connect'.  See its documentation\")", ((cpp_function_code)(&callConnect)), NULL);
+    defineFunctionObject("*DB-CONNECTION-RENEWAL-INTERVAL*-SETTER", "(DEFUN (*DB-CONNECTION-RENEWAL-INTERVAL*-SETTER INTEGER) ((VALUE INTEGER)))", ((cpp_function_code)(&ODbConnectionRenewalIntervalOSetter)), NULL);
     defineFunctionObject("GET-MAX-CONNECTION-LIFETIME", "(DEFUN (GET-MAX-CONNECTION-LIFETIME INTEGER) ((CON CONNECTION)))", ((cpp_function_code)(&getMaxConnectionLifetime)), NULL);
     defineFunctionObject("MAYBE-RENEW-CONNECTION", "(DEFUN MAYBE-RENEW-CONNECTION ((CON CONNECTION)))", ((cpp_function_code)(&maybeRenewConnection)), NULL);
     defineFunctionObject("JDBC-CONNECTION-STRING?", "(DEFUN (JDBC-CONNECTION-STRING? BOOLEAN) ((STRING STRING)))", ((cpp_function_code)(&jdbcConnectionStringP)), NULL);
@@ -2638,24 +2648,19 @@ void helpStartupSdbc4() {
     defineFunctionObject("TEST-RESULT-SET", "(DEFUN TEST-RESULT-SET ())", ((cpp_function_code)(&testResultSet)), NULL);
     defineFunctionObject("TEST-RETRIEVE-ALL", "(DEFUN TEST-RETRIEVE-ALL ())", ((cpp_function_code)(&testRetrieveAll)), NULL);
     defineFunctionObject("MAIN", "(DEFUN (MAIN INTEGER) () :PUBLIC? TRUE)", ((cpp_function_code)(&main)), NULL);
-    defineFunctionObject("STARTUP-SDBC", "(DEFUN STARTUP-SDBC () :PUBLIC? TRUE)", ((cpp_function_code)(&startupSdbc)), NULL);
-    { MethodSlot* function = lookupFunction(SYM_SDBC_SDBC_STARTUP_SDBC);
-
-      setDynamicSlotValue(function->dynamicSlots, SYM_SDBC_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupSdbc"), NULL_STRING_WRAPPER);
-    }
   }
 }
 
 void startupSdbc() {
   { 
     BIND_STELLA_SPECIAL(oMODULEo, Module*, getStellaModule("/SDBC", oSTARTUP_TIME_PHASEo > 1));
-    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo.get());
+    BIND_STELLA_SPECIAL(oCONTEXTo, Context*, oMODULEo);
     if (currentStartupTimePhaseP(2)) {
       helpStartupSdbc1();
       helpStartupSdbc2();
     }
     if (currentStartupTimePhaseP(4)) {
-      oSQL_COMMAND_TEMPLATESo.set(newKeyValueMap());
+      oSQL_COMMAND_TEMPLATESo = newKeyValueMap();
     }
     if (currentStartupTimePhaseP(5)) {
       helpStartupSdbc3();
@@ -2665,6 +2670,11 @@ void startupSdbc() {
     }
     if (currentStartupTimePhaseP(7)) {
       helpStartupSdbc4();
+      defineFunctionObject("STARTUP-SDBC", "(DEFUN STARTUP-SDBC () :PUBLIC? TRUE)", ((cpp_function_code)(&startupSdbc)), NULL);
+      { MethodSlot* function = lookupFunction(SYM_SDBC_SDBC_STARTUP_SDBC);
+
+        setDynamicSlotValue(function->dynamicSlots, SYM_SDBC_STELLA_METHOD_STARTUP_CLASSNAME, wrapString("_StartupSdbc"), NULL_STRING_WRAPPER);
+      }
     }
     if (currentStartupTimePhaseP(8)) {
       finalizeSlots();
@@ -2673,6 +2683,7 @@ void startupSdbc() {
     if (currentStartupTimePhaseP(9)) {
       inModule(((StringWrapper*)(copyConsTree(wrapString("/SDBC")))));
       setLoggingParameters("SDBC", consList(6, KWD_SDBC_LOG_LEVELS, getQuotedTree("((:NONE :LOW :MEDIUM :HIGH) \"/SDBC\")", "/SDBC"), KWD_SDBC_LEVEL, KWD_SDBC_NONE, KWD_SDBC_MAX_WIDTH, wrapInteger(250)));
+      defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *DB-CONNECTION-RENEWAL-INTERVAL* INTEGER 60 :DOCUMENTATION \"The maximum lifetime of a database connection (in seconds) after which\nit gets automatically renewed.  Auto-renewals avoid connection timeout errors which are\notherwise tricky to catch, e.g., we might just see a `bad handle passed' error.\" :DEMON-PROPERTY \"sdbc.dbConnectionRenewalInterval\" :PUBLIC? TRUE)");
       defineStellaGlobalVariableFromStringifiedSource("(DEFSPECIAL *SQL-COMMAND-TEMPLATES* (KEY-VALUE-MAP OF OBJECT (KEY-VALUE-LIST OF OBJECT PROPERTY-LIST)) (NEW KEY-VALUE-MAP))");
       defineStellaGlobalVariableFromStringifiedSource("(DEFGLOBAL *SQL-CMD-TEMPLATE-VARIABLE-PREFIX* STRING \"#$\")");
       sdbc::initializeSymbols();

@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 2009-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 2009-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: http-server.ste,v 1.6 2010/10/11 21:39:28 hans Exp
+;;; Version: http-server.ste,v 1.7 2014/04/17 22:35:12 hans Exp
 
 ;;; Abstract HTTP server and request/exchange API.  These methods need
 ;;; to be implemented by each supported server implementation.  We
@@ -432,7 +432,8 @@ Note that different implementations have slightly different behavior."
 (defun (parse-and-decode-form-values (KEY-VALUE-LIST OF STRING-WRAPPER STRING-WRAPPER)) ((values STRING))
   :documentation "Given the `values' returned by a form, parse and decode them and return them as
 a key-value-list.  NOTE: values will not be trimmed and empty values will be represented by the empty
-string rather than NULL."
+string rather than NULL.  Also, if the same input name occurs more than once, only the value of the
+last input will be recorded in the resulting key-value-list."
   :public? TRUE
   (let ((result (new KEY-VALUE-LIST))
         (bareEntry STRING NULL)
@@ -446,6 +447,25 @@ string rather than NULL."
                         (unescape-url-string (subsequence bareEntry 0 split))
                         (unescape-url-string (subsequence bareEntry (1+ split) NULL)))))
     (return result)))
+
+(defun (parse-and-decode-non-unique-form-values (PROPERTY-LIST OF STRING-WRAPPER STRING-WRAPPER)) ((values STRING))
+  :documentation "Given the `values' returned by a form, parse and decode them and return them as
+a property-list.  NOTE: values will not be trimmed and empty values will be represented by the empty
+string rather than NULL.  Keys will be inserted into the result in the order they appear in the form.
+If they are non-unique, multiple entries per key will result which can be iterated over, however,
+standard `lookup' calls will return the value of the first key only."
+  :public? TRUE
+  (let ((result NIL)
+        (bareEntry STRING NULL)
+        (split 0))
+    (setq values (substitute values #\space #\+)) ;; decode spaces
+    (foreach entry in (split-string values #\&)
+        do (setq bareEntry (unwrap-string entry))
+           (setq split (position bareEntry #\= 0))
+           (when (defined? split)
+             (pushq result (unescape-url-string (subsequence bareEntry 0 split)))
+             (pushq result (unescape-url-string (subsequence bareEntry (1+ split) NULL)))))
+    (return (new PROPERTY-LIST :the-plist (reverse result)))))
 
 
   ;;
@@ -558,7 +578,12 @@ and does not (yet) support directory listings."
   :public? TRUE
   (setq directory (translate-logical-pathname directory))
   (setq directory (file-name-as-directory directory))
-  (ensure-file-exists directory "publish-directory")
+  ;(ensure-file-exists directory "publish-directory")
+  ;; make this a warning for now, so that it doesn't break the startup of the
+  ;; system in case we are only using it for HTTP client operations - but maybe
+  ;; these should be checked during server startup only:
+  (unless (probe-file? directory)
+    (warn "HTTP/publish-directory: " directory " does not exist"))
   (unless (ends-with? path "/" NULL)
     (setq path (concatenate path "/")))
   (let ((theOptions

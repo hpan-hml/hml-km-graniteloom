@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -110,6 +110,7 @@ extern int oMAX_TOKENIZER_STATESo;
 extern int oMAX_TOKENIZER_CHARACTERSo;
 extern int oTOKENIZER_INITIAL_BUFFER_SIZEo;
 extern DECLARE_STELLA_SPECIAL(oWITHTOKENIZERINPUTTYPEo, Surrogate* );
+extern boolean oTRACE_GET_NEXT_TOKENpo;
 extern Cons* oSTELLA_TOKENIZER_TABLE_DEFINITIONo;
 extern TokenizerTable* oSTELLA_TOKENIZER_TABLEo;
 extern Vector* oSTELLA_LOGICAL_STATE_NAMESo;
@@ -201,6 +202,7 @@ char readCharacter(InputStream* inputstream, boolean& _Return1);
 void unreadCharacter(char ch, InputStream* inputstream);
 boolean yesOrNoP(char* message);
 boolean yOrNP(char* message);
+char* fileToString(char* file);
 void helpStartupRead1();
 void helpStartupRead2();
 void helpStartupRead3();
@@ -289,9 +291,12 @@ extern Symbol* SYM_READ_STELLA_PROGN;
 extern Symbol* SYM_READ_STELLA_SETQ;
 extern Symbol* SYM_READ_STELLA_LOOP;
 extern Symbol* SYM_READ_STELLA_CHARACTER_CODE;
+extern Symbol* SYM_READ_STELLA_BYTE_ARRAY_NTH;
+extern Symbol* SYM_READ_STELLA_IF_OUTPUT_LANGUAGE;
+extern Keyword* KWD_READ_COMMON_LISP;
+extern Symbol* SYM_READ_STELLA_g;
 extern Symbol* SYM_READ_STELLA_LOGOR;
 extern Symbol* SYM_READ_STELLA_SHIFT_LEFT;
-extern Symbol* SYM_READ_STELLA_BYTE_ARRAY_NTH;
 extern Symbol* SYM_READ_STELLA_COND;
 extern Symbol* SYM_READ_STELLA_e;
 extern Symbol* SYM_READ_STELLA_LOGAND;

@@ -23,7 +23,7 @@
 | UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          |
 | 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               |
 |                                                                            |
-| Portions created by the Initial Developer are Copyright (C) 1996-2010      |
+| Portions created by the Initial Developer are Copyright (C) 1996-2014      |
 | the Initial Developer. All Rights Reserved.                                |
 |                                                                            |
 | Contributor(s):                                                            |
@@ -152,9 +152,10 @@ public class Heap extends Vector {
 
   /** Insert <code>value</code> into <code>self</code> and restore the heap property.
    * If <code>self</code> has available room, simply insert <code>value</code>.  If the heap is full, only
-   * insert <code>value</code> if it is better than the current root (i.e., the minimum of <code>self</code>
-   * if <code>self</code>s <code>predicate</code> has <code>L</code> semantics).  In that case, replace the root of
-   * <code>self</code> and restore the heap property.  This is useful to build and maintain a
+   * insert <code>value</code> if it is better than the current root (i.e., if <code>value</code> is
+   * greater than the minimum of <code>self</code> for the case of a min-heap where <code>self</code>s
+   * <code>predicate</code> has <code>L</code> semantics).  In that case, replace the root of <code>self</code>
+   * and restore the heap property.  This is useful to build and maintain a
    * heap with some top-N elements (relative to <code>predicate</code>) where the root (or
    * minimum) of <code>self</code> is the currently weakest element at the end of the list.
    * @param value
@@ -239,12 +240,24 @@ public class Heap extends Vector {
   }
 
   /** Return the root of <code>self</code> (NULL if <code>self</code> is empty).
+   * The root contains the minimum element of a min-heap with '&lt;' predicate.
    * @return Stella_Object
    */
   public Stella_Object heapRoot() {
     { Heap self = this;
 
       return ((self.emptyP() ? null : (self.theArray)[0]));
+    }
+  }
+
+  /** Return the last item in the heap <code>self</code> which will be the
+   * largest or best item if <code>self</code> is a sorted min-heap with a '&lt;' predicate.
+   * @return Stella_Object
+   */
+  public Stella_Object last() {
+    { Heap self = this;
+
+      return ((self.theArray)[(self.length() - 1)]);
     }
   }
 
@@ -274,6 +287,37 @@ public class Heap extends Vector {
     { Heap self = this;
 
       self.fillPointer = 0;
+    }
+  }
+
+  /** Return a copy of the heap <code>self</code>.
+   * @return Vector
+   */
+  public Vector copy() {
+    { Heap self = this;
+
+      { int length = self.fillPointer;
+
+        { Heap self000 = Heap.newHeap(self.predicate, self.arraySize);
+
+          self000.fillPointer = length;
+          { Heap copy = self000;
+            edu.isi.stella.Stella_Object[] sourcearray = self.theArray;
+            edu.isi.stella.Stella_Object[] copyarray = copy.theArray;
+
+            { int i = Stella.NULL_INTEGER;
+              int iter000 = 0;
+              int upperBound000 = length - 1;
+
+              for (;iter000 <= upperBound000; iter000 = iter000 + 1) {
+                i = iter000;
+                copyarray[i] = (sourcearray[i]);
+              }
+            }
+            return (copy);
+          }
+        }
+      }
     }
   }
 

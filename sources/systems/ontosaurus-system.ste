@@ -20,7 +20,7 @@
 ; UNIVERSITY OF SOUTHERN CALIFORNIA, INFORMATION SCIENCES INSTITUTE          ;
 ; 4676 Admiralty Way, Marina Del Rey, California 90292, U.S.A.               ;
 ;                                                                            ;
-; Portions created by the Initial Developer are Copyright (C) 2000-2010      ;
+; Portions created by the Initial Developer are Copyright (C) 2000-2014      ;
 ; the Initial Developer. All Rights Reserved.                                ;
 ;                                                                            ;
 ; Contributor(s):                                                            ;
@@ -40,7 +40,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; END LICENSE BLOCK ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; Version: ontosaurus-system.ste,v 1.15 2010/02/12 20:38:34 hans Exp
+;;; Version: ontosaurus-system.ste,v 1.16 2014/04/17 00:56:32 hans Exp
 
 (in-package "STELLA")
 
@@ -115,5 +115,5 @@
   :lisp-package "STELLA"
   :java-package "edu.isi.ontosaurus"
   :java-catchall-class "OntosaurusUtil"
-  :uses ("STELLA" "LOGIC")
+  :uses ("LOGIC" "STELLA")
   :code-only? TRUE)
