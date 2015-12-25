@@ -84,9 +84,6 @@ Representation in Common Lisp:
     * e.g. `(STELLA::GET-SYSTEM-DEFINITION "powerloom")`
 * `STELLA::*SYSTEMDEFINITIONS*` [`STELLA::LIST`]
 * `STELLA::*FILE-LOAD-PATH*`
-* `STELLA::STRING-WRAPPER`
-* `STELLA::WRAPPER-VALUE-TYPE`
-* `STELLA::SURROGATE`
 * `"pl:native;lisp;*;startup-system.lisp"` [directory]
 * Source files: `systems.slisp`, `systems.lisp`
 
@@ -97,6 +94,14 @@ _Refer to native C++ source files_, `systems.cc`
 Representation in Java:
 
 _Refer to native Java source files_, `systems.java`
+
+### Value Wrapping in STELLA
+
+_Notes_ - Lisp representation
+
+* `STELLA::STRING-WRAPPER`
+* `STELLA::WRAPPER-VALUE-TYPE`
+* `STELLA::SURROGATE`
 
 
 ### Knowledge Representation - A Bibliography
