@@ -19,9 +19,24 @@ is developed independent of the original [PowerLoom][pl] project.
 
 # Documentation
 
-## PowerLoom Manual
+**Local files:**
 
-A manual is available for [PowerLoom][PL], online
+* `README-STELLA`
+* `README-POWERLOOM`
+* `sources/stella/README`
+* `sources/stella/doc/`
+    * `sources/stella/doc/manual.pdf`
+* `sources/logic/README`
+* `sources/logic/doc/PowerLoom-Overview-Slides.ppt`
+* `sources/powerloom/doc/`
+    * `sources/powerloom/doc/manual.pdf`
+* `native/cpp/stella/cpp-lib/gc/doc/`
+* `sources/powerloom-gui/src/overview.html`
+* `htdocs/ontosaurus/help/`
+* `sources/powerloom-server/plsoap/README`
+* `native/lisp/powerloom-server/plsoap/README`
+* `native/java/edu/isi/powerloom/server/plsoap/README`
+* `sources/webtools/tomcat/README`
 
 
 ## Additional Documentatry Information
