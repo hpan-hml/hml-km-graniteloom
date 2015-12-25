@@ -274,7 +274,7 @@ GraniteLoom fork of [PowerLoom][PL]
 [stella]: http://www.isi.edu/isd/LOOM/Stella/index.html
 [kif3]: http://logic.stanford.edu/kif/Hypertext/kif-manual.html
 [kifpedia]: https://en.wikipedia.org/wiki/Knowledge_Interchange_Format
-[kiffparser]: http://www.ksl.stanford.edu/knowledge-sharing/lib/kifparser/
+[kifparser]: http://www.ksl.stanford.edu/knowledge-sharing/lib/kifparser/
 [stankif]: http://logic.stanford.edu/kif/
 [stanlog]: http://logic.stanford.edu/
 [cdr]: https://me.stanford.edu/research/labs-and-centers/center-design-research
