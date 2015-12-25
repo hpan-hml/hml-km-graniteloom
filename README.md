@@ -127,11 +127,11 @@ _Refer to native Java source files_, `systems.java`
 
 #### Dependencies
 
-* `stella.asd` - Stella System Definition (GraniteLoom)
+* `stella.asd` - **Stella System Definition** (GraniteLoom) [ASDF::System]
 
-    * Dependencies: Each of [USocket][usocket], [Bordeaux Threads][bthread]
+    * **Dependencies:** Each of [USocket][usocket], [Bordeaux Threads][bthread]
 
-    * Features and Parameters Affecting System Definition
+    * **Features and Parameters Affecting System Definition**
 
         * Feature `:STELLA-STRUCT` - newly defined in GraniteLoom,
           this feature provides an alternative to appilcations of the
@@ -153,7 +153,7 @@ _Refer to native Java source files_, `systems.java`
           `native/lisp/stella/cl-lib/cl-setup.lisp` (TO DO -
           PORTABILITY, NO USERSPACE SIDE EFECTS)
 
-    * Side Effects - Behaviors During Evaluation of System Definition
+    * **Side Effects - Behaviors During Evaluation of System Definition**
         * Common Lisp Package `STELLA-SYSTEM` defined
         * Common Lisp Package `STELLA` defined
         * Macro `STELLA::WITH-REDEFINITION-WARNINGS-SUPPRESSED`
@@ -163,19 +163,18 @@ _Refer to native Java source files_, `systems.java`
         * Fxtensions for ASDF in STELLA, PowerLoom defined
 
 
-    * Side Effects - Behaviors Before `ASDF:COMPILE-OP` of System Definition
+    * **Side Effects - Behaviors Before `ASDF:COMPILE-OP` of System Definition**
         * Set `CL-USER::*LOAD-CL-STRUCT-STELLA*?` value to `T` when
           the feature `:STELLA-STRUCT` is defined
 
-    * Side Effects - Behaviors After `ASDF:LOAD-OP` of System Definition
+    * **Side Effects - Behaviors After `ASDF:LOAD-OP` of System Definition**
         * Function Call Evaluated: `STELLA::STARTUP-STELLA-SYSTEM`
         * Function Call Evaluated `STELLA::STARTUP-STELLA-TO-CL`
         * Informative message printed to `CL:*STANDARD-OUTPUT*` when
         `CL-USER::*STELLA-VERBORE?*`
         * `#+ALLEGRO` `(tpl:setq-default cl-user::*redefinition-warnings* nil)`
 
-    * Side Effects - Behaviors during Normal Upstream System
-      Evaluation
+    * **Side Effects - Behaviors during Normal Upstream System Evaluation**
     
         * Logical pathname host `PL:` defined
     
@@ -186,7 +185,7 @@ _Refer to native Java source files_, `systems.java`
             * See alo: `CL-USER::*STELLA-NATIVE-DIRECTORY*`
       
 
-* `powerloom.asd` (TO DO) - Powerloom System Definition (GraniteLoom)
+* `powerloom.asd` (TO DO) - Powerloom System Definition (GraniteLoom) [ASDF::System]
 
     * Dependencies: `stella.asd`
 
