@@ -221,7 +221,7 @@ for later design work, in GraniteLoom_
 * `C-HEADER-FILE`
 * `MAKEFILE`
 
-_To Do: ASDF integration with XSD Shared MIME Info_
+_To Do: ASDF integration with XDG Shared MIME Info_
 
 * `STELLA-LISP-FILE` - Special Handling in GraniteLoom System Definitions
 
