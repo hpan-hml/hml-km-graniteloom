@@ -39,7 +39,7 @@ is developed independent of the original [PowerLoom][pl] project.
 * `sources/webtools/tomcat/README`
 
 
-## Additional Documentatry Information
+## Additional Documentary Information
 
 ### STELLA Programming Language
 
@@ -49,6 +49,14 @@ a _typed_ dialect of the  [Knowledge Interchange Format][kif3]
 
 [STELLA][stella] source code may be transformed into into C++,
 Java, and Common Lisp source code.
+
+#### Type Definitions - Stella and C++, Java, Common Lisp
+
+...
+
+#### Value Wrappers in Stella
+
+...
 
 ### Knowledge Interchange Format (KIF)
 
@@ -257,7 +265,7 @@ Quoting the [Powerloom Download Page][pldl] (December 2015)
 > use PowerLoom even for commercial development while still retaining
 > the advantages of open-source licensing.
 
-Such a license is retrained, throughout the works contributed in the
+Such a license is retained, throughout the works contributed in the
 GraniteLoom fork of [PowerLoom][PL]
 
 [pl]: http://www.isi.edu/isd/LOOM/PowerLoom/
