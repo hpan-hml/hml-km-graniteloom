@@ -21,12 +21,10 @@ is developed independent of the original [PowerLoom][pl] project.
 
 **Local files:**
 
-* `README-STELLA`
-* `README-POWERLOOM`
-* `sources/stella/README`
+* `sources/stella/README` - STELLA Overview
 * `sources/stella/doc/`
     * `sources/stella/doc/manual.pdf`
-* `sources/logic/README`
+* `sources/logic/README` - PowerLoom Overview
 * `sources/logic/doc/PowerLoom-Overview-Slides.ppt`
 * `sources/powerloom/doc/`
     * `sources/powerloom/doc/manual.pdf`
@@ -34,8 +32,6 @@ is developed independent of the original [PowerLoom][pl] project.
 * `sources/powerloom-gui/src/overview.html`
 * `htdocs/ontosaurus/help/`
 * `sources/powerloom-server/plsoap/README`
-* `native/lisp/powerloom-server/plsoap/README`
-* `native/java/edu/isi/powerloom/server/plsoap/README`
 * `sources/webtools/tomcat/README`
 
 
