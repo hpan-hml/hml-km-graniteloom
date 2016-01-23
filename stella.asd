@@ -46,7 +46,7 @@
     (dolist (s '(#:*load-cl-struct-stella?*
                  #:*stella-verbose?*
                  #:*source-truename* ;; [new]
-                 #:*stella-system* ;; [new]
+                 #:*system-asdf* ;; [new]
                  ))
       (intern (symbol-name s) p)))
   
@@ -67,7 +67,7 @@
      #:*load-cl-struct-stella?*
      #:*stella-verbose?*
      #:*source-truename*
-     #:*stella-system*
+     #:*system-asdf*
      ))
 
   #+NIL
@@ -130,13 +130,11 @@
   ()
   (:default-initargs :type "java"))
 
-(defclass c++-header-file (source-file)
-  ()
-  (:default-initargs :type "hh"))
-
 (defclass c-header-file (source-file)
   ()
   (:default-initargs :type "h"))
+
+;; asdf:c-source-file - defined in ASDF upstream
 
 (defclass c++-source-file (source-file)
   ()
@@ -148,6 +146,63 @@
   (:default-initargs :type nil))
 
 
+(defclass powerloom-kb (source-file)
+  ()
+  (:default-initargs :type "plm"))
+
+
+(defclass stella-sytem (system)
+  ()
+  (:default-initargs :type nil))
+
+
+(deftype stella-laguage ()
+  ;; cf. STELLA::%MAKE-SYSTEM - syntax tho?
+  ;;
+  ;; informaive typedef
+  '(member :common-lisp :cpp :java))
+
+
+
+(defclass transform-op (operation)
+  ())
+
+
+(defmethod operate ((o transform-op) (c stella-system)
+                    &key (production t))
+  (apply #'stella::make-system
+         (component-name c)
+         :force-translation? t
+         :load-system? t
+         (cond
+           (production '(:production-settings? t
+                         :developmen-settings? nil))
+           (t '(:production-settings? nil
+                :developmen-settings? tx)))))
+
+(defmethod operate ((o load-op) (c stella-system))
+  ;; FIXME: pathname handling
+  ;;
+  ;; FIXME: IN-ORDER-TO method
+
+  ;; compiles and loads ... ? then calls 'the system startup function"...
+  ;;; referring to docstriing or STELLA::MAKE-SYSTEM, STELLA::%MAKE-SYSTEM
+  (stella::make-system (component-name c) :load-system? t)
+  )
+
+
+(defmethod operate ((o compile-op) (c stella-system))
+  ;; FIXME: pathname handling
+  ;;
+  ;; FIXME: IN-ORDER-TO method
+
+  ;; compiles and loads ... ? then calls 'the system startup function"...
+  ;;; referring to docstriing or STELLA::MAKE-SYSTEM, STELLA::%MAKE-SYSTEM
+  (stella::make-system (component-name c)
+                       :load-system? nil
+                       :force-recompilation? t))
+
+;; --- 
 
 ;; emulating forms defined in
 ;; file native/lisp/stella/cl-lib/cl-setup.lisp
@@ -189,7 +244,27 @@ implementation ~(~D)~%is too small.  It must be at least 24 bits."
             )
          (progn ,@forms))))
 
-;; [new]
+
+;; [new] (FIXME: DO not define here)
+
+(defun unwrap-literal (value) ;; UTIL
+  ;; see also: stella::wrap-literal
+  (declare (type stella::literal-wrapper value))
+  (etypecase value
+    (stella::string-wrapper (stella::unwrap-string value))
+    (stella::integer-wrapper (stella::unwrap-integer value))
+    (stella::long-integer-wrapper (stella::unwrap-long-integer value))
+    (stella::float-wrapper (stella::unwrap-float value))
+    (stella::boolean-wrapper (stella::unwrap-boolean value))
+    (stella::character-wrapper (stella::unwrap-character value))))
+
+(defun unencapsulate-object (value)
+  (declare (type (or stella::literal-wrapper
+                     stella::list)
+                 value))
+  (etypecase value
+    (stella::literal-wrapper (values (unwrap-literal value)))
+    (stella::list (values (stella::%the-cons-list value)))))
 
 (defclass stella-lisp-file (cl-source-file)
   ())
@@ -197,13 +272,13 @@ implementation ~(~D)~%is too small.  It must be at least 24 bits."
 
 (defvar *source-truename*)
 
-(defvar *stella-system*)
+(defvar *system-asdf*)
 
 (defvar *stella-verbose?* (or *compile-verbose* *load-verbose*))
 
 (defmethod perform :around ((o compile-op) (c stella-lisp-file))
   (let ((*compile-verbose* *stella-verbose?*)
-        (*stella-system* (component-system c))
+        (*system-asdf* (component-system c))
         (*source-truename*
          (truename (component-pathname c))))
     (stella::with-redefinition-warnings-suppressed
@@ -212,7 +287,7 @@ implementation ~(~D)~%is too small.  It must be at least 24 bits."
 
 (defmethod perform :around ((o load-op) (c stella-lisp-file))
   (let ((*load-verbose* *stella-verbose?*)
-        (*stella-system* (component-system c))
+        (*system-asdf* (component-system c))
         (*source-truename*
          (truename (component-pathname c))))
     (stella::with-redefinition-warnings-suppressed
@@ -220,17 +295,17 @@ implementation ~(~D)~%is too small.  It must be at least 24 bits."
         (call-next-method)))))
 
 
-(defclass stella-system (system)
+(defclass stella-system-asdf (system)
   ())
 
-(defmethod perform :around ((op operation) (c stella-system))
-  (let ((*stella-system* c))
+(defmethod perform :around ((op operation) (c stella-system-asdf))
+  (let ((*system-asdf* c))
     ;; NB: PERFORM might not be applied recursively onto system components
     (call-next-method)))
 
 
 (defsystem #:stella ;; xref: ./load-stella.lisp , ...
-  :class stella-system
+  :class stella-system-asdf
   :depends-on
   (#:usocket ;; portable sockets interface
    ;; ^ cf. socket handling in STELLA 
